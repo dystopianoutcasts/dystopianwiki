@@ -4,9 +4,11 @@
  */
 
 .quickstart {
+  position: relative;
   padding: var(--spacing-12) var(--spacing-4);
   max-width: var(--content-max-width);
   margin: 0 auto;
+  z-index: 1;
 }
 
 .quickstart__title {
@@ -24,12 +26,14 @@
   gap: var(--spacing-4);
 }
 
+/* @breakpoint-lg: 1024px - Desktop/Large tablet: 2-column grid */
 @media (max-width: 1024px) {
   .quickstart__grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
+/* @breakpoint-sm: 640px - Mobile: Single column, reduced padding */
 @media (max-width: 640px) {
   .quickstart__grid {
     grid-template-columns: 1fr;

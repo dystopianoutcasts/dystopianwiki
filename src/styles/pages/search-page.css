@@ -215,7 +215,7 @@
   color: var(--color-text-tertiary);
 }
 
-/* Responsive */
+/* @breakpoint-sm: 640px - Mobile: Compact layout */
 @media (max-width: 640px) {
   .search-page {
     padding: var(--spacing-4) var(--spacing-3);

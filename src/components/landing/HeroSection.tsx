@@ -24,9 +24,9 @@ export function HeroSection({ defaultVersion = 'build-41' }: HeroSectionProps) {
       <div className="hero__decoration hero__decoration--right" />
 
       <div className="hero__content">
-        {/* Shield Logo */}
+        {/* Banner Logo */}
         <img
-          src="/assets/branding/logo-shield.png"
+          src="/assets/banners/dystopian-outcasts-banner-1024.png"
           alt="Dystopian Outcasts"
           className="hero__logo"
         />

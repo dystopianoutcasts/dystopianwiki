@@ -59,35 +59,42 @@
   --color-neutral-50: #f8f6f3;   /* Cream tint */
 
   /* ═══════════════════════════════════════════════════════════════
-     SEMANTIC COLORS - Light Theme
+     SEMANTIC COLORS - Default Theme (Dystopian Navy)
+     Deep midnight navy with orange accents - the signature look
      ═══════════════════════════════════════════════════════════════ */
-  --color-background: var(--color-neutral-50);
-  --color-surface: #ffffff;
-  --color-surface-elevated: #ffffff;
-  --color-text-primary: var(--color-neutral-900);
-  --color-text-secondary: var(--color-neutral-600);
-  --color-text-muted: var(--color-neutral-500);
-  --color-border: var(--color-neutral-200);
-  --color-border-light: var(--color-neutral-100);
+  --color-background: var(--color-primary-900);
+  --color-surface: var(--color-primary-800);
+  --color-surface-elevated: var(--color-primary-700);
+  --color-text-primary: #f0f4f8;  /* Blue-tinted white */
+  --color-text-secondary: #94a3b8;  /* Muted blue-gray */
+  --color-text-muted: #64748b;
+  --color-border: var(--color-primary-700);
+  --color-border-light: var(--color-primary-800);
 
-  /* Interactive */
-  --color-link: var(--color-primary-600);
-  --color-link-hover: var(--color-primary-700);
-  --color-focus-ring: var(--color-primary-400);
+  /* Interactive - warm orange pops against deep blue */
+  --color-link: var(--color-accent-400);
+  --color-link-hover: var(--color-accent-300);
+  --color-focus-ring: var(--color-accent-500);
 
   /* Badges & Alerts */
-  --color-badge-new: var(--color-highlight-600);
-  --color-badge-advanced: var(--color-highlight-500);
-  --color-badge-beginner: var(--color-accent-500);
-  --color-badge-intermediate: var(--color-primary-500);
-  --color-alert-info-bg: var(--color-highlight-100);
-  --color-alert-info-border: var(--color-highlight-300);
-  --color-alert-warning-bg: var(--color-accent-100);
-  --color-alert-warning-border: var(--color-accent-300);
+  --color-badge-new: var(--color-highlight-500);
+  --color-badge-advanced: var(--color-highlight-400);
+  --color-badge-beginner: var(--color-accent-400);
+  --color-badge-intermediate: var(--color-primary-400);
+  --color-alert-info-bg: var(--color-highlight-900);
+  --color-alert-info-border: var(--color-highlight-700);
+  --color-alert-warning-bg: var(--color-accent-900);
+  --color-alert-warning-border: var(--color-accent-700);
 
-  /* Code */
-  --color-code-bg: var(--color-neutral-100);
-  --color-code-text: var(--color-primary-800);
+  /* Code - slightly elevated surface */
+  --color-code-bg: var(--color-primary-800);
+  --color-code-text: var(--color-accent-300);
+
+  /* Deeper shadows for the dark base */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 30px rgba(0, 0, 0, 0.6), 0 10px 15px rgba(0, 0, 0, 0.3);
 
   /* ═══════════════════════════════════════════════════════════════
      TYPOGRAPHY
@@ -153,6 +160,7 @@
      LAYOUT - Flex-based proportions
      ═══════════════════════════════════════════════════════════════ */
   --header-height: 64px;
+  --content-max-width: 1400px;
 
   /* Sidebar and TOC use flex-basis with min/max constraints */
   --sidebar-flex: 0 0 15%;       /* 15% of parent, doesn't grow/shrink */
@@ -168,41 +176,74 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   DARK THEME - Deep midnight navy, not washed-out gray
+   BREAKPOINTS - Responsive design reference
+   ═══════════════════════════════════════════════════════════════════
+
+   Note: CSS custom properties cannot be used in media queries.
+   These values are documented here for reference and consistency.
+
+   BREAKPOINT SYSTEM (desktop-down approach with max-width):
+   ─────────────────────────────────────────────────────────────────
+
+   --breakpoint-xl: 1280px   │ Large desktop - Full layout with sidebars & TOC
+                             │ @media (max-width: 1280px) { ... }
+   ─────────────────────────────────────────────────────────────────
+   --breakpoint-lg: 1024px   │ Desktop/Large tablet - Sidebar becomes overlay
+                             │ @media (max-width: 1024px) { ... }
+   ─────────────────────────────────────────────────────────────────
+   --breakpoint-md: 768px    │ Tablet - Mobile nav, stacked layouts
+                             │ @media (max-width: 768px) { ... }
+   ─────────────────────────────────────────────────────────────────
+   --breakpoint-sm: 640px    │ Mobile - Single column, reduced spacing
+                             │ @media (max-width: 640px) { ... }
+   ─────────────────────────────────────────────────────────────────
+
+   USAGE PATTERN:
+   Base styles = desktop (largest screens)
+   Then add @media (max-width: X) for progressively smaller screens
+
    ═══════════════════════════════════════════════════════════════════ */
-[data-theme="dark"] {
-  /* Deep navy backgrounds - rich and bold */
-  --color-background: var(--color-primary-950);
-  --color-surface: var(--color-primary-900);
-  --color-surface-elevated: var(--color-primary-800);
 
-  /* High contrast text */
-  --color-text-primary: #f0f4f8;  /* Slightly blue-tinted white */
-  --color-text-secondary: #94a3b8;  /* Muted blue-gray */
-  --color-text-muted: #64748b;
+/* ═══════════════════════════════════════════════════════════════════
+   LIGHT THEME - Much lighter navy blue
+   ═══════════════════════════════════════════════════════════════════ */
+[data-theme="light"] {
+  /* Lighter navy backgrounds - visible blue tint */
+  --color-background: var(--color-primary-500);
+  --color-surface: var(--color-primary-400);
+  --color-surface-elevated: var(--color-primary-300);
 
-  /* Subtle borders that don't wash out */
-  --color-border: var(--color-primary-800);
-  --color-border-light: var(--color-primary-900);
+  /* Dark text for contrast */
+  --color-text-primary: var(--color-primary-950);
+  --color-text-secondary: var(--color-primary-800);
+  --color-text-muted: var(--color-primary-700);
 
-  /* Interactive - warm orange pops against deep blue */
-  --color-link: var(--color-accent-400);
-  --color-link-hover: var(--color-accent-300);
-  --color-focus-ring: var(--color-accent-500);
+  /* Lighter borders */
+  --color-border: var(--color-primary-300);
+  --color-border-light: var(--color-primary-400);
 
-  /* Alerts */
-  --color-alert-info-bg: var(--color-highlight-900);
-  --color-alert-info-border: var(--color-highlight-700);
-  --color-alert-warning-bg: var(--color-accent-900);
-  --color-alert-warning-border: var(--color-accent-700);
+  /* Interactive - darker orange for light bg */
+  --color-link: var(--color-accent-700);
+  --color-link-hover: var(--color-accent-800);
+  --color-focus-ring: var(--color-accent-600);
 
-  /* Code - slightly elevated surface */
-  --color-code-bg: var(--color-primary-800);
-  --color-code-text: var(--color-accent-300);
+  /* Badges & Alerts - adjusted for light bg */
+  --color-badge-new: var(--color-highlight-700);
+  --color-badge-advanced: var(--color-highlight-600);
+  --color-badge-beginner: var(--color-accent-600);
+  --color-badge-intermediate: var(--color-primary-700);
+  --color-alert-info-bg: var(--color-highlight-200);
+  --color-alert-info-border: var(--color-highlight-400);
+  --color-alert-warning-bg: var(--color-accent-200);
+  --color-alert-warning-border: var(--color-accent-400);
 
-  /* Deeper shadows for that bold feel */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
-  --shadow-xl: 0 20px 30px rgba(0, 0, 0, 0.6), 0 10px 15px rgba(0, 0, 0, 0.3);
+  /* Code */
+  --color-code-bg: var(--color-primary-300);
+  --color-code-text: var(--color-accent-800);
+
+  /* Lighter shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.1);
 }

@@ -28,6 +28,7 @@
   gap: var(--spacing-6);
 }
 
+/* @breakpoint-md: 768px - Tablet: Stack content vertically */
 @media (max-width: 768px) {
   .community-banner__content {
     flex-direction: column;
@@ -75,6 +76,7 @@
   max-width: 600px;
 }
 
+/* @breakpoint-md: 768px - Tablet: Remove max-width constraint */
 @media (max-width: 768px) {
   .community-banner__description {
     max-width: none;
@@ -121,6 +123,7 @@
   transform: translate(2px, -2px);
 }
 
+/* @breakpoint-md: 768px - Tablet: Full-width button */
 @media (max-width: 768px) {
   .community-banner__button {
     width: 100%;

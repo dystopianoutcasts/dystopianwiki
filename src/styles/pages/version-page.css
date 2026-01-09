@@ -196,7 +196,7 @@
   font-weight: 600;
 }
 
-/* Responsive */
+/* @breakpoint-sm: 640px - Mobile: Compact cards, smaller typography */
 @media (max-width: 640px) {
   .version-page {
     padding: var(--spacing-6) var(--spacing-3);

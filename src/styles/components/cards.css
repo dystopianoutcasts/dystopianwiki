@@ -23,6 +23,7 @@
   gap: var(--spacing-6);
 }
 
+/* @breakpoint-md: 768px - Tablet: Single column layout */
 @media (max-width: 768px) {
   .section-browser__grid {
     grid-template-columns: 1fr;

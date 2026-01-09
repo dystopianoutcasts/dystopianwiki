@@ -27,13 +27,14 @@
   width: 100%;
 }
 
-/* Responsive */
+/* @breakpoint-lg: 1024px - Desktop/Large tablet: Reduce content padding */
 @media (max-width: 1024px) {
   .wiki-layout__content {
     padding: var(--spacing-4);
   }
 }
 
+/* @breakpoint-sm: 640px - Mobile: Minimal content padding */
 @media (max-width: 640px) {
   .wiki-layout__content {
     padding: var(--spacing-3);

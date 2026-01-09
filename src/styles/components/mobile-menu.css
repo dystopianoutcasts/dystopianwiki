@@ -7,6 +7,7 @@
   display: none;
 }
 
+/* @breakpoint-md: 768px - Tablet: Enable mobile menu */
 @media (max-width: 768px) {
   .mobile-menu {
     display: block;

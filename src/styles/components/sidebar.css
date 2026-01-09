@@ -161,7 +161,7 @@
   color: var(--color-text-secondary);
 }
 
-/* Mobile Sidebar */
+/* @breakpoint-lg: 1024px - Desktop/Large tablet: Sidebar becomes slide-out overlay */
 @media (max-width: 1024px) {
   .sidebar {
     position: fixed;

@@ -110,7 +110,7 @@
   transition: width var(--transition-fast);
 }
 
-/* Mobile: hide TOC by default, show as dropdown */
+/* @breakpoint-xl: 1280px - Below large desktop: Hide desktop TOC, show mobile dropdown */
 @media (max-width: 1280px) {
   .toc {
     display: none;
@@ -158,12 +158,12 @@
   }
 }
 
+/* @breakpoint-xl: 1281px+ - Large desktop: Show sidebar TOC, hide mobile version */
 @media (min-width: 1281px) {
   .toc__toggle {
     display: none;
   }
 
-  /* Hide mobile TOC on desktop */
   .toc--mobile {
     display: none;
   }

@@ -132,7 +132,7 @@
   border-radius: var(--radius-sm);
 }
 
-/* Responsive */
+/* @breakpoint-sm: 640px - Mobile: Single column grid, smaller typography */
 @media (max-width: 640px) {
   .section-page__header {
     margin-bottom: var(--spacing-6);
