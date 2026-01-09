@@ -24,13 +24,13 @@
   z-index: -1;
 }
 
-/* Light theme - lighter navy gradient */
+/* Light theme - vibrant Mega Man blue gradient */
 [data-theme="light"] .hero__gradient {
   background: linear-gradient(
     135deg,
-    var(--color-primary-600) 0%,
-    var(--color-primary-500) 50%,
-    var(--color-accent-700) 100%
+    #0066cc 0%,           /* Deep Mega Man blue */
+    #1e90ff 50%,          /* Dodger blue */
+    #ff6b00 100%          /* Vibrant orange accent */
   );
 }
 
@@ -88,7 +88,7 @@
 }
 
 [data-theme="light"] .hero__subtitle em {
-  color: var(--color-accent-600);
+  color: #ff6b00;  /* Vibrant orange to match gradient */
 }
 
 /* Search Container */

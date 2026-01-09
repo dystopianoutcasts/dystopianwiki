@@ -205,34 +205,34 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════════
-   LIGHT THEME - Much lighter navy blue (400/300/200 range)
+   LIGHT THEME - Vibrant Mega Man blue with cyan highlights
    ═══════════════════════════════════════════════════════════════════ */
 [data-theme="light"] {
-  /* Much lighter navy backgrounds */
-  --color-background: var(--color-primary-400);
-  --color-surface: var(--color-primary-300);
-  --color-surface-elevated: var(--color-primary-200);
+  /* Vibrant Mega Man blue backgrounds */
+  --color-background: #1e90ff;           /* Dodger blue - main Mega Man blue */
+  --color-surface: #3ba3ff;              /* Lighter vibrant blue */
+  --color-surface-elevated: #5cb8ff;     /* Even lighter, slightly cyan */
 
-  /* Dark text for contrast on light backgrounds */
-  --color-text-primary: var(--color-primary-950);
-  --color-text-secondary: var(--color-primary-800);
-  --color-text-muted: var(--color-primary-700);
+  /* Dark text for contrast - deep navy */
+  --color-text-primary: #0a1628;
+  --color-text-secondary: #0f2847;
+  --color-text-muted: #1a3d5c;
 
-  /* Borders adjusted for light bg */
-  --color-border: var(--color-primary-500);
-  --color-border-light: var(--color-primary-400);
+  /* Borders - cyan-tinted for that Mega Man feel */
+  --color-border: #00bfff;               /* Deep sky blue / cyan */
+  --color-border-light: #4dd2ff;         /* Lighter cyan */
 
-  /* Interactive - darker orange for light bg */
-  --color-link: var(--color-accent-700);
-  --color-link-hover: var(--color-accent-800);
+  /* Interactive - bright orange pops against blue */
+  --color-link: #ff6b00;                 /* Vibrant orange */
+  --color-link-hover: #ff8533;           /* Lighter orange on hover */
 
-  /* Code - adjusted for lighter bg */
-  --color-code-bg: var(--color-primary-300);
-  --color-code-text: var(--color-accent-800);
+  /* Code - slightly darker blue with orange text */
+  --color-code-bg: #1a7edb;
+  --color-code-text: #ffcc00;            /* Golden yellow for code */
 
-  /* Lighter shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15), 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.2), 0 10px 10px rgba(0, 0, 0, 0.1);
+  /* Shadows with blue tint */
+  --shadow-sm: 0 1px 2px rgba(0, 50, 100, 0.2);
+  --shadow-md: 0 4px 6px rgba(0, 50, 100, 0.25), 0 2px 4px rgba(0, 50, 100, 0.15);
+  --shadow-lg: 0 10px 15px rgba(0, 50, 100, 0.25), 0 4px 6px rgba(0, 50, 100, 0.15);
+  --shadow-xl: 0 20px 25px rgba(0, 50, 100, 0.3), 0 10px 10px rgba(0, 50, 100, 0.15);
 }
