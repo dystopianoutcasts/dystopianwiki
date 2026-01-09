@@ -205,30 +205,34 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════════
-   LIGHT THEME - Lighter navy blue (same style, just lighter backgrounds)
+   LIGHT THEME - Much lighter navy blue (400/300/200 range)
    ═══════════════════════════════════════════════════════════════════ */
 [data-theme="light"] {
-  /* Lighter navy backgrounds - still blue, just lighter */
-  --color-background: var(--color-primary-600);
-  --color-surface: var(--color-primary-500);
-  --color-surface-elevated: var(--color-primary-400);
+  /* Much lighter navy backgrounds */
+  --color-background: var(--color-primary-400);
+  --color-surface: var(--color-primary-300);
+  --color-surface-elevated: var(--color-primary-200);
 
-  /* Keep same light text as dark mode */
-  --color-text-primary: #f0f4f8;
-  --color-text-secondary: #94a3b8;
-  --color-text-muted: #64748b;
+  /* Dark text for contrast on light backgrounds */
+  --color-text-primary: var(--color-primary-950);
+  --color-text-secondary: var(--color-primary-800);
+  --color-text-muted: var(--color-primary-700);
 
-  /* Keep same borders, just adjusted for lighter bg */
-  --color-border: var(--color-primary-400);
-  --color-border-light: var(--color-primary-500);
+  /* Borders adjusted for light bg */
+  --color-border: var(--color-primary-500);
+  --color-border-light: var(--color-primary-400);
+
+  /* Interactive - darker orange for light bg */
+  --color-link: var(--color-accent-700);
+  --color-link-hover: var(--color-accent-800);
 
   /* Code - adjusted for lighter bg */
-  --color-code-bg: var(--color-primary-500);
-  --color-code-text: var(--color-accent-300);
+  --color-code-bg: var(--color-primary-300);
+  --color-code-text: var(--color-accent-800);
 
-  /* Slightly lighter shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3), 0 4px 6px rgba(0, 0, 0, 0.2);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.4), 0 10px 10px rgba(0, 0, 0, 0.2);
+  /* Lighter shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15), 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.2), 0 10px 10px rgba(0, 0, 0, 0.1);
 }
