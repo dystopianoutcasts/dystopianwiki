@@ -13,7 +13,7 @@ import './styles/base.css';
 
 function App() {
   return (
-    <BrowserRouter basename="/dystopianwiki">
+    <BrowserRouter basename="/">
       <Routes>
         {/* Landing Page */}
         <Route path="/" element={<HomePage />} />
