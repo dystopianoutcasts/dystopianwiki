@@ -1,0 +1,224 @@
+{
+  "id": "game-mechanics-injury-system",
+  "title": "Project Zomboid Injury System Reference",
+  "slug": "injury-system",
+  "version": "build-41",
+  "section": "modding",
+  "category": "game-mechanics",
+  "tags": [
+    "lua",
+    "item",
+    "weapon",
+    "modding",
+    "api",
+    "injury",
+    "system",
+    "reference"
+  ],
+  "content": "# Project Zomboid Injury System Reference\r\n\r\nDocumentation for modding injuries, wounds, and health in Project Zomboid.\r\n\r\n---\r\n\r\n## Table of Contents\r\n1. [Health System Overview](#health-system-overview)\r\n2. [Body Parts](#body-parts)\r\n3. [Injury Types](#injury-types)\r\n4. [Applying Injuries](#applying-injuries)\r\n5. [Checking Injuries](#checking-injuries)\r\n6. [Healing & Treatment](#healing--treatment)\r\n7. [Code Examples](#code-examples)\r\n8. [CommonSense Fix Analysis](#commonsense-fix-analysis)\r\n\r\n---\r\n\r\n## Health System Overview\r\n\r\n### General Health\r\n- Player has a general health pool (0-100)\r\n- `ReduceGeneralHealth(amount)` - **DANGEROUS** - directly reduces HP\r\n- General health regenerates over time if injuries are treated\r\n\r\n### Body Damage\r\nAccess via: `player:getBodyDamage()`\r\n\r\nKey methods:\r\n```lua\r\nlocal bodyDamage = player:getBodyDamage()\r\nbodyDamage:ReduceGeneralHealth(amount)  -- Direct HP damage (use sparingly!)\r\nbodyDamage:getOverallBodyHealth()       -- Get current health\r\nbodyDamage:getBodyPart(BodyPartType.X)  -- Get specific body part\r\nbodyDamage:getBodyParts()               -- Get all body parts (ArrayList)\r\n```\r\n\r\n---\r\n\r\n## Body Parts\r\n\r\n### Body Part Types (BodyPartType enum)\r\n```lua\r\nBodyPartType.Hand_L         -- Left Hand\r\nBodyPartType.Hand_R         -- Right Hand\r\nBodyPartType.ForeArm_L      -- Left Forearm\r\nBodyPartType.ForeArm_R      -- Right Forearm\r\nBodyPartType.UpperArm_L     -- Left Upper Arm\r\nBodyPartType.UpperArm_R     -- Right Upper Arm\r\nBodyPartType.Torso_Lower    -- Lower Torso\r\nBodyPartType.Torso_Upper    -- Upper Torso\r\nBodyPartType.Head           -- Head\r\nBodyPartType.Neck           -- Neck\r\nBodyPartType.Groin          -- Groin\r\nBodyPartType.UpperLeg_L     -- Left Thigh\r\nBodyPartType.UpperLeg_R     -- Right Thigh\r\nBodyPartType.LowerLeg_L     -- Left Shin\r\nBodyPartType.LowerLeg_R     -- Right Shin\r\nBodyPartType.Foot_L         -- Left Foot\r\nBodyPartType.Foot_R         -- Right Foot\r\nBodyPartType.Back           -- Back\r\n```\r\n\r\n### Accessing Body Parts\r\n```lua\r\n-- Direct access\r\nlocal hand = player:getBodyDamage():getBodyPart(BodyPartType.Hand_L)\r\n\r\n-- Iterate all body parts\r\nlocal bodyParts = player:getBodyDamage():getBodyParts()\r\nfor i = 0, BodyPartType.ToIndex(BodyPartType.MAX) - 1 do\r\n    local bodyPart = bodyParts:get(i)\r\n    local partType = bodyPart:getType()\r\nend\r\n```\r\n\r\n---\r\n\r\n## Injury Types\r\n\r\n### Severity Scale (Lightest to Most Severe)\r\n\r\n| Injury | Bleeds? | HP Drain | Treatment | Notes |\r\n|--------|---------|----------|-----------|-------|\r\n| Scratch | Minimal | None | Bandage optional | Heals on its own |\r\n| Cut | Light | None | Bandage recommended | Heals with time |\r\n| Deep Wound | Heavy | Indirect | Requires stitches + bandage | Can be fatal if untreated |\r\n| Bite | Heavy | None* | Bandage | *Zombie = infection = death |\r\n| Fracture | No | None | Splint | Affects movement |\r\n| Burn | Variable | None | Bandage | Depends on severity |\r\n| Bullet Wound | Heavy | None | Surgery + bandage | Bullet must be removed |\r\n| Glass Wound | Heavy | None | Surgery + bandage | Glass must be removed |\r\n\r\n### Important Distinction\r\n- **Scratches/Cuts/Wounds** = Physical injuries, treatable\r\n- **Infection (zombie)** = Death sentence (unless disabled in sandbox)\r\n- **Wound Infection** = Treatable bacterial infection from dirty bandages\r\n\r\n---\r\n\r\n## Applying Injuries\r\n\r\n### Scratches (Lightest)\r\n```lua\r\nlocal hand = player:getBodyDamage():getBodyPart(BodyPartType.Hand_L)\r\n\r\n-- Standard scratch\r\nhand:setScratched(true, false)  -- (scratched, fromInfection)\r\n\r\n-- Tool/weapon scratch (farming, opening cans, etc.)\r\nhand:SetScratchedWeapon(true)\r\n\r\n-- Set scratch healing time (0 = fresh)\r\nhand:setScratchTime(0)\r\n```\r\n\r\n### Cuts\r\n```lua\r\nlocal hand = player:getBodyDamage():getBodyPart(BodyPartType.Hand_L)\r\n\r\nhand:setCut(true)\r\nhand:setCutTime(0)  -- 0 = fresh cut\r\n```\r\n\r\n### Bleeding\r\n```lua\r\n-- Set bleeding duration (higher = longer bleed)\r\nhand:setBleedingTime(0.2)   -- Tiny bleed (scratch)\r\nhand:setBleedingTime(5)     -- Light bleed (cut)\r\nhand:setBleedingTime(10)    -- Moderate bleed\r\nhand:setBleedingTime(20)    -- Heavy bleed (deep wound)\r\n```\r\n\r\n### Deep Wounds\r\n```lua\r\n-- Auto-generate (sets bleeding automatically)\r\nhand:generateDeepWound()\r\n\r\n-- OR manual\r\nhand:setDeepWounded(true)\r\nhand:setDeepWoundTime(50)\r\nhand:setBleedingTime(20)\r\n```\r\n\r\n### Glass/Shard Wounds\r\n```lua\r\nhand:generateDeepShardWound()  -- Deep wound + embedded glass\r\n```\r\n\r\n### Burns\r\n```lua\r\nhand:setBurnTime(50)  -- Higher = more severe\r\n```\r\n\r\n### Fractures\r\n```lua\r\nhand:setFractureTime(21)  -- Days to heal (in-game time)\r\n```\r\n\r\n### Bullet Wounds\r\n```lua\r\nhand:setHaveBullet(true, 0)  -- (hasBullet, bulletDepth)\r\n```\r\n\r\n### Bites (Zombie)\r\n```lua\r\nhand:SetBitten(true)\r\nhand:SetInfected(true)  -- This kills the player (unless sandbox disabled)\r\n```\r\n\r\n---\r\n\r\n## Checking Injuries\r\n\r\n### Boolean Checks\r\n```lua\r\nlocal hand = player:getBodyDamage():getBodyPart(BodyPartType.Hand_L)\r\n\r\nhand:scratched()        -- Is scratched?\r\nhand:isCut()            -- Is cut?\r\nhand:bleeding()         -- Is bleeding?\r\nhand:isDeepWounded()    -- Has deep wound?\r\nhand:deepWounded()      -- Alternative deep wound check\r\nhand:bitten()           -- Was bitten?\r\nhand:isInfectedWound()  -- Has wound infection?\r\nhand:isBurnt()          -- Is burned?\r\nhand:haveBullet()       -- Has bullet lodged?\r\nhand:haveGlass()        -- Has glass lodged?\r\nhand:bandaged()         -- Is bandaged?\r\nhand:stitched()         -- Is stitched?\r\nhand:HasInjury()        -- Has ANY injury?\r\n```\r\n\r\n### Duration/Severity Checks\r\n```lua\r\nhand:getScratchTime()     -- Scratch duration remaining\r\nhand:getBleedingTime()    -- Bleeding duration remaining\r\nhand:getDeepWoundTime()   -- Deep wound duration remaining\r\nhand:getBurnTime()        -- Burn duration remaining\r\nhand:getFractureTime()    -- Fracture duration remaining\r\n```\r\n\r\n---\r\n\r\n## Healing & Treatment\r\n\r\n### Remove Injuries\r\n```lua\r\n-- Remove scratch\r\nhand:setScratched(false, true)\r\nhand:setScratchTime(0)\r\n\r\n-- Remove cut\r\nhand:setCut(false)\r\nhand:setCutTime(0)\r\n\r\n-- Remove deep wound\r\nhand:setDeepWounded(false)\r\nhand:setDeepWoundTime(0)\r\nhand:setBleedingTime(0)\r\n\r\n-- Full heal (removes everything)\r\nhand:RestoreToFullHealth()\r\n```\r\n\r\n### Bandaging (done via items, but for reference)\r\n```lua\r\nhand:bandaged()  -- Check if bandaged\r\n```\r\n\r\n---\r\n\r\n## Code Examples\r\n\r\n### Example 1: Random Hand Scratch (Farming Style)\r\n```lua\r\n-- Used when player does manual labor without protection\r\nlocal function scratchRandomHand(player)\r\n    local bodyDamage = player:getBodyDamage()\r\n    local hand\r\n\r\n    if ZombRand(2) == 0 then\r\n        hand = bodyDamage:getBodyPart(BodyPartType.Hand_L)\r\n    else\r\n        hand = bodyDamage:getBodyPart(BodyPartType.Hand_R)\r\n    end\r\n\r\n    hand:SetScratchedWeapon(true)\r\n    hand:setBleedingTime(0.2)  -- Tiny bleed\r\nend\r\n```\r\n\r\n### Example 2: Check All Injuries on Hands\r\n```lua\r\nlocal function handsAreInjured(player)\r\n    local bd = player:getBodyDamage()\r\n    local leftHand = bd:getBodyPart(BodyPartType.Hand_L)\r\n    local rightHand = bd:getBodyPart(BodyPartType.Hand_R)\r\n\r\n    return leftHand:HasInjury() or rightHand:HasInjury()\r\nend\r\n```\r\n\r\n### Example 3: Apply Moderate Cut with Bleeding\r\n```lua\r\nlocal function applyCut(player, bodyPartType)\r\n    local bodyPart = player:getBodyDamage():getBodyPart(bodyPartType)\r\n    bodyPart:setCut(true)\r\n    bodyPart:setCutTime(0)\r\n    bodyPart:setBleedingTime(5)\r\nend\r\n```\r\n\r\n### Example 4: Full Injury Status Report\r\n```lua\r\nlocal function getInjuryReport(bodyPart)\r\n    local report = {}\r\n\r\n    if bodyPart:scratched() then table.insert(report, \"Scratched\") end\r\n    if bodyPart:isCut() then table.insert(report, \"Cut\") end\r\n    if bodyPart:bleeding() then table.insert(report, \"Bleeding (\"..bodyPart:getBleedingTime()..\")\") end\r\n    if bodyPart:isDeepWounded() then table.insert(report, \"Deep Wound\") end\r\n    if bodyPart:bitten() then table.insert(report, \"Bitten\") end\r\n    if bodyPart:isBurnt() then table.insert(report, \"Burned\") end\r\n    if bodyPart:haveBullet() then table.insert(report, \"Bullet Lodged\") end\r\n    if bodyPart:haveGlass() then table.insert(report, \"Glass Lodged\") end\r\n    if bodyPart:bandaged() then table.insert(report, \"[Bandaged]\") end\r\n    if bodyPart:stitched() then table.insert(report, \"[Stitched]\") end\r\n\r\n    return table.concat(report, \", \")\r\nend\r\n```\r\n\r\n---\r\n\r\n## CommonSense Fix Analysis\r\n\r\n### What CommonSense Did Wrong\r\n\r\n**Original Code (BB_CS_OnCraft.lua:79):**\r\n```lua\r\nbodyDamage:ReduceGeneralHealth(8 * SandboxVars.CommonSense.CanWoundIntensity)\r\n```\r\n\r\n**Problems:**\r\n1. `ReduceGeneralHealth()` directly damages HP pool - this is NOT how injuries work\r\n2. Base damage of 8 is massive (for comparison, zombie scratches don't do direct HP damage)\r\n3. With default intensity of 1.0, that's 8% HP per can\r\n4. With intensity cranked up, could easily do 40-60% HP\r\n5. Combined with bleeding, this was killing players\r\n\r\n### What We Fixed (OutcastQoL)\r\n\r\n**Our Code:**\r\n```lua\r\n-- Apply a light scratch to a random hand (50/50 left or right)\r\nlocal hand\r\nif ZombRand(2) == 0 then\r\n    hand = bodyDamage:getBodyPart(BodyPartType.Hand_L)\r\nelse\r\n    hand = bodyDamage:getBodyPart(BodyPartType.Hand_R)\r\nend\r\n\r\nhand:SetScratchedWeapon(true)\r\nhand:setBleedingTime(0.2)  -- Tiny bleed, bandage optional\r\n```\r\n\r\n**Why This Is Correct:**\r\n1. No direct HP damage - injuries affect body parts, not HP directly\r\n2. `SetScratchedWeapon(true)` is the same method vanilla uses for farming without gloves\r\n3. Tiny bleeding (0.2) means minor inconvenience, not life-threatening\r\n4. Random hand adds variety\r\n5. Can still opens (the whole point!)\r\n\r\n### Injury Severity Comparison\r\n\r\n| Source | Method | Effect |\r\n|--------|--------|--------|\r\n| CommonSense Original | `ReduceGeneralHealth(8)` | 8% direct HP loss |\r\n| Zombie Scratch | `setScratched(true, true)` | No HP loss, possible infection |\r\n| Farming (no gloves) | `SetScratchedWeapon(true)` | No HP loss, minor scratch |\r\n| Our Fix | `SetScratchedWeapon(true)` + `setBleedingTime(0.2)` | No HP loss, tiny bleed |\r\n\r\n---\r\n\r\n## Quick Reference Card\r\n\r\n### Apply Light Injury (Recommended)\r\n```lua\r\nbodyPart:SetScratchedWeapon(true)\r\nbodyPart:setBleedingTime(0.2)\r\n```\r\n\r\n### Apply Moderate Injury\r\n```lua\r\nbodyPart:setCut(true)\r\nbodyPart:setBleedingTime(5)\r\n```\r\n\r\n### Apply Severe Injury\r\n```lua\r\nbodyPart:generateDeepWound()\r\n```\r\n\r\n### AVOID (Unless Intentional)\r\n```lua\r\nbodyDamage:ReduceGeneralHealth(X)  -- Direct HP damage, very harsh!\r\n```\r\n\r\n---\r\n\r\n*Document created for Dystopian Outcasts server modding reference.*\r\n*Based on Project Zomboid Build 41.78+ Lua API.*\r\n",
+  "excerpt": "Documentation for modding injuries, wounds, and health in Project Zomboid.\r\n\r\n---\r\n\r\n\r\n1. Health System Overview\r\n2. Body Parts\r\n3. Injury Types\r\n4. Applying Injuries\r\n5. Checking Injuries\r\n6. Heal...",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "intermediate",
+  "tableOfContents": [
+    {
+      "id": "table-of-contents",
+      "text": "Table of Contents",
+      "level": 2
+    },
+    {
+      "id": "health-system-overview",
+      "text": "Health System Overview",
+      "level": 2
+    },
+    {
+      "id": "general-health",
+      "text": "General Health",
+      "level": 3
+    },
+    {
+      "id": "body-damage",
+      "text": "Body Damage",
+      "level": 3
+    },
+    {
+      "id": "body-parts",
+      "text": "Body Parts",
+      "level": 2
+    },
+    {
+      "id": "body-part-types-bodyparttype-enum",
+      "text": "Body Part Types (BodyPartType enum)",
+      "level": 3
+    },
+    {
+      "id": "accessing-body-parts",
+      "text": "Accessing Body Parts",
+      "level": 3
+    },
+    {
+      "id": "injury-types",
+      "text": "Injury Types",
+      "level": 2
+    },
+    {
+      "id": "severity-scale-lightest-to-most-severe",
+      "text": "Severity Scale (Lightest to Most Severe)",
+      "level": 3
+    },
+    {
+      "id": "important-distinction",
+      "text": "Important Distinction",
+      "level": 3
+    },
+    {
+      "id": "applying-injuries",
+      "text": "Applying Injuries",
+      "level": 2
+    },
+    {
+      "id": "scratches-lightest",
+      "text": "Scratches (Lightest)",
+      "level": 3
+    },
+    {
+      "id": "cuts",
+      "text": "Cuts",
+      "level": 3
+    },
+    {
+      "id": "bleeding",
+      "text": "Bleeding",
+      "level": 3
+    },
+    {
+      "id": "deep-wounds",
+      "text": "Deep Wounds",
+      "level": 3
+    },
+    {
+      "id": "glassshard-wounds",
+      "text": "Glass/Shard Wounds",
+      "level": 3
+    },
+    {
+      "id": "burns",
+      "text": "Burns",
+      "level": 3
+    },
+    {
+      "id": "fractures",
+      "text": "Fractures",
+      "level": 3
+    },
+    {
+      "id": "bullet-wounds",
+      "text": "Bullet Wounds",
+      "level": 3
+    },
+    {
+      "id": "bites-zombie",
+      "text": "Bites (Zombie)",
+      "level": 3
+    },
+    {
+      "id": "checking-injuries",
+      "text": "Checking Injuries",
+      "level": 2
+    },
+    {
+      "id": "boolean-checks",
+      "text": "Boolean Checks",
+      "level": 3
+    },
+    {
+      "id": "durationseverity-checks",
+      "text": "Duration/Severity Checks",
+      "level": 3
+    },
+    {
+      "id": "healing-treatment",
+      "text": "Healing & Treatment",
+      "level": 2
+    },
+    {
+      "id": "remove-injuries",
+      "text": "Remove Injuries",
+      "level": 3
+    },
+    {
+      "id": "bandaging-done-via-items-but-for-reference",
+      "text": "Bandaging (done via items, but for reference)",
+      "level": 3
+    },
+    {
+      "id": "code-examples",
+      "text": "Code Examples",
+      "level": 2
+    },
+    {
+      "id": "example-1-random-hand-scratch-farming-style",
+      "text": "Example 1: Random Hand Scratch (Farming Style)",
+      "level": 3
+    },
+    {
+      "id": "example-2-check-all-injuries-on-hands",
+      "text": "Example 2: Check All Injuries on Hands",
+      "level": 3
+    },
+    {
+      "id": "example-3-apply-moderate-cut-with-bleeding",
+      "text": "Example 3: Apply Moderate Cut with Bleeding",
+      "level": 3
+    },
+    {
+      "id": "example-4-full-injury-status-report",
+      "text": "Example 4: Full Injury Status Report",
+      "level": 3
+    },
+    {
+      "id": "commonsense-fix-analysis",
+      "text": "CommonSense Fix Analysis",
+      "level": 2
+    },
+    {
+      "id": "what-commonsense-did-wrong",
+      "text": "What CommonSense Did Wrong",
+      "level": 3
+    },
+    {
+      "id": "what-we-fixed-outcastqol",
+      "text": "What We Fixed (OutcastQoL)",
+      "level": 3
+    },
+    {
+      "id": "injury-severity-comparison",
+      "text": "Injury Severity Comparison",
+      "level": 3
+    },
+    {
+      "id": "quick-reference-card",
+      "text": "Quick Reference Card",
+      "level": 2
+    },
+    {
+      "id": "apply-light-injury-recommended",
+      "text": "Apply Light Injury (Recommended)",
+      "level": 3
+    },
+    {
+      "id": "apply-moderate-injury",
+      "text": "Apply Moderate Injury",
+      "level": 3
+    },
+    {
+      "id": "apply-severe-injury",
+      "text": "Apply Severe Injury",
+      "level": 3
+    },
+    {
+      "id": "avoid-unless-intentional",
+      "text": "AVOID (Unless Intentional)",
+      "level": 3
+    }
+  ]
+}

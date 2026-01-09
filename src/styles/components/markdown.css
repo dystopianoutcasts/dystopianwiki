@@ -1,0 +1,280 @@
+/**
+ * Markdown Renderer Styles
+ * Styles for rendered markdown content
+ */
+
+.markdown {
+  color: var(--color-text-primary);
+  line-height: var(--line-height-relaxed);
+}
+
+/* Headings */
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+  margin-top: var(--spacing-8);
+  margin-bottom: var(--spacing-4);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  scroll-margin-top: calc(var(--header-height) + var(--spacing-4));
+}
+
+.markdown h1 {
+  font-size: var(--font-size-3xl);
+  padding-bottom: var(--spacing-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.markdown h2 {
+  font-size: var(--font-size-2xl);
+  padding-bottom: var(--spacing-2);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.markdown h3 {
+  font-size: var(--font-size-xl);
+}
+
+.markdown h4 {
+  font-size: var(--font-size-lg);
+}
+
+.markdown h5 {
+  font-size: var(--font-size-base);
+}
+
+.markdown h6 {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* First heading shouldn't have top margin */
+.markdown > h1:first-child,
+.markdown > h2:first-child,
+.markdown > h3:first-child {
+  margin-top: 0;
+}
+
+/* Anchor links on headings */
+.markdown h1 a,
+.markdown h2 a,
+.markdown h3 a,
+.markdown h4 a,
+.markdown h5 a,
+.markdown h6 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.markdown h1 a:hover,
+.markdown h2 a:hover,
+.markdown h3 a:hover,
+.markdown h4 a:hover,
+.markdown h5 a:hover,
+.markdown h6 a:hover {
+  text-decoration: underline;
+}
+
+/* Paragraphs */
+.markdown p {
+  margin-bottom: var(--spacing-4);
+}
+
+/* Links */
+.markdown a {
+  color: var(--color-link);
+  text-decoration: none;
+}
+
+.markdown a:hover {
+  text-decoration: underline;
+}
+
+/* Lists */
+.markdown ul,
+.markdown ol {
+  margin-bottom: var(--spacing-4);
+  padding-left: var(--spacing-6);
+}
+
+.markdown li {
+  margin-bottom: var(--spacing-2);
+}
+
+.markdown li > ul,
+.markdown li > ol {
+  margin-top: var(--spacing-2);
+  margin-bottom: 0;
+}
+
+/* Task lists */
+.markdown ul.contains-task-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.markdown .task-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-2);
+}
+
+.markdown .task-list-item input[type="checkbox"] {
+  margin-top: 0.3em;
+}
+
+/* Blockquotes */
+.markdown blockquote {
+  margin: var(--spacing-4) 0;
+  padding: var(--spacing-4);
+  padding-left: var(--spacing-5);
+  border-left: 4px solid var(--color-primary-500);
+  background-color: var(--color-background);
+  border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+  color: var(--color-text-secondary);
+}
+
+.markdown blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Info/Warning/Note callouts */
+.markdown blockquote.info {
+  border-left-color: var(--color-highlight-500);
+  background-color: var(--color-alert-info-bg);
+}
+
+.markdown blockquote.warning {
+  border-left-color: var(--color-accent-500);
+  background-color: var(--color-alert-warning-bg);
+}
+
+/* Horizontal rules */
+.markdown hr {
+  margin: var(--spacing-8) 0;
+  border: none;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Images */
+.markdown img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--border-radius-md);
+  margin: var(--spacing-4) 0;
+}
+
+.markdown figure {
+  margin: var(--spacing-6) 0;
+}
+
+.markdown figcaption {
+  margin-top: var(--spacing-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* Tables */
+.markdown table {
+  width: 100%;
+  margin: var(--spacing-4) 0;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.markdown th,
+.markdown td {
+  padding: var(--spacing-3) var(--spacing-4);
+  text-align: left;
+  border: 1px solid var(--color-border);
+}
+
+.markdown th {
+  font-weight: var(--font-weight-semibold);
+  background-color: var(--color-background);
+}
+
+.markdown tr:nth-child(even) {
+  background-color: var(--color-background);
+}
+
+/* Inline code */
+.markdown code:not(pre code) {
+  font-family: var(--font-family-mono);
+  font-size: 0.875em;
+  background-color: var(--color-code-bg);
+  color: var(--color-code-text);
+  padding: 0.125em 0.375em;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--color-border-light);
+}
+
+/* Code blocks are handled by CodeBlock component */
+.markdown pre {
+  margin: var(--spacing-4) 0;
+}
+
+/* Keyboard shortcuts */
+.markdown kbd {
+  display: inline-block;
+  padding: 0.125em 0.5em;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  box-shadow: 0 1px 0 var(--color-border);
+}
+
+/* Strong and emphasis */
+.markdown strong {
+  font-weight: var(--font-weight-semibold);
+}
+
+.markdown em {
+  font-style: italic;
+}
+
+/* Strikethrough */
+.markdown del {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+/* Definition lists */
+.markdown dl {
+  margin: var(--spacing-4) 0;
+}
+
+.markdown dt {
+  font-weight: var(--font-weight-semibold);
+  margin-top: var(--spacing-3);
+}
+
+.markdown dd {
+  margin-left: var(--spacing-4);
+  color: var(--color-text-secondary);
+}
+
+/* Footnotes */
+.markdown .footnotes {
+  margin-top: var(--spacing-8);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.markdown .footnotes ol {
+  padding-left: var(--spacing-4);
+}
+
+/* Abbreviations */
+.markdown abbr[title] {
+  text-decoration: underline dotted;
+  cursor: help;
+}

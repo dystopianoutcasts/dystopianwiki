@@ -1,0 +1,14 @@
+{
+  "id": "build-41",
+  "name": "Build 41",
+  "status": "current",
+  "description": "The current stable multiplayer version of Project Zomboid. Recommended for most modding and mapping projects.",
+  "sections": ["modding", "mapping"],
+  "releaseDate": "2021-12-16",
+  "features": [
+    "Multiplayer support",
+    "Improved animation system",
+    "New crafting mechanics",
+    "Expanded Lua API"
+  ]
+}

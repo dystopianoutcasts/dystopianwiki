@@ -1,0 +1,73 @@
+{
+  "articles": [
+    {
+      "id": "game-mechanics-injury-system",
+      "title": "Project Zomboid Injury System Reference",
+      "slug": "injury-system",
+      "version": "build-41",
+      "section": "modding",
+      "category": "game-mechanics",
+      "tags": [
+        "lua",
+        "item",
+        "weapon",
+        "modding",
+        "api",
+        "injury",
+        "system",
+        "reference"
+      ],
+      "excerpt": "Documentation for modding injuries, wounds, and health in Project Zomboid.\r\n\r\n---\r\n\r\n\r\n1. Health System Overview\r\n2. Body Parts\r\n3. Injury Types\r\n4. Applying Injuries\r\n5. Checking Injuries\r\n6. Heal...",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "intermediate",
+      "content": "",
+      "tableOfContents": []
+    },
+    {
+      "id": "game-mechanics-animation-reference",
+      "title": "Project Zomboid Vanilla Animation Reference",
+      "slug": "animation-reference",
+      "version": "build-41",
+      "section": "modding",
+      "category": "game-mechanics",
+      "tags": [
+        "recipe",
+        "item",
+        "weapon",
+        "foraging",
+        "animation",
+        "sound",
+        "modding",
+        "api"
+      ],
+      "excerpt": "This document provides a comprehensive reference of all vanilla animations available in Project Zomboid for use in mod recipes and scripts.",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "advanced",
+      "content": "",
+      "tableOfContents": []
+    },
+    {
+      "id": "game-mechanics-sound-reference",
+      "title": "Project Zomboid Vanilla Sound Reference",
+      "slug": "sound-reference",
+      "version": "build-41",
+      "section": "modding",
+      "category": "game-mechanics",
+      "tags": [
+        "recipe",
+        "item",
+        "repair",
+        "weapon",
+        "event",
+        "sound",
+        "modding",
+        "api"
+      ],
+      "excerpt": "This document provides a comprehensive reference of all vanilla sounds available in Project Zomboid for use in mod recipes and scripts.",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "intermediate",
+      "content": "",
+      "tableOfContents": []
+    }
+  ]
+}

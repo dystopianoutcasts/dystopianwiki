@@ -1,0 +1,125 @@
+/**
+ * Quickstart Grid Styles
+ * 8 topic cards in 4x2 grid layout
+ */
+
+.quickstart {
+  padding: var(--spacing-12) var(--spacing-4);
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+}
+
+.quickstart__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-6);
+}
+
+.quickstart__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-4);
+}
+
+@media (max-width: 1024px) {
+  .quickstart__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .quickstart__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quickstart {
+    padding: var(--spacing-8) var(--spacing-4);
+  }
+}
+
+/* Card */
+.quickstart-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-5);
+  cursor: pointer;
+  transition: transform var(--transition-fast),
+              box-shadow var(--transition-fast),
+              border-color var(--transition-fast);
+  text-decoration: none;
+  display: block;
+}
+
+.quickstart-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary-300);
+  text-decoration: none;
+}
+
+[data-theme="dark"] .quickstart-card:hover {
+  border-color: var(--color-accent-500);
+}
+
+.quickstart-card:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Icon */
+.quickstart-card__icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: var(--spacing-3);
+  line-height: 1;
+}
+
+/* Title */
+.quickstart-card__title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-2);
+}
+
+/* Description */
+.quickstart-card__description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-normal);
+  margin: 0;
+}
+
+/* Section Badge */
+.quickstart-card__section {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: 2px 8px;
+  border-radius: var(--border-radius-full);
+  margin-top: var(--spacing-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.quickstart-card__section--modding {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-700);
+}
+
+.quickstart-card__section--mapping {
+  background-color: var(--color-accent-100);
+  color: var(--color-accent-700);
+}
+
+[data-theme="dark"] .quickstart-card__section--modding {
+  background-color: var(--color-primary-800);
+  color: var(--color-primary-200);
+}
+
+[data-theme="dark"] .quickstart-card__section--mapping {
+  background-color: var(--color-accent-900);
+  color: var(--color-accent-200);
+}

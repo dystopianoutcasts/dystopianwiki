@@ -1,0 +1,103 @@
+{
+  "id": "lua-api-weapon-model-swapping",
+  "title": "Weapon 3D Model Swapping - Complete Guide",
+  "slug": "weapon-model-swapping",
+  "version": "build-41",
+  "section": "modding",
+  "category": "lua-api",
+  "tags": [
+    "lua",
+    "item",
+    "weapon",
+    "event",
+    "api",
+    "model",
+    "swapping"
+  ],
+  "content": "# Weapon 3D Model Swapping - Complete Guide\r\n\r\n## YES, You Can Change Weapon Models at Runtime\r\n\r\nBased on VFE (Vanilla Firearm Expansion) mod analysis, Project Zomboid **fully supports** runtime weapon model changes.\r\n\r\n---\r\n\r\n## The Three Visual Components of a Weapon\r\n\r\n| Component | What It Is | How to Change |\r\n|-----------|-----------|---------------|\r\n| **WeaponSprite** | 3D model when HELD by player | `weapon:setWeaponSprite(\"ModelName\")` |\r\n| **WorldStaticModel** | 3D model when DROPPED in world | `ScriptManager.instance:getItem(name):DoParam(\"WorldStaticModel = ModelName\")` |\r\n| **Texture/Icon** | 2D inventory icon | `weapon:setTexture(getTexture(\"path\"))` |\r\n\r\n---\r\n\r\n## Method 1: Changing Held Weapon Model (setWeaponSprite)\r\n\r\nThis is the PRIMARY method for visual weapon changes:\r\n\r\n```lua\r\n-- Change the weapon's 3D model when held\r\nweapon:setWeaponSprite(\"GraveIndex_Legendary\")\r\n\r\n-- Get the original sprite name (useful for appending)\r\nlocal baseSprite = weapon:getOriginalWeaponSprite()\r\n\r\n-- Build dynamic sprite name\r\nlocal newSprite = baseSprite .. \"_Legendary\"\r\nweapon:setWeaponSprite(newSprite)\r\n```\r\n\r\n### VFE's Pattern\r\n\r\n```lua\r\n-- VFE uses a naming convention: BaseSprite + Suffix\r\n-- Example: \"HuntingRifle\" + \"FGS\" = \"HuntingRifleFGS\"\r\n\r\nlocal originalSprite = weapon:getOriginalWeaponSprite()\r\nif hasLegendaryEnchant then\r\n    originalSprite = originalSprite .. \"_Legendary\"\r\nend\r\nweapon:setWeaponSprite(originalSprite)\r\n```\r\n\r\n---\r\n\r\n## Method 2: Changing World Dropped Model (WorldStaticModel)\r\n\r\nWhen weapons are dropped on the ground, they use a different model:\r\n\r\n```lua\r\n-- Change the world model for an item type\r\nlocal function SetWorldModel(itemName, modelName)\r\n    local item = ScriptManager.instance:getItem(itemName)\r\n    item:DoParam(\"WorldStaticModel = \" .. modelName)\r\nend\r\n\r\n-- Example: Change Grave Index world model to legendary version\r\nSetWorldModel(\"Outcast.GraveIndex\", \"GraveIndex_Legendary_World\")\r\n```\r\n\r\n**Note:** This changes ALL items of that type. For per-item changes, you need separate item definitions.\r\n\r\n---\r\n\r\n## Method 3: Changing Inventory Icon (setTexture)\r\n\r\n```lua\r\n-- Change the 2D inventory icon\r\nlocal newIcon = getTexture(\"media/textures/GraveIndex_Legendary.png\")\r\nweapon:setTexture(newIcon)\r\n```\r\n\r\n---\r\n\r\n## Complete Tier Swap Implementation\r\n\r\nFor the Grave Index weapon, here's how to implement full visual changes:\r\n\r\n### Step 1: Create Model/Texture Assets\r\n\r\n```\r\nmedia/\r\n├── models/                          # 3D models\r\n│   ├── GraveIndex_Common.fbx\r\n│   ├── GraveIndex_Rare.fbx\r\n│   ├── GraveIndex_Epic.fbx\r\n│   └── GraveIndex_Legendary.fbx\r\n├── textures/                        # 2D icons\r\n│   ├── GraveIndex_Common.png\r\n│   ├── GraveIndex_Rare.png\r\n│   ├── GraveIndex_Epic.png\r\n│   └── GraveIndex_Legendary.png\r\n└── scripts/\r\n    └── models_GraveIndex.txt        # Model definitions\r\n```\r\n\r\n### Step 2: Register Models in Script\r\n\r\n```txt\r\n-- File: media/scripts/models_GraveIndex.txt\r\nmodule Outcast {\r\n    model GraveIndex_Common\r\n    {\r\n        mesh = weapons/GraveIndex_Common,\r\n        texture = weapons/GraveIndex_Common,\r\n        scale = 1.0,\r\n    }\r\n\r\n    model GraveIndex_Rare\r\n    {\r\n        mesh = weapons/GraveIndex_Rare,\r\n        texture = weapons/GraveIndex_Rare,\r\n        scale = 1.0,\r\n    }\r\n\r\n    model GraveIndex_Epic\r\n    {\r\n        mesh = weapons/GraveIndex_Epic,\r\n        texture = weapons/GraveIndex_Epic,\r\n        scale = 1.0,\r\n    }\r\n\r\n    model GraveIndex_Legendary\r\n    {\r\n        mesh = weapons/GraveIndex_Legendary,\r\n        texture = weapons/GraveIndex_Legendary,\r\n        scale = 1.0,\r\n    }\r\n}\r\n```\r\n\r\n### Step 3: Lua Model Swap Function\r\n\r\n```lua\r\n-- File: media/lua/client/OutcastTiered/OutcastTiered_Models.lua\r\n\r\nOutcastTiered = OutcastTiered or {}\r\nOutcastTiered.Models = {}\r\n\r\n-- Model mapping per tier\r\nOutcastTiered.Models.SpriteMap = {\r\n    [\"Outcast.GraveIndex\"] = {\r\n        Common = \"GraveIndex_Common\",\r\n        Rare = \"GraveIndex_Rare\",\r\n        Epic = \"GraveIndex_Epic\",\r\n        Legendary = \"GraveIndex_Legendary\"\r\n    }\r\n}\r\n\r\nOutcastTiered.Models.IconMap = {\r\n    [\"Outcast.GraveIndex\"] = {\r\n        Common = \"media/textures/GraveIndex_Common.png\",\r\n        Rare = \"media/textures/GraveIndex_Rare.png\",\r\n        Epic = \"media/textures/GraveIndex_Epic.png\",\r\n        Legendary = \"media/textures/GraveIndex_Legendary.png\"\r\n    }\r\n}\r\n\r\n-- Main function to update weapon visuals\r\nfunction OutcastTiered.Models:updateWeaponVisuals(weapon)\r\n    local fullType = weapon:getFullType()\r\n    local modData = weapon:getModData()\r\n    local tier = modData[\"OutcastTier\"] or \"Common\"\r\n\r\n    -- Get sprite map for this weapon\r\n    local spriteMap = self.SpriteMap[fullType]\r\n    if spriteMap and spriteMap[tier] then\r\n        weapon:setWeaponSprite(spriteMap[tier])\r\n    end\r\n\r\n    -- Get icon map for this weapon\r\n    local iconMap = self.IconMap[fullType]\r\n    if iconMap and iconMap[tier] then\r\n        local texture = getTexture(iconMap[tier])\r\n        if texture then\r\n            weapon:setTexture(texture)\r\n        end\r\n    end\r\nend\r\n\r\n-- Hook into equip event\r\nEvents.OnEquipPrimary.Add(function(player, weapon)\r\n    if weapon and OutcastTiered:isTierable(weapon) then\r\n        OutcastTiered.Models:updateWeaponVisuals(weapon)\r\n    end\r\nend)\r\n\r\n-- Hook into tier upgrade\r\nfunction OutcastTiered:onTierUpgrade(weapon, newTier)\r\n    local modData = weapon:getModData()\r\n    modData[\"OutcastTier\"] = newTier\r\n    OutcastTiered.Models:updateWeaponVisuals(weapon)\r\nend\r\n```\r\n\r\n---\r\n\r\n## Java Research Needed\r\n\r\nTo fully understand the weapon model system, you'd want to research these Java classes:\r\n\r\n### Classes to Investigate\r\n\r\n| Java Class | Purpose | Key Methods |\r\n|------------|---------|-------------|\r\n| `zombie.inventory.types.HandWeapon` | Base weapon class | `setWeaponSprite()`, `getWeaponSprite()` |\r\n| `zombie.inventory.InventoryItem` | Base item class | `setTexture()`, `getTexture()` |\r\n| `zombie.scripting.objects.Item` | Script definitions | `DoParam()`, property getters |\r\n| `zombie.core.textures.Texture` | Texture loading | Used by `getTexture()` |\r\n| `zombie.iso.ModelManager` | 3D model management | Model loading/caching |\r\n\r\n### Where to Find Java Source\r\n\r\nPZ's Java classes can be decompiled from:\r\n- `R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\zombie\\` (class files)\r\n- Use a Java decompiler (JD-GUI, Fernflower, CFR) on `zombie.jar` or class files\r\n\r\n### Specific Methods to Research\r\n\r\n```java\r\n// In HandWeapon.java (or parent class)\r\npublic void setWeaponSprite(String spriteName);\r\npublic String getWeaponSprite();\r\npublic String getOriginalWeaponSprite();\r\n\r\n// In InventoryItem.java\r\npublic void setTexture(Texture texture);\r\n\r\n// In ScriptItem.java (scripting.objects.Item)\r\npublic void DoParam(String paramString);\r\n```\r\n\r\n---\r\n\r\n## What You DON'T Need to Research\r\n\r\nYou **don't need** deep Java research to change weapon models because:\r\n\r\n1. **`setWeaponSprite()` is already exposed** - Works from Lua directly\r\n2. **`setTexture()` is already exposed** - Works from Lua directly\r\n3. **`ScriptManager` is already exposed** - Can modify script properties at runtime\r\n4. **Model loading is automatic** - Just put models in the right folder with correct script definitions\r\n\r\nThe VFE mod proves this works without any Java modifications.\r\n\r\n---\r\n\r\n## Summary: For Grave Index Transmogrification\r\n\r\n1. **Create 4 model variations** (Common, Rare, Epic, Legendary .fbx files)\r\n2. **Create 4 texture/icon variations** (.png files)\r\n3. **Register models in script file** (models_GraveIndex.txt)\r\n4. **Use `setWeaponSprite()` on tier change** to swap the held model\r\n5. **Use `setTexture()` on tier change** to swap the inventory icon\r\n6. **Track tier in ModData** for persistence\r\n\r\nNo Java decompilation or custom API needed - PZ already exposes everything required.\r\n",
+  "excerpt": "Based on VFE (Vanilla Firearm Expansion) mod analysis, Project Zomboid fully supports runtime weapon model changes.\r\n\r\n---\r\n\r\n\r\n\r\n| Component | What It Is | How to Change |\r\n|-----------|----------...",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "advanced",
+  "tableOfContents": [
+    {
+      "id": "yes-you-can-change-weapon-models-at-runtime",
+      "text": "YES, You Can Change Weapon Models at Runtime",
+      "level": 2
+    },
+    {
+      "id": "the-three-visual-components-of-a-weapon",
+      "text": "The Three Visual Components of a Weapon",
+      "level": 2
+    },
+    {
+      "id": "method-1-changing-held-weapon-model-setweaponsprite",
+      "text": "Method 1: Changing Held Weapon Model (setWeaponSprite)",
+      "level": 2
+    },
+    {
+      "id": "vfes-pattern",
+      "text": "VFE's Pattern",
+      "level": 3
+    },
+    {
+      "id": "method-2-changing-world-dropped-model-worldstaticmodel",
+      "text": "Method 2: Changing World Dropped Model (WorldStaticModel)",
+      "level": 2
+    },
+    {
+      "id": "method-3-changing-inventory-icon-settexture",
+      "text": "Method 3: Changing Inventory Icon (setTexture)",
+      "level": 2
+    },
+    {
+      "id": "complete-tier-swap-implementation",
+      "text": "Complete Tier Swap Implementation",
+      "level": 2
+    },
+    {
+      "id": "step-1-create-modeltexture-assets",
+      "text": "Step 1: Create Model/Texture Assets",
+      "level": 3
+    },
+    {
+      "id": "step-2-register-models-in-script",
+      "text": "Step 2: Register Models in Script",
+      "level": 3
+    },
+    {
+      "id": "step-3-lua-model-swap-function",
+      "text": "Step 3: Lua Model Swap Function",
+      "level": 3
+    },
+    {
+      "id": "java-research-needed",
+      "text": "Java Research Needed",
+      "level": 2
+    },
+    {
+      "id": "classes-to-investigate",
+      "text": "Classes to Investigate",
+      "level": 3
+    },
+    {
+      "id": "where-to-find-java-source",
+      "text": "Where to Find Java Source",
+      "level": 3
+    },
+    {
+      "id": "specific-methods-to-research",
+      "text": "Specific Methods to Research",
+      "level": 3
+    },
+    {
+      "id": "what-you-dont-need-to-research",
+      "text": "What You DON'T Need to Research",
+      "level": 2
+    },
+    {
+      "id": "summary-for-grave-index-transmogrification",
+      "text": "Summary: For Grave Index Transmogrification",
+      "level": 2
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+/**
+ * Section Browser Cards
+ * Large cards for Modding/Mapping sections
+ */
+
+.section-browser {
+  padding: var(--spacing-12) var(--spacing-4);
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  background-color: var(--color-background);
+}
+
+.section-browser__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-6);
+}
+
+.section-browser__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-6);
+}
+
+@media (max-width: 768px) {
+  .section-browser__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-browser {
+    padding: var(--spacing-8) var(--spacing-4);
+  }
+}
+
+/* Section Card */
+.section-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-6);
+  transition: box-shadow var(--transition-normal), border-color var(--transition-normal);
+}
+
+.section-card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+/* Color variants */
+.section-card--primary {
+  border-left: 4px solid var(--color-primary-500);
+}
+
+.section-card--primary:hover {
+  border-color: var(--color-primary-400);
+}
+
+.section-card--accent {
+  border-left: 4px solid var(--color-accent-500);
+}
+
+.section-card--accent:hover {
+  border-color: var(--color-accent-400);
+}
+
+/* Header */
+.section-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-3);
+}
+
+.section-card__icon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.section-card__title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* Description */
+.section-card__description {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-4);
+  line-height: var(--line-height-relaxed);
+}
+
+/* Categories List */
+.section-card__categories {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--spacing-5);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+}
+
+.section-card__categories li {
+  display: inline-block;
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  padding: var(--spacing-1) var(--spacing-3);
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-full);
+}
+
+/* Link */
+.section-card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-link);
+  text-decoration: none;
+  transition: gap var(--transition-fast);
+}
+
+.section-card__link:hover {
+  text-decoration: none;
+  gap: var(--spacing-3);
+}
+
+.section-card__link::after {
+  content: '→';
+  transition: transform var(--transition-fast);
+}
+
+.section-card__link:hover::after {
+  transform: translateX(2px);
+}
+
+.section-card--primary .section-card__link {
+  color: var(--color-primary-600);
+}
+
+.section-card--accent .section-card__link {
+  color: var(--color-accent-600);
+}
+
+[data-theme="dark"] .section-card--primary .section-card__link {
+  color: var(--color-primary-300);
+}
+
+[data-theme="dark"] .section-card--accent .section-card__link {
+  color: var(--color-accent-400);
+}

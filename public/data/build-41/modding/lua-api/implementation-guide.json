@@ -1,0 +1,93 @@
+{
+  "id": "lua-api-implementation-guide",
+  "title": "Grave Index Weapon Transmogrification - Implementation Guide",
+  "slug": "implementation-guide",
+  "version": "build-41",
+  "section": "modding",
+  "category": "lua-api",
+  "tags": [
+    "lua",
+    "item",
+    "weapon",
+    "event",
+    "sound",
+    "implementation",
+    "guide"
+  ],
+  "content": "# Grave Index Weapon Transmogrification - Implementation Guide\r\n\r\n## Goal\r\n\r\nCreate a tiered weapon system for the Grave Index weapon that evolves based on player actions (kills, damage, usage).\r\n\r\n---\r\n\r\n## Approach Options\r\n\r\n### Option A: ModData-Only (Simplest)\r\n\r\nKeep single weapon item, track tier via ModData, apply stat bonuses at runtime.\r\n\r\n**Pros:**\r\n- No new item definitions needed\r\n- Simpler implementation\r\n- ModData persists automatically\r\n\r\n**Cons:**\r\n- Can't change weapon model/texture per tier\r\n- Limited visual feedback\r\n\r\n### Option B: Item Replacement (DAMN Pattern)\r\n\r\nCreate separate item definitions for each tier, replace weapon when upgrading.\r\n\r\n**Pros:**\r\n- Different models/textures per tier\r\n- Native stat differences in script\r\n- Clear visual progression\r\n\r\n**Cons:**\r\n- More item definitions to maintain\r\n- Need to handle item replacement carefully\r\n\r\n### Option C: Hybrid (Recommended)\r\n\r\nUse ModData for tracking + create tiered variants for visual/stat changes.\r\n\r\n---\r\n\r\n## Recommended Implementation\r\n\r\n### Step 1: Define Tiered Weapon Variants\r\n\r\nCreate script definitions for each tier in `media/scripts/`:\r\n\r\n```\r\n-- File: items_outcast_weapons.txt\r\n\r\nmodule Outcast {\r\n    item GraveIndex_Common {\r\n        DisplayCategory = Weapon,\r\n        DisplayName = Grave Index,\r\n        Icon = GraveIndex,\r\n        Type = Weapon,\r\n        SubCategory = Swinging,\r\n        Weight = 3,\r\n        MinDamage = 1.0,\r\n        MaxDamage = 2.5,\r\n        CriticalChance = 20,\r\n        CritDmgMultiplier = 2.5,\r\n        Categories = Blade,\r\n        SwingTime = 2.5,\r\n        MinRange = 0.61,\r\n        MaxRange = 1.3,\r\n        MaxHitCount = 2,\r\n    }\r\n\r\n    item GraveIndex_Rare {\r\n        DisplayCategory = Weapon,\r\n        DisplayName = Grave Index [Rare],\r\n        Icon = GraveIndex_Rare,\r\n        Type = Weapon,\r\n        SubCategory = Swinging,\r\n        Weight = 3,\r\n        MinDamage = 1.2,\r\n        MaxDamage = 3.0,\r\n        CriticalChance = 25,\r\n        CritDmgMultiplier = 2.75,\r\n        Categories = Blade,\r\n        SwingTime = 2.4,\r\n        MinRange = 0.61,\r\n        MaxRange = 1.3,\r\n        MaxHitCount = 3,\r\n    }\r\n\r\n    item GraveIndex_Epic {\r\n        DisplayCategory = Weapon,\r\n        DisplayName = Grave Index [Epic],\r\n        Icon = GraveIndex_Epic,\r\n        Type = Weapon,\r\n        SubCategory = Swinging,\r\n        Weight = 3,\r\n        MinDamage = 1.5,\r\n        MaxDamage = 3.5,\r\n        CriticalChance = 30,\r\n        CritDmgMultiplier = 3.0,\r\n        Categories = Blade,\r\n        SwingTime = 2.3,\r\n        MinRange = 0.61,\r\n        MaxRange = 1.35,\r\n        MaxHitCount = 3,\r\n    }\r\n\r\n    item GraveIndex_Legendary {\r\n        DisplayCategory = Weapon,\r\n        DisplayName = Grave Index [Legendary],\r\n        Icon = GraveIndex_Legendary,\r\n        Type = Weapon,\r\n        SubCategory = Swinging,\r\n        Weight = 2.5,\r\n        MinDamage = 2.0,\r\n        MaxDamage = 4.5,\r\n        CriticalChance = 35,\r\n        CritDmgMultiplier = 3.5,\r\n        Categories = Blade,\r\n        SwingTime = 2.2,\r\n        MinRange = 0.61,\r\n        MaxRange = 1.4,\r\n        MaxHitCount = 4,\r\n    }\r\n}\r\n```\r\n\r\n### Step 2: Create Lua Library Structure\r\n\r\n```\r\nmedia/lua/\r\n├── client/\r\n│   └── OutcastTiered/\r\n│       ├── OutcastTiered_Client.lua      -- Client event handlers\r\n│       └── OutcastTiered_UI.lua          -- Stats UI\r\n├── server/\r\n│   └── OutcastTiered/\r\n│       └── OutcastTiered_Server.lua      -- Server command handlers\r\n└── shared/\r\n    └── OutcastTiered/\r\n        ├── OutcastTiered_Core.lua        -- Core utilities\r\n        └── OutcastTiered_Config.lua      -- Tier definitions\r\n```\r\n\r\n### Step 3: Core Configuration\r\n\r\n```lua\r\n-- File: media/lua/shared/OutcastTiered/OutcastTiered_Core.lua\r\n\r\nOutcastTiered = OutcastTiered or {};\r\n\r\n-- Tier definitions\r\nOutcastTiered.Tiers = {\r\n    Common = {\r\n        order = 1,\r\n        color = {r=255, g=255, b=255},  -- White\r\n        killThreshold = 0,\r\n        suffix = \"_Common\"\r\n    },\r\n    Rare = {\r\n        order = 2,\r\n        color = {r=0, g=128, b=255},    -- Blue\r\n        killThreshold = 25,\r\n        suffix = \"_Rare\"\r\n    },\r\n    Epic = {\r\n        order = 3,\r\n        color = {r=163, g=53, b=238},   -- Purple\r\n        killThreshold = 75,\r\n        suffix = \"_Epic\"\r\n    },\r\n    Legendary = {\r\n        order = 4,\r\n        color = {r=255, g=165, b=0},    -- Orange\r\n        killThreshold = 150,\r\n        suffix = \"_Legendary\"\r\n    }\r\n};\r\n\r\n-- Weapons that support tiering\r\nOutcastTiered.TierableWeapons = {\r\n    [\"Outcast.GraveIndex\"] = true,\r\n    [\"Outcast.GraveIndex_Common\"] = true,\r\n    [\"Outcast.GraveIndex_Rare\"] = true,\r\n    [\"Outcast.GraveIndex_Epic\"] = true,\r\n    [\"Outcast.GraveIndex_Legendary\"] = true,\r\n};\r\n\r\n-- Get base weapon type (without tier suffix)\r\nfunction OutcastTiered:getBaseType(weapon)\r\n    local fullType = weapon:getFullType();\r\n    for _, tier in pairs(self.Tiers) do\r\n        fullType = fullType:gsub(tier.suffix, \"\");\r\n    end\r\n    return fullType;\r\nend\r\n\r\n-- Check if weapon is tierable\r\nfunction OutcastTiered:isTierable(weapon)\r\n    if not weapon then return false; end\r\n    local baseType = self:getBaseType(weapon);\r\n    return self.TierableWeapons[baseType] or self.TierableWeapons[weapon:getFullType()];\r\nend\r\n\r\n-- Get current tier from weapon\r\nfunction OutcastTiered:getCurrentTier(weapon)\r\n    local modData = weapon:getModData();\r\n    return modData[\"OutcastTier\"] or \"Common\";\r\nend\r\n\r\n-- Get next tier\r\nfunction OutcastTiered:getNextTier(currentTier)\r\n    local currentOrder = self.Tiers[currentTier].order;\r\n    for tierName, tierData in pairs(self.Tiers) do\r\n        if tierData.order == currentOrder + 1 then\r\n            return tierName;\r\n        end\r\n    end\r\n    return nil;  -- Already at max tier\r\nend\r\n```\r\n\r\n### Step 4: Client-Side Event Handlers\r\n\r\n```lua\r\n-- File: media/lua/client/OutcastTiered/OutcastTiered_Client.lua\r\n\r\nrequire \"OutcastTiered/OutcastTiered_Core\";\r\n\r\n-- Track kills\r\nEvents.OnZombieDead.Add(function(zombie)\r\n    local player = getPlayer();\r\n    if not player then return; end\r\n\r\n    local weapon = player:getPrimaryHandItem();\r\n    if not OutcastTiered:isTierable(weapon) then return; end\r\n\r\n    -- Increment kill count\r\n    local modData = weapon:getModData();\r\n    modData[\"OutcastKillCount\"] = (modData[\"OutcastKillCount\"] or 0) + 1;\r\n\r\n    -- Check for tier upgrade\r\n    OutcastTiered:checkUpgrade(player, weapon);\r\nend);\r\n\r\n-- Check if weapon qualifies for upgrade\r\nfunction OutcastTiered:checkUpgrade(player, weapon)\r\n    local modData = weapon:getModData();\r\n    local kills = modData[\"OutcastKillCount\"] or 0;\r\n    local currentTier = self:getCurrentTier(weapon);\r\n    local nextTier = self:getNextTier(currentTier);\r\n\r\n    if not nextTier then return; end  -- Max tier\r\n\r\n    local threshold = self.Tiers[nextTier].killThreshold;\r\n    if kills >= threshold then\r\n        -- Request upgrade from server\r\n        self:requestUpgrade(weapon, nextTier);\r\n    end\r\nend\r\n\r\n-- Send upgrade request to server\r\nfunction OutcastTiered:requestUpgrade(weapon, newTier)\r\n    sendClientCommand(\r\n        getPlayer(),\r\n        \"OutcastTiered\",\r\n        \"upgradeWeapon\",\r\n        {\r\n            weaponId = weapon:getID(),\r\n            newTier = newTier\r\n        }\r\n    );\r\nend\r\n\r\n-- Handle server response\r\nEvents.OnServerCommand.Add(function(moduleName, command, args)\r\n    if moduleName ~= \"OutcastTiered\" then return; end\r\n\r\n    if command == \"weaponUpgraded\" then\r\n        local player = getPlayer();\r\n        local tierData = OutcastTiered.Tiers[args.newTier];\r\n\r\n        -- Show notification\r\n        local color = tierData.color;\r\n        HaloTextHelper.addTextWithArrow(\r\n            player,\r\n            \"Weapon evolved to \" .. args.newTier .. \"!\",\r\n            true,\r\n            HaloTextHelper.getColorRGB(color.r, color.g, color.b)\r\n        );\r\n\r\n        -- Play sound effect\r\n        player:getEmitter():playSound(\"OutcastTierUp\");\r\n    end\r\nend);\r\n```\r\n\r\n### Step 5: Server-Side Handler\r\n\r\n```lua\r\n-- File: media/lua/server/OutcastTiered/OutcastTiered_Server.lua\r\n\r\nrequire \"OutcastTiered/OutcastTiered_Core\";\r\n\r\nEvents.OnClientCommand.Add(function(moduleName, command, playerObj, args)\r\n    if moduleName ~= \"OutcastTiered\" then return; end\r\n\r\n    if command == \"upgradeWeapon\" then\r\n        OutcastTiered:serverUpgradeWeapon(playerObj, args);\r\n    end\r\nend);\r\n\r\nfunction OutcastTiered:serverUpgradeWeapon(playerObj, args)\r\n    local inventory = playerObj:getInventory();\r\n    local weapon = inventory:getItemById(args.weaponId);\r\n\r\n    if not weapon or not self:isTierable(weapon) then\r\n        return;  -- Invalid request\r\n    end\r\n\r\n    -- Validate upgrade eligibility\r\n    local modData = weapon:getModData();\r\n    local kills = modData[\"OutcastKillCount\"] or 0;\r\n    local threshold = self.Tiers[args.newTier].killThreshold;\r\n\r\n    if kills < threshold then\r\n        return;  -- Not enough kills\r\n    end\r\n\r\n    -- Perform upgrade\r\n    local baseType = self:getBaseType(weapon);\r\n    local newType = baseType .. self.Tiers[args.newTier].suffix;\r\n\r\n    -- Create new weapon\r\n    local newWeapon = InventoryItemFactory.CreateItem(newType);\r\n    if not newWeapon then return; end\r\n\r\n    -- Transfer moddata\r\n    local newModData = newWeapon:getModData();\r\n    for key, value in pairs(modData) do\r\n        newModData[key] = value;\r\n    end\r\n    newModData[\"OutcastTier\"] = args.newTier;\r\n\r\n    -- Transfer condition\r\n    newWeapon:setCondition(weapon:getCondition());\r\n\r\n    -- Check if equipped\r\n    local wasEquipped = playerObj:getPrimaryHandItem() == weapon;\r\n\r\n    -- Add new weapon\r\n    inventory:AddItem(newWeapon);\r\n\r\n    -- Re-equip if needed\r\n    if wasEquipped then\r\n        playerObj:setPrimaryHandItem(newWeapon);\r\n    end\r\n\r\n    -- Remove old weapon\r\n    inventory:Remove(weapon);\r\n\r\n    -- Notify client\r\n    sendServerCommand(\r\n        playerObj,\r\n        \"OutcastTiered\",\r\n        \"weaponUpgraded\",\r\n        {\r\n            newTier = args.newTier,\r\n            weaponType = newType\r\n        }\r\n    );\r\nend\r\n```\r\n\r\n### Step 6: Context Menu Integration\r\n\r\n```lua\r\n-- Add to OutcastTiered_Client.lua\r\n\r\nEvents.OnFillInventoryObjectContextMenu.Add(function(playerNum, context, items)\r\n    local player = getSpecificPlayer(playerNum);\r\n\r\n    for _, item in ipairs(items) do\r\n        local testItem = item;\r\n        if not instanceof(item, \"InventoryItem\") then\r\n            testItem = item.items[1];\r\n        end\r\n\r\n        if OutcastTiered:isTierable(testItem) then\r\n            -- Add \"View Stats\" submenu\r\n            local statsOption = context:addOption(\"Outcast Stats\", testItem, nil);\r\n            local statsMenu = ISContextMenu:getNew(context);\r\n            context:addSubMenu(statsOption, statsMenu);\r\n\r\n            local modData = testItem:getModData();\r\n            local tier = OutcastTiered:getCurrentTier(testItem);\r\n            local kills = modData[\"OutcastKillCount\"] or 0;\r\n\r\n            statsMenu:addOption(\"Tier: \" .. tier, nil, nil);\r\n            statsMenu:addOption(\"Kills: \" .. kills, nil, nil);\r\n\r\n            -- Show progress to next tier\r\n            local nextTier = OutcastTiered:getNextTier(tier);\r\n            if nextTier then\r\n                local threshold = OutcastTiered.Tiers[nextTier].killThreshold;\r\n                local remaining = threshold - kills;\r\n                statsMenu:addOption(\"Next tier in: \" .. remaining .. \" kills\", nil, nil);\r\n            else\r\n                statsMenu:addOption(\"MAX TIER\", nil, nil);\r\n            end\r\n        end\r\n    end\r\nend);\r\n```\r\n\r\n---\r\n\r\n## File Summary\r\n\r\n| File | Purpose |\r\n|------|---------|\r\n| `media/scripts/items_outcast_weapons.txt` | Weapon definitions for all tiers |\r\n| `media/lua/shared/OutcastTiered/OutcastTiered_Core.lua` | Tier config, utility functions |\r\n| `media/lua/client/OutcastTiered/OutcastTiered_Client.lua` | Kill tracking, UI, client events |\r\n| `media/lua/server/OutcastTiered/OutcastTiered_Server.lua` | Upgrade validation, item replacement |\r\n\r\n---\r\n\r\n## Testing Checklist\r\n\r\n- [ ] Weapon starts at Common tier\r\n- [ ] Kill count increments on zombie kills\r\n- [ ] Upgrade triggers at correct thresholds\r\n- [ ] New weapon has correct stats\r\n- [ ] ModData transfers between tiers\r\n- [ ] Equipped weapon stays equipped after upgrade\r\n- [ ] Works in multiplayer (client→server→client flow)\r\n- [ ] Context menu shows correct stats\r\n",
+  "excerpt": "Create a tiered weapon system for the Grave Index weapon that evolves based on player actions (kills, damage, usage).\r\n\r\n---\r\n\r\n\r\n\r\n\r\n\r\nKeep single weapon item, track tier via ModData, apply stat b...",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "goal",
+      "text": "Goal",
+      "level": 2
+    },
+    {
+      "id": "approach-options",
+      "text": "Approach Options",
+      "level": 2
+    },
+    {
+      "id": "option-a-moddata-only-simplest",
+      "text": "Option A: ModData-Only (Simplest)",
+      "level": 3
+    },
+    {
+      "id": "option-b-item-replacement-damn-pattern",
+      "text": "Option B: Item Replacement (DAMN Pattern)",
+      "level": 3
+    },
+    {
+      "id": "option-c-hybrid-recommended",
+      "text": "Option C: Hybrid (Recommended)",
+      "level": 3
+    },
+    {
+      "id": "recommended-implementation",
+      "text": "Recommended Implementation",
+      "level": 2
+    },
+    {
+      "id": "step-1-define-tiered-weapon-variants",
+      "text": "Step 1: Define Tiered Weapon Variants",
+      "level": 3
+    },
+    {
+      "id": "step-2-create-lua-library-structure",
+      "text": "Step 2: Create Lua Library Structure",
+      "level": 3
+    },
+    {
+      "id": "step-3-core-configuration",
+      "text": "Step 3: Core Configuration",
+      "level": 3
+    },
+    {
+      "id": "step-4-client-side-event-handlers",
+      "text": "Step 4: Client-Side Event Handlers",
+      "level": 3
+    },
+    {
+      "id": "step-5-server-side-handler",
+      "text": "Step 5: Server-Side Handler",
+      "level": 3
+    },
+    {
+      "id": "step-6-context-menu-integration",
+      "text": "Step 6: Context Menu Integration",
+      "level": 3
+    },
+    {
+      "id": "file-summary",
+      "text": "File Summary",
+      "level": 2
+    },
+    {
+      "id": "testing-checklist",
+      "text": "Testing Checklist",
+      "level": 2
+    }
+  ]
+}

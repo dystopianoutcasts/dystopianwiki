@@ -1,0 +1,154 @@
+{
+  "id": "tools-mod-quickstart",
+  "title": "Project Zomboid Mod Development Quick Start Guide",
+  "slug": "mod-quickstart",
+  "version": "build-41",
+  "section": "modding",
+  "category": "tools",
+  "tags": [
+    "lua",
+    "recipe",
+    "item",
+    "repair",
+    "weapon",
+    "modding",
+    "crafting",
+    "quick"
+  ],
+  "content": "# Project Zomboid Mod Development Quick Start Guide\n## Outcast Advanced Crafts - Development Environment\n\n---\n\n## 📁 FILE STRUCTURE & LOCATIONS\n\n### Your Mod Files\n**Primary Location:**\n```\nC:\\Users\\ediaz\\Zomboid\\Workshop\\OutcastAdvancedCrafts\\\n```\n\n**Structure:**\n```\nOutcastAdvancedCrafts/\n├── Contents/\n│   └── mods/\n│       └── OutcastAdvCrft/\n│           ├── media/\n│           │   ├── lua/\n│           │   │   ├── client/\n│           │   │   │   └── OutcastAC_SmeltingFunctions.lua  (OnCreate callbacks - XP awards)\n│           │   │   └── shared/\n│           │   │       └── OutcastAC_RecipeCode.lua  (unused OnGiveXP functions)\n│           │   ├── scripts/\n│           │   │   ├── outcast_bullet_recipes.txt  (8 bullet recipes)\n│           │   │   ├── outcast_smelting_recipes.txt  (11 smelting recipes)\n│           │   │   ├── outcast_slag_recipes.txt  (3 slag recipes)\n│           │   │   └── outcast_items.txt  (custom items: Iron, Slag, molds)\n│           │   └── perks.txt  (Blacksmith skill definition)\n│           └── mod.info\n└── outcasttesting_docs/  (NOT CREATED - use Desktop location instead)\n```\n\n### Documentation Location\n**Outcast Testing Docs:**\n```\nC:\\Users\\ediaz\\Desktop\\DystopeanOutcasts\\OutcastTESTING_DOCS\\\n```\n\n**What to store here:**\n- Research notes on vanilla systems\n- Workshop mod analysis documents\n- Implementation plans and design docs\n- Bug investigation notes\n- XP balance spreadsheets\n- This quick start guide\n\n---\n\n## 🎮 VANILLA PROJECT ZOMBOID FILES\n\n### Installation Directory\n**Game Files:**\n```\nR:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\\n```\n\n**Key Vanilla Directories:**\n```\nProjectZomboid/\n├── media/\n│   ├── lua/\n│   │   ├── client/  (client-side Lua)\n│   │   ├── server/  (server-side Lua)\n│   │   └── shared/  (shared Lua functions)\n│   └── scripts/\n│       ├── items/  (item definitions)\n│       ├── recipes/  (recipe definitions)\n│       └── vehicles/  (vehicle definitions)\n└── zombie/  (Java class files - decompiled)\n```\n\n### Important Vanilla Files for Reference\n\n**Perks System:**\n```\nR:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\scripts\\newitems.txt\n```\n- Contains vanilla perk definitions (Mechanics, MetalWelding, Cooking, etc.)\n\n**Recipe Examples:**\n```\nR:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\scripts\\recipes.txt\nR:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\scripts\\recipes_metalwork.txt\n```\n- Study vanilla recipe syntax\n- OnCreate and OnGiveXP patterns\n\n**Lua Recipe Functions:**\n```\nR:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\lua\\shared\\recipecode.lua\n```\n- Contains Recipe.OnGiveXP.* functions (Mechanics5, Cooking2, etc.)\n- Shows how vanilla awards XP\n\n### Best Way to Navigate Vanilla Files\n\n**Method 1: Direct Search (Fastest)**\nUse Windows Explorer search or `grep` from terminal:\n```bash\n# Search for recipe patterns\ngrep -r \"OnGiveXP\" \"R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\scripts\\\"\n\n# Search Lua functions\ngrep -r \"function Recipe.OnGiveXP\" \"R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\lua\\\"\n```\n\n**Method 2: IDE/Text Editor**\n- Open entire `ProjectZomboid\\media\\` folder in VS Code\n- Use Ctrl+Shift+F for full-text search across all files\n- Search for: function names, perk names, item names, recipe patterns\n\n**Method 3: PZ Wiki Cross-Reference**\n1. Check PZ Modding Wiki: https://pzwiki.net/wiki/Modding\n2. Find the system you're researching (recipes, items, skills)\n3. Use wiki examples to locate corresponding vanilla files\n\n---\n\n## 🛠️ STEAM WORKSHOP CONTENT (108600)\n\n### Workshop Directory\n**Location:**\n```\nR:\\Games\\Steam\\steamapps\\workshop\\content\\108600\\\n```\n\n**What is 108600?**\n- Steam App ID for Project Zomboid\n- All subscribed Workshop mods are downloaded here\n- Each subdirectory is a mod's Workshop ID\n\n### Workshop Mods Referenced in Development\n\n**Mods We've Studied:**\n\n| Mod Name | Workshop ID | Purpose | Key Learnings |\n|----------|-------------|---------|---------------|\n| **Vehicle Repair Overhaul** | 2757712197 | Multi-skill recipes | Uses ONE OnGiveXP for Tailoring (not multiple skills) |\n| **Gunsmith** | 3105394500 | Custom skill XP | Uses OnCreate callbacks, NOT Recipe.OnGiveXP |\n| **Driving Skill** | 2721945297 | Custom skill XP | Uses OnCreate callbacks, NOT Recipe.OnGiveXP |\n| **Scavenging** | 2903135820 | Custom skill XP | Uses OnCreate callbacks, NOT Recipe.OnGiveXP |\n\n**How to Find Workshop IDs:**\n1. Open mod page on Steam Workshop\n2. Check URL: `https://steamcommunity.com/sharedfiles/filedetails/?id=XXXXXXXXXX`\n3. XXXXXXXXXX is the Workshop ID\n\n### Best Way to Search & Navigate Workshop Mods\n\n**Method 1: Search by Mod Name**\n```bash\n# Find mod folder by searching mod.info files\ngrep -r \"name=Vehicle Repair\" \"R:\\Games\\Steam\\steamapps\\workshop\\content\\108600\\\"\n```\n\n**Method 2: Search by File Pattern**\n```bash\n# Find all mods with custom skills (perks.txt)\nfind \"R:\\Games\\Steam\\steamapps\\workshop\\content\\108600\" -name \"perks.txt\"\n\n# Find all recipe OnCreate callbacks\ngrep -r \"OnCreate:\" \"R:\\Games\\Steam\\steamapps\\workshop\\content\\108600\\*/Contents/mods/*/media/scripts/\"\n```\n\n**Method 3: Browse Installed Mods in Game**\n1. Launch Project Zomboid\n2. Main Menu → Mods\n3. Check mod list - note the mod name\n4. Search for that name in Workshop directory\n\n**Method 4: Steam Workshop URL to Local Files**\n```\nWorkshop ID: 2599752664\nLocal Path: R:\\Games\\Steam\\steamapps\\workshop\\content\\108600\\2599752664\\\n```\n\n---\n\n## 🧠 CRITICAL TECHNICAL LEARNINGS\n\n### Multi-Skill XP Pattern (PROVEN)\n\n**✅ WORKING PATTERN (Custom Skills):**\n```lua\n-- In lua/client/YourMod_Functions.lua\nfunction YourMod.OnCreate.CraftItem(items, result, player, selectedItem)\n    player:getXp():AddXP(Perks.CustomSkill, 10)\n    player:getXp():AddXP(Perks.MetalWelding, 5)\n    player:getXp():AddXP(Perks.Mechanics, 3)\nend\n```\n\n**In recipe file:**\n```\nrecipe Craft Item\n{\n    OnCreate:YourMod.OnCreate.CraftItem,\n}\n```\n\n**❌ NOT WORKING (Custom Skills):**\n```lua\n-- Recipe.OnGiveXP functions DO NOT work with custom skills\nfunction Recipe.OnGiveXP.YourMod_Function(recipe, ingredients, result, player)\n    player:getXp():AddXP(Perks.CustomSkill, 10)\nend\n```\n\n**Why?**\n- Recipe.OnGiveXP functions are parsed BEFORE custom perks load\n- Custom skills (defined in perks.txt) aren't available yet\n- OnCreate callbacks run AFTER perks load ✅\n\n### Skill Naming Convention\n\n**perks.txt:**\n```\nperk Blacksmith  ← Lua reference name\n{\n    parent = Crafting,\n    translation = Blacksmithing,  ← UI display name\n}\n```\n\n**Lua code:**\n```lua\nplayer:getXp():AddXP(Perks.Blacksmith, 10)  -- Use perk name, not translation\n```\n\n**UI displays:** \"Blacksmithing\" (from translation field)\n\n---\n\n## 🚀 QUICK REFERENCE COMMANDS\n\n### Search for Recipe Patterns\n```bash\n# Find all OnCreate callbacks in your mod\ngrep -r \"OnCreate:\" \"C:\\Users\\ediaz\\Zomboid\\Workshop\\OutcastAdvancedCrafts\\Contents\\mods\\OutcastAdvCrft\\media\\scripts\\\"\n\n# Find all XP awards in your mod\ngrep -r \"AddXP\" \"C:\\Users\\ediaz\\Zomboid\\Workshop\\OutcastAdvancedCrafts\\Contents\\mods\\OutcastAdvCrft\\media\\lua\\\"\n```\n\n### Validate Recipe Syntax\n```bash\n# Check for syntax errors in recipe files\n# (No automated tool - must check game logs)\n# Logs location:\nC:\\Users\\ediaz\\Zomboid\\Logs\\\n```\n\n### Compare with Vanilla\n```bash\n# Find vanilla recipe examples for MetalWelding\ngrep -r \"SkillRequired:MetalWelding\" \"R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\scripts\\\"\n\n# Find vanilla OnGiveXP functions\ngrep -r \"function Recipe.OnGiveXP\" \"R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\lua\\shared\\\"\n```\n\n---\n\n## 📝 CURRENT MOD STATUS (Last Updated)\n\n### Implemented Features\n- ✅ Custom Blacksmithing skill (Crafting category)\n- ✅ 8 Bullet casting recipes (9mm → .44 Magnum)\n- ✅ 11 Smelting recipes (scrap → iron)\n- ✅ 3 Slag processing recipes (slag → construction materials)\n- ✅ Multi-skill XP awards (Blacksmithing + MetalWelding + Mechanics/Cooking)\n- ✅ Skill-based tiered smelting (Novice/Advanced/Master)\n- ✅ Custom items: Iron, Slag, bullet molds\n\n### XP Award Pattern\n**All 22 recipes use OnCreate callbacks:**\n- Blacksmithing XP (custom skill)\n- MetalWelding XP (vanilla skill)\n- Mechanics XP (vanilla skill)\n- Cooking XP (vanilla skill - slag recipes only)\n\n### Known Issues\n- ❌ Recipe.OnGiveXP functions don't work with custom skills (abandoned approach)\n- ⚠️ Skill display name now fixed: \"Blacksmithing\" (was \"Blacksmith\")\n\n---\n\n## 💡 TIPS FOR LLM CONTEXT\n\nWhen starting a new chat session with an LLM about this mod, provide:\n\n1. **File structure** (this document)\n2. **Current implementation status** (what's working)\n3. **Specific files** (read and attach relevant files)\n4. **The problem** (what you're trying to solve)\n\n**Example prompt:**\n```\nI'm developing a Project Zomboid mod called Outcast Advanced Crafts.\n\nFile structure:\n- Mod location: C:\\Users\\ediaz\\Zomboid\\Workshop\\OutcastAdvancedCrafts\\\n- OnCreate functions: Contents/mods/OutcastAdvCrft/media/lua/client/OutcastAC_SmeltingFunctions.lua\n- Recipes: Contents/mods/OutcastAdvCrft/media/scripts/outcast_*_recipes.txt\n\nCurrent status:\n- 22 recipes awarding multi-skill XP via OnCreate callbacks\n- Custom Blacksmithing skill working\n- All recipes tested and functional\n\nVanilla files reference:\n- Game install: R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\\n- Workshop mods: R:\\Games\\Steam\\steamapps\\workshop\\content\\108600\\\n\nQuestion: [Your specific question here]\n```\n\n---\n\n## 🔗 USEFUL LINKS\n\n- **PZ Modding Wiki:** https://pzwiki.net/wiki/Modding\n- **Discord:** https://discord.gg/KgNBWyfcvZ (Dystopian Outcasts)\n- **Steam Workshop:** https://steamcommunity.com/app/108600/workshop/\n\n---\n\n## 📋 WORKSHOP MOD IDs TO REFERENCE\n\n**Referenced Mods with Workshop IDs:**\n\n| Mod Name | Workshop ID | Local Path | Notes |\n|----------|-------------|------------|-------|\n| **Vehicle Repair Overhaul** | 2757712197 | `R:\\Games\\Steam\\steamapps\\workshop\\content\\108600\\2757712197\\` | Multi-skill recipe research |\n| **Gunsmith** | 3105394500 | `R:\\Games\\Steam\\steamapps\\workshop\\content\\108600\\3105394500\\` | Custom skill implementation pattern |\n| **Driving Skill** | 2721945297 | `R:\\Games\\Steam\\steamapps\\workshop\\content\\108600\\2721945297\\` | Custom skill implementation pattern |\n| **Scavenging** | 2903135820 | `R:\\Games\\Steam\\steamapps\\workshop\\content\\108600\\2903135820\\` | Custom skill implementation pattern |\n\n**How to Access:**\n```bash\n# View Gunsmith skill definition\ncat \"R:\\Games\\Steam\\steamapps\\workshop\\content\\108600\\3105394500\\mods\\weapongunsmith\\media\\perks.txt\"\n\n# Search for OnCreate functions in Driving Skill mod\ngrep -r \"OnCreate\" \"R:\\Games\\Steam\\steamapps\\workshop\\content\\108600\\2721945297\\\"\n```\n\n---\n\n**Last Updated:** 2025-11-20\n**Mod Version:** Development (Pre-release)\n**Game Version:** Project Zomboid Build 41\n",
+  "excerpt": "---",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "outcast-advanced-crafts-development-environment",
+      "text": "Outcast Advanced Crafts - Development Environment",
+      "level": 2
+    },
+    {
+      "id": "-file-structure-locations",
+      "text": "📁 FILE STRUCTURE & LOCATIONS",
+      "level": 2
+    },
+    {
+      "id": "your-mod-files",
+      "text": "Your Mod Files",
+      "level": 3
+    },
+    {
+      "id": "documentation-location",
+      "text": "Documentation Location",
+      "level": 3
+    },
+    {
+      "id": "-vanilla-project-zomboid-files",
+      "text": "🎮 VANILLA PROJECT ZOMBOID FILES",
+      "level": 2
+    },
+    {
+      "id": "installation-directory",
+      "text": "Installation Directory",
+      "level": 3
+    },
+    {
+      "id": "important-vanilla-files-for-reference",
+      "text": "Important Vanilla Files for Reference",
+      "level": 3
+    },
+    {
+      "id": "best-way-to-navigate-vanilla-files",
+      "text": "Best Way to Navigate Vanilla Files",
+      "level": 3
+    },
+    {
+      "id": "-steam-workshop-content-108600",
+      "text": "🛠️ STEAM WORKSHOP CONTENT (108600)",
+      "level": 2
+    },
+    {
+      "id": "workshop-directory",
+      "text": "Workshop Directory",
+      "level": 3
+    },
+    {
+      "id": "workshop-mods-referenced-in-development",
+      "text": "Workshop Mods Referenced in Development",
+      "level": 3
+    },
+    {
+      "id": "best-way-to-search-navigate-workshop-mods",
+      "text": "Best Way to Search & Navigate Workshop Mods",
+      "level": 3
+    },
+    {
+      "id": "-critical-technical-learnings",
+      "text": "🧠 CRITICAL TECHNICAL LEARNINGS",
+      "level": 2
+    },
+    {
+      "id": "multi-skill-xp-pattern-proven",
+      "text": "Multi-Skill XP Pattern (PROVEN)",
+      "level": 3
+    },
+    {
+      "id": "skill-naming-convention",
+      "text": "Skill Naming Convention",
+      "level": 3
+    },
+    {
+      "id": "-quick-reference-commands",
+      "text": "🚀 QUICK REFERENCE COMMANDS",
+      "level": 2
+    },
+    {
+      "id": "search-for-recipe-patterns",
+      "text": "Search for Recipe Patterns",
+      "level": 3
+    },
+    {
+      "id": "validate-recipe-syntax",
+      "text": "Validate Recipe Syntax",
+      "level": 3
+    },
+    {
+      "id": "compare-with-vanilla",
+      "text": "Compare with Vanilla",
+      "level": 3
+    },
+    {
+      "id": "-current-mod-status-last-updated",
+      "text": "📝 CURRENT MOD STATUS (Last Updated)",
+      "level": 2
+    },
+    {
+      "id": "implemented-features",
+      "text": "Implemented Features",
+      "level": 3
+    },
+    {
+      "id": "xp-award-pattern",
+      "text": "XP Award Pattern",
+      "level": 3
+    },
+    {
+      "id": "known-issues",
+      "text": "Known Issues",
+      "level": 3
+    },
+    {
+      "id": "-tips-for-llm-context",
+      "text": "💡 TIPS FOR LLM CONTEXT",
+      "level": 2
+    },
+    {
+      "id": "-useful-links",
+      "text": "🔗 USEFUL LINKS",
+      "level": 2
+    },
+    {
+      "id": "-workshop-mod-ids-to-reference",
+      "text": "📋 WORKSHOP MOD IDs TO REFERENCE",
+      "level": 2
+    }
+  ]
+}

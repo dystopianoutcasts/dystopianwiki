@@ -1,0 +1,191 @@
+/**
+ * Category Page Styles
+ */
+
+.category-page {
+  max-width: 900px;
+}
+
+.category-page__loading,
+.category-page__error,
+.category-page__empty {
+  text-align: center;
+  padding: var(--spacing-12) var(--spacing-4);
+}
+
+.category-page__error h1 {
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-4);
+}
+
+.category-page__error p,
+.category-page__empty p {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-4);
+}
+
+.category-page__back-link {
+  display: inline-block;
+  padding: var(--spacing-2) var(--spacing-4);
+  background: var(--color-accent-600);
+  color: white;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.category-page__back-link:hover {
+  background: var(--color-accent-700);
+}
+
+/* Header */
+.category-page__header {
+  text-align: center;
+  margin-bottom: var(--spacing-8);
+  padding-bottom: var(--spacing-6);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.category-page__icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: var(--spacing-2);
+}
+
+.category-page__title {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-2);
+}
+
+.category-page__description {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  max-width: 500px;
+  margin: 0 auto var(--spacing-3);
+  line-height: 1.5;
+}
+
+.category-page__count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  display: inline-block;
+  padding: var(--spacing-1) var(--spacing-3);
+  background: var(--color-background);
+  border-radius: var(--radius-full);
+}
+
+/* Articles List */
+.category-page__articles-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.category-page__article-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.category-page__article-card:hover {
+  border-color: var(--color-primary-400);
+  box-shadow: var(--shadow-sm);
+}
+
+.category-page__article-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.category-page__article-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-1);
+}
+
+.category-page__article-excerpt {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin-bottom: var(--spacing-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.category-page__article-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  flex-wrap: wrap;
+}
+
+.category-page__difficulty {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+}
+
+.category-page__difficulty--beginner {
+  background: var(--color-success-100);
+  color: var(--color-success-700);
+}
+
+.category-page__difficulty--intermediate {
+  background: var(--color-warning-100);
+  color: var(--color-warning-700);
+}
+
+.category-page__difficulty--advanced {
+  background: var(--color-highlight-100);
+  color: var(--color-highlight-700);
+}
+
+.category-page__tags {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+.category-page__tag {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+}
+
+.category-page__article-arrow {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-tertiary);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.category-page__article-card:hover .category-page__article-arrow {
+  transform: translateX(4px);
+  color: var(--color-primary-500);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .category-page__article-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .category-page__article-arrow {
+    display: none;
+  }
+}

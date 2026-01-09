@@ -1,0 +1,7 @@
+{
+  "id": "modding",
+  "name": "Modding",
+  "description": "Learn how to create mods for Project Zomboid using Lua scripting, custom items, recipes, and game mechanics.",
+  "icon": "code",
+  "categories": ["lua-api", "recipes", "items", "game-mechanics", "weapon-repair", "foraging", "tools"]
+}

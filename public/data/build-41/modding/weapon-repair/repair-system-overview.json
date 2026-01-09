@@ -1,0 +1,128 @@
+{
+  "id": "weapon-repair-repair-system-overview",
+  "title": "Project Zomboid Repair System Overview",
+  "slug": "repair-system-overview",
+  "version": "build-41",
+  "section": "modding",
+  "category": "weapon-repair",
+  "tags": [
+    "lua",
+    "item",
+    "repair",
+    "weapon",
+    "event",
+    "system",
+    "overview"
+  ],
+  "content": "# Project Zomboid Repair System Overview\r\n\r\n## Architecture\r\n\r\nThe repair system in Project Zomboid consists of three main layers:\r\n\r\n```\r\n┌─────────────────────────────────────────────────────────┐\r\n│                    SCRIPT LAYER                         │\r\n│  fixing.txt / vehiclesfixing.txt                        │\r\n│  Defines WHAT can be repaired and WITH what             │\r\n└─────────────────────────────────────────────────────────┘\r\n                          ↓\r\n┌─────────────────────────────────────────────────────────┐\r\n│                   JAVA LAYER                            │\r\n│  FixingManager                                          │\r\n│  Core repair logic, calculations, validation            │\r\n└─────────────────────────────────────────────────────────┘\r\n                          ↓\r\n┌─────────────────────────────────────────────────────────┐\r\n│                    LUA LAYER                            │\r\n│  ISFixAction, ISInventoryPaneContextMenu, etc.          │\r\n│  UI, timed actions, player interaction                  │\r\n└─────────────────────────────────────────────────────────┘\r\n```\r\n\r\n## How Repairs Work\r\n\r\n### 1. Defining Repairs (Script Layer)\r\n\r\nItems become repairable by having an entry in `fixing.txt`:\r\n\r\n```\r\nfixing Fix Axe\r\n{\r\n   Require : Axe,\r\n   Fixer : Woodglue=2; Woodwork=2,\r\n   Fixer : DuctTape=2,\r\n   Fixer : Glue=2,\r\n   Fixer : Scotchtape=4,\r\n}\r\n```\r\n\r\n**Key Components:**\r\n- `Require` - The item type that can be repaired\r\n- `Fixer` - Items that can perform the repair, with optional skill requirements\r\n\r\n### 2. Calculating Repairs (Java Layer)\r\n\r\nThe `FixingManager` class handles:\r\n- `getFixes(item)` - Returns available repair definitions for an item\r\n- `getCondRepaired(item, player, fixing, fixer)` - Calculates condition restoration %\r\n- `getChanceOfFail(item, player, fixing, fixer)` - Calculates failure probability\r\n- `fixItem(item, character, fixing, fixer)` - Performs the actual repair\r\n\r\n### 3. User Interface (Lua Layer)\r\n\r\nWhen a player right-clicks a damaged item:\r\n\r\n1. `ISInventoryPaneContextMenu` checks if item is broken/damaged\r\n2. `FixingManager.getFixes()` retrieves available repairs\r\n3. Submenu displays repair options with:\r\n   - Required items and quantities\r\n   - Required skill levels\r\n   - Potential repair percentage\r\n   - Success chance percentage\r\n4. Player selects a fixer option\r\n5. `ISFixAction` queues the timed repair action\r\n\r\n## Condition System\r\n\r\n### Item Properties\r\n\r\nWeapons have these durability-related properties in their script definitions:\r\n\r\n```\r\nitem Axe\r\n{\r\n    ConditionMax = 15,           // Maximum condition value\r\n    ConditionLowerChanceOneIn = 15,  // Higher = more durable\r\n    // ... other properties\r\n}\r\n```\r\n\r\n### Condition States\r\n\r\n| Condition | State |\r\n|-----------|-------|\r\n| `condition == ConditionMax` | Perfect condition |\r\n| `0 < condition < ConditionMax` | Damaged (repairable) |\r\n| `condition == 0` | Broken (`isBroken() == true`) |\r\n\r\n### Condition Degradation\r\n\r\nWhen using a weapon, condition loss is calculated as:\r\n\r\n```lua\r\nif ZombRand(item:getConditionLowerChance() * 2 + character:getMaintenanceMod() * 2) == 0 then\r\n    item:setCondition(item:getCondition() - 1)\r\nelse\r\n    -- No degradation, gain Maintenance XP\r\n    character:getXp():AddXP(Perks.Maintenance, 1)\r\nend\r\n```\r\n\r\n**Factors:**\r\n- Higher `ConditionLowerChanceOneIn` = less frequent degradation\r\n- Higher Maintenance skill = less frequent degradation\r\n- When degradation doesn't occur, player gains Maintenance XP\r\n\r\n## Skill Requirements\r\n\r\n### Common Repair Skills\r\n\r\n| Skill | Used For |\r\n|-------|----------|\r\n| **Woodwork** | Wooden-handled weapons (axes, sledgehammers, bats) |\r\n| **Aiming** | Firearms (pistols, rifles, shotguns) |\r\n| **Mechanics** | Vehicle parts |\r\n| **MetalWelding** | Welded vehicle repairs |\r\n| **Tailoring** | Clothing patches |\r\n| **Maintenance** | Passive: reduces condition loss on all weapons |\r\n\r\n### Skill Level Requirements (Examples)\r\n\r\n| Weapon Type | Skill | Level Required |\r\n|-------------|-------|----------------|\r\n| Axe (with Woodglue) | Woodwork | 2 |\r\n| Pistol | Aiming | 3 |\r\n| Shotgun | Aiming | 2 |\r\n| Hunting Rifle | Aiming | 4 |\r\n| Assault Rifle | Aiming | 5 |\r\n| Vehicle Engine | Mechanics | Varies by vehicle |\r\n\r\n## Repair Items (Fixers)\r\n\r\n### Common Repair Items\r\n\r\n| Item | Skill Requirement | Best For |\r\n|------|-------------------|----------|\r\n| **Woodglue** | Woodwork 1-2 | Wooden weapons (most effective) |\r\n| **DuctTape** | None | General repairs (quick) |\r\n| **Glue** | None | General repairs |\r\n| **Scotchtape** | None | General repairs (less efficient) |\r\n| **Same Weapon Type** | Aiming 2-5 | Firearms only |\r\n\r\n### Usage Amounts\r\n\r\nFixers have a \"uses\" value indicating how much is consumed:\r\n- `Woodglue=2` means 2 uses of Woodglue\r\n- `Scotchtape=4` means 4 uses of Scotchtape (less efficient)\r\n\r\n## Special Mechanics\r\n\r\n### Firearms Self-Repair\r\n\r\nFirearms cannot be repaired with tape or glue. They require the same weapon type:\r\n\r\n```\r\nfixing Fix Pistol\r\n{\r\n   Require : Pistol,\r\n   Fixer : Pistol; Aiming=3,\r\n}\r\n```\r\n\r\nThis means you sacrifice one pistol to repair another.\r\n\r\n### GlobalItem (Consumable Tools)\r\n\r\nSome repairs require tools that consume fuel/uses:\r\n\r\n```\r\nGlobalItem : BlowTorch=2,\r\n```\r\n\r\nThe BlowTorch uses 2 units of fuel during the repair.\r\n\r\n### ConditionModifier\r\n\r\nSome repairs have effectiveness multipliers:\r\n\r\n```\r\nConditionModifier : 1.2,  // 20% more effective\r\nConditionModifier : 0.5,  // 50% less effective\r\n```\r\n\r\n### HaveBeenRepaired Flag\r\n\r\nItems track whether they've been repaired:\r\n- Affects XP gain (prevents grinding)\r\n- May affect repair effectiveness in some scenarios\r\n- Accessed via `item:getHaveBeenRepaired()` and `item:setHaveBeenRepaired()`\r\n\r\n## Repair Limitations\r\n\r\n1. **Maximum Condition**: Items cannot exceed 100 condition\r\n2. **Skill Requirements**: Must meet minimum skill level for skilled repairs\r\n3. **Item Availability**: Must have required fixer items in inventory\r\n4. **Success Chance**: Repairs can fail based on skill level\r\n5. **Failure Penalties**: Failed vehicle part repairs cost 5-10 condition points\r\n",
+  "excerpt": "The repair system in Project Zomboid consists of three main layers:\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nItems become repairable by having an entry in :\r\n\r\n\r\n\r\nKey Components:\r\n-  - The item type that can be repaired\r\n-...",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "architecture",
+      "text": "Architecture",
+      "level": 2
+    },
+    {
+      "id": "how-repairs-work",
+      "text": "How Repairs Work",
+      "level": 2
+    },
+    {
+      "id": "1-defining-repairs-script-layer",
+      "text": "1. Defining Repairs (Script Layer)",
+      "level": 3
+    },
+    {
+      "id": "2-calculating-repairs-java-layer",
+      "text": "2. Calculating Repairs (Java Layer)",
+      "level": 3
+    },
+    {
+      "id": "3-user-interface-lua-layer",
+      "text": "3. User Interface (Lua Layer)",
+      "level": 3
+    },
+    {
+      "id": "condition-system",
+      "text": "Condition System",
+      "level": 2
+    },
+    {
+      "id": "item-properties",
+      "text": "Item Properties",
+      "level": 3
+    },
+    {
+      "id": "condition-states",
+      "text": "Condition States",
+      "level": 3
+    },
+    {
+      "id": "condition-degradation",
+      "text": "Condition Degradation",
+      "level": 3
+    },
+    {
+      "id": "skill-requirements",
+      "text": "Skill Requirements",
+      "level": 2
+    },
+    {
+      "id": "common-repair-skills",
+      "text": "Common Repair Skills",
+      "level": 3
+    },
+    {
+      "id": "skill-level-requirements-examples",
+      "text": "Skill Level Requirements (Examples)",
+      "level": 3
+    },
+    {
+      "id": "repair-items-fixers",
+      "text": "Repair Items (Fixers)",
+      "level": 2
+    },
+    {
+      "id": "common-repair-items",
+      "text": "Common Repair Items",
+      "level": 3
+    },
+    {
+      "id": "usage-amounts",
+      "text": "Usage Amounts",
+      "level": 3
+    },
+    {
+      "id": "special-mechanics",
+      "text": "Special Mechanics",
+      "level": 2
+    },
+    {
+      "id": "firearms-self-repair",
+      "text": "Firearms Self-Repair",
+      "level": 3
+    },
+    {
+      "id": "globalitem-consumable-tools",
+      "text": "GlobalItem (Consumable Tools)",
+      "level": 3
+    },
+    {
+      "id": "conditionmodifier",
+      "text": "ConditionModifier",
+      "level": 3
+    },
+    {
+      "id": "havebeenrepaired-flag",
+      "text": "HaveBeenRepaired Flag",
+      "level": 3
+    },
+    {
+      "id": "repair-limitations",
+      "text": "Repair Limitations",
+      "level": 2
+    }
+  ]
+}
