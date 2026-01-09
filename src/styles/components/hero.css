@@ -24,13 +24,13 @@
   z-index: -1;
 }
 
-/* Light theme - vibrant Mega Man blue gradient */
+/* Light theme - rich Mega Man cobalt blue gradient */
 [data-theme="light"] .hero__gradient {
   background: linear-gradient(
     135deg,
-    #0066cc 0%,           /* Deep Mega Man blue */
-    #1e90ff 50%,          /* Dodger blue */
-    #ff6b00 100%          /* Vibrant orange accent */
+    #1d4ed8 0%,           /* Deep cobalt blue */
+    #2563eb 50%,          /* Rich Mega Man blue */
+    #ea580c 100%          /* Deep orange accent */
   );
 }
 
@@ -88,7 +88,7 @@
 }
 
 [data-theme="light"] .hero__subtitle em {
-  color: #ff6b00;  /* Vibrant orange to match gradient */
+  color: #fb923c;  /* Warm orange to match theme */
 }
 
 /* Search Container */
