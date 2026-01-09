@@ -15,11 +15,13 @@
   max-width: 500px;
 }
 
-.not-found-page__icon {
-  font-size: 5rem;
-  display: block;
-  margin-bottom: var(--spacing-4);
+.not-found-page__image {
+  max-width: 280px;
+  width: 100%;
+  height: auto;
+  margin-bottom: var(--spacing-6);
   animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
 }
 
 @keyframes float {
@@ -96,10 +98,10 @@
   color: var(--color-primary-400);
 }
 
-/* @breakpoint-sm: 640px - Mobile: Smaller icon and title */
+/* @breakpoint-sm: 640px - Mobile: Smaller image and title */
 @media (max-width: 640px) {
-  .not-found-page__icon {
-    font-size: 4rem;
+  .not-found-page__image {
+    max-width: 200px;
   }
 
   .not-found-page__title {

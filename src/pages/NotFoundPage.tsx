@@ -7,9 +7,11 @@ export function NotFoundPage() {
     <Layout>
       <div className="not-found-page">
         <div className="not-found-page__content">
-          <span className="not-found-page__icon" role="img" aria-label="zombie">
-            🧟
-          </span>
+          <img
+            src="/assets/banners/benny404_4K.png"
+            alt="Benny the wombat looking lost"
+            className="not-found-page__image"
+          />
           <h1 className="not-found-page__title">404</h1>
           <h2 className="not-found-page__subtitle">Page Not Found</h2>
           <p className="not-found-page__message">
