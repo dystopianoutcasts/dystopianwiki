@@ -56,10 +56,6 @@ const MIGRATION_MAP = {
     'lua-api': {
       sourceDir: 'API_Research',
       files: [
-        { file: '01_JAVA_LUA_BRIDGE.md', slug: 'java-lua-bridge', difficulty: 'advanced' as const },
-        { file: '02_ITEM_MODIFICATION_PATTERNS.md', slug: 'item-modification', difficulty: 'intermediate' as const },
-        { file: '03_EVENT_ARCHITECTURE.md', slug: 'event-architecture', difficulty: 'intermediate' as const },
-        { file: '04_IMPLEMENTATION_GUIDE.md', slug: 'implementation-guide', difficulty: 'beginner' as const },
         { file: '06_WEAPON_MODEL_SWAPPING.md', slug: 'weapon-model-swapping', difficulty: 'advanced' as const },
       ]
     },
