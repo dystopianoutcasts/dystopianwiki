@@ -5,8 +5,8 @@ import { fileURLToPath, URL } from 'node:url'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // Update this to match your GitHub repo name for deployment
-  base: '/dystopianwiki/',
+  // Use '/' for custom domain, or '/repo-name/' for GitHub Pages subdirectory
+  base: '/',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
