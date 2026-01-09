@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { WikiLayout } from '../components/layout/WikiLayout';
+import { SEOHead } from '../components/seo/SEOHead';
 import { useCategories, useArticlesList } from '../hooks/useWikiData';
 import type { Difficulty } from '../types/wiki';
 import '../styles/pages/category-page.css';
@@ -67,8 +68,15 @@ export function CategoryPage() {
     );
   }
 
+  const categoryName = categoryInfo?.name || category;
+  const articleCount = articles.length;
+
   return (
     <Layout>
+      <SEOHead
+        title={`${categoryName} - Project Zomboid Modding`}
+        description={categoryInfo?.description || `Learn about ${categoryName} in Project Zomboid. ${articleCount} tutorials and guides for modders.`}
+      />
       <WikiLayout>
         <div className="category-page">
           <header className="category-page__header">

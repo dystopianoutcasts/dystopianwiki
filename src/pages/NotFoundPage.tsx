@@ -1,10 +1,16 @@
 import { Link } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
+import { SEOHead } from '../components/seo/SEOHead';
 import '../styles/pages/not-found-page.css';
 
 export function NotFoundPage() {
   return (
     <Layout>
+      <SEOHead
+        title="Page Not Found"
+        description="The page you're looking for doesn't exist or has been moved."
+        noIndex={true}
+      />
       <div className="not-found-page">
         <div className="not-found-page__content">
           <img

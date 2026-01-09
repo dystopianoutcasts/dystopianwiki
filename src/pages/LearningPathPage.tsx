@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { LearningPathCard } from '../components/learning/LearningPathCard';
 import { useLearningProgress } from '../hooks/useLearningProgress';
+import { SEOHead } from '../components/seo/SEOHead';
 import type { Difficulty } from '../types/wiki';
 import '../styles/components/learning-path.css';
 
@@ -111,6 +112,10 @@ export function LearningPathPage() {
 
   return (
     <div className="learning-path">
+      <SEOHead
+        title="Learning Path - Start Your Modding Journey"
+        description="Complete beginner's guide to Project Zomboid modding. Step-by-step tutorials from your first mod to advanced Lua scripting. No coding experience required."
+      />
       {/* Hero Section */}
       <header className="learning-path__hero">
         <div className="learning-path__hero-content">

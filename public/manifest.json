@@ -1,0 +1,28 @@
+{
+  "name": "PZ Modding Wiki",
+  "short_name": "PZ Wiki",
+  "description": "Project Zomboid Modding Wiki - Your guide to surviving the apocalypse... with code. Free tutorials for Lua scripting, custom items, recipes, and game mechanics.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060d18",
+  "theme_color": "#060d18",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/branding/benny/benny-192-cream.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/branding/benny/benny-512-cream.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "games", "utilities"],
+  "screenshots": [],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

@@ -205,34 +205,42 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════════
-   LIGHT THEME - Rich Mega Man blue (cobalt/royal blue)
+   LIGHT THEME - Deep Royal Blue with Cyan Highlights
+   Deep navy background (#000d23) with bright cyan (#00FFFF) accents
    ═══════════════════════════════════════════════════════════════════ */
 [data-theme="light"] {
-  /* Rich Mega Man cobalt blue backgrounds */
-  --color-background: #2563eb;           /* Rich cobalt blue - true Mega Man blue */
-  --color-surface: #3b82f6;              /* Slightly lighter royal blue */
-  --color-surface-elevated: #60a5fa;     /* Light blue for elevated elements */
+  /* Deep royal blue backgrounds - from palette */
+  --color-background: #000d23;           /* Deep midnight blue */
+  --color-surface: #001334;              /* Slightly lighter navy */
+  --color-surface-elevated: #002567;     /* Elevated surface blue */
 
-  /* Light text for contrast on rich blue */
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #e0e7ff;       /* Soft blue-white */
-  --color-text-muted: #bfdbfe;           /* Muted light blue */
+  /* White/light text for contrast on deep blue */
+  --color-text-primary: #ffffff;         /* Pure white for maximum contrast */
+  --color-text-secondary: #b8d4f0;       /* Soft blue-white */
+  --color-text-muted: #7aa3c9;           /* Muted light blue */
 
-  /* Borders - lighter blue accents */
-  --color-border: #60a5fa;               /* Light blue border */
-  --color-border-light: #93c5fd;         /* Even lighter blue */
+  /* Borders - calm mid-blues */
+  --color-border: #003189;               /* Mid-tone blue border */
+  --color-border-light: #0046c5;         /* Brighter blue border */
 
-  /* Interactive - bright orange pops against blue */
-  --color-link: #fb923c;                 /* Warm orange */
-  --color-link-hover: #fdba74;           /* Lighter orange on hover */
+  /* Interactive - bright cyan highlights + orange accent */
+  --color-link: #00e5ff;                 /* Bright cyan link */
+  --color-link-hover: #00ffff;           /* Full cyan on hover */
+  --color-focus-ring: #00ffff;           /* Cyan focus ring */
 
-  /* Code - darker blue with light text */
-  --color-code-bg: #1d4ed8;              /* Deep blue */
-  --color-code-text: #fde047;            /* Yellow for code */
+  /* Code - deeper blue with cyan text */
+  --color-code-bg: #001945;              /* Deep blue code background */
+  --color-code-text: #00ffff;            /* Cyan code text */
 
-  /* Shadows with blue tint */
-  --shadow-sm: 0 1px 2px rgba(0, 30, 80, 0.3);
-  --shadow-md: 0 4px 6px rgba(0, 30, 80, 0.35), 0 2px 4px rgba(0, 30, 80, 0.2);
-  --shadow-lg: 0 10px 15px rgba(0, 30, 80, 0.35), 0 4px 6px rgba(0, 30, 80, 0.2);
-  --shadow-xl: 0 20px 25px rgba(0, 30, 80, 0.4), 0 10px 10px rgba(0, 30, 80, 0.2);
+  /* Badges - cyan highlights for special elements */
+  --color-badge-new: #00e5ff;            /* Cyan for new badges */
+  --color-badge-advanced: #00bfff;       /* Lighter cyan */
+  --color-badge-beginner: var(--color-accent-400);  /* Keep orange */
+  --color-badge-intermediate: #0058f8;   /* Royal blue */
+
+  /* Shadows with deep blue tint */
+  --shadow-sm: 0 1px 2px rgba(0, 10, 30, 0.4);
+  --shadow-md: 0 4px 6px rgba(0, 10, 30, 0.45), 0 2px 4px rgba(0, 10, 30, 0.3);
+  --shadow-lg: 0 10px 15px rgba(0, 10, 30, 0.45), 0 4px 6px rgba(0, 10, 30, 0.3);
+  --shadow-xl: 0 20px 25px rgba(0, 10, 30, 0.5), 0 10px 10px rgba(0, 10, 30, 0.3);
 }

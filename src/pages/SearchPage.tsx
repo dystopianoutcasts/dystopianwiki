@@ -4,6 +4,7 @@ import Fuse from 'fuse.js';
 import { Layout } from '../components/layout/Layout';
 import { WikiLayout } from '../components/layout/WikiLayout';
 import { useSearch } from '../hooks/useSearch';
+import { SEOHead } from '../components/seo/SEOHead';
 import type { SearchResult, Difficulty } from '../types/wiki';
 import '../styles/pages/search-page.css';
 
@@ -92,6 +93,11 @@ export function SearchPage() {
 
   return (
     <Layout>
+      <SEOHead
+        title={debouncedQuery ? `Search: ${debouncedQuery}` : 'Search'}
+        description="Search the Project Zomboid Modding Wiki for tutorials, guides, and documentation."
+        noIndex={true}
+      />
       <WikiLayout showSidebar={false}>
         <div className="search-page">
           <header className="search-page__header">

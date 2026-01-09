@@ -1,0 +1,24 @@
+# Robots.txt for PZ Modding Wiki
+# https://dystopianoutcasts.wiki
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://dystopianoutcasts.wiki/sitemap.xml
+
+# Disallow search results pages (duplicate content)
+Disallow: /search?*
+
+# Allow all crawlers to access static assets
+User-agent: Googlebot
+Allow: /assets/
+Allow: /data/
+
+User-agent: Bingbot
+Allow: /assets/
+Allow: /data/
+
+# Crawl-delay for polite crawling
+User-agent: *
+Crawl-delay: 1

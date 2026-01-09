@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { WikiLayout } from '../components/layout/WikiLayout';
 import { WikiArticle } from '../components/wiki/WikiArticle';
+import { SEOHead } from '../components/seo/SEOHead';
 import { useArticle, useArticlesList } from '../hooks/useWikiData';
 import '../styles/pages/article-page.css';
 
@@ -82,6 +83,17 @@ export function ArticlePage() {
 
   return (
     <Layout>
+      <SEOHead
+        title={article.title}
+        description={article.excerpt || `Learn about ${article.title} in Project Zomboid modding.`}
+        ogType="article"
+        article={{
+          publishedTime: article.lastUpdated,
+          modifiedTime: article.lastUpdated,
+          section: category,
+          tags: article.tags,
+        }}
+      />
       <WikiLayout>
         <div className="article-page">
           <WikiArticle

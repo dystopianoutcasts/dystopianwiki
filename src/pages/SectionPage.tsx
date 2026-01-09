@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { WikiLayout } from '../components/layout/WikiLayout';
+import { SEOHead } from '../components/seo/SEOHead';
 import { useSectionInfo, useCategories } from '../hooks/useWikiData';
 import '../styles/pages/section-page.css';
 
@@ -57,6 +58,10 @@ export function SectionPage() {
 
   return (
     <Layout>
+      <SEOHead
+        title={`${sectionInfo.name} - Project Zomboid ${version}`}
+        description={sectionInfo.description || `Browse ${sectionInfo.name} documentation for Project Zomboid. Tutorials and guides for modders.`}
+      />
       <WikiLayout>
         <div className="section-page">
           <header className="section-page__header">

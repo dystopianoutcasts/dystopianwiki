@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { WikiLayout } from '../components/layout/WikiLayout';
+import { SEOHead } from '../components/seo/SEOHead';
 import { useVersionInfo, useSections } from '../hooks/useWikiData';
 import '../styles/pages/version-page.css';
 
@@ -47,6 +48,10 @@ export function VersionPage() {
 
   return (
     <Layout>
+      <SEOHead
+        title={`${versionInfo.name} Documentation - Project Zomboid Modding`}
+        description={versionInfo.description || `Project Zomboid ${versionInfo.name} modding documentation. Tutorials, guides, and API reference.`}
+      />
       <WikiLayout showSidebar={false}>
         <div className="version-page">
           <header className="version-page__header">
