@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, useParams } from 'react-router-dom';
 import '../../styles/components/sidebar.css';
 
@@ -13,7 +13,12 @@ interface Category {
   id: string;
   name: string;
   icon: string;
-  articleCount?: number;
+  description?: string;
+  articleCount: number;
+}
+
+interface CategoriesData {
+  categories: Category[];
 }
 
 interface SectionData {
@@ -23,33 +28,24 @@ interface SectionData {
   categories: Category[];
 }
 
-// Default sidebar data
-const sidebarSections: SectionData[] = [
-  {
-    id: 'modding',
-    name: 'Modding',
-    icon: '🔌',
-    categories: [
-      { id: 'lua-api', name: 'Lua API', icon: '📜', articleCount: 8 },
-      { id: 'recipes', name: 'Recipes', icon: '🔧', articleCount: 6 },
-      { id: 'items', name: 'Items', icon: '🎮', articleCount: 5 },
-      { id: 'game-mechanics', name: 'Game Mechanics', icon: '🩹', articleCount: 8 },
-      { id: 'weapon-repair', name: 'Weapon Repair', icon: '⚔️', articleCount: 9 },
-      { id: 'foraging', name: 'Foraging', icon: '🌿', articleCount: 4 },
-      { id: 'tools', name: 'Tools', icon: '🛠️', articleCount: 3 },
-    ],
-  },
-  {
-    id: 'mapping',
-    name: 'Mapping',
-    icon: '🗺️',
-    categories: [
-      { id: 'tilezed', name: 'TileZed', icon: '🏗️', articleCount: 4 },
-      { id: 'worlded', name: 'WorldEd', icon: '🌍', articleCount: 3 },
-      { id: 'buildings', name: 'Buildings', icon: '🏠', articleCount: 3 },
-      { id: 'terrain', name: 'Terrain', icon: '⛰️', articleCount: 2 },
-    ],
-  },
+// Icon mapping from categories.json icon names to emojis
+const iconMap: Record<string, string> = {
+  scroll: '📜',
+  wrench: '🔧',
+  box: '🎮',
+  cog: '🩹',
+  hammer: '⚔️',
+  leaf: '🌿',
+  tool: '🛠️',
+  grid: '🏗️',
+  globe: '🌍',
+  building: '🏠',
+  mountain: '⛰️',
+};
+
+// Section definitions (static, but categories loaded dynamically)
+const sectionDefinitions = [
+  { id: 'modding', name: 'Modding', icon: '🔌' },
 ];
 
 interface SidebarProps {
@@ -60,7 +56,51 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen = false, onClose, collapsed = false }: SidebarProps) {
   const { version = 'build-41', section: currentSection, category: currentCategory } = useParams();
-  const [expandedSections, setExpandedSections] = useState<string[]>(['modding', 'mapping']);
+  const [expandedSections, setExpandedSections] = useState<string[]>(['modding']);
+  const [sections, setSections] = useState<SectionData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const loadedSections: SectionData[] = [];
+
+        for (const sectionDef of sectionDefinitions) {
+          try {
+            const response = await fetch(`/data/${version}/${sectionDef.id}/categories.json`);
+            if (response.ok) {
+              const data: CategoriesData = await response.json();
+
+              // Filter out categories with 0 articles and map icons
+              const categoriesWithArticles = data.categories
+                .filter(cat => cat.articleCount > 0)
+                .map(cat => ({
+                  ...cat,
+                  icon: iconMap[cat.icon] || cat.icon,
+                }));
+
+              if (categoriesWithArticles.length > 0) {
+                loadedSections.push({
+                  ...sectionDef,
+                  categories: categoriesWithArticles,
+                });
+              }
+            }
+          } catch (err) {
+            console.warn(`Failed to load categories for ${sectionDef.id}`);
+          }
+        }
+
+        setSections(loadedSections);
+      } catch (error) {
+        console.error('Error loading sidebar data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadCategories();
+  }, [version]);
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections((prev) =>
@@ -69,6 +109,14 @@ export function Sidebar({ isOpen = false, onClose, collapsed = false }: SidebarP
         : [...prev, sectionId]
     );
   };
+
+  if (loading) {
+    return (
+      <aside className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''}`}>
+        <div className="sidebar__loading">Loading...</div>
+      </aside>
+    );
+  }
 
   return (
     <>
@@ -85,7 +133,7 @@ export function Sidebar({ isOpen = false, onClose, collapsed = false }: SidebarP
         role="navigation"
         aria-label="Wiki navigation"
       >
-        {sidebarSections.map((section) => {
+        {sections.map((section) => {
           const isExpanded = expandedSections.includes(section.id);
           const isActiveSection = currentSection === section.id;
 
@@ -130,9 +178,7 @@ export function Sidebar({ isOpen = false, onClose, collapsed = false }: SidebarP
                           {category.icon}
                         </span>
                         <span>{category.name}</span>
-                        {category.articleCount !== undefined && (
-                          <span className="sidebar__category-count">{category.articleCount}</span>
-                        )}
+                        <span className="sidebar__category-count">{category.articleCount}</span>
                       </NavLink>
                     </li>
                   );

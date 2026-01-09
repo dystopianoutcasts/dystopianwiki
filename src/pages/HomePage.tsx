@@ -3,6 +3,7 @@ import { HeroSection } from '../components/landing/HeroSection';
 import { QuickstartGrid } from '../components/landing/QuickstartGrid';
 import { SectionBrowser } from '../components/landing/SectionBrowser';
 import { CommunityBanner } from '../components/landing/CommunityBanner';
+import { WhyThisWiki } from '../components/landing/WhyThisWiki';
 
 export function HomePage() {
   return (
@@ -12,6 +13,7 @@ export function HomePage() {
         <QuickstartGrid />
         <SectionBrowser />
         <CommunityBanner />
+        <WhyThisWiki />
       </main>
     </Layout>
   );

@@ -176,20 +176,20 @@ img {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   SELECTION
+   SELECTION - Default is dark theme
    ═══════════════════════════════════════════════════════════════════ */
 ::selection {
-  background-color: var(--color-primary-200);
-  color: var(--color-primary-900);
-}
-
-[data-theme="dark"] ::selection {
   background-color: var(--color-accent-600);
   color: var(--color-neutral-50);
 }
 
+[data-theme="light"] ::selection {
+  background-color: var(--color-primary-300);
+  color: var(--color-primary-900);
+}
+
 /* ═══════════════════════════════════════════════════════════════════
-   SCROLLBAR
+   SCROLLBAR - Default is dark theme
    ═══════════════════════════════════════════════════════════════════ */
 ::-webkit-scrollbar {
   width: 8px;
@@ -201,20 +201,20 @@ img {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-neutral-400);
+  background: var(--color-primary-600);
   border-radius: var(--border-radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-neutral-500);
-}
-
-[data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: var(--color-primary-600);
-}
-
-[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
   background: var(--color-primary-500);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: var(--color-primary-400);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-300);
 }
 
 /* ═══════════════════════════════════════════════════════════════════

@@ -5,7 +5,7 @@
       "name": "Lua API",
       "description": "Events, callbacks, and the core Lua scripting interface for Project Zomboid modding.",
       "icon": "scroll",
-      "articleCount": 5
+      "articleCount": 1
     },
     {
       "id": "recipes",
