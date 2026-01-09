@@ -11,19 +11,20 @@ export function useTheme() {
     const stored = getStorageItem<Theme>(StorageKeys.THEME, 'system');
     if (stored !== 'system') return stored;
 
-    // Fall back to system preference
+    // Fall back to system preference, default to dark
     if (typeof window !== 'undefined' && window.matchMedia) {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
     }
-    return 'light';
+    return 'dark';
   });
 
   // Apply theme to document
+  // Default (no attribute) = dark theme, [data-theme="light"] = light theme
   useEffect(() => {
     const root = document.documentElement;
 
-    if (theme === 'dark') {
-      root.setAttribute('data-theme', 'dark');
+    if (theme === 'light') {
+      root.setAttribute('data-theme', 'light');
     } else {
       root.removeAttribute('data-theme');
     }
