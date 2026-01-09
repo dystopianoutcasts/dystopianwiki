@@ -187,8 +187,9 @@
     flex-direction: column;
   }
 
+  /* Hide desktop TOC on mobile - mobile TOC is rendered separately */
   .wiki-article__toc {
-    order: -1;
+    display: none;
   }
 }
 

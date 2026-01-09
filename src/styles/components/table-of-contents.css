@@ -161,4 +161,9 @@
   .toc__toggle {
     display: none;
   }
+
+  /* Hide mobile TOC on desktop */
+  .toc--mobile {
+    display: none;
+  }
 }
