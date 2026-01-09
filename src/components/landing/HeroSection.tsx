@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { FuzzySearchBar } from '../search/FuzzySearchBar';
 import '../../styles/components/hero.css';
 
@@ -47,6 +47,15 @@ export function HeroSection({ defaultVersion = 'build-41' }: HeroSectionProps) {
             autoFocus={false}
             size="large"
           />
+        </div>
+
+        {/* Actions - Start Learning Button */}
+        <div className="hero__actions">
+          <Link to="/learning-path" className="hero__learn-btn">
+            <span className="hero__learn-icon" role="img" aria-label="book">&#128218;</span>
+            Start Learning
+          </Link>
+          <p className="hero__actions-hint">New to modding? Follow our guided curriculum</p>
         </div>
       </div>
     </section>

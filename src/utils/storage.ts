@@ -70,6 +70,7 @@ export const StorageKeys = {
   RECENT_SEARCHES: 'recent-searches',
   SIDEBAR_COLLAPSED: 'sidebar-collapsed',
   CACHE_TIMESTAMP: 'cache-timestamp',
+  LEARNING_PROGRESS: 'learning-progress',
 } as const;
 
 export type StorageKey = typeof StorageKeys[keyof typeof StorageKeys];

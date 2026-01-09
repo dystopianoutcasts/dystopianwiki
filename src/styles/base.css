@@ -179,14 +179,15 @@ img {
 
 /* ═══════════════════════════════════════════════════════════════════
    SELECTION - Default is dark theme
+   Toned down for better readability and less eye strain
    ═══════════════════════════════════════════════════════════════════ */
 ::selection {
-  background-color: var(--color-accent-600);
+  background-color: rgba(212, 120, 44, 0.35);
   color: var(--color-neutral-50);
 }
 
 [data-theme="light"] ::selection {
-  background-color: var(--color-primary-300);
+  background-color: rgba(37, 99, 235, 0.3);
   color: var(--color-primary-900);
 }
 

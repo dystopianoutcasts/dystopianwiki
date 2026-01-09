@@ -133,6 +133,22 @@ export function Sidebar({ isOpen = false, onClose, collapsed = false }: SidebarP
         role="navigation"
         aria-label="Wiki navigation"
       >
+        {/* Learning Path Link */}
+        <div className="sidebar__learning-path">
+          <NavLink
+            to="/learning-path"
+            className={({ isActive }) =>
+              `sidebar__learning-link ${isActive ? 'sidebar__learning-link--active' : ''}`
+            }
+            onClick={onClose}
+          >
+            <span className="sidebar__learning-icon" role="img" aria-hidden="true">
+              &#128218;
+            </span>
+            <span>Learning Path</span>
+          </NavLink>
+        </div>
+
         {sections.map((section) => {
           const isExpanded = expandedSections.includes(section.id);
           const isActiveSection = currentSection === section.id;

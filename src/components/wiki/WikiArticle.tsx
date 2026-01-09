@@ -4,6 +4,7 @@ import type { WikiArticle as WikiArticleType, Difficulty } from '../../types/wik
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { TableOfContents, extractTOCFromMarkdown } from './TableOfContents';
 import { RelatedArticles } from './RelatedArticles';
+import { ArticleCTA } from './ArticleCTA';
 import '../../styles/components/wiki-article.css';
 
 interface RelatedArticleData {
@@ -122,6 +123,9 @@ export function WikiArticle({
         {relatedArticles.length > 0 && (
           <RelatedArticles articles={relatedArticles} />
         )}
+
+        {/* Discord Community CTA */}
+        <ArticleCTA />
 
         {/* Navigation */}
         {(prevArticle || nextArticle) && (

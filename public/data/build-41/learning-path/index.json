@@ -1,0 +1,219 @@
+{
+  "sections": [
+    {
+      "id": "foundations",
+      "title": "Part 1: Foundations",
+      "description": "Understand what modding is and how Project Zomboid is structured",
+      "articles": [
+        {
+          "id": "what-is-modding",
+          "step": "1.1",
+          "title": "What Is a Mod?",
+          "slug": "what-is-modding",
+          "description": "Learn what mods are and why games like PZ support them",
+          "difficulty": "beginner",
+          "estimatedMinutes": 8
+        },
+        {
+          "id": "pz-architecture",
+          "step": "1.2",
+          "title": "PZ's Three Layers",
+          "slug": "pz-architecture",
+          "description": "Java engine, Lua scripts, and data files explained",
+          "difficulty": "beginner",
+          "estimatedMinutes": 10
+        },
+        {
+          "id": "media-folder",
+          "step": "1.3",
+          "title": "The Media Folder",
+          "slug": "media-folder",
+          "description": "Navigate where all game content lives",
+          "difficulty": "beginner",
+          "estimatedMinutes": 8
+        },
+        {
+          "id": "file-types",
+          "step": "1.4",
+          "title": "File Types Explained",
+          "slug": "file-types",
+          "description": "TXT, Lua, PNG, and other file formats",
+          "difficulty": "beginner",
+          "estimatedMinutes": 6
+        }
+      ]
+    },
+    {
+      "id": "environment",
+      "title": "Part 2: Setting Up",
+      "description": "Get your tools ready for modding",
+      "articles": [
+        {
+          "id": "vscode-setup",
+          "step": "2.1",
+          "title": "Installing VS Code",
+          "slug": "vscode-setup",
+          "description": "Your home base for editing mod files",
+          "difficulty": "beginner",
+          "estimatedMinutes": 10
+        },
+        {
+          "id": "mod-folder-structure",
+          "step": "2.2",
+          "title": "Mod Folder Structure",
+          "slug": "mod-folder-structure",
+          "description": "Create your first mod folder with the right layout",
+          "difficulty": "beginner",
+          "estimatedMinutes": 8
+        },
+        {
+          "id": "mod-info-file",
+          "step": "2.3",
+          "title": "The mod.info File",
+          "slug": "mod-info-file",
+          "description": "Configure your mod's metadata",
+          "difficulty": "beginner",
+          "estimatedMinutes": 6
+        },
+        {
+          "id": "debug-mode",
+          "step": "2.4",
+          "title": "Debug Mode",
+          "slug": "debug-mode",
+          "description": "Enable PZ's debug tools for testing",
+          "difficulty": "beginner",
+          "estimatedMinutes": 5
+        }
+      ]
+    },
+    {
+      "id": "ai-partner",
+      "title": "Part 3: Your AI Partner",
+      "description": "Learn to code without knowing how to code",
+      "articles": [
+        {
+          "id": "ai-for-modding",
+          "step": "3.1",
+          "title": "AI Tools for Modding",
+          "slug": "ai-for-modding",
+          "description": "How AI assistants change the game",
+          "difficulty": "beginner",
+          "estimatedMinutes": 8
+        },
+        {
+          "id": "writing-prompts",
+          "step": "3.2",
+          "title": "Writing Good Prompts",
+          "slug": "writing-prompts",
+          "description": "Context, examples, requests, and constraints",
+          "difficulty": "beginner",
+          "estimatedMinutes": 12
+        },
+        {
+          "id": "ai-debugging",
+          "step": "3.3",
+          "title": "AI for Debugging",
+          "slug": "ai-debugging",
+          "description": "Use AI to understand and fix errors",
+          "difficulty": "beginner",
+          "estimatedMinutes": 10
+        },
+        {
+          "id": "context-library",
+          "step": "3.4",
+          "title": "Building a Context Library",
+          "slug": "context-library",
+          "description": "Create reference files for better AI results",
+          "difficulty": "intermediate",
+          "estimatedMinutes": 15
+        }
+      ]
+    },
+    {
+      "id": "first-recipe",
+      "title": "Part 4: Your First Recipe",
+      "description": "Create something that works in-game",
+      "articles": [
+        {
+          "id": "recipe-anatomy",
+          "step": "4.1",
+          "title": "Anatomy of a Recipe",
+          "slug": "recipe-anatomy",
+          "description": "Break down a vanilla recipe line by line",
+          "difficulty": "beginner",
+          "estimatedMinutes": 10
+        },
+        {
+          "id": "first-recipe-file",
+          "step": "4.2",
+          "title": "Your First Recipe File",
+          "slug": "first-recipe-file",
+          "description": "Write a simple crafting recipe from scratch",
+          "difficulty": "beginner",
+          "estimatedMinutes": 12
+        },
+        {
+          "id": "testing-recipes",
+          "step": "4.3",
+          "title": "Testing Your Recipe",
+          "slug": "testing-recipes",
+          "description": "Load your mod and craft something",
+          "difficulty": "beginner",
+          "estimatedMinutes": 8
+        },
+        {
+          "id": "recipe-ingredients",
+          "step": "4.4",
+          "title": "Recipe Ingredients Deep Dive",
+          "slug": "recipe-ingredients",
+          "description": "Multiple inputs, tools, and alternatives",
+          "difficulty": "intermediate",
+          "estimatedMinutes": 15
+        }
+      ]
+    },
+    {
+      "id": "first-item",
+      "title": "Part 5: Custom Items",
+      "description": "Create things that don't exist in vanilla",
+      "articles": [
+        {
+          "id": "item-anatomy",
+          "step": "5.1",
+          "title": "Anatomy of an Item",
+          "slug": "item-anatomy",
+          "description": "Understand item properties and types",
+          "difficulty": "beginner",
+          "estimatedMinutes": 12
+        },
+        {
+          "id": "first-item-file",
+          "step": "5.2",
+          "title": "Your First Custom Item",
+          "slug": "first-item-file",
+          "description": "Define a new food item step by step",
+          "difficulty": "beginner",
+          "estimatedMinutes": 15
+        },
+        {
+          "id": "item-icons",
+          "step": "5.3",
+          "title": "Creating Item Icons",
+          "slug": "item-icons",
+          "description": "Make or modify icons for your items",
+          "difficulty": "beginner",
+          "estimatedMinutes": 10
+        },
+        {
+          "id": "item-recipe-connection",
+          "step": "5.4",
+          "title": "Connecting Items and Recipes",
+          "slug": "item-recipe-connection",
+          "description": "Make your item craftable",
+          "difficulty": "beginner",
+          "estimatedMinutes": 8
+        }
+      ]
+    }
+  ]
+}

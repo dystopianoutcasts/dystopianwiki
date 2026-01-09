@@ -5,6 +5,7 @@ import { SectionPage } from './pages/SectionPage';
 import { CategoryPage } from './pages/CategoryPage';
 import { ArticlePage } from './pages/ArticlePage';
 import { SearchPage } from './pages/SearchPage';
+import { LearningPathPage } from './pages/LearningPathPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 // Import global styles
@@ -20,6 +21,9 @@ function App() {
 
         {/* Search Page */}
         <Route path="/search" element={<SearchPage />} />
+
+        {/* Learning Path */}
+        <Route path="/learning-path" element={<LearningPathPage />} />
 
         {/* Version Landing */}
         <Route path="/:version" element={<VersionPage />} />
