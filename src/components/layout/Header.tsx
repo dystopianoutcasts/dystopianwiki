@@ -44,8 +44,8 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
         {/* Logo */}
         <Link to="/" className="header__logo">
           <img
-            src="/assets/branding/logo.png"
-            alt="Dystopian Outcasts"
+            src="/assets/branding/benny_transparentBg_512.png"
+            alt="Benny - Dystopian Outcasts mascot"
             className="header__logo-image"
           />
           <span className="header__logo-text">PZ Modding Wiki</span>
@@ -61,14 +61,7 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
           >
             Modding
           </NavLink>
-          <NavLink
-            to="/build-41/mapping"
-            className={({ isActive }) =>
-              `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
-            }
-          >
-            Mapping
-          </NavLink>
+          {/* Mapping link hidden until section has content */}
         </nav>
 
         {/* Actions */}
