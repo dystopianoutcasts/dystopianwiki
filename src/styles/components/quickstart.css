@@ -10,10 +10,12 @@
 }
 
 .quickstart__title {
+  font-family: var(--font-family-display);
   font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-normal);
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-6);
+  letter-spacing: 0.02em;
 }
 
 .quickstart__grid {

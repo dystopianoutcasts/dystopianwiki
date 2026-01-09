@@ -18,22 +18,17 @@ export function MarkdownRenderer({ content, className = '' }: MarkdownRendererPr
   // Custom components for react-markdown
   const components = useMemo(
     () => ({
-      // Custom code block rendering
-      code({ node, inline, className, children, ...props }: any) {
-        const match = /language-(\w+)/.exec(className || '');
+      // Custom pre rendering - wraps code blocks
+      pre({ children, ...props }: any) {
+        // Extract the code element from pre's children
+        const codeElement = children?.props;
+        if (!codeElement) return <pre {...props}>{children}</pre>;
+
+        const className = codeElement.className || '';
+        const match = /language-(\w+)/.exec(className);
         const language = match ? match[1] : 'text';
-        const codeString = String(children).replace(/\n$/, '');
+        const codeString = String(codeElement.children).replace(/\n$/, '');
 
-        // For inline code, use simple code element
-        if (inline) {
-          return (
-            <code className="inline-code" {...props}>
-              {children}
-            </code>
-          );
-        }
-
-        // For code blocks, use our custom CodeBlock component
         return (
           <CodeBlock
             code={codeString}
@@ -43,9 +38,29 @@ export function MarkdownRenderer({ content, className = '' }: MarkdownRendererPr
         );
       },
 
-      // Custom pre rendering (just pass through, code handles it)
-      pre({ children }: any) {
-        return <>{children}</>;
+      // Inline code - NOT wrapped in pre
+      code({ node, className, children, ...props }: any) {
+        // If this code has a language class or contains newlines, it's likely a block
+        // But since we handle blocks in pre, this should only receive inline code
+        const hasLanguage = /language-(\w+)/.test(className || '');
+        const content = String(children);
+        const isMultiLine = content.includes('\n');
+
+        // Truly inline code (no language, single line)
+        if (!hasLanguage && !isMultiLine) {
+          return (
+            <code className="inline-code" {...props}>
+              {children}
+            </code>
+          );
+        }
+
+        // Fallback for edge cases
+        return (
+          <code className={className} {...props}>
+            {children}
+          </code>
+        );
       },
 
       // Add IDs to headings for anchor links

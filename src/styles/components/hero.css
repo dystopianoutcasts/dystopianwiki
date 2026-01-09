@@ -40,24 +40,26 @@
 
 /* Logo */
 .hero__logo {
-  width: 200px;
-  max-width: 80%;
+  width: 320px;
+  max-width: 85%;
   height: auto;
-  margin: 0 auto var(--spacing-8);
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+  margin: 0 auto var(--spacing-6);
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.2));
 }
 
 [data-theme="dark"] .hero__logo {
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
 }
 
 /* Title */
 .hero__title {
+  font-family: var(--font-family-display);
   font-size: var(--font-size-4xl);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-normal);  /* Russo One is already bold */
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-3);
-  letter-spacing: -0.025em;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 @media (max-width: 640px) {
