@@ -12,7 +12,7 @@
 .wiki-article__main {
   flex: 1;
   min-width: 0; /* Prevent flex overflow */
-  max-width: var(--article-max-width);
+  /* Content expands to fill available space next to TOC */
 }
 
 .wiki-article__toc {
