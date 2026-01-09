@@ -149,13 +149,21 @@
   --transition-slow: 300ms ease;
 
   /* ═══════════════════════════════════════════════════════════════
-     LAYOUT
+     LAYOUT - Flex-based proportions
      ═══════════════════════════════════════════════════════════════ */
   --header-height: 64px;
-  --sidebar-width: 220px;  /* Tighter sidebar to focus on content */
-  --toc-width: 220px;      /* Right-side table of contents */
-  --content-max-width: 1400px;
-  --article-max-width: 900px;  /* Wider article content */
+
+  /* Sidebar and TOC use flex-basis with min/max constraints */
+  --sidebar-flex: 0 0 15%;       /* 15% of parent, doesn't grow/shrink */
+  --sidebar-min: 180px;          /* Minimum readable width */
+  --sidebar-max: 250px;          /* Maximum to prevent over-expansion */
+
+  --toc-flex: 0 0 15%;           /* 15% of parent */
+  --toc-min: 180px;
+  --toc-max: 250px;
+
+  /* Content takes remaining space */
+  --content-flex: 1 1 70%;       /* Grows to fill, starts at 70% */
 }
 
 /* ═══════════════════════════════════════════════════════════════════

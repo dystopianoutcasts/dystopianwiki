@@ -12,8 +12,9 @@
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
-  width: var(--toc-width);
-  flex-shrink: 0;
+  flex: var(--toc-flex);
+  min-width: var(--toc-min);
+  max-width: var(--toc-max);
 }
 
 /* Scrollbar */

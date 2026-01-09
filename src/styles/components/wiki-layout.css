@@ -9,7 +9,7 @@
 }
 
 .wiki-layout__main {
-  flex: 1;
+  flex: var(--content-flex);
   min-width: 0; /* Prevent flex item overflow */
   display: flex;
   flex-direction: column;
@@ -18,12 +18,11 @@
 .wiki-layout__content {
   flex: 1;
   padding: var(--spacing-6);
-  /* Let the article component control its own width */
+  width: 100%;
 }
 
 /* Full width content (no sidebar) */
 .wiki-layout--full-width .wiki-layout__content {
-  max-width: var(--content-max-width);
   margin: 0 auto;
   width: 100%;
 }

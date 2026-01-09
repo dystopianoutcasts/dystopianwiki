@@ -5,18 +5,18 @@
 
 .wiki-article {
   display: flex;
-  gap: var(--spacing-8);
-  max-width: 100%;
+  gap: var(--spacing-6);
+  width: 100%;
 }
 
 .wiki-article__main {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0; /* Prevent flex overflow */
-  /* Content expands to fill available space next to TOC */
+  /* Content takes all remaining space after TOC */
 }
 
 .wiki-article__toc {
-  flex-shrink: 0;
+  /* TOC uses flex properties from variables */
 }
 
 /* Article Header */
