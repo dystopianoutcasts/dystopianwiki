@@ -1,26 +1,3 @@
 {
-  "articles": [
-    {
-      "id": "tilezed-tilezed-setup-guide",
-      "title": "TileZed Setup Guide - Outcast Antique Oven",
-      "slug": "tilezed-setup-guide",
-      "version": "build-41",
-      "section": "mapping",
-      "category": "tilezed",
-      "tags": [
-        "lua",
-        "recipe",
-        "item",
-        "tilezed",
-        "crafting",
-        "setup",
-        "guide"
-      ],
-      "excerpt": "This guide provides step-by-step instructions for creating the Outcast Antique Oven tiles in TileZed.",
-      "lastUpdated": "2026-01-09",
-      "difficulty": "beginner",
-      "content": "",
-      "tableOfContents": []
-    }
-  ]
+  "articles": []
 }

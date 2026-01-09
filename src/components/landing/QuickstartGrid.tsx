@@ -28,14 +28,6 @@ const defaultCards: QuickstartCard[] = [
     section: 'modding',
   },
   {
-    id: 'tilezed',
-    icon: '🗺️',
-    title: 'TileZed',
-    description: 'Build custom maps and tilesets',
-    url: '/build-41/mapping/tilezed',
-    section: 'mapping',
-  },
-  {
     id: 'weapon-repair',
     icon: '⚔️',
     title: 'Weapon Repair',
