@@ -7,8 +7,9 @@
   /* ═══════════════════════════════════════════════════════════════
      PRIMARY - Navy Blue (from shield logo background)
      ═══════════════════════════════════════════════════════════════ */
-  --color-primary-900: #0f1f33;
-  --color-primary-800: #162b45;
+  --color-primary-950: #060d18;  /* Near black with blue undertone */
+  --color-primary-900: #0a1628;  /* Deep midnight navy */
+  --color-primary-800: #0f1f35;  /* Dark navy */
   --color-primary-700: #1e3a5f;  /* Main navy */
   --color-primary-600: #264a78;
   --color-primary-500: #2e5a91;
@@ -167,19 +168,24 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   DARK THEME
+   DARK THEME - Deep midnight navy, not washed-out gray
    ═══════════════════════════════════════════════════════════════════ */
 [data-theme="dark"] {
-  --color-background: var(--color-primary-900);
-  --color-surface: var(--color-primary-800);
-  --color-surface-elevated: var(--color-primary-700);
-  --color-text-primary: var(--color-neutral-100);
-  --color-text-secondary: var(--color-neutral-400);
-  --color-text-muted: var(--color-neutral-500);
-  --color-border: var(--color-primary-700);
-  --color-border-light: var(--color-primary-800);
+  /* Deep navy backgrounds - rich and bold */
+  --color-background: var(--color-primary-950);
+  --color-surface: var(--color-primary-900);
+  --color-surface-elevated: var(--color-primary-800);
 
-  /* Interactive */
+  /* High contrast text */
+  --color-text-primary: #f0f4f8;  /* Slightly blue-tinted white */
+  --color-text-secondary: #94a3b8;  /* Muted blue-gray */
+  --color-text-muted: #64748b;
+
+  /* Subtle borders that don't wash out */
+  --color-border: var(--color-primary-800);
+  --color-border-light: var(--color-primary-900);
+
+  /* Interactive - warm orange pops against deep blue */
   --color-link: var(--color-accent-400);
   --color-link-hover: var(--color-accent-300);
   --color-focus-ring: var(--color-accent-500);
@@ -190,13 +196,13 @@
   --color-alert-warning-bg: var(--color-accent-900);
   --color-alert-warning-border: var(--color-accent-700);
 
-  /* Code */
+  /* Code - slightly elevated surface */
   --color-code-bg: var(--color-primary-800);
-  --color-code-text: var(--color-accent-200);
+  --color-code-text: var(--color-accent-300);
 
-  /* Shadows are more subtle in dark mode */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3), 0 4px 6px rgba(0, 0, 0, 0.15);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.35), 0 10px 10px rgba(0, 0, 0, 0.15);
+  /* Deeper shadows for that bold feel */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 30px rgba(0, 0, 0, 0.6), 0 10px 15px rgba(0, 0, 0, 0.3);
 }
