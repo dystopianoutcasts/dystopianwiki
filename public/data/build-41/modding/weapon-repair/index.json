@@ -1,0 +1,156 @@
+{
+  "articles": [
+    {
+      "id": "weapon-repair-repair-system-overview",
+      "title": "Project Zomboid Repair System Overview",
+      "slug": "repair-system-overview",
+      "version": "build-41",
+      "section": "modding",
+      "category": "weapon-repair",
+      "tags": [
+        "lua",
+        "item",
+        "repair",
+        "weapon",
+        "event",
+        "system",
+        "overview"
+      ],
+      "excerpt": "The repair system in Project Zomboid consists of three main layers:\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nItems become repairable by having an entry in :\r\n\r\n\r\n\r\nKey Components:\r\n-  - The item type that can be repaired\r\n-...",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "beginner",
+      "content": "",
+      "tableOfContents": []
+    },
+    {
+      "id": "weapon-repair-fixing-txt-anatomy",
+      "title": "Fixing.txt Anatomy - Repair Definition Structure",
+      "slug": "fixing-txt-anatomy",
+      "version": "build-41",
+      "section": "modding",
+      "category": "weapon-repair",
+      "tags": [
+        "item",
+        "repair",
+        "weapon",
+        "fixing",
+        "txt",
+        "anatomy"
+      ],
+      "excerpt": "Specifies the item type that this fixing definition applies to.\r\n\r\n\r\n\r\n\r\n\r\nDefines an item that can perform the repair.\r\n\r\nSimple Fixer (no skill):\r\n\r\n\r\nFixer with Skill Requirement:\r\n\r\n\r\nMultiple ...",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "intermediate",
+      "content": "",
+      "tableOfContents": []
+    },
+    {
+      "id": "weapon-repair-repair-items-reference",
+      "title": "Repair Items Reference (Fixers)",
+      "slug": "repair-items-reference",
+      "version": "build-41",
+      "section": "modding",
+      "category": "weapon-repair",
+      "tags": [
+        "lua",
+        "recipe",
+        "item",
+        "repair",
+        "weapon",
+        "items",
+        "reference"
+      ],
+      "excerpt": "Fixer items are consumable materials used to repair damaged equipment. Each fixer has specific properties that determine its effectiveness and requirements.\r\n\r\n\r\n\r\n\r\n\r\nProperties:\r\n- Requires: Wood...",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "intermediate",
+      "content": "",
+      "tableOfContents": []
+    },
+    {
+      "id": "weapon-repair-repairable-weapons",
+      "title": "Repairable Weapons List (Vanilla)",
+      "slug": "repairable-weapons",
+      "version": "build-41",
+      "section": "modding",
+      "category": "weapon-repair",
+      "tags": [
+        "item",
+        "repair",
+        "weapon",
+        "repairable",
+        "weapons"
+      ],
+      "excerpt": "This document lists all weapons that have repair definitions in vanilla Project Zomboid's .\r\n\r\n\r\n\r\n| Weapon | Fixers | Skill Required |\r\n|--------|--------|----------------|\r\n| Axe | Woodglue, Duct...",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "beginner",
+      "content": "",
+      "tableOfContents": []
+    },
+    {
+      "id": "weapon-repair-lua-repair-mechanics",
+      "title": "Lua Repair Mechanics",
+      "slug": "lua-repair-mechanics",
+      "version": "build-41",
+      "section": "modding",
+      "category": "weapon-repair",
+      "tags": [
+        "lua",
+        "recipe",
+        "item",
+        "repair",
+        "weapon",
+        "event",
+        "api",
+        "mechanics"
+      ],
+      "excerpt": "The FixingManager is a Java class accessed from Lua:",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "advanced",
+      "content": "",
+      "tableOfContents": []
+    },
+    {
+      "id": "weapon-repair-repair-formulas",
+      "title": "Repair Formulas and Calculations",
+      "slug": "repair-formulas",
+      "version": "build-41",
+      "section": "modding",
+      "category": "weapon-repair",
+      "tags": [
+        "lua",
+        "item",
+        "repair",
+        "weapon",
+        "formulas",
+        "and",
+        "calculations"
+      ],
+      "excerpt": "When using a weapon, condition loss is calculated per action:\r\n\r\n\r\n\r\nVariables:\r\n-  = Item's  property\r\n-  = Player's Maintenance skill modifier\r\n\r\nExample:\r\n- Axe has \r\n- Player has Maintenance le...",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "intermediate",
+      "content": "",
+      "tableOfContents": []
+    },
+    {
+      "id": "weapon-repair-repair-cheat-sheet",
+      "title": "Weapon Repair Quick Reference Cheat Sheet",
+      "slug": "repair-cheat-sheet",
+      "version": "build-41",
+      "section": "modding",
+      "category": "weapon-repair",
+      "tags": [
+        "lua",
+        "item",
+        "repair",
+        "weapon",
+        "api",
+        "cheat",
+        "sheet"
+      ],
+      "excerpt": "| Fixer | Uses | Skill | Best For |\r\n|-------|------|-------|----------|\r\n| Woodglue | 2 | Woodwork 2 | Wooden weapons |\r\n| DuctTape | 2 | None | Everything |\r\n| Glue | 2 | None | Everything |\r\n| S...",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "beginner",
+      "content": "",
+      "tableOfContents": []
+    }
+  ]
+}

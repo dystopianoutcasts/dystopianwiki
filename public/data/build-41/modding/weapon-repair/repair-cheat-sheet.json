@@ -1,0 +1,113 @@
+{
+  "id": "weapon-repair-repair-cheat-sheet",
+  "title": "Weapon Repair Quick Reference Cheat Sheet",
+  "slug": "repair-cheat-sheet",
+  "version": "build-41",
+  "section": "modding",
+  "category": "weapon-repair",
+  "tags": [
+    "lua",
+    "item",
+    "repair",
+    "weapon",
+    "api",
+    "cheat",
+    "sheet"
+  ],
+  "content": "# Weapon Repair Quick Reference Cheat Sheet\r\n\r\n## Fixing.txt Syntax\r\n\r\n```\r\nfixing Fix [ItemType]\r\n{\r\n   Require : [ItemType],\r\n   GlobalItem : [Tool]=[Uses],           // Optional\r\n   ConditionModifier : [decimal],         // Optional\r\n\r\n   Fixer : [Item]=[Uses],\r\n   Fixer : [Item]=[Uses]; [Skill]=[Level],\r\n   Fixer : [Item]=[Uses]; [Skill1]=[Level]; [Skill2]=[Level],\r\n}\r\n```\r\n\r\n## Common Fixers\r\n\r\n| Fixer | Uses | Skill | Best For |\r\n|-------|------|-------|----------|\r\n| Woodglue | 2 | Woodwork 2 | Wooden weapons |\r\n| DuctTape | 2 | None | Everything |\r\n| Glue | 2 | None | Everything |\r\n| Scotchtape | 4 | None | Emergency |\r\n| Same Gun | 1 | Aiming 2-5 | Firearms |\r\n\r\n## Skill Requirements\r\n\r\n| Skill | Weapons |\r\n|-------|---------|\r\n| Woodwork 2 | Axes, Sledgehammers, Wooden bats |\r\n| Aiming 2 | Shotguns, Revolvers |\r\n| Aiming 3 | Pistols |\r\n| Aiming 4 | Hunting/Varmint Rifles |\r\n| Aiming 5 | Assault Rifles |\r\n| Mechanics | Vehicles |\r\n| MetalWelding | Welded vehicle parts |\r\n\r\n## Lua API Quick Reference\r\n\r\n```lua\r\n-- Get repairs available for item\r\nlocal fixes = FixingManager.getFixes(item)\r\n\r\n-- Calculate repair quality\r\nlocal condRestored = FixingManager.getCondRepaired(item, player, fixing, fixer)\r\nlocal failChance = FixingManager.getChanceOfFail(item, player, fixing, fixer)\r\n\r\n-- Perform repair\r\nFixingManager.fixItem(item, character, fixing, fixer)\r\n\r\n-- Item condition\r\nitem:getCondition()\r\nitem:setCondition(value)\r\nitem:getConditionMax()\r\nitem:isBroken()\r\n\r\n-- Item state\r\nitem:getHaveBeenRepaired()\r\nitem:setHaveBeenRepaired(true)\r\n\r\n-- Player skills\r\nplayer:getPerkLevel(Perks.Maintenance)\r\nplayer:getMaintenanceMod()\r\nplayer:getXp():AddXP(perk, amount)\r\n```\r\n\r\n## Key Files\r\n\r\n```\r\nScripts:\r\n  media/scripts/fixing.txt              // Repair definitions\r\n  media/scripts/vehiclesfixing.txt      // Vehicle repairs\r\n  media/scripts/items_weapons.txt       // Weapon properties\r\n\r\nLua:\r\n  lua/client/TimedActions/ISFixAction.lua\r\n  lua/client/ISUI/ISInventoryPaneContextMenu.lua\r\n  lua/server/Vehicles/VehicleCommands.lua\r\n```\r\n\r\n## Condition Formula\r\n\r\n```lua\r\n-- Degradation check per use:\r\nif ZombRand(condLowerChance * 2 + maintenanceMod * 2) == 0 then\r\n    condition = condition - 1\r\nelse\r\n    AddXP(Perks.Maintenance, 1)\r\nend\r\n\r\n-- Engine repair per part:\r\ncondPerPart = min(1 + (skillAboveReq / 2), 5)\r\n```\r\n\r\n## Quick Examples\r\n\r\n### Basic Weapon\r\n```\r\nfixing Fix MyWeapon\r\n{\r\n   Require : MyWeapon,\r\n   Fixer : DuctTape=2,\r\n   Fixer : Glue=2,\r\n}\r\n```\r\n\r\n### Skilled Repair\r\n```\r\nfixing Fix MyAxe\r\n{\r\n   Require : MyAxe,\r\n   Fixer : Woodglue=2; Woodwork=2,\r\n   Fixer : DuctTape=2,\r\n}\r\n```\r\n\r\n### Firearm\r\n```\r\nfixing Fix MyGun\r\n{\r\n   Require : MyGun,\r\n   Fixer : MyGun; Aiming=3,\r\n}\r\n```\r\n\r\n### With GlobalItem\r\n```\r\nfixing Fix MyArmor\r\n{\r\n   Require : MyArmor,\r\n   GlobalItem : BlowTorch=2,\r\n   ConditionModifier : 1.2,\r\n   Fixer : SheetMetal=1; MetalWelding=2,\r\n}\r\n```\r\n\r\n## Detection Capabilities\r\n\r\n| What | How | Detectable |\r\n|------|-----|------------|\r\n| Can repair? | FixingManager.getFixes() | Yes |\r\n| Repair quality | getCondRepaired() | Yes |\r\n| Success chance | getChanceOfFail() | Yes |\r\n| Already repaired | getHaveBeenRepaired() | Yes |\r\n| Current condition | getCondition() | Yes |\r\n| Is broken | isBroken() | Yes |\r\n\r\n## Weapon Properties\r\n\r\n```\r\nConditionMax = 15,           // Max condition\r\nConditionLowerChanceOneIn = 15,  // Higher = more durable\r\n```\r\n\r\n## Common Perks Enum\r\n\r\n```lua\r\nPerks.Maintenance\r\nPerks.Woodwork\r\nPerks.Aiming\r\nPerks.Mechanics\r\nPerks.MetalWelding\r\nPerks.Tailoring\r\nPerks.Electrical\r\n```\r\n\r\n## Repair Menu Trigger\r\n\r\n```lua\r\n-- In ISInventoryPaneContextMenu\r\nif item:isBroken() or item:getCondition() < item:getConditionMax() then\r\n    -- Show repair menu\r\nend\r\n```\r\n\r\n## Repair Action Duration\r\n\r\n```lua\r\n-- Default: 60 ticks (~2 seconds)\r\nISFixAction:new(player, item, 60, fixing, fixer)\r\n\r\n-- Clothing: 150 - (tailoring * 6) ticks\r\n-- Engine: Uses engine parts consumed\r\n```\r\n\r\n## Tips\r\n\r\n1. **No fixing entry = not repairable**\r\n2. **Firearms require same type** (no tape/glue)\r\n3. **Skill affects quality AND success**\r\n4. **GlobalItem = fuel consumed**\r\n5. **ConditionModifier > 1 = better repair**\r\n6. **Condition caps at 100**\r\n7. **Maintenance skill reduces degradation**\r\n\r\n## Minimal Mod Setup\r\n\r\n```\r\nMyMod/\r\n├── mod.info\r\n└── media/\r\n    └── scripts/\r\n        └── fixing_mymod.txt\r\n```\r\n\r\n**fixing_mymod.txt:**\r\n```\r\nfixing Fix MyModItem\r\n{\r\n   Require : MyModItem,\r\n   Fixer : DuctTape=2,\r\n}\r\n```\r\n",
+  "excerpt": "| Fixer | Uses | Skill | Best For |\r\n|-------|------|-------|----------|\r\n| Woodglue | 2 | Woodwork 2 | Wooden weapons |\r\n| DuctTape | 2 | None | Everything |\r\n| Glue | 2 | None | Everything |\r\n| S...",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "fixingtxt-syntax",
+      "text": "Fixing.txt Syntax",
+      "level": 2
+    },
+    {
+      "id": "common-fixers",
+      "text": "Common Fixers",
+      "level": 2
+    },
+    {
+      "id": "skill-requirements",
+      "text": "Skill Requirements",
+      "level": 2
+    },
+    {
+      "id": "lua-api-quick-reference",
+      "text": "Lua API Quick Reference",
+      "level": 2
+    },
+    {
+      "id": "key-files",
+      "text": "Key Files",
+      "level": 2
+    },
+    {
+      "id": "condition-formula",
+      "text": "Condition Formula",
+      "level": 2
+    },
+    {
+      "id": "quick-examples",
+      "text": "Quick Examples",
+      "level": 2
+    },
+    {
+      "id": "basic-weapon",
+      "text": "Basic Weapon",
+      "level": 3
+    },
+    {
+      "id": "skilled-repair",
+      "text": "Skilled Repair",
+      "level": 3
+    },
+    {
+      "id": "firearm",
+      "text": "Firearm",
+      "level": 3
+    },
+    {
+      "id": "with-globalitem",
+      "text": "With GlobalItem",
+      "level": 3
+    },
+    {
+      "id": "detection-capabilities",
+      "text": "Detection Capabilities",
+      "level": 2
+    },
+    {
+      "id": "weapon-properties",
+      "text": "Weapon Properties",
+      "level": 2
+    },
+    {
+      "id": "common-perks-enum",
+      "text": "Common Perks Enum",
+      "level": 2
+    },
+    {
+      "id": "repair-menu-trigger",
+      "text": "Repair Menu Trigger",
+      "level": 2
+    },
+    {
+      "id": "repair-action-duration",
+      "text": "Repair Action Duration",
+      "level": 2
+    },
+    {
+      "id": "tips",
+      "text": "Tips",
+      "level": 2
+    },
+    {
+      "id": "minimal-mod-setup",
+      "text": "Minimal Mod Setup",
+      "level": 2
+    }
+  ]
+}

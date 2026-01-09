@@ -1,0 +1,49 @@
+{
+  "articles": [
+    {
+      "id": "tools-tilezed-setup",
+      "title": "TileZed Setup Guide - Outcast Antique Oven",
+      "slug": "tilezed-setup",
+      "version": "build-41",
+      "section": "modding",
+      "category": "tools",
+      "tags": [
+        "lua",
+        "recipe",
+        "item",
+        "tilezed",
+        "crafting",
+        "setup",
+        "guide"
+      ],
+      "excerpt": "This guide provides step-by-step instructions for creating the Outcast Antique Oven tiles in TileZed.",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "beginner",
+      "content": "",
+      "tableOfContents": []
+    },
+    {
+      "id": "tools-mod-quickstart",
+      "title": "Project Zomboid Mod Development Quick Start Guide",
+      "slug": "mod-quickstart",
+      "version": "build-41",
+      "section": "modding",
+      "category": "tools",
+      "tags": [
+        "lua",
+        "recipe",
+        "item",
+        "repair",
+        "weapon",
+        "modding",
+        "crafting",
+        "quick"
+      ],
+      "excerpt": "---",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "beginner",
+      "content": "",
+      "tableOfContents": []
+    }
+  ]
+}

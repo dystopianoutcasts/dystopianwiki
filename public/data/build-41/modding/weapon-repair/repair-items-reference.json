@@ -1,0 +1,128 @@
+{
+  "id": "weapon-repair-repair-items-reference",
+  "title": "Repair Items Reference (Fixers)",
+  "slug": "repair-items-reference",
+  "version": "build-41",
+  "section": "modding",
+  "category": "weapon-repair",
+  "tags": [
+    "lua",
+    "recipe",
+    "item",
+    "repair",
+    "weapon",
+    "items",
+    "reference"
+  ],
+  "content": "# Repair Items Reference (Fixers)\r\n\r\n## Overview\r\n\r\nFixer items are consumable materials used to repair damaged equipment. Each fixer has specific properties that determine its effectiveness and requirements.\r\n\r\n## Common Repair Materials\r\n\r\n### Woodglue\r\n\r\n**Properties:**\r\n- Requires: Woodwork skill (Level 1-2 depending on item)\r\n- Usage: 2 uses per repair (typical)\r\n- Best for: Wooden-handled weapons\r\n\r\n**Used to Repair:**\r\n- Axes (Axe, HandAxe, WoodAxe, PickAxe)\r\n- Sledgehammers\r\n- Baseball Bats\r\n- Spears\r\n- Other wooden tools\r\n\r\n**Advantages:**\r\n- Most effective for wooden weapons\r\n- Better repair quality with Woodwork skill\r\n\r\n### DuctTape\r\n\r\n**Properties:**\r\n- Requires: No skill\r\n- Usage: 2 uses per repair (typical)\r\n- Best for: Quick repairs on any item\r\n\r\n**Used to Repair:**\r\n- Most melee weapons\r\n- Sports equipment\r\n- Garden tools\r\n- Musical instruments\r\n\r\n**Advantages:**\r\n- No skill requirement\r\n- Universally available\r\n- Quick and easy\r\n\r\n### Glue\r\n\r\n**Properties:**\r\n- Requires: No skill\r\n- Usage: 2 uses per repair (typical)\r\n- Best for: General repairs\r\n\r\n**Used to Repair:**\r\n- Same as DuctTape\r\n- Most non-firearm weapons\r\n\r\n**Notes:**\r\n- WoodGlue and Glue are interchangeable in some recipes\r\n- Defined in recipecode.lua as same type\r\n\r\n### Scotchtape\r\n\r\n**Properties:**\r\n- Requires: No skill\r\n- Usage: 4 uses per repair (typical)\r\n- Best for: Emergency repairs when nothing else available\r\n\r\n**Used to Repair:**\r\n- Same as DuctTape\r\n- Most melee weapons\r\n\r\n**Disadvantages:**\r\n- Requires more uses (less efficient)\r\n- Last resort material\r\n\r\n### Nails\r\n\r\n**Properties:**\r\n- Requires: No skill\r\n- Usage: Varies\r\n- Best for: Nailed weapons\r\n\r\n**Used to Repair:**\r\n- BaseballBatNails\r\n- Other nailed weapon variants\r\n\r\n## Firearm Repair Items\r\n\r\nFirearms use a unique self-repair system where the same weapon type is consumed.\r\n\r\n### Same Weapon Type\r\n\r\n**Pistols:**\r\n```\r\nFixer : Pistol; Aiming=3,\r\n```\r\n- Consume one pistol to repair another\r\n- Requires Aiming skill level 3\r\n\r\n**Shotguns:**\r\n```\r\nFixer : Shotgun; Aiming=2,\r\nFixer : ShotgunSawnoff; Aiming=2,\r\n```\r\n- Shotgun and ShotgunSawnoff can repair each other\r\n- Requires Aiming skill level 2\r\n\r\n**Rifles:**\r\n```\r\nFixer : HuntingRifle; Aiming=4,\r\nFixer : VarmintRifle; Aiming=4,\r\n```\r\n- Requires Aiming skill level 4\r\n\r\n**Assault Rifles:**\r\n```\r\nFixer : AssaultRifle; Aiming=5,\r\nFixer : AssaultRifle2; Aiming=5,\r\n```\r\n- Requires Aiming skill level 5\r\n\r\n**Revolvers:**\r\n```\r\nFixer : Revolver; Aiming=2,\r\nFixer : Revolver_Long; Aiming=2,\r\nFixer : Revolver_Short; Aiming=2,\r\n```\r\n- All revolver types can repair each other\r\n- Requires Aiming skill level 2\r\n\r\n## Vehicle Repair Items\r\n\r\n### BlowTorch\r\n\r\n**Properties:**\r\n- Type: GlobalItem (fuel consumed)\r\n- Usage: 2 uses per welded repair\r\n- Requires: MetalWelding + Mechanics skills\r\n\r\n**Used to Repair:**\r\n- Gas tanks\r\n- Engine hoods\r\n- Trunk lids\r\n- Doors (welded variants)\r\n\r\n### SheetMetal / SmallSheetMetal\r\n\r\n**Properties:**\r\n- Standard material for welded repairs\r\n- SheetMetal: 1 use, SmallSheetMetal: 2 uses\r\n- Requires: Mechanics 2 + MetalWelding 1-3\r\n\r\n**Used to Repair:**\r\n- Most vehicle body parts\r\n- Welded components\r\n\r\n## Clothing Repair Items\r\n\r\n### Fabric (Various Types)\r\n\r\n**Used with:** Thread + Needle\r\n\r\n**Properties:**\r\n- Consumed during patching\r\n- Different fabrics for different results\r\n\r\n### Thread\r\n\r\n**Properties:**\r\n- Uses degraded per patch\r\n- Required for all clothing repairs\r\n\r\n### Needle\r\n\r\n**Properties:**\r\n- Required tool (not consumed)\r\n- Enables clothing repair actions\r\n\r\n## Item Distribution\r\n\r\nRepair items can be found in various locations:\r\n\r\n| Item | Common Locations |\r\n|------|------------------|\r\n| DuctTape | Warehouses, garages, hardware stores |\r\n| Glue | Schools, offices, craft stores |\r\n| WoodGlue | Warehouses, carpentry shops |\r\n| Scotchtape | Offices, homes, stores |\r\n| Nails | Hardware stores, construction sites |\r\n| BlowTorch | Mechanic shops, warehouses |\r\n| SheetMetal | Junkyards, warehouses, factories |\r\n\r\n## Repair Material Efficiency\r\n\r\n| Material | Uses Required | Skill Required | Efficiency |\r\n|----------|---------------|----------------|------------|\r\n| Woodglue | 2 | Woodwork 2 | High |\r\n| DuctTape | 2 | None | Medium |\r\n| Glue | 2 | None | Medium |\r\n| Scotchtape | 4 | None | Low |\r\n\r\n## Tips for Modders\r\n\r\n### Defining Custom Fixers\r\n\r\nYou can use any item as a fixer in your mod:\r\n\r\n```\r\nfixing Fix MyWeapon\r\n{\r\n   Require : MyWeapon,\r\n   Fixer : MyCustomRepairKit=1; MyCustomSkill=3,\r\n   Fixer : DuctTape=2,\r\n}\r\n```\r\n\r\n### Creating Repair Kits\r\n\r\nDefine a custom item that serves as a dedicated repair material:\r\n\r\n```lua\r\n-- In items script\r\nitem WeaponRepairKit\r\n{\r\n    Type = Normal,\r\n    DisplayName = Weapon Repair Kit,\r\n    Icon = RepairKit,\r\n    Weight = 0.5,\r\n}\r\n```\r\n\r\nThen reference it in fixing.txt:\r\n```\r\nFixer : WeaponRepairKit=1; Maintenance=2,\r\n```\r\n",
+  "excerpt": "Fixer items are consumable materials used to repair damaged equipment. Each fixer has specific properties that determine its effectiveness and requirements.\r\n\r\n\r\n\r\n\r\n\r\nProperties:\r\n- Requires: Wood...",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "intermediate",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "common-repair-materials",
+      "text": "Common Repair Materials",
+      "level": 2
+    },
+    {
+      "id": "woodglue",
+      "text": "Woodglue",
+      "level": 3
+    },
+    {
+      "id": "ducttape",
+      "text": "DuctTape",
+      "level": 3
+    },
+    {
+      "id": "glue",
+      "text": "Glue",
+      "level": 3
+    },
+    {
+      "id": "scotchtape",
+      "text": "Scotchtape",
+      "level": 3
+    },
+    {
+      "id": "nails",
+      "text": "Nails",
+      "level": 3
+    },
+    {
+      "id": "firearm-repair-items",
+      "text": "Firearm Repair Items",
+      "level": 2
+    },
+    {
+      "id": "same-weapon-type",
+      "text": "Same Weapon Type",
+      "level": 3
+    },
+    {
+      "id": "vehicle-repair-items",
+      "text": "Vehicle Repair Items",
+      "level": 2
+    },
+    {
+      "id": "blowtorch",
+      "text": "BlowTorch",
+      "level": 3
+    },
+    {
+      "id": "sheetmetal-smallsheetmetal",
+      "text": "SheetMetal / SmallSheetMetal",
+      "level": 3
+    },
+    {
+      "id": "clothing-repair-items",
+      "text": "Clothing Repair Items",
+      "level": 2
+    },
+    {
+      "id": "fabric-various-types",
+      "text": "Fabric (Various Types)",
+      "level": 3
+    },
+    {
+      "id": "thread",
+      "text": "Thread",
+      "level": 3
+    },
+    {
+      "id": "needle",
+      "text": "Needle",
+      "level": 3
+    },
+    {
+      "id": "item-distribution",
+      "text": "Item Distribution",
+      "level": 2
+    },
+    {
+      "id": "repair-material-efficiency",
+      "text": "Repair Material Efficiency",
+      "level": 2
+    },
+    {
+      "id": "tips-for-modders",
+      "text": "Tips for Modders",
+      "level": 2
+    },
+    {
+      "id": "defining-custom-fixers",
+      "text": "Defining Custom Fixers",
+      "level": 3
+    },
+    {
+      "id": "creating-repair-kits",
+      "text": "Creating Repair Kits",
+      "level": 3
+    }
+  ]
+}

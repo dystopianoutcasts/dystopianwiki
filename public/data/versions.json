@@ -1,0 +1,12 @@
+{
+  "defaultVersion": "build-41",
+  "versions": [
+    {
+      "id": "build-41",
+      "name": "Build 41",
+      "releaseDate": "2021-12-20",
+      "status": "current",
+      "sections": ["modding", "mapping"]
+    }
+  ]
+}

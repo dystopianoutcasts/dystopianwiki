@@ -1,0 +1,522 @@
+[
+  {
+    "id": "lua-api-java-lua-bridge",
+    "title": "Java-Lua Bridge Patterns",
+    "slug": "java-lua-bridge",
+    "url": "/build-41/modding/lua-api/java-lua-bridge",
+    "version": "build-41",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua",
+      "item",
+      "weapon",
+      "event",
+      "api",
+      "java",
+      "bridge"
+    ],
+    "excerpt": "The DAMN library uses a client-server command dispatch pattern to bridge Lua and Java safely in multiplayer.\r\n\r\n---\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n---\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n---\r\n\r\n\r\n\r\nProject Zomboid expo...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "lua-api-item-modification",
+    "title": "Item Modification & Transmogrification Patterns",
+    "slug": "item-modification",
+    "url": "/build-41/modding/lua-api/item-modification",
+    "version": "build-41",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua",
+      "item",
+      "weapon",
+      "event",
+      "crafting",
+      "modification",
+      "patterns"
+    ],
+    "excerpt": "DAMN implements item metamorphosis through crafting, condition-based transformations, and runtime property modification. These patterns are directly applicable to weapon tier transformations.\r\n\r\n--...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "lua-api-event-architecture",
+    "title": "Event-Driven Architecture",
+    "slug": "event-architecture",
+    "url": "/build-41/modding/lua-api/event-architecture",
+    "version": "build-41",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua",
+      "item",
+      "weapon",
+      "event",
+      "architecture"
+    ],
+    "excerpt": "The DAMN library demonstrates a robust event-driven pattern for handling game state changes and synchronization.\r\n\r\n---\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n---\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n---\r\n\r\n\r\n\r\n...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "lua-api-implementation-guide",
+    "title": "Grave Index Weapon Transmogrification - Implementation Guide",
+    "slug": "implementation-guide",
+    "url": "/build-41/modding/lua-api/implementation-guide",
+    "version": "build-41",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua",
+      "item",
+      "weapon",
+      "event",
+      "sound",
+      "implementation",
+      "guide"
+    ],
+    "excerpt": "Create a tiered weapon system for the Grave Index weapon that evolves based on player actions (kills, damage, usage).\r\n\r\n---\r\n\r\n\r\n\r\n\r\n\r\nKeep single weapon item, track tier via ModData, apply stat b...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "lua-api-weapon-model-swapping",
+    "title": "Weapon 3D Model Swapping - Complete Guide",
+    "slug": "weapon-model-swapping",
+    "url": "/build-41/modding/lua-api/weapon-model-swapping",
+    "version": "build-41",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua",
+      "item",
+      "weapon",
+      "event",
+      "api",
+      "model",
+      "swapping"
+    ],
+    "excerpt": "Based on VFE (Vanilla Firearm Expansion) mod analysis, Project Zomboid fully supports runtime weapon model changes.\r\n\r\n---\r\n\r\n\r\n\r\n| Component | What It Is | How to Change |\r\n|-----------|----------...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "recipes-recipe-basics",
+    "title": "Recipe Creation Basics - Project Zomboid",
+    "slug": "recipe-basics",
+    "url": "/build-41/modding/recipes/recipe-basics",
+    "version": "build-41",
+    "section": "modding",
+    "category": "recipes",
+    "tags": [
+      "recipe",
+      "item",
+      "weapon",
+      "sound",
+      "crafting",
+      "creation",
+      "basics"
+    ],
+    "excerpt": "Recipes in Project Zomboid define how players can craft items by combining inputs to produce outputs. This guide covers the fundamental structure and syntax for creating recipes.\r\n\r\n\r\nRecipes must ...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "recipes-crafting-tables",
+    "title": "Recipes with Crafting Tables - Enhanced Crafting Core",
+    "slug": "crafting-tables",
+    "url": "/build-41/modding/recipes/crafting-tables",
+    "version": "build-41",
+    "section": "modding",
+    "category": "recipes",
+    "tags": [
+      "recipe",
+      "item",
+      "repair",
+      "weapon",
+      "sound",
+      "crafting",
+      "with",
+      "tables"
+    ],
+    "excerpt": "The Enhanced Crafting Core mod (More Builds) adds craftable workstations that can be used as proximity requirements for recipes. This guide explains how to require players to be near specific craft...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "recipes-consumable-recipes",
+    "title": "Consumable vs Reusable Items in Recipes",
+    "slug": "consumable-recipes",
+    "url": "/build-41/modding/recipes/consumable-recipes",
+    "version": "build-41",
+    "section": "modding",
+    "category": "recipes",
+    "tags": [
+      "recipe",
+      "item",
+      "weapon",
+      "sound",
+      "crafting",
+      "consumable",
+      "items"
+    ],
+    "excerpt": "In Project Zomboid recipes, input items can either be consumed (destroyed) or kept (reusable). Understanding this distinction is critical for creating balanced and functional recipes.\r\n\r\n\r\n\r\n\r\nBy d...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "recipes-vanilla-recipe-anatomy",
+    "title": "Vanilla Recipe Anatomy - Complete Parameter Reference",
+    "slug": "vanilla-recipe-anatomy",
+    "url": "/build-41/modding/recipes/vanilla-recipe-anatomy",
+    "version": "build-41",
+    "section": "modding",
+    "category": "recipes",
+    "tags": [
+      "lua",
+      "recipe",
+      "item",
+      "weapon",
+      "event",
+      "animation",
+      "sound",
+      "crafting"
+    ],
+    "excerpt": "This document provides a complete breakdown of all parameters available in Project Zomboid recipes, based on vanilla game recipes.\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nCommon Item Types:\r\n- \r\n- \r\n-...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "items-item-creation",
+    "title": "Item Creation Guide - Project Zomboid",
+    "slug": "item-creation",
+    "url": "/build-41/modding/items/item-creation",
+    "version": "build-41",
+    "section": "modding",
+    "category": "items",
+    "tags": [
+      "recipe",
+      "item",
+      "weapon",
+      "crafting",
+      "creation",
+      "guide"
+    ],
+    "excerpt": "Items in Project Zomboid are defined in script files within your mod's directory. This guide covers the fundamentals of creating new items.\r\n\r\n\r\nItems must be defined in  files within your mod's  d...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "items-vanilla-item-anatomy",
+    "title": "Vanilla Item Anatomy - Complete Property Reference",
+    "slug": "vanilla-item-anatomy",
+    "url": "/build-41/modding/items/vanilla-item-anatomy",
+    "version": "build-41",
+    "section": "modding",
+    "category": "items",
+    "tags": [
+      "recipe",
+      "item",
+      "weapon",
+      "animation",
+      "crafting",
+      "vanilla",
+      "anatomy"
+    ],
+    "excerpt": "This document provides a comprehensive reference of all properties available for Project Zomboid items, based on vanilla game items.\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nPurpose: Determines fundamental item behavior (...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "items-ammunition-items",
+    "title": "Vanilla Ammunition Items - Complete Reference",
+    "slug": "ammunition-items",
+    "url": "/build-41/modding/items/ammunition-items",
+    "version": "build-41",
+    "section": "modding",
+    "category": "items",
+    "tags": [
+      "recipe",
+      "item",
+      "weapon",
+      "sound",
+      "crafting",
+      "vanilla",
+      "ammunition",
+      "items"
+    ],
+    "excerpt": "This document catalogs all vanilla Project Zomboid ammunition-related items, including rounds, boxes, magazines, molds, and crafting materials.\r\n\r\n\r\n\r\n\r\n| Name              | Item ID              |...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "game-mechanics-injury-system",
+    "title": "Project Zomboid Injury System Reference",
+    "slug": "injury-system",
+    "url": "/build-41/modding/game-mechanics/injury-system",
+    "version": "build-41",
+    "section": "modding",
+    "category": "game-mechanics",
+    "tags": [
+      "lua",
+      "item",
+      "weapon",
+      "modding",
+      "api",
+      "injury",
+      "system",
+      "reference"
+    ],
+    "excerpt": "Documentation for modding injuries, wounds, and health in Project Zomboid.\r\n\r\n---\r\n\r\n\r\n1. Health System Overview\r\n2. Body Parts\r\n3. Injury Types\r\n4. Applying Injuries\r\n5. Checking Injuries\r\n6. Heal...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "game-mechanics-animation-reference",
+    "title": "Project Zomboid Vanilla Animation Reference",
+    "slug": "animation-reference",
+    "url": "/build-41/modding/game-mechanics/animation-reference",
+    "version": "build-41",
+    "section": "modding",
+    "category": "game-mechanics",
+    "tags": [
+      "recipe",
+      "item",
+      "weapon",
+      "foraging",
+      "animation",
+      "sound",
+      "modding",
+      "api"
+    ],
+    "excerpt": "This document provides a comprehensive reference of all vanilla animations available in Project Zomboid for use in mod recipes and scripts.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "game-mechanics-sound-reference",
+    "title": "Project Zomboid Vanilla Sound Reference",
+    "slug": "sound-reference",
+    "url": "/build-41/modding/game-mechanics/sound-reference",
+    "version": "build-41",
+    "section": "modding",
+    "category": "game-mechanics",
+    "tags": [
+      "recipe",
+      "item",
+      "repair",
+      "weapon",
+      "event",
+      "sound",
+      "modding",
+      "api"
+    ],
+    "excerpt": "This document provides a comprehensive reference of all vanilla sounds available in Project Zomboid for use in mod recipes and scripts.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "weapon-repair-repair-system-overview",
+    "title": "Project Zomboid Repair System Overview",
+    "slug": "repair-system-overview",
+    "url": "/build-41/modding/weapon-repair/repair-system-overview",
+    "version": "build-41",
+    "section": "modding",
+    "category": "weapon-repair",
+    "tags": [
+      "lua",
+      "item",
+      "repair",
+      "weapon",
+      "event",
+      "system",
+      "overview"
+    ],
+    "excerpt": "The repair system in Project Zomboid consists of three main layers:\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nItems become repairable by having an entry in :\r\n\r\n\r\n\r\nKey Components:\r\n-  - The item type that can be repaired\r\n-...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "weapon-repair-fixing-txt-anatomy",
+    "title": "Fixing.txt Anatomy - Repair Definition Structure",
+    "slug": "fixing-txt-anatomy",
+    "url": "/build-41/modding/weapon-repair/fixing-txt-anatomy",
+    "version": "build-41",
+    "section": "modding",
+    "category": "weapon-repair",
+    "tags": [
+      "item",
+      "repair",
+      "weapon",
+      "fixing",
+      "txt",
+      "anatomy"
+    ],
+    "excerpt": "Specifies the item type that this fixing definition applies to.\r\n\r\n\r\n\r\n\r\n\r\nDefines an item that can perform the repair.\r\n\r\nSimple Fixer (no skill):\r\n\r\n\r\nFixer with Skill Requirement:\r\n\r\n\r\nMultiple ...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "weapon-repair-repair-items-reference",
+    "title": "Repair Items Reference (Fixers)",
+    "slug": "repair-items-reference",
+    "url": "/build-41/modding/weapon-repair/repair-items-reference",
+    "version": "build-41",
+    "section": "modding",
+    "category": "weapon-repair",
+    "tags": [
+      "lua",
+      "recipe",
+      "item",
+      "repair",
+      "weapon",
+      "items",
+      "reference"
+    ],
+    "excerpt": "Fixer items are consumable materials used to repair damaged equipment. Each fixer has specific properties that determine its effectiveness and requirements.\r\n\r\n\r\n\r\n\r\n\r\nProperties:\r\n- Requires: Wood...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "weapon-repair-repairable-weapons",
+    "title": "Repairable Weapons List (Vanilla)",
+    "slug": "repairable-weapons",
+    "url": "/build-41/modding/weapon-repair/repairable-weapons",
+    "version": "build-41",
+    "section": "modding",
+    "category": "weapon-repair",
+    "tags": [
+      "item",
+      "repair",
+      "weapon",
+      "repairable",
+      "weapons"
+    ],
+    "excerpt": "This document lists all weapons that have repair definitions in vanilla Project Zomboid's .\r\n\r\n\r\n\r\n| Weapon | Fixers | Skill Required |\r\n|--------|--------|----------------|\r\n| Axe | Woodglue, Duct...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "weapon-repair-lua-repair-mechanics",
+    "title": "Lua Repair Mechanics",
+    "slug": "lua-repair-mechanics",
+    "url": "/build-41/modding/weapon-repair/lua-repair-mechanics",
+    "version": "build-41",
+    "section": "modding",
+    "category": "weapon-repair",
+    "tags": [
+      "lua",
+      "recipe",
+      "item",
+      "repair",
+      "weapon",
+      "event",
+      "api",
+      "mechanics"
+    ],
+    "excerpt": "The FixingManager is a Java class accessed from Lua:",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "weapon-repair-repair-formulas",
+    "title": "Repair Formulas and Calculations",
+    "slug": "repair-formulas",
+    "url": "/build-41/modding/weapon-repair/repair-formulas",
+    "version": "build-41",
+    "section": "modding",
+    "category": "weapon-repair",
+    "tags": [
+      "lua",
+      "item",
+      "repair",
+      "weapon",
+      "formulas",
+      "and",
+      "calculations"
+    ],
+    "excerpt": "When using a weapon, condition loss is calculated per action:\r\n\r\n\r\n\r\nVariables:\r\n-  = Item's  property\r\n-  = Player's Maintenance skill modifier\r\n\r\nExample:\r\n- Axe has \r\n- Player has Maintenance le...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "weapon-repair-repair-cheat-sheet",
+    "title": "Weapon Repair Quick Reference Cheat Sheet",
+    "slug": "repair-cheat-sheet",
+    "url": "/build-41/modding/weapon-repair/repair-cheat-sheet",
+    "version": "build-41",
+    "section": "modding",
+    "category": "weapon-repair",
+    "tags": [
+      "lua",
+      "item",
+      "repair",
+      "weapon",
+      "api",
+      "cheat",
+      "sheet"
+    ],
+    "excerpt": "| Fixer | Uses | Skill | Best For |\r\n|-------|------|-------|----------|\r\n| Woodglue | 2 | Woodwork 2 | Wooden weapons |\r\n| DuctTape | 2 | None | Everything |\r\n| Glue | 2 | None | Everything |\r\n| S...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "foraging-vanilla-foraging",
+    "title": "VANILLA FORAGING SYSTEM - RESEARCH NOTES",
+    "slug": "vanilla-foraging",
+    "url": "/build-41/modding/foraging/vanilla-foraging",
+    "version": "build-41",
+    "section": "modding",
+    "category": "foraging",
+    "tags": [
+      "lua",
+      "item",
+      "foraging",
+      "vanilla",
+      "notes"
+    ],
+    "excerpt": "Date: 2025-12-22\r\nResearched For: Iron Pyrite Foraging Implementation\r\n\r\n---\r\n\r\n\r\n\r\n\r\n- \r\n  - Contains all foraging item definitions\r\n  - Uses global  table\r\n\r\n- \r\n  - Core foraging logic/system\r\n\r...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "tools-tilezed-setup",
+    "title": "TileZed Setup Guide - Outcast Antique Oven",
+    "slug": "tilezed-setup",
+    "url": "/build-41/modding/tools/tilezed-setup",
+    "version": "build-41",
+    "section": "modding",
+    "category": "tools",
+    "tags": [
+      "lua",
+      "recipe",
+      "item",
+      "tilezed",
+      "crafting",
+      "setup",
+      "guide"
+    ],
+    "excerpt": "This guide provides step-by-step instructions for creating the Outcast Antique Oven tiles in TileZed.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "tools-mod-quickstart",
+    "title": "Project Zomboid Mod Development Quick Start Guide",
+    "slug": "mod-quickstart",
+    "url": "/build-41/modding/tools/mod-quickstart",
+    "version": "build-41",
+    "section": "modding",
+    "category": "tools",
+    "tags": [
+      "lua",
+      "recipe",
+      "item",
+      "repair",
+      "weapon",
+      "modding",
+      "crafting",
+      "quick"
+    ],
+    "excerpt": "---",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "tilezed-tilezed-setup-guide",
+    "title": "TileZed Setup Guide - Outcast Antique Oven",
+    "slug": "tilezed-setup-guide",
+    "url": "/build-41/mapping/tilezed/tilezed-setup-guide",
+    "version": "build-41",
+    "section": "mapping",
+    "category": "tilezed",
+    "tags": [
+      "lua",
+      "recipe",
+      "item",
+      "tilezed",
+      "crafting",
+      "setup",
+      "guide"
+    ],
+    "excerpt": "This guide provides step-by-step instructions for creating the Outcast Antique Oven tiles in TileZed.",
+    "difficulty": "beginner"
+  }
+]

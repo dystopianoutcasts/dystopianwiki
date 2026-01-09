@@ -1,0 +1,94 @@
+{
+  "articles": [
+    {
+      "id": "recipes-recipe-basics",
+      "title": "Recipe Creation Basics - Project Zomboid",
+      "slug": "recipe-basics",
+      "version": "build-41",
+      "section": "modding",
+      "category": "recipes",
+      "tags": [
+        "recipe",
+        "item",
+        "weapon",
+        "sound",
+        "crafting",
+        "creation",
+        "basics"
+      ],
+      "excerpt": "Recipes in Project Zomboid define how players can craft items by combining inputs to produce outputs. This guide covers the fundamental structure and syntax for creating recipes.\r\n\r\n\r\nRecipes must ...",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "beginner",
+      "content": "",
+      "tableOfContents": []
+    },
+    {
+      "id": "recipes-crafting-tables",
+      "title": "Recipes with Crafting Tables - Enhanced Crafting Core",
+      "slug": "crafting-tables",
+      "version": "build-41",
+      "section": "modding",
+      "category": "recipes",
+      "tags": [
+        "recipe",
+        "item",
+        "repair",
+        "weapon",
+        "sound",
+        "crafting",
+        "with",
+        "tables"
+      ],
+      "excerpt": "The Enhanced Crafting Core mod (More Builds) adds craftable workstations that can be used as proximity requirements for recipes. This guide explains how to require players to be near specific craft...",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "intermediate",
+      "content": "",
+      "tableOfContents": []
+    },
+    {
+      "id": "recipes-consumable-recipes",
+      "title": "Consumable vs Reusable Items in Recipes",
+      "slug": "consumable-recipes",
+      "version": "build-41",
+      "section": "modding",
+      "category": "recipes",
+      "tags": [
+        "recipe",
+        "item",
+        "weapon",
+        "sound",
+        "crafting",
+        "consumable",
+        "items"
+      ],
+      "excerpt": "In Project Zomboid recipes, input items can either be consumed (destroyed) or kept (reusable). Understanding this distinction is critical for creating balanced and functional recipes.\r\n\r\n\r\n\r\n\r\nBy d...",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "beginner",
+      "content": "",
+      "tableOfContents": []
+    },
+    {
+      "id": "recipes-vanilla-recipe-anatomy",
+      "title": "Vanilla Recipe Anatomy - Complete Parameter Reference",
+      "slug": "vanilla-recipe-anatomy",
+      "version": "build-41",
+      "section": "modding",
+      "category": "recipes",
+      "tags": [
+        "lua",
+        "recipe",
+        "item",
+        "weapon",
+        "event",
+        "animation",
+        "sound",
+        "crafting"
+      ],
+      "excerpt": "This document provides a complete breakdown of all parameters available in Project Zomboid recipes, based on vanilla game recipes.\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nCommon Item Types:\r\n- \r\n- \r\n-...",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "intermediate",
+      "content": "",
+      "tableOfContents": []
+    }
+  ]
+}

@@ -1,0 +1,174 @@
+{
+  "id": "recipes-crafting-tables",
+  "title": "Recipes with Crafting Tables - Enhanced Crafting Core",
+  "slug": "crafting-tables",
+  "version": "build-41",
+  "section": "modding",
+  "category": "recipes",
+  "tags": [
+    "recipe",
+    "item",
+    "repair",
+    "weapon",
+    "sound",
+    "crafting",
+    "with",
+    "tables"
+  ],
+  "content": "# Recipes with Crafting Tables - Enhanced Crafting Core\r\n\r\n## Overview\r\nThe Enhanced Crafting Core mod (More Builds) adds craftable workstations that can be used as proximity requirements for recipes. This guide explains how to require players to be near specific crafting tables.\r\n\r\n## The NearItem Parameter\r\n\r\n### Syntax\r\n```\r\nrecipe Example {\r\n    InputItem,\r\n    keep Tool,\r\n\r\n    Result:OutputItem,\r\n    Time:100.0,\r\n    NearItem:Table Name,     // Player must be close to this table\r\n}\r\n```\r\n\r\n### Important Notes\r\n- `NearItem` is a **proximity requirement**, not an item consumption\r\n- Players must be physically near the specified object to craft\r\n- The table is **NOT consumed** or modified\r\n- No `keep` keyword needed (it's not an input item)\r\n\r\n## Enhanced Crafting Core Tables\r\n\r\n### Available Tables\r\nFrom the Enhanced Crafting Core (More Builds) mod:\r\n\r\n| Table Name         | Use Case |\r\n|------------        |----------|\r\n| `Armory Table`     | Weapons, ammunition, military equipment |\r\n| `Laboratory Table` | Chemistry, medicine, scientific recipes |\r\n| `Forge Table`      | Metalworking, smelting, blacksmithing |\r\n| `Mechanic Table`   | Vehicle parts, mechanical work |\r\n| `Tailoring Table`  | Clothing, fabric work, repairs |\r\n\r\n**Source:** `C:\\Users\\ediaz\\Desktop\\DystopeanOutcasts\\Crafting-Enhanced-Core\\README.md`\r\n\r\n### Syntax Format\r\nUse the exact string name in quotes or without quotes:\r\n\r\n```\r\nNearItem:Armory Table,       // Correct\r\nNearItem:\"Armory Table\",     // Also works\r\nNearItem:Forge Table,        // Correct\r\n```\r\n\r\n## Complete Example: Armory Table Recipe\r\n\r\n### Bullet Crafting Recipe\r\n```\r\nmodule OutcastAdvCrft {\r\n    imports {\r\n        Base\r\n    }\r\n\r\n    recipe Make 9mm Bullets {\r\n        keep 9mmBulletsMold,\r\n        keep Hammer,\r\n        ScrapMetal,\r\n        GunPowder=10,\r\n\r\n        Result:Bullets9mm=10,\r\n        Time:300.0,\r\n        Category:Weapons,\r\n        Sound:Hammering,\r\n        NearItem:Armory Table,       // Must be near Armory Table\r\n        AnimNode:BuildHigh,\r\n        Prop1:Hammer,\r\n    }\r\n}\r\n```\r\n\r\n### Laboratory Table Example\r\n```\r\nmodule Example_Recipes {\r\n    imports {\r\n        Base\r\n    }\r\n\r\n    recipe Convert Nails to Screws {\r\n        Nails=1,\r\n        keep Hammer,\r\n\r\n        Result:Screws,\r\n        Time:100.0,\r\n        Category:Chemistry,\r\n        Sound:Anvil,\r\n        NearItem:Laboratory Table,   // Chemistry workstation\r\n        AnimNode:BuildHigh,\r\n        Prop1:Hammer,\r\n        Prop2:Source=1,\r\n    }\r\n}\r\n```\r\n\r\n### Forge Table Example\r\n```\r\nrecipe Smelt Iron Ingot {\r\n    IronOre=5,\r\n    keep Tongs,\r\n\r\n    Result:IronIngot,\r\n    Time:400.0,\r\n    Category:Metalwork,\r\n    Sound:Forge,\r\n    NearItem:Forge Table,            // Metalworking station\r\n}\r\n```\r\n\r\n## How Tables Work In-Game\r\n\r\n### Table Placement\r\n1. Tables must be **crafted** by the player first\r\n2. Tables are **placed in the world** like furniture\r\n3. Tables remain in place and are reusable\r\n4. Multiple recipes can use the same table\r\n\r\n### Proximity Detection\r\n- Player must be within a few tiles of the table\r\n- The game automatically detects if the requirement is met\r\n- If not near the table, the recipe won't appear in the crafting menu\r\n\r\n### No Module Import Required\r\nUnlike mod items, you **DO NOT** need to import a module for tables:\r\n\r\n```\r\nmodule OutcastAdvCrft {\r\n    imports {\r\n        Base           // No Enhanced Crafting import needed!\r\n    }\r\n\r\n    recipe Example {\r\n        InputItem,\r\n        Result:OutputItem,\r\n        NearItem:Armory Table,   // Works without import\r\n    }\r\n}\r\n```\r\n\r\nThe tables are **world objects**, not **items**, so they're referenced by string name.\r\n\r\n## Combining with Other Requirements\r\n\r\n### With Skill Requirements\r\n```\r\nrecipe Advanced Bullet Crafting {\r\n    keep 9mmBulletsMold,\r\n    GunPowder=20,\r\n\r\n    Result:Bullets9mm=20,\r\n    Time:250.0,\r\n    NearItem:Armory Table,\r\n    SkillRequired:MetalWelding=5,    // Need skill AND table\r\n}\r\n```\r\n\r\n### With Multiple Tools\r\n```\r\nrecipe Complex Weapon Mod {\r\n    WeaponPart1,\r\n    WeaponPart2,\r\n    keep [Recipe.GetItemTypes.Screwdriver],\r\n    keep [Recipe.GetItemTypes.Hammer],\r\n\r\n    Result:ModifiedWeapon,\r\n    Time:500.0,\r\n    NearItem:Armory Table,\r\n    Category:Weapons,\r\n    SkillRequired:Aiming=3,\r\n}\r\n```\r\n\r\n## Multiple NearItem Options\r\nYou can specify alternative tables using `/` (OR logic):\r\n\r\n```\r\nrecipe Example {\r\n    InputItem,\r\n\r\n    Result:OutputItem,\r\n    NearItem:Armory Table/Forge Table,   // Either table works\r\n}\r\n```\r\n\r\n## Common Errors\r\n\r\n### Wrong Syntax\r\n```\r\nNearItem:Base.ArmoryTable,        // WRONG - Not an item ID\r\nNearItem:MoreBuilds.ArmoryTable,  // WRONG - Not a module item\r\n```\r\n\r\n### Correct Syntax\r\n```\r\nNearItem:Armory Table,            // CORRECT - String name\r\n```\r\n\r\n### Table Not Built\r\nIf the player hasn't crafted and placed the table yet:\r\n- Recipe won't appear in crafting menu\r\n- Player needs to build the table first\r\n- Tables require their own crafting materials\r\n\r\n## Building the Tables\r\n\r\n### Enhanced Crafting Core Requirement\r\nPlayers must have the Enhanced Crafting Core mod installed to:\r\n1. Craft the tables\r\n2. Place them in the world\r\n3. Use them for recipes\r\n\r\n### Table Crafting\r\nTables are craftable items in the \"Build\" menu (part of the More Builds mod functionality). Players need materials like:\r\n- Wood planks\r\n- Nails/screws\r\n- Metal sheets (for some tables)\r\n- Tools (hammer, saw, etc.)\r\n\r\n## Mod Dependency\r\n\r\n### Your mod.info File\r\nIf your mod requires tables, add Enhanced Crafting Core as a dependency:\r\n\r\n```\r\nname=Your Mod Name\r\nid=YourModID\r\ndescription=Your mod description\r\nrequire=MoreBuilds\r\n```\r\n\r\n**Mod ID:** `MoreBuilds` (Steam Workshop ID: 515555911)\r\n\r\n## Source Files\r\n- **Enhanced Crafting README:** `C:\\Users\\ediaz\\Desktop\\DystopeanOutcasts\\Crafting-Enhanced-Core\\README.md`\r\n- **Mod Steam Workshop:** Workshop ID 515555911\r\n- **Research Date:** 2025-11-06\r\n\r\n## Next Steps\r\n- See [01-recipe-creation-basics.md](01-recipe-creation-basics.md) for basic recipe syntax\r\n- See [13-9mm-recipe-implementation.md](13-9mm-recipe-implementation.md) for complete bullet crafting example\r\n",
+  "excerpt": "The Enhanced Crafting Core mod (More Builds) adds craftable workstations that can be used as proximity requirements for recipes. This guide explains how to require players to be near specific craft...",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "intermediate",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "the-nearitem-parameter",
+      "text": "The NearItem Parameter",
+      "level": 2
+    },
+    {
+      "id": "syntax",
+      "text": "Syntax",
+      "level": 3
+    },
+    {
+      "id": "important-notes",
+      "text": "Important Notes",
+      "level": 3
+    },
+    {
+      "id": "enhanced-crafting-core-tables",
+      "text": "Enhanced Crafting Core Tables",
+      "level": 2
+    },
+    {
+      "id": "available-tables",
+      "text": "Available Tables",
+      "level": 3
+    },
+    {
+      "id": "syntax-format",
+      "text": "Syntax Format",
+      "level": 3
+    },
+    {
+      "id": "complete-example-armory-table-recipe",
+      "text": "Complete Example: Armory Table Recipe",
+      "level": 2
+    },
+    {
+      "id": "bullet-crafting-recipe",
+      "text": "Bullet Crafting Recipe",
+      "level": 3
+    },
+    {
+      "id": "laboratory-table-example",
+      "text": "Laboratory Table Example",
+      "level": 3
+    },
+    {
+      "id": "forge-table-example",
+      "text": "Forge Table Example",
+      "level": 3
+    },
+    {
+      "id": "how-tables-work-in-game",
+      "text": "How Tables Work In-Game",
+      "level": 2
+    },
+    {
+      "id": "table-placement",
+      "text": "Table Placement",
+      "level": 3
+    },
+    {
+      "id": "proximity-detection",
+      "text": "Proximity Detection",
+      "level": 3
+    },
+    {
+      "id": "no-module-import-required",
+      "text": "No Module Import Required",
+      "level": 3
+    },
+    {
+      "id": "combining-with-other-requirements",
+      "text": "Combining with Other Requirements",
+      "level": 2
+    },
+    {
+      "id": "with-skill-requirements",
+      "text": "With Skill Requirements",
+      "level": 3
+    },
+    {
+      "id": "with-multiple-tools",
+      "text": "With Multiple Tools",
+      "level": 3
+    },
+    {
+      "id": "multiple-nearitem-options",
+      "text": "Multiple NearItem Options",
+      "level": 2
+    },
+    {
+      "id": "common-errors",
+      "text": "Common Errors",
+      "level": 2
+    },
+    {
+      "id": "wrong-syntax",
+      "text": "Wrong Syntax",
+      "level": 3
+    },
+    {
+      "id": "correct-syntax",
+      "text": "Correct Syntax",
+      "level": 3
+    },
+    {
+      "id": "table-not-built",
+      "text": "Table Not Built",
+      "level": 3
+    },
+    {
+      "id": "building-the-tables",
+      "text": "Building the Tables",
+      "level": 2
+    },
+    {
+      "id": "enhanced-crafting-core-requirement",
+      "text": "Enhanced Crafting Core Requirement",
+      "level": 3
+    },
+    {
+      "id": "table-crafting",
+      "text": "Table Crafting",
+      "level": 3
+    },
+    {
+      "id": "mod-dependency",
+      "text": "Mod Dependency",
+      "level": 2
+    },
+    {
+      "id": "your-modinfo-file",
+      "text": "Your mod.info File",
+      "level": 3
+    },
+    {
+      "id": "source-files",
+      "text": "Source Files",
+      "level": 2
+    },
+    {
+      "id": "next-steps",
+      "text": "Next Steps",
+      "level": 2
+    }
+  ]
+}

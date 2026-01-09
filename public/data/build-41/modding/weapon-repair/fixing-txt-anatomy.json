@@ -1,0 +1,117 @@
+{
+  "id": "weapon-repair-fixing-txt-anatomy",
+  "title": "Fixing.txt Anatomy - Repair Definition Structure",
+  "slug": "fixing-txt-anatomy",
+  "version": "build-41",
+  "section": "modding",
+  "category": "weapon-repair",
+  "tags": [
+    "item",
+    "repair",
+    "weapon",
+    "fixing",
+    "txt",
+    "anatomy"
+  ],
+  "content": "# Fixing.txt Anatomy - Repair Definition Structure\r\n\r\n## File Location\r\n\r\n```\r\nR:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\scripts\\fixing.txt\r\nR:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\scripts\\vehiclesfixing.txt\r\n```\r\n\r\n## Basic Structure\r\n\r\n```\r\nfixing Fix [ItemType]\r\n{\r\n   Require : [ItemType],\r\n   [Optional Properties]\r\n\r\n   Fixer : [FixerItem]=[Uses],\r\n   Fixer : [FixerItem]=[Uses]; [SkillName]=[Level],\r\n   ...\r\n}\r\n```\r\n\r\n## Property Reference\r\n\r\n### Require (Required)\r\n\r\nSpecifies the item type that this fixing definition applies to.\r\n\r\n```\r\nRequire : Axe,\r\n```\r\n\r\n### Fixer (Required, at least one)\r\n\r\nDefines an item that can perform the repair.\r\n\r\n**Simple Fixer (no skill):**\r\n```\r\nFixer : DuctTape=2,\r\n```\r\n\r\n**Fixer with Skill Requirement:**\r\n```\r\nFixer : Woodglue=2; Woodwork=2,\r\n```\r\n\r\n**Multiple Skills:**\r\n```\r\nFixer : SheetMetal=1; Mechanics=2; MetalWelding=1,\r\n```\r\n\r\n### GlobalItem (Optional)\r\n\r\nA tool that is consumed during repair (like fuel):\r\n\r\n```\r\nGlobalItem : BlowTorch=2,\r\n```\r\n\r\nThe tool must be available and will lose 2 uses during repair.\r\n\r\n### ConditionModifier (Optional)\r\n\r\nMultiplier affecting repair effectiveness:\r\n\r\n```\r\nConditionModifier : 1.2,    // 20% more effective\r\nConditionModifier : 0.8,    // 20% less effective\r\nConditionModifier : 0.5,    // 50% less effective\r\n```\r\n\r\n## Complete Examples\r\n\r\n### Simple Melee Weapon\r\n\r\n```\r\nfixing Fix BaseballBat\r\n{\r\n   Require : BaseballBat,\r\n   Fixer : DuctTape=2,\r\n   Fixer : Glue=2,\r\n   Fixer : Scotchtape=4,\r\n}\r\n```\r\n\r\n### Wooden Weapon with Skill Options\r\n\r\n```\r\nfixing Fix Axe\r\n{\r\n   Require : Axe,\r\n   Fixer : Woodglue=2; Woodwork=2,\r\n   Fixer : DuctTape=2,\r\n   Fixer : Glue=2,\r\n   Fixer : Scotchtape=4,\r\n}\r\n```\r\n\r\n### Firearm (Self-Repair)\r\n\r\n```\r\nfixing Fix Pistol\r\n{\r\n   Require : Pistol,\r\n   Fixer : Pistol; Aiming=3,\r\n}\r\n```\r\n\r\n### Firearm with Cross-Repair\r\n\r\n```\r\nfixing Fix ShotgunSawnoff\r\n{\r\n   Require : ShotgunSawnoff,\r\n   Fixer : ShotgunSawnoff; Aiming=2,\r\n   Fixer : Shotgun; Aiming=2,\r\n}\r\n```\r\n\r\n### Vehicle Part (Complex)\r\n\r\n```\r\nfixing Fix CarGasTank\r\n{\r\n   Require : CarGasTank,\r\n   GlobalItem : BlowTorch=2,\r\n   ConditionModifier : 1.2,\r\n\r\n   Fixer : SheetMetal=1; Mechanics=2; MetalWelding=1,\r\n   Fixer : SmallSheetMetal=2; Mechanics=2; MetalWelding=1,\r\n}\r\n```\r\n\r\n### Musical Instrument\r\n\r\n```\r\nfixing Fix Banjo\r\n{\r\n   Require : Banjo,\r\n   Fixer : DuctTape=2,\r\n   Fixer : Glue=2,\r\n   Fixer : Scotchtape=4,\r\n}\r\n```\r\n\r\n### Spear (Crafted Weapon)\r\n\r\n```\r\nfixing Fix SpearBreadKnife\r\n{\r\n   Require : SpearBreadKnife,\r\n   Fixer : DuctTape=1,\r\n   Fixer : Scotchtape=2,\r\n}\r\n```\r\n\r\n## Skill Names Reference\r\n\r\nValid skill names for Fixer requirements:\r\n\r\n| Skill Name | Description |\r\n|------------|-------------|\r\n| `Woodwork` | Carpentry skill |\r\n| `Aiming` | Firearm accuracy skill |\r\n| `Mechanics` | Vehicle repair skill |\r\n| `MetalWelding` | Welding skill |\r\n\r\n## Usage Amounts Guide\r\n\r\n| Uses | Meaning |\r\n|------|---------|\r\n| 1 | Minimal repair, quick |\r\n| 2 | Standard repair |\r\n| 3-4 | Complex repair or less efficient material |\r\n\r\n## Notes on Fixer Priority\r\n\r\nWhen multiple fixers are available:\r\n1. All valid options are shown to player\r\n2. Player chooses based on availability and skill\r\n3. Skill-based repairs often provide better results\r\n4. Non-skill repairs are quick but may be less effective\r\n\r\n## Creating Custom Repairs\r\n\r\nFor mods, create your own fixing definitions:\r\n\r\n```\r\nfixing Fix MyCustomWeapon\r\n{\r\n   Require : MyCustomWeapon,\r\n\r\n   // Skilled repair option\r\n   Fixer : Woodglue=2; Woodwork=2,\r\n\r\n   // Quick repair options\r\n   Fixer : DuctTape=2,\r\n   Fixer : Glue=2,\r\n}\r\n```\r\n\r\nPlace in your mod's `media/scripts/` folder in a `.txt` file.\r\n",
+  "excerpt": "Specifies the item type that this fixing definition applies to.\r\n\r\n\r\n\r\n\r\n\r\nDefines an item that can perform the repair.\r\n\r\nSimple Fixer (no skill):\r\n\r\n\r\nFixer with Skill Requirement:\r\n\r\n\r\nMultiple ...",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "intermediate",
+  "tableOfContents": [
+    {
+      "id": "file-location",
+      "text": "File Location",
+      "level": 2
+    },
+    {
+      "id": "basic-structure",
+      "text": "Basic Structure",
+      "level": 2
+    },
+    {
+      "id": "property-reference",
+      "text": "Property Reference",
+      "level": 2
+    },
+    {
+      "id": "require-required",
+      "text": "Require (Required)",
+      "level": 3
+    },
+    {
+      "id": "fixer-required-at-least-one",
+      "text": "Fixer (Required, at least one)",
+      "level": 3
+    },
+    {
+      "id": "globalitem-optional",
+      "text": "GlobalItem (Optional)",
+      "level": 3
+    },
+    {
+      "id": "conditionmodifier-optional",
+      "text": "ConditionModifier (Optional)",
+      "level": 3
+    },
+    {
+      "id": "complete-examples",
+      "text": "Complete Examples",
+      "level": 2
+    },
+    {
+      "id": "simple-melee-weapon",
+      "text": "Simple Melee Weapon",
+      "level": 3
+    },
+    {
+      "id": "wooden-weapon-with-skill-options",
+      "text": "Wooden Weapon with Skill Options",
+      "level": 3
+    },
+    {
+      "id": "firearm-self-repair",
+      "text": "Firearm (Self-Repair)",
+      "level": 3
+    },
+    {
+      "id": "firearm-with-cross-repair",
+      "text": "Firearm with Cross-Repair",
+      "level": 3
+    },
+    {
+      "id": "vehicle-part-complex",
+      "text": "Vehicle Part (Complex)",
+      "level": 3
+    },
+    {
+      "id": "musical-instrument",
+      "text": "Musical Instrument",
+      "level": 3
+    },
+    {
+      "id": "spear-crafted-weapon",
+      "text": "Spear (Crafted Weapon)",
+      "level": 3
+    },
+    {
+      "id": "skill-names-reference",
+      "text": "Skill Names Reference",
+      "level": 2
+    },
+    {
+      "id": "usage-amounts-guide",
+      "text": "Usage Amounts Guide",
+      "level": 2
+    },
+    {
+      "id": "notes-on-fixer-priority",
+      "text": "Notes on Fixer Priority",
+      "level": 2
+    },
+    {
+      "id": "creating-custom-repairs",
+      "text": "Creating Custom Repairs",
+      "level": 2
+    }
+  ]
+}

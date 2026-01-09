@@ -1,0 +1,112 @@
+{
+  "articles": [
+    {
+      "id": "lua-api-java-lua-bridge",
+      "title": "Java-Lua Bridge Patterns",
+      "slug": "java-lua-bridge",
+      "version": "build-41",
+      "section": "modding",
+      "category": "lua-api",
+      "tags": [
+        "lua",
+        "item",
+        "weapon",
+        "event",
+        "api",
+        "java",
+        "bridge"
+      ],
+      "excerpt": "The DAMN library uses a client-server command dispatch pattern to bridge Lua and Java safely in multiplayer.\r\n\r\n---\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n---\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n---\r\n\r\n\r\n\r\nProject Zomboid expo...",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "advanced",
+      "content": "",
+      "tableOfContents": []
+    },
+    {
+      "id": "lua-api-item-modification",
+      "title": "Item Modification & Transmogrification Patterns",
+      "slug": "item-modification",
+      "version": "build-41",
+      "section": "modding",
+      "category": "lua-api",
+      "tags": [
+        "lua",
+        "item",
+        "weapon",
+        "event",
+        "crafting",
+        "modification",
+        "patterns"
+      ],
+      "excerpt": "DAMN implements item metamorphosis through crafting, condition-based transformations, and runtime property modification. These patterns are directly applicable to weapon tier transformations.\r\n\r\n--...",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "intermediate",
+      "content": "",
+      "tableOfContents": []
+    },
+    {
+      "id": "lua-api-event-architecture",
+      "title": "Event-Driven Architecture",
+      "slug": "event-architecture",
+      "version": "build-41",
+      "section": "modding",
+      "category": "lua-api",
+      "tags": [
+        "lua",
+        "item",
+        "weapon",
+        "event",
+        "architecture"
+      ],
+      "excerpt": "The DAMN library demonstrates a robust event-driven pattern for handling game state changes and synchronization.\r\n\r\n---\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n---\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n---\r\n\r\n\r\n\r\n...",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "intermediate",
+      "content": "",
+      "tableOfContents": []
+    },
+    {
+      "id": "lua-api-implementation-guide",
+      "title": "Grave Index Weapon Transmogrification - Implementation Guide",
+      "slug": "implementation-guide",
+      "version": "build-41",
+      "section": "modding",
+      "category": "lua-api",
+      "tags": [
+        "lua",
+        "item",
+        "weapon",
+        "event",
+        "sound",
+        "implementation",
+        "guide"
+      ],
+      "excerpt": "Create a tiered weapon system for the Grave Index weapon that evolves based on player actions (kills, damage, usage).\r\n\r\n---\r\n\r\n\r\n\r\n\r\n\r\nKeep single weapon item, track tier via ModData, apply stat b...",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "beginner",
+      "content": "",
+      "tableOfContents": []
+    },
+    {
+      "id": "lua-api-weapon-model-swapping",
+      "title": "Weapon 3D Model Swapping - Complete Guide",
+      "slug": "weapon-model-swapping",
+      "version": "build-41",
+      "section": "modding",
+      "category": "lua-api",
+      "tags": [
+        "lua",
+        "item",
+        "weapon",
+        "event",
+        "api",
+        "model",
+        "swapping"
+      ],
+      "excerpt": "Based on VFE (Vanilla Firearm Expansion) mod analysis, Project Zomboid fully supports runtime weapon model changes.\r\n\r\n---\r\n\r\n\r\n\r\n| Component | What It Is | How to Change |\r\n|-----------|----------...",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "advanced",
+      "content": "",
+      "tableOfContents": []
+    }
+  ]
+}

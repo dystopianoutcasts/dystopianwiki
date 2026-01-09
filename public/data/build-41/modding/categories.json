@@ -1,0 +1,53 @@
+{
+  "categories": [
+    {
+      "id": "lua-api",
+      "name": "Lua API",
+      "description": "Events, callbacks, and the core Lua scripting interface for Project Zomboid modding.",
+      "icon": "scroll",
+      "articleCount": 5
+    },
+    {
+      "id": "recipes",
+      "name": "Recipes",
+      "description": "Create custom crafting recipes for items, weapons, and consumables.",
+      "icon": "wrench",
+      "articleCount": 4
+    },
+    {
+      "id": "items",
+      "name": "Items",
+      "description": "Define new items with custom properties, textures, and behaviors.",
+      "icon": "box",
+      "articleCount": 3
+    },
+    {
+      "id": "game-mechanics",
+      "name": "Game Mechanics",
+      "description": "Modify and extend core game systems like injuries, skills, and weather.",
+      "icon": "cog",
+      "articleCount": 3
+    },
+    {
+      "id": "weapon-repair",
+      "name": "Weapon Repair",
+      "description": "Implement weapon maintenance and repair systems for custom weapons.",
+      "icon": "hammer",
+      "articleCount": 7
+    },
+    {
+      "id": "foraging",
+      "name": "Foraging",
+      "description": "Add custom foraging definitions and loot tables.",
+      "icon": "leaf",
+      "articleCount": 1
+    },
+    {
+      "id": "tools",
+      "name": "Tools",
+      "description": "Development tools, debugging techniques, and workflow tips.",
+      "icon": "tool",
+      "articleCount": 2
+    }
+  ]
+}

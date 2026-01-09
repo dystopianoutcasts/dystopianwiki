@@ -1,0 +1,42 @@
+/**
+ * Wiki Layout Styles
+ * Layout with sidebar + main content area
+ */
+
+.wiki-layout {
+  display: flex;
+  min-height: calc(100vh - var(--header-height));
+}
+
+.wiki-layout__main {
+  flex: 1;
+  min-width: 0; /* Prevent flex item overflow */
+  display: flex;
+  flex-direction: column;
+}
+
+.wiki-layout__content {
+  flex: 1;
+  padding: var(--spacing-6);
+  max-width: var(--article-max-width);
+}
+
+/* Full width content (no sidebar) */
+.wiki-layout--full-width .wiki-layout__content {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .wiki-layout__content {
+    padding: var(--spacing-4);
+  }
+}
+
+@media (max-width: 640px) {
+  .wiki-layout__content {
+    padding: var(--spacing-3);
+  }
+}

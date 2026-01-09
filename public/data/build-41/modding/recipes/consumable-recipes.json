@@ -1,0 +1,168 @@
+{
+  "id": "recipes-consumable-recipes",
+  "title": "Consumable vs Reusable Items in Recipes",
+  "slug": "consumable-recipes",
+  "version": "build-41",
+  "section": "modding",
+  "category": "recipes",
+  "tags": [
+    "recipe",
+    "item",
+    "weapon",
+    "sound",
+    "crafting",
+    "consumable",
+    "items"
+  ],
+  "content": "# Consumable vs Reusable Items in Recipes\r\n\r\n## Overview\r\nIn Project Zomboid recipes, input items can either be consumed (destroyed) or kept (reusable). Understanding this distinction is critical for creating balanced and functional recipes.\r\n\r\n## The Basic Rule\r\n\r\n### Default Behavior: Items Are Consumed\r\n**By default, ALL input items in a recipe are CONSUMED unless prefixed with `keep`.**\r\n\r\n```\r\nrecipe Example {\r\n    Item1,           // CONSUMED (destroyed after crafting)\r\n    Item2,           // CONSUMED\r\n    Item3=5,         // CONSUMED (all 5 units destroyed)\r\n\r\n    Result:OutputItem,\r\n}\r\n```\r\n\r\n### Reusable Items: Use `keep`\r\nTo make an item reusable (typically tools), prefix it with `keep`:\r\n\r\n```\r\nrecipe Example {\r\n    Material,        // CONSUMED\r\n    keep Tool,       // KEPT (not consumed, reusable)\r\n\r\n    Result:OutputItem,\r\n}\r\n```\r\n\r\n## Keyword Reference\r\n\r\n### `keep`\r\nItems marked with `keep` are **NOT consumed**:\r\n- Remain in player's inventory after crafting\r\n- Used for tools, equipment, reusable items\r\n- Can be used repeatedly for multiple crafts\r\n\r\n```\r\nrecipe Saw Logs {\r\n    Log,                             // Consumed\r\n    keep [Recipe.GetItemTypes.Saw],  // NOT consumed (tool)\r\n\r\n    Result:Plank=3,\r\n    Time:230.0,\r\n}\r\n```\r\n\r\n### `destroy` (Optional)\r\nExplicitly marks items as consumed (optional, for clarity):\r\n\r\n```\r\nrecipe Example {\r\n    destroy Material1,   // Explicitly consumed\r\n    destroy Material2,   // Explicitly consumed\r\n    keep Tool,           // Reusable\r\n\r\n    Result:OutputItem,\r\n}\r\n```\r\n\r\n**Note:** `destroy` is optional since items are consumed by default. It's mainly for code readability.\r\n\r\n## Common Usage Patterns\r\n\r\n### Tools (Always `keep`)\r\n```\r\nrecipe Craft Item {\r\n    Material=5,\r\n    keep Hammer,\r\n    keep Saw,\r\n    keep Screwdriver,\r\n\r\n    Result:CraftedItem,\r\n}\r\n```\r\n\r\n### Materials (Never `keep`)\r\n```\r\nrecipe Make Bullets {\r\n    ScrapMetal,          // Consumed\r\n    GunPowder=10,        // Consumed\r\n    keep BulletMold,     // Reusable\r\n\r\n    Result:Bullets9mm=10,\r\n}\r\n```\r\n\r\n### Mixed Example\r\n```\r\nrecipe Build Spiked Bat {\r\n    BaseballBat,                         // Consumed (base weapon)\r\n    Nails=5,                             // Consumed (materials)\r\n    keep [Recipe.GetItemTypes.Hammer],   // Reusable (tool)\r\n\r\n    Result:BaseballBatNails,\r\n    Time:150.0,\r\n}\r\n```\r\n\r\n## Item Type Matching with `keep`\r\n\r\nWhen using item type matching, `keep` still applies:\r\n\r\n```\r\nrecipe Example {\r\n    Material,\r\n    keep [Recipe.GetItemTypes.Hammer],     // Any hammer, not consumed\r\n    keep [Recipe.GetItemTypes.Saw],        // Any saw, not consumed\r\n\r\n    Result:OutputItem,\r\n}\r\n```\r\n\r\n## Real-World Examples\r\n\r\n### Vanilla Example: Opening Ammo Box\r\n```\r\nrecipe Open Box of 9mm Bullets {\r\n    Bullets9mmBox,       // Consumed (box is destroyed)\r\n\r\n    Result:Bullets9mm=6,\r\n    Sound:BoxOfRoundsOpenOne,\r\n    Time:15.0,\r\n}\r\n```\r\n**Effect:** Box disappears, 6 bullets appear in inventory.\r\n\r\n### Vanilla Example: Packing Ammo Box\r\n```\r\nrecipe Place 9mm Bullets in Box {\r\n    Bullets9mm=30,       // Consumed (30 bullets used)\r\n\r\n    Result:Bullets9mmBox,\r\n    Sound:BoxOfRoundsOpenOne,\r\n    Time:15.0,\r\n}\r\n```\r\n**Effect:** 30 loose bullets disappear, 1 box appears.\r\n\r\n### Mod Example: Dystopian Currency\r\n```\r\nrecipe Pack 10 Copper Dystopians {\r\n    destroy copperDystopian=10,  // Explicitly consumed\r\n\r\n    Result:silverDystopian,\r\n    Time:25,\r\n    Sound:Hammering,\r\n}\r\n```\r\n**Effect:** 10 copper coins destroyed, 1 silver coin created.\r\n\r\n### Scrap Guns Example: Weapon Assembly\r\n```\r\nrecipe Assemble Double Barrel Shotgun {\r\n    AirTank,                     // Consumed\r\n    SheetMetal,                  // Consumed\r\n    MetalPipe,                   // Consumed\r\n    LeadPipe,                    // Consumed\r\n    Plank,                       // Consumed\r\n    LeatherStrips=5,             // Consumed\r\n    BlowTorch=1,                 // Consumed (uses 1 unit)\r\n    Wire=2,                      // Consumed\r\n    keep [Recipe.GetItemTypes.Pliers],      // Reusable\r\n    keep [Recipe.GetItemTypes.WeldingMask], // Reusable\r\n    keep [Recipe.GetItemTypes.Hammer],      // Reusable\r\n    keep [Recipe.GetItemTypes.Saw],         // Reusable\r\n\r\n    Result:HDBS,\r\n    Time:1900,\r\n}\r\n```\r\n**Effect:** All materials consumed, all tools remain.\r\n\r\n## Drainable Items\r\n\r\n### Special Case: Partial Consumption\r\nSome items are `Type = Drainable` (like gas cans, paint, etc.). When used in recipes:\r\n\r\n```\r\nrecipe Example {\r\n    GasolineCan=5,       // Consumes 5 units (not 5 cans)\r\n    keep Tool,\r\n\r\n    Result:OutputItem,\r\n}\r\n```\r\n\r\n**GunPowder Example:**\r\n```\r\nitem GunPowder {\r\n    Type = Drainable,\r\n    UseDelta = 0.1,      // 10% per use\r\n}\r\n\r\nrecipe Make Bullets {\r\n    GunPowder=10,        // Uses 10 units from drainable container\r\n    keep BulletMold,\r\n\r\n    Result:Bullets9mm=10,\r\n}\r\n```\r\n\r\n## Balance Considerations\r\n\r\n### Tools Should Be Reusable\r\n```\r\nkeep Hammer,         // Correct - tools are expensive/rare\r\nkeep Saw,            // Correct\r\nkeep Screwdriver,    // Correct\r\n```\r\n\r\n### Materials Should Be Consumed\r\n```\r\nWood,                // Correct - consumed in crafting\r\nMetal,               // Correct\r\nScrews=5,            // Correct\r\n```\r\n\r\n### Exceptions\r\nSome \"materials\" might be reusable for gameplay reasons:\r\n\r\n```\r\nrecipe Cast Bullets {\r\n    ScrapMetal,          // Consumed (becomes bullets)\r\n    GunPowder=10,        // Consumed\r\n    keep BulletMold,     // Reusable (expensive, core mechanic)\r\n    keep Hammer,         // Reusable (tool)\r\n\r\n    Result:Bullets9mm=10,\r\n}\r\n```\r\n\r\n## Common Errors\r\n\r\n### Error: Consuming Tools\r\n```\r\nrecipe Example {\r\n    Material,\r\n    Hammer,              // ERROR - Hammer is consumed!\r\n\r\n    Result:OutputItem,\r\n}\r\n```\r\n**Problem:** Player loses hammer after one use. Very frustrating!\r\n\r\n**Fix:**\r\n```\r\nrecipe Example {\r\n    Material,\r\n    keep Hammer,         // CORRECT - Hammer is reusable\r\n\r\n    Result:OutputItem,\r\n}\r\n```\r\n\r\n### Error: Keeping Materials\r\n```\r\nrecipe Example {\r\n    keep Wood,           // ERROR - Wood not consumed!\r\n    keep Nails,          // ERROR - Nails not consumed!\r\n\r\n    Result:Chair,\r\n}\r\n```\r\n**Problem:** Player can craft infinite chairs from 1 wood + 1 nail!\r\n\r\n**Fix:**\r\n```\r\nrecipe Example {\r\n    Wood=5,              // CORRECT - Wood consumed\r\n    Nails=10,            // CORRECT - Nails consumed\r\n    keep Hammer,         // CORRECT - Tool reusable\r\n\r\n    Result:Chair,\r\n}\r\n```\r\n\r\n## Testing Checklist\r\n\r\nWhen creating recipes, verify:\r\n- [ ] All tools have `keep` prefix\r\n- [ ] All materials are consumed (no `keep`)\r\n- [ ] Drainable items use appropriate quantities\r\n- [ ] Recipe doesn't create duplication exploits\r\n- [ ] Players lose expected items after crafting\r\n- [ ] Players keep expected tools after crafting\r\n\r\n## Source Files\r\n- **Vanilla Recipes:** `R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\scripts\\recipes.txt`\r\n- **Scrap Guns Recipes:** `R:\\Games\\Steam\\steamapps\\workshop\\content\\108600\\2125659488\\mods\\Scrap Guns (New Version)\\media\\scripts\\module_SGuns_recipes.txt`\r\n- **Research Date:** 2025-11-06\r\n\r\n## Next Steps\r\n- See [01-recipe-creation-basics.md](01-recipe-creation-basics.md) for basic recipe syntax\r\n- See [07-multi-item-recipes.md](07-multi-item-recipes.md) for complex multi-input recipes\r\n- See [13-9mm-recipe-implementation.md](13-9mm-recipe-implementation.md) for complete example\r\n",
+  "excerpt": "In Project Zomboid recipes, input items can either be consumed (destroyed) or kept (reusable). Understanding this distinction is critical for creating balanced and functional recipes.\r\n\r\n\r\n\r\n\r\nBy d...",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "the-basic-rule",
+      "text": "The Basic Rule",
+      "level": 2
+    },
+    {
+      "id": "default-behavior-items-are-consumed",
+      "text": "Default Behavior: Items Are Consumed",
+      "level": 3
+    },
+    {
+      "id": "reusable-items-use-keep",
+      "text": "Reusable Items: Use `keep`",
+      "level": 3
+    },
+    {
+      "id": "keyword-reference",
+      "text": "Keyword Reference",
+      "level": 2
+    },
+    {
+      "id": "keep",
+      "text": "`keep`",
+      "level": 3
+    },
+    {
+      "id": "destroy-optional",
+      "text": "`destroy` (Optional)",
+      "level": 3
+    },
+    {
+      "id": "common-usage-patterns",
+      "text": "Common Usage Patterns",
+      "level": 2
+    },
+    {
+      "id": "tools-always-keep",
+      "text": "Tools (Always `keep`)",
+      "level": 3
+    },
+    {
+      "id": "materials-never-keep",
+      "text": "Materials (Never `keep`)",
+      "level": 3
+    },
+    {
+      "id": "mixed-example",
+      "text": "Mixed Example",
+      "level": 3
+    },
+    {
+      "id": "item-type-matching-with-keep",
+      "text": "Item Type Matching with `keep`",
+      "level": 2
+    },
+    {
+      "id": "real-world-examples",
+      "text": "Real-World Examples",
+      "level": 2
+    },
+    {
+      "id": "vanilla-example-opening-ammo-box",
+      "text": "Vanilla Example: Opening Ammo Box",
+      "level": 3
+    },
+    {
+      "id": "vanilla-example-packing-ammo-box",
+      "text": "Vanilla Example: Packing Ammo Box",
+      "level": 3
+    },
+    {
+      "id": "mod-example-dystopian-currency",
+      "text": "Mod Example: Dystopian Currency",
+      "level": 3
+    },
+    {
+      "id": "scrap-guns-example-weapon-assembly",
+      "text": "Scrap Guns Example: Weapon Assembly",
+      "level": 3
+    },
+    {
+      "id": "drainable-items",
+      "text": "Drainable Items",
+      "level": 2
+    },
+    {
+      "id": "special-case-partial-consumption",
+      "text": "Special Case: Partial Consumption",
+      "level": 3
+    },
+    {
+      "id": "balance-considerations",
+      "text": "Balance Considerations",
+      "level": 2
+    },
+    {
+      "id": "tools-should-be-reusable",
+      "text": "Tools Should Be Reusable",
+      "level": 3
+    },
+    {
+      "id": "materials-should-be-consumed",
+      "text": "Materials Should Be Consumed",
+      "level": 3
+    },
+    {
+      "id": "exceptions",
+      "text": "Exceptions",
+      "level": 3
+    },
+    {
+      "id": "common-errors",
+      "text": "Common Errors",
+      "level": 2
+    },
+    {
+      "id": "error-consuming-tools",
+      "text": "Error: Consuming Tools",
+      "level": 3
+    },
+    {
+      "id": "error-keeping-materials",
+      "text": "Error: Keeping Materials",
+      "level": 3
+    },
+    {
+      "id": "testing-checklist",
+      "text": "Testing Checklist",
+      "level": 2
+    },
+    {
+      "id": "source-files",
+      "text": "Source Files",
+      "level": 2
+    },
+    {
+      "id": "next-steps",
+      "text": "Next Steps",
+      "level": 2
+    }
+  ]
+}

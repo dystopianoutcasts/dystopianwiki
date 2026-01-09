@@ -1,0 +1,24 @@
+{
+  "articles": [
+    {
+      "id": "foraging-vanilla-foraging",
+      "title": "VANILLA FORAGING SYSTEM - RESEARCH NOTES",
+      "slug": "vanilla-foraging",
+      "version": "build-41",
+      "section": "modding",
+      "category": "foraging",
+      "tags": [
+        "lua",
+        "item",
+        "foraging",
+        "vanilla",
+        "notes"
+      ],
+      "excerpt": "Date: 2025-12-22\r\nResearched For: Iron Pyrite Foraging Implementation\r\n\r\n---\r\n\r\n\r\n\r\n\r\n- \r\n  - Contains all foraging item definitions\r\n  - Uses global  table\r\n\r\n- \r\n  - Core foraging logic/system\r\n\r...",
+      "lastUpdated": "2026-01-09",
+      "difficulty": "beginner",
+      "content": "",
+      "tableOfContents": []
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "sections": [
+    {
+      "id": "modding",
+      "name": "Modding",
+      "description": "Learn to create mods for Project Zomboid",
+      "icon": "🔌"
+    },
+    {
+      "id": "mapping",
+      "name": "Mapping",
+      "description": "Create custom maps and buildings",
+      "icon": "🗺️"
+    }
+  ]
+}
