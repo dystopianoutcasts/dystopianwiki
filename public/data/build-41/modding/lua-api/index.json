@@ -1,26 +1,21 @@
 {
+  "id": "lua-api",
+  "name": "Lua API",
+  "slug": "lua-api",
   "articles": [
     {
-      "id": "lua-api-weapon-model-swapping",
-      "title": "Weapon 3D Model Swapping - Complete Guide",
+      "id": "official-examples",
+      "title": "Official Lua Examples",
+      "slug": "official-examples",
+      "difficulty": "beginner",
+      "order": 1
+    },
+    {
+      "id": "weapon-model-swapping",
+      "title": "Weapon 3D Model Swapping",
       "slug": "weapon-model-swapping",
-      "version": "build-41",
-      "section": "modding",
-      "category": "lua-api",
-      "tags": [
-        "lua",
-        "item",
-        "weapon",
-        "event",
-        "api",
-        "model",
-        "swapping"
-      ],
-      "excerpt": "Based on VFE (Vanilla Firearm Expansion) mod analysis, Project Zomboid fully supports runtime weapon model changes.\r\n\r\n---\r\n\r\n\r\n\r\n| Component | What It Is | How to Change |\r\n|-----------|----------...",
-      "lastUpdated": "2026-01-09",
       "difficulty": "advanced",
-      "content": "",
-      "tableOfContents": []
+      "order": 2
     }
   ]
 }

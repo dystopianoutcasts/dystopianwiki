@@ -26,7 +26,7 @@
       "name": "Lua API",
       "description": "Events, callbacks, and the core Lua scripting interface for Project Zomboid modding.",
       "icon": "scroll",
-      "articleCount": 1
+      "articleCount": 2
     },
     {
       "id": "reference",

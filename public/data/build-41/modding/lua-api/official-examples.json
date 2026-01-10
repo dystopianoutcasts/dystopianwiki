@@ -1,0 +1,63 @@
+{
+  "id": "lua-api-official-examples",
+  "title": "Official Lua Examples",
+  "slug": "official-examples",
+  "version": "build-41",
+  "section": "modding",
+  "category": "lua-api",
+  "tags": [
+    "beginner",
+    "lua",
+    "examples",
+    "official",
+    "timed-actions",
+    "ui",
+    "recipes"
+  ],
+  "content": "# Official Lua Examples\n\n## Overview\n\nThe Indie Stone provides official Lua examples in `media/luaexamples/`. These demonstrate core modding patterns and serve as learning resources.\n\n## File Locations\n\n```\nmedia/luaexamples/\n├── ISTimer.lua           # Timer utility class\n├── testtimed.lua         # Timed action example (mine placement)\n├── ui/\n│   ├── ui.lua            # Basic window/button example\n│   ├── uiHelpers.lua     # UI helper functions\n│   ├── hotkeyBar.lua     # Hotkey bar implementation\n│   ├── hotkeySlot.lua    # Hotkey slot implementation\n│   ├── actionUIElement.lua\n│   ├── actionOptionsWindow.lua\n│   └── actions/\n└── other/\n    └── recipecode.lua    # Recipe callback examples\n```\n\n---\n\n## ISTimer.lua - Timer Utility Class\n\nDemonstrates **ISBaseObject inheritance** and **timer management**.\n\n### Key Concepts\n\n```lua\nrequire \"ISBaseObject\"\n\n-- Inherit from ISBaseObject\nISTimer = ISBaseObject:derive(\"ISTimer\");\n\n-- Static tracking\nISTimer.IDMax = 1;\nISTimer.Timers = {};\n```\n\n### Creating a Timer\n\n```lua\nfunction ISTimer:new(name, objectOnExpire, funcOnExpire, timeInSeconds, repeats, realWorldTime)\n    o = {}\n    o.data = {};\n    setmetatable(o, self)\n    self.__index = self\n    o:initialise();\n    o.data.name = name;\n    o.data.classOnExpire = objectOnExpire;\n    o.data.funcOnExpire = funcOnExpire;\n    o.data.timeInSeconds = timeInSeconds;\n    o.data.repeats = repeats;\n    o.data.realWorldTime = realWorldTime;\n    return o\nend\n```\n\n### Timer Control\n\n```lua\nfunction ISTimer:start()\n    self.data.active = true;\n    ISTimer.Timers[self.data.ID] = self;\nend\n\nfunction ISTimer:stop()\n    self.data.active = false;\n    ISTimer.Timers[self.data.ID] = nil;\nend\n\nfunction ISTimer:reset()\n    self.data.elapsed = 0;\n    self.data.active = false;\nend\n```\n\n### Game Time vs Real Time\n\n```lua\n-- Game time (affected by game speed)\nv.elapsed = v.elapsed + GameTime.getInstance():getMultipliedSecondsSinceLastUpdate();\n\n-- Real world time (ignores game speed)\nv.elapsed = v.elapsed + GameTime.getInstance():getRealworldSecondsSinceLastUpdate();\n```\n\n### Usage Pattern\n\n```lua\n-- Create timer\nlocal myTimer = ISTimer:new(\n    \"MyTimer\",           -- name\n    self,                 -- object to call method on\n    self.onTimerExpire,   -- function to call\n    10,                   -- seconds\n    false,                -- repeats?\n    false                 -- real world time?\n);\n\n-- Start timer\nmyTimer:start();\n```\n\n---\n\n## testtimed.lua - Timed Action Example\n\nDemonstrates **placeable objects**, **timed actions**, and **world interaction**.\n\n### Creating a Timed Action\n\n```lua\nrequire 'timedactionshelper'\n\n-- Validation function - called repeatedly\nfunction buildMineIsValid(char, square)\n    return char:getInventory():contains(\"Apple\");\nend\n\n-- Start function - called when action begins\nfunction buildMineStart(char, square)\n    buildMineAction:playLoopedSoundTillComplete(\"hammernail\", 10, 0.4);\nend\n\n-- Perform function - called when action completes\nfunction buildMinePerform(char, square)\n    -- Create world object\n    local mine = IsoObject.new(square, \"TileFloorInt_7\", \"Mine\");\n    \n    -- Store data on the object\n    local data = mine:getModData();\n    data.countdownTillArm = 120;\n    data.exploded = false;\n    \n    -- Add to world\n    square:AddTileObject(mine);\n    \n    -- Consume ingredient\n    local item = char:getInventory():FindAndReturn(\"Apple\");\n    item:Use();\nend\n\n-- Register the action\nbuildMineAction = TimedActions.Create(\n    \"BuildMine\",          -- Action name\n    buildMineIsValid,     -- Validation callback\n    buildMineStart,       -- Start callback  \n    buildMinePerform      -- Complete callback\n);\n```\n\n### Starting a Timed Action\n\n```lua\nlocal player = getPlayer();\nTimedActions.Start(buildMineAction, player, 90, square);\n-- 90 = time in ticks (~3 seconds)\n```\n\n### Ghost Tile Rendering\n\n```lua\nfunction DoMineBuilding(isRender, x, y, z, square, inventoryItem)\n    if not square:isFree(false) then\n        return;\n    end\n    \n    if isRender then\n        -- Draw ghost preview\n        if mineSprite == nil then\n            mineSprite = IsoSprite.new();\n            mineSprite:LoadFramesNoDirPageSimple(\"TileFloorInt_7\");\n        end\n        mineSprite:RenderGhostTile(x, y, z);\n    else\n        -- Actually place\n        local player = getPlayer();\n        TimedActions.Start(buildMineAction, player, 90, square);\n    end\nend\n\n-- Register for building events\nEvents.OnDoTileBuilding.Add(DoTileBuilding);\n```\n\n### World Object Updating\n\n```lua\nfunction UpdateMine(mine)\n    local square = mine:getSquare();\n    local data = mine:getModData();\n    \n    if data.exploded then return; end\n    \n    -- Countdown phase\n    if data.countdownTillArm > 0 then\n        data.countdownTillArm = data.countdownTillArm - 1;\n    else\n        -- Check for triggers\n        local objects = square:getLuaMovingObjectList();\n        if objects ~= nil and not table.isempty(objects) then\n            data.exploded = true;\n            ExplodeMine(mine, square);\n            square:RemoveTileObject(mine);\n        end\n    end\nend\n\n-- Update every tick\nfunction Tick(totalTicks)\n    for k,o in ipairs(mineList) do\n        UpdateMine(o);\n    end\nend\nEvents.OnTick.Add(Tick);\n```\n\n### Explosion Effect\n\n```lua\nfunction ExplodeMine(mine, square)\n    local radius = 3;\n    local numFires = 2;\n    local cell = getWorld():getCell();\n    \n    -- Kill nearby characters\n    local objects = cell:getLuaObjectList();\n    for k,v in ipairs(objects) do\n        if square:DistTo(v) < radius and v:isCharacter() and not v:isDead() then\n            v:Kill(nil);\n        end\n    end\n    \n    -- Play sound\n    getSoundManager():PlayWorldSound(\"explode\", square, 0, 20, 1.0, false);\n    \n    -- Start fires\n    for i = 0, numFires do\n        local sq = cell:getGridSquare(\n            ZombRand(square:getX()-radius, square:getX()+radius),\n            ZombRand(square:getY()-radius, square:getY()+radius),\n            square:getZ()\n        );\n        if sq ~= nil then\n            sq:StartFire();\n        end\n    end\nend\n```\n\n---\n\n## recipecode.lua - Recipe Callbacks\n\nDemonstrates **recipe callbacks** for dynamic crafting behavior.\n\n### OnTest - Recipe Availability\n\n```lua\n-- Return true if recipe should be available\nfunction TorchBatteryRemoval_TestIsValid(a, b, c, d)\n    return a:getUsedDelta() > 0;  -- Only if flashlight has battery\nend\n\nfunction TorchBatteryInsert_TestIsValid(a, b, c, d)\n    return a:getUsedDelta() == 0;  -- Only if flashlight is empty\nend\n```\n\n### OnCreate - Modify Result Item\n\n```lua\n-- Called when creating the result item\nfunction TorchBatteryRemoval_OnCreate(a, b, c, d, result)\n    result:setUsedDelta(a:getUsedDelta());  -- Transfer battery power\nend\n\nfunction TorchBatteryInsert_OnCreate(a, b, c, d, result)\n    result:setUsedDelta(b:getUsedDelta());  -- Set flashlight power from battery\nend\n```\n\n### OnGrab - Post-Craft Modification\n\n```lua\n-- Called when player picks up crafted item\nfunction TorchBatteryRemoval_OnGrab(a, b, c, d, result)\n    a:setUsedDelta(0);  -- Clear flashlight's power\nend\n```\n\n### Skill-Based Results\n\n```lua\nfunction TastySoup_OnGrab(a, b, c, d, result)\n    local player = getPlayer();\n    local cookinglevel = player:getPerkLevel(Perks.Cooking);\n    \n    if cookinglevel == 0 then\n        result:setName(\"Watery Soup\");\n        result:setHungChange(result:getHungChange() * 0.7);\n    elseif cookinglevel == 1 then\n        result:setName(\"Okay Soup\");\n    elseif cookinglevel == 2 then\n        result:setName(\"Nice Soup\");\n        result:setHungChange(result:getHungChange() * 1.1);\n    elseif cookinglevel == 3 then\n        result:setName(\"Tasty Soup\");\n        result:setHungChange(result:getHungChange() * 1.3);\n    elseif cookinglevel == 4 then\n        result:setName(\"Delicious Soup\");\n        result:setHungChange(result:getHungChange() * 1.5);\n    elseif cookinglevel == 5 then\n        result:setName(\"Gourmet Soup\");\n        result:setHungChange(result:getHungChange() * 2);\n    end\nend\n```\n\n---\n\n## ui.lua - Basic UI Example\n\nDemonstrates **window creation** and **button handling**.\n\n### Window Definition\n\n```lua\nrequire 'ui/uiHelpers'\n\nclickCounter = 0;\n\nmywindow = {\n    onButtonClicked = function(name)\n        clickCounter = clickCounter + 1;\n    end,\n    \n    render = function(element)\n        element:DrawTextCentre(\n            \"Has been clicked \"..clickCounter..\" times.\",\n            150, 100, 1, 0, 0, 1\n        );\n    end,\n    \n    x = 100,\n    y = 100,\n    width = 300,\n    height = 300,\n    hasClose = true;\n};\n```\n\n### Button Definition\n\n```lua\nmybutton = {\n    parent = mywindow,\n    name = \"testButton\",\n    text = \"Bob's Button\",\n    x = 150,\n    y = 250;\n};\n```\n\n### Generic Render Element\n\n```lua\nmygenericelement = {\n    x = 150,\n    y = 250,\n    width = 120,\n    height = 120,\n    render = function(element)\n        element:DrawTextCentre(\"Test Render\", 150, 100, 1, 0, 0, 1);\n        \n        local player = getPlayer();\n        local equippeditem = player:getPrimaryHandItem();\n        \n        if equippeditem ~= nil then\n            local texture = equippeditem:getTexture();\n            element:DrawTexture(texture, 0, 0, 0.3);\n        end\n    end;\n};\n```\n\n---\n\n## Key Patterns Demonstrated\n\n### 1. ISBaseObject Inheritance\n```lua\nrequire \"ISBaseObject\"\nMyClass = ISBaseObject:derive(\"MyClass\");\n```\n\n### 2. Event Registration\n```lua\nEvents.OnTick.Add(MyTickFunction);\nEvents.OnDoTileBuilding.Add(MyBuildFunction);\n```\n\n### 3. ModData Storage\n```lua\nlocal data = object:getModData();\ndata.myValue = 123;\n```\n\n### 4. Timed Action Structure\n```lua\n-- isValid, start, perform callbacks\nTimedActions.Create(name, isValid, start, perform);\nTimedActions.Start(action, player, time, square);\n```\n\n### 5. Recipe Callbacks\n```lua\n-- OnTest, OnCreate, OnGrab patterns\nfunction MyRecipe_OnCreate(a, b, c, d, result)\n    -- Modify result\nend\n```\n\n### 6. World Object Creation\n```lua\nlocal obj = IsoObject.new(square, \"SpriteName\", \"ObjectName\");\nsquare:AddTileObject(obj);\nsquare:RemoveTileObject(obj);\n```\n\n### 7. Sound Playing\n```lua\ngetSoundManager():PlayWorldSound(\"soundname\", square, 0, radius, volume, false);\naction:playLoopedSoundTillComplete(\"soundname\", radius, volume);\n```\n\n---\n\n## Related\n\n- [Events Reference](/build-41/modding/reference/events) - All game events\n- [Global Functions](/build-41/modding/reference/globals) - Core global functions\n- [Script Properties](/build-41/modding/reference/script-properties) - Item and recipe properties",
+  "excerpt": "Official PZ Lua examples from media/luaexamples/ demonstrating timers, timed actions, UI creation, and recipe callbacks.",
+  "lastUpdated": "2026-01-10",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "file-locations",
+      "text": "File Locations",
+      "level": 2
+    },
+    {
+      "id": "istimer-lua-timer-utility-class",
+      "text": "ISTimer.lua - Timer Utility Class",
+      "level": 2
+    },
+    {
+      "id": "testtimed-lua-timed-action-example",
+      "text": "testtimed.lua - Timed Action Example",
+      "level": 2
+    },
+    {
+      "id": "recipecode-lua-recipe-callbacks",
+      "text": "recipecode.lua - Recipe Callbacks",
+      "level": 2
+    },
+    {
+      "id": "ui-lua-basic-ui-example",
+      "text": "ui.lua - Basic UI Example",
+      "level": 2
+    },
+    {
+      "id": "key-patterns-demonstrated",
+      "text": "Key Patterns Demonstrated",
+      "level": 2
+    },
+    {
+      "id": "related",
+      "text": "Related",
+      "level": 2
+    }
+  ]
+}
