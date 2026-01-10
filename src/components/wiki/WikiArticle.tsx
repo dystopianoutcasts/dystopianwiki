@@ -156,6 +156,27 @@ export function WikiArticle({
         {/* Discord Community CTA */}
         <ArticleCTA />
 
+        {/* Next Steps (only shown when NOT in learning path) */}
+        {!learningPath && article.nextSteps && article.nextSteps.length > 0 && (
+          <div className="wiki-article__next-steps">
+            <h2 className="wiki-article__next-steps-title">Next Steps</h2>
+            <div className="wiki-article__next-steps-list">
+              {article.nextSteps.map((step, index) => (
+                <Link
+                  key={index}
+                  to={step.url}
+                  className="wiki-article__next-step"
+                >
+                  <span className="wiki-article__next-step-title">{step.title}</span>
+                  {step.description && (
+                    <span className="wiki-article__next-step-desc">{step.description}</span>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Learning Path Navigation */}
         {learningPath && (
           <div className="wiki-article__learning-path">

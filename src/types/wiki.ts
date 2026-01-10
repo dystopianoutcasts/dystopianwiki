@@ -60,6 +60,12 @@ export interface TOCItem {
   level: number;  // 1-6 for h1-h6
 }
 
+export interface NextStep {
+  title: string;
+  url: string;
+  description?: string;
+}
+
 export interface WikiArticle {
   id: string;
   title: string;
@@ -75,6 +81,7 @@ export interface WikiArticle {
   lastUpdated: string;    // ISO date string
   difficulty?: Difficulty;
   tableOfContents: TOCItem[];
+  nextSteps?: NextStep[]; // Suggested next articles (shown outside learning path)
 }
 
 export interface ArticleIndex {

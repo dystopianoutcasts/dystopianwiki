@@ -165,6 +165,66 @@
   margin-bottom: var(--spacing-4);
 }
 
+/* Next Steps Section (shown outside learning path) */
+.wiki-article__next-steps {
+  margin-top: var(--spacing-6);
+  padding: var(--spacing-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+}
+
+.wiki-article__next-steps-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-4);
+}
+
+.wiki-article__next-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.wiki-article__next-step {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-4);
+  background: var(--color-background);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  text-decoration: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.wiki-article__next-step:hover {
+  border-color: var(--color-primary-400);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transform: translateX(4px);
+  text-decoration: none;
+}
+
+[data-theme="dark"] .wiki-article__next-step:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.wiki-article__next-step-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-600);
+}
+
+[data-theme="dark"] .wiki-article__next-step-title {
+  color: var(--color-accent-400);
+}
+
+.wiki-article__next-step-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-1);
+}
+
 /* Learning Path Section */
 .wiki-article__learning-path {
   margin-top: var(--spacing-8);
