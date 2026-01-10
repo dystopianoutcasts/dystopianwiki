@@ -1,0 +1,77 @@
+{
+  "id": "tools-tilezed",
+  "title": "TileZed Reference",
+  "slug": "tilezed",
+  "version": "build-41",
+  "section": "modding",
+  "category": "tools",
+  "tags": [
+    "intermediate",
+    "tilezed",
+    "mapping",
+    "tiles",
+    "buildings",
+    "external"
+  ],
+  "content": "# TileZed Reference\n\n## Overview\n\nTileZed is the official tile and building editor for Project Zomboid. It's used to create custom tiles, buildings, and interior designs that can be added to the game world.\n\n## Official Resources\n\n### Download\n\n**Build 41 Version (Unjammer Fork):**\n- GitHub: [https://github.com/Unjammer/TileZed](https://github.com/Unjammer/TileZed)\n\nThis is the community-maintained fork updated for Build 41 compatibility.\n\n### Primary Documentation\n\n**The One-Stop TileZed Mapping Shop:**\n- Forum Thread: [https://theindiestone.com/forums/index.php?/topic/21951-the-one-stop-tilezed-mapping-shop/](https://theindiestone.com/forums/index.php?/topic/21951-the-one-stop-tilezed-mapping-shop/)\n\nThis comprehensive forum thread is the definitive guide for TileZed, maintained by the community with tutorials, tips, and troubleshooting.\n\n## What TileZed Does\n\n### Building Editor\n- Create custom buildings\n- Design interior layouts\n- Place furniture and objects\n- Set room definitions\n- Configure spawns and loot\n\n### Tileset Editor\n- Create custom tilesets\n- Define tile properties\n- Set container properties\n- Configure tile behaviors\n\n### TMX Export\n- Export buildings as TMX files\n- Compatible with WorldEd map editor\n- Include spawn data\n- Set room metadata\n\n## Basic Workflow\n\n1. **Open TileZed**\n2. **Load or create a tileset**\n3. **Design your building** using the tile palette\n4. **Define rooms** for loot spawning\n5. **Export as .tmx** for WorldEd\n\n## File Types\n\n| Extension | Purpose |\n|-----------|----------|\n| `.tileset` | Tileset definition |\n| `.tbx` | Building file |\n| `.tmx` | Exported map cell |\n| `.tiles` | Tile definitions |\n\n## Integration with WorldEd\n\nTileZed buildings are placed into the game world using WorldEd:\n\n1. Create building in TileZed\n2. Export as .tmx\n3. Open WorldEd\n4. Place .tmx in world cells\n5. Generate final map files\n\n## Keyboard Shortcuts\n\n| Shortcut | Action |\n|----------|--------|\n| `Space` | Pan view |\n| `Scroll` | Zoom in/out |\n| `F` | Flip tile |\n| `R` | Rotate tile |\n| `Delete` | Remove tile |\n| `Ctrl+Z` | Undo |\n| `Ctrl+S` | Save |\n\n## Tips for Beginners\n\n1. **Start with existing buildings** - Study vanilla .tbx files\n2. **Use room definitions** - Essential for loot spawning\n3. **Layer properly** - Ground, walls, furniture, roof\n4. **Test frequently** - Check in-game appearance\n5. **Read the forum thread** - Most questions already answered\n\n## Common Issues\n\n### Tiles Not Showing\n- Check tileset is loaded\n- Verify tile IDs match\n- Ensure .tiles file is valid\n\n### Building Not Spawning\n- Check room definitions\n- Verify spawn points\n- Test with debug mode\n\n### Compatibility Issues\n- Use Unjammer fork for B41\n- Check Java version requirements\n\n## External Links\n\n- **GitHub (B41):** [https://github.com/Unjammer/TileZed](https://github.com/Unjammer/TileZed)\n- **Forum Guide:** [https://theindiestone.com/forums/index.php?/topic/21951-the-one-stop-tilezed-mapping-shop/](https://theindiestone.com/forums/index.php?/topic/21951-the-one-stop-tilezed-mapping-shop/)\n- **WorldEd (companion tool):** [WorldEd Reference](/build-41/modding/tools/worlded)\n\n## Related Wiki Articles\n\n- [TileZed Setup Guide](/build-41/modding/tools/tilezed-setup) - Detailed setup walkthrough\n- [WorldEd Reference](/build-41/modding/tools/worlded) - World map editor",
+  "excerpt": "Reference guide for TileZed, the tile and building editor for Project Zomboid, with links to official resources and documentation.",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "intermediate",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "official-resources",
+      "text": "Official Resources",
+      "level": 2
+    },
+    {
+      "id": "what-tilezed-does",
+      "text": "What TileZed Does",
+      "level": 2
+    },
+    {
+      "id": "basic-workflow",
+      "text": "Basic Workflow",
+      "level": 2
+    },
+    {
+      "id": "file-types",
+      "text": "File Types",
+      "level": 2
+    },
+    {
+      "id": "integration-with-worlded",
+      "text": "Integration with WorldEd",
+      "level": 2
+    },
+    {
+      "id": "keyboard-shortcuts",
+      "text": "Keyboard Shortcuts",
+      "level": 2
+    },
+    {
+      "id": "tips-for-beginners",
+      "text": "Tips for Beginners",
+      "level": 2
+    },
+    {
+      "id": "common-issues",
+      "text": "Common Issues",
+      "level": 2
+    },
+    {
+      "id": "external-links",
+      "text": "External Links",
+      "level": 2
+    },
+    {
+      "id": "related-wiki-articles",
+      "text": "Related Wiki Articles",
+      "level": 2
+    }
+  ]
+}

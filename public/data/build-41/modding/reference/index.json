@@ -1,0 +1,28 @@
+{
+  "id": "reference",
+  "name": "API Reference",
+  "slug": "reference",
+  "articles": [
+    {
+      "id": "events",
+      "title": "Events Reference",
+      "slug": "events",
+      "difficulty": "intermediate",
+      "order": 1
+    },
+    {
+      "id": "globals",
+      "title": "Global Functions",
+      "slug": "globals",
+      "difficulty": "intermediate",
+      "order": 2
+    },
+    {
+      "id": "script-properties",
+      "title": "Script Properties",
+      "slug": "script-properties",
+      "difficulty": "intermediate",
+      "order": 3
+    }
+  ]
+}
