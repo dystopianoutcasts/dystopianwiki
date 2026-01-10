@@ -94,57 +94,65 @@ export function WikiArticle({
 
   return (
     <article className="wiki-article">
-      {/* Main Content */}
-      <div className="wiki-article__main">
-        {/* Header */}
-        <header className="wiki-article__header">
-          <div className="wiki-article__meta">
-            <span className="wiki-article__category">
-              {categoryDisplayNames[article.category] || article.category}
-            </span>
-            {article.difficulty && (
-              <span
-                className={`wiki-article__difficulty wiki-article__difficulty--${article.difficulty}`}
-              >
-                {difficultyLabels[article.difficulty]}
+      {/* Article body with sidebar */}
+      <div className="wiki-article__body">
+        {/* Main Content */}
+        <div className="wiki-article__main">
+          {/* Header */}
+          <header className="wiki-article__header">
+            <div className="wiki-article__meta">
+              <span className="wiki-article__category">
+                {categoryDisplayNames[article.category] || article.category}
               </span>
-            )}
-          </div>
-
-          <h1 className="wiki-article__title">{article.title}</h1>
-
-          {article.excerpt && (
-            <p className="wiki-article__excerpt">{article.excerpt}</p>
-          )}
-
-          <p className="wiki-article__updated">Last updated: {formattedDate}</p>
-
-          {article.tags.length > 0 && (
-            <div className="wiki-article__tags">
-              {article.tags.map((tag) => (
-                <span key={tag} className="wiki-article__tag">
-                  #{tag}
+              {article.difficulty && (
+                <span
+                  className={`wiki-article__difficulty wiki-article__difficulty--${article.difficulty}`}
+                >
+                  {difficultyLabels[article.difficulty]}
                 </span>
-              ))}
+              )}
             </div>
+
+            <h1 className="wiki-article__title">{article.title}</h1>
+
+            {article.excerpt && (
+              <p className="wiki-article__excerpt">{article.excerpt}</p>
+            )}
+
+            <p className="wiki-article__updated">Last updated: {formattedDate}</p>
+
+            {article.tags.length > 0 && (
+              <div className="wiki-article__tags">
+                {article.tags.map((tag) => (
+                  <span key={tag} className="wiki-article__tag">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </header>
+
+          {/* Mobile TOC */}
+          {tocItems.length > 0 && (
+            <TableOfContents items={tocItems} className="toc--mobile" />
           )}
-        </header>
 
-        {/* Mobile TOC */}
-        {tocItems.length > 0 && (
-          <TableOfContents items={tocItems} className="toc--mobile" />
-        )}
-
-        {/* Content */}
-        <div className="wiki-article__content">
-          <MarkdownRenderer content={article.content} />
+          {/* Content */}
+          <div className="wiki-article__content">
+            <MarkdownRenderer content={article.content} />
+          </div>
         </div>
 
-        {/* Related Articles */}
-        {relatedArticles.length > 0 && (
-          <RelatedArticles articles={relatedArticles} />
+        {/* Desktop TOC */}
+        {tocItems.length > 0 && (
+          <aside className="wiki-article__toc">
+            <TableOfContents items={tocItems} />
+          </aside>
         )}
+      </div>
 
+      {/* Full-width sections below the article body */}
+      <div className="wiki-article__below">
         {/* Discord Community CTA */}
         <ArticleCTA />
 
@@ -213,6 +221,11 @@ export function WikiArticle({
           </div>
         )}
 
+        {/* Related Articles */}
+        {relatedArticles.length > 0 && (
+          <RelatedArticles articles={relatedArticles} />
+        )}
+
         {/* Navigation */}
         {(prevArticle || nextArticle) && (
           <footer className="wiki-article__footer">
@@ -239,13 +252,6 @@ export function WikiArticle({
           </footer>
         )}
       </div>
-
-      {/* Desktop TOC */}
-      {tocItems.length > 0 && (
-        <aside className="wiki-article__toc">
-          <TableOfContents items={tocItems} />
-        </aside>
-      )}
     </article>
   );
 }

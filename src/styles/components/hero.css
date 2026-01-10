@@ -40,13 +40,34 @@
   margin: 0 auto;
 }
 
+/* Logo Link - Links to Discord */
+.hero__logo-link {
+  display: block;
+  margin: 0 auto var(--spacing-6);
+  width: fit-content;
+  transition: transform var(--transition-fast), filter var(--transition-fast);
+}
+
+.hero__logo-link:hover {
+  transform: scale(1.03) translateY(-2px);
+}
+
+.hero__logo-link:hover .hero__logo {
+  filter: drop-shadow(0 8px 20px rgba(88, 101, 242, 0.4));
+}
+
+[data-theme="light"] .hero__logo-link:hover .hero__logo {
+  filter: drop-shadow(0 8px 20px rgba(88, 101, 242, 0.5));
+}
+
 /* Logo - Default dark theme has stronger shadow */
 .hero__logo {
   width: 320px;
   max-width: 85%;
   height: auto;
-  margin: 0 auto var(--spacing-6);
+  display: block;
   filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
+  transition: filter var(--transition-fast);
 }
 
 [data-theme="light"] .hero__logo {

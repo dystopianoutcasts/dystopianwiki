@@ -4,9 +4,16 @@
  */
 
 .wiki-article {
+  width: 100%;
+}
+
+/* Article body - flex container for content + TOC sidebar */
+.wiki-article__body {
   display: flex;
   gap: var(--spacing-6);
   width: 100%;
+  /* align-items: flex-start allows TOC to be sticky within flex container */
+  align-items: flex-start;
 }
 
 .wiki-article__main {
@@ -16,7 +23,17 @@
 }
 
 .wiki-article__toc {
-  /* TOC uses flex properties from variables */
+  /* Flex sizing from CSS variables */
+  flex: var(--toc-flex);
+  min-width: var(--toc-min);
+  max-width: var(--toc-max);
+  /* The .toc inside this container handles sticky positioning */
+}
+
+/* Full-width sections below the article body */
+.wiki-article__below {
+  width: 100%;
+  margin-top: var(--spacing-8);
 }
 
 /* Article Header */
@@ -127,7 +144,7 @@
 
 /* Content */
 .wiki-article__content {
-  margin-bottom: var(--spacing-8);
+  margin-bottom: var(--spacing-4);
 }
 
 /* Learning Path Section */
@@ -315,7 +332,7 @@
 
 /* @breakpoint-xl: 1280px - Below large desktop: Stack article layout, hide desktop TOC */
 @media (max-width: 1280px) {
-  .wiki-article {
+  .wiki-article__body {
     flex-direction: column;
   }
 

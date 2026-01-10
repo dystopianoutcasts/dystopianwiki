@@ -24,12 +24,20 @@ export function HeroSection({ defaultVersion = 'build-41' }: HeroSectionProps) {
       <div className="hero__decoration hero__decoration--right" />
 
       <div className="hero__content">
-        {/* Banner Logo */}
-        <img
-          src="/assets/banners/dystopian-outcasts-banner-1024.png"
-          alt="Dystopian Outcasts"
-          className="hero__logo"
-        />
+        {/* Banner Logo - Links to Discord */}
+        <a
+          href="https://discord.gg/KgNBWyfcvZ"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hero__logo-link"
+          aria-label="Join Dystopian Outcasts Discord"
+        >
+          <img
+            src="/assets/banners/dystopian-outcasts-banner-1024.png"
+            alt="Dystopian Outcasts"
+            className="hero__logo"
+          />
+        </a>
 
         {/* Title */}
         <h1 className="hero__title">Project Zomboid Modding Wiki</h1>

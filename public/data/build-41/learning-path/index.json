@@ -187,6 +187,100 @@
           "estimatedMinutes": 8
         }
       ]
+    },
+    {
+      "id": "lua-basics",
+      "title": "Part 5: Lua Scripting",
+      "description": "Add behavior to your mods with Lua events and actions",
+      "articles": [
+        {
+          "id": "events-intro",
+          "step": "5.1",
+          "title": "Events System",
+          "slug": "events-overview",
+          "url": "/build-41/modding/lua-api/events-overview",
+          "description": "Hook into game events to run your code",
+          "difficulty": "intermediate",
+          "estimatedMinutes": 12
+        },
+        {
+          "id": "events-lifecycle",
+          "step": "5.2",
+          "title": "Lifecycle Events",
+          "slug": "events-lifecycle",
+          "url": "/build-41/modding/lua-api/events-lifecycle",
+          "description": "Game boot, start, save, and time events",
+          "difficulty": "intermediate",
+          "estimatedMinutes": 10
+        },
+        {
+          "id": "context-menus",
+          "step": "5.3",
+          "title": "Context Menus",
+          "slug": "context-menus",
+          "url": "/build-41/modding/lua-api/context-menus",
+          "description": "Add right-click options to items and objects",
+          "difficulty": "intermediate",
+          "estimatedMinutes": 15
+        },
+        {
+          "id": "timed-actions",
+          "step": "5.4",
+          "title": "Timed Actions",
+          "slug": "timed-actions",
+          "url": "/build-41/modding/lua-api/timed-actions",
+          "description": "Create custom player actions with progress bars",
+          "difficulty": "intermediate",
+          "estimatedMinutes": 12
+        }
+      ]
+    },
+    {
+      "id": "custom-ui",
+      "title": "Part 6: Custom UI",
+      "description": "Create user interfaces for your mods",
+      "articles": [
+        {
+          "id": "isui-intro",
+          "step": "6.1",
+          "title": "ISUI Overview",
+          "slug": "isui-overview",
+          "url": "/build-41/modding/ui-framework/isui-overview",
+          "description": "Introduction to PZ's UI framework",
+          "difficulty": "intermediate",
+          "estimatedMinutes": 10
+        },
+        {
+          "id": "isui-lifecycle",
+          "step": "6.2",
+          "title": "Element Lifecycle",
+          "slug": "isui-lifecycle",
+          "url": "/build-41/modding/ui-framework/isui-lifecycle",
+          "description": "new, initialise, instantiate, createChildren",
+          "difficulty": "intermediate",
+          "estimatedMinutes": 12
+        },
+        {
+          "id": "isui-panels",
+          "step": "6.3",
+          "title": "Panels & Containers",
+          "slug": "isui-panels",
+          "url": "/build-41/modding/ui-framework/isui-panels",
+          "description": "ISPanel for organizing UI elements",
+          "difficulty": "intermediate",
+          "estimatedMinutes": 10
+        },
+        {
+          "id": "isui-buttons",
+          "step": "6.4",
+          "title": "Buttons & Input",
+          "slug": "isui-buttons",
+          "url": "/build-41/modding/ui-framework/isui-buttons",
+          "description": "ISButton, ISTextEntryBox, and user input",
+          "difficulty": "intermediate",
+          "estimatedMinutes": 12
+        }
+      ]
     }
   ]
 }

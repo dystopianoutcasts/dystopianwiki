@@ -31,7 +31,7 @@ export function Footer() {
             <span>GitHub</span>
           </a>
           <a
-            href="https://discord.gg"
+            href="https://discord.gg/KgNBWyfcvZ"
             target="_blank"
             rel="noopener noreferrer"
             className="footer__link"

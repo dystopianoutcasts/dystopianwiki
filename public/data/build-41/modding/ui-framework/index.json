@@ -20,13 +20,8 @@
     },
     {
       "slug": "isui-buttons",
-      "title": "Buttons",
-      "excerpt": "ISButton component with callbacks, states, images, and tooltips."
-    },
-    {
-      "slug": "isui-text-input",
-      "title": "Text Input",
-      "excerpt": "ISTextEntryBox and ISTextBox for single-line and multi-line text input."
+      "title": "Buttons and Input",
+      "excerpt": "ISButton and ISTextEntryBox for clickable buttons and text input fields."
     },
     {
       "slug": "isui-lists",

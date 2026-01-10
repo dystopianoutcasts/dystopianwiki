@@ -18,7 +18,7 @@ export function CommunityBanner() {
           </p>
         </div>
         <a
-          href="https://discord.gg/become-an-outcast"
+          href="https://discord.gg/KgNBWyfcvZ"
           target="_blank"
           rel="noopener noreferrer"
           className="community-banner__button"
