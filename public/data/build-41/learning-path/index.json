@@ -10,6 +10,7 @@
           "step": "1.1",
           "title": "What Is a Mod?",
           "slug": "what-is-modding",
+          "url": "/build-41/modding/fundamentals/what-is-a-mod",
           "description": "Learn what mods are and why games like PZ support them",
           "difficulty": "beginner",
           "estimatedMinutes": 8
@@ -19,6 +20,7 @@
           "step": "1.2",
           "title": "PZ's Three Layers",
           "slug": "pz-architecture",
+          "url": "/build-41/modding/fundamentals/pz-three-layers",
           "description": "Java engine, Lua scripts, and data files explained",
           "difficulty": "beginner",
           "estimatedMinutes": 10
@@ -28,6 +30,7 @@
           "step": "1.3",
           "title": "The Media Folder",
           "slug": "media-folder",
+          "url": "/build-41/modding/fundamentals/media-folder",
           "description": "Navigate where all game content lives",
           "difficulty": "beginner",
           "estimatedMinutes": 8
@@ -37,6 +40,7 @@
           "step": "1.4",
           "title": "File Types Explained",
           "slug": "file-types",
+          "url": "/build-41/modding/fundamentals/file-types-explained",
           "description": "TXT, Lua, PNG, and other file formats",
           "difficulty": "beginner",
           "estimatedMinutes": 6

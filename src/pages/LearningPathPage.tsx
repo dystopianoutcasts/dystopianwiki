@@ -14,6 +14,7 @@ interface LearningArticle {
   description: string;
   difficulty: Difficulty;
   estimatedMinutes: number;
+  url?: string; // Optional full URL, otherwise defaults to /learning-path/{slug}
 }
 
 interface LearningSection {
@@ -191,7 +192,7 @@ export function LearningPathPage() {
                         difficulty={article.difficulty}
                         isCompleted={isCompleted(article.id)}
                         isActive={activeArticleId === article.id}
-                        url={`/learning-path/${article.slug}`}
+                        url={article.url || `/learning-path/${article.slug}`}
                         estimatedMinutes={article.estimatedMinutes}
                       />
                     ))}
