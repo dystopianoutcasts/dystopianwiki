@@ -27,7 +27,25 @@
   flex: var(--toc-flex);
   min-width: var(--toc-min);
   max-width: var(--toc-max);
-  /* The .toc inside this container handles sticky positioning */
+
+  /* Sticky positioning - wrapper handles layout */
+  position: sticky;
+  top: calc(var(--header-height) + var(--spacing-6));
+  align-self: flex-start;
+
+  /* Height constraint with scroll when needed */
+  max-height: calc(100vh - var(--header-height) - var(--spacing-12));
+  overflow-y: auto;
+}
+
+/* Scrollbar styling for TOC wrapper */
+.wiki-article__toc::-webkit-scrollbar {
+  width: 4px;
+}
+
+.wiki-article__toc::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-300);
+  border-radius: var(--border-radius-full);
 }
 
 /* Full-width sections below the article body */
