@@ -1,5 +1,6 @@
 import { Link, NavLink } from 'react-router-dom';
 import { useTheme } from '../../hooks/useTheme';
+import { FuzzySearchBar } from '../search/FuzzySearchBar';
 import '../../styles/components/header.css';
 
 // Icons
@@ -54,6 +55,14 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
         {/* Navigation */}
         <nav className="header__nav">
           <NavLink
+            to="/learning-path"
+            className={({ isActive }) =>
+              `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
+            }
+          >
+            Learning Path
+          </NavLink>
+          <NavLink
             to="/build-41/modding"
             className={({ isActive }) =>
               `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
@@ -63,6 +72,11 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
           </NavLink>
           {/* Mapping link hidden until section has content */}
         </nav>
+
+        {/* Search Bar */}
+        <div className="header__search">
+          <FuzzySearchBar placeholder="Search docs..." />
+        </div>
 
         {/* Actions */}
         <div className="header__actions">

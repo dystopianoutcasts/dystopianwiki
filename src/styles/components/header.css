@@ -93,6 +93,28 @@
   }
 }
 
+/* Search Bar in Header */
+.header__search {
+  flex: 1;
+  max-width: 320px;
+  margin: 0 var(--spacing-4);
+}
+
+.header__search .search-bar {
+  width: 100%;
+}
+
+.header__search .search-bar__input-wrapper {
+  background-color: var(--color-background);
+}
+
+/* @breakpoint-md: 768px - Tablet: Hide search bar, use mobile menu */
+@media (max-width: 768px) {
+  .header__search {
+    display: none;
+  }
+}
+
 /* Actions */
 .header__actions {
   display: flex;

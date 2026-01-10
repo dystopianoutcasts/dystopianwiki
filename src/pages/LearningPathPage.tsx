@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { LearningPathCard } from '../components/learning/LearningPathCard';
 import { useLearningProgress } from '../hooks/useLearningProgress';
 import { SEOHead } from '../components/seo/SEOHead';
+import { Layout } from '../components/layout/Layout';
 import type { Difficulty } from '../types/wiki';
 import '../styles/components/learning-path.css';
 
@@ -70,28 +71,32 @@ export function LearningPathPage() {
 
   if (loading) {
     return (
-      <div className="learning-path">
-        <div className="learning-path__hero">
-          <div className="learning-path__hero-content">
-            <h1 className="learning-path__title">Loading...</h1>
+      <Layout>
+        <div className="learning-path">
+          <div className="learning-path__hero">
+            <div className="learning-path__hero-content">
+              <h1 className="learning-path__title">Loading...</h1>
+            </div>
           </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="learning-path">
-        <div className="learning-path__hero">
-          <div className="learning-path__hero-content">
-            <h1 className="learning-path__title">Your Modding Journey</h1>
-            <p className="learning-path__subtitle">
-              Learning path content coming soon! Check back later for our guided curriculum.
-            </p>
+      <Layout>
+        <div className="learning-path">
+          <div className="learning-path__hero">
+            <div className="learning-path__hero-content">
+              <h1 className="learning-path__title">Your Modding Journey</h1>
+              <p className="learning-path__subtitle">
+                Learning path content coming soon! Check back later for our guided curriculum.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
@@ -111,13 +116,14 @@ export function LearningPathPage() {
     currentArticle || (firstIncompleteIndex >= 0 ? allArticles[firstIncompleteIndex].id : null);
 
   return (
-    <div className="learning-path">
-      <SEOHead
-        title="Learning Path - Start Your Modding Journey"
-        description="Complete beginner's guide to Project Zomboid modding. Step-by-step tutorials from your first mod to advanced Lua scripting. No coding experience required."
-      />
-      {/* Hero Section */}
-      <header className="learning-path__hero">
+    <Layout>
+      <div className="learning-path">
+        <SEOHead
+          title="Learning Path - Start Your Modding Journey"
+          description="Complete beginner's guide to Project Zomboid modding. Step-by-step tutorials from your first mod to advanced Lua scripting. No coding experience required."
+        />
+        {/* Hero Section */}
+        <header className="learning-path__hero">
         <div className="learning-path__hero-content">
           <h1 className="learning-path__title">Your Modding Journey</h1>
           <p className="learning-path__subtitle">
@@ -196,6 +202,7 @@ export function LearningPathPage() {
           );
         })}
       </main>
-    </div>
+      </div>
+    </Layout>
   );
 }

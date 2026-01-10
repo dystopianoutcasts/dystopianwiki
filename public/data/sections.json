@@ -1,6 +1,12 @@
 {
   "sections": [
     {
+      "id": "learning-path",
+      "name": "Learning Path",
+      "description": "Step-by-step guided curriculum from beginner to advanced",
+      "icon": "📚"
+    },
+    {
       "id": "modding",
       "name": "Modding",
       "description": "Learn to create mods for Project Zomboid",
