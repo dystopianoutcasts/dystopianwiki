@@ -1,70 +1,56 @@
 {
+  "id": "items",
+  "name": "Items",
+  "slug": "items",
   "articles": [
     {
-      "id": "items-item-creation",
-      "title": "Item Creation Guide - Project Zomboid",
-      "slug": "item-creation",
-      "version": "build-41",
-      "section": "modding",
-      "category": "items",
-      "tags": [
-        "recipe",
-        "item",
-        "weapon",
-        "crafting",
-        "creation",
-        "guide"
-      ],
-      "excerpt": "Items in Project Zomboid are defined in script files within your mod's directory. This guide covers the fundamentals of creating new items.\r\n\r\n\r\nItems must be defined in  files within your mod's  d...",
-      "lastUpdated": "2026-01-09",
+      "id": "item-anatomy",
+      "title": "Anatomy of an Item",
+      "slug": "item-anatomy",
       "difficulty": "beginner",
-      "content": "",
-      "tableOfContents": []
+      "order": 1
     },
     {
-      "id": "items-vanilla-item-anatomy",
-      "title": "Vanilla Item Anatomy - Complete Property Reference",
+      "id": "first-item-file",
+      "title": "Your First Custom Item",
+      "slug": "first-item-file",
+      "difficulty": "beginner",
+      "order": 2
+    },
+    {
+      "id": "item-icons",
+      "title": "Creating Item Icons",
+      "slug": "item-icons",
+      "difficulty": "beginner",
+      "order": 3
+    },
+    {
+      "id": "item-recipe-connection",
+      "title": "Connecting Items and Recipes",
+      "slug": "item-recipe-connection",
+      "difficulty": "beginner",
+      "order": 4
+    },
+    {
+      "id": "item-creation",
+      "title": "Item Creation Guide",
+      "slug": "item-creation",
+      "difficulty": "beginner",
+      "order": 5
+    },
+    {
+      "id": "vanilla-item-anatomy",
+      "title": "Vanilla Item Anatomy Reference",
       "slug": "vanilla-item-anatomy",
-      "version": "build-41",
-      "section": "modding",
-      "category": "items",
-      "tags": [
-        "recipe",
-        "item",
-        "weapon",
-        "animation",
-        "crafting",
-        "vanilla",
-        "anatomy"
-      ],
-      "excerpt": "This document provides a comprehensive reference of all properties available for Project Zomboid items, based on vanilla game items.\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nPurpose: Determines fundamental item behavior (...",
-      "lastUpdated": "2026-01-09",
       "difficulty": "intermediate",
-      "content": "",
-      "tableOfContents": []
+      "order": 6
     },
     {
-      "id": "items-ammunition-items",
-      "title": "Vanilla Ammunition Items - Complete Reference",
+      "id": "ammunition-items",
+      "title": "Vanilla Ammunition Items",
       "slug": "ammunition-items",
-      "version": "build-41",
-      "section": "modding",
-      "category": "items",
-      "tags": [
-        "recipe",
-        "item",
-        "weapon",
-        "sound",
-        "crafting",
-        "vanilla",
-        "ammunition",
-        "items"
-      ],
-      "excerpt": "This document catalogs all vanilla Project Zomboid ammunition-related items, including rounds, boxes, magazines, molds, and crafting materials.\r\n\r\n\r\n\r\n\r\n| Name              | Item ID              |...",
-      "lastUpdated": "2026-01-09",
       "difficulty": "intermediate",
-      "content": "",
-      "tableOfContents": []
+      "order": 7
     }
   ]
 }

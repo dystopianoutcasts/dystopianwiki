@@ -1,0 +1,87 @@
+{
+  "id": "recipes-recipe-ingredients",
+  "title": "Recipe Ingredients Deep Dive",
+  "slug": "recipe-ingredients",
+  "version": "build-41",
+  "section": "modding",
+  "category": "recipes",
+  "tags": [
+    "intermediate",
+    "recipe",
+    "ingredients",
+    "tools",
+    "learning-path",
+    "advanced"
+  ],
+  "content": "# Recipe Ingredients Deep Dive\n\n## Overview\n\nBasic recipes use simple ingredients. Real mods need more: alternative items, tool types, quantities, and special behaviors. This guide covers all ingredient patterns.\n\n## Basic Ingredient Patterns\n\n### Single Item\n\n```\nTreeBranch,\n```\n\nRequires exactly one tree branch. Consumed on use.\n\n### Multiple of Same Item\n\n```\nPlank=4,\n```\n\nRequires 4 planks. All consumed.\n\n### Kept Item (Tool)\n\n```\nkeep Hammer,\n```\n\nRequires hammer but doesn't consume it.\n\n## Alternative Items (OR)\n\n### Two Alternatives\n\n```\nKitchenKnife/HuntingKnife,\n```\n\nAccepts either kitchen knife OR hunting knife.\n\n### Multiple Alternatives\n\n```\nAxe/WoodAxe/HandAxe/StoneAxe,\n```\n\nAccepts any of the four axe types.\n\n### Alternative with Quantity\n\n```\nPlank/Pallet=2,\n```\n\nAccepts 2 planks OR 2 pallets.\n\n## Item Type Functions\n\n### Built-in Type Functions\n\nPZ provides functions that return groups of items:\n\n```\n[Recipe.GetItemTypes.Saw],\n```\n\nThis matches ANY saw-type item.\n\n### Common Type Functions\n\n| Function | Matches |\n|----------|--------|\n| `[Recipe.GetItemTypes.Saw]` | All saws |\n| `[Recipe.GetItemTypes.Hammer]` | All hammers |\n| `[Recipe.GetItemTypes.Screwdriver]` | All screwdrivers |\n| `[Recipe.GetItemTypes.Wrench]` | All wrenches |\n| `[Recipe.GetItemTypes.Welding]` | Welding equipment |\n\n### Using Type Functions as Tools\n\n```\nkeep [Recipe.GetItemTypes.Saw],\n```\n\nAny saw works as a kept tool.\n\n## Quantity Patterns\n\n### Fixed Quantity\n\n```\nNails=5,\n```\n\nExactly 5 nails required.\n\n### Result Quantity\n\n```\nResult:Plank=3,\n```\n\nProduces 3 planks.\n\n### Multiple Results\n\nYou can only have one Result line, but with quantity:\n\n```\nResult:Plank=4,\n```\n\n## Tool Behavior\n\n### keep vs destroy\n\n```\nkeep Hammer,      <- Not consumed\ndestroy Hammer,   <- Consumed (same as no keyword)\nHammer,           <- Consumed (default)\n```\n\n### Tool Degradation\n\nTools with `keep` still lose durability based on item's `ConditionLowerChanceOneIn` property. They break eventually.\n\n### Multiple Tools\n\n```\nkeep Hammer,\nkeep Saw,\n```\n\nBoth required, neither consumed.\n\n## Special Ingredients\n\n### Water\n\nWater can come from bottles, sinks, or rain collectors:\n\n```\nWater=5,\n```\n\nAny water source with 5+ units works.\n\n### Drainables\n\nItems like glue, thread, duct tape drain rather than consume:\n\n```\nDuctTape=2,\n```\n\nUses 2 units from the duct tape roll.\n\n### Empty Containers\n\nSome recipes need empty containers:\n\n```\nEmptyPetrolCan,\n```\n\nRequires an empty (not full) petrol can.\n\n## Advanced Patterns\n\n### Combining Patterns\n\n```\nmodule Base {\n    recipe Complex Craft {\n        Plank=2,                           <- Quantity\n        Nails=4,                           <- Quantity\n        keep [Recipe.GetItemTypes.Hammer], <- Type function as tool\n        RippedSheets/DenimStrips,          <- Alternatives\n        Water=1,                           <- Drainable\n\n        Result:ComplexItem,\n        Time:200.0,\n    }\n}\n```\n\n### Conditional Ingredients\n\nSome vanilla recipes use Lua callbacks for complex conditions. For beginners, stick to the patterns above.\n\n## Real Vanilla Examples\n\n### Simple Tool Recipe\n\n```\nrecipe Make Metal Sheet {\n    ScrapMetal=5,\n    keep BlowTorch,\n    keep WeldingMask,\n\n    Result:SheetMetal,\n    Time:120.0,\n    Category:Metalworking,\n}\n```\n\n### Alternative Items Recipe\n\n```\nrecipe Rip Clothing {\n    Shirt/Blouse/TShirt,\n\n    Result:RippedSheets=2,\n    Time:60.0,\n    Category:Survivalist,\n}\n```\n\n### Complex Vanilla Recipe\n\n```\nrecipe Craft Spear {\n    TreeBranch/Plank,\n    KitchenKnife/HuntingKnife/Screwdriver,\n    keep [Recipe.GetItemTypes.Saw],\n\n    Result:SpearCrafted,\n    Time:80.0,\n    SkillRequired:Maintenance=2,\n    Category:Survivalist,\n}\n```\n\n## Common Mistakes\n\n### Wrong: Quantity on Keep\n\n```\n❌ keep Hammer=2,     <- Can't require multiple kept tools\n✓ keep Hammer,       <- Just one\n```\n\n### Wrong: Mixing Keep and Alternatives\n\n```\n❌ keep Knife/Axe,    <- Won't parse correctly\n✓ keep Knife,        <- Separate lines\n✓ keep Axe,\n```\n\nFor alternatives as tools, use type functions:\n```\n✓ keep [Recipe.GetItemTypes.Saw],\n```\n\n### Wrong: Result with Alternatives\n\n```\n❌ Result:Plank/ShortPlank,  <- Can't do this\n✓ Result:Plank,             <- One result type\n```\n\n## Designing Good Recipes\n\n### Balance Considerations\n\n| Factor | Guideline |\n|--------|----------|\n| **Rarity** | Rare inputs = valuable output |\n| **Tool requirement** | Adds realism without grinding |\n| **Time** | More valuable items = longer craft |\n| **Skill** | Advanced items need skill gates |\n\n### Example Balanced Progression\n\n**Beginner recipe (no tools):**\n```\nrecipe Bundle Rags {\n    RippedSheets=3,\n\n    Result:RagBundle,\n    Time:30.0,\n}\n```\n\n**Intermediate recipe (common tool):**\n```\nrecipe Craft Splint {\n    TreeBranch,\n    RippedSheets=2,\n    keep KitchenKnife,\n\n    Result:Splint,\n    Time:60.0,\n}\n```\n\n**Advanced recipe (skill + rare tool):**\n```\nrecipe Forge Blade {\n    ScrapMetal=3,\n    keep BlowTorch,\n    keep WeldingMask,\n    keep Hammer,\n\n    Result:ForgedBlade,\n    Time:300.0,\n    SkillRequired:Metalworking=4,\n    Category:Metalworking,\n}\n```\n\n## Key Takeaways\n\n1. **`/` means OR** - `Knife/Axe` accepts either\n2. **`=N` sets quantity** - `Nails=5` requires 5\n3. **`keep` preserves tools** - They still degrade\n4. **Type functions are powerful** - `[Recipe.GetItemTypes.Saw]`\n5. **Water and drainables** - Work differently from normal items\n6. **Balance matters** - Match complexity to reward\n\n## Next Steps\n\n- **[Anatomy of an Item](/build-41/modding/items/item-anatomy)** - Create custom items\n- **[Your First Custom Item](/build-41/modding/items/first-item-file)** - Make items for your recipes",
+  "excerpt": "Master advanced recipe ingredient patterns: alternatives, type functions, quantities, tool behavior, and balancing techniques.",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "intermediate",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "basic-ingredient-patterns",
+      "text": "Basic Ingredient Patterns",
+      "level": 2
+    },
+    {
+      "id": "alternative-items-or",
+      "text": "Alternative Items (OR)",
+      "level": 2
+    },
+    {
+      "id": "item-type-functions",
+      "text": "Item Type Functions",
+      "level": 2
+    },
+    {
+      "id": "quantity-patterns",
+      "text": "Quantity Patterns",
+      "level": 2
+    },
+    {
+      "id": "tool-behavior",
+      "text": "Tool Behavior",
+      "level": 2
+    },
+    {
+      "id": "special-ingredients",
+      "text": "Special Ingredients",
+      "level": 2
+    },
+    {
+      "id": "advanced-patterns",
+      "text": "Advanced Patterns",
+      "level": 2
+    },
+    {
+      "id": "real-vanilla-examples",
+      "text": "Real Vanilla Examples",
+      "level": 2
+    },
+    {
+      "id": "common-mistakes",
+      "text": "Common Mistakes",
+      "level": 2
+    },
+    {
+      "id": "designing-good-recipes",
+      "text": "Designing Good Recipes",
+      "level": 2
+    },
+    {
+      "id": "key-takeaways",
+      "text": "Key Takeaways",
+      "level": 2
+    },
+    {
+      "id": "next-steps",
+      "text": "Next Steps",
+      "level": 2
+    }
+  ]
+}

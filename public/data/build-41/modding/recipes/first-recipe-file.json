@@ -1,0 +1,97 @@
+{
+  "id": "recipes-first-recipe-file",
+  "title": "Your First Recipe File",
+  "slug": "first-recipe-file",
+  "version": "build-41",
+  "section": "modding",
+  "category": "recipes",
+  "tags": [
+    "beginner",
+    "recipe",
+    "tutorial",
+    "hands-on",
+    "learning-path",
+    "getting-started"
+  ],
+  "content": "# Your First Recipe File\n\n## Overview\n\nTime to write a real recipe. By the end of this guide, you'll have a working mod that adds a custom crafting recipe to Project Zomboid.\n\n## What We're Making\n\nA recipe to craft a **makeshift torch** from:\n- A tree branch\n- Ripped sheets\n- A lighter (not consumed)\n\n## Prerequisites\n\nBefore starting, ensure you have:\n- A mod folder set up (see [Mod Folder Structure](/build-41/modding/setup/mod-folder-structure))\n- A `mod.info` file (see [The mod.info File](/build-41/modding/setup/mod-info-file))\n- VS Code or another text editor\n\n## Step 1: Create the Scripts Folder\n\nYour mod folder should look like this:\n\n```\nMyFirstMod/\n├── mod.info\n└── media/\n    └── scripts/          <- Create this folder\n```\n\nCreate the `scripts` folder inside `media`.\n\n## Step 2: Create the Recipe File\n\n1. Inside `media/scripts/`, create a new file: `my_recipes.txt`\n2. Open it in VS Code\n\nYour structure now:\n\n```\nMyFirstMod/\n├── mod.info\n└── media/\n    └── scripts/\n        └── my_recipes.txt    <- Your new file\n```\n\n## Step 3: Write the Recipe\n\nPaste this into `my_recipes.txt`:\n\n```\nmodule Base {\n    imports {\n        Base\n    }\n\n    recipe Make Makeshift Torch {\n        TreeBranch,\n        RippedSheets=2,\n        keep Lighter,\n\n        Result:Torch,\n        Time:60.0,\n        Category:Survivalist,\n    }\n}\n```\n\nSave the file (`Ctrl+S`).\n\n## Step 4: Understanding Each Line\n\n```\nmodule Base {\n```\nWe're adding to the Base module where vanilla items live.\n\n```\n    imports {\n        Base\n    }\n```\nThis lets us reference Base module items without prefixing.\n\n```\n    recipe Make Makeshift Torch {\n```\nThe recipe name shown in the crafting menu.\n\n```\n        TreeBranch,\n```\nRequires one tree branch (consumed).\n\n```\n        RippedSheets=2,\n```\nRequires 2 ripped sheets (consumed).\n\n```\n        keep Lighter,\n```\nRequires a lighter but **doesn't consume it**.\n\n```\n        Result:Torch,\n```\nProduces a vanilla torch item.\n\n```\n        Time:60.0,\n```\nTakes 60 time units to craft.\n\n```\n        Category:Survivalist,\n```\nAppears in the Survivalist crafting category.\n\n## Step 5: Update mod.info\n\nMake sure your `mod.info` has at least:\n\n```\nname=My First Mod\nid=MyFirstMod\ndescription=Adds a makeshift torch recipe.\n```\n\n## Step 6: Test the Recipe\n\n1. Launch Project Zomboid\n2. Go to **Mods** from the main menu\n3. Find \"My First Mod\" and enable it\n4. Start a new game (or continue if you have debug mode)\n5. Collect the ingredients: tree branch, ripped sheets, lighter\n6. Open the crafting menu (`B` by default)\n7. Look under \"Survivalist\" category\n8. Find \"Make Makeshift Torch\"\n9. Craft it!\n\n## Troubleshooting\n\n### Recipe Doesn't Appear\n\n**Check:** Is your mod enabled?\n- Go to Mods menu and verify it's checked\n\n**Check:** Is the file in the right place?\n- Must be in `media/scripts/` not just `media/`\n\n**Check:** Is the file extension correct?\n- Must be `.txt` not `.txt.txt`\n\n### Error When Loading\n\n**Check console.txt** for errors:\n```\n%UserProfile%\\Zomboid\\console.txt\n```\n\n**Common error:** Missing comma\n```\n❌ Time:60.0\n✓ Time:60.0,\n```\n\n**Common error:** Using equals instead of colon\n```\n❌ Result=Torch,\n✓ Result:Torch,\n```\n\n### Can't Find Ingredients\n\nUse debug mode to spawn items:\n\n1. Enable debug mode (`-debug` launch option)\n2. Press `~` to open console\n3. Type:\n```lua\ngetPlayer():getInventory():AddItem(\"Base.TreeBranch\")\ngetPlayer():getInventory():AddItem(\"Base.RippedSheets\", 2)\ngetPlayer():getInventory():AddItem(\"Base.Lighter\")\n```\n\n## Adding More Recipes\n\nAdd multiple recipes to the same file:\n\n```\nmodule Base {\n    imports {\n        Base\n    }\n\n    recipe Make Makeshift Torch {\n        TreeBranch,\n        RippedSheets=2,\n        keep Lighter,\n\n        Result:Torch,\n        Time:60.0,\n        Category:Survivalist,\n    }\n\n    recipe Sharpen Stick {\n        TreeBranch,\n        keep KitchenKnife/HuntingKnife,\n\n        Result:SharpedStick,\n        Time:40.0,\n        Category:Survivalist,\n    }\n\n    recipe Bundle Newspapers {\n        Newspaper=5,\n\n        Result:NewspaperBundle,\n        Time:20.0,\n        Category:Survivalist,\n    }\n}\n```\n\n## Variations to Try\n\n### Change Ingredients\n\nTry different items:\n```\nrecipe Light Campfire {\n    Kindling/Twigs,\n    keep Matches/Lighter,\n    keep Notchedplank,\n\n    Result:CampfireLit,\n    Time:100.0,\n}\n```\n\n### Multiple Results\n\nProduce multiple items:\n```\nrecipe Disassemble Pallet {\n    Pallet,\n    keep Hammer,\n\n    Result:Plank=4,\n    Time:120.0,\n}\n```\n\n### Alternative Ingredients\n\nAccept multiple item types:\n```\nrecipe Repair Clothes {\n    RippedSheets/DenimStrips,\n    keep Needle,\n    Thread,\n\n    Result:PatchedClothes,\n    Time:80.0,\n}\n```\n\nThe `/` means \"or\" - either ripped sheets OR denim strips.\n\n## Complete Working Example\n\nHere's a complete `my_recipes.txt` with three recipes:\n\n```\nmodule Base {\n    imports {\n        Base\n    }\n\n    /* Makeshift Torch - Basic fire source */\n    recipe Make Makeshift Torch {\n        TreeBranch,\n        RippedSheets=2,\n        keep Lighter,\n\n        Result:Torch,\n        Time:60.0,\n        Category:Survivalist,\n    }\n\n    /* Rag Rope - Utility item */\n    recipe Make Rag Rope {\n        RippedSheets=4,\n\n        Result:Rope,\n        Time:80.0,\n        Category:Survivalist,\n    }\n\n    /* Disassemble Chair - Get materials back */\n    recipe Disassemble Chair {\n        WoodenChair,\n        keep Hammer,\n        keep Saw,\n\n        Result:Plank=2,\n        Time:150.0,\n        Category:Carpentry,\n    }\n}\n```\n\n## Key Takeaways\n\n1. **Recipe files go in `media/scripts/`**\n2. **Use `.txt` extension**\n3. **Module and imports at the top**\n4. **Colons for properties** (`Result:`, `Time:`)\n5. **Commas after every line**\n6. **`keep` for reusable tools**\n7. **Test with debug mode** for easy item spawning\n\n## Next Steps\n\n- **[Testing Your Recipe](/build-41/modding/recipes/testing-recipes)** - Debug and verify recipes\n- **[Recipe Ingredients Deep Dive](/build-41/modding/recipes/recipe-ingredients)** - Advanced ingredient patterns",
+  "excerpt": "Step-by-step tutorial to create your first working recipe mod for Project Zomboid, from folder setup to in-game testing.",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "what-were-making",
+      "text": "What We're Making",
+      "level": 2
+    },
+    {
+      "id": "prerequisites",
+      "text": "Prerequisites",
+      "level": 2
+    },
+    {
+      "id": "step-1-create-the-scripts-folder",
+      "text": "Step 1: Create the Scripts Folder",
+      "level": 2
+    },
+    {
+      "id": "step-2-create-the-recipe-file",
+      "text": "Step 2: Create the Recipe File",
+      "level": 2
+    },
+    {
+      "id": "step-3-write-the-recipe",
+      "text": "Step 3: Write the Recipe",
+      "level": 2
+    },
+    {
+      "id": "step-4-understanding-each-line",
+      "text": "Step 4: Understanding Each Line",
+      "level": 2
+    },
+    {
+      "id": "step-5-update-mod-info",
+      "text": "Step 5: Update mod.info",
+      "level": 2
+    },
+    {
+      "id": "step-6-test-the-recipe",
+      "text": "Step 6: Test the Recipe",
+      "level": 2
+    },
+    {
+      "id": "troubleshooting",
+      "text": "Troubleshooting",
+      "level": 2
+    },
+    {
+      "id": "adding-more-recipes",
+      "text": "Adding More Recipes",
+      "level": 2
+    },
+    {
+      "id": "variations-to-try",
+      "text": "Variations to Try",
+      "level": 2
+    },
+    {
+      "id": "complete-working-example",
+      "text": "Complete Working Example",
+      "level": 2
+    },
+    {
+      "id": "key-takeaways",
+      "text": "Key Takeaways",
+      "level": 2
+    },
+    {
+      "id": "next-steps",
+      "text": "Next Steps",
+      "level": 2
+    }
+  ]
+}

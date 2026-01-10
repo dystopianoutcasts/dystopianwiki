@@ -1,0 +1,35 @@
+{
+  "id": "ai-assisted",
+  "name": "AI-Assisted Modding",
+  "slug": "ai-assisted",
+  "articles": [
+    {
+      "id": "ai-for-modding",
+      "title": "AI Tools for Modding",
+      "slug": "ai-for-modding",
+      "difficulty": "beginner",
+      "order": 1
+    },
+    {
+      "id": "writing-prompts",
+      "title": "Writing Good Prompts",
+      "slug": "writing-prompts",
+      "difficulty": "beginner",
+      "order": 2
+    },
+    {
+      "id": "ai-debugging",
+      "title": "AI for Debugging",
+      "slug": "ai-debugging",
+      "difficulty": "beginner",
+      "order": 3
+    },
+    {
+      "id": "context-library",
+      "title": "Building a Context Library",
+      "slug": "context-library",
+      "difficulty": "intermediate",
+      "order": 4
+    }
+  ]
+}

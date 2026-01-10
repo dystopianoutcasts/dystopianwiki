@@ -1,0 +1,77 @@
+{
+  "id": "setup-vscode-setup",
+  "title": "Installing VS Code",
+  "slug": "vscode-setup",
+  "version": "build-41",
+  "section": "modding",
+  "category": "setup",
+  "tags": [
+    "beginner",
+    "setup",
+    "vscode",
+    "editor",
+    "tools",
+    "getting-started"
+  ],
+  "content": "# Installing VS Code\n\n## Overview\n\nVisual Studio Code (VS Code) is a free, lightweight code editor that's perfect for PZ modding. It handles Lua scripts, text files, and JSON with syntax highlighting, making errors easier to spot.\n\n## Why VS Code?\n\n| Feature | Benefit for Modding |\n|---------|--------------------|\n| **Free & Cross-Platform** | Works on Windows, Mac, Linux |\n| **Lua Support** | Syntax highlighting for .lua files |\n| **Folder View** | See your entire mod structure at once |\n| **Search** | Find text across all files instantly |\n| **Extensions** | Add Lua linting, PZ-specific tools |\n| **Lightweight** | Runs fast, even on older machines |\n\n## Installation Steps\n\n### Step 1: Download VS Code\n\n1. Go to [code.visualstudio.com](https://code.visualstudio.com)\n2. Click the download button for your operating system\n3. Run the installer\n\n### Step 2: Install During Setup\n\nDuring installation, check these options:\n- **Add \"Open with Code\" to context menu** - Right-click folders to open them\n- **Register Code as an editor for supported file types** - Double-click to open files\n- **Add to PATH** - Use `code` command in terminal\n\n### Step 3: First Launch\n\nWhen VS Code opens:\n1. Choose your color theme (dark themes are easier on the eyes)\n2. Skip the \"Get Started\" tutorial for now\n3. Close the Welcome tab\n\n## Essential Extensions\n\nClick the Extensions icon (square icon on the left sidebar) and install:\n\n### 1. Lua (by sumneko)\n\nThe most important extension for PZ modding:\n- Lua syntax highlighting\n- Error detection\n- Auto-completion\n- Hover documentation\n\nSearch: `sumneko.lua`\n\n### 2. Even Better TOML\n\nFor reading mod.info files (TOML format):\n- Syntax highlighting for .info files\n\nSearch: `tamasfe.even-better-toml`\n\n### 3. EditorConfig\n\nMaintains consistent formatting:\n- Consistent indentation\n- Line ending handling\n\nSearch: `EditorConfig.EditorConfig`\n\n## Opening Your First Mod Folder\n\n### Method 1: File Menu\n1. File > Open Folder\n2. Navigate to your mod folder\n3. Click \"Select Folder\"\n\n### Method 2: Right-Click (if you enabled context menu)\n1. Find your mod folder in File Explorer\n2. Right-click the folder\n3. Select \"Open with Code\"\n\n### Method 3: Command Line\n```bash\ncd path/to/your/mod\ncode .\n```\n\n## Understanding the Interface\n\n```\n┌─────────────────────────────────────────────────────┐\n│  File  Edit  View  ...                    [icons]   │\n├──────────┬──────────────────────────────────────────┤\n│          │                                          │\n│  EXPLORER│     Editor Area                          │\n│          │     (your code here)                     │\n│  > media │                                          │\n│    > lua │                                          │\n│    > ... │                                          │\n│          │                                          │\n├──────────┴──────────────────────────────────────────┤\n│  PROBLEMS  OUTPUT  TERMINAL                         │\n└─────────────────────────────────────────────────────┘\n```\n\n**Key Areas:**\n- **Explorer** (left): Your mod's file tree\n- **Editor** (center): Where you write code\n- **Problems** (bottom): Shows errors and warnings\n- **Terminal** (bottom): Run commands\n\n## Useful Keyboard Shortcuts\n\n| Action | Windows/Linux | Mac |\n|--------|--------------|-----|\n| Open file | Ctrl+P | Cmd+P |\n| Search in files | Ctrl+Shift+F | Cmd+Shift+F |\n| Go to line | Ctrl+G | Cmd+G |\n| Toggle sidebar | Ctrl+B | Cmd+B |\n| Open terminal | Ctrl+` | Cmd+` |\n| Save file | Ctrl+S | Cmd+S |\n| Undo | Ctrl+Z | Cmd+Z |\n\n## Configuring for PZ Modding\n\n### Associate .txt Files with Lua\n\nPZ script files use `.txt` extension but contain Lua-like syntax:\n\n1. Open a `.txt` script file\n2. Click \"Plain Text\" in the bottom-right corner\n3. Select \"Configure File Association for '.txt'\"\n4. Choose \"Lua\"\n\nNow all .txt files get Lua highlighting.\n\n### Set Default Indentation\n\n1. File > Preferences > Settings\n2. Search \"tab size\"\n3. Set to `4` (PZ convention)\n4. Enable \"Insert Spaces\"\n\n## Workspace Settings\n\nCreate a `.vscode/settings.json` in your mod folder:\n\n```json\n{\n  \"files.associations\": {\n    \"*.txt\": \"lua\"\n  },\n  \"editor.tabSize\": 4,\n  \"editor.insertSpaces\": true,\n  \"files.eol\": \"\\n\"\n}\n```\n\nThis ensures consistent settings for your mod project.\n\n## Key Takeaways\n\n1. **VS Code is free** and works on all operating systems\n2. **Install the Lua extension** - it's essential for PZ modding\n3. **Open folders, not files** - see your whole mod structure\n4. **Learn Ctrl+P and Ctrl+Shift+F** - navigate and search fast\n5. **Associate .txt with Lua** for syntax highlighting in script files\n\n## Next Steps\n\n- **[Mod Folder Structure](/build-41/modding/setup/mod-folder-structure)** - Create your first mod folder\n- **[The mod.info File](/build-41/modding/setup/mod-info-file)** - Configure your mod's metadata",
+  "excerpt": "Set up Visual Studio Code for Project Zomboid modding with essential extensions, keyboard shortcuts, and configuration tips.",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "why-vs-code",
+      "text": "Why VS Code?",
+      "level": 2
+    },
+    {
+      "id": "installation-steps",
+      "text": "Installation Steps",
+      "level": 2
+    },
+    {
+      "id": "essential-extensions",
+      "text": "Essential Extensions",
+      "level": 2
+    },
+    {
+      "id": "opening-your-first-mod-folder",
+      "text": "Opening Your First Mod Folder",
+      "level": 2
+    },
+    {
+      "id": "understanding-the-interface",
+      "text": "Understanding the Interface",
+      "level": 2
+    },
+    {
+      "id": "useful-keyboard-shortcuts",
+      "text": "Useful Keyboard Shortcuts",
+      "level": 2
+    },
+    {
+      "id": "configuring-for-pz-modding",
+      "text": "Configuring for PZ Modding",
+      "level": 2
+    },
+    {
+      "id": "workspace-settings",
+      "text": "Workspace Settings",
+      "level": 2
+    },
+    {
+      "id": "key-takeaways",
+      "text": "Key Takeaways",
+      "level": 2
+    },
+    {
+      "id": "next-steps",
+      "text": "Next Steps",
+      "level": 2
+    }
+  ]
+}

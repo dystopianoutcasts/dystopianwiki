@@ -1,0 +1,72 @@
+{
+  "id": "recipes-recipe-anatomy",
+  "title": "Anatomy of a Recipe",
+  "slug": "recipe-anatomy",
+  "version": "build-41",
+  "section": "modding",
+  "category": "recipes",
+  "tags": [
+    "beginner",
+    "recipe",
+    "anatomy",
+    "syntax",
+    "learning-path",
+    "fundamentals"
+  ],
+  "content": "# Anatomy of a Recipe\n\n## Overview\n\nRecipes define how players craft items. Understanding recipe structure is essential for creating your own. This guide breaks down a vanilla recipe line by line.\n\n## The Simplest Recipe\n\nLet's start with the most basic recipe possible:\n\n```\nmodule Base {\n    recipe Open Canned Beans {\n        CannedBeans,\n        TinOpener,\n\n        Result:CannedBeansOpen,\n        Time:30,\n    }\n}\n```\n\nThis recipe:\n- Combines `CannedBeans` + `TinOpener`\n- Produces `CannedBeansOpen`\n- Takes 30 time units\n\n## Breaking It Down\n\n### Line 1: Module Declaration\n\n```\nmodule Base {\n```\n\nThe `module` tells PZ which namespace to use. `Base` is the vanilla namespace. Your recipe can:\n- Use `Base` to reference vanilla items\n- Use a custom module for mod-specific items\n\n### Line 2: Recipe Name\n\n```\n    recipe Open Canned Beans {\n```\n\n- `recipe` - Keyword that starts a recipe definition\n- `Open Canned Beans` - Display name shown to players\n- `{` - Opens the recipe block\n\n### Lines 3-4: Ingredients\n\n```\n        CannedBeans,\n        TinOpener,\n```\n\nEach ingredient is listed on its own line:\n- Item IDs, not display names\n- Comma after each item (including the last)\n- By default, items are **consumed** (destroyed)\n\n### Line 5: Empty Line\n\nThe blank line separates ingredients from results. It's optional but improves readability.\n\n### Line 6: Result\n\n```\n        Result:CannedBeansOpen,\n```\n\n- `Result:` - Keyword followed by colon\n- `CannedBeansOpen` - Item ID to create\n- Multiple results: `Result:Plank=3,` (creates 3 planks)\n\n### Line 7: Time\n\n```\n        Time:30,\n```\n\n- `Time:` - How long the crafting takes\n- `30` - Time units (roughly relates to in-game time)\n- Higher = longer crafting animation\n\n### Lines 8-9: Closing\n\n```\n    }\n}\n```\n\nClose the recipe block and module block.\n\n## Recipe Syntax Rules\n\n### Key Rule: Colons for Properties\n\nRecipes use `:` (colon), not `=` (equals):\n\n```\n✓ Result:Plank,\n✗ Result=Plank,\n\n✓ Time:50,\n✗ Time=50,\n```\n\n### Key Rule: Commas After Everything\n\n```\n✓ Plank,\n✓ Nails=5,\n✓ Result:Crate,\n✗ Result:Crate\n```\n\n(Missing comma causes errors)\n\n## A More Complex Example\n\nHere's a vanilla recipe with more features:\n\n```\nmodule Base {\n    recipe Saw Logs {\n        Log,\n        keep [Recipe.GetItemTypes.Saw],\n\n        Result:Plank=3,\n        Time:230.0,\n        Category:Carpentry,\n        OnGiveXP:Recipe.OnGiveXP.SawLogs,\n        Sound:Sawing,\n        AnimNode:SawLog,\n    }\n}\n```\n\n### New Elements Explained\n\n| Element | Purpose |\n|---------|--------|\n| `keep` | Tool not consumed |\n| `[Recipe.GetItemTypes.Saw]` | Accepts any saw type |\n| `Result:Plank=3` | Creates 3 planks |\n| `Category:Carpentry` | Recipe menu category |\n| `OnGiveXP:...` | Awards XP on completion |\n| `Sound:Sawing` | Plays sound effect |\n| `AnimNode:SawLog` | Character animation |\n\n## Common Recipe Properties\n\n### Essential Properties\n\n| Property | Example | Purpose |\n|----------|---------|--------|\n| `Result:` | `Result:Plank,` | What gets created |\n| `Time:` | `Time:50.0,` | Crafting duration |\n\n### Tool Handling\n\n| Property | Example | Purpose |\n|----------|---------|--------|\n| `keep` | `keep Hammer,` | Don't consume this item |\n| `destroy` | `destroy Hammer,` | Explicitly consume |\n\n### Requirements\n\n| Property | Example | Purpose |\n|----------|---------|--------|\n| `SkillRequired:` | `SkillRequired:Carpentry=2,` | Minimum skill level |\n| `NeedToBeLearn:` | `NeedToBeLearn:true,` | Must read recipe magazine |\n\n### Feedback\n\n| Property | Example | Purpose |\n|----------|---------|--------|\n| `Sound:` | `Sound:Sawing,` | Sound effect |\n| `AnimNode:` | `AnimNode:SawLog,` | Character animation |\n| `Category:` | `Category:Cooking,` | UI category |\n\n### XP & Leveling\n\n| Property | Example | Purpose |\n|----------|---------|--------|\n| `OnGiveXP:` | `OnGiveXP:Recipe.OnGiveXP.SawLogs,` | Lua function for XP |\n\n## Reading Vanilla Recipes\n\nVanilla recipes are in:\n```\nSteam\\steamapps\\common\\ProjectZomboid\\media\\scripts\\recipes.txt\n```\n\nOpen this file to see hundreds of examples. Key files:\n- `recipes.txt` - Main crafting recipes\n- `recipes_food.txt` - Cooking recipes\n- `recipes_furniture.txt` - Building recipes\n\n## Recipe Categories\n\nCommon categories for the `Category:` property:\n\n| Category | For |\n|----------|-----|\n| `Cooking` | Food preparation |\n| `Carpentry` | Wood crafting |\n| `Metalworking` | Metal crafting |\n| `Tailoring` | Clothing repair/creation |\n| `Mechanics` | Vehicle parts |\n| `Electrical` | Electronic items |\n| `Survivalist` | General survival crafting |\n\n## Key Takeaways\n\n1. **Module wraps everything** - Usually `Base`\n2. **Ingredients before properties** - Listed first, then results\n3. **Use colons, not equals** - `Result:Item,` not `Result=Item`\n4. **Commas everywhere** - After every line inside the recipe\n5. **`keep` preserves tools** - Otherwise items are consumed\n\n## Next Steps\n\n- **[Your First Recipe File](/build-41/modding/recipes/first-recipe-file)** - Write your own recipe\n- **[Testing Your Recipe](/build-41/modding/recipes/testing-recipes)** - Load and test in-game",
+  "excerpt": "Learn the structure and syntax of Project Zomboid recipes by breaking down a vanilla recipe line by line.",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "the-simplest-recipe",
+      "text": "The Simplest Recipe",
+      "level": 2
+    },
+    {
+      "id": "breaking-it-down",
+      "text": "Breaking It Down",
+      "level": 2
+    },
+    {
+      "id": "recipe-syntax-rules",
+      "text": "Recipe Syntax Rules",
+      "level": 2
+    },
+    {
+      "id": "a-more-complex-example",
+      "text": "A More Complex Example",
+      "level": 2
+    },
+    {
+      "id": "common-recipe-properties",
+      "text": "Common Recipe Properties",
+      "level": 2
+    },
+    {
+      "id": "reading-vanilla-recipes",
+      "text": "Reading Vanilla Recipes",
+      "level": 2
+    },
+    {
+      "id": "recipe-categories",
+      "text": "Recipe Categories",
+      "level": 2
+    },
+    {
+      "id": "key-takeaways",
+      "text": "Key Takeaways",
+      "level": 2
+    },
+    {
+      "id": "next-steps",
+      "text": "Next Steps",
+      "level": 2
+    }
+  ]
+}

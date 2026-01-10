@@ -1,0 +1,77 @@
+{
+  "id": "ai-assisted-writing-prompts",
+  "title": "Writing Good Prompts",
+  "slug": "writing-prompts",
+  "version": "build-41",
+  "section": "modding",
+  "category": "ai-assisted",
+  "tags": [
+    "beginner",
+    "ai",
+    "prompts",
+    "tips",
+    "workflow",
+    "productivity"
+  ],
+  "content": "# Writing Good Prompts\n\n## Overview\n\nThe quality of AI output depends on the quality of your input. A vague prompt gets vague results. A specific, well-structured prompt gets useful code. This guide teaches you how to write prompts that get results.\n\n## The CERC Framework\n\nUse this structure for consistent results:\n\n| Element | Purpose | Example |\n|---------|---------|--------|\n| **C**ontext | Set the scene | \"In Project Zomboid Build 41...\" |\n| **E**xample | Show what you want | \"Similar to the vanilla Axe item...\" |\n| **R**equest | State your need | \"Create a recipe that...\" |\n| **C**onstraints | Set boundaries | \"The recipe should not require Lua\" |\n\n## Bad vs Good Prompts\n\n### Example 1: Item Creation\n\n**Bad:**\n> \"Make me a sword item\"\n\n**Good:**\n> \"In Project Zomboid Build 41, create a script file item definition for a katana sword. It should:\n> - Be a two-handed weapon\n> - Have high damage but low durability\n> - Use the existing KatanaModelMale attachment\n> - Follow the same format as vanilla's Axe item\n> \n> I only need the item script, no Lua.\"\n\n### Example 2: Recipe Creation\n\n**Bad:**\n> \"Recipe for crafting something\"\n\n**Good:**\n> \"Create a PZ Build 41 recipe definition that:\n> - Combines 2 short planks and 4 nails to make a wooden sign\n> - Requires a hammer (not consumed)\n> - Takes 60 time units\n> - Gives carpentry XP\n> - Uses the Carpentry category\n> \n> Output in script file format (.txt), using module Base.\"\n\n### Example 3: Explaining Code\n\n**Bad:**\n> \"What does this do?\" [pastes 100 lines]\n\n**Good:**\n> \"I'm learning PZ modding. Please explain this vanilla recipe line by line. I don't understand what 'keep' does or why there are square brackets:\n> ```\n> recipe Saw Logs {\n>     Log,\n>     keep [Recipe.GetItemTypes.Saw],\n>     Result:Plank=3,\n>     Time:230.0,\n> }\n> ```\"\n\n## Context That Helps\n\n### Always Include\n\n1. **Game and version:** \"Project Zomboid Build 41\"\n2. **File type:** \"script file (.txt)\" or \"Lua file\"\n3. **Module:** \"using module Base\" or \"custom module MyMod\"\n\n### Include When Relevant\n\n1. **Your skill level:** \"I'm a beginner\" helps AI calibrate explanations\n2. **What you've tried:** \"I tried X but got error Y\"\n3. **Similar vanilla content:** \"Like the vanilla Axe but...\"\n4. **What you don't want:** \"No Lua required\" or \"Server-side only\"\n\n## Providing Examples\n\nAI learns from examples. Always include relevant vanilla code:\n\n**Prompt:**\n> \"Create a food item similar to this vanilla example but for a custom pizza:\n> ```\n> item Apple {\n>     DisplayCategory = Food,\n>     Type = Food,\n>     DisplayName = Apple,\n>     Icon = Apple,\n>     Weight = 0.2,\n>     HungerChange = -10,\n>     ThirstChange = 5,\n>     Calories = 52,\n>     Carbohydrates = 14,\n>     Proteins = 0,\n>     Lipids = 0,\n> }\n> ```\n> \n> My pizza should restore more hunger, have cheese nutrients, and be heavier.\"\n\nThe AI now knows exactly what format to follow and what properties to adjust.\n\n## Asking for Explanations\n\nDon't just ask for code - ask for understanding:\n\n**Instead of:**\n> \"Give me the code\"\n\n**Try:**\n> \"Give me the code and explain each property so I can modify it later\"\n\n**Or:**\n> \"Write the code with comments explaining what each line does\"\n\n## Iterating Effectively\n\n### When Something Doesn't Work\n\n**Bad:**\n> \"It doesn't work\"\n\n**Good:**\n> \"When I load this in PZ, I get this error in console.txt:\n> ```\n> ERROR: ScriptModule.CreateFromToken> Unknown item type: MyMod.CustomSword\n> ```\n> Here's my full item script: [paste code]\n> \n> What's wrong?\"\n\n### When You Need Changes\n\n**Bad:**\n> \"Make it better\"\n\n**Good:**\n> \"This works but I need two changes:\n> 1. Increase the damage from 1.5 to 2.5\n> 2. Add a sound effect when swinging\n> \n> Which properties control these?\"\n\n## Prompt Templates\n\n### For New Items\n\n```\nIn Project Zomboid Build 41, create a script item definition for [item name].\n\nItem properties:\n- Type: [Normal/Weapon/Food/etc]\n- Weight: [number]\n- [Other specific properties]\n\nBased on vanilla item: [similar vanilla item]\nModule: Base (or custom)\nOutput format: script file (.txt)\n```\n\n### For New Recipes\n\n```\nCreate a PZ Build 41 recipe script for [recipe name].\n\nIngredients:\n- [item1] x[quantity]\n- [item2] (kept/destroyed)\n\nResult: [output item]\nTime: [time units]\nCategory: [Cooking/Carpentry/etc]\n\nAdditional requirements:\n- [skill requirements]\n- [XP rewards]\n\nModule: Base\nFormat: script file (.txt)\n```\n\n### For Debugging\n\n```\nI'm getting this error in PZ Build 41:\n\n[paste full error message]\n\nHere's my code:\n\n[paste your code]\n\nWhat's causing this error and how do I fix it?\n```\n\n### For Understanding Vanilla\n\n```\nExplain this vanilla PZ code line by line. I'm a beginner modder.\n\n[paste code]\n\nSpecifically, I don't understand:\n1. [specific confusion]\n2. [specific confusion]\n```\n\n## Common Mistakes\n\n### Being Too Vague\n\n❌ \"Make a mod\"  \n✓ \"Create a script file that adds a crowbar item in Build 41\"\n\n### No Version Specified\n\n❌ \"PZ recipe syntax\"  \n✓ \"PZ Build 41 recipe syntax\"\n\n### No Format Specified\n\n❌ \"Create an item\"  \n✓ \"Create an item definition in script file format (.txt)\"\n\n### Asking Multiple Things at Once\n\n❌ \"Make an item, recipe, and Lua script for a new weapon system\"  \n✓ Start with one: \"First, create the item definition for the weapon\"\n\n## Key Takeaways\n\n1. **Use CERC** - Context, Example, Request, Constraints\n2. **Be specific** - Version, format, module, file type\n3. **Include examples** - Paste vanilla code you want to match\n4. **Include errors** - Full error messages help AI debug\n5. **Iterate** - Refine prompts based on results\n6. **Ask for explanations** - Understanding beats copy-paste\n\n## Next Steps\n\n- **[AI for Debugging](/build-41/modding/ai-assisted/ai-debugging)** - Use AI to fix errors\n- **[Building a Context Library](/build-41/modding/ai-assisted/context-library)** - Create reference files for better AI results",
+  "excerpt": "Learn the CERC framework for writing AI prompts that produce useful, accurate code for Project Zomboid modding.",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "the-cerc-framework",
+      "text": "The CERC Framework",
+      "level": 2
+    },
+    {
+      "id": "bad-vs-good-prompts",
+      "text": "Bad vs Good Prompts",
+      "level": 2
+    },
+    {
+      "id": "context-that-helps",
+      "text": "Context That Helps",
+      "level": 2
+    },
+    {
+      "id": "providing-examples",
+      "text": "Providing Examples",
+      "level": 2
+    },
+    {
+      "id": "asking-for-explanations",
+      "text": "Asking for Explanations",
+      "level": 2
+    },
+    {
+      "id": "iterating-effectively",
+      "text": "Iterating Effectively",
+      "level": 2
+    },
+    {
+      "id": "prompt-templates",
+      "text": "Prompt Templates",
+      "level": 2
+    },
+    {
+      "id": "common-mistakes",
+      "text": "Common Mistakes",
+      "level": 2
+    },
+    {
+      "id": "key-takeaways",
+      "text": "Key Takeaways",
+      "level": 2
+    },
+    {
+      "id": "next-steps",
+      "text": "Next Steps",
+      "level": 2
+    }
+  ]
+}

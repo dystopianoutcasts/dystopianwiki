@@ -1,0 +1,82 @@
+{
+  "id": "items-item-icons",
+  "title": "Creating Item Icons",
+  "slug": "item-icons",
+  "version": "build-41",
+  "section": "modding",
+  "category": "items",
+  "tags": [
+    "beginner",
+    "item",
+    "icons",
+    "textures",
+    "learning-path",
+    "graphics"
+  ],
+  "content": "# Creating Item Icons\n\n## Overview\n\nEvery item needs an icon. You can use vanilla icons to start, but custom items deserve custom icons. This guide covers icon requirements, creation, and implementation.\n\n## Icon Requirements\n\n### Technical Specs\n\n| Property | Requirement |\n|----------|------------|\n| **Format** | PNG with transparency |\n| **Size** | 32x32 pixels (standard) |\n| **Color depth** | 32-bit (RGBA) |\n| **Background** | Transparent |\n\n### File Location\n\nIcons go in:\n```\nYourMod/\n└── media/\n    └── textures/\n        └── Item/\n            └── YourIcon.png\n```\n\n**Important:** The `Item` folder must have capital `I`.\n\n## Using Vanilla Icons\n\n### Quick Start: Borrow Vanilla Icons\n\nUntil you create custom icons, use existing ones:\n\n```\nitem MyWeapon {\n    Type = Weapon,\n    DisplayName = Custom Sword,\n    Icon = Katana,          <- Vanilla icon name\n    Weight = 2.0,\n}\n```\n\n### Common Vanilla Icons\n\n| Icon Name | Item Type |\n|-----------|----------|\n| `Axe` | Tools |\n| `Hammer` | Tools |\n| `Apple` | Food |\n| `Chocolate` | Snacks |\n| `Katana` | Bladed weapons |\n| `BaseballBat` | Blunt weapons |\n| `WaterBottleFull` | Containers |\n| `Pills` | Medicine |\n| `Screwdriver` | Tools |\n| `DuctTape` | Materials |\n\n### Finding Vanilla Icons\n\nVanilla icons are at:\n```\nSteam\\steamapps\\common\\ProjectZomboid\\media\\textures\\Item\\\n```\n\nBrowse to see all available icons.\n\n## Creating Custom Icons\n\n### Method 1: Edit Vanilla Icons\n\nThe fastest approach:\n\n1. Find a similar vanilla icon\n2. Copy it to your mod's textures folder\n3. Rename it\n4. Edit colors/details\n\n### Method 2: Create From Scratch\n\n#### Tools (Free Options)\n\n| Tool | Platform | Best For |\n|------|----------|----------|\n| **GIMP** | All | Full-featured editing |\n| **Aseprite** | All | Pixel art (paid but excellent) |\n| **Piskel** | Web/All | Simple pixel art |\n| **Paint.NET** | Windows | Easy editing |\n| **Photoshop** | All | Professional (paid) |\n\n#### Basic Creation Steps\n\n1. **Create 32x32 canvas** with transparent background\n2. **Draw your icon** - Keep it simple and recognizable\n3. **Match PZ style** - Look at vanilla for reference\n4. **Save as PNG** - Ensure transparency is preserved\n\n### Method 3: AI Image Generation\n\nAI can help create icons:\n\n1. Generate a concept image\n2. Scale down to 32x32\n3. Clean up and add transparency\n4. Match PZ's visual style\n\n## Implementing Your Icon\n\n### Step 1: Create Folder Structure\n\n```\nMyMod/\n└── media/\n    └── textures/\n        └── Item/\n            └── EnergyBar.png    <- Your icon\n```\n\n### Step 2: Reference in Script\n\n```\nitem EnergyBar {\n    Type = Food,\n    DisplayName = Energy Bar,\n    Icon = EnergyBar,      <- Matches filename without .png\n    Weight = 0.1,\n}\n```\n\n### Step 3: Test In-Game\n\n1. Enable mod\n2. Start game\n3. Spawn item\n4. Check inventory icon\n\n## Icon Best Practices\n\n### Do\n\n- **Keep it simple** - 32x32 is tiny\n- **Use clear silhouettes** - Recognizable at a glance\n- **Match vanilla style** - Consistent with base game\n- **Use transparency** - No solid backgrounds\n- **Test at actual size** - Looks different zoomed out\n\n### Don't\n\n- **Add too much detail** - Gets lost at small size\n- **Use tiny text** - Unreadable\n- **Make it too dark** - Hard to see\n- **Ignore transparency** - White boxes look bad\n\n## Color Palette Tips\n\n### Match PZ's Style\n\nPZ icons use:\n- Muted, slightly desaturated colors\n- Soft shadows (not harsh black)\n- Consistent lighting (top-left source)\n- Simple highlights\n\n### Quick Color Reference\n\n| Item Type | Color Tendency |\n|-----------|---------------|\n| Weapons | Grays, browns, metallics |\n| Food | Warm colors, naturals |\n| Medicine | White, red, blue |\n| Tools | Gray, yellow, brown |\n| Materials | Browns, grays, muted |\n\n## Multiple Icon Variations\n\nSome items need multiple icons:\n\n### Different States\n\n```\nmedia/textures/Item/\n├── WaterBottleFull.png    <- Full bottle\n├── WaterBottleHalf.png    <- Half full\n└── WaterBottleEmpty.png   <- Empty bottle\n```\n\n### Icon Rotation (Optional)\n\nFor ground items, you might create rotated versions.\n\n## Troubleshooting\n\n### Icon Not Showing\n\n1. **Check folder path** - Must be `media/textures/Item/`\n2. **Check capitalization** - `Item` not `item`\n3. **Check filename** - Must match `Icon = ` property exactly\n4. **Check file format** - Must be `.png`\n\n### Icon Has White Background\n\n- Transparency not saved properly\n- Re-export as 32-bit PNG with alpha channel\n- In GIMP: Export > PNG > Save background color\n\n### Icon Looks Wrong\n\n- Check image is 32x32 pixels\n- Ensure scaling used nearest-neighbor (for pixel art)\n- Verify colors aren't too dark or too bright\n\n### Icon Works in Menu But Not Inventory\n\n- Some UI elements use different icon references\n- Check `WorldStaticModel` for world representation\n\n## Quick Reference\n\n### Folder Structure\n\n```\nMyMod/\n└── media/\n    └── textures/\n        └── Item/             <- Capital I!\n            └── MyIcon.png    <- Your icons\n```\n\n### Script Reference\n\n```\nitem MyItem {\n    Icon = MyIcon,    <- No .png, no path\n}\n```\n\n### Icon Specs\n\n- Size: 32x32 pixels\n- Format: PNG\n- Background: Transparent\n- Color: 32-bit RGBA\n\n## Key Takeaways\n\n1. **Start with vanilla icons** - Faster to prototype\n2. **Icons go in `media/textures/Item/`** - Capital I\n3. **32x32 PNG with transparency** - Standard format\n4. **Filename matches Icon property** - No extension in script\n5. **Keep it simple** - Detail gets lost at small sizes\n\n## Next Steps\n\n- **[Connecting Items and Recipes](/build-41/modding/items/item-recipe-connection)** - Make items craftable\n- **[Your First Recipe File](/build-41/modding/recipes/first-recipe-file)** - Create recipes using your items",
+  "excerpt": "Learn how to create and implement custom item icons for Project Zomboid mods, including technical requirements and best practices.",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "icon-requirements",
+      "text": "Icon Requirements",
+      "level": 2
+    },
+    {
+      "id": "using-vanilla-icons",
+      "text": "Using Vanilla Icons",
+      "level": 2
+    },
+    {
+      "id": "creating-custom-icons",
+      "text": "Creating Custom Icons",
+      "level": 2
+    },
+    {
+      "id": "implementing-your-icon",
+      "text": "Implementing Your Icon",
+      "level": 2
+    },
+    {
+      "id": "icon-best-practices",
+      "text": "Icon Best Practices",
+      "level": 2
+    },
+    {
+      "id": "color-palette-tips",
+      "text": "Color Palette Tips",
+      "level": 2
+    },
+    {
+      "id": "multiple-icon-variations",
+      "text": "Multiple Icon Variations",
+      "level": 2
+    },
+    {
+      "id": "troubleshooting",
+      "text": "Troubleshooting",
+      "level": 2
+    },
+    {
+      "id": "quick-reference",
+      "text": "Quick Reference",
+      "level": 2
+    },
+    {
+      "id": "key-takeaways",
+      "text": "Key Takeaways",
+      "level": 2
+    },
+    {
+      "id": "next-steps",
+      "text": "Next Steps",
+      "level": 2
+    }
+  ]
+}

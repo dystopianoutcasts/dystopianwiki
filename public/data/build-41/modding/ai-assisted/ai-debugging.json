@@ -1,0 +1,77 @@
+{
+  "id": "ai-assisted-ai-debugging",
+  "title": "AI for Debugging",
+  "slug": "ai-debugging",
+  "version": "build-41",
+  "section": "modding",
+  "category": "ai-assisted",
+  "tags": [
+    "beginner",
+    "ai",
+    "debugging",
+    "errors",
+    "troubleshooting",
+    "console"
+  ],
+  "content": "# AI for Debugging\n\n## Overview\n\nError messages can be cryptic. AI excels at translating these into plain English and suggesting fixes. This guide shows you how to use AI as your debugging partner.\n\n## The Debugging Workflow\n\n```\n1. Error occurs in game\n        ↓\n2. Copy error from console.txt\n        ↓\n3. Paste error + your code to AI\n        ↓\n4. AI explains problem and suggests fix\n        ↓\n5. Apply fix, test again\n        ↓\n6. Repeat until resolved\n```\n\n## Finding Error Messages\n\n### Console.txt Location\n\n```\n%UserProfile%\\Zomboid\\console.txt\n```\n\nOr: `C:\\Users\\YourName\\Zomboid\\console.txt`\n\n### In-Game Console\n\nWith debug mode enabled, press `~` to see errors live.\n\n### What to Copy\n\nCopy the entire error block, not just one line:\n\n```\nERROR: General, 1705234567890> ExceptionLogger.logException> Exception thrown\njava.lang.RuntimeException: attempted index of nil value 'player'\n    at KahluaThread.lua:89\n    at function: OnPlayerUpdate -- file: MyMod/client/main.lua line # 23\n    at Events.OnPlayerUpdate.lua:15\n```\n\nThis tells AI:\n- Error type: `attempted index of nil value`\n- Variable: `player`\n- File: `MyMod/client/main.lua`\n- Line: 23\n\n## Formatting Your Debug Request\n\n### Template\n\n```\nI'm getting this error in Project Zomboid Build 41:\n\n```\n[paste complete error message]\n```\n\nHere's the relevant code from [filename]:\n\n```lua\n[paste your code]\n```\n\nWhat's causing this and how do I fix it?\n```\n\n### Example Request\n\n```\nI'm getting this error in Project Zomboid Build 41:\n\n```\nERROR: attempted index of nil value 'player'\n  at function: OnGameStart -- file: MyMod/client/main.lua line # 12\n```\n\nHere's my code from main.lua:\n\n```lua\nlocal function OnGameStart()\n    local player = getPlayer()\n    local inventory = player:getInventory()\n    inventory:AddItem(\"Base.Axe\")\nend\n\nEvents.OnGameStart.Add(OnGameStart)\n```\n\nWhat's causing this and how do I fix it?\n```\n\n### AI Response Example\n\n> \"The error occurs because `getPlayer()` returns `nil` during `OnGameStart`. This event fires before the player is fully loaded.\n> \n> **Fix:** Use `OnCreatePlayer` instead, which fires after the player exists:\n> \n> ```lua\n> local function OnCreatePlayer(playerNum, player)\n>     local inventory = player:getInventory()\n>     inventory:AddItem(\"Base.Axe\")\n> end\n> \n> Events.OnCreatePlayer.Add(OnCreatePlayer)\n> ```\n> \n> Notice the event passes the `player` directly as a parameter.\"\n\n## Common Error Types\n\n### Nil Value Errors\n\n**Error:** `attempted index of nil value 'something'`\n\n**Meaning:** You're trying to use a variable that doesn't exist or hasn't been set yet.\n\n**AI Prompt:**\n> \"This nil error suggests 'player' doesn't exist. When in PZ's lifecycle does getPlayer() return a valid player?\"\n\n### Syntax Errors\n\n**Error:** `unexpected symbol near '}'`\n\n**Meaning:** Missing comma, bracket, or other syntax issue.\n\n**AI Prompt:**\n> \"I have a Lua syntax error. Please check this code for missing commas, brackets, or syntax issues:\n> [paste code]\"\n\n### Module/Item Not Found\n\n**Error:** `Unknown item type: MyMod.CustomItem`\n\n**Meaning:** The game can't find your item definition.\n\n**AI Prompt:**\n> \"PZ can't find my item. Here's my script file and folder structure. What's wrong?\n> [paste script]\n> [describe folder location]\"\n\n### Script Parse Errors\n\n**Error:** `Error parsing script at line 15`\n\n**Meaning:** Your .txt script file has a syntax problem.\n\n**AI Prompt:**\n> \"My PZ script won't parse. Error at line 15. Here's the full script:\n> [paste script]\n> Remember PZ scripts use = for items and : for recipes.\"\n\n## Advanced Debugging Techniques\n\n### Asking AI to Trace Logic\n\n```\nThis code runs without errors but doesn't do what I expect.\n\nExpected: [what you want to happen]\nActual: [what happens]\n\nCode:\n[paste code]\n\nCan you trace through the logic and find where it goes wrong?\n```\n\n### Asking for Defensive Code\n\n```\nThis code crashes when the player doesn't have the item.\nHow do I add nil checks to prevent the crash?\n\n[paste code]\n```\n\n### Asking for Logging\n\n```\nI can't figure out why this isn't working.\nCan you add print() statements so I can see what's happening at each step?\n\n[paste code]\n```\n\n## Reading AI's Debugging Response\n\nA good AI response includes:\n\n1. **What's wrong** - The specific problem\n2. **Why it's wrong** - The root cause\n3. **How to fix it** - Corrected code\n4. **Why the fix works** - Explanation\n\nIf AI only gives code without explanation, ask:\n> \"Can you explain why this fix works? I want to understand for next time.\"\n\n## Iterating on Fixes\n\n### When the Fix Doesn't Work\n\n```\nI applied your fix but now I get a different error:\n\n[paste new error]\n\nHere's the updated code:\n\n[paste updated code]\n```\n\n### When You Need More Context\n\n```\nYour fix mentions [concept]. I don't understand that.\nCan you explain [concept] in beginner terms?\n```\n\n### When You Want Alternatives\n\n```\nThis fix works but seems complex.\nIs there a simpler way to achieve the same result?\n```\n\n## Building Debugging Skills\n\nOver time, you'll recognize patterns:\n\n| Error Pattern | Likely Cause |\n|--------------|-------------|\n| `nil value` | Using something before it exists |\n| `expected X near Y` | Syntax error (comma, bracket) |\n| `Unknown item type` | Item not defined or wrong module |\n| `attempt to call a nil value` | Function doesn't exist |\n| `stack overflow` | Infinite loop or recursion |\n\nAsk AI to help you learn these patterns:\n> \"What are the most common PZ Lua errors and what causes each one?\"\n\n## Key Takeaways\n\n1. **Copy the full error** - Include the entire stack trace\n2. **Include your code** - AI needs context\n3. **Specify PZ version** - \"Build 41\" matters\n4. **Ask for explanations** - Learn why, not just what\n5. **Iterate** - Debugging often takes multiple rounds\n\n## Next Steps\n\n- **[Building a Context Library](/build-41/modding/ai-assisted/context-library)** - Create reference files for better AI results\n- **[Debug Mode](/build-41/modding/setup/debug-mode)** - Enable PZ's debug tools",
+  "excerpt": "Learn how to use AI assistants to debug Project Zomboid mod errors effectively - from reading error messages to iterating on fixes.",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "the-debugging-workflow",
+      "text": "The Debugging Workflow",
+      "level": 2
+    },
+    {
+      "id": "finding-error-messages",
+      "text": "Finding Error Messages",
+      "level": 2
+    },
+    {
+      "id": "formatting-your-debug-request",
+      "text": "Formatting Your Debug Request",
+      "level": 2
+    },
+    {
+      "id": "common-error-types",
+      "text": "Common Error Types",
+      "level": 2
+    },
+    {
+      "id": "advanced-debugging-techniques",
+      "text": "Advanced Debugging Techniques",
+      "level": 2
+    },
+    {
+      "id": "reading-ais-debugging-response",
+      "text": "Reading AI's Debugging Response",
+      "level": 2
+    },
+    {
+      "id": "iterating-on-fixes",
+      "text": "Iterating on Fixes",
+      "level": 2
+    },
+    {
+      "id": "building-debugging-skills",
+      "text": "Building Debugging Skills",
+      "level": 2
+    },
+    {
+      "id": "key-takeaways",
+      "text": "Key Takeaways",
+      "level": 2
+    },
+    {
+      "id": "next-steps",
+      "text": "Next Steps",
+      "level": 2
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "id": "ai-assisted-context-library",
+  "title": "Building a Context Library",
+  "slug": "context-library",
+  "version": "build-41",
+  "section": "modding",
+  "category": "ai-assisted",
+  "tags": [
+    "intermediate",
+    "ai",
+    "context",
+    "reference",
+    "workflow",
+    "organization"
+  ],
+  "content": "# Building a Context Library\n\n## Overview\n\nAI tools perform better when given relevant examples and context. A context library is a collection of reference files you can paste into AI conversations to get more accurate, PZ-specific results. This guide shows you how to build one.\n\n## Why Context Libraries Work\n\nWithout context, AI might:\n- Use generic Lua patterns instead of PZ conventions\n- Guess at item property names\n- Miss PZ-specific syntax requirements\n\nWith context, AI can:\n- Match your existing code style\n- Use correct PZ property names\n- Follow established patterns exactly\n\n## What to Include\n\n### Essential References\n\n| Reference | Purpose | Example Use |\n|-----------|---------|------------|\n| **Vanilla item examples** | Correct property names | \"Make an item like this one\" |\n| **Vanilla recipe examples** | Correct recipe syntax | \"Follow this recipe format\" |\n| **Your mod's existing code** | Consistency | \"Match my existing style\" |\n| **PZ function signatures** | Correct API usage | \"Use this function correctly\" |\n\n### Recommended Files\n\n1. **5-10 vanilla item definitions** covering different types\n2. **5-10 vanilla recipe definitions** covering different patterns\n3. **Common Lua event handlers** from vanilla\n4. **Your mod's conventions** (naming, structure)\n\n## Creating Your Library\n\n### Step 1: Create a Folder\n\n```\nMyMod/\n├── mod.info\n├── media/\n└── _ai_context/           <- Your context library\n    ├── vanilla_items.txt\n    ├── vanilla_recipes.txt\n    ├── lua_events.txt\n    └── my_conventions.md\n```\n\nThe `_ai_context` folder won't affect your mod - it's just for reference.\n\n### Step 2: Extract Vanilla Examples\n\nOpen PZ's vanilla scripts and copy relevant examples:\n\n**vanilla_items.txt:**\n```\n-- WEAPON EXAMPLE\nitem BaseballBat {\n    MaxRange = 1.3,\n    WeaponSprite = BaseballBat,\n    MinAngle = 0.2,\n    Type = Weapon,\n    MinimumSwingTime = 3,\n    KnockBackOnNoDeath = TRUE,\n    SwingAmountBeforeImpact = 0.02,\n    Categories = Blunt,\n    ConditionLowerChanceOneIn = 30,\n    Weight = 2,\n    SplatNumber = 1,\n    PushBackMod = 0.5,\n    MaxDamage = 1.2,\n    SubCategory = Swinging,\n    ConditionMax = 15,\n    MaxHitCount = 2,\n    DoorDamage = 7,\n    SwingAnim = Bat,\n    DisplayName = Baseball Bat,\n    MinDamage = 0.8,\n    IdleAnim = Idle_Weapon2,\n    SwingTime = 3,\n    KnockdownMod = 2,\n    SplatBloodOnNoDeath = TRUE,\n    Icon = BaseballBat,\n    RunAnim = Run_Weapon2,\n    TwoHandWeapon = TRUE,\n    TreeDamage = 3,\n    CriticalChance = 25,\n    CritDmgMultiplier = 3,\n    AttachmentType = BigBlade,\n}\n\n-- FOOD EXAMPLE\nitem Apple {\n    HungerChange = -10,\n    Type = Food,\n    ThirstChange = 5,\n    DisplayName = Apple,\n    Icon = Apple,\n    Weight = 0.2,\n    Calories = 52,\n    Carbohydrates = 14,\n    Proteins = 0,\n    Lipids = 0,\n    DaysFresh = 6,\n    DaysTotallyRotten = 12,\n}\n\n-- TOOL EXAMPLE\nitem Hammer {\n    MaxRange = 0.9,\n    WeaponSprite = Hammer,\n    MinAngle = 0.2,\n    Type = Weapon,\n    MinimumSwingTime = 2.5,\n    Categories = Blunt,\n    ConditionLowerChanceOneIn = 20,\n    Weight = 1,\n    SplatNumber = 0,\n    MaxDamage = 0.5,\n    SubCategory = Swinging,\n    ConditionMax = 10,\n    MaxHitCount = 1,\n    DoorDamage = 1,\n    SwingAnim = Bat,\n    DisplayName = Hammer,\n    MinDamage = 0.3,\n    SwingTime = 2.5,\n    Icon = Hammer,\n    TreeDamage = 0,\n}\n```\n\n**vanilla_recipes.txt:**\n```\n-- SIMPLE RECIPE\nrecipe Open Beans {\n    CannedBeans,\n    TinOpener,\n\n    Result:CannedBeansOpen,\n    Time:30,\n}\n\n-- KEEP TOOL RECIPE\nrecipe Saw Logs {\n    Log,\n    keep [Recipe.GetItemTypes.Saw],\n\n    Result:Plank=3,\n    Time:230.0,\n    Category:Carpentry,\n    OnGiveXP:Recipe.OnGiveXP.SawLogs,\n}\n\n-- MULTI-INGREDIENT RECIPE\nrecipe Make Wooden Crate {\n    Plank=4,\n    Nails=8,\n    keep Hammer,\n\n    Result:Crate,\n    Time:150.0,\n    Category:Carpentry,\n    NeedToBeLearn:true,\n}\n\n-- SKILL REQUIREMENT RECIPE\nrecipe Make Spear {\n    TreeBranch,\n    KitchenKnife/HuntingKnife,\n\n    Result:SpearCrafted,\n    Time:80.0,\n    SkillRequired:Maintenance=2,\n}\n```\n\n### Step 3: Document Your Conventions\n\n**my_conventions.md:**\n```markdown\n# MyMod Conventions\n\n## Naming\n- Item IDs: PascalCase (CustomSword, AdvancedHelmet)\n- File names: snake_case (items_weapons.txt, recipes_food.txt)\n- Lua functions: PascalCase (OnPlayerDeath, HandleItemUse)\n\n## Module\n- Always use module Base unless creating unique items\n- Custom items that shouldn't conflict: use module MyMod\n\n## Code Style\n- 4-space indentation\n- Comments before complex logic\n- Group related items in same file\n\n## Recipe Categories\n- Weapons → Metalworking\n- Tools → Carpentry\n- Food → Cooking\n- Survival → Survivalist\n```\n\n## Using Your Context Library\n\n### Full Context Prompt\n\n```\nI'm creating a mod for Project Zomboid Build 41.\n\nHere are my reference examples for correct syntax:\n\n[paste vanilla_items.txt section]\n\nHere are my mod's conventions:\n\n[paste my_conventions.md]\n\nNow, create a new weapon item for a machete that:\n- High damage, moderate speed\n- Can cut trees\n- Follows the format of my BaseballBat example\n```\n\n### Partial Context Prompt\n\nWhen you only need specific context:\n\n```\nUsing this vanilla recipe as a template:\n\n[paste one recipe example]\n\nCreate a recipe that makes a torch from a stick and ripped sheets.\n```\n\n## Maintaining Your Library\n\n### Update When\n\n- You discover new vanilla patterns\n- PZ updates change syntax\n- You establish new conventions\n- You find better examples\n\n### Organize by Topic\n\nAs your library grows:\n\n```\n_ai_context/\n├── items/\n│   ├── weapons.txt\n│   ├── food.txt\n│   ├── tools.txt\n│   └── clothing.txt\n├── recipes/\n│   ├── cooking.txt\n│   ├── carpentry.txt\n│   └── metalworking.txt\n├── lua/\n│   ├── events.txt\n│   ├── inventory.txt\n│   └── player.txt\n└── conventions.md\n```\n\n## Advanced: Project-Specific Context\n\nFor complex mods, create a project summary:\n\n**project_context.md:**\n```markdown\n# Survival+ Mod Context\n\n## What This Mod Does\nAdds realistic survival mechanics: advanced hunger, temperature, disease.\n\n## Key Custom Items\n- Thermometer (checks player temperature)\n- Medicine Kit (cures diseases)\n- Water Purifier (makes water safe)\n\n## Key Systems\n- Temperature tracked via hidden moodle\n- Disease uses custom \"Infected\" effect\n- All items use module SurvivalPlus\n\n## Integration\n- Requires: Hydrocraft (for additional containers)\n- Compatible with: Brita's Weapons\n\n## Current Files\n- items_medical.txt (12 items)\n- items_tools.txt (5 items)\n- recipes_medical.txt (8 recipes)\n```\n\nPaste this at the start of AI sessions about your mod.\n\n## Key Takeaways\n\n1. **Context improves accuracy** - AI matches patterns it sees\n2. **Vanilla examples are gold** - Use real PZ code as templates\n3. **Document your conventions** - Consistency across AI sessions\n4. **Organize by topic** - Find the right context quickly\n5. **Keep it updated** - Outdated context causes outdated output\n\n## Next Steps\n\n- **[Anatomy of a Recipe](/build-41/modding/recipes/recipe-anatomy)** - Start creating content\n- **[Anatomy of an Item](/build-41/modding/items/item-anatomy)** - Define custom items",
+  "excerpt": "Build a collection of reference files and vanilla examples that help AI tools generate more accurate, PZ-specific code for your mods.",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "intermediate",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "why-context-libraries-work",
+      "text": "Why Context Libraries Work",
+      "level": 2
+    },
+    {
+      "id": "what-to-include",
+      "text": "What to Include",
+      "level": 2
+    },
+    {
+      "id": "creating-your-library",
+      "text": "Creating Your Library",
+      "level": 2
+    },
+    {
+      "id": "using-your-context-library",
+      "text": "Using Your Context Library",
+      "level": 2
+    },
+    {
+      "id": "maintaining-your-library",
+      "text": "Maintaining Your Library",
+      "level": 2
+    },
+    {
+      "id": "advanced-project-specific-context",
+      "text": "Advanced: Project-Specific Context",
+      "level": 2
+    },
+    {
+      "id": "key-takeaways",
+      "text": "Key Takeaways",
+      "level": 2
+    },
+    {
+      "id": "next-steps",
+      "text": "Next Steps",
+      "level": 2
+    }
+  ]
+}

@@ -8,6 +8,20 @@
       "articleCount": 4
     },
     {
+      "id": "setup",
+      "name": "Setup",
+      "description": "Set up your development environment for PZ modding: editors, folder structure, and debug tools.",
+      "icon": "settings",
+      "articleCount": 4
+    },
+    {
+      "id": "ai-assisted",
+      "name": "AI-Assisted Modding",
+      "description": "Use AI tools to accelerate your modding workflow without deep coding knowledge.",
+      "icon": "sparkles",
+      "articleCount": 4
+    },
+    {
       "id": "lua-api",
       "name": "Lua API",
       "description": "Events, callbacks, and the core Lua scripting interface for Project Zomboid modding.",
@@ -19,14 +33,14 @@
       "name": "Recipes",
       "description": "Create custom crafting recipes for items, weapons, and consumables.",
       "icon": "wrench",
-      "articleCount": 4
+      "articleCount": 8
     },
     {
       "id": "items",
       "name": "Items",
       "description": "Define new items with custom properties, textures, and behaviors.",
       "icon": "box",
-      "articleCount": 3
+      "articleCount": 7
     },
     {
       "id": "game-mechanics",

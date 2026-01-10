@@ -1,94 +1,63 @@
 {
+  "id": "recipes",
+  "name": "Recipes",
+  "slug": "recipes",
   "articles": [
     {
-      "id": "recipes-recipe-basics",
-      "title": "Recipe Creation Basics - Project Zomboid",
+      "id": "recipe-anatomy",
+      "title": "Anatomy of a Recipe",
+      "slug": "recipe-anatomy",
+      "difficulty": "beginner",
+      "order": 1
+    },
+    {
+      "id": "first-recipe-file",
+      "title": "Your First Recipe File",
+      "slug": "first-recipe-file",
+      "difficulty": "beginner",
+      "order": 2
+    },
+    {
+      "id": "testing-recipes",
+      "title": "Testing Your Recipe",
+      "slug": "testing-recipes",
+      "difficulty": "beginner",
+      "order": 3
+    },
+    {
+      "id": "recipe-ingredients",
+      "title": "Recipe Ingredients Deep Dive",
+      "slug": "recipe-ingredients",
+      "difficulty": "intermediate",
+      "order": 4
+    },
+    {
+      "id": "recipe-basics",
+      "title": "Recipe Creation Basics",
       "slug": "recipe-basics",
-      "version": "build-41",
-      "section": "modding",
-      "category": "recipes",
-      "tags": [
-        "recipe",
-        "item",
-        "weapon",
-        "sound",
-        "crafting",
-        "creation",
-        "basics"
-      ],
-      "excerpt": "Recipes in Project Zomboid define how players can craft items by combining inputs to produce outputs. This guide covers the fundamental structure and syntax for creating recipes.\r\n\r\n\r\nRecipes must ...",
-      "lastUpdated": "2026-01-09",
       "difficulty": "beginner",
-      "content": "",
-      "tableOfContents": []
+      "order": 5
     },
     {
-      "id": "recipes-crafting-tables",
-      "title": "Recipes with Crafting Tables - Enhanced Crafting Core",
-      "slug": "crafting-tables",
-      "version": "build-41",
-      "section": "modding",
-      "category": "recipes",
-      "tags": [
-        "recipe",
-        "item",
-        "repair",
-        "weapon",
-        "sound",
-        "crafting",
-        "with",
-        "tables"
-      ],
-      "excerpt": "The Enhanced Crafting Core mod (More Builds) adds craftable workstations that can be used as proximity requirements for recipes. This guide explains how to require players to be near specific craft...",
-      "lastUpdated": "2026-01-09",
-      "difficulty": "intermediate",
-      "content": "",
-      "tableOfContents": []
-    },
-    {
-      "id": "recipes-consumable-recipes",
-      "title": "Consumable vs Reusable Items in Recipes",
+      "id": "consumable-recipes",
+      "title": "Consumable vs Reusable Items",
       "slug": "consumable-recipes",
-      "version": "build-41",
-      "section": "modding",
-      "category": "recipes",
-      "tags": [
-        "recipe",
-        "item",
-        "weapon",
-        "sound",
-        "crafting",
-        "consumable",
-        "items"
-      ],
-      "excerpt": "In Project Zomboid recipes, input items can either be consumed (destroyed) or kept (reusable). Understanding this distinction is critical for creating balanced and functional recipes.\r\n\r\n\r\n\r\n\r\nBy d...",
-      "lastUpdated": "2026-01-09",
       "difficulty": "beginner",
-      "content": "",
-      "tableOfContents": []
+      "order": 6
     },
     {
-      "id": "recipes-vanilla-recipe-anatomy",
-      "title": "Vanilla Recipe Anatomy - Complete Parameter Reference",
+      "id": "vanilla-recipe-anatomy",
+      "title": "Vanilla Recipe Anatomy Reference",
       "slug": "vanilla-recipe-anatomy",
-      "version": "build-41",
-      "section": "modding",
-      "category": "recipes",
-      "tags": [
-        "lua",
-        "recipe",
-        "item",
-        "weapon",
-        "event",
-        "animation",
-        "sound",
-        "crafting"
-      ],
-      "excerpt": "This document provides a complete breakdown of all parameters available in Project Zomboid recipes, based on vanilla game recipes.\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nCommon Item Types:\r\n- \r\n- \r\n-...",
-      "lastUpdated": "2026-01-09",
       "difficulty": "intermediate",
-      "content": "",
-      "tableOfContents": []
+      "order": 7
+    },
+    {
+      "id": "crafting-tables",
+      "title": "Recipes with Crafting Tables",
+      "slug": "crafting-tables",
+      "difficulty": "intermediate",
+      "order": 8
     }
   ]
 }

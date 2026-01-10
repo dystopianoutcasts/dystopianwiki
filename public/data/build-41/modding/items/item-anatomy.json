@@ -1,0 +1,67 @@
+{
+  "id": "items-item-anatomy",
+  "title": "Anatomy of an Item",
+  "slug": "item-anatomy",
+  "version": "build-41",
+  "section": "modding",
+  "category": "items",
+  "tags": [
+    "beginner",
+    "item",
+    "anatomy",
+    "syntax",
+    "learning-path",
+    "fundamentals"
+  ],
+  "content": "# Anatomy of an Item\n\n## Overview\n\nItems are the building blocks of PZ mods. Whether you're creating weapons, food, tools, or materials - they all follow the same basic structure. This guide breaks down item definitions line by line.\n\n## The Simplest Item\n\nHere's a minimal item definition:\n\n```\nmodule Base {\n    item MyItem {\n        Type = Normal,\n        DisplayName = My Item,\n        Icon = MyItem,\n        Weight = 1.0,\n    }\n}\n```\n\nThis creates:\n- An item with ID `Base.MyItem`\n- Named \"My Item\" in-game\n- Using icon file `MyItem.png`\n- Weighing 1.0 units\n\n## Breaking It Down\n\n### Line 1: Module Declaration\n\n```\nmodule Base {\n```\n\nThe module sets the namespace. `Base` is vanilla. Your item's full ID becomes `ModuleName.ItemName`.\n\n### Line 2: Item Declaration\n\n```\n    item MyItem {\n```\n\n- `item` - Keyword that defines an item\n- `MyItem` - The item's ID (no spaces, alphanumeric)\n- `{` - Opens the property block\n\n### Line 3: Type\n\n```\n        Type = Normal,\n```\n\nThe most important property. Determines how the game treats this item.\n\n| Type | For |\n|------|-----|\n| `Normal` | Basic items with no special behavior |\n| `Food` | Edible items with hunger/thirst values |\n| `Weapon` | Melee or ranged weapons |\n| `Drainable` | Items with uses (glue, thread) |\n| `Literature` | Readable items (books, magazines) |\n| `Clothing` | Wearable items |\n| `Container` | Items that hold other items |\n\n### Line 4: Display Name\n\n```\n        DisplayName = My Item,\n```\n\nThe name players see in inventory. Can include spaces and special characters.\n\n### Line 5: Icon\n\n```\n        Icon = MyItem,\n```\n\nReferences the texture file at:\n```\nmedia/textures/Item/MyItem.png\n```\n\n**Note:** Don't include `.png` in the property.\n\n### Line 6: Weight\n\n```\n        Weight = 1.0,\n```\n\nHow much the item weighs. Affects inventory capacity.\n\n| Weight | Example Items |\n|--------|---------------|\n| 0.1 | Bullets, small items |\n| 0.5 | Can of food |\n| 1.0 | Hammer, bottle |\n| 2.0 | Baseball bat |\n| 5.0 | Sledgehammer |\n\n## Item Syntax Rules\n\n### Key Rule: Equals Sign\n\nItems use `=` (equals), not `:` (colon):\n\n```\n✓ Type = Normal,\n✗ Type: Normal,\n\n✓ Weight = 1.0,\n✗ Weight: 1.0,\n```\n\n**This is the opposite of recipes!**\n\n### Key Rule: Commas\n\nEvery property line ends with a comma:\n\n```\n✓ Weight = 1.0,\n✗ Weight = 1.0\n```\n\n### Key Rule: No Quotes\n\nMost values don't need quotes:\n\n```\n✓ DisplayName = Baseball Bat,\n✗ DisplayName = \"Baseball Bat\",\n```\n\n## Common Item Types\n\n### Normal Item (Basic)\n\n```\nitem Crowbar {\n    Type = Normal,\n    DisplayName = Crowbar,\n    Icon = Crowbar,\n    Weight = 2.0,\n    DisplayCategory = Tool,\n}\n```\n\n### Food Item\n\n```\nitem Apple {\n    Type = Food,\n    DisplayName = Apple,\n    Icon = Apple,\n    Weight = 0.2,\n    HungerChange = -10,\n    ThirstChange = 5,\n    Calories = 52,\n    DaysFresh = 6,\n    DaysTotallyRotten = 12,\n}\n```\n\nFood items have:\n- `HungerChange` - Negative reduces hunger\n- `ThirstChange` - Positive increases, negative reduces\n- `Calories` - Energy value\n- `DaysFresh/DaysTotallyRotten` - Spoilage timing\n\n### Weapon Item\n\n```\nitem BaseballBat {\n    Type = Weapon,\n    DisplayName = Baseball Bat,\n    Icon = BaseballBat,\n    Weight = 2.0,\n    Categories = Blunt,\n    SubCategory = Swinging,\n    MinDamage = 0.8,\n    MaxDamage = 1.2,\n    MaxRange = 1.3,\n    ConditionMax = 15,\n    SwingTime = 3,\n    TwoHandWeapon = TRUE,\n}\n```\n\nWeapon items have:\n- `MinDamage/MaxDamage` - Damage range\n- `MaxRange` - Attack reach\n- `ConditionMax` - Durability\n- `SwingTime` - Attack speed\n- `TwoHandWeapon` - Requires both hands\n\n### Drainable Item\n\n```\nitem DuctTape {\n    Type = Drainable,\n    DisplayName = Duct Tape,\n    Icon = DuctTape,\n    Weight = 0.3,\n    UseDelta = 0.04,\n    UseWhileEquipped = FALSE,\n}\n```\n\nDrainable items:\n- `UseDelta` - How much is consumed per use\n- Start full, drain with use\n\n## Essential Properties Reference\n\n### Universal Properties\n\n| Property | Example | Purpose |\n|----------|---------|--------|\n| `Type` | `Normal` | Item behavior type |\n| `DisplayName` | `My Item` | In-game name |\n| `Icon` | `MyIcon` | Texture filename |\n| `Weight` | `1.0` | Inventory weight |\n| `DisplayCategory` | `Tool` | UI category |\n\n### Inventory/Display\n\n| Property | Example | Purpose |\n|----------|---------|--------|\n| `Tooltip` | `Tooltip_Axe` | Hover text key |\n| `StaticModel` | `Axe` | 3D world model |\n| `WorldStaticModel` | `Axe_Ground` | Model when on ground |\n\n### Condition/Durability\n\n| Property | Example | Purpose |\n|----------|---------|--------|\n| `ConditionMax` | `15` | Starting/max durability |\n| `ConditionLowerChanceOneIn` | `30` | Chance to lose durability |\n\n## Reading Vanilla Items\n\nVanilla items are in:\n```\nSteam\\steamapps\\common\\ProjectZomboid\\media\\scripts\\items.txt\n```\n\nAlso check:\n- `items_weapons.txt` - All weapons\n- `items_food.txt` - All food\n- `items_furniture.txt` - Furniture items\n\n## Key Takeaways\n\n1. **Module wraps everything** - Sets the namespace\n2. **Type determines behavior** - Normal, Food, Weapon, etc.\n3. **Use equals, not colons** - `Type = Normal` (opposite of recipes)\n4. **Icon references texture file** - Without `.png` extension\n5. **Weight affects gameplay** - Balance carrying capacity\n\n## Next Steps\n\n- **[Your First Custom Item](/build-41/modding/items/first-item-file)** - Create a food item\n- **[Creating Item Icons](/build-41/modding/items/item-icons)** - Make textures for items",
+  "excerpt": "Understand the structure and syntax of Project Zomboid item definitions by breaking down item scripts line by line.",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "the-simplest-item",
+      "text": "The Simplest Item",
+      "level": 2
+    },
+    {
+      "id": "breaking-it-down",
+      "text": "Breaking It Down",
+      "level": 2
+    },
+    {
+      "id": "item-syntax-rules",
+      "text": "Item Syntax Rules",
+      "level": 2
+    },
+    {
+      "id": "common-item-types",
+      "text": "Common Item Types",
+      "level": 2
+    },
+    {
+      "id": "essential-properties-reference",
+      "text": "Essential Properties Reference",
+      "level": 2
+    },
+    {
+      "id": "reading-vanilla-items",
+      "text": "Reading Vanilla Items",
+      "level": 2
+    },
+    {
+      "id": "key-takeaways",
+      "text": "Key Takeaways",
+      "level": 2
+    },
+    {
+      "id": "next-steps",
+      "text": "Next Steps",
+      "level": 2
+    }
+  ]
+}

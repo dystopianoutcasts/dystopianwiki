@@ -1,0 +1,82 @@
+{
+  "id": "setup-mod-folder-structure",
+  "title": "Mod Folder Structure",
+  "slug": "mod-folder-structure",
+  "version": "build-41",
+  "section": "modding",
+  "category": "setup",
+  "tags": [
+    "beginner",
+    "setup",
+    "folder-structure",
+    "mod-folder",
+    "media",
+    "getting-started"
+  ],
+  "content": "# Mod Folder Structure\n\n## Overview\n\nEvery PZ mod follows a specific folder structure. Get this right, and the game automatically loads your content. Get it wrong, and nothing works. This guide shows you exactly how to set up your mod folder.\n\n## Where Mods Live\n\nMods can be placed in two locations:\n\n### Steam Workshop Mods (Downloaded)\n```\nC:\\Program Files (x86)\\Steam\\steamapps\\workshop\\content\\108600\\\n```\n\n### Local Development Mods (What You Create)\n```\nC:\\Users\\YourName\\Zomboid\\mods\\\n```\n\nAlways develop in the `Zomboid\\mods` folder - it's easier to find and edit.\n\n## The Basic Structure\n\nEvery mod needs this minimum structure:\n\n```\nYourModName/\n├── mod.info                    <- Required: Mod metadata\n└── media/                      <- Required: All content goes here\n    └── (your files)\n```\n\nThat's it for the bare minimum. The `mod.info` file tells PZ about your mod, and the `media` folder holds everything else.\n\n## The Complete Structure\n\nHere's a full mod structure with all common folders:\n\n```\nYourModName/\n├── mod.info\n├── poster.png                  <- Optional: Workshop thumbnail (256x256)\n└── media/\n    ├── scripts/                <- Item and recipe definitions (.txt)\n    ├── lua/\n    │   ├── client/             <- Client-side Lua (UI, visuals)\n    │   ├── server/             <- Server-side Lua (gameplay logic)\n    │   └── shared/             <- Both sides (utilities, data)\n    ├── textures/\n    │   └── Item/               <- Item icons (.png)\n    ├── ui/                     <- UI textures\n    ├── sound/                  <- Custom sounds (.ogg, .wav)\n    ├── models/                 <- 3D models\n    ├── clothing/               <- Clothing definitions\n    └── maps/                   <- Custom map files\n```\n\n## Folder Reference\n\n| Folder | Purpose | File Types |\n|--------|---------|------------|\n| `scripts/` | Items, recipes, vehicles, sounds | `.txt` |\n| `lua/client/` | UI, context menus, client effects | `.lua` |\n| `lua/server/` | Spawning, world changes, game logic | `.lua` |\n| `lua/shared/` | Code needed by both client and server | `.lua` |\n| `textures/Item/` | Item inventory icons | `.png` |\n| `ui/` | UI elements, buttons, windows | `.png` |\n| `sound/` | Sound effects, music | `.ogg`, `.wav` |\n| `models/` | 3D models for items, vehicles | various |\n\n## Creating Your First Mod Folder\n\n### Step 1: Navigate to Mods Folder\n\n1. Press `Win + R`\n2. Type `%UserProfile%\\Zomboid\\mods`\n3. Press Enter\n\nIf the `mods` folder doesn't exist, create it.\n\n### Step 2: Create Your Mod Folder\n\n1. Right-click > New > Folder\n2. Name it something unique (no spaces recommended)\n   - Good: `MyFirstMod`, `BetterTools`, `ZombieTweaks`\n   - Avoid: `My First Mod`, `test`, `mod`\n\n### Step 3: Create the media Folder\n\n1. Open your mod folder\n2. Create a new folder named `media` (lowercase)\n\n### Step 4: Create mod.info\n\n1. Right-click > New > Text Document\n2. Name it `mod.info` (remove .txt extension)\n3. Open with VS Code and add basic info (covered in next article)\n\n## A Simple Working Example\n\nLet's create a mod that adds one new recipe:\n\n```\nMyFirstMod/\n├── mod.info\n└── media/\n    └── scripts/\n        └── my_recipes.txt\n```\n\n**mod.info:**\n```\nname=My First Mod\nid=MyFirstMod\ndescription=Adds a simple recipe\n```\n\n**media/scripts/my_recipes.txt:**\n```\nmodule Base {\n    recipe Open Can of Beans {\n        TinOpener,\n        CannedBeans,\n\n        Result:CannedBeansOpen,\n        Time:50.0,\n    }\n}\n```\n\nThat's a complete, working mod!\n\n## Common Mistakes\n\n### Wrong Folder Name\n```\n❌ media/Scripts/     <- Wrong: capital S\n✓ media/scripts/     <- Correct: lowercase\n```\n\n### Missing media Folder\n```\n❌ MyMod/scripts/     <- Wrong: no media folder\n✓ MyMod/media/scripts/ <- Correct: inside media\n```\n\n### Files in Wrong Location\n```\n❌ media/my_recipes.txt        <- Wrong: not in scripts\n✓ media/scripts/my_recipes.txt <- Correct: in scripts folder\n```\n\n### Spaces in Folder Names\n```\n❌ My Cool Mod/       <- Can cause issues\n✓ MyCoolMod/         <- Safe\n✓ My_Cool_Mod/       <- Also safe\n```\n\n## Script vs Lua Folders\n\nA common question: when do I use `scripts/` vs `lua/`?\n\n| Use `scripts/` for | Use `lua/` for |\n|-------------------|----------------|\n| Item definitions | Custom game logic |\n| Recipe definitions | UI modifications |\n| Vehicle definitions | Event handlers |\n| Sound definitions | Complex calculations |\n| Fixing definitions | Spawning systems |\n\n**Rule of thumb:** If you're defining *what* something is, use `scripts/`. If you're defining *how* something behaves, use `lua/`.\n\n## Organizing Multiple Files\n\nAs your mod grows, organize scripts logically:\n\n```\nmedia/scripts/\n├── items_weapons.txt\n├── items_food.txt\n├── items_tools.txt\n├── recipes_weapons.txt\n├── recipes_food.txt\n└── recipes_tools.txt\n```\n\nPZ loads all `.txt` files in `scripts/` - the filenames are for your organization.\n\n## Key Takeaways\n\n1. **Mods go in `Zomboid\\mods\\`** for local development\n2. **Every mod needs `mod.info`** and a `media/` folder\n3. **Folder names are case-sensitive** - use lowercase\n4. **Scripts define data**, Lua defines behavior\n5. **Start simple** - add folders only as you need them\n\n## Next Steps\n\n- **[The mod.info File](/build-41/modding/setup/mod-info-file)** - Configure your mod's metadata\n- **[Debug Mode](/build-41/modding/setup/debug-mode)** - Enable testing tools",
+  "excerpt": "Learn the correct folder structure for Project Zomboid mods, including where to place scripts, Lua files, textures, and other content.",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "where-mods-live",
+      "text": "Where Mods Live",
+      "level": 2
+    },
+    {
+      "id": "the-basic-structure",
+      "text": "The Basic Structure",
+      "level": 2
+    },
+    {
+      "id": "the-complete-structure",
+      "text": "The Complete Structure",
+      "level": 2
+    },
+    {
+      "id": "folder-reference",
+      "text": "Folder Reference",
+      "level": 2
+    },
+    {
+      "id": "creating-your-first-mod-folder",
+      "text": "Creating Your First Mod Folder",
+      "level": 2
+    },
+    {
+      "id": "a-simple-working-example",
+      "text": "A Simple Working Example",
+      "level": 2
+    },
+    {
+      "id": "common-mistakes",
+      "text": "Common Mistakes",
+      "level": 2
+    },
+    {
+      "id": "script-vs-lua-folders",
+      "text": "Script vs Lua Folders",
+      "level": 2
+    },
+    {
+      "id": "organizing-multiple-files",
+      "text": "Organizing Multiple Files",
+      "level": 2
+    },
+    {
+      "id": "key-takeaways",
+      "text": "Key Takeaways",
+      "level": 2
+    },
+    {
+      "id": "next-steps",
+      "text": "Next Steps",
+      "level": 2
+    }
+  ]
+}
