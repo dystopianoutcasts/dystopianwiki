@@ -15,7 +15,7 @@ export function VersionPage() {
   if (isLoading) {
     return (
       <Layout>
-        <WikiLayout showSidebar={false}>
+        <WikiLayout>
           <div className="version-page">
             <div className="version-page__loading">Loading version information...</div>
           </div>
@@ -27,7 +27,7 @@ export function VersionPage() {
   if (versionError || !versionInfo) {
     return (
       <Layout>
-        <WikiLayout showSidebar={false}>
+        <WikiLayout>
           <div className="version-page">
             <div className="version-page__error">
               <h1>Version Not Found</h1>
@@ -52,7 +52,7 @@ export function VersionPage() {
         title={`${versionInfo.name} Documentation - Project Zomboid Modding`}
         description={versionInfo.description || `Project Zomboid ${versionInfo.name} modding documentation. Tutorials, guides, and API reference.`}
       />
-      <WikiLayout showSidebar={false}>
+      <WikiLayout>
         <div className="version-page">
           <header className="version-page__header">
             <div className="version-page__badge">

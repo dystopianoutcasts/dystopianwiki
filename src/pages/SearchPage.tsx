@@ -98,7 +98,7 @@ export function SearchPage() {
         description="Search the Project Zomboid Modding Wiki for tutorials, guides, and documentation."
         noIndex={true}
       />
-      <WikiLayout showSidebar={false}>
+      <WikiLayout>
         <div className="search-page">
           <header className="search-page__header">
             <h1 className="search-page__title">Search Documentation</h1>
