@@ -1,0 +1,76 @@
+{
+  "id": "lua-api-isbaseobject",
+  "title": "ISBaseObject Inheritance System",
+  "slug": "isbaseobject",
+  "version": "build-41",
+  "section": "modding",
+  "category": "lua-api",
+  "tags": [
+    "intermediate",
+    "lua",
+    "oop",
+    "inheritance",
+    "classes"
+  ],
+  "content": "# ISBaseObject Inheritance System\n\n## Overview\n\nISBaseObject is Project Zomboid's base class for object-oriented programming in Lua. It provides a simple inheritance pattern used throughout the game's UI, timed actions, and other systems.\n\n## Location\n\n```\nmedia/lua/shared/ISBaseObject.lua\n```\n\n---\n\n## The Base Class\n\n```lua\nISBaseObject = {};\n\nISBaseObject.Type = \"ISBaseObject\";\n\nfunction ISBaseObject:initialise()\n    -- Override in derived classes\nend\n\nfunction ISBaseObject:derive(type)\n    local o = {}\n    setmetatable(o, self)\n    self.__index = self\n    o.Type = type;\n    return o\nend\n\nfunction ISBaseObject:new()\n    local o = {}\n    setmetatable(o, self)\n    self.__index = self\n    return o\nend\n```\n\n---\n\n## Key Methods\n\n### derive(type)\n\nCreates a new class that inherits from ISBaseObject:\n\n```lua\n-- type: string identifier for the class\nMyClass = ISBaseObject:derive(\"MyClass\");\n```\n\n### new()\n\nCreates a new instance of a class:\n\n```lua\nfunction MyClass:new(param1, param2)\n    local o = {}\n    setmetatable(o, self)\n    self.__index = self\n    o.param1 = param1\n    o.param2 = param2\n    return o\nend\n```\n\n### initialise()\n\nCalled to initialize the object. Override in derived classes:\n\n```lua\nfunction MyClass:initialise()\n    -- Setup code here\nend\n```\n\n---\n\n## Creating a Custom Class\n\n### Basic Pattern\n\n```lua\nrequire \"ISBaseObject\"\n\n-- 1. Derive from ISBaseObject\nMyCustomClass = ISBaseObject:derive(\"MyCustomClass\");\n\n-- 2. Static properties (shared by all instances)\nMyCustomClass.DefaultValue = 100;\nMyCustomClass.IDMax = 1;\n\n-- 3. Override initialise\nfunction MyCustomClass:initialise()\n    self.id = MyCustomClass.IDMax;\n    MyCustomClass.IDMax = MyCustomClass.IDMax + 1;\nend\n\n-- 4. Define instance methods\nfunction MyCustomClass:doSomething()\n    print(\"Instance \" .. self.id .. \" doing something\");\nend\n\n-- 5. Define the constructor\nfunction MyCustomClass:new(name, value)\n    local o = {}\n    setmetatable(o, self)\n    self.__index = self\n    o.name = name;\n    o.value = value or MyCustomClass.DefaultValue;\n    o:initialise();\n    return o\nend\n```\n\n### Usage\n\n```lua\nlocal obj1 = MyCustomClass:new(\"First\", 50);\nlocal obj2 = MyCustomClass:new(\"Second\");\n\nobj1:doSomething();  -- \"Instance 1 doing something\"\nobj2:doSomething();  -- \"Instance 2 doing something\"\n\nprint(obj2.value);   -- 100 (default value)\n```\n\n---\n\n## Inheritance Chains\n\nYou can derive from derived classes:\n\n```lua\nrequire \"ISBaseObject\"\n\n-- Base animal class\nAnimal = ISBaseObject:derive(\"Animal\");\n\nfunction Animal:new(name)\n    local o = {}\n    setmetatable(o, self)\n    self.__index = self\n    o.name = name;\n    return o\nend\n\nfunction Animal:speak()\n    print(self.name .. \" makes a sound\");\nend\n\n-- Dog derives from Animal\nDog = Animal:derive(\"Dog\");\n\nfunction Dog:new(name, breed)\n    local o = Animal.new(self, name);  -- Call parent constructor\n    o.breed = breed;\n    return o\nend\n\nfunction Dog:speak()\n    print(self.name .. \" barks!\");\nend\n\nfunction Dog:fetch()\n    print(self.name .. \" fetches the ball\");\nend\n```\n\n---\n\n## Core Derived Classes in PZ\n\n### ISUIElement\n\nBase class for all UI components:\n\n```lua\nISUIElement = ISBaseObject:derive(\"ISUIElement\");\nISUIElement.IDMax = 1;\n```\n\n**Key hierarchy:**\n```\nISBaseObject\n└── ISUIElement\n    ├── ISPanel\n    │   ├── ISCollapsableWindow\n    │   ├── ISInventoryPage\n    │   └── ISHealthPanel\n    ├── ISButton\n    ├── ISTextEntryBox\n    ├── ISScrollingListBox\n    └── ISRichTextPanel\n```\n\n### ISBaseTimedAction\n\nBase class for all timed actions:\n\n```lua\nISBaseTimedAction = ISBaseObject:derive(\"ISBaseTimedAction\");\nISBaseTimedAction.IDMax = 1;\n```\n\n**Key hierarchy:**\n```\nISBaseObject\n└── ISBaseTimedAction\n    ├── ISApplyBandage\n    ├── ISCraftAction\n    ├── ISEatFoodAction\n    ├── ISReadABook\n    └── (hundreds more...)\n```\n\n### ISBuildingObject\n\nBase class for buildable objects:\n\n```lua\nISBuildingObject = ISBaseObject:derive(\"ISBuildingObject\");\n```\n\n### ISReloadable\n\nBase class for reloadable weapons:\n\n```lua\nISReloadable = ISBaseObject:derive(\"ISReloadable\");\n```\n\n---\n\n## Best Practices\n\n### 1. Always require ISBaseObject\n\n```lua\nrequire \"ISBaseObject\"\n```\n\n### 2. Use meaningful Type strings\n\n```lua\n-- Good\nMyMod_CustomPanel = ISBaseObject:derive(\"MyMod_CustomPanel\");\n\n-- Bad (could conflict)\nPanel = ISBaseObject:derive(\"Panel\");\n```\n\n### 3. Call parent methods when overriding\n\n```lua\nfunction MyPanel:initialise()\n    ISPanel.initialise(self);  -- Call parent\n    -- Your initialization code\nend\n```\n\n### 4. Initialize in new(), not derive()\n\n```lua\n-- Correct: Initialize per-instance data in new()\nfunction MyClass:new()\n    local o = {}\n    setmetatable(o, self)\n    self.__index = self\n    o.instanceData = {};  -- Each instance gets its own table\n    return o\nend\n\n-- Wrong: This data is shared by all instances!\nMyClass = ISBaseObject:derive(\"MyClass\");\nMyClass.instanceData = {};  -- Shared! Not per-instance!\n```\n\n### 5. Use self.__index properly\n\n```lua\nfunction MyClass:new()\n    local o = {}\n    setmetatable(o, self)\n    self.__index = self  -- Allows method lookup in parent\n    return o\nend\n```\n\n---\n\n## Common Patterns\n\n### Singleton Pattern\n\n```lua\nMyManager = ISBaseObject:derive(\"MyManager\");\nMyManager.instance = nil;\n\nfunction MyManager:getInstance()\n    if not MyManager.instance then\n        MyManager.instance = MyManager:new();\n    end\n    return MyManager.instance;\nend\n\nfunction MyManager:new()\n    local o = {}\n    setmetatable(o, self)\n    self.__index = self\n    o.data = {};\n    return o\nend\n```\n\n### Factory Pattern\n\n```lua\nItemFactory = ISBaseObject:derive(\"ItemFactory\");\n\nfunction ItemFactory:create(itemType)\n    if itemType == \"weapon\" then\n        return WeaponItem:new();\n    elseif itemType == \"food\" then\n        return FoodItem:new();\n    end\n    return nil;\nend\n```\n\n### Observer Pattern\n\n```lua\nObservable = ISBaseObject:derive(\"Observable\");\n\nfunction Observable:new()\n    local o = {}\n    setmetatable(o, self)\n    self.__index = self\n    o.observers = {};\n    return o\nend\n\nfunction Observable:addObserver(observer)\n    table.insert(self.observers, observer);\nend\n\nfunction Observable:notify(event)\n    for _, observer in ipairs(self.observers) do\n        observer:onEvent(event);\n    end\nend\n```\n\n---\n\n## Debugging Tips\n\n### Check class type\n\n```lua\nprint(myObject.Type);  -- \"MyCustomClass\"\n```\n\n### Check inheritance\n\n```lua\nfunction instanceof(obj, className)\n    local mt = getmetatable(obj);\n    while mt do\n        if mt.Type == className then\n            return true;\n        end\n        mt = getmetatable(mt);\n    end\n    return false;\nend\n\nif instanceof(myDog, \"Animal\") then\n    print(\"It's an animal!\");\nend\n```\n\n---\n\n## Related\n\n- [TimedAction Lifecycle](/build-41/modding/lua-api/timed-actions) - Action system using ISBaseObject\n- [Official Lua Examples](/build-41/modding/lua-api/official-examples) - Example code from the game\n- [Events Reference](/build-41/modding/reference/events) - Game events",
+  "excerpt": "Understanding Project Zomboid's ISBaseObject inheritance system for creating custom classes, UI components, and timed actions.",
+  "lastUpdated": "2026-01-10",
+  "difficulty": "intermediate",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "location",
+      "text": "Location",
+      "level": 2
+    },
+    {
+      "id": "the-base-class",
+      "text": "The Base Class",
+      "level": 2
+    },
+    {
+      "id": "key-methods",
+      "text": "Key Methods",
+      "level": 2
+    },
+    {
+      "id": "creating-a-custom-class",
+      "text": "Creating a Custom Class",
+      "level": 2
+    },
+    {
+      "id": "inheritance-chains",
+      "text": "Inheritance Chains",
+      "level": 2
+    },
+    {
+      "id": "core-derived-classes-in-pz",
+      "text": "Core Derived Classes in PZ",
+      "level": 2
+    },
+    {
+      "id": "best-practices",
+      "text": "Best Practices",
+      "level": 2
+    },
+    {
+      "id": "common-patterns",
+      "text": "Common Patterns",
+      "level": 2
+    },
+    {
+      "id": "debugging-tips",
+      "text": "Debugging Tips",
+      "level": 2
+    },
+    {
+      "id": "related",
+      "text": "Related",
+      "level": 2
+    }
+  ]
+}

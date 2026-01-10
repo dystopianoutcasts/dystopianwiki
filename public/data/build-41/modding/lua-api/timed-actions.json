@@ -1,0 +1,71 @@
+{
+  "id": "lua-api-timed-actions",
+  "title": "TimedAction Lifecycle",
+  "slug": "timed-actions",
+  "version": "build-41",
+  "section": "modding",
+  "category": "lua-api",
+  "tags": [
+    "intermediate",
+    "lua",
+    "timed-actions",
+    "gameplay",
+    "api"
+  ],
+  "content": "# TimedAction Lifecycle\n\n## Overview\n\nTimed actions are the backbone of player interactions in Project Zomboid. From bandaging wounds to crafting items, eating food to reading books - everything uses the timed action system.\n\n## Location\n\n```\nmedia/lua/shared/TimedActions/ISBaseTimedAction.lua\nmedia/lua/client/TimedActions/  -- All action implementations\n```\n\n---\n\n## Lifecycle Phases\n\nA timed action goes through these phases in order:\n\n```\n1. new()         - Constructor: Initialize the action\n2. isValidStart() - Check: Can we begin this action?\n3. waitToStart()  - Wait: Turn to face target if needed\n4. start()       - Begin: Setup animations and state\n5. update()      - Loop: Called every tick while running\n6. isValid()     - Check: Is action still valid? (called each update)\n7. perform()     - Complete: Execute the final result\n   OR\n7. stop()        - Cancel: Clean up if interrupted\n```\n\n---\n\n## ISBaseTimedAction Methods\n\n### new(character)\n\n**Purpose:** Create a new action instance\n\n**Called:** When you instantiate the action\n\n```lua\nfunction MyAction:new(character, item, targetSquare)\n    local o = {}\n    setmetatable(o, self)\n    self.__index = self\n    o.character = character;\n    o.item = item;\n    o.targetSquare = targetSquare;\n    o.stopOnWalk = true;\n    o.stopOnRun = true;\n    o.maxTime = 200;  -- Ticks (roughly 6.6 seconds)\n    return o;\nend\n```\n\n**Key properties to set:**\n| Property | Type | Description |\n|----------|------|-------------|\n| `character` | IsoPlayer | The player performing action |\n| `maxTime` | int | Duration in ticks (-1 = instant) |\n| `stopOnWalk` | bool | Cancel if player walks |\n| `stopOnRun` | bool | Cancel if player runs |\n| `stopOnAim` | bool | Cancel if player aims (default true) |\n| `ignoreHandsWounds` | bool | Don't slow down for hand injuries |\n| `caloriesModifier` | float | Calorie burn multiplier |\n\n---\n\n### isValidStart()\n\n**Purpose:** Check if action can begin\n\n**Called:** Once, before action starts\n\n**Return:** `true` to proceed, `false` to abort\n\n```lua\nfunction MyAction:isValidStart()\n    -- Check if we still have the item\n    if not self.character:getInventory():contains(self.item) then\n        return false;\n    end\n    -- Check if we're close enough\n    if self.character:DistToSquared(self.targetSquare:getX(), self.targetSquare:getY()) > 4 then\n        return false;\n    end\n    return true;\nend\n```\n\nDefault implementation returns `true`.\n\n---\n\n### waitToStart()\n\n**Purpose:** Wait for preconditions (like turning to face target)\n\n**Called:** After isValidStart(), before start()\n\n**Return:** `true` to keep waiting, `false` to proceed\n\n```lua\nfunction MyAction:waitToStart()\n    -- Turn to face the target object\n    self.character:faceThisObject(self.targetObject);\n    return self.character:shouldBeTurning();\nend\n```\n\nDefault implementation returns `false` (no waiting).\n\n---\n\n### start()\n\n**Purpose:** Initialize the action (setup animations, sounds, UI)\n\n**Called:** Once, when action actually begins\n\n```lua\nfunction MyAction:start()\n    -- Set animation\n    self:setActionAnim(CharacterActionAnims.Craft);\n    \n    -- Set hand models\n    self:setOverrideHandModels(self.item, nil);\n    \n    -- Play sound\n    self.sound = self.character:playSound(\"Hammering\");\n    \n    -- Set item job info (for progress bar)\n    self.item:setJobType(getText(\"ContextMenu_Repair\"));\n    self.item:setJobDelta(0.0);\n    \n    -- Report event for moodles\n    self.character:reportEvent(\"EventCrafting\");\nend\n```\n\n**Helper methods:**\n| Method | Description |\n|--------|-------------|\n| `setActionAnim(anim)` | Set character animation |\n| `setAnimVariable(key, val)` | Set animation variable |\n| `setOverrideHandModels(primary, secondary)` | Set held items |\n\n---\n\n### update()\n\n**Purpose:** Per-tick logic while action is running\n\n**Called:** Every tick until complete or cancelled\n\n```lua\nfunction MyAction:update()\n    -- Update progress bar\n    self.item:setJobDelta(self:getJobDelta());\n    \n    -- Keep facing target\n    self.character:faceThisObject(self.targetObject);\n    \n    -- Set metabolic activity\n    self.character:setMetabolicTarget(Metabolics.LightDomestic);\n    \n    -- Custom per-tick logic\n    if self:getJobDelta() > 0.5 and not self.halfwayDone then\n        self.halfwayDone = true;\n        self.character:Say(\"Halfway there!\");\n    end\nend\n```\n\n**Useful methods:**\n| Method | Description |\n|--------|-------------|\n| `getJobDelta()` | Progress 0.0 to 1.0 |\n| `resetJobDelta()` | Reset progress |\n| `setCurrentTime(time)` | Set elapsed time |\n\n---\n\n### isValid()\n\n**Purpose:** Check if action should continue\n\n**Called:** Every tick during update\n\n**Return:** `true` to continue, `false` to stop\n\n```lua\nfunction MyAction:isValid()\n    -- Check if item still exists\n    if not self.character:getInventory():contains(self.item) then\n        return false;\n    end\n    \n    -- Check if target moved\n    if self.targetPlayer and ISHealthPanel.DidPatientMove(\n        self.character, self.targetPlayer, \n        self.savedX, self.savedY\n    ) then\n        return false;\n    end\n    \n    return true;\nend\n```\n\n---\n\n### perform()\n\n**Purpose:** Execute the action's result\n\n**Called:** Once, when action completes successfully\n\n```lua\nfunction MyAction:perform()\n    -- IMPORTANT: Always call parent first!\n    ISBaseTimedAction.perform(self);\n    \n    -- Clear job delta\n    self.item:setJobDelta(0.0);\n    \n    -- Apply the actual effect\n    self.targetObject:repair(self.repairAmount);\n    \n    -- Consume materials\n    self.character:getInventory():Remove(self.item);\n    \n    -- Award XP\n    self.character:getXp():AddXP(Perks.Woodwork, 5);\n    \n    -- Play completion sound\n    self.character:playSound(\"RepairComplete\");\nend\n```\n\n**Critical:** Always call `ISBaseTimedAction.perform(self)` first! This removes the action from the queue and starts the next action.\n\n---\n\n### stop()\n\n**Purpose:** Clean up when action is interrupted\n\n**Called:** When action is cancelled (player moved, invalid, etc.)\n\n```lua\nfunction MyAction:stop()\n    -- Clear job delta\n    if self.item then\n        self.item:setJobDelta(0.0);\n    end\n    \n    -- Stop sounds\n    if self.sound then\n        self.character:stopOrTriggerSound(self.sound);\n    end\n    \n    -- Clean up UI state\n    ISHealthPanel.setBodyPartActionForPlayer(\n        self.otherPlayer, self.bodyPart, nil, nil, nil\n    );\n    \n    -- IMPORTANT: Call parent last!\n    ISBaseTimedAction.stop(self);\nend\n```\n\n**Critical:** Always call `ISBaseTimedAction.stop(self)` - this resets the action queue.\n\n---\n\n## Queueing Actions\n\n### Adding to Queue\n\n```lua\n-- Simple add\nISTimedActionQueue.add(MyAction:new(player, item, target));\n\n-- Add after another action\nlocal action1 = MyAction:new(player, item1, target);\nlocal action2 = MyAction:new(player, item2, target);\nISTimedActionQueue.add(action1);\naction1:addAfter(action2);  -- action2 runs after action1\n```\n\n### Getting the Queue\n\n```lua\nlocal queue = ISTimedActionQueue.getTimedActionQueue(player);\n```\n\n### Checking Queue State\n\n```lua\n-- Check if player is doing something\nif player:getCurrentAction() then\n    print(\"Player is busy\");\nend\n```\n\n---\n\n## Complete Action Example\n\n```lua\nrequire \"TimedActions/ISBaseTimedAction\"\n\nISRepairItemAction = ISBaseTimedAction:derive(\"ISRepairItemAction\");\n\nfunction ISRepairItemAction:isValidStart()\n    -- Must have the item and repair kit\n    return self.character:getInventory():contains(self.item) and\n           self.character:getInventory():contains(self.repairKit);\nend\n\nfunction ISRepairItemAction:isValid()\n    -- Continue checking while running\n    return self.character:getInventory():contains(self.item) and\n           self.character:getInventory():contains(self.repairKit);\nend\n\nfunction ISRepairItemAction:waitToStart()\n    -- No waiting needed for self-actions\n    return false;\nend\n\nfunction ISRepairItemAction:start()\n    self:setActionAnim(CharacterActionAnims.Craft);\n    self:setOverrideHandModels(self.item, self.repairKit);\n    self.item:setJobType(getText(\"ContextMenu_Repair\"));\n    self.item:setJobDelta(0.0);\n    self.character:reportEvent(\"EventCrafting\");\nend\n\nfunction ISRepairItemAction:update()\n    self.item:setJobDelta(self:getJobDelta());\n    self.character:setMetabolicTarget(Metabolics.LightDomestic);\nend\n\nfunction ISRepairItemAction:stop()\n    self.item:setJobDelta(0.0);\n    ISBaseTimedAction.stop(self);\nend\n\nfunction ISRepairItemAction:perform()\n    ISBaseTimedAction.perform(self);\n    self.item:setJobDelta(0.0);\n    \n    -- Calculate repair amount based on skill\n    local skillLevel = self.character:getPerkLevel(Perks.Mechanics);\n    local repairAmount = 10 + (skillLevel * 5);\n    \n    -- Apply repair\n    local newCondition = math.min(\n        self.item:getConditionMax(),\n        self.item:getCondition() + repairAmount\n    );\n    self.item:setCondition(newCondition);\n    \n    -- Use repair kit\n    self.repairKit:Use();\n    \n    -- Award XP\n    self.character:getXp():AddXP(Perks.Mechanics, 5);\nend\n\nfunction ISRepairItemAction:new(character, item, repairKit)\n    local o = {}\n    setmetatable(o, self)\n    self.__index = self\n    o.character = character;\n    o.item = item;\n    o.repairKit = repairKit;\n    o.stopOnWalk = true;\n    o.stopOnRun = true;\n    \n    -- Time based on skill\n    local skillLevel = character:getPerkLevel(Perks.Mechanics);\n    o.maxTime = 300 - (skillLevel * 20);\n    \n    return o;\nend\n```\n\n---\n\n## Time Adjustments\n\nThe base class automatically adjusts `maxTime` based on:\n\n1. **Unhappiness** - Adds time per moodle level\n2. **Hand injuries** - Adds time based on pain\n3. **Body temperature** - Multiplier from getTimedActionTimeModifier()\n\n```lua\nfunction ISBaseTimedAction:adjustMaxTime(maxTime)\n    if maxTime ~= -1 then\n        -- Unhappy penalty\n        maxTime = maxTime + ((self.character:getMoodles():getMoodleLevel(MoodleType.Unhappy)) * 10)\n        \n        -- Hand/arm injury penalty\n        if not self.ignoreHandsWounds then\n            for i = BodyPartType.ToIndex(BodyPartType.Hand_L), \n                    BodyPartType.ToIndex(BodyPartType.ForeArm_R) do\n                local part = self.character:getBodyDamage():getBodyPart(\n                    BodyPartType.FromIndex(i)\n                );\n                maxTime = maxTime + part:getPain();\n            end\n        end\n        \n        -- Temperature modifier\n        maxTime = maxTime * self.character:getTimedActionTimeModifier();\n    end\n    return maxTime;\nend\n```\n\n---\n\n## Common Animations\n\n| Animation | Use Case |\n|-----------|----------|\n| `CharacterActionAnims.Craft` | Crafting, repairing |\n| `CharacterActionAnims.Bandage` | Medical actions |\n| `CharacterActionAnims.Eat` | Eating food |\n| `CharacterActionAnims.Drink` | Drinking |\n| `CharacterActionAnims.Read` | Reading books |\n| `CharacterActionAnims.Loot` | Taking items |\n| `\"Loot\"` | Generic interaction |\n\n---\n\n## Metabolic Targets\n\n```lua\nself.character:setMetabolicTarget(Metabolics.LightDomestic);\nself.character:setMetabolicTarget(Metabolics.HeavyDomestic);\nself.character:setMetabolicTarget(Metabolics.LightWork);\nself.character:setMetabolicTarget(Metabolics.MediumWork);\nself.character:setMetabolicTarget(Metabolics.HeavyWork);\n```\n\n---\n\n## Related\n\n- [ISBaseObject Inheritance](/build-41/modding/lua-api/isbaseobject) - The base class system\n- [Official Lua Examples](/build-41/modding/lua-api/official-examples) - Example code from the game\n- [Events Reference](/build-41/modding/reference/events) - Game events",
+  "excerpt": "Complete guide to Project Zomboid's timed action lifecycle: new, isValidStart, waitToStart, start, update, isValid, perform, and stop phases.",
+  "lastUpdated": "2026-01-10",
+  "difficulty": "intermediate",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "location",
+      "text": "Location",
+      "level": 2
+    },
+    {
+      "id": "lifecycle-phases",
+      "text": "Lifecycle Phases",
+      "level": 2
+    },
+    {
+      "id": "isbasetimedaction-methods",
+      "text": "ISBaseTimedAction Methods",
+      "level": 2
+    },
+    {
+      "id": "queueing-actions",
+      "text": "Queueing Actions",
+      "level": 2
+    },
+    {
+      "id": "complete-action-example",
+      "text": "Complete Action Example",
+      "level": 2
+    },
+    {
+      "id": "time-adjustments",
+      "text": "Time Adjustments",
+      "level": 2
+    },
+    {
+      "id": "common-animations",
+      "text": "Common Animations",
+      "level": 2
+    },
+    {
+      "id": "metabolic-targets",
+      "text": "Metabolic Targets",
+      "level": 2
+    },
+    {
+      "id": "related",
+      "text": "Related",
+      "level": 2
+    }
+  ]
+}
