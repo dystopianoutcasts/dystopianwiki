@@ -1,9 +1,11 @@
+import { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { WikiLayout } from '../components/layout/WikiLayout';
 import { WikiArticle } from '../components/wiki/WikiArticle';
 import { SEOHead } from '../components/seo/SEOHead';
 import { useArticle, useArticlesList } from '../hooks/useWikiData';
+import { useLearningPathContext } from '../context/LearningPathContext';
 import '../styles/pages/article-page.css';
 
 export function ArticlePage() {
@@ -16,6 +18,58 @@ export function ArticlePage() {
 
   const { data: article, loading, error } = useArticle(version, section, category, slug);
   const { data: articlesList } = useArticlesList(version, section, category);
+
+  // Learning Path integration
+  const {
+    currentLearningArticle,
+    nextLearningArticle,
+    prevLearningArticle,
+    isCompleted,
+    markComplete,
+    completedCount,
+    totalArticles,
+  } = useLearningPathContext();
+
+  // Build learning path props if current article is part of learning path
+  const learningPath = useMemo(() => {
+    if (!currentLearningArticle) return undefined;
+
+    return {
+      current: {
+        id: currentLearningArticle.id,
+        step: currentLearningArticle.step,
+        title: currentLearningArticle.title,
+      },
+      next: nextLearningArticle
+        ? {
+            id: nextLearningArticle.id,
+            step: nextLearningArticle.step,
+            title: nextLearningArticle.title,
+            url: nextLearningArticle.url,
+          }
+        : null,
+      prev: prevLearningArticle
+        ? {
+            id: prevLearningArticle.id,
+            step: prevLearningArticle.step,
+            title: prevLearningArticle.title,
+            url: prevLearningArticle.url,
+          }
+        : null,
+      isCompleted: isCompleted(currentLearningArticle.id),
+      onMarkComplete: () => markComplete(currentLearningArticle.id),
+      completedCount,
+      totalArticles,
+    };
+  }, [
+    currentLearningArticle,
+    nextLearningArticle,
+    prevLearningArticle,
+    isCompleted,
+    markComplete,
+    completedCount,
+    totalArticles,
+  ]);
 
   // Find prev/next articles for navigation
   const currentIndex = articlesList?.findIndex((a) => a.slug === slug) ?? -1;
@@ -101,6 +155,7 @@ export function ArticlePage() {
             relatedArticles={relatedArticles}
             prevArticle={prevArticle}
             nextArticle={nextArticle}
+            learningPath={learningPath}
           />
         </div>
       </WikiLayout>

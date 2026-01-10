@@ -18,11 +18,22 @@ interface RelatedArticleData {
   difficulty?: Difficulty;
 }
 
+interface LearningPathNav {
+  current: { id: string; step: string; title: string };
+  next: { id: string; step: string; title: string; url: string } | null;
+  prev: { id: string; step: string; title: string; url: string } | null;
+  isCompleted: boolean;
+  onMarkComplete: () => void;
+  completedCount: number;
+  totalArticles: number;
+}
+
 interface WikiArticleProps {
   article: WikiArticleType;
   relatedArticles?: RelatedArticleData[];
   prevArticle?: { slug: string; title: string; url: string };
   nextArticle?: { slug: string; title: string; url: string };
+  learningPath?: LearningPathNav;
 }
 
 const difficultyLabels: Record<Difficulty, string> = {
@@ -50,6 +61,7 @@ export function WikiArticle({
   relatedArticles = [],
   prevArticle,
   nextArticle,
+  learningPath,
 }: WikiArticleProps) {
   const { setTocItems, clearTocItems } = useArticleContext();
 
@@ -135,6 +147,71 @@ export function WikiArticle({
 
         {/* Discord Community CTA */}
         <ArticleCTA />
+
+        {/* Learning Path Navigation */}
+        {learningPath && (
+          <div className="wiki-article__learning-path">
+            <div className="wiki-article__learning-header">
+              <div className="wiki-article__learning-info">
+                <span className="wiki-article__learning-badge">
+                  Learning Path - Step {learningPath.current.step}
+                </span>
+                <span className="wiki-article__learning-progress">
+                  {learningPath.completedCount} of {learningPath.totalArticles} completed
+                </span>
+              </div>
+              <Link to="/learning-path" className="wiki-article__learning-overview">
+                View Full Path
+              </Link>
+            </div>
+
+            <div className="wiki-article__learning-actions">
+              <button
+                className={`wiki-article__complete-btn ${learningPath.isCompleted ? 'wiki-article__complete-btn--completed' : ''}`}
+                onClick={learningPath.onMarkComplete}
+                disabled={learningPath.isCompleted}
+              >
+                {learningPath.isCompleted ? 'Completed' : 'Mark as Complete'}
+              </button>
+            </div>
+
+            <nav className="wiki-article__learning-nav" aria-label="Learning path navigation">
+              {learningPath.prev && (
+                <Link
+                  to={learningPath.prev.url}
+                  className="wiki-article__learning-link wiki-article__learning-link--prev"
+                >
+                  <span className="wiki-article__learning-link-label">Previous Lesson</span>
+                  <span className="wiki-article__learning-link-step">
+                    {learningPath.prev.step}: {learningPath.prev.title}
+                  </span>
+                </Link>
+              )}
+              {learningPath.next && (
+                <Link
+                  to={learningPath.next.url}
+                  className="wiki-article__learning-link wiki-article__learning-link--next"
+                >
+                  <span className="wiki-article__learning-link-label">Next Lesson</span>
+                  <span className="wiki-article__learning-link-step">
+                    {learningPath.next.step}: {learningPath.next.title}
+                  </span>
+                </Link>
+              )}
+              {!learningPath.next && (
+                <Link
+                  to="/learning-path"
+                  className="wiki-article__learning-link wiki-article__learning-link--next"
+                >
+                  <span className="wiki-article__learning-link-label">Congratulations!</span>
+                  <span className="wiki-article__learning-link-step">
+                    Return to Learning Path
+                  </span>
+                </Link>
+              )}
+            </nav>
+          </div>
+        )}
 
         {/* Navigation */}
         {(prevArticle || nextArticle) && (

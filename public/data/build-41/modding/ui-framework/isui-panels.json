@@ -1,0 +1,87 @@
+{
+  "id": "ui-framework-isui-panels",
+  "title": "Panels and Containers",
+  "slug": "isui-panels",
+  "version": "build-41",
+  "section": "modding",
+  "category": "ui-framework",
+  "tags": [
+    "intermediate",
+    "lua",
+    "ui",
+    "isui",
+    "ispanel",
+    "containers"
+  ],
+  "content": "# Panels and Containers\n\n## Overview\n\nISPanel is the basic container component in the ISUI framework. It adds background rendering, borders, and optional mouse-drag movement to the base ISUIElement.\n\n## Location\n\n```\nmedia/lua/client/ISUI/ISPanel.lua  -- 132 lines\n```\n\n---\n\n## Container Hierarchy\n\n```\nISUIElement\n    └── ISPanel                      -- Basic container with background/border\n        └── ISCollapsableWindow      -- Window with title bar, resize\n        └── ISResizeWidget           -- Resize handle component\n    └── ISPanelJoypad                -- Container with gamepad navigation\n        └── [Most game UI panels]\n```\n\n---\n\n## ISPanel\n\n### Constructor\n\n```lua\nfunction ISPanel:new(x, y, width, height)\n    local o = ISUIElement:new(x, y, width, height)\n    setmetatable(o, self)\n    self.__index = self\n\n    o.background = true\n    o.backgroundColor = {r=0, g=0, b=0, a=0.5}\n    o.borderColor = {r=0.4, g=0.4, b=0.4, a=1}\n    o.moveWithMouse = false\n\n    return o\nend\n```\n\n### Properties\n\n| Property | Type | Default | Description |\n|----------|------|---------|-------------|\n| `background` | boolean | `true` | Whether to draw background |\n| `backgroundColor` | table | `{r=0, g=0, b=0, a=0.5}` | Background color (RGBA 0-1) |\n| `borderColor` | table | `{r=0.4, g=0.4, b=0.4, a=1}` | Border color (RGBA 0-1) |\n| `moveWithMouse` | boolean | `false` | Enable drag-to-move |\n| `moving` | boolean | - | Currently being dragged |\n| `mouseOver` | boolean | - | Mouse is over panel |\n\n### Methods\n\n| Method | Description |\n|--------|-------------|\n| `noBackground()` | Disables background rendering |\n| `close()` | Hides the panel (`setVisible(false)`) |\n\n---\n\n## Basic Usage\n\n### Simple Panel\n\n```lua\nrequire \"ISUI/ISPanel\"\n\nlocal panel = ISPanel:new(100, 100, 300, 200)\npanel:initialise()\npanel:addToUIManager()\n```\n\n### Custom Colors\n\n```lua\nlocal panel = ISPanel:new(100, 100, 300, 200)\npanel.backgroundColor = {r=0.2, g=0.1, b=0.1, a=0.9}\npanel.borderColor = {r=0.8, g=0.2, b=0.2, a=1}\npanel:initialise()\npanel:addToUIManager()\n```\n\n### Transparent Panel\n\n```lua\nlocal panel = ISPanel:new(100, 100, 300, 200)\npanel:noBackground()  -- Disables background and border\npanel:initialise()\npanel:addToUIManager()\n```\n\n### Draggable Panel\n\n```lua\nlocal panel = ISPanel:new(100, 100, 300, 200)\npanel.moveWithMouse = true  -- Enable drag-to-move\npanel:initialise()\npanel:addToUIManager()\n```\n\n---\n\n## Rendering\n\nISPanel's `prerender()` draws the background and border:\n\n```lua\nfunction ISPanel:prerender()\n    if self.background then\n        self:drawRectStatic(0, 0, self.width, self.height,\n            self.backgroundColor.a,\n            self.backgroundColor.r,\n            self.backgroundColor.g,\n            self.backgroundColor.b)\n        self:drawRectBorderStatic(0, 0, self.width, self.height,\n            self.borderColor.a,\n            self.borderColor.r,\n            self.borderColor.g,\n            self.borderColor.b)\n    end\nend\n```\n\n---\n\n## Mouse Movement System\n\nWhen `moveWithMouse = true`, ISPanel handles drag-to-move:\n\n```lua\nfunction ISPanel:onMouseDown(x, y)\n    if not self.moveWithMouse then return true end\n    \n    self.downX = x\n    self.downY = y\n    self.moving = true\n    self:bringToTop()\nend\n\nfunction ISPanel:onMouseMove(dx, dy)\n    if not self.moveWithMouse then return end\n    self.mouseOver = true\n\n    if self.moving then\n        if self.parent then\n            -- Move parent instead if nested\n            self.parent:setX(self.parent.x + dx)\n            self.parent:setY(self.parent.y + dy)\n        else\n            self:setX(self.x + dx)\n            self:setY(self.y + dy)\n        end\n    end\nend\n\nfunction ISPanel:onMouseUp(x, y)\n    if not self.moveWithMouse then return end\n    self.moving = false\nend\n```\n\n---\n\n## Creating Custom Panels\n\n### Basic Custom Panel\n\n```lua\nrequire \"ISUI/ISPanel\"\nrequire \"ISUI/ISButton\"\nrequire \"ISUI/ISLabel\"\n\nMyCustomPanel = ISPanel:derive(\"MyCustomPanel\")\n\nfunction MyCustomPanel:new(x, y, width, height)\n    local o = ISPanel:new(x, y, width, height)\n    setmetatable(o, self)\n    self.__index = self\n\n    o.backgroundColor = {r=0.1, g=0.1, b=0.1, a=0.9}\n    o.borderColor = {r=0.4, g=0.4, b=0.4, a=1}\n\n    return o\nend\n\nfunction MyCustomPanel:initialise()\n    ISPanel.initialise(self)\nend\n\nfunction MyCustomPanel:createChildren()\n    ISPanel.createChildren(self)\n\n    -- Add a title label\n    self.titleLabel = ISLabel:new(\n        10, 10, 25,\n        \"My Panel\",\n        1, 1, 1, 1,\n        UIFont.Medium, true\n    )\n    self.titleLabel:initialise()\n    self:addChild(self.titleLabel)\n\n    -- Add a close button\n    self.closeButton = ISButton:new(\n        self.width - 90, self.height - 35,\n        80, 25,\n        getText(\"UI_Close\"),\n        self, MyCustomPanel.onClose\n    )\n    self.closeButton:initialise()\n    self.closeButton:instantiate()\n    self.closeButton.anchorTop = false\n    self.closeButton.anchorBottom = true\n    self:addChild(self.closeButton)\nend\n\nfunction MyCustomPanel:onClose()\n    self:setVisible(false)\nend\n```\n\n### Usage\n\n```lua\nlocal panel = MyCustomPanel:new(100, 100, 300, 200)\npanel:initialise()\npanel:addToUIManager()\n```\n\n---\n\n## Draggable Panel Pattern\n\n```lua\nrequire \"ISUI/ISPanel\"\n\nMyDraggablePanel = ISPanel:derive(\"MyDraggablePanel\")\n\nfunction MyDraggablePanel:new(x, y, width, height)\n    local o = ISPanel:new(x, y, width, height)\n    setmetatable(o, self)\n    self.__index = self\n\n    o.moveWithMouse = true  -- Enable dragging\n    o.backgroundColor = {r=0.2, g=0.2, b=0.3, a=0.95}\n    o.borderColor = {r=0.5, g=0.5, b=0.7, a=1}\n\n    return o\nend\n\nfunction MyDraggablePanel:createChildren()\n    ISPanel.createChildren(self)\n\n    -- Add a title area\n    self.titleLabel = ISLabel:new(10, 5, 20, \"Drag Me!\", 1, 1, 1, 1, UIFont.Medium, true)\n    self.titleLabel:initialise()\n    self:addChild(self.titleLabel)\n\n    -- Add close button\n    self.closeBtn = ISButton:new(self.width - 25, 5, 20, 20, \"X\", self, MyDraggablePanel.close)\n    self.closeBtn:initialise()\n    self.closeBtn.anchorLeft = false\n    self.closeBtn.anchorRight = true\n    self:addChild(self.closeBtn)\nend\n```\n\n---\n\n## Scrollable Panel Pattern\n\n```lua\nrequire \"ISUI/ISPanel\"\n\nMyScrollablePanel = ISPanel:derive(\"MyScrollablePanel\")\n\nfunction MyScrollablePanel:new(x, y, width, height)\n    local o = ISPanel:new(x, y, width, height)\n    setmetatable(o, self)\n    self.__index = self\n    o.items = {}\n    o.itemHeight = 25\n    return o\nend\n\nfunction MyScrollablePanel:createChildren()\n    ISPanel.createChildren(self)\n    self:addScrollBars(false)  -- Vertical only\nend\n\nfunction MyScrollablePanel:addItem(text)\n    table.insert(self.items, text)\n    self:setScrollHeight(#self.items * self.itemHeight)\nend\n\nfunction MyScrollablePanel:prerender()\n    ISPanel.prerender(self)\n\n    -- Set clipping\n    self:setStencilRect(0, 0, self.width - 13, self.height)\n\n    local y = 0\n    for i, item in ipairs(self.items) do\n        self:drawText(item, 10, y, 1, 1, 1, 1, UIFont.Small)\n        y = y + self.itemHeight\n    end\n\n    self:clearStencilRect()\nend\n\nfunction MyScrollablePanel:onMouseWheel(del)\n    self:setYScroll(self:getYScroll() - del * 40)\n    return true\nend\n```\n\n---\n\n## Wrapping in a Window\n\nAny panel can be wrapped in an ISCollapsableWindow:\n\n```lua\nlocal panel = MyCustomPanel:new(0, 0, 300, 200)\npanel:initialise()\n\n-- Wrap in window with title bar\nlocal window = panel:wrapInCollapsableWindow(\"My Window Title\", true)\nwindow:addToUIManager()\n\n-- Center on screen\nwindow:setX((getCore():getScreenWidth() - window.width) / 2)\nwindow:setY((getCore():getScreenHeight() - window.height) / 2)\n```\n\n---\n\n## When to Use ISPanel vs ISPanelJoypad\n\n| Use ISPanel when... | Use ISPanelJoypad when... |\n|--------------------|---------------------------|\n| Mouse-only interface | Gamepad support needed |\n| Simple container | Button navigation required |\n| Nested within another panel | Face button shortcuts (A/B/X/Y) |\n| Quick prototype | Settings screens |\n| No interactive elements | Lists with selectable items |\n\n---\n\n## Related\n\n- [ISUI Framework Overview](/build-41/modding/ui-framework/isui-overview) - Framework introduction\n- [UI Element Lifecycle](/build-41/modding/ui-framework/isui-lifecycle) - Lifecycle phases\n- [Gamepad Support](/build-41/modding/ui-framework/isui-joypad) - ISPanelJoypad documentation\n- [Collapsable Windows](/build-41/modding/ui-framework/isui-windows) - Window with title bar",
+  "excerpt": "ISPanel container component with background rendering, borders, and drag-to-move functionality for organizing UI elements.",
+  "lastUpdated": "2026-01-10",
+  "difficulty": "intermediate",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "location",
+      "text": "Location",
+      "level": 2
+    },
+    {
+      "id": "container-hierarchy",
+      "text": "Container Hierarchy",
+      "level": 2
+    },
+    {
+      "id": "ispanel",
+      "text": "ISPanel",
+      "level": 2
+    },
+    {
+      "id": "basic-usage",
+      "text": "Basic Usage",
+      "level": 2
+    },
+    {
+      "id": "rendering",
+      "text": "Rendering",
+      "level": 2
+    },
+    {
+      "id": "mouse-movement-system",
+      "text": "Mouse Movement System",
+      "level": 2
+    },
+    {
+      "id": "creating-custom-panels",
+      "text": "Creating Custom Panels",
+      "level": 2
+    },
+    {
+      "id": "draggable-panel-pattern",
+      "text": "Draggable Panel Pattern",
+      "level": 2
+    },
+    {
+      "id": "scrollable-panel-pattern",
+      "text": "Scrollable Panel Pattern",
+      "level": 2
+    },
+    {
+      "id": "wrapping-in-a-window",
+      "text": "Wrapping in a Window",
+      "level": 2
+    },
+    {
+      "id": "when-to-use-ispanel-vs-ispaneljoypad",
+      "text": "When to Use ISPanel vs ISPanelJoypad",
+      "level": 2
+    },
+    {
+      "id": "related",
+      "text": "Related",
+      "level": 2
+    }
+  ]
+}

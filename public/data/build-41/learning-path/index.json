@@ -95,60 +95,13 @@
       ]
     },
     {
-      "id": "ai-partner",
-      "title": "Part 3: Your AI Partner",
-      "description": "Learn to code without knowing how to code",
-      "articles": [
-        {
-          "id": "ai-for-modding",
-          "step": "3.1",
-          "title": "AI Tools for Modding",
-          "slug": "ai-for-modding",
-          "url": "/build-41/modding/ai-assisted/ai-for-modding",
-          "description": "How AI assistants change the game",
-          "difficulty": "beginner",
-          "estimatedMinutes": 8
-        },
-        {
-          "id": "writing-prompts",
-          "step": "3.2",
-          "title": "Writing Good Prompts",
-          "slug": "writing-prompts",
-          "url": "/build-41/modding/ai-assisted/writing-prompts",
-          "description": "Context, examples, requests, and constraints",
-          "difficulty": "beginner",
-          "estimatedMinutes": 12
-        },
-        {
-          "id": "ai-debugging",
-          "step": "3.3",
-          "title": "AI for Debugging",
-          "slug": "ai-debugging",
-          "url": "/build-41/modding/ai-assisted/ai-debugging",
-          "description": "Use AI to understand and fix errors",
-          "difficulty": "beginner",
-          "estimatedMinutes": 10
-        },
-        {
-          "id": "context-library",
-          "step": "3.4",
-          "title": "Building a Context Library",
-          "slug": "context-library",
-          "url": "/build-41/modding/ai-assisted/context-library",
-          "description": "Create reference files for better AI results",
-          "difficulty": "intermediate",
-          "estimatedMinutes": 15
-        }
-      ]
-    },
-    {
       "id": "first-recipe",
-      "title": "Part 4: Your First Recipe",
+      "title": "Part 3: Your First Recipe",
       "description": "Create something that works in-game",
       "articles": [
         {
           "id": "recipe-anatomy",
-          "step": "4.1",
+          "step": "3.1",
           "title": "Anatomy of a Recipe",
           "slug": "recipe-anatomy",
           "url": "/build-41/modding/recipes/recipe-anatomy",
@@ -158,7 +111,7 @@
         },
         {
           "id": "first-recipe-file",
-          "step": "4.2",
+          "step": "3.2",
           "title": "Your First Recipe File",
           "slug": "first-recipe-file",
           "url": "/build-41/modding/recipes/first-recipe-file",
@@ -168,7 +121,7 @@
         },
         {
           "id": "testing-recipes",
-          "step": "4.3",
+          "step": "3.3",
           "title": "Testing Your Recipe",
           "slug": "testing-recipes",
           "url": "/build-41/modding/recipes/testing-recipes",
@@ -178,7 +131,7 @@
         },
         {
           "id": "recipe-ingredients",
-          "step": "4.4",
+          "step": "3.4",
           "title": "Recipe Ingredients Deep Dive",
           "slug": "recipe-ingredients",
           "url": "/build-41/modding/recipes/recipe-ingredients",
@@ -190,12 +143,12 @@
     },
     {
       "id": "first-item",
-      "title": "Part 5: Custom Items",
+      "title": "Part 4: Custom Items",
       "description": "Create things that don't exist in vanilla",
       "articles": [
         {
           "id": "item-anatomy",
-          "step": "5.1",
+          "step": "4.1",
           "title": "Anatomy of an Item",
           "slug": "item-anatomy",
           "url": "/build-41/modding/items/item-anatomy",
@@ -205,7 +158,7 @@
         },
         {
           "id": "first-item-file",
-          "step": "5.2",
+          "step": "4.2",
           "title": "Your First Custom Item",
           "slug": "first-item-file",
           "url": "/build-41/modding/items/first-item-file",
@@ -215,7 +168,7 @@
         },
         {
           "id": "item-icons",
-          "step": "5.3",
+          "step": "4.3",
           "title": "Creating Item Icons",
           "slug": "item-icons",
           "url": "/build-41/modding/items/item-icons",
@@ -225,7 +178,7 @@
         },
         {
           "id": "item-recipe-connection",
-          "step": "5.4",
+          "step": "4.4",
           "title": "Connecting Items and Recipes",
           "slug": "item-recipe-connection",
           "url": "/build-41/modding/items/item-recipe-connection",

@@ -1,0 +1,82 @@
+{
+  "category": "ui-framework",
+  "name": "UI Framework",
+  "description": "Project Zomboid's ISUI component system for building custom interfaces.",
+  "articles": [
+    {
+      "slug": "isui-overview",
+      "title": "ISUI Framework Overview",
+      "excerpt": "Introduction to Project Zomboid's UI system: ISUIElement hierarchy, lifecycle, and core concepts."
+    },
+    {
+      "slug": "isui-lifecycle",
+      "title": "UI Element Lifecycle",
+      "excerpt": "Understanding new(), initialise(), instantiate(), and createChildren() phases."
+    },
+    {
+      "slug": "isui-panels",
+      "title": "Panels and Containers",
+      "excerpt": "ISPanel and ISPanelJoypad for organizing UI components with backgrounds and borders."
+    },
+    {
+      "slug": "isui-buttons",
+      "title": "Buttons",
+      "excerpt": "ISButton component with callbacks, states, images, and tooltips."
+    },
+    {
+      "slug": "isui-text-input",
+      "title": "Text Input",
+      "excerpt": "ISTextEntryBox and ISTextBox for single-line and multi-line text input."
+    },
+    {
+      "slug": "isui-lists",
+      "title": "Scrolling Lists",
+      "excerpt": "ISScrollingListBox for displaying selectable item lists with custom rendering."
+    },
+    {
+      "slug": "isui-combo-boxes",
+      "title": "Combo Boxes",
+      "excerpt": "ISComboBox dropdown selection component with popup list."
+    },
+    {
+      "slug": "isui-dialogs",
+      "title": "Modal Dialogs",
+      "excerpt": "ISModalDialog and ISModalRichText for Yes/No confirmations and messages."
+    },
+    {
+      "slug": "isui-windows",
+      "title": "Collapsable Windows",
+      "excerpt": "ISCollapsableWindow for draggable, resizable windows with title bars."
+    },
+    {
+      "slug": "isui-tabs",
+      "title": "Tab Panels",
+      "excerpt": "ISTabPanel for organizing content into switchable tabs."
+    },
+    {
+      "slug": "isui-tooltips",
+      "title": "Tooltips",
+      "excerpt": "ISToolTip for context-sensitive help and information display."
+    },
+    {
+      "slug": "isui-rich-text",
+      "title": "Rich Text",
+      "excerpt": "ISRichTextPanel with formatting codes for styled text display."
+    },
+    {
+      "slug": "isui-checkboxes",
+      "title": "Checkboxes and Radio Buttons",
+      "excerpt": "ISTickBox and ISRadioButtons for boolean and exclusive selection."
+    },
+    {
+      "slug": "isui-radial-menus",
+      "title": "Radial Menus",
+      "excerpt": "ISRadialMenu for pie-style selection interfaces with gamepad support."
+    },
+    {
+      "slug": "isui-joypad",
+      "title": "Gamepad Support",
+      "excerpt": "ISPanelJoypad focus system and controller navigation patterns."
+    }
+  ]
+}

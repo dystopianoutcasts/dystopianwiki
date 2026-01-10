@@ -8,6 +8,7 @@ import { SearchPage } from './pages/SearchPage';
 import { LearningPathPage } from './pages/LearningPathPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { ArticleProvider } from './context/ArticleContext';
+import { LearningPathProvider } from './context/LearningPathContext';
 
 // Import global styles
 import './styles/variables.css';
@@ -17,6 +18,7 @@ import './styles/animations.css';
 function App() {
   return (
     <BrowserRouter basename="/">
+      <LearningPathProvider>
       <ArticleProvider>
       <Routes>
         {/* Landing Page */}
@@ -44,6 +46,7 @@ function App() {
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       </ArticleProvider>
+      </LearningPathProvider>
     </BrowserRouter>
   );
 }

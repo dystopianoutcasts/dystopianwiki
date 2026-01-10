@@ -29,6 +29,13 @@
       "articleCount": 4
     },
     {
+      "id": "ui-framework",
+      "name": "UI Framework",
+      "description": "Project Zomboid's ISUI component system for building custom interfaces.",
+      "icon": "layout",
+      "articleCount": 15
+    },
+    {
       "id": "reference",
       "name": "API Reference",
       "description": "Complete reference data for PZ's Lua API: events, globals, and script properties.",
@@ -50,10 +57,24 @@
       "articleCount": 7
     },
     {
+      "id": "systems",
+      "name": "Game Systems",
+      "description": "Core gameplay systems: loot distribution, spawning, professions, and world mechanics.",
+      "icon": "cog",
+      "articleCount": 11
+    },
+    {
+      "id": "data-formats",
+      "name": "Data Formats",
+      "description": "File formats and syntax for Project Zomboid's data files: scripts, tiles, models, and more.",
+      "icon": "file-text",
+      "articleCount": 8
+    },
+    {
       "id": "game-mechanics",
       "name": "Game Mechanics",
       "description": "Modify and extend core game systems like injuries, skills, and weather.",
-      "icon": "cog",
+      "icon": "zap",
       "articleCount": 3
     },
     {
