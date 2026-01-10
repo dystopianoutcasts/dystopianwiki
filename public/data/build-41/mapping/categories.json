@@ -1,0 +1,25 @@
+{
+  "categories": [
+    {
+      "id": "video-tutorials",
+      "name": "Video Tutorials",
+      "icon": "video",
+      "description": "Complete video guide series for learning PZ map making from scratch",
+      "articleCount": 1
+    },
+    {
+      "id": "tilezed",
+      "name": "TileZed",
+      "icon": "grid",
+      "description": "Building and tile editing with TileZed",
+      "articleCount": 0
+    },
+    {
+      "id": "worlded",
+      "name": "WorldEd",
+      "icon": "globe",
+      "description": "World editing and map assembly",
+      "articleCount": 0
+    }
+  ]
+}

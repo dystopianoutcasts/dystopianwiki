@@ -41,11 +41,14 @@ const iconMap: Record<string, string> = {
   globe: '🌍',
   building: '🏠',
   mountain: '⛰️',
+  video: '🎬',
+  map: '🗺️',
 };
 
 // Section definitions (static, but categories loaded dynamically)
 const sectionDefinitions = [
   { id: 'modding', name: 'Modding', icon: '🔌' },
+  { id: 'mapping', name: 'Mapping', icon: '🗺️' },
 ];
 
 interface SidebarProps {

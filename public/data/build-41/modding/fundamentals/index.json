@@ -1,0 +1,35 @@
+{
+  "id": "fundamentals",
+  "name": "Fundamentals",
+  "slug": "fundamentals",
+  "articles": [
+    {
+      "id": "what-is-a-mod",
+      "title": "What Is a Mod?",
+      "slug": "what-is-a-mod",
+      "difficulty": "beginner",
+      "order": 1
+    },
+    {
+      "id": "pz-three-layers",
+      "title": "PZ's Three Layers",
+      "slug": "pz-three-layers",
+      "difficulty": "beginner",
+      "order": 2
+    },
+    {
+      "id": "media-folder",
+      "title": "The Media Folder",
+      "slug": "media-folder",
+      "difficulty": "beginner",
+      "order": 3
+    },
+    {
+      "id": "file-types-explained",
+      "title": "File Types Explained",
+      "slug": "file-types-explained",
+      "difficulty": "beginner",
+      "order": 4
+    }
+  ]
+}

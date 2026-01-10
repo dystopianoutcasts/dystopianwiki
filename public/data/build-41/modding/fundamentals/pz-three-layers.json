@@ -1,0 +1,109 @@
+{
+  "id": "fundamentals-pz-three-layers",
+  "title": "PZ's Three Layers",
+  "slug": "pz-three-layers",
+  "version": "build-41",
+  "section": "modding",
+  "category": "fundamentals",
+  "tags": [
+    "beginner",
+    "architecture",
+    "java",
+    "lua",
+    "scripts",
+    "data",
+    "layers",
+    "engine"
+  ],
+  "content": "# PZ's Three Layers\n\n## Overview\n\nProject Zomboid's architecture consists of three distinct layers, each with different capabilities and access levels for modders. Understanding this separation is crucial for knowing what you can change and how.\n\n## The Three Layers\n\n```\n┌─────────────────────────────────────────────────────────────┐\n│                      JAVA LAYER                             │\n│            (Game Engine - Cannot Modify)                    │\n│   Rendering, Physics, Networking, Save/Load, Core Systems   │\n└─────────────────────────────────────────────────────────────┘\n                              ↑\n                     Lua calls into Java\n                              ↓\n┌─────────────────────────────────────────────────────────────┐\n│                       LUA LAYER                             │\n│              (Game Logic - Can Modify)                      │\n│   UI, Events, Timed Actions, Recipe Callbacks, Behaviors    │\n└─────────────────────────────────────────────────────────────┘\n                              ↑\n                  Lua reads script definitions\n                              ↓\n┌─────────────────────────────────────────────────────────────┐\n│                      DATA LAYER                             │\n│             (Content Definitions - Can Modify)              │\n│    Items, Recipes, Sounds, Moveables, Farming, Camping      │\n└─────────────────────────────────────────────────────────────┘\n```\n\n## Layer 1: Java (The Engine)\n\n### What It Does\n\nThe Java layer is the game engine itself:\n- Rendering graphics and 3D models\n- Physics and collision detection\n- Networking for multiplayer\n- Save/load game state\n- Input handling (keyboard, mouse, controller)\n- Memory management and optimization\n\n### Can Modders Change It?\n\n**No.** The Java source code is not available for modification.\n\n### What We Can Infer\n\nWhile we can't edit Java, we can see how Lua interacts with it:\n\n```lua\n-- These functions call into the Java engine\nlocal playerObj = getSpecificPlayer(player)  -- Java returns a player object\nlocal inv = playerObj:getInventory()         -- Java-side inventory\nlocal cell = getCell()                       -- Java world cell\nlocal world = getWorld()                     -- Java world object\n```\n\nThe `:` method calls (like `:getInventory()`) are calling Java methods through Lua bindings. Common patterns include:\n\n```lua\n-- Player manipulation\nplayer:getInventory()\nplayer:getXp():AddXP(Perks.Woodwork, 3)\nplayer:getPerkLevel(Perks.Carpentry)\n\n-- World access\ngetCell()\ngetWorld()\ngetCore()\n\n-- UI and text\ngetText(\"UI_SomethingKey\")\n```\n\n**Key Insight:** Many \"objects\" you manipulate in Lua are actually wrappers around Java game objects.\n\n## Layer 2: Lua (Game Logic)\n\n### What It Does\n\nThe Lua layer implements game behavior:\n- Recipe callbacks (OnCreate, OnGiveXP, OnTest)\n- UI creation and interaction\n- Context menu building\n- Timed actions (crafting animations)\n- Event handling (game start, player death, etc.)\n- Client/server communication in multiplayer\n\n### Can Modders Change It?\n\n**Yes!** This is where behavioral modding happens.\n\n### The Three Lua Folders\n\n```\nmedia/lua/\n├── client/    <- UI, menus, input, local-only logic\n├── server/    <- Authority logic, world changes, recipes\n└── shared/    <- Code used by both client and server\n```\n\n#### Client Lua (`lua/client/`)\n\nRuns only on each player's computer:\n- UI panels and windows (ISUI)\n- Context menus (right-click actions)\n- Tooltips and hover effects\n- Local player input handling\n- Visual effects and animations\n\n**Example from vanilla:**\n```lua\n-- Building a context menu\nISWorldObjectContextMenu.onRightClickOnFood = function(player, context, worldobjects)\n    local playerObj = getSpecificPlayer(player)\n    local playerInv = playerObj:getInventory()\n    -- Add menu options...\nend\n```\n\n#### Server Lua (`lua/server/`)\n\nRuns with authority over the game world:\n- Recipe code (the actual crafting logic)\n- World state changes\n- Spawning items and zombies\n- Multiplayer synchronization\n\n**Example from vanilla `recipecode.lua`:**\n```lua\nfunction Recipe.OnGiveXP.SawLogs(recipe, ingredients, result, player)\n    if player:getPerkLevel(Perks.Woodwork) <= 3 then\n        player:getXp():AddXP(Perks.Woodwork, 3)\n    else\n        player:getXp():AddXP(Perks.Woodwork, 1)\n    end\nend\n\nfunction Recipe.OnCreate.SpikedBat(items, result, player)\n    for i=1,items:size() do\n        local item = items:get(i-1)\n        if item:getType() == \"BaseballBat\" then\n            result:setCondition(item:getCondition())\n            break\n        end\n    end\nend\n```\n\n#### Shared Lua (`lua/shared/`)\n\nCode that both client and server need:\n- Utility functions\n- Shared definitions\n- Systems that must exist on both sides\n\n### Client vs Server: The Rule\n\n> **If it's visual/UI/input → client**  \n> **If it changes world state → server (or synchronized)**\n\nIn single-player, this distinction matters less. In multiplayer, it's critical.\n\n## Layer 3: Data (Content Definitions)\n\n### What It Does\n\nThe data layer defines *what exists* in the game:\n- Items (properties, types, weights, icons)\n- Recipes (inputs, outputs, requirements)\n- Sounds (audio banks and effects)\n- Moveables (furniture placement rules)\n- Farming (crop definitions)\n- Evolved recipes (cooking systems)\n\n### Can Modders Change It?\n\n**Yes!** This is the easiest layer to modify.\n\n### File Location\n\n```\nmedia/scripts/\n├── items.txt           <- Main item definitions\n├── items_weapons.txt   <- Weapon-specific items\n├── items_food.txt      <- Food items\n├── recipes.txt         <- Crafting recipes\n├── uniquerecipes.txt   <- Special recipes\n├── sounds_*.txt        <- Sound definitions\n├── farming.txt         <- Crop definitions\n└── ...more definition files\n```\n\n### How Scripts Connect to Lua\n\nScript files can reference Lua functions through callbacks:\n\n**Script (data):**\n```\nrecipe Saw Logs {\n    Log,\n    keep [Recipe.GetItemTypes.Saw],\n    \n    Result:Plank=3,\n    OnGiveXP:Recipe.OnGiveXP.SawLogs,    <- Calls Lua function\n    OnCreate:Recipe.OnCreate.SawLogs,    <- Calls Lua function\n}\n```\n\n**Lua (behavior):**\n```lua\n-- This function name must EXACTLY match the script reference\nfunction Recipe.OnGiveXP.SawLogs(recipe, ingredients, result, player)\n    player:getXp():AddXP(Perks.Woodwork, 3)\nend\n```\n\nThe script says \"call this function.\" The Lua implements what the function does.\n\n## What Can You Change at Each Layer?\n\n| Layer | Can Modify? | What You Can Add/Change |\n|-------|-------------|-------------------------|\n| **Java** | No | Nothing directly |\n| **Lua** | Yes | UI, events, callbacks, behaviors, systems |\n| **Data** | Yes | Items, recipes, sounds, balance, properties |\n\n## Practical Examples\n\n### Adding a New Item (Data Only)\n\n```\nmodule Base {\n    item MyNewItem {\n        DisplayName = My New Item,\n        Type = Normal,\n        Weight = 1.0,\n        Icon = MyItemIcon,\n    }\n}\n```\n\nNo Lua needed. The Java engine knows how to handle Normal items.\n\n### Adding a Recipe That Awards XP (Data + Existing Lua)\n\n```\nmodule Base {\n    recipe Craft Something {\n        Material1,\n        Material2,\n        keep Hammer,\n        \n        Result:MyNewItem,\n        Time:100.0,\n        OnGiveXP:Give10CarpentryXP,    <- Uses existing function\n    }\n}\n```\n\nYou're connecting to Lua that already exists in vanilla.\n\n### Adding Custom XP Logic (Data + Custom Lua)\n\n**Script:**\n```\nrecipe Advanced Craft {\n    RareMaterial,\n    keep SpecialTool,\n    \n    Result:AdvancedItem,\n    OnGiveXP:MyMod.GiveCustomXP,\n}\n```\n\n**Lua (in your mod's lua/server/ folder):**\n```lua\nMyMod = MyMod or {}\n\nfunction MyMod.GiveCustomXP(recipe, ingredients, result, player)\n    local skill = player:getPerkLevel(Perks.MetalWelding)\n    if skill < 5 then\n        player:getXp():AddXP(Perks.MetalWelding, 10)\n    else\n        player:getXp():AddXP(Perks.MetalWelding, 5)\n    end\nend\n```\n\n## Key Patterns for Beginners\n\n### 1. Start with Data\n\nMost mods don't need custom Lua. Items and recipes cover a lot.\n\n### 2. Use Existing Callbacks\n\nVanilla has many OnGiveXP and OnCreate functions you can reference:\n- `Recipe.OnGiveXP.SawLogs`\n- `Recipe.OnCreate.SpikedBat`\n- `Give10CarpentryXP`, `Give25MWXP`\n\n### 3. Add Lua Only When Needed\n\nIf vanilla callbacks don't do what you need, then write custom Lua.\n\n### 4. Respect the Client/Server Split\n\nIn multiplayer:\n- UI code goes in `lua/client/`\n- World-changing code goes in `lua/server/`\n\n## The Flow of a Recipe\n\n```\n1. Player clicks \"Craft\" (UI/Client Lua)\n          ↓\n2. Game checks recipe requirements (Data Layer + Java)\n          ↓\n3. OnTest callback runs if defined (Server Lua)\n          ↓\n4. OnCanPerform callback runs if defined (Server Lua)\n          ↓\n5. Timed action plays (Java + Client Lua)\n          ↓\n6. OnCreate callback runs (Server Lua)\n          ↓\n7. OnGiveXP callback runs (Server Lua)\n          ↓\n8. Item appears in inventory (Java)\n```\n\nEach step involves different layers working together.\n\n## Key Takeaways\n\n1. **Java is the engine** - you can't modify it, but Lua talks to it\n2. **Lua is behavior** - UI, events, callbacks, game logic\n3. **Data is content** - items, recipes, sounds, definitions\n4. **Scripts define what, Lua defines how**\n5. **Client Lua = visuals, Server Lua = authority**\n6. **Start with Data**, add Lua only when needed\n\n## Next Steps\n\n- **[The Media Folder](/wiki/build-41/modding/fundamentals/media-folder)** - Learn where every file type belongs\n- **[File Types Explained](/wiki/build-41/modding/fundamentals/file-types-explained)** - Deep dive into .txt and .lua syntax",
+  "excerpt": "Project Zomboid's architecture consists of three distinct layers: Java (engine), Lua (behavior), and Data (content). Understanding this separation is crucial for knowing what you can modify and how.",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "the-three-layers",
+      "text": "The Three Layers",
+      "level": 2
+    },
+    {
+      "id": "layer-1-java-the-engine",
+      "text": "Layer 1: Java (The Engine)",
+      "level": 2
+    },
+    {
+      "id": "what-it-does",
+      "text": "What It Does",
+      "level": 3
+    },
+    {
+      "id": "can-modders-change-it",
+      "text": "Can Modders Change It?",
+      "level": 3
+    },
+    {
+      "id": "what-we-can-infer",
+      "text": "What We Can Infer",
+      "level": 3
+    },
+    {
+      "id": "layer-2-lua-game-logic",
+      "text": "Layer 2: Lua (Game Logic)",
+      "level": 2
+    },
+    {
+      "id": "the-three-lua-folders",
+      "text": "The Three Lua Folders",
+      "level": 3
+    },
+    {
+      "id": "client-vs-server-the-rule",
+      "text": "Client vs Server: The Rule",
+      "level": 3
+    },
+    {
+      "id": "layer-3-data-content-definitions",
+      "text": "Layer 3: Data (Content Definitions)",
+      "level": 2
+    },
+    {
+      "id": "how-scripts-connect-to-lua",
+      "text": "How Scripts Connect to Lua",
+      "level": 3
+    },
+    {
+      "id": "what-can-you-change-at-each-layer",
+      "text": "What Can You Change at Each Layer?",
+      "level": 2
+    },
+    {
+      "id": "practical-examples",
+      "text": "Practical Examples",
+      "level": 2
+    },
+    {
+      "id": "key-patterns-for-beginners",
+      "text": "Key Patterns for Beginners",
+      "level": 2
+    },
+    {
+      "id": "the-flow-of-a-recipe",
+      "text": "The Flow of a Recipe",
+      "level": 2
+    },
+    {
+      "id": "key-takeaways",
+      "text": "Key Takeaways",
+      "level": 2
+    },
+    {
+      "id": "next-steps",
+      "text": "Next Steps",
+      "level": 2
+    }
+  ]
+}

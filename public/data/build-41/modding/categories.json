@@ -1,6 +1,13 @@
 {
   "categories": [
     {
+      "id": "fundamentals",
+      "name": "Fundamentals",
+      "description": "Essential concepts for understanding Project Zomboid modding: architecture, file structure, and syntax basics.",
+      "icon": "book",
+      "articleCount": 4
+    },
+    {
       "id": "lua-api",
       "name": "Lua API",
       "description": "Events, callbacks, and the core Lua scripting interface for Project Zomboid modding.",
