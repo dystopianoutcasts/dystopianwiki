@@ -1,0 +1,87 @@
+{
+  "id": "reference-farming",
+  "title": "Farming Script Reference",
+  "slug": "farming",
+  "version": "build-41",
+  "section": "modding",
+  "category": "reference",
+  "tags": [
+    "beginner",
+    "farming",
+    "gardening",
+    "scripts",
+    "reference",
+    "food"
+  ],
+  "content": "# Farming Script Reference\n\n## Overview\n\nFarming scripts define crops, seeds, gardening tools, and farming-related recipes. The farming module is located in `media/scripts/farming.txt`.\n\n## File Structure\n\n```\nmedia/scripts/farming.txt\n├── Farming Food Items    -- Crops and produce\n├── Food Items            -- Processed foods\n├── Seeds                 -- Individual seeds\n├── Seed Packages         -- Seed packets\n├── Tools                 -- Gardening equipment\n└── Recipes               -- Farming recipes\n```\n\n---\n\n## Module Declaration\n\n```\nmodule farming\n{\n    imports\n    {\n        Base\n    }\n    \n    /* Item and recipe definitions */\n}\n```\n\nNote: The farming module imports Base, so items reference `Base.ItemName` or just `ItemName`.\n\n---\n\n## Crop Items\n\nCrops are Food type items with special farming properties:\n\n```\nitem Tomato\n{\n    DisplayCategory = Food,\n    Type = Food,\n    DisplayName = Tomato,\n    Icon = Tomato,\n    Weight = 0.2,\n    \n    /* Nutrition */\n    HungerChange = -12,\n    ThirstChange = -8,\n    Calories = 14,\n    Carbohydrates = 3.53,\n    Proteins = 1.29,\n    Lipids = 0.21,\n    \n    /* Spoilage */\n    DaysFresh = 4,\n    DaysTotallyRotten = 12,\n    \n    /* Cooking */\n    EvolvedRecipe = Pizza:12;Soup:12;Stew:12;Salad:6,\n    FoodType = Vegetables,\n    \n    /* 3D Models */\n    StaticModel = RoundFood_Red,\n    WorldStaticModel = Tomato_Ground,\n}\n```\n\n### Key Crop Properties\n\n| Property | Description | Example |\n|----------|-------------|----------|\n| `FoodType` | Category for recipes | `FoodType = Vegetables,` |\n| `EvolvedRecipe` | Cooking compatibility | `EvolvedRecipe = Soup:12;Stew:12,` |\n| `ThirstChange` | Water content | `ThirstChange = -8,` |\n| `DaysFresh` | Freshness duration | `DaysFresh = 4,` |\n| `WorldStaticModel` | Dropped item model | `WorldStaticModel = Tomato_Ground,` |\n\n---\n\n## Vanilla Crops\n\n| Crop | HungerChange | DaysFresh | DaysTotallyRotten |\n|------|--------------|-----------|-------------------|\n| Tomato | -12 | 4 | 12 |\n| Potato | -18 | 14 | 28 |\n| Cabbage | -24 | 2 | 4 |\n| Carrot | -10 | 7 | 14 |\n| Broccoli | -10 | 3 | 7 |\n| Radish | -3 | 3 | 7 |\n| Strawberry | -5 | 2 | 5 |\n\n---\n\n## Seed Items\n\n### Individual Seeds\n\n```\nitem TomatoSeed\n{\n    DisplayCategory = Gardening,\n    Type = Normal,\n    DisplayName = Tomato Seeds,\n    Icon = TZ_TomatoSeeds,\n    Weight = 0.009,\n    SurvivalGear = TRUE,\n    WorldStaticModel = Seeds_Ground,\n}\n```\n\n### Seed Packets\n\n```\nitem TomatoBagSeed\n{\n    DisplayCategory = Gardening,\n    Type = Normal,\n    DisplayName = Tomato Seeds Packet,\n    Icon = TZ_SeedpackTomatoes,\n    Weight = 0.1,\n    SurvivalGear = TRUE,\n    WorldStaticModel = TomatoSeedBag_Ground,\n}\n```\n\n### Vanilla Seeds\n\n| Seed | Packet | Opens To |\n|------|--------|----------|\n| CarrotSeed | CarrotBagSeed | 50 seeds |\n| TomatoSeed | TomatoBagSeed | 50 seeds |\n| PotatoSeed | PotatoBagSeed | 50 seeds |\n| CabbageSeed | CabbageBagSeed | 50 seeds |\n| BroccoliSeed | BroccoliBagSeed | 50 seeds |\n| RedRadishSeed | RedRadishBagSeed | 50 seeds |\n| StrewberrieSeed | StrewberrieBagSeed | 50 seeds |\n\n---\n\n## Gardening Tools\n\n### Trowel (Hand Shovel)\n\n```\nitem HandShovel\n{\n    DisplayCategory = Gardening,\n    Type = Weapon,\n    DisplayName = Trowel,\n    Icon = TZ_GardenTrowel,\n    Weight = 0.5,\n    \n    /* Weapon properties */\n    WeaponSprite = Trowel,\n    Categories = SmallBlade,\n    SubCategory = Stab,\n    SwingAnim = Stab,\n    MinDamage = 0.2,\n    MaxDamage = 0.4,\n    ConditionMax = 6,\n    \n    /* Tool functions */\n    Tags = ClearAshes;DigPlow;TakeDirt,\n    SurvivalGear = TRUE,\n}\n```\n\n### Watering Can\n\n```\nitem WateredCan\n{\n    DisplayCategory = Gardening,\n    Type = Normal,\n    DisplayName = Watering Can,\n    Icon = TZ_WateringCan,\n    Weight = 2.0,\n    ReplaceOnUseOn = WaterSource-WateredCanFull,\n    CanStoreWater = true,\n    RainFactor = 0.2,\n    StaticModel = WateringCan,\n    SurvivalGear = TRUE,\n}\n\nitem WateredCanFull\n{\n    DisplayCategory = Water,\n    Type = Drainable,\n    DisplayName = Watering Can (Full),\n    Icon = TZ_WateringCan,\n    Weight = 4.0,\n    UseDelta = 0.025,\n    UseWhileEquipped = false,\n    ReplaceOnUseOn = WaterSource-WateredCanFull,\n    ReplaceOnDeplete = WateredCan,\n    IsWaterSource = true,\n    CanStoreWater = true,\n    RainFactor = 0.2,\n    EatType = WateringCan,\n}\n```\n\n### Gardening Spray Can\n\n```\nitem GardeningSprayEmpty\n{\n    DisplayCategory = Gardening,\n    Type = Normal,\n    DisplayName = Gardening Spray Can (Empty),\n    Icon = TZ_GardeningSprayCan,\n    Weight = 0.3,\n    ReplaceOnUseOn = WaterSource-GardeningSprayFull,\n    CanStoreWater = true,\n    SurvivalGear = TRUE,\n}\n\nitem GardeningSprayMilk\n{\n    DisplayCategory = Gardening,\n    Type = Drainable,\n    DisplayName = Mildew Spray,\n    Icon = TZ_GardeningSprayCan,\n    Weight = 1.0,\n    UseDelta = 0.1,\n    ReplaceOnDeplete = GardeningSprayEmpty,\n    UseWhileEquipped = false,\n}\n\nitem GardeningSprayCigarettes\n{\n    DisplayCategory = Gardening,\n    Type = Drainable,\n    DisplayName = Insecticide Spray,\n    Icon = TZ_GardeningSprayCan,\n    Weight = 1.0,\n    UseDelta = 0.1,\n    ReplaceOnDeplete = GardeningSprayEmpty,\n    UseWhileEquipped = false,\n}\n```\n\n---\n\n## Farming Recipes\n\n### Open Seed Packet\n\n```\nrecipe Open Packet of Tomato Seeds\n{\n    TomatoBagSeed,\n\n    Result:TomatoSeed=50,\n    Time:20.0,\n    Category:Farming,\n    Sound:OpenSeedPacket,\n}\n```\n\n### Repack Seeds\n\n```\nrecipe Put Tomato Seeds in Packet\n{\n    TomatoSeed=50,\n\n    Result:TomatoBagSeed,\n    Time:10.0,\n    Category:Farming,\n}\n```\n\n### Make Mildew Cure\n\n```\nrecipe Make Mildew Cure\n{\n    GardeningSprayEmpty,\n    [Recipe.GetItemTypes.Milk],\n\n    Result:GardeningSprayMilk,\n    Time:40.0,\n    Category:Farming,\n    NeedToBeLearn:true,\n    AllowRottenItem:true,\n    OnTest:Recipe.OnTest.WholeMilk,\n}\n```\n\n### Make Insecticide Spray\n\n```\nrecipe Make Flies Cure\n{\n    GardeningSprayEmpty,\n    Water=3,\n    Cigarettes=5,\n\n    Result:GardeningSprayCigarettes,\n    Time:40.0,\n    Category:Farming,\n    NeedToBeLearn:true,\n}\n```\n\n### Smithing Recipes\n\n```\nrecipe Make Shovel\n{\n    IronIngot=90,\n    Handle,\n    keep [Recipe.GetItemTypes.Hammer],\n    keep Tongs,\n\n    NearItem:Anvil,\n    Result:Shovel,\n    Time:200.0,\n    Category:Smithing,\n    SkillRequired:Blacksmith=6,\n    OnGiveXP:Recipe.OnGiveXP.Blacksmith25,\n    NeedToBeLearn:true,\n}\n\nrecipe Make Hand Shovel\n{\n    IronIngot=50,\n    keep [Recipe.GetItemTypes.Hammer],\n    keep Tongs,\n\n    NearItem:Anvil,\n    Result:HandShovel,\n    Time:200.0,\n    Category:Smithing,\n    SkillRequired:Blacksmith=6,\n    OnGiveXP:Recipe.OnGiveXP.Blacksmith20,\n    NeedToBeLearn:true,\n}\n```\n\n---\n\n## Creating Custom Crops\n\n### Custom Vegetable\n\n```\nmodule MyMod\n{\n    imports { Base farming }\n    \n    item CustomVegetable\n    {\n        DisplayCategory = Food,\n        Type = Food,\n        DisplayName = Custom Vegetable,\n        Icon = CustomVegIcon,\n        Weight = 0.2,\n        \n        HungerChange = -15,\n        ThirstChange = -5,\n        Calories = 25,\n        Carbohydrates = 5,\n        Proteins = 2,\n        Lipids = 0.1,\n        \n        DaysFresh = 5,\n        DaysTotallyRotten = 10,\n        \n        EvolvedRecipe = Soup:15;Stew:15;Salad:8,\n        FoodType = Vegetables,\n        \n        WorldStaticModel = CustomVeg_Ground,\n    }\n}\n```\n\n### Custom Seeds\n\n```\nmodule MyMod\n{\n    imports { Base }\n    \n    item CustomVegSeed\n    {\n        DisplayCategory = Gardening,\n        Type = Normal,\n        DisplayName = Custom Vegetable Seeds,\n        Icon = CustomSeedIcon,\n        Weight = 0.009,\n        SurvivalGear = TRUE,\n    }\n    \n    item CustomVegBagSeed\n    {\n        DisplayCategory = Gardening,\n        Type = Normal,\n        DisplayName = Custom Vegetable Seeds Packet,\n        Icon = CustomSeedBagIcon,\n        Weight = 0.1,\n        SurvivalGear = TRUE,\n    }\n    \n    recipe Open Packet of Custom Seeds\n    {\n        CustomVegBagSeed,\n        \n        Result:CustomVegSeed=50,\n        Time:20.0,\n        Category:Farming,\n        Sound:OpenSeedPacket,\n    }\n}\n```\n\n---\n\n## Food Processing Items\n\n### Bacon Processing\n\n```\nitem Bacon\n{\n    DisplayCategory = Food,\n    Type = Food,\n    DisplayName = Bacon,\n    Icon = Bacon,\n    Weight = 0.3,\n    IsCookable = true,\n    MinutesToCook = 20,\n    MinutesToBurn = 50,\n    HungerChange = -12,\n    DaysFresh = 3,\n    DaysTotallyRotten = 5,\n    DangerousUncooked = true,\n    EvolvedRecipe = Pizza:12;Stew:12;Sandwich:12|Cooked,\n    FoodType = Bacon,\n    GoodHot = true,\n    BadCold = true,\n    Packaged = TRUE,\n}\n\nitem BaconRashers\n{\n    /* ... sliced bacon ... */\n}\n\nitem BaconBits\n{\n    /* ... diced bacon ... */\n}\n\nrecipe Get Bacon Rashers\n{\n    keep [Recipe.GetItemTypes.SharpKnife],\n    Bacon,\n\n    Result:BaconRashers=4,\n    Time:10.0,\n    Category:Cooking,\n}\n\nrecipe Get Bacon Bits\n{\n    keep [Recipe.GetItemTypes.SharpKnife],\n    BaconRashers,\n\n    Result:BaconBits=4,\n    Time:10.0,\n    Category:Cooking,\n}\n```\n\n---\n\n## Condiments\n\n### Mayonnaise\n\n```\nitem MayonnaiseFull\n{\n    DisplayCategory = Food,\n    Type = Food,\n    DisplayName = Mayonnaise,\n    Weight = 0.5,\n    HungerChange = -30,\n    BoredomChange = 10,\n    UnhappyChange = 5,\n    DaysFresh = 10,\n    DaysTotallyRotten = 13,\n    ReplaceOnUse = MayonnaiseEmpty,\n    EvolvedRecipe = Sandwich:2;Burger:2;Salad:2,\n    Spice = true,\n    Packaged = TRUE,\n    EatType = candrink,\n    FoodType = NoExplicit,\n}\n\nitem MayonnaiseEmpty\n{\n    DisplayCategory = WaterContainer,\n    Type = Normal,\n    DisplayName = Empty Bottle,\n    Weight = 0.1,\n    ReplaceOnUseOn = WaterSource-MayonnaiseWaterFull,\n    CanStoreWater = true,\n}\n```\n\n---\n\n## Important Tags\n\n| Tag | Purpose |\n|-----|----------|\n| `SurvivalGear` | Marks item as essential |\n| `CanStoreWater` | Can hold water |\n| `RainFactor` | Collects rain (0.0-1.0) |\n| `DigPlow` | Can plow ground |\n| `TakeDirt` | Can collect dirt |\n| `ClearAshes` | Can clear fire remains |\n\n---\n\n## Related\n\n- [Script Properties](/build-41/modding/reference/script-properties) - Item and recipe properties\n- [Foraging Documentation](/build-41/modding/foraging) - Foraging system\n- [Evolved Recipes](/build-41/modding/recipes/evolved-recipe-syntax) - Cooking system",
+  "excerpt": "Reference for Project Zomboid farming scripts including crops, seeds, gardening tools, and farming recipes.",
+  "lastUpdated": "2026-01-10",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "file-structure",
+      "text": "File Structure",
+      "level": 2
+    },
+    {
+      "id": "module-declaration",
+      "text": "Module Declaration",
+      "level": 2
+    },
+    {
+      "id": "crop-items",
+      "text": "Crop Items",
+      "level": 2
+    },
+    {
+      "id": "vanilla-crops",
+      "text": "Vanilla Crops",
+      "level": 2
+    },
+    {
+      "id": "seed-items",
+      "text": "Seed Items",
+      "level": 2
+    },
+    {
+      "id": "gardening-tools",
+      "text": "Gardening Tools",
+      "level": 2
+    },
+    {
+      "id": "farming-recipes",
+      "text": "Farming Recipes",
+      "level": 2
+    },
+    {
+      "id": "creating-custom-crops",
+      "text": "Creating Custom Crops",
+      "level": 2
+    },
+    {
+      "id": "food-processing-items",
+      "text": "Food Processing Items",
+      "level": 2
+    },
+    {
+      "id": "condiments",
+      "text": "Condiments",
+      "level": 2
+    },
+    {
+      "id": "important-tags",
+      "text": "Important Tags",
+      "level": 2
+    },
+    {
+      "id": "related",
+      "text": "Related",
+      "level": 2
+    }
+  ]
+}

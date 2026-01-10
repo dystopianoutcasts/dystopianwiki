@@ -33,7 +33,7 @@
       "name": "API Reference",
       "description": "Complete reference data for PZ's Lua API: events, globals, and script properties.",
       "icon": "database",
-      "articleCount": 3
+      "articleCount": 6
     },
     {
       "id": "recipes",

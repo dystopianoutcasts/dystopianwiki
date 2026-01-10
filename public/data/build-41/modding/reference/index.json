@@ -23,6 +23,27 @@
       "slug": "script-properties",
       "difficulty": "intermediate",
       "order": 3
+    },
+    {
+      "id": "vehicles",
+      "title": "Vehicle Script Reference",
+      "slug": "vehicles",
+      "difficulty": "intermediate",
+      "order": 4
+    },
+    {
+      "id": "fixing",
+      "title": "Fixing Script Reference",
+      "slug": "fixing",
+      "difficulty": "beginner",
+      "order": 5
+    },
+    {
+      "id": "farming",
+      "title": "Farming Script Reference",
+      "slug": "farming",
+      "difficulty": "beginner",
+      "order": 6
     }
   ]
 }
