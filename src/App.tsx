@@ -7,14 +7,17 @@ import { ArticlePage } from './pages/ArticlePage';
 import { SearchPage } from './pages/SearchPage';
 import { LearningPathPage } from './pages/LearningPathPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { ArticleProvider } from './context/ArticleContext';
 
 // Import global styles
 import './styles/variables.css';
 import './styles/base.css';
+import './styles/animations.css';
 
 function App() {
   return (
     <BrowserRouter basename="/">
+      <ArticleProvider>
       <Routes>
         {/* Landing Page */}
         <Route path="/" element={<HomePage />} />
@@ -40,6 +43,7 @@ function App() {
         {/* 404 */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      </ArticleProvider>
     </BrowserRouter>
   );
 }

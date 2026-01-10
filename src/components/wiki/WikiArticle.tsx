@@ -1,10 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { WikiArticle as WikiArticleType, Difficulty } from '../../types/wiki';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { TableOfContents, extractTOCFromMarkdown } from './TableOfContents';
 import { RelatedArticles } from './RelatedArticles';
 import { ArticleCTA } from './ArticleCTA';
+import { useArticleContext } from '../../context/ArticleContext';
 import '../../styles/components/wiki-article.css';
 
 interface RelatedArticleData {
@@ -50,6 +51,8 @@ export function WikiArticle({
   prevArticle,
   nextArticle,
 }: WikiArticleProps) {
+  const { setTocItems, clearTocItems } = useArticleContext();
+
   // Extract TOC from markdown content
   const tocItems = useMemo(
     () => article.tableOfContents.length > 0
@@ -57,6 +60,12 @@ export function WikiArticle({
       : extractTOCFromMarkdown(article.content),
     [article.content, article.tableOfContents]
   );
+
+  // Set TOC items in context for mobile menu access
+  useEffect(() => {
+    setTocItems(tocItems);
+    return () => clearTocItems();
+  }, [tocItems, setTocItems, clearTocItems]);
 
   // Format last updated date
   const formattedDate = useMemo(() => {

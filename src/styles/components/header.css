@@ -67,13 +67,14 @@
   text-decoration: none;
   padding: var(--spacing-2) var(--spacing-3);
   border-radius: var(--border-radius-md);
-  transition: color var(--transition-fast), background-color var(--transition-fast);
+  transition: color var(--transition-fast), background-color var(--transition-fast), transform var(--transition-fast);
 }
 
 .header__nav-link:hover {
   color: var(--color-text-primary);
   background-color: var(--color-background);
   text-decoration: none;
+  transform: translateY(-1px);
 }
 
 .header__nav-link--active {
@@ -108,10 +109,27 @@
   background-color: var(--color-background);
 }
 
-/* @breakpoint-md: 768px - Tablet: Hide search bar, use mobile menu */
+/* @breakpoint-md: 768px - Tablet: Make search bar responsive */
 @media (max-width: 768px) {
   .header__search {
-    display: none;
+    flex: 1;
+    max-width: none;
+    margin: 0 var(--spacing-2);
+  }
+}
+
+/* @breakpoint-sm: 640px - Mobile: Compact search bar */
+@media (max-width: 640px) {
+  .header__search {
+    margin: 0 var(--spacing-1);
+  }
+
+  .header__search .search-bar__input-wrapper {
+    padding: var(--spacing-1) var(--spacing-2);
+  }
+
+  .header__search .search-bar__input {
+    font-size: var(--font-size-sm);
   }
 }
 
@@ -140,6 +158,13 @@
 
 .header__version-select:hover {
   border-color: var(--color-primary-400);
+}
+
+/* @breakpoint-md: 768px - Tablet: Hide version selector on mobile */
+@media (max-width: 768px) {
+  .header__version-select {
+    display: none;
+  }
 }
 
 /* Theme Toggle */

@@ -15,6 +15,7 @@
   flex: var(--toc-flex);
   min-width: var(--toc-min);
   max-width: var(--toc-max);
+  will-change: transform;
 }
 
 /* Scrollbar */
