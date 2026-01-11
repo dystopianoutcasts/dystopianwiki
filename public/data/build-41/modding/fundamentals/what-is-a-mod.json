@@ -14,26 +14,26 @@
     "getting-started",
     "overview"
   ],
-  "content": "# What Is a Mod?\n\n## Overview\n\nA mod (modification) in Project Zomboid is a collection of files that add new content or change existing game behavior. Mods can range from simple tweaks to complete overhauls, and understanding what they contain is the first step to creating your own.\n\n## What Can Mods Do?\n\nMods in Project Zomboid can:\n\n- **Add new items** - weapons, tools, food, materials, clothing\n- **Create recipes** - new ways to craft and combine items\n- **Modify game behavior** - through Lua scripting\n- **Add textures and models** - custom visuals for items and the world\n- **Change sounds** - new audio for actions, weapons, and ambience\n- **Extend game systems** - skills, traits, foraging, farming, and more\n\n## The Anatomy of a Mod\n\nEvery mod follows the same basic structure - a folder containing a `mod.info` file and a `media` folder:\n\n```\nYourMod/\n├── mod.info                    <- Mod metadata (name, ID, dependencies)\n└── Contents/\n    └── mods/\n        └── YourModName/\n            └── media/\n                ├── scripts/    <- Item and recipe definitions (.txt)\n                ├── lua/        <- Game logic and behavior (.lua)\n                ├── textures/   <- Item icons and images (.png)\n                └── ui/         <- UI textures (.png)\n```\n\nThis structure mirrors vanilla PZ's own `media` folder, allowing your files to extend or override game content.\n\n## Mod Complexity Levels\n\n### Simple Mods (Data-Only)\n\nThe simplest mods only contain **script definitions** - no programming required.\n\n**Example: A new item with 5 properties**\n```\nmodule Base {\n    item CampingTent {\n        DisplayCategory = Camping,\n        Type = Normal,\n        DisplayName = Tent,\n        Icon = TZ_Tent,\n        Weight = 3.0,\n    }\n}\n```\n\nThis is \"data-only\" modding. You're telling the game \"this item exists\" and defining its properties. No Lua code needed.\n\n**Example: A simple recipe**\n```\nmodule Base {\n    imports {\n        Base\n    }\n\n    recipe Smash Bottle {\n        WineEmpty/WineEmpty2/WhiskeyEmpty/BeerEmpty,\n\n        Result:SmashedBottle,\n        Time:20,\n        Sound:BreakGlassItem,\n    }\n}\n```\n\nThis recipe converts empty bottles into smashed glass. Pure data definition - the game engine handles the rest.\n\n### Medium Complexity (Data + Built-in Hooks)\n\nRecipes can use **callbacks** - references to Lua functions that run at specific times:\n\n```\nrecipe Saw Logs {\n    Log,\n    keep [Recipe.GetItemTypes.Saw],\n\n    CanBeDoneFromFloor:true,\n    Result:Plank=3,\n    Sound:Sawing,\n    Time:230.0,\n    Category:Carpentry,\n    OnGiveXP:Recipe.OnGiveXP.SawLogs,\n    AnimNode:SawLog,\n    Prop1:Source=2,\n    Prop2:Log,\n}\n```\n\nThe `OnGiveXP:Recipe.OnGiveXP.SawLogs` line tells the game \"when this recipe completes, call a Lua function to award XP.\" The Lua already exists in vanilla - you're just connecting to it.\n\n### Complex Mods (Data + Custom Lua)\n\nAdvanced mods write their own Lua functions:\n\n**Script definition (data):**\n```\nrecipe Make Spiked Bat {\n    BaseballBat,\n    Nails=5,\n    keep [Recipe.GetItemTypes.Hammer],\n\n    Result:SpikedBaseballBat,\n    OnCreate:Recipe.OnCreate.SpikedBat,\n}\n```\n\n**Lua implementation (behavior):**\n```lua\nfunction Recipe.OnCreate.SpikedBat(items, result, player)\n    -- Find the original bat and transfer its condition\n    for i=1,items:size() do\n        local item = items:get(i-1)\n        if item:getType() == \"BaseballBat\" then\n            result:setCondition(item:getCondition())\n            break\n        end\n    end\nend\n```\n\nThe script defines *what* happens (bat + nails = spiked bat). The Lua defines *how* it happens (preserve the bat's condition).\n\n## The Modding Superpower\n\nThe key insight is this:\n\n> **Scripts define what exists. Lua defines how it behaves.**\n\nThis separation means:\n- You can create lots of content with just scripts (no programming)\n- When you need custom behavior, you add Lua\n- The game handles everything else (UI, saving, multiplayer sync)\n\n## What Files Do Modders Actually Edit?\n\nBased on real mods and vanilla analysis:\n\n| File Type | Location | Purpose | Skill Level |\n|-----------|----------|---------|-------------|\n| `.txt` scripts | `media/scripts/` | Items, recipes, sounds | Beginner |\n| `.png` textures | `media/textures/` | Item icons | Beginner |\n| `.lua` client | `media/lua/client/` | UI, context menus | Intermediate |\n| `.lua` server | `media/lua/server/` | Recipe callbacks, world changes | Intermediate |\n| `.lua` shared | `media/lua/shared/` | Code for both sides | Advanced |\n\n## Concrete Examples from Vanilla\n\n### Data Layer Example: Bullet Mold\n```\nitem 9mmBulletsMold {\n    DisplayCategory = Ammo,\n    Weight = 0.5,\n    Type = Normal,\n    DisplayName = 9mm Bullets Mold,\n    Icon = BulletMold,\n    MetalValue = 15,\n    WorldStaticModel = ShotGunShellsMold_Ground,\n}\n```\n\nSeven properties. No code. The game knows how to handle Normal-type items.\n\n### Data + Callback Example: Sawing Logs\n\nThe recipe connects data to behavior:\n\n```\nrecipe Saw Logs {\n    Log,\n    keep [Recipe.GetItemTypes.Saw],\n    \n    Result:Plank=3,\n    OnGiveXP:Recipe.OnGiveXP.SawLogs,\n}\n```\n\nThe Lua function provides the XP logic:\n\n```lua\nfunction Recipe.OnGiveXP.SawLogs(recipe, ingredients, result, player)\n    if player:getPerkLevel(Perks.Woodwork) <= 3 then\n        player:getXp():AddXP(Perks.Woodwork, 3)\n    else\n        player:getXp():AddXP(Perks.Woodwork, 1)\n    end\nend\n```\n\nLower skill = more XP. This is game balance logic that scripts alone can't express.\n\n## Key Takeaways\n\n1. **Mods are folders** that mirror PZ's own file structure\n2. **Scripts (.txt)** define items, recipes, and properties - no coding required\n3. **Lua (.lua)** adds custom behavior when scripts aren't enough\n4. **Start with scripts** - most beginner mods don't need Lua at all\n5. **The game handles the hard parts** - you focus on content",
+  "content": "# What Is a Mod?\n\n## Overview\n\nA mod (short for modification) is simply a collection of files that add new content or change existing game behavior in Project Zomboid. That's it. No magic, no advanced computer science degree required.\n\nIf you're reading this thinking \"I'm not a coder, this isn't for me\" - stop right there. **Most modding in Project Zomboid doesn't require any coding at all.** The developers at The Indie Stone specifically designed the game to be moddable by regular people who just want to add cool stuff to their favorite game.\n\n## What Can Mods Do?\n\nMods can:\n\n- **Add new items** - weapons, tools, food, materials, clothing\n- **Create recipes** - new ways to craft and combine items\n- **Add textures and icons** - custom visuals for your items\n- **Change sounds** - new audio for weapons and actions\n- **Modify game behavior** - through Lua scripting (we'll get there eventually)\n- **Extend game systems** - skills, traits, foraging, farming, and more\n\nBut let's not get ahead of ourselves. Today, we're going to demystify what a mod actually is and prove to you that you can do this.\n\n## The Two Things Every Mod Needs\n\nAt its core, every mod has just two things:\n\n1. **A `mod.info` file** - This tells the game \"hey, I'm a mod, here's my name and some info about me\"\n2. **A `media` folder** - This is where all your actual mod content lives\n\nThat's the foundation. Everything else builds on top of these two things.\n\n## The Secret: PZ's \"Exposed\" Files\n\nHere's the beautiful thing that The Indie Stone did for us modders:\n\nThey **exposed** their game files. What does \"exposed\" mean? It means they put a lot of the game's content out in the open as simple text files that we can look at, copy, and modify. More importantly, they configured Project Zomboid so that we can write our own text files following a simple pattern - and the game will load them just like the vanilla content.\n\n**No compiling. No special tools. Just text files.**\n\nWhen you write a `.txt` file in the right format and put it in the right place, the game's engine reads it and says \"oh, here's a new item\" or \"here's a new recipe\" and adds it to the game. It's that simple.\n\n## How the Media Folder Works\n\nThe `media` folder in your mod mirrors the game's own `media` folder. When Project Zomboid loads, it reads the vanilla `media` folder first, then reads all the mod `media` folders and combines everything together.\n\nIf you create the same folder structure in your mod that exists in vanilla, the game will load your files right alongside the original ones. Your custom katana sits next to the vanilla katana. Your new recipe appears in the crafting menu. The game doesn't care if it's vanilla or modded - it just loads it all.\n\n## Let's Prove It: Creating a Super Katana\n\nEnough theory. Let's actually do something.\n\n**Our goal:** Create a \"Wicked Katana\" that does twice the damage of the regular Katana.\n\n### Step 1: Find the Vanilla Katana\n\nFirst, we need to see how the original Katana is defined. To do this, we need to find Project Zomboid's game files.\n\n> **Finding PZ's Game Files:**\n> \n> The easy way: In Steam, right-click Project Zomboid → **Manage** → **Browse Local Files**\n> \n> This opens the game folder. Look for the `media` folder (it's alphabetical, so it'll be in the M's).\n>\n> The typical path looks like:\n> `C:\\Program Files (x86)\\Steam\\steamapps\\common\\ProjectZomboid\\media`\n\nNow we need to find where weapons are defined. Navigate to:\n\n```\nProjectZomboid/media/scripts/items_weapons.txt\n```\n\nOpen this file in any text editor (Notepad works fine, but VS Code or Notepad++ are better). Use **Ctrl+F** to search for \"Katana\" and you'll find:\n\n```\nitem Katana\n{\n    DisplayCategory = Weapon,\n    MaxRange = 1.4,\n    WeaponSprite = Katana,\n    MinAngle = 0.8,\n    Type = Weapon,\n    MinimumSwingTime = 3,\n    HitFloorSound = KatanaHit,\n    ImpactSound = KatanaHit,\n    DoorHitSound = KatanaHit,\n    HitSound = KatanaHit,\n    SwingSound = KatanaSwing,\n    KnockBackOnNoDeath = TRUE,\n    SwingAmountBeforeImpact = 0.02,\n    Categories = LongBlade,\n    Weight = 2,\n    ConditionLowerChanceOneIn = 15,\n    PushBackMod = 0.5,\n    SubCategory = Swinging,\n    ConditionMax = 10,\n    MaxHitCount = 3,\n    DoorDamage = 8,\n    SwingAnim = Bat,\n    CriticalChance = 30,\n    CritDmgMultiplier = 10,\n    DisplayName = Katana,\n    MinRange = 0.61,\n    SwingTime = 3,\n    HitAngleMod = -30,\n    KnockdownMod = 0,\n    Icon = Katana,\n    RunAnim = Run_Weapon2,\n    BreakSound = KatanaBreak,\n    TreeDamage = 1,\n    MinDamage = 8,\n    MaxDamage = 8,\n    BaseSpeed = 1,\n    WeaponLength = 0.4,\n    DamageCategory = Slash,\n    DamageMakeHole = TRUE,\n    TwoHandWeapon = TRUE,\n    AttachmentType = BigBlade,\n}\n```\n\nLook at that. It's just a list of properties with values. No scary code. No mysterious symbols. Just `PropertyName = Value` over and over.\n\n### Step 2: Understanding What We're Looking At\n\nBefore we copy this, let's understand the key parts:\n\n**The item declaration:**\n```\nitem Katana\n```\nThis is the **internal name** - what the game uses to identify this item. When you spawn items or reference them in recipes, you use this name.\n\n**The curly braces `{ }`:**\nEverything between these braces belongs to this item. Think of it like a container.\n\n**The properties:**\nEach line like `MinDamage = 8` sets one attribute of the item. Change the number, change the item.\n\nThe key damage properties for our Super Katana:\n- `MinDamage = 8` - Minimum damage per hit\n- `MaxDamage = 8` - Maximum damage per hit (same as min means consistent damage)\n\n### Step 3: Create Your Mod's File Structure\n\nNow for your mod. You need to create folders that match where the Katana file lives:\n\n```\nYourModName/\n└── media/\n    └── scripts/\n        └── my_weapons.txt\n```\n\n> **Important Naming Note:**\n> \n> Do NOT name your file `items_weapons.txt` (the same as vanilla). If you do, you might overwrite vanilla content or cause conflicts. Always use unique file names like `my_weapons.txt`, `wickedweapons.txt`, or `[YourModName]_items.txt`.\n\n### Step 4: Understanding Modules\n\nOpen your new `my_weapons.txt` file. Before we add our item, we need to understand **modules**.\n\nA module is like a namespace - it's a container that holds items and prevents naming conflicts. The vanilla game uses a module called `Base` for most items.\n\nHere's the structure:\n\n```\nmodule Base {\n    imports {\n        Base\n    }\n\n    item YourItemHere {\n        // properties go here\n    }\n}\n```\n\n**Why `module Base`?**\n\nUsing `module Base` puts your item alongside vanilla items. This works fine, but has a downside: your items get mixed in with hundreds of vanilla items, making them harder to find when testing or using admin commands.\n\n**Better approach - Your Own Module:**\n\nYou can create your own module:\n\n```\nmodule WickedWeapons {\n    imports {\n        Base\n    }\n\n    item WickedKatana {\n        // properties\n    }\n}\n```\n\nNow your item's full name is `WickedWeapons.WickedKatana` instead of `Base.WickedKatana`. Much easier to find!\n\n> **Module Naming Rules:**\n> - No spaces\n> - Start with a letter\n> - Letters, numbers, and underscores only\n> - Keep it short - you'll type this a lot\n> - Examples: `MyMod`, `WickedWeapons`, `BobsItems`\n\n**What does `imports { Base }` do?**\n\nThis imports all vanilla items so you can reference them. If a recipe needs `Base.Plank`, the import makes that work. You generally always want to import Base.\n\n### Step 5: Create the Wicked Katana\n\nNow let's write our item. We'll copy the Katana but change the name and double the damage:\n\n```\nmodule WickedWeapons {\n    imports {\n        Base\n    }\n\n    item WickedKatana\n    {\n        /* Display */\n        DisplayCategory = Weapon,\n        DisplayName = Wicked Katana,\n        Icon = Katana,\n        \n        /* Type & Category */\n        Type = Weapon,\n        SubCategory = Swinging,\n        Categories = LongBlade,\n        DamageCategory = Slash,\n        DamageMakeHole = TRUE,\n        TwoHandWeapon = TRUE,\n        AttachmentType = BigBlade,\n        \n        /* Visual */\n        WeaponSprite = Katana,\n        \n        /* Range */\n        MinRange = 0.61,\n        MaxRange = 1.4,\n        MinAngle = 0.8,\n        WeaponLength = 0.4,\n        \n        /* Speed & Animation */\n        SwingTime = 3,\n        MinimumSwingTime = 3,\n        BaseSpeed = 1,\n        SwingAnim = Bat,\n        RunAnim = Run_Weapon2,\n        SwingAmountBeforeImpact = 0.02,\n        \n        /* DAMAGE - Doubled from vanilla! */\n        MinDamage = 16,\n        MaxDamage = 16,\n        CriticalChance = 30,\n        CritDmgMultiplier = 10,\n        \n        /* Combat Modifiers */\n        MaxHitCount = 3,\n        PushBackMod = 0.5,\n        KnockdownMod = 0,\n        KnockBackOnNoDeath = TRUE,\n        HitAngleMod = -30,\n        \n        /* Durability */\n        ConditionMax = 10,\n        ConditionLowerChanceOneIn = 15,\n        \n        /* Weight */\n        Weight = 2,\n        \n        /* Environmental Damage */\n        DoorDamage = 8,\n        TreeDamage = 1,\n        \n        /* Sounds */\n        SwingSound = KatanaSwing,\n        HitSound = KatanaHit,\n        HitFloorSound = KatanaHit,\n        ImpactSound = KatanaHit,\n        DoorHitSound = KatanaHit,\n        BreakSound = KatanaBreak,\n    }\n}\n```\n\nNotice what we changed:\n- `item WickedKatana` - New internal name\n- `DisplayName = Wicked Katana` - What players see in-game\n- `MinDamage = 16` and `MaxDamage = 16` - Doubled from 8!\n\nWe kept `Icon = Katana` and `WeaponSprite = Katana` so our weapon uses the vanilla Katana's appearance. You could create custom graphics later, but this works perfectly for now.\n\n### Step 6: That's It!\n\nSave the file. Your mod now adds a Wicked Katana to Project Zomboid.\n\nTo test it, you'd enable the mod and use debug mode to spawn `WickedWeapons.WickedKatana` - but we'll cover testing in another article.\n\n## The Quick Summary\n\nWhat we actually did:\n\n1. Found the vanilla Katana definition in `media/scripts/items_weapons.txt`\n2. Created a mod with `media/scripts/my_weapons.txt`\n3. Copied the Katana definition\n4. Changed the name and damage values\n5. Done\n\nThat's modding. Copy, paste, change some numbers. The game handles everything else.\n\n## Understanding Item Properties\n\nLet's break down what those properties actually do, organized by category:\n\n### Display Properties\n| Property | What It Does | Example |\n|----------|--------------|----------|\n| `DisplayName` | Name shown to players | `Wicked Katana` |\n| `DisplayCategory` | Category in spawn menus | `Weapon` |\n| `Icon` | Inventory icon sprite | `Katana` |\n\n### Type Properties\n| Property | What It Does | Example |\n|----------|--------------|----------|\n| `Type` | Item type (Weapon, Food, Normal, etc.) | `Weapon` |\n| `SubCategory` | Weapon subtype | `Swinging` |\n| `Categories` | Skill category | `LongBlade` |\n| `DamageCategory` | Damage type | `Slash` |\n\n### Damage Properties\n| Property | What It Does | Example |\n|----------|--------------|----------|\n| `MinDamage` | Minimum damage per hit | `16` |\n| `MaxDamage` | Maximum damage per hit | `16` |\n| `CriticalChance` | % chance to crit | `30` |\n| `CritDmgMultiplier` | Critical hit multiplier | `10` |\n\n### Combat Properties\n| Property | What It Does | Example |\n|----------|--------------|----------|\n| `MaxHitCount` | Max zombies hit per swing | `3` |\n| `PushBackMod` | How much knockback | `0.5` |\n| `KnockdownMod` | Chance to knock down | `0` |\n\n### Durability Properties\n| Property | What It Does | Example |\n|----------|--------------|----------|\n| `ConditionMax` | Maximum durability | `10` |\n| `ConditionLowerChanceOneIn` | 1-in-X chance to lose durability per hit | `15` |\n\n## Syntax: The Patterns That Matter\n\nSince these are text files (not code), the game's engine **parses** them - it reads through expecting specific patterns. If you break the pattern, the item won't load.\n\n**Key syntax rules:**\n\n1. **Commas after every property** (except the last one)\n   ```\n   MinDamage = 8,\n   MaxDamage = 8,    <- comma\n   Weight = 2,       <- no comma on last property is OK, but comma works too\n   ```\n\n2. **Curly braces must match**\n   ```\n   item Katana {\n       // properties\n   }   <- this closes the item\n   ```\n\n3. **Module wraps everything**\n   ```\n   module Base {\n       item Thing { }\n   }   <- this closes the module\n   ```\n\n4. **No special characters in names** - Letters, numbers, underscores only\n\n5. **Case matters** - `MinDamage` is not the same as `mindamage`\n\n## What's Next?\n\nYou've just created your first item mod. The same principles apply to:\n- Adding new foods\n- Creating clothing\n- Making tools\n- And much more\n\nRecipes work similarly - just a different set of properties in a different pattern.\n\nWhen you're ready to go deeper, the next articles cover the full mod folder structure, the `mod.info` file, and how to test your creations in-game.\n\n## Key Takeaways\n\n1. **Mods are just folders** with a `mod.info` file and a `media` folder\n2. **The Indie Stone exposed their files** so we can mod without coding\n3. **Items are defined in `.txt` files** using simple `Property = Value` patterns\n4. **Copy vanilla, change values** - that's the core workflow\n5. **Use your own module name** to keep your items organized\n6. **Syntax matters** - commas, braces, and spelling must be exact\n7. **You don't need to be a programmer** - this is data entry, not coding",
   "nextSteps": [
     {
-      "title": "PZ's Three Layers",
-      "url": "/build-41/modding/fundamentals/pz-three-layers",
-      "description": "Understand the Java/Lua/Data architecture"
+      "title": "Mod Folder Structure",
+      "url": "/build-41/modding/setup/mod-folder-structure",
+      "description": "Set up your mod's folders correctly"
     },
     {
-      "title": "The Media Folder",
-      "url": "/build-41/modding/fundamentals/media-folder",
-      "description": "Learn where every file goes"
+      "title": "The mod.info File",
+      "url": "/build-41/modding/setup/mod-info-file",
+      "description": "Configure your mod's metadata"
     },
     {
-      "title": "File Types Explained",
-      "url": "/build-41/modding/fundamentals/file-types-explained",
-      "description": "Deep dive into .txt and .lua syntax"
+      "title": "Debug Mode",
+      "url": "/build-41/modding/setup/debug-mode",
+      "description": "Learn to test and spawn your items in-game"
     }
   ],
-  "excerpt": "A mod in Project Zomboid is a collection of files that add new content or change existing game behavior. Learn about mod structure, complexity levels, and what files modders actually edit.",
-  "lastUpdated": "2026-01-09",
+  "excerpt": "A mod is simply a collection of files that add new content to Project Zomboid. No coding required - just text files with simple patterns. Learn by creating a custom weapon in this hands-on guide.",
+  "lastUpdated": "2026-01-10",
   "difficulty": "beginner",
   "tableOfContents": [
     {
@@ -47,54 +47,74 @@
       "level": 2
     },
     {
-      "id": "the-anatomy-of-a-mod",
-      "text": "The Anatomy of a Mod",
+      "id": "the-two-things-every-mod-needs",
+      "text": "The Two Things Every Mod Needs",
       "level": 2
     },
     {
-      "id": "mod-complexity-levels",
-      "text": "Mod Complexity Levels",
+      "id": "the-secret-pzs-exposed-files",
+      "text": "The Secret: PZ's \"Exposed\" Files",
       "level": 2
     },
     {
-      "id": "simple-mods-data-only",
-      "text": "Simple Mods (Data-Only)",
-      "level": 3
-    },
-    {
-      "id": "medium-complexity-data-built-in-hooks",
-      "text": "Medium Complexity (Data + Built-in Hooks)",
-      "level": 3
-    },
-    {
-      "id": "complex-mods-data-custom-lua",
-      "text": "Complex Mods (Data + Custom Lua)",
-      "level": 3
-    },
-    {
-      "id": "the-modding-superpower",
-      "text": "The Modding Superpower",
+      "id": "how-the-media-folder-works",
+      "text": "How the Media Folder Works",
       "level": 2
     },
     {
-      "id": "what-files-do-modders-actually-edit",
-      "text": "What Files Do Modders Actually Edit?",
+      "id": "lets-prove-it-creating-a-super-katana",
+      "text": "Let's Prove It: Creating a Super Katana",
       "level": 2
     },
     {
-      "id": "concrete-examples-from-vanilla",
-      "text": "Concrete Examples from Vanilla",
+      "id": "step-1-find-the-vanilla-katana",
+      "text": "Step 1: Find the Vanilla Katana",
+      "level": 3
+    },
+    {
+      "id": "step-2-understanding-what-were-looking-at",
+      "text": "Step 2: Understanding What We're Looking At",
+      "level": 3
+    },
+    {
+      "id": "step-3-create-your-mods-file-structure",
+      "text": "Step 3: Create Your Mod's File Structure",
+      "level": 3
+    },
+    {
+      "id": "step-4-understanding-modules",
+      "text": "Step 4: Understanding Modules",
+      "level": 3
+    },
+    {
+      "id": "step-5-create-the-wicked-katana",
+      "text": "Step 5: Create the Wicked Katana",
+      "level": 3
+    },
+    {
+      "id": "step-6-thats-it",
+      "text": "Step 6: That's It!",
+      "level": 3
+    },
+    {
+      "id": "the-quick-summary",
+      "text": "The Quick Summary",
       "level": 2
     },
     {
-      "id": "data-layer-example-bullet-mold",
-      "text": "Data Layer Example: Bullet Mold",
-      "level": 3
+      "id": "understanding-item-properties",
+      "text": "Understanding Item Properties",
+      "level": 2
     },
     {
-      "id": "data-callback-example-sawing-logs",
-      "text": "Data + Callback Example: Sawing Logs",
-      "level": 3
+      "id": "syntax-the-patterns-that-matter",
+      "text": "Syntax: The Patterns That Matter",
+      "level": 2
+    },
+    {
+      "id": "whats-next",
+      "text": "What's Next?",
+      "level": 2
     },
     {
       "id": "key-takeaways",
