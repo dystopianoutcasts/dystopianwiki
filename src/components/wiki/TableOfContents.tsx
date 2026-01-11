@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { TOCItem } from '../../types/wiki';
 import '../../styles/components/table-of-contents.css';
 
@@ -18,9 +18,6 @@ export function TableOfContents({ items, className = '' }: TableOfContentsProps)
   const [activeId, setActiveId] = useState<string>('');
   const [expanded, setExpanded] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [tocOffset, setTocOffset] = useState(0);
-  const targetOffset = useRef(0);
-  const isMobile = className.includes('mobile');
 
   // Track scroll position and update active heading
   useEffect(() => {
@@ -60,38 +57,6 @@ export function TableOfContents({ items, className = '' }: TableOfContentsProps)
     return () => window.removeEventListener('scroll', handleScroll);
   }, [items]);
 
-  // Smooth follow animation for desktop TOC
-  useEffect(() => {
-    if (isMobile) return;
-
-    let animationFrame: number;
-    let currentOffset = 0;
-
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      // Calculate target offset - subtle movement (10% of scroll, max 50px)
-      targetOffset.current = Math.min(scrollTop * 0.08, 50);
-    };
-
-    const animate = () => {
-      // Lerp (linear interpolation) towards target for smooth following
-      const diff = targetOffset.current - currentOffset;
-      if (Math.abs(diff) > 0.1) {
-        currentOffset += diff * 0.12;
-        setTocOffset(currentOffset);
-      }
-      animationFrame = requestAnimationFrame(animate);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    animationFrame = requestAnimationFrame(animate);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      cancelAnimationFrame(animationFrame);
-    };
-  }, [isMobile]);
-
   const handleClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
     const element = document.getElementById(id);
@@ -114,13 +79,10 @@ export function TableOfContents({ items, className = '' }: TableOfContentsProps)
     return null;
   }
 
-  const tocStyle = !isMobile ? { transform: `translateY(${tocOffset}px)` } : undefined;
-
   return (
     <nav
       className={`toc ${expanded ? 'toc--expanded' : ''} ${className}`}
       aria-label="Table of contents"
-      style={tocStyle}
     >
       {/* Mobile toggle */}
       <button

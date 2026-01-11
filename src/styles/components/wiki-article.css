@@ -28,14 +28,17 @@
   min-width: var(--toc-min);
   max-width: var(--toc-max);
 
-  /* Sticky positioning - wrapper handles layout */
+  /* Sticky positioning - follows scroll within article body */
   position: sticky;
   top: calc(var(--header-height) + var(--spacing-6));
   align-self: flex-start;
 
-  /* Height constraint with scroll when needed */
-  max-height: calc(100vh - var(--header-height) - var(--spacing-12));
+  /* Height constraint with scroll for long TOCs - use smaller max to leave breathing room */
+  max-height: calc(100vh - var(--header-height) - var(--spacing-8));
   overflow-y: auto;
+
+  /* Ensure TOC doesn't get clipped by parent */
+  overflow-x: visible;
 }
 
 /* Scrollbar styling for TOC wrapper */
