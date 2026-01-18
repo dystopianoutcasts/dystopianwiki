@@ -63,25 +63,35 @@ python scripts/pz_parser.py parse <file.txt>   # Parse specific file to JSON
 - **IndexedDB** - Client-side caching via `idb` library
 - **Content Manifest** - Cache invalidation system (`content-manifest.json`)
 
-## Content Structure
+## API Structure (NEW - In Progress)
 
+We're migrating to a per-game versioned API structure. See [docs/api-architecture.md](docs/api-architecture.md) for full details.
+
+### New Structure (Target)
+```
+public/api/
+├── games.json                   # Global games manifest
+├── pz/                          # Project Zomboid
+│   └── v1/                      # API version
+│       ├── versions.json        # Game versions (build-41, build-42)
+│       ├── sections.json        # Available sections
+│       └── build-41/            # Game version content
+│           ├── modding/
+│           ├── mapping/
+│           └── learning-path/
+└── vs/                          # Vintage Story (future)
+    └── v1/
+```
+
+### Old Structure (To Be Removed)
 ```
 public/data/
-├── versions.json           # Version list
-├── sections.json           # Section definitions
-├── search-index.json       # Global search index
-├── content-manifest.json   # Generated file hashes for cache invalidation
+├── versions.json
+├── sections.json
+├── search-index.json
+├── content-manifest.json
 └── build-41/
-    └── modding/
-        ├── fundamentals/   # Mod basics, file types
-        ├── items/          # Item creation guides
-        ├── recipes/        # Recipe creation guides
-        ├── lua-api/        # Lua reference
-        ├── game-mechanics/ # System overviews
-        ├── weapon-repair/  # Repair system (complete)
-        ├── foraging/       # Foraging system
-        ├── reference/      # Quick references
-        └── [more to come]
+    └── modding/...
 ```
 
 ## Article JSON Format
@@ -273,7 +283,7 @@ The wiki uses IndexedDB caching with content manifest invalidation:
 
 ### Recent Major Changes
 
-**Wiki Restructure to Game-Agnostic:**
+**1. Wiki Restructure to Game-Agnostic (DONE):**
 - New unified landing page with game selector cards
 - Added About Dystopian Outcasts section
 - URL structure now includes game prefix (`/pz/build-41/modding/...`)
@@ -281,7 +291,13 @@ The wiki uses IndexedDB caching with content manifest invalidation:
 - Created `useGameContext` hook for consistent URL building
 - Legacy routes still work for backwards compatibility
 
-**New Components:**
+**2. API Restructure - Per-Game Versioning (IN PROGRESS):**
+- Moving from `/data/` to `/api/{game}/v1/` structure
+- Created `/api/pz/v1/` folder with all PZ content
+- Created `games.json`, `versions.json`, `sections.json`
+- Need to wire up data fetching to use new paths
+
+### New Components Created
 - `GameCards.tsx` - Game selector cards (PZ, Vintage Story)
 - `AboutSection.tsx` - About Dystopian Outcasts section
 - `useGameContext.ts` - Hook for game-aware URL generation
@@ -297,9 +313,98 @@ The wiki uses IndexedDB caching with content manifest invalidation:
 - Radio items (23)
 - **16 vanilla-reference articles** total
 
-### Next Priorities
+---
 
-1. Add Vintage Story content structure
+## TODO: API Migration (Hand-off to Devs)
+
+### Completed
+- [x] Created `/public/api/` folder structure
+- [x] Created `/api/games.json` - global games manifest
+- [x] Copied PZ data to `/api/pz/v1/build-41/`
+- [x] Created `/api/pz/v1/versions.json`
+- [x] Created `/api/pz/v1/sections.json`
+- [x] Updated frontend routes in `App.tsx` for `/pz/` prefix
+- [x] Created `useGameContext` hook
+- [x] Updated `Sidebar.tsx` navigation links
+- [x] Updated `Breadcrumbs.tsx` with PZ/VS display names
+- [x] Updated `SectionPage.tsx` to use `buildPath()`
+- [x] Updated `CategoryPage.tsx` to use `buildPath()`
+- [x] Updated `ArticlePage.tsx` to use `buildPath()`
+
+### TODO: Wire Up New API Paths
+These files still fetch from old `/data/` paths and need to be updated:
+
+1. **`src/hooks/useWikiData.ts`** - Main data fetching hooks
+   - Change: `data/${version}/${section}/...` → `api/pz/v1/${version}/${section}/...`
+   - Need to make it game-aware (use gameId from context)
+
+2. **`src/components/layout/Sidebar.tsx`** - Line 78
+   - Change: `fetch('/data/${version}/${sectionDef.id}/categories.json')`
+   - To: `fetch('/api/pz/v1/${version}/${sectionDef.id}/categories.json')`
+
+3. **`src/components/landing/SectionBrowser.tsx`** - If still used
+   - Update fetch paths
+
+4. **Search functionality**
+   - Update search index path
+   - May need per-game search indexes
+
+5. **`scripts/pz_parser.py`** - Python parser
+   - Update `WIKI_DATA_PATH` to output to `/api/pz/v1/build-41/`
+
+6. **Cache manifest generation**
+   - Update `scripts/generate-manifest.js` for new paths
+
+### TODO: Cleanup
+- [ ] Remove old `/public/data/` folder after migration verified
+- [ ] Update any hardcoded `/data/` paths
+- [ ] Test all routes work with new API structure
+
+### Next Priorities (After API Migration)
+
+1. Add Vintage Story content structure (`/api/vs/v1/`)
 2. Continue Phase 2: Lua source documentation for PZ
 3. Document remaining PZ script files (moveables, animations)
 4. Add server configuration guides
+
+---
+
+## Documentation
+
+See `/docs/` folder for detailed planning documents:
+
+### Current Sprint
+- [docs/README.md](docs/README.md) - Overview and current sprint status
+- [docs/api-architecture.md](docs/api-architecture.md) - Full API structure documentation
+
+### Mobile App & Future Plans
+- [docs/tech-stack-overview.md](docs/tech-stack-overview.md) - What each technology does and why (React Native, Supabase, etc.)
+- [docs/mobile-app-architecture.md](docs/mobile-app-architecture.md) - How the mobile app will be structured
+- [docs/rate-limiting-strategy.md](docs/rate-limiting-strategy.md) - How we handle traffic and prevent abuse
+- [docs/infrastructure-hosting.md](docs/infrastructure-hosting.md) - Where things run, costs, deployment pipeline
+- [docs/migration-plan.md](docs/migration-plan.md) - Step-by-step plan from wiki to full app
+
+### Quick Summary: The Plan
+
+We're expanding this wiki into a cross-platform mobile app (iOS + Android + Web).
+
+**Tech Stack:**
+- **Frontend:** React Native + Expo (one codebase for all platforms)
+- **Backend:** Supabase (auth, PostgreSQL database, storage)
+- **Search:** Full-text + semantic search via pgvector
+- **Hosting:** Vercel (web), Expo EAS (mobile builds)
+
+**Why These Choices:**
+- We already know React/TypeScript
+- Supabase is free tier generous, easy to start
+- React Native = one codebase for iOS, Android, and web
+- DIY rate limiting saves $20/month vs Cloudflare paid
+
+**Estimated Costs:**
+- Year 1: ~$125 (just app store fees)
+- Ongoing: $99/year (Apple Developer) if we stay in free tiers
+
+**Rate Limiting Strategy:**
+- Anonymous: 10 requests/min (enough to browse, painful to scrape)
+- Registered: 60 requests/min (comfortable for power users)
+- We allow AI/LLMs to help users, just discourage bulk scraping
