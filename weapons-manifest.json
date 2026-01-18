@@ -1,0 +1,811 @@
+{
+  "generated": "2026-01-18T14:42:46.880Z",
+  "source": "items_weapons.txt",
+  "articles": [
+    {
+      "id": "vanilla-weapon-saucepan",
+      "title": "Saucepan",
+      "slug": "vanilla-saucepan"
+    },
+    {
+      "id": "vanilla-weapon-leadpipe",
+      "title": "Lead Pipe",
+      "slug": "vanilla-leadpipe"
+    },
+    {
+      "id": "vanilla-weapon-nightstick",
+      "title": "Nightstick",
+      "slug": "vanilla-nightstick"
+    },
+    {
+      "id": "vanilla-weapon-metalbar",
+      "title": "Metal Bar",
+      "slug": "vanilla-metalbar"
+    },
+    {
+      "id": "vanilla-weapon-metalpipe",
+      "title": "Metal Pipe",
+      "slug": "vanilla-metalpipe"
+    },
+    {
+      "id": "vanilla-weapon-meatcleaver",
+      "title": "Meat Cleaver",
+      "slug": "vanilla-meatcleaver"
+    },
+    {
+      "id": "vanilla-weapon-handaxe",
+      "title": "Hand Axe",
+      "slug": "vanilla-handaxe"
+    },
+    {
+      "id": "vanilla-weapon-handscythe",
+      "title": "Hand Scythe",
+      "slug": "vanilla-handscythe"
+    },
+    {
+      "id": "vanilla-weapon-machete",
+      "title": "Machete",
+      "slug": "vanilla-machete"
+    },
+    {
+      "id": "vanilla-weapon-pipewrench",
+      "title": "Pipe Wrench",
+      "slug": "vanilla-pipewrench"
+    },
+    {
+      "id": "vanilla-weapon-saxophone",
+      "title": "Saxophone",
+      "slug": "vanilla-saxophone"
+    },
+    {
+      "id": "vanilla-weapon-trumpet",
+      "title": "Trumpet",
+      "slug": "vanilla-trumpet"
+    },
+    {
+      "id": "vanilla-weapon-violin",
+      "title": "Violin",
+      "slug": "vanilla-violin"
+    },
+    {
+      "id": "vanilla-weapon-drumstick",
+      "title": "Drumstick",
+      "slug": "vanilla-drumstick"
+    },
+    {
+      "id": "vanilla-weapon-plunger",
+      "title": "Plunger",
+      "slug": "vanilla-plunger"
+    },
+    {
+      "id": "vanilla-weapon-flute",
+      "title": "Flute",
+      "slug": "vanilla-flute"
+    },
+    {
+      "id": "vanilla-weapon-chairleg",
+      "title": "Chair Leg",
+      "slug": "vanilla-chairleg"
+    },
+    {
+      "id": "vanilla-weapon-pickaxehandle",
+      "title": "PickAxe Handle",
+      "slug": "vanilla-pickaxehandle"
+    },
+    {
+      "id": "vanilla-weapon-pickaxehandlespiked",
+      "title": "Spiked PickAxe Handle",
+      "slug": "vanilla-pickaxehandlespiked"
+    },
+    {
+      "id": "vanilla-weapon-tableleg",
+      "title": "Table Leg",
+      "slug": "vanilla-tableleg"
+    },
+    {
+      "id": "vanilla-weapon-badmintonracket",
+      "title": "Badminton Racket",
+      "slug": "vanilla-badmintonracket"
+    },
+    {
+      "id": "vanilla-weapon-tennisracket",
+      "title": "Tennis Racket",
+      "slug": "vanilla-tennisracket"
+    },
+    {
+      "id": "vanilla-weapon-clubhammer",
+      "title": "Club Hammer",
+      "slug": "vanilla-clubhammer"
+    },
+    {
+      "id": "vanilla-weapon-ballpeenhammer",
+      "title": "Ball Peen Hammer",
+      "slug": "vanilla-ballpeenhammer"
+    },
+    {
+      "id": "vanilla-weapon-woodenmallet",
+      "title": "Wooden Mallet",
+      "slug": "vanilla-woodenmallet"
+    },
+    {
+      "id": "vanilla-weapon-wrench",
+      "title": "Wrench",
+      "slug": "vanilla-wrench"
+    },
+    {
+      "id": "vanilla-weapon-hammer",
+      "title": "Hammer",
+      "slug": "vanilla-hammer"
+    },
+    {
+      "id": "vanilla-weapon-hammerstone",
+      "title": "Stone Hammer",
+      "slug": "vanilla-hammerstone"
+    },
+    {
+      "id": "vanilla-weapon-rollingpin",
+      "title": "Rolling Pin",
+      "slug": "vanilla-rollingpin"
+    },
+    {
+      "id": "vanilla-weapon-pan",
+      "title": "Frying Pan",
+      "slug": "vanilla-pan"
+    },
+    {
+      "id": "vanilla-weapon-gridlepan",
+      "title": "Griddle Pan",
+      "slug": "vanilla-gridlepan"
+    },
+    {
+      "id": "vanilla-weapon-dumbbell",
+      "title": "DumbBell",
+      "slug": "vanilla-dumbbell"
+    },
+    {
+      "id": "vanilla-weapon-chainsaw",
+      "title": "Chainsaw",
+      "slug": "vanilla-chainsaw"
+    },
+    {
+      "id": "vanilla-weapon-golfclub",
+      "title": "Golfclub",
+      "slug": "vanilla-golfclub"
+    },
+    {
+      "id": "vanilla-weapon-crowbar",
+      "title": "Crowbar",
+      "slug": "vanilla-crowbar"
+    },
+    {
+      "id": "vanilla-weapon-katana",
+      "title": "Katana",
+      "slug": "vanilla-katana"
+    },
+    {
+      "id": "vanilla-weapon-banjo",
+      "title": "Banjo",
+      "slug": "vanilla-banjo"
+    },
+    {
+      "id": "vanilla-weapon-guitaracoustic",
+      "title": "Acoustic Guitar",
+      "slug": "vanilla-guitaracoustic"
+    },
+    {
+      "id": "vanilla-weapon-axestone",
+      "title": "Raw Axe",
+      "slug": "vanilla-axestone"
+    },
+    {
+      "id": "vanilla-weapon-snowshovel",
+      "title": "Snow Shovel",
+      "slug": "vanilla-snowshovel"
+    },
+    {
+      "id": "vanilla-weapon-shovel",
+      "title": "Shovel",
+      "slug": "vanilla-shovel"
+    },
+    {
+      "id": "vanilla-weapon-shovel2",
+      "title": "Shovel",
+      "slug": "vanilla-shovel2"
+    },
+    {
+      "id": "vanilla-weapon-gardenhoe",
+      "title": "Garden Hoe",
+      "slug": "vanilla-gardenhoe"
+    },
+    {
+      "id": "vanilla-weapon-plank",
+      "title": "Plank",
+      "slug": "vanilla-plank"
+    },
+    {
+      "id": "vanilla-weapon-planknail",
+      "title": "Spiked Plank",
+      "slug": "vanilla-planknail"
+    },
+    {
+      "id": "vanilla-weapon-poolcue",
+      "title": "Poolcue",
+      "slug": "vanilla-poolcue"
+    },
+    {
+      "id": "vanilla-weapon-broom",
+      "title": "Broom",
+      "slug": "vanilla-broom"
+    },
+    {
+      "id": "vanilla-weapon-hockeystick",
+      "title": "Hockey Stick",
+      "slug": "vanilla-hockeystick"
+    },
+    {
+      "id": "vanilla-weapon-icehockeystick",
+      "title": "Ice Hockey Stick",
+      "slug": "vanilla-icehockeystick"
+    },
+    {
+      "id": "vanilla-weapon-lacrossestick",
+      "title": "LaCrosse Stick",
+      "slug": "vanilla-lacrossestick"
+    },
+    {
+      "id": "vanilla-weapon-pickaxe",
+      "title": "PickAxe",
+      "slug": "vanilla-pickaxe"
+    },
+    {
+      "id": "vanilla-weapon-canoepadel",
+      "title": "Canoe Paddle",
+      "slug": "vanilla-canoepadel"
+    },
+    {
+      "id": "vanilla-weapon-canoepadelx2",
+      "title": "Canoe Paddle Double",
+      "slug": "vanilla-canoepadelx2"
+    },
+    {
+      "id": "vanilla-weapon-baseballbat",
+      "title": "Baseball Bat",
+      "slug": "vanilla-baseballbat"
+    },
+    {
+      "id": "vanilla-weapon-baseballbatnails",
+      "title": "Spiked Baseball Bat",
+      "slug": "vanilla-baseballbatnails"
+    },
+    {
+      "id": "vanilla-weapon-craftedfishingrod",
+      "title": "Fishing Rod",
+      "slug": "vanilla-craftedfishingrod"
+    },
+    {
+      "id": "vanilla-weapon-craftedfishingrodtwineline",
+      "title": "Fishing Rod",
+      "slug": "vanilla-craftedfishingrodtwineline"
+    },
+    {
+      "id": "vanilla-weapon-fishingrod",
+      "title": "Fishing Rod",
+      "slug": "vanilla-fishingrod"
+    },
+    {
+      "id": "vanilla-weapon-fishingrodbreak",
+      "title": "Fishing Rod Without line",
+      "slug": "vanilla-fishingrodbreak"
+    },
+    {
+      "id": "vanilla-weapon-fishingrodtwineline",
+      "title": "Fishing Rod",
+      "slug": "vanilla-fishingrodtwineline"
+    },
+    {
+      "id": "vanilla-weapon-axe",
+      "title": "Axe",
+      "slug": "vanilla-axe"
+    },
+    {
+      "id": "vanilla-weapon-leafrake",
+      "title": "Leaf Rake",
+      "slug": "vanilla-leafrake"
+    },
+    {
+      "id": "vanilla-weapon-rake",
+      "title": "Rake",
+      "slug": "vanilla-rake"
+    },
+    {
+      "id": "vanilla-weapon-barbell",
+      "title": "Barbell",
+      "slug": "vanilla-barbell"
+    },
+    {
+      "id": "vanilla-weapon-woodaxe",
+      "title": "Wood Axe",
+      "slug": "vanilla-woodaxe"
+    },
+    {
+      "id": "vanilla-weapon-sledgehammer",
+      "title": "Sledgehammer",
+      "slug": "vanilla-sledgehammer"
+    },
+    {
+      "id": "vanilla-weapon-sledgehammer2",
+      "title": "Sledgehammer",
+      "slug": "vanilla-sledgehammer2"
+    },
+    {
+      "id": "vanilla-weapon-guitarelectricbassblack",
+      "title": "Black Electric Bass",
+      "slug": "vanilla-guitarelectricbassblack"
+    },
+    {
+      "id": "vanilla-weapon-guitarelectricbassblue",
+      "title": "Blue Electric Bass",
+      "slug": "vanilla-guitarelectricbassblue"
+    },
+    {
+      "id": "vanilla-weapon-guitarelectricbassred",
+      "title": "Red Electric Bass",
+      "slug": "vanilla-guitarelectricbassred"
+    },
+    {
+      "id": "vanilla-weapon-keytar",
+      "title": "Keytar",
+      "slug": "vanilla-keytar"
+    },
+    {
+      "id": "vanilla-weapon-guitarelectricblack",
+      "title": "Black Electric Guitar",
+      "slug": "vanilla-guitarelectricblack"
+    },
+    {
+      "id": "vanilla-weapon-guitarelectricblue",
+      "title": "Blue Electric Guitar",
+      "slug": "vanilla-guitarelectricblue"
+    },
+    {
+      "id": "vanilla-weapon-guitarelectricred",
+      "title": "Red Electric Guitar",
+      "slug": "vanilla-guitarelectricred"
+    },
+    {
+      "id": "vanilla-weapon-smashedbottle",
+      "title": "Smashed Bottle",
+      "slug": "vanilla-smashedbottle"
+    },
+    {
+      "id": "vanilla-weapon-handfork",
+      "title": "Hand Fork",
+      "slug": "vanilla-handfork"
+    },
+    {
+      "id": "vanilla-weapon-huntingknife",
+      "title": "Hunting Knife",
+      "slug": "vanilla-huntingknife"
+    },
+    {
+      "id": "vanilla-weapon-flintknife",
+      "title": "Stone Knife",
+      "slug": "vanilla-flintknife"
+    },
+    {
+      "id": "vanilla-weapon-icepick",
+      "title": "Ice Pick",
+      "slug": "vanilla-icepick"
+    },
+    {
+      "id": "vanilla-weapon-letteropener",
+      "title": "Letter Opener",
+      "slug": "vanilla-letteropener"
+    },
+    {
+      "id": "vanilla-weapon-fork",
+      "title": "Fork",
+      "slug": "vanilla-fork"
+    },
+    {
+      "id": "vanilla-weapon-scissors",
+      "title": "Scissors",
+      "slug": "vanilla-scissors"
+    },
+    {
+      "id": "vanilla-weapon-spoon",
+      "title": "Spoon",
+      "slug": "vanilla-spoon"
+    },
+    {
+      "id": "vanilla-weapon-scalpel",
+      "title": "Scalpel",
+      "slug": "vanilla-scalpel"
+    },
+    {
+      "id": "vanilla-weapon-butterknife",
+      "title": "Butter Knife",
+      "slug": "vanilla-butterknife"
+    },
+    {
+      "id": "vanilla-weapon-stake",
+      "title": "Stake",
+      "slug": "vanilla-stake"
+    },
+    {
+      "id": "vanilla-weapon-breadknife",
+      "title": "Bread Knife",
+      "slug": "vanilla-breadknife"
+    },
+    {
+      "id": "vanilla-weapon-kitchenknife",
+      "title": "Kitchen Knife",
+      "slug": "vanilla-kitchenknife"
+    },
+    {
+      "id": "vanilla-weapon-redpen",
+      "title": "Red Pen",
+      "slug": "vanilla-redpen"
+    },
+    {
+      "id": "vanilla-weapon-bluepen",
+      "title": "Blue Pen",
+      "slug": "vanilla-bluepen"
+    },
+    {
+      "id": "vanilla-weapon-pen",
+      "title": "Pen",
+      "slug": "vanilla-pen"
+    },
+    {
+      "id": "vanilla-weapon-pencil",
+      "title": "Pencil",
+      "slug": "vanilla-pencil"
+    },
+    {
+      "id": "vanilla-weapon-screwdriver",
+      "title": "Screwdriver",
+      "slug": "vanilla-screwdriver"
+    },
+    {
+      "id": "vanilla-weapon-closedumbrellablue",
+      "title": "Closed Umbrella",
+      "slug": "vanilla-closedumbrellablue"
+    },
+    {
+      "id": "vanilla-weapon-closedumbrellared",
+      "title": "Closed Umbrella",
+      "slug": "vanilla-closedumbrellared"
+    },
+    {
+      "id": "vanilla-weapon-closedumbrellablack",
+      "title": "Closed Umbrella",
+      "slug": "vanilla-closedumbrellablack"
+    },
+    {
+      "id": "vanilla-weapon-closedumbrellawhite",
+      "title": "Closed Umbrella",
+      "slug": "vanilla-closedumbrellawhite"
+    },
+    {
+      "id": "vanilla-weapon-gardenfork",
+      "title": "Garden Fork",
+      "slug": "vanilla-gardenfork"
+    },
+    {
+      "id": "vanilla-weapon-woodenlance",
+      "title": "Wooden Spear",
+      "slug": "vanilla-woodenlance"
+    },
+    {
+      "id": "vanilla-weapon-spearbreadknife",
+      "title": "Spear With Bread Knife",
+      "slug": "vanilla-spearbreadknife"
+    },
+    {
+      "id": "vanilla-weapon-spearbutterknife",
+      "title": "Spear With Butter Knife",
+      "slug": "vanilla-spearbutterknife"
+    },
+    {
+      "id": "vanilla-weapon-spearfork",
+      "title": "Spear With Fork",
+      "slug": "vanilla-spearfork"
+    },
+    {
+      "id": "vanilla-weapon-spearletteropener",
+      "title": "Spear With Letter Opener",
+      "slug": "vanilla-spearletteropener"
+    },
+    {
+      "id": "vanilla-weapon-spearscalpel",
+      "title": "Spear With Scalpel",
+      "slug": "vanilla-spearscalpel"
+    },
+    {
+      "id": "vanilla-weapon-spearspoon",
+      "title": "Spear With Spoon",
+      "slug": "vanilla-spearspoon"
+    },
+    {
+      "id": "vanilla-weapon-spearscissors",
+      "title": "Spear With Scissors",
+      "slug": "vanilla-spearscissors"
+    },
+    {
+      "id": "vanilla-weapon-spearhandfork",
+      "title": "Spear With Hand Fork",
+      "slug": "vanilla-spearhandfork"
+    },
+    {
+      "id": "vanilla-weapon-spearscrewdriver",
+      "title": "Spear With Screwdriver",
+      "slug": "vanilla-spearscrewdriver"
+    },
+    {
+      "id": "vanilla-weapon-spearhuntingknife",
+      "title": "Spear With Hunting Knife",
+      "slug": "vanilla-spearhuntingknife"
+    },
+    {
+      "id": "vanilla-weapon-spearmachete",
+      "title": "Spear With Machete",
+      "slug": "vanilla-spearmachete"
+    },
+    {
+      "id": "vanilla-weapon-spearicepick",
+      "title": "Spear With Ice Pick",
+      "slug": "vanilla-spearicepick"
+    },
+    {
+      "id": "vanilla-weapon-spearcrafted",
+      "title": "Crafted Spear",
+      "slug": "vanilla-spearcrafted"
+    },
+    {
+      "id": "vanilla-weapon-spearknife",
+      "title": "Spear With Knife",
+      "slug": "vanilla-spearknife"
+    },
+    {
+      "id": "vanilla-weapon-varmintrifle",
+      "title": "MSR700 Rifle",
+      "slug": "vanilla-varmintrifle"
+    },
+    {
+      "id": "vanilla-weapon-huntingrifle",
+      "title": "MSR788 Rifle",
+      "slug": "vanilla-huntingrifle"
+    },
+    {
+      "id": "vanilla-weapon-shotgun",
+      "title": "JS-2000 Shotgun",
+      "slug": "vanilla-shotgun"
+    },
+    {
+      "id": "vanilla-weapon-doublebarrelshotgun",
+      "title": "Double Barrel Shotgun",
+      "slug": "vanilla-doublebarrelshotgun"
+    },
+    {
+      "id": "vanilla-weapon-doublebarrelshotgunsawnoff",
+      "title": "Sawn Off Double Barrel Shotgun",
+      "slug": "vanilla-doublebarrelshotgunsawnoff"
+    },
+    {
+      "id": "vanilla-weapon-shotgunsawnoff",
+      "title": "Sawn Off JS-2000 Shotgun",
+      "slug": "vanilla-shotgunsawnoff"
+    },
+    {
+      "id": "vanilla-weapon-pistol",
+      "title": "M9 Pistol",
+      "slug": "vanilla-pistol"
+    },
+    {
+      "id": "vanilla-weapon-pistol2",
+      "title": "M1911 Pistol",
+      "slug": "vanilla-pistol2"
+    },
+    {
+      "id": "vanilla-weapon-pistol3",
+      "title": "D-E Pistol",
+      "slug": "vanilla-pistol3"
+    },
+    {
+      "id": "vanilla-weapon-revolver",
+      "title": "M625 Revolver",
+      "slug": "vanilla-revolver"
+    },
+    {
+      "id": "vanilla-weapon-revolver-long",
+      "title": "Magnum",
+      "slug": "vanilla-revolver-long"
+    },
+    {
+      "id": "vanilla-weapon-revolver-short",
+      "title": "M36 Revolver",
+      "slug": "vanilla-revolver-short"
+    },
+    {
+      "id": "vanilla-weapon-assaultrifle",
+      "title": "M16 Assault Rifle",
+      "slug": "vanilla-assaultrifle"
+    },
+    {
+      "id": "vanilla-weapon-assaultrifle2",
+      "title": "M14 Single Shot Assault Rifle",
+      "slug": "vanilla-assaultrifle2"
+    },
+    {
+      "id": "vanilla-weapon-molotov",
+      "title": "Molotov Cocktail",
+      "slug": "vanilla-molotov"
+    },
+    {
+      "id": "vanilla-weapon-bullets9mm",
+      "title": "9mm Rounds",
+      "slug": "vanilla-bullets9mm"
+    },
+    {
+      "id": "vanilla-weapon-bullets9mmbox",
+      "title": "Box of 9mm Bullets",
+      "slug": "vanilla-bullets9mmbox"
+    },
+    {
+      "id": "vanilla-weapon-9mmclip",
+      "title": "9mm Magazine",
+      "slug": "vanilla-9mmclip"
+    },
+    {
+      "id": "vanilla-weapon-bullets45",
+      "title": ".45 Auto",
+      "slug": "vanilla-bullets45"
+    },
+    {
+      "id": "vanilla-weapon-bullets45box",
+      "title": "Box of .45 Auto Bullets",
+      "slug": "vanilla-bullets45box"
+    },
+    {
+      "id": "vanilla-weapon-45clip",
+      "title": ".45 Auto Magazine",
+      "slug": "vanilla-45clip"
+    },
+    {
+      "id": "vanilla-weapon-bullets44",
+      "title": ".44 Magnum Bullets",
+      "slug": "vanilla-bullets44"
+    },
+    {
+      "id": "vanilla-weapon-bullets44box",
+      "title": "Box of .44 Magnum Bullets",
+      "slug": "vanilla-bullets44box"
+    },
+    {
+      "id": "vanilla-weapon-44clip",
+      "title": ".44 Magazine",
+      "slug": "vanilla-44clip"
+    },
+    {
+      "id": "vanilla-weapon-bullets38",
+      "title": ".38 Special Bullets",
+      "slug": "vanilla-bullets38"
+    },
+    {
+      "id": "vanilla-weapon-bullets38box",
+      "title": "Box of .38 Special Bullets",
+      "slug": "vanilla-bullets38box"
+    },
+    {
+      "id": "vanilla-weapon-shotgunshells",
+      "title": "Shotgun Shells",
+      "slug": "vanilla-shotgunshells"
+    },
+    {
+      "id": "vanilla-weapon-shotgunshellsbox",
+      "title": "Box of Shotgun Shells",
+      "slug": "vanilla-shotgunshellsbox"
+    },
+    {
+      "id": "vanilla-weapon-223bullets",
+      "title": ".223 Ammo",
+      "slug": "vanilla-223bullets"
+    },
+    {
+      "id": "vanilla-weapon-223box",
+      "title": "Box of .223 Bullets",
+      "slug": "vanilla-223box"
+    },
+    {
+      "id": "vanilla-weapon-223clip",
+      "title": ".223 Magazine",
+      "slug": "vanilla-223clip"
+    },
+    {
+      "id": "vanilla-weapon-308bullets",
+      "title": ".308 Ammo",
+      "slug": "vanilla-308bullets"
+    },
+    {
+      "id": "vanilla-weapon-308box",
+      "title": "Box of .308 Bullets",
+      "slug": "vanilla-308box"
+    },
+    {
+      "id": "vanilla-weapon-308clip",
+      "title": ".308 Magazine",
+      "slug": "vanilla-308clip"
+    },
+    {
+      "id": "vanilla-weapon-556bullets",
+      "title": ".556 Ammo",
+      "slug": "vanilla-556bullets"
+    },
+    {
+      "id": "vanilla-weapon-556box",
+      "title": "Box of .556 Bullets",
+      "slug": "vanilla-556box"
+    },
+    {
+      "id": "vanilla-weapon-556clip",
+      "title": ".556 Magazine",
+      "slug": "vanilla-556clip"
+    },
+    {
+      "id": "vanilla-weapon-m14clip",
+      "title": ".308 Magazine",
+      "slug": "vanilla-m14clip"
+    },
+    {
+      "id": "vanilla-weapon-barehands",
+      "title": "Bare Hands",
+      "slug": "vanilla-barehands"
+    },
+    {
+      "id": "vanilla-weapons-axe",
+      "title": "Axe Weapons",
+      "slug": "weapons-axe"
+    },
+    {
+      "id": "vanilla-weapons-blunt",
+      "title": "Blunt Weapons",
+      "slug": "weapons-blunt"
+    },
+    {
+      "id": "vanilla-weapons-improvised",
+      "title": "Improvised Weapons",
+      "slug": "weapons-improvised"
+    },
+    {
+      "id": "vanilla-weapons-longblade",
+      "title": "LongBlade Weapons",
+      "slug": "weapons-longblade"
+    },
+    {
+      "id": "vanilla-weapons-smallblade",
+      "title": "SmallBlade Weapons",
+      "slug": "weapons-smallblade"
+    },
+    {
+      "id": "vanilla-weapons-smallblunt",
+      "title": "SmallBlunt Weapons",
+      "slug": "weapons-smallblunt"
+    },
+    {
+      "id": "vanilla-weapons-spear",
+      "title": "Spear Weapons",
+      "slug": "weapons-spear"
+    },
+    {
+      "id": "vanilla-weapons-unarmed",
+      "title": "Unarmed Weapons",
+      "slug": "weapons-unarmed"
+    },
+    {
+      "id": "vanilla-weapons-uncategorized",
+      "title": "Uncategorized Weapons",
+      "slug": "weapons-uncategorized"
+    }
+  ]
+}
