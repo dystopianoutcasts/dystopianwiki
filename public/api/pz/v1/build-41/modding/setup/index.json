@@ -1,0 +1,35 @@
+{
+  "id": "setup",
+  "name": "Setup",
+  "slug": "setup",
+  "articles": [
+    {
+      "id": "vscode-setup",
+      "title": "Installing VS Code",
+      "slug": "vscode-setup",
+      "difficulty": "beginner",
+      "order": 1
+    },
+    {
+      "id": "mod-folder-structure",
+      "title": "Mod Folder Structure",
+      "slug": "mod-folder-structure",
+      "difficulty": "beginner",
+      "order": 2
+    },
+    {
+      "id": "mod-info-file",
+      "title": "The mod.info File",
+      "slug": "mod-info-file",
+      "difficulty": "beginner",
+      "order": 3
+    },
+    {
+      "id": "debug-mode",
+      "title": "Debug Mode",
+      "slug": "debug-mode",
+      "difficulty": "beginner",
+      "order": 4
+    }
+  ]
+}

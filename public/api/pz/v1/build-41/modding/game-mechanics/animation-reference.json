@@ -1,0 +1,299 @@
+{
+  "id": "game-mechanics-animation-reference",
+  "title": "Project Zomboid Vanilla Animation Reference",
+  "slug": "animation-reference",
+  "version": "build-41",
+  "section": "modding",
+  "category": "game-mechanics",
+  "tags": [
+    "recipe",
+    "item",
+    "weapon",
+    "foraging",
+    "animation",
+    "sound",
+    "modding",
+    "api"
+  ],
+  "content": "# Project Zomboid Vanilla Animation Reference\n\nThis document provides a comprehensive reference of all vanilla animations available in Project Zomboid for use in mod recipes and scripts.\n\n**Last Updated:** November 15, 2025\n**Game Version:** Build 41+\n**Source Location:** `R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media`\n\n---\n\n## Quick Reference - Most Common AnimNodes for Modding\n\n| AnimNode | Use Case | Example |\n|----------|----------|---------|\n| `Craft` | Generic crafting recipes | Making items, combining parts |\n| `Disassemble` | Taking items apart | Breaking down furniture, electronics |\n| `SawLog` | Woodworking/sawing | Cutting logs, planks, boards |\n| `RipSheets` | Tearing fabric | Making bandages, rags |\n| `Build` | Construction | Building structures, barricades |\n| `chop_tree` | Wood gathering | Chopping trees, branches |\n| `Dig` / `DigShovel` | Excavation | Digging holes, graves, farming |\n| `Eat` / `Eat1Hand` | Consuming food | Food recipes |\n| `DrinkBottle` | Drinking liquids | Beverage consumption |\n| `Bandage` | Medical treatment | Applying bandages, first aid |\n| `painting` | Artistic work | Painting walls, signs |\n\n---\n\n## Table of Contents\n\n1. [Recipe AnimNode Reference](#recipe-animnode-reference)\n2. [Player Action AnimNodes](#player-action-animnodes)\n3. [Animation File Structure](#animation-file-structure)\n4. [Usage Examples](#usage-examples)\n5. [Key Reference Files](#key-reference-files)\n\n---\n\n## Recipe AnimNode Reference\n\nThese are the AnimNode values explicitly used in vanilla recipe definitions. These are the most commonly used for crafting recipes.\n\n### Available AnimNodes for Recipes\n\n| AnimNode | Description | Usage Context |\n|----------|-------------|---------------|\n| `Disassemble` | Generic disassembly animation | Taking apart items, electronics, furniture |\n| `SawLog` | Sawing wood animation | Cutting logs into planks, woodworking |\n| `RipSheets` | Tearing/ripping fabric animation | Making bandages, cloth strips |\n\n### Found In Vanilla Files\n\n- **recipes.txt** - Disassemble (furniture, electronics), SawLog (planks)\n- **recipes_radio.txt** - Disassemble (radios, electronics)\n\n**Important:** AnimNode names are **case-sensitive**!\n\n**Special Note on \"Disassemble\":** Vanilla recipes use `Disassemble` (capital D) in the `AnimNode:` field, even though the XML file is named `disassemble.xml` (lowercase). When creating recipes, use **`AnimNode:Disassemble,`** with capital D to match vanilla behavior.\n\n---\n\n## Player Action AnimNodes\n\nThese are defined in the game's AnimSets and can be used in custom recipes. There are **141 unique player action animations** available.\n\n**Location:** `R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\AnimSets\\player\\actions\\`\n\n### Complete Alphabetical List (All 141 AnimNodes)\n\n| AnimNode | Category | Description |\n|----------|----------|-------------|\n| `AttachItem_Back` | Item Management | Attaching item to back |\n| `AttachItem_BeltLeft` | Item Management | Attaching to left belt |\n| `AttachItem_BeltRight` | Item Management | Attaching to right belt |\n| `AttachItem_HolsterLeft` | Item Management | Attaching to left holster |\n| `AttachItem_HolsterRight` | Item Management | Attaching to right holster |\n| `Bandage` | Medical | Generic bandaging |\n| `BandageHead` | Medical | Bandaging head |\n| `BandageLeftArm` | Medical | Bandaging left arm |\n| `BandageLeftLeg` | Medical | Bandaging left leg |\n| `BandageLowerBody` | Medical | Bandaging lower torso |\n| `BandageRightArm` | Medical | Bandaging right arm |\n| `BandageRightLeg` | Medical | Bandaging right leg |\n| `BandageUpperBody` | Medical | Bandaging upper torso |\n| `BlowTorch` | Crafting & Building | Using blowtorch (mid-level) |\n| `BlowTorchFloor` | Crafting & Building | Using blowtorch on floor |\n| `BlowTorchMid` | Crafting & Building | Using blowtorch at mid-height |\n| `book` | Reading | Reading book |\n| `Build` | Crafting & Building | General building/construction |\n| `BuildLow` | Crafting & Building | Building low structures |\n| `chop_tree` | Resource Gathering | Chopping down trees |\n| `Craft` | Crafting & Building | Generic crafting |\n| `default-fallback` | Miscellaneous | Default fallback animation |\n| `Destroy` | Crafting & Building | Destroying structures |\n| `DestroyFloor` | Crafting & Building | Destroying floor tiles |\n| `DetachItem_Back` | Item Management | Detaching from back |\n| `DetachItem_BeltLeft` | Item Management | Detaching from left belt |\n| `DetachItem_BeltRight` | Item Management | Detaching from right belt |\n| `DetachItem_HolsterLeft` | Item Management | Detaching from left holster |\n| `DetachItem_HolsterRight` | Item Management | Detaching from right holster |\n| `Dig` | Resource Gathering | Generic digging |\n| `DigHoe` | Resource Gathering | Digging with hoe |\n| `DigPickAxe` | Resource Gathering | Digging with pickaxe |\n| `DigShovel` | Resource Gathering | Digging with shovel |\n| `DigTrowel` | Resource Gathering | Digging with trowel |\n| `disassemble` | Crafting & Building | Disassembling items |\n| `DrinkBleach` | Eating & Drinking | Drinking bleach |\n| `DrinkBottle` | Eating & Drinking | Drinking from bottle |\n| `DrinkBowl` | Eating & Drinking | Drinking from bowl |\n| `DrinkFromBourbon` | Eating & Drinking | Drinking from bourbon bottle |\n| `DrinkFromBowlSpoon` | Eating & Drinking | Drinking soup with spoon |\n| `DrinkFromCan` | Eating & Drinking | Drinking from can |\n| `DrinkPopCan` | Eating & Drinking | Drinking from soda can |\n| `DrinkPot` | Eating & Drinking | Drinking from pot |\n| `DrinkTapWater` | Eating & Drinking | Drinking from tap |\n| `DropWhileMoving` | Item Management | Dropping while walking |\n| `Eat` | Eating & Drinking | Generic eating |\n| `Eat1Hand` | Eating & Drinking | Eating one-handed item |\n| `Eat2Hands` | Eating & Drinking | Eating two-handed item |\n| `EatFromCan` | Eating & Drinking | Eating from can |\n| `EatFromPlate` | Eating & Drinking | Eating from plate |\n| `EatFromPot` | Eating & Drinking | Eating from pot |\n| `EquipItem` | Item Management | Equipping item |\n| `ExamineVehicle` | Vehicle Actions | Examining vehicle |\n| `FillBottleFromTap` | Eating & Drinking | Filling bottle at sink |\n| `FillBourbonFromTap` | Eating & Drinking | Filling bourbon bottle |\n| `FillBowlFromTap` | Eating & Drinking | Filling bowl at sink |\n| `FillBucketFromTap` | Eating & Drinking | Filling bucket at sink |\n| `FillKettleFromTap` | Eating & Drinking | Filling kettle at sink |\n| `FillMugFromTap` | Eating & Drinking | Filling mug at sink |\n| `FillPotFromTap` | Eating & Drinking | Filling pot at sink |\n| `fitness` | Miscellaneous | Exercise/fitness activities |\n| `Forage` | Resource Gathering | Foraging |\n| `InsertBullets` | Weapon Actions | Inserting bullets |\n| `LoadDblBarrel` | Weapon Actions | Loading double barrel shotgun |\n| `LoadDblBarrelSawnoff` | Weapon Actions | Loading sawn-off double barrel |\n| `LoadHandgun` | Weapon Actions | Loading handgun/pistol |\n| `LoadRevolver` | Weapon Actions | Loading revolver |\n| `LoadRifle` | Weapon Actions | Loading rifle with magazine |\n| `LoadRifleNoMag` | Weapon Actions | Loading rifle without magazine |\n| `LoadShotgun` | Weapon Actions | Loading pump shotgun |\n| `Loot` | Looting | Generic looting (mid-height) |\n| `LootHigh` | Looting | Looting high containers |\n| `LootLow` | Looting | Looting low containers |\n| `LootSitting` | Looting | Looting while sitting |\n| `MedicalCheck` | Medical | Medical examination |\n| `newspaper` | Reading | Reading newspaper |\n| `painting` | Crafting & Building | Painting structures |\n| `Pour` | Eating & Drinking | Generic pouring |\n| `PourBowl` | Eating & Drinking | Pouring into bowl |\n| `PourBucket` | Eating & Drinking | Pouring into bucket |\n| `PourCookingPot` | Eating & Drinking | Pouring into pot |\n| `PourKettle` | Eating & Drinking | Pouring into kettle |\n| `PourMug` | Eating & Drinking | Pouring into mug |\n| `PourWateringCan` | Eating & Drinking | Pouring into watering can |\n| `RackDblBarrel` | Weapon Actions | Racking double barrel |\n| `RackDblBarrelSawnoff` | Weapon Actions | Racking sawn-off |\n| `RackHandgun` | Weapon Actions | Racking handgun slide |\n| `RackRevolver` | Weapon Actions | Racking revolver |\n| `RackRifle` | Weapon Actions | Racking rifle |\n| `RackRifleAim` | Weapon Actions | Racking rifle while aiming |\n| `RackRifleAimNoMag` | Weapon Actions | Racking rifle (aim, no mag) |\n| `RackRifleNoMag` | Weapon Actions | Racking rifle (no mag) |\n| `RackShotgun` | Weapon Actions | Racking shotgun |\n| `RackShotgunAim` | Weapon Actions | Racking shotgun while aiming |\n| `Rake` | Resource Gathering | Raking ground |\n| `reading` | Reading | Generic reading |\n| `RefuelGasCan` | Vehicle Actions | Refueling with gas can |\n| `RemoveBarricade` | Barricade & Structures | Removing barricade (generic) |\n| `RemoveBarricadeCrowbar` | Barricade & Structures | Remove barricade with crowbar |\n| `RemoveBarricadeCrowbarHigh` | Barricade & Structures | Remove high barricade with crowbar |\n| `RemoveBullets` | Weapon Actions | Removing bullets from magazine |\n| `RemoveBush` | Resource Gathering | Removing bushes (generic) |\n| `RemoveBushAxe` | Resource Gathering | Removing bushes with axe |\n| `RemoveBushKnife` | Resource Gathering | Removing bushes with knife |\n| `RemoveBushLongBlade` | Resource Gathering | Removing bushes with long blade |\n| `RemoveCurtain` | Barricade & Structures | Removing curtains |\n| `RemoveGrass` | Resource Gathering | Removing grass |\n| `RipSheets` | Resource Gathering | Ripping sheets/fabric |\n| `SawLog` | Resource Gathering | Sawing logs |\n| `Shave` | Medical | Shaving face |\n| `Smoke` | Eating & Drinking | Smoking cigarette |\n| `TakeGasFromPump` | Vehicle Actions | Taking gas from pump |\n| `TakeGasFromVehicle` | Vehicle Actions | Siphoning gas from vehicle |\n| `TakePills` | Medical | Taking pills/medicine |\n| `TransferItemOnSelf` | Item Management | Moving item on body |\n| `UnequipItem` | Item Management | Unequipping item |\n| `UnloadDblBarrel` | Weapon Actions | Unloading double barrel |\n| `UnloadDblBarrelSawnoff` | Weapon Actions | Unloading sawn-off |\n| `UnloadHandgun` | Weapon Actions | Unloading handgun |\n| `UnloadRevolver` | Weapon Actions | Unloading revolver |\n| `UnloadRifle` | Weapon Actions | Unloading rifle |\n| `UnloadRifleNoMag` | Weapon Actions | Unloading rifle (no mag) |\n| `UnloadShotgun` | Weapon Actions | Unloading shotgun |\n| `VehicleTrailer` | Vehicle Actions | Working on trailer |\n| `VehicleWash` | Vehicle Actions | Washing vehicle |\n| `VehicleWorkOnMid` | Vehicle Actions | Working on mid-level parts |\n| `VehicleWorkOnTire` | Vehicle Actions | Working on tires |\n| `WashFace` | Medical | Washing face |\n| `WearClothingDefault` | Clothing | Wearing generic clothing |\n| `WearClothingFace` | Clothing | Wearing face items (mask) |\n| `WearClothingFeet` | Clothing | Wearing shoes/boots |\n| `WearClothingHat` | Clothing | Wearing hat/helmet |\n| `WearClothingJacket` | Clothing | Wearing jacket/coat |\n| `WearClothingLegs` | Clothing | Wearing pants |\n| `WearClothingNotMoving` | Clothing | Dressing while stationary |\n| `WearClothingPullover` | Clothing | Wearing shirt/pullover |\n| `WearClothingWaist` | Clothing | Wearing belt items |\n\n---\n\n### Categorized Reference\n\n### Crafting & Building (11 animations)\n\n| AnimNode | Description |\n|----------|-------------|\n| `Build` | General building/construction animation |\n| `BuildLow` | Building low structures (floor level) |\n| `Craft` | Generic crafting animation |\n| `Destroy` | Destroying structures |\n| `DestroyFloor` | Destroying floor tiles |\n| `disassemble` | Disassembling items (lowercase) |\n| `painting` | Painting structures |\n| `BlowTorch` | Using blowtorch (mid-level) |\n| `BlowTorchFloor` | Using blowtorch on floor |\n| `BlowTorchMid` | Using blowtorch at mid-height |\n\n### Tree & Resource Gathering (17 animations)\n\n| AnimNode | Description |\n|----------|-------------|\n| `chop_tree` | Chopping down trees |\n| `Dig` | Generic digging animation |\n| `DigHoe` | Digging with hoe |\n| `DigPickAxe` | Digging with pickaxe |\n| `DigShovel` | Digging with shovel |\n| `DigTrowel` | Digging with trowel |\n| `Forage` | Foraging animation |\n| `Rake` | Raking ground |\n| `RemoveBush` | Removing bushes (generic) |\n| `RemoveBushAxe` | Removing bushes with axe |\n| `RemoveBushKnife` | Removing bushes with knife |\n| `RemoveBushLongBlade` | Removing bushes with long blade |\n| `RemoveGrass` | Removing grass |\n| `SawLog` | Sawing logs |\n| `RipSheets` | Ripping sheets/fabric |\n\n### Eating & Drinking (21 animations)\n\n#### Eating Animations\n\n| AnimNode | Description |\n|----------|-------------|\n| `Eat` | Generic eating animation |\n| `Eat1Hand` | Eating one-handed item |\n| `Eat2Hands` | Eating two-handed item |\n| `EatFromCan` | Eating from can |\n| `EatFromPlate` | Eating from plate |\n| `EatFromPot` | Eating from pot |\n\n#### Drinking Animations\n\n| AnimNode | Description |\n|----------|-------------|\n| `DrinkBleach` | Drinking bleach (suicide) |\n| `DrinkBottle` | Drinking from bottle |\n| `DrinkBowl` | Drinking from bowl |\n| `DrinkFromBourbon` | Drinking from bourbon bottle |\n| `DrinkFromBowlSpoon` | Drinking soup with spoon |\n| `DrinkFromCan` | Drinking from can |\n| `DrinkPopCan` | Drinking from soda can |\n| `DrinkPot` | Drinking from pot |\n| `DrinkTapWater` | Drinking from tap |\n| `Smoke` | Smoking cigarette |\n\n#### Filling Container Animations\n\n| AnimNode | Description |\n|----------|-------------|\n| `FillBottleFromTap` | Filling bottle at sink |\n| `FillBourbonFromTap` | Filling bourbon bottle at sink |\n| `FillBowlFromTap` | Filling bowl at sink |\n| `FillBucketFromTap` | Filling bucket at sink |\n| `FillKettleFromTap` | Filling kettle at sink |\n| `FillMugFromTap` | Filling mug at sink |\n| `FillPotFromTap` | Filling pot at sink |\n\n#### Pouring Animations\n\n| AnimNode | Description |\n|----------|-------------|\n| `Pour` | Generic pouring |\n| `PourBowl` | Pouring into bowl |\n| `PourBucket` | Pouring into bucket |\n| `PourCookingPot` | Pouring into pot |\n| `PourKettle` | Pouring into kettle |\n| `PourMug` | Pouring into mug |\n| `PourWateringCan` | Pouring into watering can |\n\n### Medical (13 animations)\n\n| AnimNode | Description |\n|----------|-------------|\n| `Bandage` | Generic bandaging |\n| `BandageHead` | Bandaging head |\n| `BandageLeftArm` | Bandaging left arm |\n| `BandageLeftLeg` | Bandaging left leg |\n| `BandageLowerBody` | Bandaging lower torso |\n| `BandageRightArm` | Bandaging right arm |\n| `BandageRightLeg` | Bandaging right leg |\n| `BandageUpperBody` | Bandaging upper torso |\n| `TakePills` | Taking pills/medicine |\n| `MedicalCheck` | Medical examination |\n| `Shave` | Shaving face |\n| `WashFace` | Washing face |\n\n### Weapon Actions (28 animations)\n\n#### Ammunition Management\n\n| AnimNode | Description |\n|----------|-------------|\n| `InsertBullets` | Inserting bullets into magazine |\n| `RemoveBullets` | Removing bullets from magazine |\n\n#### Loading Weapons\n\n| AnimNode | Description |\n|----------|-------------|\n| `LoadDblBarrel` | Loading double barrel shotgun |\n| `LoadDblBarrelSawnoff` | Loading sawn-off double barrel |\n| `LoadHandgun` | Loading handgun/pistol |\n| `LoadRevolver` | Loading revolver |\n| `LoadRifle` | Loading rifle with magazine |\n| `LoadRifleNoMag` | Loading rifle without magazine |\n| `LoadShotgun` | Loading pump shotgun |\n\n#### Unloading Weapons\n\n| AnimNode | Description |\n|----------|-------------|\n| `UnloadDblBarrel` | Unloading double barrel |\n| `UnloadDblBarrelSawnoff` | Unloading sawn-off |\n| `UnloadHandgun` | Unloading handgun |\n| `UnloadRevolver` | Unloading revolver |\n| `UnloadRifle` | Unloading rifle |\n| `UnloadRifleNoMag` | Unloading rifle (no mag) |\n| `UnloadShotgun` | Unloading shotgun |\n\n#### Racking/Chambering Weapons\n\n| AnimNode | Description |\n|----------|-------------|\n| `RackDblBarrel` | Racking double barrel |\n| `RackDblBarrelSawnoff` | Racking sawn-off |\n| `RackHandgun` | Racking handgun slide |\n| `RackRevolver` | Racking revolver |\n| `RackRifle` | Racking rifle |\n| `RackRifleAim` | Racking rifle while aiming |\n| `RackRifleAimNoMag` | Racking rifle (aim, no mag) |\n| `RackRifleNoMag` | Racking rifle (no mag) |\n| `RackShotgun` | Racking shotgun |\n| `RackShotgunAim` | Racking shotgun while aiming |\n\n### Item Management (14 animations)\n\n#### Attaching Items\n\n| AnimNode | Description |\n|----------|-------------|\n| `AttachItem_Back` | Attaching item to back |\n| `AttachItem_BeltLeft` | Attaching to left belt |\n| `AttachItem_BeltRight` | Attaching to right belt |\n| `AttachItem_HolsterLeft` | Attaching to left holster |\n| `AttachItem_HolsterRight` | Attaching to right holster |\n\n#### Detaching Items\n\n| AnimNode | Description |\n|----------|-------------|\n| `DetachItem_Back` | Detaching from back |\n| `DetachItem_BeltLeft` | Detaching from left belt |\n| `DetachItem_BeltRight` | Detaching from right belt |\n| `DetachItem_HolsterLeft` | Detaching from left holster |\n| `DetachItem_HolsterRight` | Detaching from right holster |\n\n#### Equipment Actions\n\n| AnimNode | Description |\n|----------|-------------|\n| `EquipItem` | Equipping item to hands |\n| `UnequipItem` | Unequipping item |\n| `TransferItemOnSelf` | Moving item on body |\n| `DropWhileMoving` | Dropping while walking |\n\n### Looting (4 animations)\n\n| AnimNode | Description |\n|----------|-------------|\n| `Loot` | Generic looting (mid-height) |\n| `LootHigh` | Looting high containers |\n| `LootLow` | Looting low containers |\n| `LootSitting` | Looting while sitting |\n\n### Reading (3 animations)\n\n| AnimNode | Description |\n|----------|-------------|\n| `book` | Reading book |\n| `newspaper` | Reading newspaper |\n| `reading` | Generic reading |\n\n### Vehicle Actions (8 animations)\n\n| AnimNode | Description |\n|----------|-------------|\n| `ExamineVehicle` | Examining vehicle condition |\n| `RefuelGasCan` | Refueling with gas can |\n| `TakeGasFromPump` | Taking gas from pump |\n| `TakeGasFromVehicle` | Siphoning gas from vehicle |\n| `VehicleTrailer` | Working on trailer |\n| `VehicleWash` | Washing vehicle |\n| `VehicleWorkOnMid` | Working on mid-level parts |\n| `VehicleWorkOnTire` | Working on tires |\n\n### Barricade & Structures (4 animations)\n\n| AnimNode | Description |\n|----------|-------------|\n| `RemoveBarricade` | Removing barricade (generic) |\n| `RemoveBarricadeCrowbar` | Remove barricade with crowbar |\n| `RemoveBarricadeCrowbarHigh` | Remove high barricade with crowbar |\n| `RemoveCurtain` | Removing curtains |\n\n### Clothing (10 animations)\n\n| AnimNode | Description |\n|----------|-------------|\n| `WearClothingDefault` | Wearing generic clothing |\n| `WearClothingFace` | Wearing face items (mask) |\n| `WearClothingFeet` | Wearing shoes/boots |\n| `WearClothingHat` | Wearing hat/helmet |\n| `WearClothingJacket` | Wearing jacket/coat |\n| `WearClothingLegs` | Wearing pants |\n| `WearClothingNotMoving` | Dressing while stationary |\n| `WearClothingPullover` | Wearing shirt/pullover |\n| `WearClothingWaist` | Wearing belt items |\n\n### Miscellaneous (2 animations)\n\n| AnimNode | Description |\n|----------|-------------|\n| `fitness` | Exercise/fitness activities |\n| `default-fallback` | Default fallback animation |\n\n---\n\n## Animation File Structure\n\n### Animation File Locations\n\n```\nR:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\\n├── anims\\                    # Legacy animations\n├── anims_X\\                  # Current animation files\n│   ├── Bob\\                 # Male character animations (1,128+ files)\n│   └── Kate\\                # Female character animations\n├── AnimSets\\                # Animation set definitions (XML)\n│   ├── player\\\n│   │   └── actions\\        # Player action definitions\n│   ├── player-vehicle\\\n│   └── zombie\\\n└── scripts\\\n    ├── animations.txt       # Animation script definitions\n    ├── recipes.txt          # Recipe AnimNode usage\n    └── recipes_radio.txt    # Radio recipe AnimNode usage\n```\n\n### Animation Naming Convention\n\nAnimation files follow this pattern:\n```\n{Character}_{Action}{Variant}_{Result}.X\n```\n\nExamples:\n- `Bob_Attack1Hand01_Hit.X` - One-handed attack hitting\n- `Bob_Attack1Hand01_CritHit.X` - Critical hit version\n- `Bob_Attack1Hand01_Miss.X` - Attack missing\n- `Bob_Dig_Shovel.X` - Digging with shovel\n- `Bob_DrinkFromBottle.X` - Drinking from bottle\n- `Bob_IdleMaking.X` - Crafting idle animation (used by Craft AnimNode)\n- `Bob_IdleSawLog.X` - Sawing idle animation (used by SawLog AnimNode)\n- `Bob_IdleDisassemble.X` - Disassembly idle animation (used by disassemble AnimNode)\n\n### Common Animation Prefixes\n\n| Prefix | Description | Example Count |\n|--------|-------------|---------------|\n| `Bob_Attack*` | Combat/weapon attacks | 100+ variations |\n| `Bob_Idle*` | Idle/standing animations | 50+ variations |\n| `Bob_IdleMaking` | Generic crafting animation | Used by Craft |\n| `Bob_IdleSawLog` | Sawing wood animation | Used by SawLog |\n| `Bob_IdleDisassemble` | Disassembly animation | Used by disassemble |\n| `Bob_Walk*` | Walking animations | 40+ variations |\n| `Bob_Run*` | Running animations | 30+ variations |\n| `Bob_Bandage*` | Medical animations | 10+ variations |\n| `Bob_Dig*` | Digging animations | 5+ variations |\n| `Bob_Drink*` | Drinking animations | 15+ variations |\n| `Bob_Eat*` | Eating animations | 10+ variations |\n\n**Note:** Each AnimNode XML file references a specific Bob/Kate animation file via the `<m_AnimName>` tag. For example:\n- `Craft.xml` → `Bob_IdleMaking`\n- `SawLog.xml` → `Bob_IdleSawLog`\n- `disassemble.xml` → `Bob_IdleDisassemble`\n\n---\n\n## Usage Examples\n\n### Basic Recipe with AnimNode\n\n```\nrecipe Saw Plank\n{\n    keep Saw,\n    WoodLog,\n\n    Result: Plank=4,\n    Time: 50.0,\n    AnimNode: SawLog,\n    Sound: SawLog,\n    Category: Carpentry,\n}\n```\n\n### Crafting Recipe\n\n```\nrecipe Craft Molotov Cocktail\n{\n    WhiskeyFull,\n    RippedSheets,\n\n    Result: MolotovCocktail,\n    Time: 30.0,\n    AnimNode: Craft,\n    Sound: ClothesRipping,\n    Category: Survivalist,\n}\n```\n\n### Disassembly Recipe\n\n```\nrecipe Dismantle Radio\n{\n    Radio,\n    keep Screwdriver,\n\n    Result: ElectronicsScrap=3,\n    Result: ScrapMetal=2,\n    Time: 100.0,\n    AnimNode: Disassemble,\n    Sound: ElectricClick,\n    Category: Electrical,\n}\n```\n\n### Medical Recipe\n\n```\nrecipe Apply Bandage\n{\n    Bandage,\n\n    Result: DirtyBandage,\n    Time: 20.0,\n    AnimNode: Bandage,\n    OnGiveXP: Doctor=5,\n    Category: Health,\n}\n```\n\n### Custom Woodworking Recipe\n\n```\nrecipe Carve Wooden Spear\n{\n    TreeBranch,\n    keep KitchenKnife,\n\n    Result: WoodenSpear,\n    Time: 80.0,\n    AnimNode: chop_tree,\n    Sound: Sawing,\n    SkillRequired: Carpentry=2,\n    Category: Weapon,\n}\n```\n\n### Resource Gathering Recipe\n\n```\nrecipe Dig Clay\n{\n    keep Shovel,\n\n    Result: ClayLump=3,\n    Time: 60.0,\n    AnimNode: DigShovel,\n    Sound: Shoveling,\n    Category: Farming,\n}\n```\n\n---\n\n## Animation System Notes\n\n### Important Considerations\n\n1. **Case Sensitivity**: All AnimNode names are case-sensitive. `Disassemble` ≠ `disassemble`\n\n2. **Compatibility**: Some AnimNodes may require specific item types or contexts to work properly\n\n3. **Sound Pairing**: Animations often have corresponding sound effects defined in `media/scripts/sounds_*.txt`\n\n4. **Duration**: The `Time:` parameter in recipes should roughly match the animation length for best results\n\n5. **Visual Context**: Some animations are designed for specific poses (standing, sitting, prone)\n\n### Animation Priority\n\nThe game selects animations based on:\n1. Player state (standing, sitting, aiming, etc.)\n2. Equipped items (one-handed, two-handed, firearms)\n3. Context (near vehicle, in water, etc.)\n4. AnimNode override in recipe\n\n### Fallback Behavior\n\nIf an AnimNode is not found or invalid:\n- The game uses a default animation\n- No error is thrown (fail-safe)\n- Recipe still executes normally\n\n---\n\n## Key Reference Files\n\n### Game Files (Read-Only Reference)\n\n| File Path | Description |\n|-----------|-------------|\n| `media/scripts/recipes.txt` | Vanilla recipe examples with AnimNodes |\n| `media/scripts/recipes_radio.txt` | Radio/electronics recipes |\n| `media/scripts/animations.txt` | Animation script definitions |\n| `media/AnimSets/player/actions/*.xml` | Player action definitions |\n| `media/anims_X/Bob/*.X` | All male character animation files |\n| `media/anims_X/Kate/*.X` | All female character animation files |\n\n### Quick Reference Commands\n\nTo browse animation files:\n```bash\n# List all Bob animations\ndir \"R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\anims_X\\Bob\"\n\n# Search for specific animations\nfindstr /i \"dig\" \"R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\anims_X\\Bob\\*\"\n\n# View recipe AnimNode usage\nfindstr /i \"AnimNode\" \"R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\scripts\\recipes.txt\"\n```\n\n---\n\n## Additional Resources\n\n### Testing Animations\n\nTo test animations in-game:\n1. Create a simple recipe with the AnimNode\n2. Set a reasonable Time value (30-100)\n3. Test in Debug Mode for faster iteration\n4. Use `/showAnimationViewer` console command\n\n### Common Issues\n\n**Issue**: Animation doesn't play\n- Check case sensitivity of AnimNode name\n- Verify the animation exists for both Bob and Kate\n- Ensure player state allows the animation\n\n**Issue**: Animation looks wrong\n- AnimNode may not match the recipe context\n- Try different AnimNodes from the same category\n- Check if item type affects animation selection\n\n**Issue**: Recipe time doesn't match animation\n- Adjust `Time:` value to match animation duration\n- Too short: animation cuts off\n- Too long: animation loops or freezes\n\n---\n\n## Version History\n\n- **v1.0** (November 2025) - Initial documentation created\n  - 141 player action AnimNodes documented\n  - 3 primary recipe AnimNodes\n  - 1,128+ Bob animation files catalogued\n  - Usage examples and best practices\n\n---\n\n## Credits\n\nThis documentation compiled from:\n- Project Zomboid Build 41 game files\n- TIS official modding documentation\n- Community modding resources\n- Direct file analysis of vanilla game data\n\n**Game Installation Path**: `R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid`\n\n---\n\n## License\n\nThis documentation is for educational and modding reference purposes.\nProject Zomboid is © The Indie Stone. All rights reserved.\n",
+  "excerpt": "This document provides a comprehensive reference of all vanilla animations available in Project Zomboid for use in mod recipes and scripts.",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "advanced",
+  "tableOfContents": [
+    {
+      "id": "quick-reference-most-common-animnodes-for-modding",
+      "text": "Quick Reference - Most Common AnimNodes for Modding",
+      "level": 2
+    },
+    {
+      "id": "table-of-contents",
+      "text": "Table of Contents",
+      "level": 2
+    },
+    {
+      "id": "recipe-animnode-reference",
+      "text": "Recipe AnimNode Reference",
+      "level": 2
+    },
+    {
+      "id": "available-animnodes-for-recipes",
+      "text": "Available AnimNodes for Recipes",
+      "level": 3
+    },
+    {
+      "id": "found-in-vanilla-files",
+      "text": "Found In Vanilla Files",
+      "level": 3
+    },
+    {
+      "id": "player-action-animnodes",
+      "text": "Player Action AnimNodes",
+      "level": 2
+    },
+    {
+      "id": "complete-alphabetical-list-all-141-animnodes",
+      "text": "Complete Alphabetical List (All 141 AnimNodes)",
+      "level": 3
+    },
+    {
+      "id": "categorized-reference",
+      "text": "Categorized Reference",
+      "level": 3
+    },
+    {
+      "id": "crafting-building-11-animations",
+      "text": "Crafting & Building (11 animations)",
+      "level": 3
+    },
+    {
+      "id": "tree-resource-gathering-17-animations",
+      "text": "Tree & Resource Gathering (17 animations)",
+      "level": 3
+    },
+    {
+      "id": "eating-drinking-21-animations",
+      "text": "Eating & Drinking (21 animations)",
+      "level": 3
+    },
+    {
+      "id": "eating-animations",
+      "text": "Eating Animations",
+      "level": 4
+    },
+    {
+      "id": "drinking-animations",
+      "text": "Drinking Animations",
+      "level": 4
+    },
+    {
+      "id": "filling-container-animations",
+      "text": "Filling Container Animations",
+      "level": 4
+    },
+    {
+      "id": "pouring-animations",
+      "text": "Pouring Animations",
+      "level": 4
+    },
+    {
+      "id": "medical-13-animations",
+      "text": "Medical (13 animations)",
+      "level": 3
+    },
+    {
+      "id": "weapon-actions-28-animations",
+      "text": "Weapon Actions (28 animations)",
+      "level": 3
+    },
+    {
+      "id": "ammunition-management",
+      "text": "Ammunition Management",
+      "level": 4
+    },
+    {
+      "id": "loading-weapons",
+      "text": "Loading Weapons",
+      "level": 4
+    },
+    {
+      "id": "unloading-weapons",
+      "text": "Unloading Weapons",
+      "level": 4
+    },
+    {
+      "id": "rackingchambering-weapons",
+      "text": "Racking/Chambering Weapons",
+      "level": 4
+    },
+    {
+      "id": "item-management-14-animations",
+      "text": "Item Management (14 animations)",
+      "level": 3
+    },
+    {
+      "id": "attaching-items",
+      "text": "Attaching Items",
+      "level": 4
+    },
+    {
+      "id": "detaching-items",
+      "text": "Detaching Items",
+      "level": 4
+    },
+    {
+      "id": "equipment-actions",
+      "text": "Equipment Actions",
+      "level": 4
+    },
+    {
+      "id": "looting-4-animations",
+      "text": "Looting (4 animations)",
+      "level": 3
+    },
+    {
+      "id": "reading-3-animations",
+      "text": "Reading (3 animations)",
+      "level": 3
+    },
+    {
+      "id": "vehicle-actions-8-animations",
+      "text": "Vehicle Actions (8 animations)",
+      "level": 3
+    },
+    {
+      "id": "barricade-structures-4-animations",
+      "text": "Barricade & Structures (4 animations)",
+      "level": 3
+    },
+    {
+      "id": "clothing-10-animations",
+      "text": "Clothing (10 animations)",
+      "level": 3
+    },
+    {
+      "id": "miscellaneous-2-animations",
+      "text": "Miscellaneous (2 animations)",
+      "level": 3
+    },
+    {
+      "id": "animation-file-structure",
+      "text": "Animation File Structure",
+      "level": 2
+    },
+    {
+      "id": "animation-file-locations",
+      "text": "Animation File Locations",
+      "level": 3
+    },
+    {
+      "id": "animation-naming-convention",
+      "text": "Animation Naming Convention",
+      "level": 3
+    },
+    {
+      "id": "common-animation-prefixes",
+      "text": "Common Animation Prefixes",
+      "level": 3
+    },
+    {
+      "id": "usage-examples",
+      "text": "Usage Examples",
+      "level": 2
+    },
+    {
+      "id": "basic-recipe-with-animnode",
+      "text": "Basic Recipe with AnimNode",
+      "level": 3
+    },
+    {
+      "id": "crafting-recipe",
+      "text": "Crafting Recipe",
+      "level": 3
+    },
+    {
+      "id": "disassembly-recipe",
+      "text": "Disassembly Recipe",
+      "level": 3
+    },
+    {
+      "id": "medical-recipe",
+      "text": "Medical Recipe",
+      "level": 3
+    },
+    {
+      "id": "custom-woodworking-recipe",
+      "text": "Custom Woodworking Recipe",
+      "level": 3
+    },
+    {
+      "id": "resource-gathering-recipe",
+      "text": "Resource Gathering Recipe",
+      "level": 3
+    },
+    {
+      "id": "animation-system-notes",
+      "text": "Animation System Notes",
+      "level": 2
+    },
+    {
+      "id": "important-considerations",
+      "text": "Important Considerations",
+      "level": 3
+    },
+    {
+      "id": "animation-priority",
+      "text": "Animation Priority",
+      "level": 3
+    },
+    {
+      "id": "fallback-behavior",
+      "text": "Fallback Behavior",
+      "level": 3
+    },
+    {
+      "id": "key-reference-files",
+      "text": "Key Reference Files",
+      "level": 2
+    },
+    {
+      "id": "game-files-read-only-reference",
+      "text": "Game Files (Read-Only Reference)",
+      "level": 3
+    },
+    {
+      "id": "quick-reference-commands",
+      "text": "Quick Reference Commands",
+      "level": 3
+    },
+    {
+      "id": "additional-resources",
+      "text": "Additional Resources",
+      "level": 2
+    },
+    {
+      "id": "testing-animations",
+      "text": "Testing Animations",
+      "level": 3
+    },
+    {
+      "id": "common-issues",
+      "text": "Common Issues",
+      "level": 3
+    },
+    {
+      "id": "version-history",
+      "text": "Version History",
+      "level": 2
+    },
+    {
+      "id": "credits",
+      "text": "Credits",
+      "level": 2
+    },
+    {
+      "id": "license",
+      "text": "License",
+      "level": 2
+    }
+  ]
+}
