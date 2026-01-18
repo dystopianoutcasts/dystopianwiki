@@ -138,6 +138,9 @@ CREATE TRIGGER update_user_profiles_updated_at
 -- CLEANUP FUNCTIONS (Scheduled Tasks)
 -- ============================================================================
 
+-- Drop old version from migration 001 (changed return type)
+DROP FUNCTION IF EXISTS cleanup_old_request_logs();
+
 -- Cleanup old request logs (keep 24 hours)
 CREATE OR REPLACE FUNCTION cleanup_old_request_logs()
 RETURNS INTEGER AS $$

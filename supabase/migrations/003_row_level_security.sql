@@ -113,7 +113,7 @@ CREATE POLICY "Banned users cannot update profiles"
   USING (
     auth.uid() = id
     AND NOT EXISTS (
-      SELECT 1 FROM user_profiles
+      SELECT 1 FROM auth.users
       WHERE id = auth.uid()
         AND (raw_user_meta_data->>'is_banned')::boolean = true
     )

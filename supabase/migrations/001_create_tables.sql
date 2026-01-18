@@ -33,7 +33,7 @@ CREATE TABLE articles (
   created_at TIMESTAMPTZ DEFAULT NOW(),
 
   -- ETag for cache validation (auto-updates on changes)
-  version UUID DEFAULT gen_random_uuid(),
+  etag UUID DEFAULT gen_random_uuid(),
 
   -- Full-text search (auto-updated)
   search_vector tsvector GENERATED ALWAYS AS (
@@ -43,20 +43,20 @@ CREATE TABLE articles (
   ) STORED
 );
 
--- Trigger to update version (ETag) on article changes
-CREATE OR REPLACE FUNCTION update_article_version()
+-- Trigger to update etag on article changes
+CREATE OR REPLACE FUNCTION update_article_etag()
 RETURNS TRIGGER AS $$
 BEGIN
-  NEW.version = gen_random_uuid();
+  NEW.etag = gen_random_uuid();
   NEW.last_updated = NOW();
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER article_version_trigger
+CREATE TRIGGER article_etag_trigger
   BEFORE UPDATE ON articles
   FOR EACH ROW
-  EXECUTE FUNCTION update_article_version();
+  EXECUTE FUNCTION update_article_etag();
 
 -- ============================================================================
 -- CATEGORIES TABLE
@@ -147,7 +147,7 @@ $$ LANGUAGE plpgsql;
 -- COMMENTS
 -- ============================================================================
 COMMENT ON TABLE articles IS 'Wiki articles with full-text search';
-COMMENT ON COLUMN articles.version IS 'ETag for cache validation - auto-updates on changes';
+COMMENT ON COLUMN articles.etag IS 'ETag for cache validation - auto-updates on changes';
 COMMENT ON COLUMN articles.search_vector IS 'Auto-generated tsvector for full-text search';
 COMMENT ON TABLE categories IS 'Article categories organized by game/section';
 COMMENT ON TABLE user_profiles IS 'Extended user profile data';

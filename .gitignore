@@ -40,3 +40,4 @@ yarn-error.log*
 
 # Archive (keeping in git for safety - can be excluded later if needed)
 # _archive-v1/
+venv/
