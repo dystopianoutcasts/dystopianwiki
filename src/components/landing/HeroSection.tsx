@@ -1,17 +1,13 @@
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FuzzySearchBar } from '../search/FuzzySearchBar';
 import '../../styles/components/hero.css';
 
-interface HeroSectionProps {
-  defaultVersion?: string;
-}
-
-export function HeroSection({ defaultVersion = 'build-41' }: HeroSectionProps) {
+export function HeroSection() {
   const navigate = useNavigate();
 
   const handleSearch = (query: string) => {
     if (query.trim()) {
-      navigate(`/search?q=${encodeURIComponent(query)}&version=${defaultVersion}`);
+      navigate(`/search?q=${encodeURIComponent(query)}`);
     }
   };
 
@@ -40,30 +36,21 @@ export function HeroSection({ defaultVersion = 'build-41' }: HeroSectionProps) {
         </a>
 
         {/* Title */}
-        <h1 className="hero__title">Project Zomboid Modding Wiki</h1>
+        <h1 className="hero__title">Dystopian Outcasts Wiki</h1>
 
         {/* Subtitle */}
         <p className="hero__subtitle">
-          Your guide to surviving the apocalypse... <em>with code</em>
+          Modding guides, server docs, and community resources for <em>survival games</em>
         </p>
 
         {/* Search Bar */}
         <div className="hero__search">
           <FuzzySearchBar
-            placeholder="Search documentation..."
+            placeholder="Search all documentation..."
             onSearch={handleSearch}
             autoFocus={false}
             size="large"
           />
-        </div>
-
-        {/* Actions - Start Learning Button */}
-        <div className="hero__actions">
-          <Link to="/learning-path" className="hero__learn-btn">
-            <span className="hero__learn-icon" role="img" aria-label="book">&#128218;</span>
-            Start Learning
-          </Link>
-          <p className="hero__actions-hint">New to modding? Follow our guided curriculum</p>
         </div>
       </div>
     </section>

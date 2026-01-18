@@ -97,6 +97,13 @@
       "description": "Development tools, debugging techniques, and workflow tips.",
       "icon": "tool",
       "articleCount": 4
+    },
+    {
+      "id": "vanilla-reference",
+      "name": "Vanilla Reference",
+      "description": "Comprehensive reference documentation for all vanilla Project Zomboid items, weapons, recipes, and game data.",
+      "icon": "database",
+      "articleCount": 16
     }
   ]
 }

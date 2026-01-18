@@ -11,6 +11,8 @@ const HomeIcon = () => (
 
 // Map of slugs to display names
 const displayNames: Record<string, string> = {
+  pz: 'Project Zomboid',
+  vs: 'Vintage Story',
   'build-41': 'Build 41',
   'build-42': 'Build 42',
   modding: 'Modding',

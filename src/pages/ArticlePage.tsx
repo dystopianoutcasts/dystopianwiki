@@ -5,6 +5,7 @@ import { WikiLayout } from '../components/layout/WikiLayout';
 import { WikiArticle } from '../components/wiki/WikiArticle';
 import { SEOHead } from '../components/seo/SEOHead';
 import { useArticle, useArticlesList } from '../hooks/useWikiData';
+import { useGameContext } from '../hooks/useGameContext';
 import { useLearningPathContext } from '../context/LearningPathContext';
 import '../styles/pages/article-page.css';
 
@@ -15,6 +16,7 @@ export function ArticlePage() {
     category: string;
     slug: string;
   }>();
+  const { buildPath, gameName } = useGameContext();
 
   const { data: article, loading, error } = useArticle(version, section, category, slug);
   const { data: articlesList } = useArticlesList(version, section, category);
@@ -77,14 +79,14 @@ export function ArticlePage() {
     ? {
         slug: articlesList[currentIndex - 1].slug,
         title: articlesList[currentIndex - 1].title,
-        url: `/${version}/${section}/${category}/${articlesList[currentIndex - 1].slug}`,
+        url: buildPath(version, section, category, articlesList[currentIndex - 1].slug),
       }
     : undefined;
   const nextArticle = currentIndex >= 0 && articlesList && currentIndex < articlesList.length - 1
     ? {
         slug: articlesList[currentIndex + 1].slug,
         title: articlesList[currentIndex + 1].title,
-        url: `/${version}/${section}/${category}/${articlesList[currentIndex + 1].slug}`,
+        url: buildPath(version, section, category, articlesList[currentIndex + 1].slug),
       }
     : undefined;
 
@@ -125,7 +127,7 @@ export function ArticlePage() {
             <div className="article-page__error">
               <h1>Article Not Found</h1>
               <p>The requested article "{slug}" could not be found.</p>
-              <Link to={`/${version}/${section}/${category}`} className="article-page__back-link">
+              <Link to={buildPath(version, section, category)} className="article-page__back-link">
                 Return to {category}
               </Link>
             </div>
@@ -139,7 +141,7 @@ export function ArticlePage() {
     <Layout>
       <SEOHead
         title={article.title}
-        description={article.excerpt || `Learn about ${article.title} in Project Zomboid modding.`}
+        description={article.excerpt || `Learn about ${article.title} in ${gameName || 'game'} modding.`}
         ogType="article"
         article={{
           publishedTime: article.lastUpdated,

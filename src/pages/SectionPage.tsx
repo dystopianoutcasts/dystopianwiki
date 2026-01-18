@@ -3,6 +3,7 @@ import { Layout } from '../components/layout/Layout';
 import { WikiLayout } from '../components/layout/WikiLayout';
 import { SEOHead } from '../components/seo/SEOHead';
 import { useSectionInfo, useCategories } from '../hooks/useWikiData';
+import { useGameContext } from '../hooks/useGameContext';
 import '../styles/pages/section-page.css';
 
 const categoryIcons: Record<string, string> = {
@@ -21,6 +22,7 @@ const categoryIcons: Record<string, string> = {
 
 export function SectionPage() {
   const { version = 'build-41', section = '' } = useParams<{ version: string; section: string }>();
+  const { buildPath, gameName } = useGameContext();
   const { data: sectionInfo, loading: sectionLoading, error: sectionError } = useSectionInfo(version, section);
   const { data: categories, loading: categoriesLoading } = useCategories(version, section);
 
@@ -46,7 +48,7 @@ export function SectionPage() {
             <div className="section-page__error">
               <h1>Section Not Found</h1>
               <p>The requested section "{section}" could not be found.</p>
-              <Link to={`/${version}`} className="section-page__back-link">
+              <Link to={buildPath(version)} className="section-page__back-link">
                 Return to {version}
               </Link>
             </div>
@@ -59,8 +61,8 @@ export function SectionPage() {
   return (
     <Layout>
       <SEOHead
-        title={`${sectionInfo.name} - Project Zomboid ${version}`}
-        description={sectionInfo.description || `Browse ${sectionInfo.name} documentation for Project Zomboid. Tutorials and guides for modders.`}
+        title={`${sectionInfo.name} - ${gameName || 'Dystopian Outcasts'} ${version}`}
+        description={sectionInfo.description || `Browse ${sectionInfo.name} documentation. Tutorials and guides for modders.`}
       />
       <WikiLayout>
         <div className="section-page">
@@ -79,7 +81,7 @@ export function SectionPage() {
                 {categories.map((category) => (
                   <Link
                     key={category.id}
-                    to={`/${version}/${section}/${category.id}`}
+                    to={buildPath(version, section, category.id)}
                     className="section-page__category-card"
                   >
                     <span className="section-page__category-icon">

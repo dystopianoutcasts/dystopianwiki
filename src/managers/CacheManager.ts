@@ -14,6 +14,7 @@ interface CacheEntry<T = unknown> {
   data: T;
   timestamp: number;
   ttl: number; // Time to live in milliseconds
+  contentHash?: string; // Hash of content for invalidation
 }
 
 // Default TTL: 1 hour
@@ -99,9 +100,9 @@ class CacheManagerClass {
   }
 
   /**
-   * Set data in cache with TTL
+   * Set data in cache with TTL and optional content hash
    */
-  async set<T>(key: string, data: T, ttl: number = DEFAULT_TTL): Promise<void> {
+  async set<T>(key: string, data: T, ttl: number = DEFAULT_TTL, contentHash?: string): Promise<void> {
     await this.init();
 
     const entry: CacheEntry<T> = {
@@ -109,6 +110,7 @@ class CacheManagerClass {
       data,
       timestamp: Date.now(),
       ttl,
+      contentHash,
     };
 
     // Always store in memory as backup
@@ -156,6 +158,70 @@ class CacheManagerClass {
       await this.db.clear(STORE_NAME);
     } catch (error) {
       console.warn('Cache clear error:', error);
+    }
+  }
+
+  /**
+   * Get content hash for a cached entry
+   */
+  async getContentHash(key: string): Promise<string | null> {
+    await this.init();
+
+    if (!this.db) {
+      const entry = memoryCache.get(key);
+      return entry?.contentHash ?? null;
+    }
+
+    try {
+      const entry = await this.db.get(STORE_NAME, key) as CacheEntry | undefined;
+      return entry?.contentHash ?? null;
+    } catch (error) {
+      console.warn('Cache getContentHash error:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Bulk delete multiple cache entries by keys
+   */
+  async invalidateByKeys(keys: string[]): Promise<void> {
+    if (keys.length === 0) return;
+
+    // Clear from memory cache
+    for (const key of keys) {
+      this.deleteFromMemory(key);
+    }
+
+    if (!this.db) {
+      return;
+    }
+
+    try {
+      const tx = this.db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+
+      await Promise.all(keys.map(key => store.delete(key)));
+      await tx.done;
+    } catch (error) {
+      console.warn('Cache invalidateByKeys error:', error);
+    }
+  }
+
+  /**
+   * Get all cache keys (for manifest comparison)
+   */
+  async getAllKeys(): Promise<string[]> {
+    await this.init();
+
+    if (!this.db) {
+      return Array.from(memoryCache.keys());
+    }
+
+    try {
+      return await this.db.getAllKeys(STORE_NAME) as string[];
+    } catch (error) {
+      console.warn('Cache getAllKeys error:', error);
+      return Array.from(memoryCache.keys());
     }
   }
 

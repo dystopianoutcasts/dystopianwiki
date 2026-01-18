@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { CacheManager, getCacheKey, CACHE_TTLS } from '../managers/CacheManager';
+import { getManifestHash } from '../utils/manifestChecker';
 import type { Version, Section, Category, WikiArticle } from '../types/wiki';
 
 interface UseWikiDataOptions {
@@ -45,8 +46,11 @@ async function fetchWithCache<T>(
 
   const data = await response.json();
 
-  // Store in cache
-  await CacheManager.set(cacheKey, data, ttl);
+  // Get content hash from manifest for cache invalidation
+  const contentHash = getManifestHash(url);
+
+  // Store in cache with content hash
+  await CacheManager.set(cacheKey, data, ttl, contentHash);
 
   return data;
 }
@@ -367,10 +371,12 @@ export async function prefetchArticle(
 
   if (!cached) {
     try {
-      const response = await fetch(`${BASE_URL}data/${version}/${section}/${category}/${slug}.json`);
+      const url = `data/${version}/${section}/${category}/${slug}.json`;
+      const response = await fetch(`${BASE_URL}${url}`);
       if (response.ok) {
         const data = await response.json();
-        await CacheManager.set(cacheKey, data, CACHE_TTLS.articles);
+        const contentHash = getManifestHash(url);
+        await CacheManager.set(cacheKey, data, CACHE_TTLS.articles, contentHash);
       }
     } catch {
       // Silently fail prefetch

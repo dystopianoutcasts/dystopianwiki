@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { NavLink, useParams } from 'react-router-dom';
+import { NavLink, useParams, useLocation } from 'react-router-dom';
 import '../../styles/components/sidebar.css';
 
 // Chevron icon
@@ -59,9 +59,14 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen = false, onClose, collapsed = false }: SidebarProps) {
   const { version = 'build-41', section: currentSection, category: currentCategory } = useParams();
+  const location = useLocation();
   const [expandedSections, setExpandedSections] = useState<string[]>(['modding']);
   const [sections, setSections] = useState<SectionData[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Determine game prefix from URL
+  const pathParts = location.pathname.split('/').filter(Boolean);
+  const gamePrefix = (pathParts[0] === 'pz' || pathParts[0] === 'vs') ? `/${pathParts[0]}` : '';
 
   useEffect(() => {
     async function loadCategories() {
@@ -139,7 +144,7 @@ export function Sidebar({ isOpen = false, onClose, collapsed = false }: SidebarP
         {/* Learning Path Link */}
         <div className="sidebar__learning-path">
           <NavLink
-            to="/learning-path"
+            to={`${gamePrefix}/learning-path`}
             className={({ isActive }) =>
               `sidebar__learning-link ${isActive ? 'sidebar__learning-link--active' : ''}`
             }
@@ -189,7 +194,7 @@ export function Sidebar({ isOpen = false, onClose, collapsed = false }: SidebarP
                   return (
                     <li key={category.id} className="sidebar__category">
                       <NavLink
-                        to={`/${version}/${section.id}/${category.id}`}
+                        to={`${gamePrefix}/${version}/${section.id}/${category.id}`}
                         className={`sidebar__category-link ${isActive ? 'sidebar__category-link--active' : ''}`}
                         onClick={onClose}
                       >

@@ -3,6 +3,7 @@ import { Layout } from '../components/layout/Layout';
 import { WikiLayout } from '../components/layout/WikiLayout';
 import { SEOHead } from '../components/seo/SEOHead';
 import { useCategories, useArticlesList } from '../hooks/useWikiData';
+import { useGameContext } from '../hooks/useGameContext';
 import type { Difficulty } from '../types/wiki';
 import '../styles/pages/category-page.css';
 
@@ -32,6 +33,7 @@ export function CategoryPage() {
     section: string;
     category: string;
   }>();
+  const { buildPath, gameName } = useGameContext();
 
   const { data: categories } = useCategories(version, section);
   const { data: articles, loading, error } = useArticlesList(version, section, category);
@@ -58,7 +60,7 @@ export function CategoryPage() {
             <div className="category-page__error">
               <h1>Category Not Found</h1>
               <p>The requested category "{category}" could not be found.</p>
-              <Link to={`/${version}/${section}`} className="category-page__back-link">
+              <Link to={buildPath(version, section)} className="category-page__back-link">
                 Return to {section}
               </Link>
             </div>
@@ -74,8 +76,8 @@ export function CategoryPage() {
   return (
     <Layout>
       <SEOHead
-        title={`${categoryName} - Project Zomboid Modding`}
-        description={categoryInfo?.description || `Learn about ${categoryName} in Project Zomboid. ${articleCount} tutorials and guides for modders.`}
+        title={`${categoryName} - ${gameName || 'Dystopian Outcasts'} Modding`}
+        description={categoryInfo?.description || `Learn about ${categoryName}. ${articleCount} tutorials and guides for modders.`}
       />
       <WikiLayout>
         <div className="category-page">
@@ -100,7 +102,7 @@ export function CategoryPage() {
                 {articles.map((article) => (
                   <li key={article.id}>
                     <Link
-                      to={`/${version}/${section}/${category}/${article.slug}`}
+                      to={buildPath(version, section, category, article.slug)}
                       className="category-page__article-card"
                     >
                       <div className="category-page__article-content">
