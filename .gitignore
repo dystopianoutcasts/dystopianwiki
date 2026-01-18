@@ -37,3 +37,6 @@ yarn-error.log*
 
 # Claude settings (keep project-specific settings)
 .claude/settings.local.json
+
+# Archive (keeping in git for safety - can be excluded later if needed)
+# _archive-v1/
