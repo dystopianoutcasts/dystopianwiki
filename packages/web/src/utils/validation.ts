@@ -136,3 +136,47 @@ export function calculatePasswordStrength(password: string): PasswordStrength {
     color: colors[score] || colors[0]
   }
 }
+
+/**
+ * Format Supabase authentication error messages into user-friendly text
+ */
+export function formatAuthError(error: Error | string): string {
+  const message = typeof error === 'string' ? error : error.message
+
+  // Map common Supabase error messages to user-friendly versions
+  const errorMappings: Record<string, string> = {
+    'Invalid login credentials': 'Incorrect email or password. Please try again.',
+    'Email not confirmed': 'Please verify your email address before signing in.',
+    'User already registered': 'An account with this email already exists.',
+    'Password should be at least 6 characters': 'Password must be at least 8 characters long.',
+    'Unable to validate email address: invalid format': 'Please enter a valid email address.',
+    'Email rate limit exceeded': 'Too many attempts. Please try again in a few minutes.',
+    'Signup requires a valid password': 'Please enter a valid password.',
+    'Token has expired or is invalid': 'This reset link has expired. Please request a new one.',
+    'User not found': 'No account found with this email address.',
+    'For security purposes, you can only request this once every 60 seconds': 'Please wait a moment before trying again.'
+  }
+
+  // Check for exact matches
+  for (const [key, value] of Object.entries(errorMappings)) {
+    if (message.includes(key)) {
+      return value
+    }
+  }
+
+  // Check for specific patterns
+  if (message.toLowerCase().includes('rate limit')) {
+    return 'Too many attempts. Please try again in a few minutes.'
+  }
+
+  if (message.toLowerCase().includes('network') || message.toLowerCase().includes('fetch')) {
+    return 'Connection error. Please check your internet and try again.'
+  }
+
+  if (message.toLowerCase().includes('timeout')) {
+    return 'Request timed out. Please try again.'
+  }
+
+  // Return original message if no mapping found
+  return message
+}

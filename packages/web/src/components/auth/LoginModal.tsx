@@ -9,6 +9,7 @@ import {
   validatePassword,
   validatePasswordMatch,
   calculatePasswordStrength,
+  formatAuthError,
   type PasswordStrength
 } from '../../utils/validation'
 import '../../styles/components/login-modal.css'
@@ -18,7 +19,7 @@ interface LoginModalProps {
 }
 
 export function LoginModal({ onClose }: LoginModalProps) {
-  const { signIn, signUp, signInWithOAuth } = useAuth()
+  const { signIn, signUp, signInWithOAuth, sendPasswordResetEmail } = useAuth()
   const [mode, setMode] = useState<'login' | 'signup'>('login')
 
   // Form fields
@@ -31,6 +32,8 @@ export function LoginModal({ onClose }: LoginModalProps) {
   // UI state
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
+  const [showPasswordReset, setShowPasswordReset] = useState(false)
 
   // Field errors (for real-time validation)
   const [emailError, setEmailError] = useState('')
@@ -104,7 +107,7 @@ export function LoginModal({ onClose }: LoginModalProps) {
         onClose()
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError(formatAuthError(err instanceof Error ? err : 'An error occurred'))
     } finally {
       setLoading(false)
     }
@@ -118,7 +121,7 @@ export function LoginModal({ onClose }: LoginModalProps) {
       await signInWithOAuth(provider)
       // OAuth redirects, so we don't close the modal here
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError(formatAuthError(err instanceof Error ? err : 'An error occurred'))
       setLoading(false)
     }
   }
@@ -151,6 +154,30 @@ export function LoginModal({ onClose }: LoginModalProps) {
     setConfirmPasswordError(result.error || '')
   }
 
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+    setSuccess(null)
+
+    try {
+      const emailValidation = validateEmail(email)
+      if (!emailValidation.isValid) {
+        setError(emailValidation.error!)
+        setLoading(false)
+        return
+      }
+
+      await sendPasswordResetEmail(email)
+      setSuccess('Password reset email sent! Check your inbox.')
+      setEmail('')
+    } catch (err) {
+      setError(formatAuthError(err instanceof Error ? err : 'Failed to send reset email'))
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="login-modal-overlay" onClick={onClose}>
       <div className="login-modal" onClick={(e) => e.stopPropagation()}>
@@ -158,29 +185,14 @@ export function LoginModal({ onClose }: LoginModalProps) {
           ×
         </button>
 
-        <div className="login-modal__mode-toggle">
-          <button
-            type="button"
-            className={`login-modal__mode-button ${mode === 'login' ? 'login-modal__mode-button--active' : ''}`}
-            onClick={() => setMode('login')}
-          >
-            Sign In
-          </button>
-          <button
-            type="button"
-            className={`login-modal__mode-button ${mode === 'signup' ? 'login-modal__mode-button--active' : ''}`}
-            onClick={() => setMode('signup')}
-          >
-            Sign Up
-          </button>
-        </div>
-
         <header className="login-modal__header">
           <h2 className="login-modal__title">
-            {mode === 'login' ? 'Welcome Back' : 'Create Account'}
+            {showPasswordReset ? 'Reset Password' : mode === 'login' ? 'Welcome Back' : 'Create Account'}
           </h2>
           <p className="login-modal__subtitle">
-            {mode === 'login'
+            {showPasswordReset
+              ? 'Enter your email to receive a password reset link'
+              : mode === 'login'
               ? 'Sign in to save bookmarks and track progress'
               : 'Join the Dystopian Outcasts community'}
           </p>
@@ -192,10 +204,58 @@ export function LoginModal({ onClose }: LoginModalProps) {
           </div>
         )}
 
-        {/* OAuth buttons - only show in LOGIN mode */}
-        {mode === 'login' && (
+        {success && (
+          <div className="login-modal__success">
+            {success}
+          </div>
+        )}
+
+        {/* Password Reset Form */}
+        {showPasswordReset ? (
+          <form className="login-modal__form" onSubmit={handlePasswordReset}>
+            <div className="login-modal__field">
+              <label htmlFor="reset-email" className="login-modal__label">
+                Email
+              </label>
+              <input
+                id="reset-email"
+                type="email"
+                className="login-modal__input"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={loading}
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="login-modal__submit"
+              disabled={loading}
+            >
+              {loading ? 'Sending...' : 'Send Reset Link'}
+            </button>
+
+            <button
+              type="button"
+              className="login-modal__toggle-button"
+              onClick={() => {
+                setShowPasswordReset(false)
+                setError(null)
+                setSuccess(null)
+              }}
+              style={{ marginTop: '1rem', textAlign: 'center', width: '100%' }}
+            >
+              ← Back to Sign In
+            </button>
+          </form>
+        ) : (
           <>
-            <div className="login-modal__oauth">
+            {/* OAuth buttons - only show in LOGIN mode */}
+            {mode === 'login' && (
+              <>
+                <div className="login-modal__oauth">
               <button
                 className="login-modal__oauth-button login-modal__oauth-button--discord"
                 onClick={() => handleOAuth('discord')}
@@ -372,17 +432,28 @@ export function LoginModal({ onClose }: LoginModalProps) {
             {loading ? 'Loading...' : mode === 'login' ? 'Sign In' : 'Create Account'}
           </button>
         </form>
+          </>
+        )}
 
         <div className="login-modal__toggle">
           {mode === 'login' ? (
             <>
-              Don't have an account?{' '}
+              <span>
+                Don't have an account?{' '}
+                <button
+                  type="button"
+                  className="login-modal__toggle-button"
+                  onClick={() => setMode('signup')}
+                >
+                  Sign up
+                </button>
+              </span>
               <button
                 type="button"
-                className="login-modal__toggle-button"
-                onClick={() => setMode('signup')}
+                className="login-modal__forgot-password"
+                onClick={() => setShowPasswordReset(true)}
               >
-                Sign up
+                Forgot Password?
               </button>
             </>
           ) : (

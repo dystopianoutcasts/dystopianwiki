@@ -129,6 +129,32 @@
   margin-bottom: 1rem;
 }
 
+.login-modal__success {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.login-modal__forgot-password {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-accent-400);
+  font-size: 0.875rem;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.login-modal__forgot-password:hover {
+  color: var(--color-accent-300);
+}
+
 .login-modal__oauth {
   display: flex;
   flex-direction: column;
@@ -270,13 +296,17 @@
 .login-modal__submit:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+  pointer-events: none;
 }
 
 .login-modal__toggle {
   margin-top: 1rem;
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 0.875rem;
   color: var(--color-text-secondary);
+  gap: 1rem;
 }
 
 .login-modal__toggle-button {
@@ -303,26 +333,68 @@
 .password-strength {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+  animation: fadeInUp 0.2s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .password-strength__bar {
-  height: 4px;
+  height: 5px;
   background: var(--color-primary-800);
-  border-radius: 2px;
+  border-radius: 3px;
   overflow: hidden;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.375rem;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .password-strength__fill {
   height: 100%;
-  transition: all 0.3s ease;
-  border-radius: 2px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.password-strength__fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
 .password-strength__label {
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
   transition: color 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* Checkbox Label */
@@ -347,4 +419,114 @@
 
 .login-modal__checkbox-label a:hover {
   color: var(--color-accent-300);
+}
+
+/* Form Transitions */
+.login-modal__form {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 640px) {
+  .login-modal-overlay {
+    padding: 0.5rem;
+    align-items: flex-end;
+  }
+
+  .login-modal {
+    max-width: 100%;
+    padding: 1.5rem;
+    border-radius: 1rem 1rem 0 0;
+    animation: slideUpMobile 0.3s ease;
+  }
+
+  @keyframes slideUpMobile {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .login-modal__close {
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+
+  .login-modal__header {
+    margin-bottom: 1.25rem;
+  }
+
+  .login-modal__title {
+    font-size: 1.25rem;
+  }
+
+  .login-modal__subtitle {
+    font-size: 0.8125rem;
+  }
+
+  .login-modal__mode-toggle {
+    gap: 0.5rem;
+  }
+
+  .login-modal__mode-button {
+    font-size: 0.8125rem;
+    padding: 0.625rem 1rem;
+  }
+
+  .login-modal__oauth {
+    gap: 0.625rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .login-modal__oauth-button {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+
+  .login-modal__form {
+    gap: 1rem;
+  }
+
+  .login-modal__input,
+  .login-modal__submit {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  .login-modal__toggle {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .login-modal {
+    padding: 1.25rem;
+  }
+
+  .login-modal__oauth-button {
+    font-size: 0.75rem;
+    padding: 0.5rem;
+  }
+
+  .login-modal__oauth-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Improved Focus States for Accessibility */
+.login-modal__input:focus-visible,
+.login-modal__submit:focus-visible,
+.login-modal__mode-button:focus-visible,
+.login-modal__oauth-button:focus-visible,
+.login-modal__toggle-button:focus-visible,
+.login-modal__forgot-password:focus-visible {
+  outline: 2px solid var(--color-accent-500);
+  outline-offset: 2px;
+}
+
+/* Smooth height transitions for form sections */
+.login-modal__field {
+  animation: fadeInUp 0.2s ease;
 }

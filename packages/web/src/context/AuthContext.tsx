@@ -13,6 +13,8 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<void>
   signInWithOAuth: (provider: 'discord' | 'google') => Promise<void>
   signOut: () => Promise<void>
+  sendPasswordResetEmail: (email: string) => Promise<void>
+  updatePassword: (newPassword: string) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -70,6 +72,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
   }
 
+  const sendPasswordResetEmail = async (email: string) => {
+    const { error } = await api.sendPasswordResetEmail(email)
+    if (error) throw error
+  }
+
+  const updatePassword = async (newPassword: string) => {
+    const { error } = await api.updatePassword(newPassword)
+    if (error) throw error
+  }
+
   const value = {
     user,
     session,
@@ -78,6 +90,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signUp,
     signInWithOAuth,
     signOut,
+    sendPasswordResetEmail,
+    updatePassword,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
