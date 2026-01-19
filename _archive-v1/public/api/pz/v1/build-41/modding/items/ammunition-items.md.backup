@@ -1,0 +1,329 @@
+# Vanilla Ammunition Items - Complete Reference
+
+## Overview
+This document catalogs all vanilla Project Zomboid ammunition-related items, including rounds, boxes, magazines, molds, and crafting materials.
+
+## Ammunition Rounds
+
+### Individual Rounds
+| Name              | Item ID              | Weight | Count | Metal Value |
+|-------------------|----------------------|--------|-------|-------------|
+| .223 Round        | `Base.223Bullets`    |  0.02  |   1   |      1      |
+| .308 Round        | `Base.308Bullets`    |  0.02  |   1   |      1      |
+| .38 Special Round | `Base.Bullets38`     |  0.02  |   1   |      1      |
+| .44 Magnum Round  | `Base.Bullets44`     |  0.04  |   1   |      1      |
+| .45 Auto Round    | `Base.Bullets45`     |  0.04  |   1   |      1      |
+| 5.56mm Round      | `Base.556Bullets`    |  0.03  |   1   |      1      |
+| 9mm Round         | `Base.Bullets9mm`    |  0.01  |   1   |      1      |
+| Shotgun Shells    | `Base.ShotgunShells` |  0.05  |   1   |      1      |
+
+### Usage in Recipes
+```
+recipe Example {
+    Base.Bullets9mm=10,      // 10 rounds of 9mm
+    Base.ShotgunShells=6,    // 6 shotgun shells
+
+    Result:Output,
+}
+```
+
+## Ammunition Boxes
+
+### Box Containers
+| Name | Item ID | Weight | Contents |
+|------|---------|--------|----------|
+| Box of .223 Rounds | `Base.223Box` | 0.6 | .223 ammo |
+| Box of .308 Rounds | `Base.308Box` | 0.6 | .308 ammo |
+| Box of .38 Special Rounds | `Base.Bullets38Box` | 0.35 | .38 ammo |
+| Box of .44 Magnum Rounds | `Base.Bullets44Box` | 0.38 | .44 ammo |
+| Box of .45 Auto Rounds | `Base.Bullets45Box` | 1.0 | .45 ammo |
+| Box of 5.56mm Rounds | `Base.556Box` | 1.2 | 5.56mm ammo |
+| Box of 9mm Rounds | `Base.Bullets9mmBox` | 0.2 | 9mm ammo |
+| Box of Shotgun Shells | `Base.ShotgunShellsBox` | 0.9 | Shotgun shells |
+
+### Box Recipes (Vanilla)
+```
+// Opening a box
+recipe Open Box of 9mm Bullets {
+    Bullets9mmBox,
+
+    Result:Bullets9mm=30,    // 30 loose rounds
+    Sound:BoxOfRoundsOpenOne,
+    Time:15.0,
+}
+
+// Packing a box
+recipe Place 9mm Bullets in Box {
+    Bullets9mm=30,
+
+    Result:Bullets9mmBox,
+    Sound:BoxOfRoundsOpenOne,
+    Time:15.0,
+}
+```
+
+## Magazines (Clips)
+
+### Magazine Items
+| Name | Item ID | Weight | Weapon | Ammo Type | Capacity |
+|------|---------|--------|--------|-----------|----------|
+| M9 Magazine | `Base.9mmClip` | 0.2 | M9 Pistol | 9mm | 15 |
+| M1911 Auto Magazine | `Base.45Clip` | 0.2 | M1911 Pistol | .45 Auto | 7 |
+| D-E Magazine | `Base.44Clip` | 0.2 | D-E Pistol | .44 Magnum | 8 |
+| MSR700 Magazine | `Base.223Clip` | 0.2 | MSR700 Rifle | .223 | 3 |
+| MSR788 Magazine | `Base.308Clip` | 0.2 | MSR788 Rifle | .308 | 3 |
+| M16 Magazine | `Base.556Clip` | 0.2 | M16 Assault Rifle | 5.56mm | 30 |
+| M14 Magazine | `Base.M14Clip` | 0.2 | M14 Rifle | .308 | 20 |
+
+### Usage Notes
+- Magazines are loaded with ammunition
+- Each magazine is specific to a weapon
+- Magazines can be reloaded with appropriate ammo
+
+## Bullet Molds
+
+### Mold Items (Future Feature)
+| Icon | Name | Item ID | Weight | Metal Value | Status |
+|------|------|---------|--------|-------------|--------|
+| | .223 Bullet Mold | `Base.223BulletsMold` | 0.5 | 15 | Future |
+| | .308 Bullet Mold | `Base.308BulletsMold` | 0.5 | 15 | Future |
+| | 9mm Bullet Mold | `Base.9mmBulletsMold` | 0.5 | 15 | Future |
+| | Shotgun Shells Mold | `Base.ShotgunShellsMold` | 0.5 | 15 | Future |
+
+**Note:** Molds are marked as "Future" in vanilla but exist in game files and can be used in mods.
+
+### Mold Properties
+```
+item 9mmBulletsMold {
+    DisplayCategory = Ammo,
+    Weight = 0.5,
+    Type = Normal,
+    DisplayName = 9mm Bullets Mold,
+    Icon = BulletMold,
+    MetalValue = 15,
+    WorldStaticModel = ShotGunShellsMold_Ground,
+}
+```
+
+### Using Molds in Recipes
+```
+recipe Craft 9mm Bullets {
+    keep Base.9mmBulletsMold,    // Reusable mold
+    keep Base.Hammer,
+    Base.ScrapMetal=2,
+    Base.GunPowder=10,
+
+    Result:Base.Bullets9mm=10,
+    Time:300.0,
+}
+```
+
+## Crafting Materials
+
+### GunPowder (CRITICAL)
+**Item ID:** `Base.GunPowder`
+
+**Full Definition:**
+```
+item GunPowder {
+    DisplayCategory = Material,
+    Weight = 0.1,
+    Type = Drainable,
+    UseDelta = 0.1,              // 10% per use (10 uses)
+    UseWhileEquipped = FALSE,
+    DisplayName = Gunpowder,
+    Icon = GunpowderJar,
+    WeightEmpty = 0.01,
+    WorldStaticModel = GunpowderJar,
+}
+```
+
+**Key Properties:**
+- **Type:** Drainable (has uses, not single-use)
+- **UseDelta:** 0.1 (10 uses per container)
+- **Weight Full:** 0.1
+- **Weight Empty:** 0.01
+
+**Usage in Recipes:**
+```
+recipe Example {
+    Base.GunPowder=10,      // Uses 10 units (1 full container)
+    Result:Output,
+}
+```
+
+### Other Related Materials
+| Name | Item ID | Use |
+|------|---------|-----|
+| Scrap Metal | `Base.ScrapMetal` | Metal source for bullets |
+| Sheet Metal | `Base.SheetMetal` | Metal crafting |
+| Metal Bar | `Base.MetalBar` | Refined metal |
+| Iron Ingot | `Base.IronIngot` | Smelted metal |
+
+## Complete Ammunition Categories
+
+### Handgun Ammunition
+- **9mm:** `Base.Bullets9mm` (most common)
+- **.45 Auto:** `Base.Bullets45`
+- **.38 Special:** `Base.Bullets38`
+- **.44 Magnum:** `Base.Bullets44` (powerful)
+
+### Rifle Ammunition
+- **5.56mm:** `Base.556Bullets` (assault rifles)
+- **.223:** `Base.223Bullets` (hunting rifles)
+- **.308:** `Base.308Bullets` (hunting rifles, most powerful)
+
+### Shotgun Ammunition
+- **Shotgun Shells:** `Base.ShotgunShells`
+
+## Vanilla Crafting Recipes
+
+### Disassemble Ammo Box
+```
+recipe Open Box of 9mm Bullets {
+    Bullets9mmBox,
+
+    Result:Bullets9mm=30,
+    Sound:BoxOfRoundsOpenOne,
+    Time:15.0,
+}
+```
+
+### Assemble Ammo Box
+```
+recipe Place 9mm Bullets in Box {
+    Bullets9mm=30,
+
+    Result:Bullets9mmBox,
+    Sound:BoxOfRoundsOpenOne,
+    Time:15.0,
+}
+```
+
+### Extract Gunpowder (Hypothetical)
+```
+recipe Extract GunPowder from Bullets {
+    Base.Bullets9mm=10,      // Consume bullets
+
+    Result:Base.GunPowder=2, // Get some gunpowder back
+    Time:100.0,
+}
+```
+
+## Ammunition by Weapon Type
+
+### Pistols
+| Weapon | Ammo | Magazine | Capacity |
+|--------|------|----------|----------|
+| M9 Pistol | 9mm | Base.9mmClip | 15 |
+| M1911 Pistol | .45 Auto | Base.45Clip | 7 |
+| D-E Pistol | .44 Magnum | Base.44Clip | 8 |
+| M36 Revolver | .38 Special | N/A (revolver) | 6 |
+| M625 Revolver | .45 Auto | N/A (revolver) | 6 |
+
+### Rifles
+| Weapon | Ammo | Magazine | Capacity |
+|--------|------|----------|----------|
+| MSR700 Rifle | .223 | Base.223Clip | 3 |
+| MSR788 Rifle | .308 | Base.308Clip | 3 |
+| M16 Assault Rifle | 5.56mm | Base.556Clip | 30 |
+| M14 Rifle | .308 | Base.M14Clip | 20 |
+
+### Shotguns
+| Weapon | Ammo | Magazine | Capacity |
+|--------|------|----------|----------|
+| Shotgun | Shotgun Shells | N/A | 2-6 (varies) |
+| Sawed-off Shotgun | Shotgun Shells | N/A | 2 |
+| Double Barrel Shotgun | Shotgun Shells | N/A | 2 |
+| JS-2000 Shotgun | Shotgun Shells | N/A | 6 |
+
+## Item Spawning (Debug)
+
+### Spawn Individual Rounds
+```
+Base.Bullets9mm
+Base.ShotgunShells
+Base.308Bullets
+```
+
+### Spawn Boxes
+```
+Base.Bullets9mmBox
+Base.ShotgunShellsBox
+Base.308Box
+```
+
+### Spawn Molds
+```
+Base.9mmBulletsMold
+Base.ShotgunShellsMold
+Base.308BulletsMold
+Base.223BulletsMold
+```
+
+### Spawn Crafting Materials
+```
+Base.GunPowder
+Base.ScrapMetal
+```
+
+## Ammunition Scarcity & Balance
+
+### Rarity (Most to Least Common)
+1. **9mm** - Very common (police, civilians)
+2. **Shotgun Shells** - Common (civilian hunting)
+3. **.38 Special** - Common (police revolvers)
+4. **5.56mm** - Uncommon (military)
+5. **.45 Auto** - Uncommon
+6. **.308** - Uncommon (hunting)
+7. **.223** - Uncommon (hunting)
+8. **.44 Magnum** - Rare (powerful)
+
+### Crafting Balance Suggestions
+When creating bullet recipes:
+- **Common ammo (9mm):** Easier recipes, less materials
+- **Powerful ammo (.44, .308):** Harder recipes, more materials
+- **Military ammo (5.56mm):** Require higher skills
+
+**Example:**
+```
+// Common 9mm - Easy
+recipe Craft 9mm Bullets {
+    Base.ScrapMetal=1,
+    Base.GunPowder=5,
+    keep Base.9mmBulletsMold,
+
+    Result:Base.Bullets9mm=10,
+    Time:200.0,
+}
+
+// Powerful .308 - Harder
+recipe Craft .308 Bullets {
+    Base.ScrapMetal=3,
+    Base.GunPowder=15,
+    keep Base.308BulletsMold,
+    keep Base.Hammer,
+
+    Result:Base.308Bullets=5,
+    Time:400.0,
+    SkillRequired:MetalWelding=5,
+}
+```
+
+## Source Files
+- **Vanilla Items:** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\items.txt`
+- **Vanilla Weapons:** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\items_weapons.txt`
+- **Vanilla New Items:** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\newitems.txt`
+- **PZ Wiki:** https://pzwiki.net/w/index.php?oldid=384163
+- **Research Date:** 2025-11-06
+
+---
+
+## Metadata
+
+- **Version**: build-41
+- **Section**: modding
+- **Category**: items
+- **Tags**: recipe, item, weapon, sound, crafting, vanilla, ammunition, items
+- **Difficulty**: intermediate
+- **Last Updated**: 2026-01-09

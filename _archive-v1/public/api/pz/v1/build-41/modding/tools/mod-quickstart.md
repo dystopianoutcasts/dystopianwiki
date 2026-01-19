@@ -1,0 +1,377 @@
+---
+id: mod-quickstart
+slug: mod-quickstart
+title: Project Zomboid Mod Development Quick Start Guide
+excerpt: C:\Users\ediaz\Zomboid\Workshop\OutcastAdvancedCrafts\ OutcastAdvancedCrafts/ ├── Contents/ │   └── mods/ │       └── OutcastAdvCrft/ │           ├── media/ │           │   ├── lua/ │           │   │...
+game: pz
+version: build-41
+section: modding
+category: tools
+subcategory: null
+difficulty: beginner
+tags:
+  - lua
+  - recipe
+  - item
+  - repair
+  - weapon
+  - modding
+  - crafting
+  - quick
+last_updated: 2026-01-09
+---
+# Project Zomboid Mod Development Quick Start Guide
+## Outcast Advanced Crafts - Development Environment
+
+---
+
+## 📁 FILE STRUCTURE & LOCATIONS
+
+### Your Mod Files
+**Primary Location:**
+```
+C:\Users\ediaz\Zomboid\Workshop\OutcastAdvancedCrafts\
+```
+
+**Structure:**
+```
+OutcastAdvancedCrafts/
+├── Contents/
+│   └── mods/
+│       └── OutcastAdvCrft/
+│           ├── media/
+│           │   ├── lua/
+│           │   │   ├── client/
+│           │   │   │   └── OutcastAC_SmeltingFunctions.lua  (OnCreate callbacks - XP awards)
+│           │   │   └── shared/
+│           │   │       └── OutcastAC_RecipeCode.lua  (unused OnGiveXP functions)
+│           │   ├── scripts/
+│           │   │   ├── outcast_bullet_recipes.txt  (8 bullet recipes)
+│           │   │   ├── outcast_smelting_recipes.txt  (11 smelting recipes)
+│           │   │   ├── outcast_slag_recipes.txt  (3 slag recipes)
+│           │   │   └── outcast_items.txt  (custom items: Iron, Slag, molds)
+│           │   └── perks.txt  (Blacksmith skill definition)
+│           └── mod.info
+└── outcasttesting_docs/  (NOT CREATED - use Desktop location instead)
+```
+
+### Documentation Location
+**Outcast Testing Docs:**
+```
+C:\Users\ediaz\Desktop\DystopeanOutcasts\OutcastTESTING_DOCS\
+```
+
+**What to store here:**
+- Research notes on vanilla systems
+- Workshop mod analysis documents
+- Implementation plans and design docs
+- Bug investigation notes
+- XP balance spreadsheets
+- This quick start guide
+
+---
+
+## 🎮 VANILLA PROJECT ZOMBOID FILES
+
+### Installation Directory
+**Game Files:**
+```
+R:\Games\Steam\steamapps\common\ProjectZomboid\
+```
+
+**Key Vanilla Directories:**
+```
+ProjectZomboid/
+├── media/
+│   ├── lua/
+│   │   ├── client/  (client-side Lua)
+│   │   ├── server/  (server-side Lua)
+│   │   └── shared/  (shared Lua functions)
+│   └── scripts/
+│       ├── items/  (item definitions)
+│       ├── recipes/  (recipe definitions)
+│       └── vehicles/  (vehicle definitions)
+└── zombie/  (Java class files - decompiled)
+```
+
+### Important Vanilla Files for Reference
+
+**Perks System:**
+```
+R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\newitems.txt
+```
+- Contains vanilla perk definitions (Mechanics, MetalWelding, Cooking, etc.)
+
+**Recipe Examples:**
+```
+R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\recipes.txt
+R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\recipes_metalwork.txt
+```
+- Study vanilla recipe syntax
+- OnCreate and OnGiveXP patterns
+
+**Lua Recipe Functions:**
+```
+R:\Games\Steam\steamapps\common\ProjectZomboid\media\lua\shared\recipecode.lua
+```
+- Contains Recipe.OnGiveXP.* functions (Mechanics5, Cooking2, etc.)
+- Shows how vanilla awards XP
+
+### Best Way to Navigate Vanilla Files
+
+**Method 1: Direct Search (Fastest)**
+Use Windows Explorer search or `grep` from terminal:
+```bash
+# Search for recipe patterns
+grep -r "OnGiveXP" "R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\"
+
+# Search Lua functions
+grep -r "function Recipe.OnGiveXP" "R:\Games\Steam\steamapps\common\ProjectZomboid\media\lua\"
+```
+
+**Method 2: IDE/Text Editor**
+- Open entire `ProjectZomboid\media\` folder in VS Code
+- Use Ctrl+Shift+F for full-text search across all files
+- Search for: function names, perk names, item names, recipe patterns
+
+**Method 3: PZ Wiki Cross-Reference**
+1. Check PZ Modding Wiki: https://pzwiki.net/wiki/Modding
+2. Find the system you're researching (recipes, items, skills)
+3. Use wiki examples to locate corresponding vanilla files
+
+---
+
+## 🛠️ STEAM WORKSHOP CONTENT (108600)
+
+### Workshop Directory
+**Location:**
+```
+R:\Games\Steam\steamapps\workshop\content\108600\
+```
+
+**What is 108600?**
+- Steam App ID for Project Zomboid
+- All subscribed Workshop mods are downloaded here
+- Each subdirectory is a mod's Workshop ID
+
+### Workshop Mods Referenced in Development
+
+**Mods We've Studied:**
+
+| Mod Name | Workshop ID | Purpose | Key Learnings |
+|----------|-------------|---------|---------------|
+| **Vehicle Repair Overhaul** | 2757712197 | Multi-skill recipes | Uses ONE OnGiveXP for Tailoring (not multiple skills) |
+| **Gunsmith** | 3105394500 | Custom skill XP | Uses OnCreate callbacks, NOT Recipe.OnGiveXP |
+| **Driving Skill** | 2721945297 | Custom skill XP | Uses OnCreate callbacks, NOT Recipe.OnGiveXP |
+| **Scavenging** | 2903135820 | Custom skill XP | Uses OnCreate callbacks, NOT Recipe.OnGiveXP |
+
+**How to Find Workshop IDs:**
+1. Open mod page on Steam Workshop
+2. Check URL: `https://steamcommunity.com/sharedfiles/filedetails/?id=XXXXXXXXXX`
+3. XXXXXXXXXX is the Workshop ID
+
+### Best Way to Search & Navigate Workshop Mods
+
+**Method 1: Search by Mod Name**
+```bash
+# Find mod folder by searching mod.info files
+grep -r "name=Vehicle Repair" "R:\Games\Steam\steamapps\workshop\content\108600\"
+```
+
+**Method 2: Search by File Pattern**
+```bash
+# Find all mods with custom skills (perks.txt)
+find "R:\Games\Steam\steamapps\workshop\content\108600" -name "perks.txt"
+
+# Find all recipe OnCreate callbacks
+grep -r "OnCreate:" "R:\Games\Steam\steamapps\workshop\content\108600\*/Contents/mods/*/media/scripts/"
+```
+
+**Method 3: Browse Installed Mods in Game**
+1. Launch Project Zomboid
+2. Main Menu → Mods
+3. Check mod list - note the mod name
+4. Search for that name in Workshop directory
+
+**Method 4: Steam Workshop URL to Local Files**
+```
+Workshop ID: 2599752664
+Local Path: R:\Games\Steam\steamapps\workshop\content\108600\2599752664\
+```
+
+---
+
+## 🧠 CRITICAL TECHNICAL LEARNINGS
+
+### Multi-Skill XP Pattern (PROVEN)
+
+**✅ WORKING PATTERN (Custom Skills):**
+```lua
+-- In lua/client/YourMod_Functions.lua
+function YourMod.OnCreate.CraftItem(items, result, player, selectedItem)
+    player:getXp():AddXP(Perks.CustomSkill, 10)
+    player:getXp():AddXP(Perks.MetalWelding, 5)
+    player:getXp():AddXP(Perks.Mechanics, 3)
+end
+```
+
+**In recipe file:**
+```
+recipe Craft Item
+{
+    OnCreate:YourMod.OnCreate.CraftItem,
+}
+```
+
+**❌ NOT WORKING (Custom Skills):**
+```lua
+-- Recipe.OnGiveXP functions DO NOT work with custom skills
+function Recipe.OnGiveXP.YourMod_Function(recipe, ingredients, result, player)
+    player:getXp():AddXP(Perks.CustomSkill, 10)
+end
+```
+
+**Why?**
+- Recipe.OnGiveXP functions are parsed BEFORE custom perks load
+- Custom skills (defined in perks.txt) aren't available yet
+- OnCreate callbacks run AFTER perks load ✅
+
+### Skill Naming Convention
+
+**perks.txt:**
+```
+perk Blacksmith  ← Lua reference name
+{
+    parent = Crafting,
+    translation = Blacksmithing,  ← UI display name
+}
+```
+
+**Lua code:**
+```lua
+player:getXp():AddXP(Perks.Blacksmith, 10)  -- Use perk name, not translation
+```
+
+**UI displays:** "Blacksmithing" (from translation field)
+
+---
+
+## 🚀 QUICK REFERENCE COMMANDS
+
+### Search for Recipe Patterns
+```bash
+# Find all OnCreate callbacks in your mod
+grep -r "OnCreate:" "C:\Users\ediaz\Zomboid\Workshop\OutcastAdvancedCrafts\Contents\mods\OutcastAdvCrft\media\scripts\"
+
+# Find all XP awards in your mod
+grep -r "AddXP" "C:\Users\ediaz\Zomboid\Workshop\OutcastAdvancedCrafts\Contents\mods\OutcastAdvCrft\media\lua\"
+```
+
+### Validate Recipe Syntax
+```bash
+# Check for syntax errors in recipe files
+# (No automated tool - must check game logs)
+# Logs location:
+C:\Users\ediaz\Zomboid\Logs\
+```
+
+### Compare with Vanilla
+```bash
+# Find vanilla recipe examples for MetalWelding
+grep -r "SkillRequired:MetalWelding" "R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\"
+
+# Find vanilla OnGiveXP functions
+grep -r "function Recipe.OnGiveXP" "R:\Games\Steam\steamapps\common\ProjectZomboid\media\lua\shared\"
+```
+
+---
+
+## 📝 CURRENT MOD STATUS (Last Updated)
+
+### Implemented Features
+- ✅ Custom Blacksmithing skill (Crafting category)
+- ✅ 8 Bullet casting recipes (9mm → .44 Magnum)
+- ✅ 11 Smelting recipes (scrap → iron)
+- ✅ 3 Slag processing recipes (slag → construction materials)
+- ✅ Multi-skill XP awards (Blacksmithing + MetalWelding + Mechanics/Cooking)
+- ✅ Skill-based tiered smelting (Novice/Advanced/Master)
+- ✅ Custom items: Iron, Slag, bullet molds
+
+### XP Award Pattern
+**All 22 recipes use OnCreate callbacks:**
+- Blacksmithing XP (custom skill)
+- MetalWelding XP (vanilla skill)
+- Mechanics XP (vanilla skill)
+- Cooking XP (vanilla skill - slag recipes only)
+
+### Known Issues
+- ❌ Recipe.OnGiveXP functions don't work with custom skills (abandoned approach)
+- ⚠️ Skill display name now fixed: "Blacksmithing" (was "Blacksmith")
+
+---
+
+## 💡 TIPS FOR LLM CONTEXT
+
+When starting a new chat session with an LLM about this mod, provide:
+
+1. **File structure** (this document)
+2. **Current implementation status** (what's working)
+3. **Specific files** (read and attach relevant files)
+4. **The problem** (what you're trying to solve)
+
+**Example prompt:**
+```
+I'm developing a Project Zomboid mod called Outcast Advanced Crafts.
+
+File structure:
+- Mod location: C:\Users\ediaz\Zomboid\Workshop\OutcastAdvancedCrafts\
+- OnCreate functions: Contents/mods/OutcastAdvCrft/media/lua/client/OutcastAC_SmeltingFunctions.lua
+- Recipes: Contents/mods/OutcastAdvCrft/media/scripts/outcast_*_recipes.txt
+
+Current status:
+- 22 recipes awarding multi-skill XP via OnCreate callbacks
+- Custom Blacksmithing skill working
+- All recipes tested and functional
+
+Vanilla files reference:
+- Game install: R:\Games\Steam\steamapps\common\ProjectZomboid\
+- Workshop mods: R:\Games\Steam\steamapps\workshop\content\108600\
+
+Question: [Your specific question here]
+```
+
+---
+
+## 🔗 USEFUL LINKS
+
+- **PZ Modding Wiki:** https://pzwiki.net/wiki/Modding
+- **Discord:** https://discord.gg/KgNBWyfcvZ (Dystopian Outcasts)
+- **Steam Workshop:** https://steamcommunity.com/app/108600/workshop/
+
+---
+
+## 📋 WORKSHOP MOD IDs TO REFERENCE
+
+**Referenced Mods with Workshop IDs:**
+
+| Mod Name | Workshop ID | Local Path | Notes |
+|----------|-------------|------------|-------|
+| **Vehicle Repair Overhaul** | 2757712197 | `R:\Games\Steam\steamapps\workshop\content\108600\2757712197\` | Multi-skill recipe research |
+| **Gunsmith** | 3105394500 | `R:\Games\Steam\steamapps\workshop\content\108600\3105394500\` | Custom skill implementation pattern |
+| **Driving Skill** | 2721945297 | `R:\Games\Steam\steamapps\workshop\content\108600\2721945297\` | Custom skill implementation pattern |
+| **Scavenging** | 2903135820 | `R:\Games\Steam\steamapps\workshop\content\108600\2903135820\` | Custom skill implementation pattern |
+
+**How to Access:**
+```bash
+# View Gunsmith skill definition
+cat "R:\Games\Steam\steamapps\workshop\content\108600\3105394500\mods\weapongunsmith\media\perks.txt"
+
+# Search for OnCreate functions in Driving Skill mod
+grep -r "OnCreate" "R:\Games\Steam\steamapps\workshop\content\108600\2721945297\"
+```
+
+---
+
+**Last Updated:** 2025-11-20
+**Mod Version:** Development (Pre-release)
+**Game Version:** Project Zomboid Build 41 

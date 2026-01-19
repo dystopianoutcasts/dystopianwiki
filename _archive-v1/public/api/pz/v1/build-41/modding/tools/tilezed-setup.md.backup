@@ -1,0 +1,263 @@
+# TileZed Setup Guide - Outcast Antique Oven
+
+## Overview
+This guide provides step-by-step instructions for creating the Outcast Antique Oven tiles in TileZed.
+
+---
+
+## Prerequisites
+
+1. **TileZed Installed**: Download from https://theindiestone.com/forums/index.php?/topic/3806-tilezed/
+2. **RaxTiles.pack Texture Pack**: Located at `OutcastAdvancedCrafts/Contents/mods/OutcastAdvCrft/media/texturepacks/RaxTiles.pack`
+3. **RaxTiles.tiles File**: Located at `OutcastAdvancedCrafts/Contents/mods/OutcastAdvCrft/media/RaxTiles.tiles`
+
+---
+
+## Step-by-Step: Create Oven Tiles
+
+### Step 1: Open TileZed
+1. Launch TileZed
+2. Click **File → Open Project**
+3. Navigate to: `C:\Users\ediaz\Zomboid\Workshop\OutcastAdvancedCrafts\Contents\mods\OutcastAdvCrft`
+4. Select `RaxTiles.tiles`
+
+### Step 2: Create Unlit Oven Tile (RaxTiles_01_42)
+
+1. **Select the tile slot** for index 42 in the RaxTiles_01 sheet
+2. **Assign Sprite**:
+   - Find `crafted_01_42` in the sprite picker
+   - Click to assign to tile slot 42
+3. **Set Tile Name**: `RaxTiles_01_42`
+4. **Set Tile Properties** (in Properties panel):
+
+```
+Basic Properties:
+├─ Name: RaxTiles_01_42
+├─ IsoType: IsoFireplace
+└─ CustomName: Outcast Antique Oven
+
+Container Properties:
+├─ Container: woodstove
+└─ ContainerCapacity: 15
+
+Surface & Physics:
+├─ Surface: 34
+├─ BlocksPlacement: true
+└─ PickUpWeight: 400
+
+Tools:
+├─ PickUpTool: Hammer
+└─ PlaceTool: Hammer
+
+Materials:
+└─ Materials: MetalPlates;MetalScrap
+```
+
+5. **Direction**: Set to South facing only (no north/east/west variants)
+
+### Step 3: Create Lit Oven Tile (RaxTiles_01_43)
+
+1. **Select tile slot 43** in the RaxTiles_01 sheet
+2. **Assign Sprite**:
+   - Find `crafted_01_43` in sprite picker
+   - Click to assign to tile slot 43
+3. **Set Tile Name**: `RaxTiles_01_43`
+4. **Copy ALL properties from RaxTiles_01_42** (same properties as unlit version)
+   - IsoType: IsoFireplace
+   - CustomName: Outcast Antique Oven
+   - Container: woodstove
+   - ContainerCapacity: 15
+   - Surface: 34
+   - PickUpWeight: 400
+   - PickUpTool: Hammer
+   - PlaceTool: Hammer
+   - Materials: MetalPlates;MetalScrap
+   - Direction: South
+
+> **Note**: Java will automatically switch between tiles 42 (unlit) and 43 (lit) based on IsoFireplace state
+
+### Step 4: Save and Export
+
+1. **Save** the tiles file: File → Save
+2. **Export Pack** (if needed): Tools → Pack Textures
+3. **Verify** RaxTiles.pack includes crafted_01_42 and crafted_01_43 sprites
+
+---
+
+## Property Details
+
+### IsoType: IsoFireplace
+**CRITICAL**: This makes the object functional as an oven/forge.
+- Enables fuel management
+- Allows lighting/extinguishing
+- Provides heat for cooking
+- Auto-switches sprites when lit
+
+### CustomName: Outcast Antique Oven
+**CRITICAL**: Must match exactly what Lua checks for.
+- Used by `OutcastForgeRecipeHelpers.requireLitForge()`
+- Case-sensitive!
+- Recipes only work when this exact name is detected
+
+### Container: woodstove
+- Container type that accepts fuel (logs, planks)
+- Same as vanilla campfires/ovens
+- ContainerCapacity: 15 slots
+
+### Surface: 34
+- Allows placing items on top of oven
+- Players can set items on the oven surface
+
+### PickUpWeight: 400
+- Very heavy (realistic for metal oven)
+- Requires high strength to move easily
+- Matches vanilla antique oven weight
+
+### Materials: MetalPlates;MetalScrap
+- What you get when dismantling
+- Separators: semicolons
+
+---
+
+## Verification Checklist
+
+After creating tiles in TileZed:
+
+- [ ] Tile `RaxTiles_01_42` created with sprite `crafted_01_42`
+- [ ] Tile `RaxTiles_01_43` created with sprite `crafted_01_43`
+- [ ] Both tiles have IsoType = IsoFireplace
+- [ ] Both tiles have CustomName = "Outcast Antique Oven"
+- [ ] Container = woodstove, ContainerCapacity = 15
+- [ ] Surface = 34
+- [ ] PickUpWeight = 400
+- [ ] PickUpTool and PlaceTool = Hammer
+- [ ] Materials = MetalPlates;MetalScrap
+- [ ] Direction = South only
+- [ ] Tiles saved to RaxTiles.tiles
+- [ ] RaxTiles.pack includes the sprites
+
+---
+
+## Testing the Oven
+
+Once tiles are created:
+
+### In-Game Test (Debug Mode):
+1. **Enable Debug Mode**: Launch game, press F11 for debug
+2. **Spawn Oven**: Right-click ground → Debug → Items → "OutcastAC.Mov_OutcastAntiqueOven"
+3. **Place Oven**: Right-click oven in inventory → "Place Object"
+4. **Test Functionality**:
+   - Right-click oven → Add fuel (logs)
+   - Right-click oven → Light fire (need lighter/matches)
+   - Verify sprite changes from 42 to 43 when lit
+   - Stand nearby with ScrapMetal
+   - Verify smelting recipes appear
+
+### Craft Test (Normal Play):
+1. **Learn Recipe**: Set `NeedToBeLearn:false` in outcast_forge_recipes.txt for testing
+2. **Gather Materials**: 6 SheetMetal, 2 MetalPipe, 4 SmallSheetMetal, 20 Screws
+3. **Craft Oven**: Right-click materials → "Craft Outcast Antique Oven"
+4. **Test** as above
+
+---
+
+## Troubleshooting
+
+### Oven doesn't appear in-game
+- **Check**: Mod is enabled in Mods menu
+- **Check**: RaxTiles.tiles saved correctly
+- **Check**: Item name matches: `OutcastAC.Mov_OutcastAntiqueOven`
+
+### Can't place oven
+- **Check**: Tile definition exists for RaxTiles_01_42
+- **Check**: PlaceTool is set to "Hammer"
+- **Try**: Use debug spawn first to verify tile works
+
+### Oven won't light
+- **Check**: IsoType = IsoFireplace (not IsoObject!)
+- **Check**: Container = woodstove
+- **Check**: Added fuel (logs, planks) first
+- **Check**: Have lighter or matches in inventory
+
+### Recipes don't appear near lit oven
+- **Check**: Oven is actually lit (see flames, sprite changed to 43)
+- **Check**: CustomName = "Outcast Antique Oven" (exact match!)
+- **Check**: Standing within 3 tiles of oven
+- **Check**: OutcastForgeRecipeHelpers.lua is loaded (check console log)
+
+### Sprite doesn't change when lit
+- **Check**: Both tiles 42 and 43 exist
+- **Check**: Both have same CustomName
+- **Check**: Both are IsoFireplace type
+- **Java handles switch**: No Lua code needed
+
+---
+
+## Alternative: Quick Test Without TileZed
+
+If you can't use TileZed right now, test with vanilla IsoFireplace:
+
+**Temporary Workaround:**
+1. Edit `OutcastForgeRecipeHelpers.lua` line 36
+2. Change from:
+   ```lua
+   if customName == "Outcast Antique Oven" then
+   ```
+   To:
+   ```lua
+   if instanceof(obj, "IsoFireplace") then
+   ```
+3. This makes recipes work with ANY lit fireplace/oven/campfire
+4. Test functionality with vanilla antique ovens
+5. Revert to custom name check once tiles are created
+
+---
+
+## File Locations Reference
+
+```
+OutcastAdvancedCrafts/
+├── Contents/mods/OutcastAdvCrft/
+    ├── media/
+    │   ├── RaxTiles.tiles          [EDIT IN TILEZED]
+    │   ├── texturepacks/
+    │   │   └── RaxTiles.pack       [Sprite source]
+    │   ├── scripts/
+    │   │   ├── outcast_items.txt   [✓ Complete]
+    │   │   └── outcast_forge_recipes.txt [✓ Complete]
+    │   └── lua/shared/
+    │       └── OutcastForgeRecipeHelpers.lua [✓ Complete]
+```
+
+---
+
+## Next Steps After TileZed
+
+1. ✅ Create tiles in TileZed (this guide)
+2. Test spawning oven in debug mode
+3. Test fueling and lighting
+4. Test smelting recipes appear when lit
+5. Test crafting recipe (if enabled)
+6. Adjust recipe requirements if needed
+7. Create knowledge book for recipe unlock (optional)
+8. Add to building menu via MoreBuilds (optional)
+
+---
+
+## Support
+
+Questions? Check:
+- [OUTCAST_ANTIQUE_OVEN_SETUP.md](OUTCAST_ANTIQUE_OVEN_SETUP.md) - Full implementation overview
+- [crafted_01_SPRITE_REFERENCE.md](crafted_01_SPRITE_REFERENCE.md) - Sprite and tile reference
+- Discord: https://discord.gg/KgNBWyfcvZ
+
+---
+
+## Metadata
+
+- **Version**: build-41
+- **Section**: modding
+- **Category**: tools
+- **Tags**: lua, recipe, item, tilezed, crafting, setup, guide
+- **Difficulty**: beginner
+- **Last Updated**: 2026-01-09

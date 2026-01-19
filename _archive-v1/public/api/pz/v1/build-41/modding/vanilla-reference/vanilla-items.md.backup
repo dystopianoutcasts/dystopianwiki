@@ -1,0 +1,123 @@
+# Vanilla Items Reference (items.txt)
+
+Complete reference for all **92 items** defined in `items.txt`.
+
+## Items by Type
+
+### Drainable (42 items)
+
+| Item | Weight | Description |
+|------|--------|-------------|
+| Antidepressants | 0.2 | `Base.PillsAntiDep` |
+| Battery | 0.1 | `Base.Battery` |
+| Beta Blockers | 0.2 | `Base.PillsBeta` |
+| Black Paint | 5 | `Base.PaintBlack` |
+| Blue Paint | 5 | `Base.PaintBlue` |
+| Brown Paint | 5 | `Base.PaintBrown` |
+| Bucket of Concrete | 10 | `Base.BucketConcreteFull` |
+| Bucket of Plaster | 10 | `Base.BucketPlasterFull` |
+| Bucket of Water | 4 | `Base.BucketWaterFull` |
+| Candle | 0.2 | `Base.Candle` |
+| Charcoal | 8 | `Base.Charcoal` |
+| Coal | 8 | `Base.Coal` |
+| Cornmeal | 1 | `Base.Cornmeal` |
+| Cyan Paint | 5 | `Base.PaintCyan` |
+| Dirt Bag | 2 | `Base.Dirtbag` |
+| Dish Towel | 0.3 | `Base.DishCloth` |
+| Flashlight | 1 | `Base.Torch` |
+| Flour | 1 | `Base.Flour` |
+| Gas Can | 5 | `Base.PetrolCan` |
+| Gravel Bag | 2 | `Base.Gravelbag` |
+| Green Paint | 5 | `Base.PaintGreen` |
+| Grey Paint | 5 | `Base.PaintGrey` |
+| Kettle of Water | 2 | `Base.FullKettle` |
+| Light Blue Paint | 5 | `Base.PaintLightBlue` |
+| Light Brown Paint | 5 | `Base.PaintLightBrown` |
+| Lighter | 0.1 | `Base.Lighter` |
+| Lit Candle | 0.2 | `Base.CandleLit` |
+| Matches | 0.1 | `Base.Matches` |
+| NPK Fertilizer | 2.0 | `Base.Fertilizer` |
+| Orange Paint | 5 | `Base.PaintOrange` |
+| Painkillers | 0.2 | `Base.Pills` |
+| Pink Paint | 5 | `Base.PaintPink` |
+| Propane Tank | 10.0 | `Base.PropaneTank` |
+| Purple Paint | 5 | `Base.PaintPurple` |
+| Red Paint | 5 | `Base.PaintRed` |
+| Sand Bag | 2 | `Base.Sandbag` |
+| Sleeping Tablets | 0.2 | `Base.PillsSleepingTablets` |
+| Thread | 0.1 | `Base.Thread` |
+| Tissue | 0.1 | `Base.Tissue` |
+| Turquoise Paint | 5 | `Base.PaintTurquoise` |
+| White Paint | 5 | `Base.PaintWhite` |
+| Yellow Paint | 5 | `Base.PaintYellow` |
+
+### Food (1 items)
+
+| Item | Weight | Description |
+|------|--------|-------------|
+| Cigarettes | 0.005 | `Base.Cigarettes` |
+
+### Normal (49 items)
+
+| Item | Weight | Description |
+|------|--------|-------------|
+| Bag of Concrete Powder | 5 | `Base.ConcretePowder` |
+| Bag of Plaster Powder | 5 | `Base.PlasterPowder` |
+| Baking Tray | 0.5 | `Base.BakingTray` |
+| Barbed Wire | 1 | `Base.BarbedWire` |
+| Belt | 0.3 | `Base.Belt` |
+| Bowl | 0.5 | `Base.Bowl` |
+| Bucket | 1 | `Base.BucketEmpty` |
+| Can Opener | 0.6 | `Base.TinOpener` |
+| Cooking Pot | 1 | `Base.Pot` |
+| Dirty Rag | 0.05 | `Base.RippedSheetsDirty` |
+| Door Hinge | 0.3 | `Base.Hinge` |
+| Doorknob | 0.5 | `Base.Doorknob` |
+| Drawer | 3 | `Base.Drawer` |
+| Empty Bottle | 0.1 | `Base.WaterBottleEmpty` |
+| Empty Bottle | 0.3 | `Base.WhiskeyEmpty` |
+| Empty Bottle | 0.3 | `Base.WineEmpty` |
+| Empty Bottle | 0.3 | `Base.WineEmpty2` |
+| Empty Bottle | 0.1 | `Base.BeerEmpty` |
+| Empty Cyan Mug | 0.2 | `Base.Mugl` |
+| Empty Fertilizer | 0.001 | `Base.FertilizerEmpty` |
+| Empty Pop Bottle | 0.1 | `Base.PopBottleEmpty` |
+| Empty Red Mug | 0.2 | `Base.MugRed` |
+| Empty Spiffo Mug | 0.2 | `Base.MugSpiffo` |
+| Empty White Mug | 0.2 | `Base.MugWhite` |
+| Garden Saw | 0.7 | `Base.GardenSaw` |
+| Kettle | 1 | `Base.Kettle` |
+| Log | 9 | `Base.Log` |
+| Nails | 0.01 | `Base.Nails` |
+| Needle | 0.1 | `Base.Needle` |
+| Paint Brush | 0.2 | `Base.Paintbrush` |
+| Picture of Bob | 0.2 | `Base.BobPic` |
+| Picture of Casey-Jo | 0.2 | `Base.CaseyPic` |
+| Picture of Chris Bailey | 0.2 | `Base.ChrisPic` |
+| Picture of Dr Cortman | 0.2 | `Base.CortmanPic` |
+| Picture of Hank | 0.2 | `Base.HankPic` |
+| Picture of James Garcia | 0.2 | `Base.JamesPic` |
+| Picture of Kate | 0.2 | `Base.KatePic` |
+| Picture of Marianne Brown | 0.2 | `Base.MariannePic` |
+| Pillow | 0.8 | `Base.Pillow` |
+| Pool Ball | 0.2 | `Base.PoolBall` |
+| Ripped Sheets | 0.05 | `Base.RippedSheets` |
+| Roasting Pan | 1.3 | `Base.RoastingPan` |
+| Saw | 0.7 | `Base.Saw` |
+| Sheet | 0.8 | `Base.Sheet` |
+| Sheet Rope | 0.8 | `Base.SheetRope` |
+| Stairs Piece | 35 | `Base.Stairs` |
+| Sterilized Rag | 0.05 | `Base.AlcoholRippedSheets` |
+| Tea Bag | 0.1 | `Base.Teabag` |
+| Wet Dish Towel | 0.3 | `Base.DishClothWet` |
+
+---
+
+## Metadata
+
+- **Version**: build-41
+- **Section**: modding
+- **Category**: vanilla-reference
+- **Tags**: reference, vanilla, items
+- **Difficulty**: beginner
+- **Last Updated**: 2026-01-18

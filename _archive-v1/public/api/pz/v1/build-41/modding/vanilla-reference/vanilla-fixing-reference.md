@@ -1,0 +1,213 @@
+---
+id: vanilla-fixing-reference
+slug: vanilla-fixing-reference
+title: Vanilla Fixing (Repair) System Reference
+excerpt: Complete reference for all **76 fixing entries** in Project Zomboid Build 41. The `fixing` system allows players to repair items using consumable materials. Unlike `recipe`, fixing entries: fixing...
+game: pz
+version: build-41
+section: modding
+category: vanilla-reference
+subcategory: null
+difficulty: beginner
+tags:
+  - reference
+  - fixing
+  - repair
+  - vanilla
+  - maintenance
+last_updated: 2026-01-18
+---
+# Vanilla Fixing (Repair) System Reference
+
+Complete reference for all **76 fixing entries** in Project Zomboid Build 41.
+
+## How the Fixing System Works
+
+The `fixing` system allows players to repair items using consumable materials. Unlike `recipe`, fixing entries:
+
+- **Don't create new items** - they restore condition to existing items
+- **Support multiple repair options** - each `Fixer` line is an alternative way to repair
+- **Can require skills** - some repair methods need skill levels
+
+## Fixing Syntax
+
+```
+fixing Fix Baseball Bat
+{
+    Require : BaseballBat,              // Item type this repairs
+
+    Fixer : Woodglue=2; Woodwork=2,     // Option 1: 2 woodglue + Woodwork level 2
+    Fixer : DuctTape=2,                 // Option 2: 2 duct tape (no skill needed)
+    Fixer : Glue=2,                     // Option 3: 2 glue
+    Fixer : Scotchtape=4,               // Option 4: 4 scotch tape
+}
+```
+
+## Fixer Properties
+
+| Property | Description |
+|----------|-------------|
+| `Require` | The item type ID this fixing entry applies to |
+| `Fixer` | A repair option: `Item=count` or `Item=count; Skill=level` |
+
+## Common Repair Materials
+
+| Material | Common Uses |
+|----------|-------------|
+| **Duct Tape** | Universal repair, works on most items |
+| **Woodglue** | Wooden items (often needs Woodwork skill) |
+| **Glue** | General purpose, weaker than Woodglue |
+| **Scotchtape** | Emergency repairs, needs more units |
+| **Nails** | Nailed weapons specifically |
+
+## Quick Navigation
+
+- [Other](#other) (21 items)
+- [Blunt Weapons](#blunt-weapons) (13 items)
+- [Firearms](#firearms) (12 items)
+- [Tools](#tools) (9 items)
+- [Bladed Weapons](#bladed-weapons) (8 items)
+- [Instruments](#instruments) (8 items)
+- [Axes](#axes) (5 items)
+
+## Other
+
+| Item | Repair Options |
+|------|----------------|
+| Fix Black Electric Bass | DuctTape×2 **OR** Scotchtape×3 |
+| Fix Blue Electric Bass | DuctTape×2 **OR** Scotchtape×3 |
+| Fix Canoe Padel | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×3 **OR** Scotchtape×4 |
+| Fix Double Canoe Padel | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×3 **OR** Scotchtape×4 |
+| Fix Garden Fork | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+| Fix Golf club | DuctTape×2 **OR** Scotchtape×3 |
+| Fix Griddle Pan | DuctTape **OR** Glue×2 **OR** Scotchtape×3 |
+| Fix Hand Fork | DuctTape **OR** Glue **OR** Scotchtape×2 |
+| Fix Hand Scythe | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+| Fix Pan | DuctTape **OR** Glue×2 **OR** Scotchtape×3 |
+| Fix Red Electric Bass | DuctTape×2 **OR** Scotchtape×3 |
+| Fix Rolling Pin | Woodglue + Woodwork 1 **OR** DuctTape **OR** Glue×2 **OR** Scotchtape×3 |
+| Fix Sauce Pan | DuctTape **OR** Glue×2 **OR** Scotchtape×3 |
+| Fix Spear | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+| Fix Spear With Hand Fork | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+| Fix Spear With Ice Pick | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+| Fix Spear With Letter Opener | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+| Fix Spear With Scalpel | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+| Fix Spear With Scissors | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+| Fix Spear With Spoon | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+| Fix Wooden Mallet | Woodglue + Woodwork 1 **OR** DuctTape **OR** Glue×2 **OR** Scotchtape×3 |
+
+## Blunt Weapons
+
+| Item | Repair Options |
+|------|----------------|
+| Fix Badminton Racket | DuctTape×2 **OR** Scotchtape×3 |
+| Fix Ball Peen Hammer | DuctTape×2 **OR** Scotchtape×3 |
+| Fix Baseball Bat | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+| Fix Club Hammer | Woodglue + Woodwork 1 **OR** DuctTape **OR** Glue×2 **OR** Scotchtape×3 |
+| Fix Hammer | Woodglue + Woodwork 1 **OR** DuctTape **OR** Glue×2 **OR** Scotchtape×3 |
+| Fix Hockey Stick | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×3 **OR** Scotchtape×4 |
+| Fix Hockey Stick | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×3 **OR** Scotchtape×4 |
+| Fix Ice Hockey Stick | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×3 **OR** Scotchtape×4 |
+| Fix LaCrosse Stick | DuctTape×2 **OR** Glue×3 |
+| Fix Nailed Baseball Bat | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 **OR** Nails |
+| Fix Sledgehammer | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×3 **OR** Scotchtape×4 |
+| Fix Sledgehammer2 | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×3 **OR** Scotchtape×4 |
+| Fix Tennis Racket | DuctTape×2 **OR** Scotchtape×3 |
+
+## Firearms
+
+| Item | Repair Options |
+|------|----------------|
+| Fix Assault Rifle | AssaultRifle + Aiming×5 |
+| Fix AssaultRifle2 | AssaultRifle2 + Aiming×5 |
+| Fix DoubleBarrelShotgun | DoubleBarrelShotgun + Aiming×2 |
+| Fix Hunting Rifle | HuntingRifle + Aiming×4 |
+| Fix Pistol | Pistol + Aiming×3 |
+| Fix Pistol2 | Pistol2 + Aiming×3 |
+| Fix Pistol3 | Pistol3 + Aiming×3 |
+| Fix Revolver | Revolver + Aiming×3 |
+| Fix Revolver_Long | Revolver_Long + Aiming×3 |
+| Fix Revolver_Short | Revolver_Short + Aiming×3 |
+| Fix Shotgun | Shotgun + Aiming×2 **OR** ShotgunSawnoff + Aiming×2 |
+| Fix Varmint Rifle | VarmintRifle + Aiming×4 |
+
+## Tools
+
+| Item | Repair Options |
+|------|----------------|
+| Fix Broom | Woodglue + Woodwork 1 **OR** DuctTape **OR** Glue×2 **OR** Scotchtape×3 |
+| Fix Garden Hoe | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×3 **OR** Scotchtape×4 |
+| Fix Leaf Rake | DuctTape **OR** Glue×2 |
+| Fix Rake | DuctTape **OR** Glue×2 |
+| Fix ShotgunSawnoff | ShotgunSawnoff + Aiming×2 **OR** Shotgun + Aiming×2 |
+| Fix Shovel | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×3 **OR** Scotchtape×4 |
+| Fix Shovel2 | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×3 **OR** Scotchtape×4 |
+| Fix Snow Shovel | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×3 **OR** Scotchtape×4 |
+| Fix Spear With Screwdriver | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+
+## Bladed Weapons
+
+| Item | Repair Options |
+|------|----------------|
+| Fix Hunting Knife | DuctTape **OR** Glue **OR** Scotchtape×2 |
+| Fix Kitchen Knife | DuctTape **OR** Glue **OR** Scotchtape×2 |
+| Fix Machete | DuctTape×2 **OR** Scotchtape×3 |
+| Fix Spear With Bread Knife | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+| Fix Spear With Butter Knife | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+| Fix Spear With Hunting Knife | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+| Fix Spear With Kitchen Knife | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+| Fix Spear With Machete | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+
+## Instruments
+
+| Item | Repair Options |
+|------|----------------|
+| Fix Acoustic Guitar | DuctTape×2 **OR** Scotchtape×3 |
+| Fix Banjo | DuctTape×2 **OR** Scotchtape×3 |
+| Fix Black Electric Guitar | DuctTape×2 **OR** Scotchtape×3 |
+| Fix Blue Electric Guitar | DuctTape×2 **OR** Scotchtape×3 |
+| Fix Red Electric Guitar | DuctTape×2 **OR** Scotchtape×3 |
+| Fix Saxophone | DuctTape×2 **OR** Scotchtape×3 |
+| Fix Trumpet | DuctTape×2 **OR** Scotchtape×3 |
+| Fix Violin | DuctTape×2 **OR** Scotchtape×3 |
+
+## Axes
+
+| Item | Repair Options |
+|------|----------------|
+| Fix Axe | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+| Fix Hand Axe | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+| Fix PickAxe | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+| Fix PickAxe | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×3 **OR** Scotchtape×4 |
+| Fix Wood Axe | Woodglue×2 + Woodwork 2 **OR** DuctTape×2 **OR** Glue×2 **OR** Scotchtape×4 |
+
+---
+
+## Fixing vs Recipe vs Evolved Recipe
+
+| System | Purpose | Creates New Item? |
+|--------|---------|-------------------|
+| `fixing` | Repair existing items | No |
+| `recipe` | Craft new items | Yes |
+| `evolvedrecipe` | Combine ingredients dynamically | Yes |
+
+## Adding Custom Repair Options
+
+To make your custom weapon repairable, create a `fixing` entry:
+
+```
+module MyMod
+{
+    fixing Fix My Custom Sword
+    {
+        Require : MyCustomSword,
+
+        Fixer : DuctTape=3,
+        Fixer : WeldingRods=1; Metalworking=2,
+    }
+}
+```
+
+## Source
+
+Definitions from `media/scripts/fixing.txt`build-41

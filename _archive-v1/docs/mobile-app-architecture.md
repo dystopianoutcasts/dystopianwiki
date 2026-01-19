@@ -74,8 +74,7 @@ mobile/
 │   └── [game]/                   # Dynamic: /pz, /vs
 │       ├── _layout.tsx
 │       ├── index.tsx             # Game home (/pz)
-│       └── [version]/            # Dynamic: /pz/build-41
-│           ├── _layout.tsx
+│       └── [version]/            # Dynamic: /pz/ │           ├── _layout.tsx
 │           └── [category]/       # /pz/build-41/modding
 │               └── [slug].tsx    # /pz/build-41/modding/weapons-guide
 │

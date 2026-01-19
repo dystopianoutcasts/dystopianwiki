@@ -1,0 +1,503 @@
+---
+id: item-creation
+slug: item-creation
+title: Item Creation Guide - Project Zomboid
+excerpt: Items in Project Zomboid are defined in script files within your mod's directory. This guide covers the fundamentals of creating new items. Items must be defined in `.txt` files within your mod's...
+game: pz
+version: build-41
+section: modding
+category: items
+subcategory: null
+difficulty: beginner
+tags:
+  - recipe
+  - item
+  - weapon
+  - crafting
+  - creation
+  - guide
+last_updated: 2026-01-09
+---
+# Item Creation Guide - Project Zomboid
+
+## Overview
+Items in Project Zomboid are defined in script files within your mod's directory. This guide covers the fundamentals of creating new items.
+
+## File Location
+Items must be defined in `.txt` files within your mod's `media/scripts/` directory.
+
+**Example Path:**
+```
+YourMod/
+└── Contents/
+    └── mods/
+        └── YourModName/
+            └── media/
+                └── scripts/
+                    └── items.txt
+```
+
+## Basic Item Structure
+
+### Module Declaration
+All items must be wrapped in a module block:
+
+```
+module ModuleName {
+    imports {
+        Base
+    }
+
+    item ItemName {
+        // Item properties here
+    }
+}
+```
+
+### Minimal Item Example
+```
+module OutcastAdvCrft {
+    imports {
+        Base
+    }
+
+    item SimpleItem {
+        DisplayName = Simple Item,
+        Weight = 1.0,
+        Type = Normal,
+        Icon = ItemIcon,
+    }
+}
+```
+
+## Item Syntax Rules
+
+### CRITICAL: Items Use Equals (`=`)
+
+**ITEMS use equals:**
+```
+item Example {
+    Weight = 1.0,
+    Type = Normal,
+    DisplayName = Example Item,
+}
+```
+
+**RECIPES use colons (never mix these up!):**
+```
+recipe Example {
+    Result:OutputItem,
+    Time:100.0,
+}
+```
+
+## Essential Properties
+
+### DisplayName
+**Purpose:** The name shown to players
+
+**Syntax:**
+```
+DisplayName = Item Name,
+```
+
+**Example:**
+```
+DisplayName = 9mm Bullets Mold,
+DisplayName = Gunpowder,
+```
+
+### Weight
+**Purpose:** Item weight (affects encumbrance)
+
+**Unit:** Abstract weight units (1.0 = heavy, 0.1 = light)
+
+**Syntax:**
+```
+Weight = 0.5,
+Weight = 1.0,
+Weight = 0.01,
+```
+
+**Examples:**
+- Bullets: `0.01` - `0.05`
+- Tools: `0.5` - `2.0`
+- Heavy items: `5.0` - `20.0`
+
+### Type
+**Purpose:** Determines fundamental item behavior
+
+**Syntax:**
+```
+Type = ItemType,
+```
+
+**Available Types:**
+- `Normal` - Standard item
+- `Drainable` - Container with uses (gas, water, gunpowder)
+- `Food` - Edible items
+- `Weapon` - Melee/ranged weapons
+- `Container` - Bags, boxes
+- `Key` - Keys and keycards
+- `Clothing` - Wearable items
+- `Literature` - Books, magazines
+
+**Example:**
+```
+Type = Normal,      // Standard item
+Type = Drainable,   // Like gunpowder jar
+```
+
+### Icon
+**Purpose:** Texture file for inventory display
+
+**Syntax:**
+```
+Icon = TextureFileName,
+```
+
+**Examples:**
+```
+Icon = BulletMold,
+Icon = GunpowderJar,
+Icon = 40calAmmoBox,
+```
+
+**Note:** Icon files must exist in `media/textures/` directory.
+
+### DisplayCategory
+**Purpose:** Category for UI organization
+
+**Syntax:**
+```
+DisplayCategory = CategoryName,
+```
+
+**Common Categories:**
+- `Ammo` - Ammunition
+- `Material` - Crafting materials
+- `Weapon` - Weapons
+- `Tool` - Tools
+- `Container` - Containers
+- `Food` - Edible items
+- `FirstAid` - Medical supplies
+
+## Common Item Types
+
+### Normal Item (Standard)
+```
+item StandardItem {
+    DisplayCategory = Material,
+    Weight = 0.5,
+    Type = Normal,
+    DisplayName = Standard Item,
+    Icon = ItemIcon,
+    WorldStaticModel = Item_Ground,
+}
+```
+
+### Drainable Item (Uses/Charges)
+```
+item GunPowder {
+    DisplayCategory = Material,
+    Weight = 0.1,
+    Type = Drainable,
+    UseDelta = 0.1,              // 10% per use
+    UseWhileEquipped = FALSE,
+    DisplayName = Gunpowder,
+    Icon = GunpowderJar,
+    WeightEmpty = 0.01,          // Weight when empty
+    WorldStaticModel = GunpowderJar,
+}
+```
+
+**Drainable Properties:**
+- `UseDelta` - Amount consumed per use (0.1 = 10%)
+- `WeightEmpty` - Weight when fully drained
+- `UseWhileEquipped` - Can use while in hands
+
+### Stackable Item (Ammunition/Materials)
+```
+item Bullets9mm {
+    DisplayCategory = Ammo,
+    Count = 5,                   // Stack size
+    Weight = 0.01,
+    Type = Normal,
+    DisplayName = 9mm Rounds,
+    Icon = 40calAmmoBox,
+    MetalValue = 1,              // For smelting
+    WorldStaticModel = 9mmRounds,
+}
+```
+
+**Stackable Properties:**
+- `Count` - Items per stack
+- `MetalValue` - Metal content (for recycling)
+
+### Tool Item
+```
+item Hammer {
+    DisplayCategory = Tool,
+    Weight = 1.0,
+    Type = Normal,
+    DisplayName = Hammer,
+    Icon = Hammer,
+    Tags = Hammer,               // For recipe matching
+    WorldStaticModel = Hammer,
+}
+```
+
+**Tool Properties:**
+- `Tags` - Used for `[Recipe.GetItemTypes.TagName]` matching
+
+## Optional Properties
+
+### WorldStaticModel
+**Purpose:** 3D model when dropped on ground
+
+**Syntax:**
+```
+WorldStaticModel = ModelName,
+```
+
+**Example:**
+```
+WorldStaticModel = ShotGunShellsMold_Ground,
+```
+
+### MetalValue
+**Purpose:** Metal content for smelting/recycling
+
+**Syntax:**
+```
+MetalValue = 15,
+```
+
+**Example:**
+```
+item 9mmBulletsMold {
+    MetalValue = 15,    // Can be smelted for 15 metal
+}
+```
+
+### Tags
+**Purpose:** Categorization for recipe matching
+
+**Syntax:**
+```
+Tags = Tag1;Tag2;Tag3,
+```
+
+**Example:**
+```
+item Hammer {
+    Tags = Hammer;BluntWeapon,
+}
+```
+
+**Usage in Recipes:**
+```
+recipe Example {
+    keep [Recipe.GetItemTypes.Hammer],  // Matches Tags
+}
+```
+
+### Tooltip
+**Purpose:** Hover tooltip text key
+
+**Syntax:**
+```
+Tooltip = Tooltip_ItemName,
+```
+
+### StaticModel
+**Purpose:** Model when equipped or placed
+
+**Syntax:**
+```
+StaticModel = ModelName,
+```
+
+## Complete Real-World Examples
+
+### Vanilla: 9mm Bullet Mold
+```
+item 9mmBulletsMold {
+    DisplayCategory = Ammo,
+    Weight = 0.5,
+    Type = Normal,
+    DisplayName = 9mm Bullets Mold,
+    Icon = BulletMold,
+    MetalValue = 15,
+    WorldStaticModel = ShotGunShellsMold_Ground,
+}
+```
+
+### Vanilla: GunPowder (Drainable)
+```
+item GunPowder {
+    DisplayCategory = Material,
+    Weight = 0.1,
+    Type = Drainable,
+    UseDelta = 0.1,
+    UseWhileEquipped = FALSE,
+    DisplayName = Gunpowder,
+    Icon = GunpowderJar,
+    WeightEmpty = 0.01,
+    WorldStaticModel = GunpowderJar,
+}
+```
+
+### Vanilla: 9mm Ammunition
+```
+item Bullets9mm {
+    DisplayCategory = Ammo,
+    Count = 5,
+    Weight = 0.01,
+    Type = Normal,
+    DisplayName = 9mm Rounds,
+    Icon = 40calAmmoBox,
+    MetalValue = 1,
+    WorldStaticModel = 9mmRounds,
+}
+```
+
+### Workshop Mod: Metal Parts
+```
+item MetalParts {
+    DisplayCategory = Material,
+    Weight = 0.03,
+    Type = Normal,
+    DisplayName = Metal Parts,
+    Icon = MetalParts,
+    WorldStaticModel = MetalParts,
+}
+```
+
+## Creating a Custom Item - Step by Step
+
+### Step 1: Create Script File
+Create `media/scripts/items.txt` in your mod folder.
+
+### Step 2: Define Module
+```
+module OutcastAdvCrft {
+    imports {
+        Base
+    }
+```
+
+### Step 3: Define Item
+```
+    item CustomGunpowder {
+        DisplayCategory = Material,
+        Weight = 0.1,
+        Type = Drainable,
+        UseDelta = 0.1,
+        UseWhileEquipped = FALSE,
+        DisplayName = Custom Gunpowder,
+        Icon = GunpowderJar,
+        WeightEmpty = 0.01,
+        WorldStaticModel = GunpowderJar,
+    }
+}
+```
+
+### Step 4: Close Module
+```
+}
+```
+
+### Step 5: Create Texture (Optional)
+If using custom icon:
+1. Create PNG file: `media/textures/CustomIcon.png`
+2. Reference in item: `Icon = CustomIcon,`
+
+## Using Your Item in Recipes
+
+Once defined, reference with module prefix:
+
+```
+module OutcastAdvCrft {
+    imports {
+        Base
+    }
+
+    recipe Use Custom Item {
+        OutcastAdvCrft.CustomGunpowder=10,  // Your custom item
+        Base.ScrapMetal,                     // Vanilla item
+
+        Result:Base.Bullets9mm=10,
+        Time:100.0,
+    }
+}
+```
+
+## Common Errors
+
+### Error: Using Colons Instead of Equals
+```
+item Example {
+    Weight: 1.0,        // ERROR - Use = not :
+    Type: Normal,       // ERROR
+}
+```
+
+**Fix:**
+```
+item Example {
+    Weight = 1.0,       // CORRECT
+    Type = Normal,      // CORRECT
+}
+```
+
+### Error: Missing Required Properties
+```
+item Example {
+    DisplayName = Example,
+    // ERROR - Missing Weight and Type
+}
+```
+
+**Fix:**
+```
+item Example {
+    DisplayName = Example,
+    Weight = 1.0,       // REQUIRED
+    Type = Normal,      // REQUIRED
+    Icon = ExampleIcon, // RECOMMENDED
+}
+```
+
+### Error: Wrong Module Reference
+```
+recipe Example {
+    WrongModule.ItemName,   // ERROR - Module doesn't exist
+}
+```
+
+**Fix:**
+```
+recipe Example {
+    OutcastAdvCrft.ItemName,  // CORRECT - Your module
+    Base.ItemName,             // CORRECT - Vanilla
+}
+```
+
+## Testing Checklist
+
+When creating items:
+- [ ] Module name matches your mod ID
+- [ ] Weight is reasonable (not 0, not 100)
+- [ ] Type is appropriate for item behavior
+- [ ] Icon file exists (or uses vanilla icon)
+- [ ] DisplayName is clear and descriptive
+- [ ] Item can be spawned in debug mode
+- [ ] Item appears in correct UI category
+- [ ] Recipes using the item work correctly
+
+## Source Files
+- **Vanilla Items:** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\items.txt`
+- **Vanilla Items (New):** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\newitems.txt`
+- **Workshop Mod Items:** Workshop ID 2680473910
+- **Research Date:**  

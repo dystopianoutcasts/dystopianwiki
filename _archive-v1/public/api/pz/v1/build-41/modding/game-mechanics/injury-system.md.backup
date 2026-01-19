@@ -1,0 +1,384 @@
+# Project Zomboid Injury System Reference
+
+Documentation for modding injuries, wounds, and health in Project Zomboid.
+
+---
+
+## Table of Contents
+1. [Health System Overview](#health-system-overview)
+2. [Body Parts](#body-parts)
+3. [Injury Types](#injury-types)
+4. [Applying Injuries](#applying-injuries)
+5. [Checking Injuries](#checking-injuries)
+6. [Healing & Treatment](#healing--treatment)
+7. [Code Examples](#code-examples)
+8. [CommonSense Fix Analysis](#commonsense-fix-analysis)
+
+---
+
+## Health System Overview
+
+### General Health
+- Player has a general health pool (0-100)
+- `ReduceGeneralHealth(amount)` - **DANGEROUS** - directly reduces HP
+- General health regenerates over time if injuries are treated
+
+### Body Damage
+Access via: `player:getBodyDamage()`
+
+Key methods:
+```lua
+local bodyDamage = player:getBodyDamage()
+bodyDamage:ReduceGeneralHealth(amount)  -- Direct HP damage (use sparingly!)
+bodyDamage:getOverallBodyHealth()       -- Get current health
+bodyDamage:getBodyPart(BodyPartType.X)  -- Get specific body part
+bodyDamage:getBodyParts()               -- Get all body parts (ArrayList)
+```
+
+---
+
+## Body Parts
+
+### Body Part Types (BodyPartType enum)
+```lua
+BodyPartType.Hand_L         -- Left Hand
+BodyPartType.Hand_R         -- Right Hand
+BodyPartType.ForeArm_L      -- Left Forearm
+BodyPartType.ForeArm_R      -- Right Forearm
+BodyPartType.UpperArm_L     -- Left Upper Arm
+BodyPartType.UpperArm_R     -- Right Upper Arm
+BodyPartType.Torso_Lower    -- Lower Torso
+BodyPartType.Torso_Upper    -- Upper Torso
+BodyPartType.Head           -- Head
+BodyPartType.Neck           -- Neck
+BodyPartType.Groin          -- Groin
+BodyPartType.UpperLeg_L     -- Left Thigh
+BodyPartType.UpperLeg_R     -- Right Thigh
+BodyPartType.LowerLeg_L     -- Left Shin
+BodyPartType.LowerLeg_R     -- Right Shin
+BodyPartType.Foot_L         -- Left Foot
+BodyPartType.Foot_R         -- Right Foot
+BodyPartType.Back           -- Back
+```
+
+### Accessing Body Parts
+```lua
+-- Direct access
+local hand = player:getBodyDamage():getBodyPart(BodyPartType.Hand_L)
+
+-- Iterate all body parts
+local bodyParts = player:getBodyDamage():getBodyParts()
+for i = 0, BodyPartType.ToIndex(BodyPartType.MAX) - 1 do
+    local bodyPart = bodyParts:get(i)
+    local partType = bodyPart:getType()
+end
+```
+
+---
+
+## Injury Types
+
+### Severity Scale (Lightest to Most Severe)
+
+| Injury | Bleeds? | HP Drain | Treatment | Notes |
+|--------|---------|----------|-----------|-------|
+| Scratch | Minimal | None | Bandage optional | Heals on its own |
+| Cut | Light | None | Bandage recommended | Heals with time |
+| Deep Wound | Heavy | Indirect | Requires stitches + bandage | Can be fatal if untreated |
+| Bite | Heavy | None* | Bandage | *Zombie = infection = death |
+| Fracture | No | None | Splint | Affects movement |
+| Burn | Variable | None | Bandage | Depends on severity |
+| Bullet Wound | Heavy | None | Surgery + bandage | Bullet must be removed |
+| Glass Wound | Heavy | None | Surgery + bandage | Glass must be removed |
+
+### Important Distinction
+- **Scratches/Cuts/Wounds** = Physical injuries, treatable
+- **Infection (zombie)** = Death sentence (unless disabled in sandbox)
+- **Wound Infection** = Treatable bacterial infection from dirty bandages
+
+---
+
+## Applying Injuries
+
+### Scratches (Lightest)
+```lua
+local hand = player:getBodyDamage():getBodyPart(BodyPartType.Hand_L)
+
+-- Standard scratch
+hand:setScratched(true, false)  -- (scratched, fromInfection)
+
+-- Tool/weapon scratch (farming, opening cans, etc.)
+hand:SetScratchedWeapon(true)
+
+-- Set scratch healing time (0 = fresh)
+hand:setScratchTime(0)
+```
+
+### Cuts
+```lua
+local hand = player:getBodyDamage():getBodyPart(BodyPartType.Hand_L)
+
+hand:setCut(true)
+hand:setCutTime(0)  -- 0 = fresh cut
+```
+
+### Bleeding
+```lua
+-- Set bleeding duration (higher = longer bleed)
+hand:setBleedingTime(0.2)   -- Tiny bleed (scratch)
+hand:setBleedingTime(5)     -- Light bleed (cut)
+hand:setBleedingTime(10)    -- Moderate bleed
+hand:setBleedingTime(20)    -- Heavy bleed (deep wound)
+```
+
+### Deep Wounds
+```lua
+-- Auto-generate (sets bleeding automatically)
+hand:generateDeepWound()
+
+-- OR manual
+hand:setDeepWounded(true)
+hand:setDeepWoundTime(50)
+hand:setBleedingTime(20)
+```
+
+### Glass/Shard Wounds
+```lua
+hand:generateDeepShardWound()  -- Deep wound + embedded glass
+```
+
+### Burns
+```lua
+hand:setBurnTime(50)  -- Higher = more severe
+```
+
+### Fractures
+```lua
+hand:setFractureTime(21)  -- Days to heal (in-game time)
+```
+
+### Bullet Wounds
+```lua
+hand:setHaveBullet(true, 0)  -- (hasBullet, bulletDepth)
+```
+
+### Bites (Zombie)
+```lua
+hand:SetBitten(true)
+hand:SetInfected(true)  -- This kills the player (unless sandbox disabled)
+```
+
+---
+
+## Checking Injuries
+
+### Boolean Checks
+```lua
+local hand = player:getBodyDamage():getBodyPart(BodyPartType.Hand_L)
+
+hand:scratched()        -- Is scratched?
+hand:isCut()            -- Is cut?
+hand:bleeding()         -- Is bleeding?
+hand:isDeepWounded()    -- Has deep wound?
+hand:deepWounded()      -- Alternative deep wound check
+hand:bitten()           -- Was bitten?
+hand:isInfectedWound()  -- Has wound infection?
+hand:isBurnt()          -- Is burned?
+hand:haveBullet()       -- Has bullet lodged?
+hand:haveGlass()        -- Has glass lodged?
+hand:bandaged()         -- Is bandaged?
+hand:stitched()         -- Is stitched?
+hand:HasInjury()        -- Has ANY injury?
+```
+
+### Duration/Severity Checks
+```lua
+hand:getScratchTime()     -- Scratch duration remaining
+hand:getBleedingTime()    -- Bleeding duration remaining
+hand:getDeepWoundTime()   -- Deep wound duration remaining
+hand:getBurnTime()        -- Burn duration remaining
+hand:getFractureTime()    -- Fracture duration remaining
+```
+
+---
+
+## Healing & Treatment
+
+### Remove Injuries
+```lua
+-- Remove scratch
+hand:setScratched(false, true)
+hand:setScratchTime(0)
+
+-- Remove cut
+hand:setCut(false)
+hand:setCutTime(0)
+
+-- Remove deep wound
+hand:setDeepWounded(false)
+hand:setDeepWoundTime(0)
+hand:setBleedingTime(0)
+
+-- Full heal (removes everything)
+hand:RestoreToFullHealth()
+```
+
+### Bandaging (done via items, but for reference)
+```lua
+hand:bandaged()  -- Check if bandaged
+```
+
+---
+
+## Code Examples
+
+### Example 1: Random Hand Scratch (Farming Style)
+```lua
+-- Used when player does manual labor without protection
+local function scratchRandomHand(player)
+    local bodyDamage = player:getBodyDamage()
+    local hand
+
+    if ZombRand(2) == 0 then
+        hand = bodyDamage:getBodyPart(BodyPartType.Hand_L)
+    else
+        hand = bodyDamage:getBodyPart(BodyPartType.Hand_R)
+    end
+
+    hand:SetScratchedWeapon(true)
+    hand:setBleedingTime(0.2)  -- Tiny bleed
+end
+```
+
+### Example 2: Check All Injuries on Hands
+```lua
+local function handsAreInjured(player)
+    local bd = player:getBodyDamage()
+    local leftHand = bd:getBodyPart(BodyPartType.Hand_L)
+    local rightHand = bd:getBodyPart(BodyPartType.Hand_R)
+
+    return leftHand:HasInjury() or rightHand:HasInjury()
+end
+```
+
+### Example 3: Apply Moderate Cut with Bleeding
+```lua
+local function applyCut(player, bodyPartType)
+    local bodyPart = player:getBodyDamage():getBodyPart(bodyPartType)
+    bodyPart:setCut(true)
+    bodyPart:setCutTime(0)
+    bodyPart:setBleedingTime(5)
+end
+```
+
+### Example 4: Full Injury Status Report
+```lua
+local function getInjuryReport(bodyPart)
+    local report = {}
+
+    if bodyPart:scratched() then table.insert(report, "Scratched") end
+    if bodyPart:isCut() then table.insert(report, "Cut") end
+    if bodyPart:bleeding() then table.insert(report, "Bleeding ("..bodyPart:getBleedingTime()..")") end
+    if bodyPart:isDeepWounded() then table.insert(report, "Deep Wound") end
+    if bodyPart:bitten() then table.insert(report, "Bitten") end
+    if bodyPart:isBurnt() then table.insert(report, "Burned") end
+    if bodyPart:haveBullet() then table.insert(report, "Bullet Lodged") end
+    if bodyPart:haveGlass() then table.insert(report, "Glass Lodged") end
+    if bodyPart:bandaged() then table.insert(report, "[Bandaged]") end
+    if bodyPart:stitched() then table.insert(report, "[Stitched]") end
+
+    return table.concat(report, ", ")
+end
+```
+
+---
+
+## CommonSense Fix Analysis
+
+### What CommonSense Did Wrong
+
+**Original Code (BB_CS_OnCraft.lua:79):**
+```lua
+bodyDamage:ReduceGeneralHealth(8 * SandboxVars.CommonSense.CanWoundIntensity)
+```
+
+**Problems:**
+1. `ReduceGeneralHealth()` directly damages HP pool - this is NOT how injuries work
+2. Base damage of 8 is massive (for comparison, zombie scratches don't do direct HP damage)
+3. With default intensity of 1.0, that's 8% HP per can
+4. With intensity cranked up, could easily do 40-60% HP
+5. Combined with bleeding, this was killing players
+
+### What We Fixed (OutcastQoL)
+
+**Our Code:**
+```lua
+-- Apply a light scratch to a random hand (50/50 left or right)
+local hand
+if ZombRand(2) == 0 then
+    hand = bodyDamage:getBodyPart(BodyPartType.Hand_L)
+else
+    hand = bodyDamage:getBodyPart(BodyPartType.Hand_R)
+end
+
+hand:SetScratchedWeapon(true)
+hand:setBleedingTime(0.2)  -- Tiny bleed, bandage optional
+```
+
+**Why This Is Correct:**
+1. No direct HP damage - injuries affect body parts, not HP directly
+2. `SetScratchedWeapon(true)` is the same method vanilla uses for farming without gloves
+3. Tiny bleeding (0.2) means minor inconvenience, not life-threatening
+4. Random hand adds variety
+5. Can still opens (the whole point!)
+
+### Injury Severity Comparison
+
+| Source | Method | Effect |
+|--------|--------|--------|
+| CommonSense Original | `ReduceGeneralHealth(8)` | 8% direct HP loss |
+| Zombie Scratch | `setScratched(true, true)` | No HP loss, possible infection |
+| Farming (no gloves) | `SetScratchedWeapon(true)` | No HP loss, minor scratch |
+| Our Fix | `SetScratchedWeapon(true)` + `setBleedingTime(0.2)` | No HP loss, tiny bleed |
+
+---
+
+## Quick Reference Card
+
+### Apply Light Injury (Recommended)
+```lua
+bodyPart:SetScratchedWeapon(true)
+bodyPart:setBleedingTime(0.2)
+```
+
+### Apply Moderate Injury
+```lua
+bodyPart:setCut(true)
+bodyPart:setBleedingTime(5)
+```
+
+### Apply Severe Injury
+```lua
+bodyPart:generateDeepWound()
+```
+
+### AVOID (Unless Intentional)
+```lua
+bodyDamage:ReduceGeneralHealth(X)  -- Direct HP damage, very harsh!
+```
+
+---
+
+*Document created for Dystopian Outcasts server modding reference.*
+*Based on Project Zomboid Build 41.78+ Lua API.*
+
+---
+
+## Metadata
+
+- **Version**: build-41
+- **Section**: modding
+- **Category**: game-mechanics
+- **Tags**: lua, item, weapon, modding, api, injury, system, reference
+- **Difficulty**: intermediate
+- **Last Updated**: 2026-01-09

@@ -1,0 +1,388 @@
+---
+id: media-folder
+slug: media-folder
+title: The Media Folder
+excerpt: The `media` folder is the heart of Project Zomboid modding. Both vanilla PZ and your mods use the same folder structure, which means your mod files can seamlessly extend or override game content....
+game: pz
+version: build-41
+section: modding
+category: fundamentals
+subcategory: null
+difficulty: beginner
+tags:
+  - beginner
+  - media
+  - folder
+  - structure
+  - organization
+  - files
+  - scripts
+  - lua
+  - textures
+last_updated: 2026-01-09
+---
+# The Media Folder
+
+## Overview
+
+The `media` folder is the heart of Project Zomboid modding. Both vanilla PZ and your mods use the same folder structure, which means your mod files can seamlessly extend or override game content.
+
+## Where Is the Media Folder?
+
+### Vanilla PZ Location
+```
+ProjectZomboid/media/
+├── scripts/     <- Item and recipe definitions
+├── lua/         <- Game logic
+├── textures/    <- Item icons and images
+├── ui/          <- UI textures
+├── sound/       <- Audio files
+├── models/      <- 3D models
+└── ...more folders
+```
+
+### Your Mod Location
+```
+YourMod/Contents/mods/YourModName/media/
+├── scripts/
+├── lua/
+├── textures/
+└── ui/
+```
+
+Your mod mirrors vanilla's structure. The game loads your files and merges them with (or overrides) vanilla content.
+
+## The Organizational Pattern
+
+PZ uses **type-based organization** - folders are grouped by what the files *do*, not what feature they support:
+
+| Folder | Contains | File Types |
+|--------|----------|------------|
+| `scripts/` | Data definitions | `.txt` |
+| `lua/` | Game logic | `.lua` |
+| `textures/` | Item/world images | `.png` |
+| `ui/` | UI images | `.png` |
+| `sound/` | Audio | `.ogg`, `.wav` |
+| `models/` | 3D models | Various |
+
+## The Scripts Folder
+
+### Location
+```
+media/scripts/
+```
+
+### What It Contains
+
+Human-readable `.txt` files that define game content:
+
+```
+media/scripts/
+├── items.txt           <- Main item definitions
+├── items_weapons.txt   <- Weapon items
+├── items_food.txt      <- Food items
+├── items_literature.txt <- Books and magazines
+├── newitems.txt        <- Additional items
+├── recipes.txt         <- Main crafting recipes
+├── uniquerecipes.txt   <- Special recipes
+├── recipes_radio.txt   <- Radio-related recipes
+├── evolvedrecipes.txt  <- Cooking/combination recipes
+├── sounds_ui.txt       <- UI sound definitions
+├── sounds_world.txt    <- World sound definitions
+├── farming.txt         <- Crop definitions
+├── moveables.txt       <- Furniture placement
+└── ...more definition files
+```
+
+### Vanilla File Statistics
+
+| File | Contents |
+|------|----------|
+| `recipes.txt` | ~315 recipes |
+| `items.txt` | Hundreds of items |
+| `items_weapons.txt` | All weapon definitions |
+| `evolvedrecipes.txt` | 38 cooking recipes |
+| `uniquerecipes.txt` | 2 special recipes |
+
+### Naming Conventions
+
+Vanilla uses consistent patterns:
+- `items_[category].txt` - Items grouped by type
+- `recipes_[system].txt` - Recipes for specific systems
+- `sounds_[context].txt` - Sounds grouped by usage
+
+**Your mods should follow similar patterns:**
+```
+media/scripts/
+├── items_mymod.txt
+├── recipes_mymod.txt
+└── sounds_mymod.txt
+```
+
+## The Lua Folder
+
+### Location
+```
+media/lua/
+```
+
+### Structure
+
+Lua is split by execution context:
+
+```
+media/lua/
+├── client/              <- Runs on player's machine only
+│   ├── ISUI/            <- UI panels and windows
+│   ├── OptionScreens/   <- Settings menus
+│   ├── TimedActions/    <- Crafting/action animations
+│   └── ...more client code
+│
+├── server/              <- Runs with world authority
+│   ├── recipecode.lua   <- Recipe callbacks
+│   └── ...more server code
+│
+└── shared/              <- Runs on both
+    ├── NPCs/
+    └── ...shared code
+```
+
+### Important Vanilla Files
+
+| File | Purpose |
+|------|----------|
+| `lua/server/recipecode.lua` | Recipe callback implementations |
+| `lua/client/ISUI/ISPanel.lua` | Base UI panel class |
+| `lua/client/ISUI/ISBaseTimedAction.lua` | Timed action base |
+
+### Key Patterns
+
+**Class inheritance using `:derive()`**
+```lua
+ISMyPanel = ISPanel:derive("ISMyPanel")
+ISMyAction = ISBaseTimedAction:derive("ISMyAction")
+```
+
+**Event registration**
+```lua
+Events.OnGameStart.Add(function()
+    -- Code runs when game starts
+end)
+
+Events.OnFillWorldObjectContextMenu.Add(function(player, context, worldobjects)
+    -- Add right-click menu options
+end)
+```
+
+## The Textures Folder
+
+### Location
+```
+media/textures/
+```
+
+### What It Contains
+
+PNG images for items and world objects. When you define an item:
+
+```
+item MyItem {
+    Icon = MyItemIcon,
+}
+```
+
+The game looks for `media/textures/MyItemIcon.png`.
+
+### Common Subfolders
+
+```
+media/textures/
+├── Item_*.png       <- Item icons
+├── clothing/        <- Clothing textures
+├── Tiles/           <- World tiles
+└── ...more folders
+```
+
+## The UI Folder
+
+### Location
+```
+media/ui/
+```
+
+### What It Contains
+
+UI-specific images like:
+- Button backgrounds
+- Panel borders
+- Icons for menus
+- Cursor images
+
+**Important:** UI *logic* is in `lua/client/ISUI/`, not in the `ui/` folder. The `ui/` folder is just images.
+
+## Creating Your Mod's Media Folder
+
+### Minimum Required Structure
+
+For a simple item + recipe mod:
+
+```
+YourMod/
+├── mod.info
+└── Contents/
+    └── mods/
+        └── YourModName/
+            └── media/
+                └── scripts/
+                    ├── items_yourmod.txt
+                    └── recipes_yourmod.txt
+```
+
+### With Custom Icons
+
+```
+YourMod/
+├── mod.info
+└── Contents/
+    └── mods/
+        └── YourModName/
+            └── media/
+                ├── scripts/
+                │   ├── items_yourmod.txt
+                │   └── recipes_yourmod.txt
+                └── textures/
+                    └── MyItemIcon.png
+```
+
+### With Custom Behavior
+
+```
+YourMod/
+├── mod.info
+└── Contents/
+    └── mods/
+        └── YourModName/
+            └── media/
+                ├── scripts/
+                │   ├── items_yourmod.txt
+                │   └── recipes_yourmod.txt
+                ├── textures/
+                │   └── MyItemIcon.png
+                └── lua/
+                    ├── server/
+                    │   └── yourmod_recipes.lua
+                    └── client/
+                        └── yourmod_ui.lua
+```
+
+## How the Game Loads Files
+
+### Load Order
+
+1. Vanilla `media/` loads first
+2. Each enabled mod's `media/` loads in order
+3. Later files can override earlier ones
+
+### Merging vs Overriding
+
+**Items and recipes MERGE** - your new definitions add to existing ones:
+```
+// Vanilla has: item Hammer { ... }
+// Your mod adds: item MyHammer { ... }
+// Result: Both exist in game
+```
+
+**Lua can OVERRIDE** - if you redefine a function, yours replaces vanilla:
+```lua
+-- Vanilla: function Recipe.OnGiveXP.SawLogs(...)
+-- Your mod: function Recipe.OnGiveXP.SawLogs(...)
+-- Result: Your function runs instead
+```
+
+## Important Subfolders for Beginners
+
+### Priority 1: scripts/
+
+Start here. You can create complete mods with just scripts:
+- New items
+- New recipes
+- Sound definitions
+- Balance changes
+
+### Priority 2: textures/
+
+Add icons for your items. Without custom textures, items use placeholder icons.
+
+### Priority 3: lua/client/
+
+Add UI modifications, context menus, or client-side behaviors.
+
+### Priority 4: lua/server/
+
+Add recipe callbacks, world-changing logic, or custom systems.
+
+## File Naming Best Practices
+
+### Do
+
+- Use descriptive names: `items_weapons_firearms.txt`
+- Include your mod name: `items_mymod.txt`
+- Use lowercase with underscores: `my_item_icon.png`
+
+### Don't
+
+- Don't overwrite vanilla files directly
+- Don't use spaces in filenames
+- Don't use special characters
+
+## Common Beginner Mistakes
+
+### 1. Wrong Folder Depth
+
+**Wrong:**
+```
+YourMod/media/scripts/items.txt
+```
+
+**Correct:**
+```
+YourMod/Contents/mods/YourModName/media/scripts/items.txt
+```
+
+### 2. UI Logic vs UI Images
+
+**Confusion:** "Where does my UI code go?"
+
+- UI *code* (Lua) → `lua/client/ISUI/`
+- UI *images* (PNG) → `ui/`
+
+### 3. Missing mod.info
+
+The `mod.info` file is required. Without it, the game won't recognize your mod.
+
+```
+name=Your Mod Name
+id=YourModID
+description=What your mod does
+```
+
+## Quick Reference: What Goes Where
+
+| I want to... | Folder | File Type |
+|--------------|--------|----------|
+| Add a new item | `scripts/` | `.txt` |
+| Add a new recipe | `scripts/` | `.txt` |
+| Add item icons | `textures/` | `.png` |
+| Add recipe callbacks | `lua/server/` | `.lua` |
+| Add context menus | `lua/client/` | `.lua` |
+| Add UI panels | `lua/client/ISUI/` | `.lua` |
+| Add sounds | `scripts/` + `sound/` | `.txt` + audio |
+
+## Key Takeaways
+
+1. **Mirror vanilla structure** - your mod's `media/` matches PZ's `media/`
+2. **Scripts define content** - items, recipes, sounds, balance
+3. **Lua defines behavior** - callbacks, UI, events
+4. **Textures provide visuals** - icons and images
+5. **Client vs server Lua matters** - especially in multiplayer
+6. **Start with scripts/** - no programming required 

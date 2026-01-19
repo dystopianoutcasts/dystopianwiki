@@ -1,0 +1,54 @@
+# Vanilla Items Reference (items_radio.txt)
+
+Complete reference for all **23 items** defined in `items_radio.txt`.
+
+## Items by Type
+
+### Literature (3 items)
+
+| Item | Weight | Description |
+|------|--------|-------------|
+| Guerilla Radio Vol. 1 | 0.1 | `Radio.RadioMag1` |
+| Guerilla Radio Vol. 2 | 0.1 | `Radio.RadioMag2` |
+| Guerilla Radio Vol. 3 | 0.1 | `Radio.RadioMag3` |
+
+### Normal (4 items)
+
+| Item | Weight | Description |
+|------|--------|-------------|
+| Electric Wire | 0.1 | `Radio.ElectricWire` |
+| Radio Receiver | 0.1 | `Radio.RadioReceiver` |
+| Radio Transmitter | 0.1 | `Radio.RadioTransmitter` |
+| Scanner Module | 0.1 | `Radio.ScannerModule` |
+
+### Radio (16 items)
+
+| Item | Weight | Description |
+|------|--------|-------------|
+| Antique Television | 10.0 | `Radio.TvAntique` |
+| Makeshift Ham Radio | 20.0 | `Radio.HamRadioMakeShift` |
+| Makeshift Radio | 1.5 | `Radio.RadioMakeShift` |
+| Makeshift Walkie Talkie | 1.0 | `Radio.WalkieTalkieMakeShift` |
+| Premium Tech. Walkie Talkie | 1.0 | `Radio.WalkieTalkie3` |
+| Premium Technologies Ham Radio | 20.0 | `Radio.HamRadio1` |
+| Premium Technologies Radio | 1.5 | `Radio.RadioRed` |
+| Premium Technologies Televi... | 10.0 | `Radio.TvWideScreen` |
+| Tactical Walkie Talkie | 1.25 | `Radio.WalkieTalkie4` |
+| Toys-R-Mine Walkie Talkie | 1.0 | `Radio.WalkieTalkie1` |
+| US ARMY COMM. Ham Radio | 20.0 | `Radio.HamRadio2` |
+| US Army Walkie Talkie | 1.5 | `Radio.WalkieTalkie5` |
+| ValuTech PortaDisc | 0.3 | `Radio.CDplayer` |
+| ValuTech Radio | 1.5 | `Radio.RadioBlack` |
+| ValuTech Television | 10.0 | `Radio.TvBlack` |
+| ValuTech Walkie Talkie | 1.0 | `Radio.WalkieTalkie2` |
+
+---
+
+## Metadata
+
+- **Version**: build-41
+- **Section**: modding
+- **Category**: vanilla-reference
+- **Tags**: reference, vanilla, items
+- **Difficulty**: beginner
+- **Last Updated**: 2026-01-18

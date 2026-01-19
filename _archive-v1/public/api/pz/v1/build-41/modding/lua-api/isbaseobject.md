@@ -1,0 +1,412 @@
+---
+id: isbaseobject
+slug: isbaseobject
+title: ISBaseObject Inheritance System
+excerpt: ISBaseObject is Project Zomboid's base class for object-oriented programming in Lua. It provides a simple inheritance pattern used throughout the game's UI, timed actions, and other systems....
+game: pz
+version: build-41
+section: modding
+category: lua-api
+subcategory: null
+difficulty: intermediate
+tags:
+  - intermediate
+  - lua
+  - oop
+  - inheritance
+  - classes
+last_updated: 2026-01-10
+---
+# ISBaseObject Inheritance System
+
+## Overview
+
+ISBaseObject is Project Zomboid's base class for object-oriented programming in Lua. It provides a simple inheritance pattern used throughout the game's UI, timed actions, and other systems.
+
+## Location
+
+```
+media/lua/shared/ISBaseObject.lua
+```
+
+---
+
+## The Base Class
+
+```lua
+ISBaseObject = {};
+
+ISBaseObject.Type = "ISBaseObject";
+
+function ISBaseObject:initialise()
+    -- Override in derived classes
+end
+
+function ISBaseObject:derive(type)
+    local o = {}
+    setmetatable(o, self)
+    self.__index = self
+    o.Type = type;
+    return o
+end
+
+function ISBaseObject:new()
+    local o = {}
+    setmetatable(o, self)
+    self.__index = self
+    return o
+end
+```
+
+---
+
+## Key Methods
+
+### derive(type)
+
+Creates a new class that inherits from ISBaseObject:
+
+```lua
+-- type: string identifier for the class
+MyClass = ISBaseObject:derive("MyClass");
+```
+
+### new()
+
+Creates a new instance of a class:
+
+```lua
+function MyClass:new(param1, param2)
+    local o = {}
+    setmetatable(o, self)
+    self.__index = self
+    o.param1 = param1
+    o.param2 = param2
+    return o
+end
+```
+
+### initialise()
+
+Called to initialize the object. Override in derived classes:
+
+```lua
+function MyClass:initialise()
+    -- Setup code here
+end
+```
+
+---
+
+## Creating a Custom Class
+
+### Basic Pattern
+
+```lua
+require "ISBaseObject"
+
+-- 1. Derive from ISBaseObject
+MyCustomClass = ISBaseObject:derive("MyCustomClass");
+
+-- 2. Static properties (shared by all instances)
+MyCustomClass.DefaultValue = 100;
+MyCustomClass.IDMax = 1;
+
+-- 3. Override initialise
+function MyCustomClass:initialise()
+    self.id = MyCustomClass.IDMax;
+    MyCustomClass.IDMax = MyCustomClass.IDMax + 1;
+end
+
+-- 4. Define instance methods
+function MyCustomClass:doSomething()
+    print("Instance " .. self.id .. " doing something");
+end
+
+-- 5. Define the constructor
+function MyCustomClass:new(name, value)
+    local o = {}
+    setmetatable(o, self)
+    self.__index = self
+    o.name = name;
+    o.value = value or MyCustomClass.DefaultValue;
+    o:initialise();
+    return o
+end
+```
+
+### Usage
+
+```lua
+local obj1 = MyCustomClass:new("First", 50);
+local obj2 = MyCustomClass:new("Second");
+
+obj1:doSomething();  -- "Instance 1 doing something"
+obj2:doSomething();  -- "Instance 2 doing something"
+
+print(obj2.value);   -- 100 (default value)
+```
+
+---
+
+## Inheritance Chains
+
+You can derive from derived classes:
+
+```lua
+require "ISBaseObject"
+
+-- Base animal class
+Animal = ISBaseObject:derive("Animal");
+
+function Animal:new(name)
+    local o = {}
+    setmetatable(o, self)
+    self.__index = self
+    o.name = name;
+    return o
+end
+
+function Animal:speak()
+    print(self.name .. " makes a sound");
+end
+
+-- Dog derives from Animal
+Dog = Animal:derive("Dog");
+
+function Dog:new(name, breed)
+    local o = Animal.new(self, name);  -- Call parent constructor
+    o.breed = breed;
+    return o
+end
+
+function Dog:speak()
+    print(self.name .. " barks!");
+end
+
+function Dog:fetch()
+    print(self.name .. " fetches the ball");
+end
+```
+
+---
+
+## Core Derived Classes in PZ
+
+### ISUIElement
+
+Base class for all UI components:
+
+```lua
+ISUIElement = ISBaseObject:derive("ISUIElement");
+ISUIElement.IDMax = 1;
+```
+
+**Key hierarchy:**
+```
+ISBaseObject
+└── ISUIElement
+    ├── ISPanel
+    │   ├── ISCollapsableWindow
+    │   ├── ISInventoryPage
+    │   └── ISHealthPanel
+    ├── ISButton
+    ├── ISTextEntryBox
+    ├── ISScrollingListBox
+    └── ISRichTextPanel
+```
+
+### ISBaseTimedAction
+
+Base class for all timed actions:
+
+```lua
+ISBaseTimedAction = ISBaseObject:derive("ISBaseTimedAction");
+ISBaseTimedAction.IDMax = 1;
+```
+
+**Key hierarchy:**
+```
+ISBaseObject
+└── ISBaseTimedAction
+    ├── ISApplyBandage
+    ├── ISCraftAction
+    ├── ISEatFoodAction
+    ├── ISReadABook
+    └── (hundreds more...)
+```
+
+### ISBuildingObject
+
+Base class for buildable objects:
+
+```lua
+ISBuildingObject = ISBaseObject:derive("ISBuildingObject");
+```
+
+### ISReloadable
+
+Base class for reloadable weapons:
+
+```lua
+ISReloadable = ISBaseObject:derive("ISReloadable");
+```
+
+---
+
+## Best Practices
+
+### 1. Always require ISBaseObject
+
+```lua
+require "ISBaseObject"
+```
+
+### 2. Use meaningful Type strings
+
+```lua
+-- Good
+MyMod_CustomPanel = ISBaseObject:derive("MyMod_CustomPanel");
+
+-- Bad (could conflict)
+Panel = ISBaseObject:derive("Panel");
+```
+
+### 3. Call parent methods when overriding
+
+```lua
+function MyPanel:initialise()
+    ISPanel.initialise(self);  -- Call parent
+    -- Your initialization code
+end
+```
+
+### 4. Initialize in new(), not derive()
+
+```lua
+-- Correct: Initialize per-instance data in new()
+function MyClass:new()
+    local o = {}
+    setmetatable(o, self)
+    self.__index = self
+    o.instanceData = {};  -- Each instance gets its own table
+    return o
+end
+
+-- Wrong: This data is shared by all instances!
+MyClass = ISBaseObject:derive("MyClass");
+MyClass.instanceData = {};  -- Shared! Not per-instance!
+```
+
+### 5. Use self.__index properly
+
+```lua
+function MyClass:new()
+    local o = {}
+    setmetatable(o, self)
+    self.__index = self  -- Allows method lookup in parent
+    return o
+end
+```
+
+---
+
+## Common Patterns
+
+### Singleton Pattern
+
+```lua
+MyManager = ISBaseObject:derive("MyManager");
+MyManager.instance = nil;
+
+function MyManager:getInstance()
+    if not MyManager.instance then
+        MyManager.instance = MyManager:new();
+    end
+    return MyManager.instance;
+end
+
+function MyManager:new()
+    local o = {}
+    setmetatable(o, self)
+    self.__index = self
+    o.data = {};
+    return o
+end
+```
+
+### Factory Pattern
+
+```lua
+ItemFactory = ISBaseObject:derive("ItemFactory");
+
+function ItemFactory:create(itemType)
+    if itemType == "weapon" then
+        return WeaponItem:new();
+    elseif itemType == "food" then
+        return FoodItem:new();
+    end
+    return nil;
+end
+```
+
+### Observer Pattern
+
+```lua
+Observable = ISBaseObject:derive("Observable");
+
+function Observable:new()
+    local o = {}
+    setmetatable(o, self)
+    self.__index = self
+    o.observers = {};
+    return o
+end
+
+function Observable:addObserver(observer)
+    table.insert(self.observers, observer);
+end
+
+function Observable:notify(event)
+    for _, observer in ipairs(self.observers) do
+        observer:onEvent(event);
+    end
+end
+```
+
+---
+
+## Debugging Tips
+
+### Check class type
+
+```lua
+print(myObject.Type);  -- "MyCustomClass"
+```
+
+### Check inheritance
+
+```lua
+function instanceof(obj, className)
+    local mt = getmetatable(obj);
+    while mt do
+        if mt.Type == className then
+            return true;
+        end
+        mt = getmetatable(mt);
+    end
+    return false;
+end
+
+if instanceof(myDog, "Animal") then
+    print("It's an animal!");
+end
+```
+
+---
+
+## Related
+
+- [TimedAction Lifecycle](/build-41/modding/lua-api/timed-actions) - Action system using ISBaseObject
+- [Official Lua Examples](/build-41/modding/lua-api/official-examples) - Example code from the game
+- [Events Reference](/build-41/modding/reference/events) - Game events 

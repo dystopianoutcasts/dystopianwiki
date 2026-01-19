@@ -1,0 +1,375 @@
+# Understanding Weapon Properties
+
+This guide explains what each weapon property actually **does** in gameplay - not just what it's called, but how it affects combat, skills, and durability.
+
+## Categories and Skills
+
+The `Categories` property is the **most important** property for weapons because it determines which skill the weapon trains.
+
+### How Categories Work
+
+When you hit a zombie with a weapon, the game checks the weapon's categories and awards XP to the matching skill:
+
+```lua
+-- From XpUpdate.lua (vanilla code)
+if weapon:getScriptItem():getCategories():contains("Axe") then
+    owner:getXp():AddXP(Perks.Axe, exp);
+end
+if weapon:getScriptItem():getCategories():contains("Blunt") then
+    owner:getXp():AddXP(Perks.Blunt, exp);
+end
+```
+
+### Category to Skill Mapping
+
+| Category | Skill Trained | Typical Weapons |
+|----------|--------------|------------------|
+| `Axe` | Axe | Axes, hatchets |
+| `LongBlade` | Long Blade | Katana, machete |
+| `SmallBlade` | Short Blade | Knives, scissors |
+| `Blunt` | Long Blunt | Baseball bat, crowbar |
+| `SmallBlunt` | Short Blunt | Hammer, pipe |
+| `Spear` | Spear | Spears, javelins |
+
+### Multi-Category Weapons
+
+A weapon can have multiple categories:
+
+```
+Categories = Improvised;SmallBlunt,
+```
+
+This weapon:
+- Is tagged as `Improvised` (for identifying non-purpose-built weapons)
+- Trains the `Short Blunt` skill on hit
+
+**Note:** `Improvised` doesn't map to a skill - it's just a tag.
+
+### Special Actions
+
+Categories also determine what actions a weapon can perform:
+
+- **Axe** - Can chop trees, remove bushes faster
+- **SmallBlade/LongBlade/Axe** - Can be used in butchering recipes
+
+```lua
+-- From ISRemoveBush.lua
+if self.weapon:getScriptItem():getCategories():contains("Axe") then
+    -- Faster bush removal
+```
+
+---
+
+## Damage Properties
+
+### MinDamage and MaxDamage
+
+Every swing deals random damage between `MinDamage` and `MaxDamage`.
+
+```
+MinDamage = 0.8,
+MaxDamage = 1.2,
+```
+
+**What the numbers mean:**
+- These are **multipliers**, not absolute values
+- 1.0 damage roughly equals one zombie's worth of damage
+- A hit dealing 1.0+ damage will typically one-shot a zombie
+
+**Practical ranges:**
+
+| Damage Range | Weapon Type |
+|-------------|-------------|
+| 0.2 - 0.5 | Weak improvised (saucepan) |
+| 0.5 - 1.0 | Light weapons (knife, hammer) |
+| 0.8 - 1.3 | Standard weapons (bat, machete) |
+| 1.0 - 2.0 | Heavy weapons (axe, sledgehammer) |
+| 1.5 - 2.5+ | Two-handed powerhouses (katana) |
+
+### Critical Hits
+
+```
+CriticalChance = 30,
+CritDmgMultiplier = 2,
+```
+
+- `CriticalChance` - Percentage chance per hit (30 = 30%)
+- `CritDmgMultiplier` - Damage is multiplied by this on crit
+
+**Critical hits are important** - they often mean instant kills. A weapon with 30% crit and 2x multiplier will kill more efficiently than raw damage suggests.
+
+### MaxHitCount
+
+```
+MaxHitCount = 2,
+```
+
+Maximum zombies hit per swing. This is **huge** for crowd control:
+
+| MaxHitCount | Best For |
+|-------------|----------|
+| 1 | Precise single-target |
+| 2 | Standard combat |
+| 3 | Crowd control |
+| 4+ | Exceptional (rare) |
+
+Two-handed weapons and long weapons typically have higher MaxHitCount.
+
+---
+
+## Range and Speed
+
+### MinRange and MaxRange
+
+```
+MinRange = 0.61,
+MaxRange = 1.3,
+```
+
+- `MinRange` - Minimum distance to hit (can't hit closer than this)
+- `MaxRange` - Maximum reach
+
+**Practical values:**
+
+| MaxRange | Reach |
+|----------|-------|
+| 0.9 - 1.0 | Very short (knife) |
+| 1.0 - 1.3 | Short (bat, machete) |
+| 1.3 - 1.5 | Medium (crowbar) |
+| 1.5 - 2.0 | Long (spear) |
+| 2.0+ | Very long (crafted spears) |
+
+**Why MinRange matters:** Spears have high MinRange (~0.9), meaning zombies that get too close are inside your attack range. This is the spear tradeoff - great reach, vulnerable up close.
+
+### BaseSpeed
+
+```
+BaseSpeed = 1,
+```
+
+- 1.0 is standard speed
+- Higher = faster attacks
+- Lower = slower attacks
+
+| BaseSpeed | Feel |
+|-----------|------|
+| 0.8 | Sluggish (heavy weapons) |
+| 1.0 | Normal |
+| 1.1 | Quick |
+| 1.2+ | Fast (knives) |
+
+### SwingTime
+
+```
+SwingTime = 3,
+```
+
+Base time to complete a swing animation. Lower = faster overall attack cycle.
+
+---
+
+## Durability System
+
+### ConditionMax
+
+```
+ConditionMax = 15,
+```
+
+The weapon's maximum durability. When condition hits 0, the weapon breaks.
+
+**Typical values:**
+
+| ConditionMax | Durability |
+|--------------|------------|
+| 5-10 | Fragile (improvised) |
+| 10-15 | Standard |
+| 15-25 | Durable |
+| 25+ | Very durable |
+
+### ConditionLowerChanceOneIn
+
+This is the most misunderstood property:
+
+```
+ConditionLowerChanceOneIn = 30,
+```
+
+**How it works:** On each hit, there's a 1-in-30 chance to lose 1 durability point.
+
+- Higher number = more durable (less chance to lose condition)
+- Lower number = less durable (more chance to lose condition)
+
+| Value | Meaning |
+|-------|--------|
+| 10 | 10% chance per hit to lose durability (fragile) |
+| 20 | 5% chance per hit |
+| 30 | 3.3% chance per hit (standard) |
+| 50 | 2% chance per hit (durable) |
+
+**Example calculation:**
+A weapon with `ConditionMax = 15` and `ConditionLowerChanceOneIn = 30`:
+- Average hits before durability loss: 30
+- Average total hits before breaking: 30 × 15 = **450 hits**
+
+---
+
+## Knockback and Knockdown
+
+### PushBackMod
+
+```
+PushBackMod = 0.3,
+```
+
+How much the hit pushes zombies back. Higher = more distance.
+
+### KnockdownMod
+
+```
+KnockdownMod = 2,
+```
+
+Modifier for chance to knock zombies to the ground. Higher = more knockdowns.
+
+**Knockdowns are powerful** - a knocked zombie is vulnerable to a ground kill.
+
+### KnockBackOnNoDeath
+
+```
+KnockBackOnNoDeath = FALSE,
+```
+
+If TRUE, the weapon still pushes back even when it doesn't kill. Heavy weapons often have this TRUE.
+
+---
+
+## SubCategory
+
+```
+SubCategory = Swinging,
+```
+
+Determines the attack style:
+
+| SubCategory | Attack Style |
+|-------------|-------------|
+| `Swinging` | Wide horizontal swings |
+| `Stabbing` | Forward thrust (spears) |
+| `OneHandSwing` | One-handed swing |
+
+This affects animations and the arc of the attack.
+
+---
+
+## Two-Handed Weapons
+
+```
+TwoHandWeapon = TRUE,
+```
+
+- Requires both hands free
+- Cannot use with offhand items
+- Usually higher damage and reach
+
+---
+
+## Door and Tree Damage
+
+```
+DoorDamage = 5,
+TreeDamage = 3,
+```
+
+How effective the weapon is against:
+- `DoorDamage` - Breaking down doors
+- `TreeDamage` - Chopping trees
+
+Axes have high TreeDamage. Sledgehammers have high DoorDamage.
+
+---
+
+## Sound Properties
+
+```
+SwingSound = BatSwing,
+HitSound = BatHit,
+BreakSound = BatBreak,
+DoorHitSound = BatHitDoor,
+HitFloorSound = BatHitFloor,
+```
+
+These reference sound events in the game's sound system. Important for immersion and can attract zombies.
+
+---
+
+## Animation Properties
+
+```
+SwingAnim = Bat,
+RunAnim = Run_Weapon2,
+IdleAnim = Idle_Weapon2,
+```
+
+References to animation states. The `SwingAnim` determines the combat animation used.
+
+---
+
+## Visual Properties
+
+```
+WeaponSprite = Crowbar,
+Icon = Crowbar,
+StaticModel = Crowbar,
+AttachmentType = BigWeapon,
+```
+
+- `WeaponSprite` - Equipped weapon sprite
+- `Icon` - Inventory icon
+- `StaticModel` - 3D model reference
+- `AttachmentType` - How it attaches to the character (holster location)
+
+---
+
+## Putting It Together
+
+Here's how to read a full weapon definition:
+
+```
+item Crowbar {
+    Type = Weapon,               // It's a weapon
+    DisplayName = Crowbar,       // Shows as "Crowbar"
+    Categories = Blunt,          // Trains Long Blunt skill
+    SubCategory = Swinging,      // Wide swing attack
+    MinDamage = 0.6,            // Damage range 0.6-1.1
+    MaxDamage = 1.1,
+    CriticalChance = 25,        // 25% crit chance
+    CritDmgMultiplier = 2,      // 2x crit damage
+    MaxRange = 1.35,            // Medium reach
+    BaseSpeed = 0.95,           // Slightly slow
+    MaxHitCount = 2,            // Hits 2 zombies max
+    ConditionMax = 15,          // 15 durability
+    ConditionLowerChanceOneIn = 25,  // ~4% chance to lose durability per hit
+    DoorDamage = 7,             // Good door breaker
+    TwoHandWeapon = TRUE,       // Requires both hands
+}
+```
+
+**This crowbar:**
+- Trains Long Blunt when you hit zombies
+- Deals moderate damage with decent crits
+- Has good reach for a blunt weapon
+- Is durable (estimated 375 hits before breaking)
+- Good for breaking down doors
+- Requires both hands
+
+---
+
+## Metadata
+
+- **Version**: build-41
+- **Section**: modding
+- **Category**: vanilla-reference
+- **Tags**: weapons, properties, guide, combat, skills
+- **Difficulty**: intermediate
+- **Last Updated**: 2026-01-18

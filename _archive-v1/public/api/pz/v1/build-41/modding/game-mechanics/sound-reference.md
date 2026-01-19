@@ -1,0 +1,1099 @@
+---
+id: sound-reference
+slug: sound-reference
+title: Project Zomboid Vanilla Sound Reference
+excerpt: This document provides a comprehensive reference of all vanilla sounds available in Project Zomboid for use in mod recipes and scripts. | Sound | Category | Use Case | Frequency |...
+game: pz
+version: build-41
+section: modding
+category: game-mechanics
+subcategory: null
+difficulty: intermediate
+tags:
+  - recipe
+  - item
+  - repair
+  - weapon
+  - event
+  - sound
+  - modding
+  - api
+last_updated: 2026-01-09
+---
+# Project Zomboid Vanilla Sound Reference
+
+This document provides a comprehensive reference of all vanilla sounds available in Project Zomboid for use in mod recipes and scripts.
+
+**Last Updated:** November 15, 2025
+**Game Version:** Build 41+
+**Source Location:** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_*.txt`
+
+---
+
+## Quick Reference - Most Common Sounds for Recipes
+
+| Sound | Category | Use Case | Frequency |
+|-------|----------|----------|-----------|
+| `PutItemInBag` | Item | Storing items, general handling | Very High (30+ uses) |
+| `OpenCannedFood` | Player | Opening cans, containers | Very High (25+ uses) |
+| `Sawing` | Item | Cutting wood, sawing materials | Very High (15+ uses) |
+| `Hammering` | Item | Nailing, carpentry, building | Very High (20+ uses) |
+| `SliceMeat` | Item | Butchering, food preparation | High (10+ uses) |
+| `ClothesRipping` | Item | Tearing fabric, sheets | High (7 uses) |
+| `SliceBread` | Item | Slicing bread, soft foods | Medium (4 uses) |
+| `EmptyPan` | Player | Emptying containers, pans | Medium (5 uses) |
+| `OpenSeedPacket` | Player | Opening seed packets | Medium (7 uses) |
+| `Dismantle` | Item | Taking apart electronics | Medium (4 uses) |
+| `BlowTorch` | Item | Welding, metalworking | Medium (6 uses) |
+| `Screwdriver` | Item | Screwing, electronics work | Low |
+| `AddItemInRecipe` | Item | Adding ingredients | Low |
+| `AddItemInBeverage` | Item | Adding to drinks | Medium (9 uses) |
+
+---
+
+## Table of Contents
+
+1. [Item Sounds (sounds_item.txt)](#item-sounds)
+2. [Object Sounds (sounds_object.txt)](#object-sounds)
+3. [Player Sounds (sounds_player.txt)](#player-sounds)
+4. [World Sounds (sounds_world.txt)](#world-sounds)
+5. [Zombie Sounds (sounds_zombie.txt)](#zombie-sounds)
+6. [UI Sounds (sounds_ui.txt)](#ui-sounds)
+7. [Meta Sounds (sounds_meta.txt)](#meta-sounds)
+8. [Music Sounds (sounds_music.txt)](#music-sounds)
+9. [Usage Examples](#usage-examples)
+
+---
+
+## Item Sounds
+
+**Source File:** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_item.txt`
+**Category:** Item
+
+### Bag & Container Sounds
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `OpenBag` | Opening bag/container | Low |
+| `CloseBag` | Closing bag/container | Low |
+| `PutItemInBag` | Storing item in bag | **Very High** |
+
+### Crafting & Tool Sounds
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `Sawing` | Sawing wood/materials | **Very High** |
+| `Hammering` | Hammering/nailing | **Very High** |
+| `Screwdriver` | Using screwdriver | Low |
+| `BlowTorch` | Welding/metalworking | Medium |
+| `Dismantle` | Dismantling electronics | Medium |
+
+### Breaking & Destroying Sounds
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `BreakMetalItem` | Breaking metal objects | Low |
+| `BreakWoodItem` | Breaking wood objects | Low |
+| `BreakGlassItem` | Breaking glass | Low |
+| `ClothesRipping` | Ripping cloth/clothing | **High** |
+
+### Cooking & Food Sounds
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `SliceBread` | Slicing bread | Medium |
+| `SliceMeat` | Slicing meat | **High** |
+| `AddItemInRecipe` | Adding ingredient to recipe | Low |
+| `AddItemInBeverage` | Adding ingredient to beverage | Medium |
+
+### Repair & Maintenance
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `FixWithTape` | Repairing with tape | Low |
+| `FixingItemFailed` | Failed repair attempt | None |
+
+### Farming Sounds
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `Shoveling` | Using shovel | Low |
+
+### Fishing Sounds
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `CastFishingLine` | Casting fishing line | None |
+| `BreakFishingLine` | Breaking fishing line | None |
+
+### Map Sounds
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `MapOpen` | Opening map | None |
+| `MapClose` | Closing map | None |
+| `MapAddNote` | Adding note to map | None |
+| `MapAddSymbol` | Adding symbol to map | None |
+| `MapRemoveMarking` | Removing map marking | None |
+
+### Combat Sounds
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `BloodSplatter` | Blood splatter effect | None |
+| `BulletHitBody` | Bullet impact on body | None |
+
+### Alarm Sounds
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `AlarmClockRingingLoop` | Alarm clock ringing | None |
+| `WatchAlarmLoop` | Watch alarm ringing | None |
+
+### Misc Item Sounds
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `LightbulbBurnedOut` | Lightbulb burning out | None |
+
+**Total Item Sounds: ~30**
+
+---
+
+## Object Sounds
+
+**Source File:** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_object.txt`
+**Category:** Object
+
+### Door Sounds (All Types)
+
+#### Sliding Glass Door
+- `SlidingGlassDoorBlocked`, `SlidingGlassDoorBreak`, `SlidingGlassDoorClose`
+- `SlidingGlassDoorLock`, `SlidingGlassDoorLocked`, `SlidingGlassDoorOpen`
+- `SlidingGlassDoorUnlock`
+
+#### Prison Metal Door
+- `PrisonMetalDoorBlocked`, `PrisonMetalDoorBreak`, `PrisonMetalDoorClose`
+- `PrisonMetalDoorLock`, `PrisonMetalDoorLocked`, `PrisonMetalDoorOpen`
+- `PrisonMetalDoorUnlock`
+
+#### Garage Door
+- `GarageDoorBlocked`, `GarageDoorBreak`, `GarageDoorClose`
+- `GarageDoorLock`, `GarageDoorLocked`, `GarageDoorOpen`
+- `GarageDoorUnlock`
+
+#### Metal Door
+- `MetalDoorBlocked`, `MetalDoorBreak`, `MetalDoorClose`
+- `MetalDoorLock`, `MetalDoorLocked`, `MetalDoorOpen`
+- `MetalDoorUnlock`
+
+#### Metal Gate
+- `MetalGateBlocked`, `MetalGateBreak`, `MetalGateClose`
+- `MetalGateLock`, `MetalGateLocked`, `MetalGateOpen`
+- `MetalGateUnlock`
+
+#### Wood Door
+- `WoodDoorBlocked`, `WoodDoorBreak`, `WoodDoorClose`, `WoodDoorCreak`
+- `WoodDoorLock`, `WoodDoorLocked`, `WoodDoorOpen`, `WoodDoorUnlock`
+
+#### Wood Shack Door
+- `WoodShackDoorBlocked`, `WoodShackDoorBreak`, `WoodShackDoorClose`, `WoodShackDoorCreak`
+- `WoodShackDoorLock`, `WoodShackDoorLocked`, `WoodShackDoorOpen`, `WoodShackDoorUnlock`
+
+#### Wood Gate
+- `WoodGateBlocked`, `WoodGateBreak`, `WoodGateClose`
+- `WoodGateLock`, `WoodGateLocked`, `WoodGateOpen`, `WoodGateUnlock`
+
+#### General Door Sounds
+- `LockDoor`, `UnlockDoor`, `BreakDoor`
+- `DoorIsBlocked`, `DoorIsLocked`, `DoorAmbiance`
+
+### Window Sounds
+
+| Sound Name | Description |
+|------------|-------------|
+| `OpenWindow` | Opening window |
+| `CloseWindow` | Closing window |
+| `SmashWindow` | Breaking window |
+| `WindowIsLocked` | Window is locked |
+| `BreakLockOnWindow` | Breaking window lock |
+| `WindowRattle` | Window rattling |
+| `WindowWind` | Wind through window |
+| `WindowAmbiance` | Window ambient sounds |
+
+### Curtain Sounds
+
+| Sound Name | Description |
+|------------|-------------|
+| `CurtainLongClose` | Closing long curtain |
+| `CurtainLongOpen` | Opening long curtain |
+| `CurtainShortClose` | Closing short curtain |
+| `CurtainShortOpen` | Opening short curtain |
+| `CurtainShadeClose` | Closing shade |
+| `CurtainShadeOpen` | Opening shade |
+| `CurtainSheetClose` | Closing sheet curtain |
+| `CurtainSheetOpen` | Opening sheet curtain |
+| `CurtainSheetAdd` | Adding curtain |
+| `CurtainSheetRemove` | Removing curtain |
+
+### Appliance Sounds
+
+| Sound Name | Description |
+|------------|-------------|
+| `ToggleStove` | Turning stove on/off |
+| `StoveRunning` | Stove operating |
+| `StoveTimer` | Stove timer ticking |
+| `StoveTimerExpired` | Stove timer finished |
+| `OpenStoveDoor` | Opening stove door |
+| `CloseStoveDoor` | Closing stove door |
+| `MicrowaveRunning` | Microwave operating |
+| `MicrowaveCookingMetal` | Metal in microwave |
+| `MicrowaveTimerExpired` | Microwave finished |
+| `FridgeHum` | Refrigerator running |
+| `ClothingDryerRunning` | Dryer running |
+| `ClothingWasherRunning` | Washer running |
+| `ClothingDryerFinished` | Dryer finished |
+| `ClothingWasherFinished` | Washer finished |
+| `LightSwitch` | Flipping light switch |
+
+### BBQ & Cooking
+
+| Sound Name | Description |
+|------------|-------------|
+| `CharcoalBarbecueRunning` | Charcoal BBQ running |
+| `PropaneBarbecueRunning` | Propane BBQ running |
+| `BBQPropaneTankInsert` | Inserting propane tank |
+| `BBQPropaneTankRemove` | Removing propane tank |
+| `BBQPropaneRunning` | Propane BBQ operating |
+| `BBQRegularAddFuel` | Adding fuel to BBQ |
+| `BBQRegularLight` | Lighting BBQ |
+| `BBQRegularRunning` | Regular BBQ operating |
+
+### Campfire & Fireplace
+
+| Sound Name | Description |
+|------------|-------------|
+| `CampfireAddFuel` | Adding fuel to campfire |
+| `CampfireRunning` | Campfire burning |
+| `CampfireLight` | Lighting campfire |
+| `CampfireBuild` | Building campfire |
+| `FireplaceAddFuel` | Adding fuel to fireplace |
+| `FireplaceRunning` | Fireplace burning |
+| `FireplaceLight` | Lighting fireplace |
+| `Fire` | General fire sound |
+
+### Electronics
+
+| Sound Name | Description |
+|------------|-------------|
+| `TelevisionTestBeep` | TV test signal |
+| `TelevisionZap` | TV channel change |
+| `TelevisionOn` | Turning TV on |
+| `TelevisionOff` | Turning TV off |
+| `TelevisionMute` | Muting TV |
+| `TelevisionUnMute` | Unmuting TV |
+| `RadioButton` | Radio button press |
+| `RadioStatic` | Radio static |
+| `RadioTalk` | Radio program |
+| `RadioZap` | Radio tuning |
+
+### Generator
+
+| Sound Name | Description |
+|------------|-------------|
+| `GeneratorFailedToStart` | Generator start failed |
+| `GeneratorStarting` | Generator starting up |
+| `GeneratorStopping` | Generator shutting down |
+| `GeneratorLoop` | Generator running |
+| `GeneratorAddFuel` | Adding fuel to generator |
+| `GeneratorRepair` | Repairing generator |
+| `GeneratorConnect` | Connecting generator |
+| `CarBatteryChargerRunning` | Battery charger running |
+
+### Water Sounds
+
+| Sound Name | Description |
+|------------|-------------|
+| `PourWaterIntoObject` | Pouring water into container |
+| `PourLiquidOnGround` | Pouring liquid on ground |
+| `GetWaterFromLake` | Getting water from lake |
+| `GetWaterFromTap` | Getting water from tap |
+| `GetWaterFromTapGlass` | Filling glass from tap |
+| `GetWaterFromTapCeramic` | Filling ceramic from tap |
+| `GetWaterFromTapPlasticMedium` | Filling medium plastic from tap |
+| `GetWaterFromTapPlasticBig` | Filling large plastic from tap |
+| `GetWaterFromTapMetalMedium` | Filling medium metal from tap |
+| `GetWaterFromTapMetalBig` | Filling large metal from tap |
+| `GetWaterFromDispenser` | Getting water from dispenser |
+| `GetWaterFromDispenserGlass` | Filling glass from dispenser |
+| `GetWaterFromDispenserCeramic` | Filling ceramic from dispenser |
+| `GetWaterFromDispenserPlasticMedium` | Filling medium plastic from dispenser |
+| `GetWaterFromDispenserPlasticBig` | Filling large plastic from dispenser |
+| `GetWaterFromDispenserMetalMedium` | Filling medium metal from dispenser |
+| `GetWaterFromDispenserMetalBig` | Filling large metal from dispenser |
+| `WaterDrip` | Water dripping ambient |
+
+### Trees & Nature
+
+| Sound Name | Description |
+|------------|-------------|
+| `ChopTree` | Chopping tree |
+| `FallingTree` | Tree falling |
+| `Bushes` | Bushes rustling |
+| `RemovePlant` | Removing plant |
+| `BirdInTree` | Bird sounds in tree |
+
+### Traps
+
+| Sound Name | Description |
+|------------|-------------|
+| `BirdInMetalTrap` | Bird caught in metal trap |
+| `BirdInWoodTrap` | Bird caught in wood trap |
+| `AnimalInMetalTrap` | Animal caught in metal trap |
+| `AnimalInWoodTrap` | Animal caught in wood trap |
+
+### Barricades
+
+| Sound Name | Description |
+|------------|-------------|
+| `AddBarricadeMetal` | Placing metal barricade |
+| `BeginRemoveBarricadeMetal` | Starting to remove metal barricade |
+| `RemoveBarricadeMetal` | Removing metal barricade |
+| `BreakBarricadeMetal` | Breaking metal barricade |
+| `HitBarricadeMetal` | Hitting metal barricade |
+| `BreakBarricadePlank` | Breaking wood barricade |
+| `BeginRemoveBarricadePlank` | Starting to remove wood barricade |
+| `HitBarricadePlank` | Hitting wood barricade |
+| `RemoveBarricadePlank` | Removing wood barricade |
+| `RemoveBrokenGlass` | Removing broken glass |
+
+### Fuel & Canister
+
+| Sound Name | Description |
+|------------|-------------|
+| `CanisterAddFuelFromGasPump` | Filling from gas pump |
+| `CanisterAddFuelSiphon` | Siphoning fuel |
+
+### Misc Object Sounds
+
+| Sound Name | Description |
+|------------|-------------|
+| `RotateObject` | Rotating moveable object |
+| `BreakObject` | Breaking generic object |
+| `BurnedObjectExploded` | Burned object exploding |
+| `LightFlicker` | Light flickering |
+
+**Total Object Sounds: ~150+**
+
+---
+
+## Player Sounds
+
+**Source File:** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_player.txt`
+**Category:** Player
+
+### Level & Game Events
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `GainExperienceLevel` | Leveling up | None |
+| `PlayerDied` | Game over/death | None |
+
+### Eating Sounds
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `Eating` | Default eating sound | Low |
+| `EatingCrispy` | Eating crispy food | Low |
+| `EatingDeadAnimal` | Eating dead animal | None |
+| `EatingFruit` | Eating fruit | Low |
+| `EatingMushy` | Eating mushy food | Low |
+| `EatingSoup` | Eating soup | Low |
+| `Swallowing` | Swallowing | Low |
+
+### Drinking Sounds
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `DrinkingFromGeneric` | Generic drinking | Low |
+| `DrinkingFromBottle` | Drinking from bottle | Low |
+| `DrinkingFromBottleGlass` | Drinking from glass bottle | Low |
+| `DrinkingFromBottlePlastic` | Drinking from plastic bottle | Low |
+| `DrinkingFromCan` | Drinking from can | Low |
+| `DrinkingFromMug` | Drinking from mug | Low |
+| `DrinkingFromCarton` | Drinking from carton | Low |
+| `DrinkingFromPool` | Drinking from pool | None |
+| `DrinkingFromRiver` | Drinking from river | None |
+| `DrinkingFromTap` | Drinking from tap | Low |
+
+### Movement & Foley
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `HumanFootstepsCombined` | Footstep sounds | None |
+| `ClimbThroughWindow` | Climbing through window | None |
+| `ClimbOverFenceLow` | Climbing low fence | None |
+| `ClimbOverFenceHighStart` | Starting to climb high fence | None |
+| `ClimbOverFenceHighStruggle` | Struggling on high fence | None |
+| `ClimbOverFenceHighSuccess` | Successfully climbing high fence | None |
+| `ClimbOverFenceHighFail` | Failing to climb high fence | None |
+| `TripOverObstacle` | Tripping over obstacle | None |
+| `FallHeavy` | Heavy fall | None |
+| `FallLight` | Light fall | None |
+| `LandHeavy` | Heavy landing | None |
+| `LandLight` | Light landing | None |
+
+### Combat
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `AttackShove` | Shoving attack | None |
+| `AttackStomp` | Stomp attack | None |
+| `ZombieRipClothing` | Clothing being ripped by zombie | None |
+| `BareHandsHit` | Bare hands hit | None |
+
+### Health & Status
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `HeartBeat` | Heartbeat sound | None |
+| `FemaleBeingEatenDeath` | Female death by zombie | None |
+| `MaleBeingEatenDeath` | Male death by zombie | None |
+| `Smoke` | Smoking | None |
+
+### Hygiene
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `WashClothing` | Washing clothing | None |
+| `WashYourself` | Washing yourself | None |
+
+### Literature
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `OpenBook` | Opening book | None |
+| `CloseBook` | Closing book | None |
+| `PageFlipBook` | Flipping book page | None |
+| `OpenMagazine` | Opening magazine | None |
+| `CloseMagazine` | Closing magazine | None |
+| `PageFlipMagazine` | Flipping magazine page | None |
+
+### Building & Construction
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `Painting` | Painting | Low |
+| `Plastering` | Plastering walls | Low |
+| `MakePlaster` | Making plaster | Low |
+| `BuildWoodenStructureSmall` | Building small wooden structure | Low |
+| `BuildWoodenStructureMedium` | Building medium wooden structure | Low |
+| `BuildWoodenStructureLarge` | Building large wooden structure | Low |
+| `BuildMetalStructureSmall` | Building small metal structure | Low |
+| `BuildMetalStructureMedium` | Building medium metal structure | Low |
+| `BuildMetalStructureSmallScrap` | Building scrap metal structure | Low |
+| `BuildMetalStructureLargePoleFence` | Building large pole fence | Low |
+| `BuildMetalStructureSmallPoleFence` | Building small pole fence | Low |
+| `BuildMetalStructureLargeWiredFence` | Building large wired fence | Low |
+| `BuildMetalStructureSmallWiredFence` | Building small wired fence | Low |
+| `BuildMetalStructureWallFrame` | Building metal wall frame | Low |
+| `BuildFenceCairn` | Building cairn fence | Low |
+| `BuildFenceSandbag` | Building sandbag fence | Low |
+| `BuildFenceSandbagFoley` | Sandbag placement foley | Low |
+| `BuildFenceGravelbag` | Building gravel bag fence | Low |
+| `BuildFenceGravelbagFoley` | Gravel bag placement foley | Low |
+| `BuildingGeneric` | Generic building sound | Low |
+
+### Cleaning
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `CleanBloodVehicle` | Cleaning blood from vehicle | None |
+| `CleanBloodBleach` | Cleaning blood with bleach | None |
+| `CleanBloodScrub` | Scrubbing blood | None |
+
+### Repair
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `RepairWithWrench` | Repairing with wrench | None |
+
+### Farming (Player Category)
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `DigFurrowWithHands` | Digging with hands | Low |
+| `DigFurrowWithShovel` | Digging with shovel | Low |
+| `DigFurrowWithTrowel` | Digging with trowel | Low |
+| `OpenSeedPacket` | Opening seed packet | Medium |
+| `SowSeeds` | Planting seeds | Low |
+| `HarvestCrops` | Harvesting crops | None |
+| `WaterCrops` | Watering plants | None |
+| `DropSoilFromShovel` | Dropping soil from shovel | Low |
+| `DropSoilFromTrowel` | Dropping soil from trowel | Low |
+| `DropSoilFromDirtBag` | Dropping soil from dirt bag | Low |
+| `DropSoilFromGravelBag` | Dropping soil from gravel bag | Low |
+| `DropSoilFromSandBag` | Dropping soil from sand bag | Low |
+
+### Cooking (Player Category)
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `BoilingFood` | Boiling food on stove | Low |
+| `FryingFood` | Frying food in pan | Low |
+| `OpenCannedFood` | Opening canned food | **Very High** |
+| `EmptyPan` | Emptying pan/container | Medium |
+
+### Logs (Player Category)
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `LogAddToStack` | Adding log to stack | Low |
+| `LogRemoveFromStack` | Removing log from stack | Low |
+
+### Fire Starting (Player Category)
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `UseMatch` | Using match | None |
+| `UseLighter` | Using lighter | None |
+
+### Map (Player Category)
+
+Listed in Item Sounds section for organization.
+
+### Door Opening (Player Category)
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `OpenStoveDoor` | Opening stove door | Low |
+| `CloseStoveDoor` | Closing stove door | Low |
+
+**Total Player Sounds: ~90+**
+
+---
+
+## World Sounds
+
+**Source File:** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_world.txt`
+**Category:** World
+
+### Ambiance
+
+| Sound Name | Description |
+|------------|-------------|
+| `WorldAmbiance` | General world ambiance |
+| `TentAmbiance` | Tent ambient sounds |
+| `TreeAmbiance` | Tree ambient sounds |
+| `VehicleAmbiance` | Vehicle ambient sounds |
+| `FactoryMachineAmbiance` | Factory machine sounds |
+| `HotdogMachineAmbiance` | Hot dog machine sounds |
+| `PayPhoneAmbiance` | Pay phone sounds |
+| `StreetLightAmbiance` | Street light sounds |
+| `NeonLightAmbiance` | Neon light sounds |
+| `NeonSignAmbiance` | Neon sign sounds |
+| `JukeboxAmbiance` | Jukebox sounds |
+| `ControlStationAmbiance` | Control station sounds |
+| `ClockAmbiance` | Clock ticking sounds |
+| `GasPumpAmbiance` | Gas pump sounds |
+| `LightBulbAmbiance` | Light bulb sounds |
+| `ArcadeMachineAmbiance` | Arcade machine sounds |
+| `FountainSmallAmbiance` | Small fountain sounds |
+| `FountainBigAmbiance` | Large fountain sounds |
+| `RadiatorAmbiance` | Radiator sounds |
+
+### Fishing
+
+| Sound Name | Description |
+|------------|-------------|
+| `StrikeWithFishingSpear` | Spear fishing strike |
+| `LureHitWater` | Fishing lure hitting water |
+| `CatchFish` | Catching fish |
+| `CatchTrashWithRod` | Catching trash while fishing |
+| `CheckFishingNet` | Checking fishing net |
+| `PlaceFishingNet` | Placing fishing net |
+| `RemoveFishingNet` | Removing fishing net |
+
+### Weather & Events
+
+| Sound Name | Description |
+|------------|-------------|
+| `Thunder` | Thunder sound |
+| `RumbleThunder` | Rumbling thunder |
+| `HouseAlarm` | House alarm |
+| `CorpseFlies` | Flies around corpse |
+| `WorldEventElectricityShutdown` | Electricity shutdown event |
+
+**Total World Sounds: ~30**
+
+---
+
+## Zombie Sounds
+
+**Source File:** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_zombie.txt`
+**Category:** Zombie
+
+### Zombie Movement
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `ZombieFootstepsCombined` | Zombie footsteps | None |
+
+### Zombie Vocals
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `FemaleZombieCombined` | Female zombie sounds | None |
+| `MaleZombieCombined` | Male zombie sounds | None |
+
+### Zombie Combat
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `HeadSmash` | Head smashed | None |
+| `HeadStab` | Head stabbed | None |
+| `BurningFlesh` | Burning flesh | None |
+| `ZombieScratch` | Zombie scratching | None |
+| `ZombieBite` | Zombie biting | None |
+| `ZombieCrawlLungeSwing` | Crawler lunge swing | None |
+| `ZombieCrawlLungeHit` | Crawler lunge hit | None |
+
+### Zombie Interactions
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `ZombieThumpGeneric` | Generic thumping | None |
+| `ZombieThumpMetal` | Thumping metal | Low (multistagebuild) |
+| `ZombieThumpVehicle` | Thumping vehicle | None |
+| `ZombieThumpVehicleWindow` | Thumping vehicle window | None |
+| `ZombieThumpWindow` | Thumping window | None |
+| `ZombieThumpBarbedFence` | Thumping barbed fence | None |
+| `ZombieThumpGarageDoor` | Thumping garage door | None |
+
+### Zombie Events
+
+| Sound Name | Description | Recipe Usage |
+|------------|-------------|--------------|
+| `ZombieSurprisedPlayer` | Zombie surprised player | None |
+| `BodyHitGround` | Body hitting ground | None |
+| `ZombieTrip` | Zombie tripping | None |
+| `TutorialZombie` | Tutorial zombie sound | None |
+
+**Total Zombie Sounds: ~20**
+
+---
+
+## UI Sounds
+
+**Source File:** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_ui.txt`
+**Category:** UI
+
+### UI Interaction
+
+| Sound Name | Description |
+|------------|-------------|
+| `UIActivateButton` | Button click |
+| `UIActivateTab` | Tab activation |
+| `UIActivateMainMenuItem` | Main menu item click |
+| `UIActivatePlayButton` | Play button click |
+| `UIClickToStart` | Click to start |
+| `UIHighlightMainMenuItem` | Menu item highlight |
+| `UISelectListItem` | List item selection |
+| `UIToggleComboBox` | Combo box toggle |
+| `UIToggleTickBox` | Checkbox toggle |
+
+**Total UI Sounds: ~10**
+
+---
+
+## Meta Sounds
+
+**Source File:** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_meta.txt`
+**Category:** Meta
+
+### Meta Events
+
+| Sound Name | Description |
+|------------|-------------|
+| `Helicopter` | Helicopter event |
+
+### Meta Weapons
+
+| Sound Name | Description |
+|------------|-------------|
+| `MetaAssaultRifle1` | Distant assault rifle |
+| `MetaPistol1` | Distant pistol shot |
+| `MetaPistol2` | Distant pistol shot variant 2 |
+| `MetaPistol3` | Distant pistol shot variant 3 |
+| `MetaShotgun1` | Distant shotgun |
+
+### Meta Animals & Sounds
+
+| Sound Name | Description |
+|------------|-------------|
+| `MetaDogBark` | Distant dog barking |
+| `MetaScream` | Distant scream |
+| `MetaOwl` | Owl hooting |
+| `MetaWolfHowl` | Wolf howling |
+
+### Meta Game Events
+
+| Sound Name | Description |
+|------------|-------------|
+| `ChatDrawCard` | Drawing card sound |
+| `ChatRollDice` | Rolling dice sound |
+
+**Total Meta Sounds: ~15**
+
+---
+
+## Music Sounds
+
+**Source File:** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_music.txt`
+**Category:** Music
+
+### Music Tracks
+
+| Sound Name | Theme |
+|------------|-------|
+| `MusicCombined` | Combined music |
+| `NewMusic_WWL_Solo` | What Was Lost Solo |
+| `NewMusic_Travelling` | Travelling theme |
+| `NewMusic_TakeStock` | Take Stock theme |
+| `NewMusic_PassingTime` | Passing Time theme |
+| `NewMusic_NoTime` | No Time theme |
+| `NewMusic_MoreAreComing` | More Are Coming theme |
+| `NewMusic_OnlyOneWay` | Only One Way theme |
+| `NewMusic_KeepMoving` | Keep Moving theme |
+| `NewMusic_GoItAlone` | Go It Alone theme |
+| `NewMusic_Sunrise` | Sunrise theme |
+| `NewMusic_HoldingOutHope` | Holding Out Hope theme |
+| `NewMusic_Working` | Working theme |
+| `NewMusic_Sunset` | Sunset theme |
+| `NewMusic_Mourning` | Mourning theme |
+| `NewMusic_LookingAround` | Looking Around theme |
+| `NewMusic_Waiting` | Waiting theme |
+| `NewMusic_Overrun` | Overrun theme |
+| `NewMusic_Rest` | Rest theme |
+| `NewMusic_PressOn` | Press On theme |
+| `NewMusic_CalmBeforeTheStorm` | Calm Before The Storm theme |
+| `NewMusic_GetReady` | Get Ready theme |
+| `NewMusic_EchoesFromBefore` | Echoes From Before theme |
+| `NewMusic_Surrounded` | Surrounded theme |
+| `NewMusic_ThePlan` | The Plan theme |
+| `NewMusic_GearUp` | Gear Up theme |
+| `NewMusic_FinallyCalm` | Finally Calm theme |
+| `NewMusic_PatchUp` | Patch Up theme |
+| `NewMusic_TheyreClose` | They're Close theme |
+| `NewMusic_ThinkingOfThePast` | Thinking Of The Past theme |
+| `NewMusic_TouchAndGo` | Touch And Go theme |
+| `NewMusic_Tread_Carefully` | Tread Carefully theme |
+| `NewMusic_Everythings_Gone` | Everything's Gone theme |
+| `NewMusic_Alone` | Alone theme |
+| `NewMusic_Barricading` | Barricading theme |
+| `NewMusic_Chase` | Chase theme |
+| `NewMusic_DesperateEscape` | Desperate Escape theme |
+| `NewMusic_FightOrFlight` | Fight or Flight theme |
+| `NewMusic_Introduction` | Introduction theme |
+| `NewMusic_MainTheme` | Main Theme |
+| `NewMusic_MaybeNot` | Maybe Not theme |
+| `NewMusic_MaybeWeCanWinThis` | Maybe We Can Win This theme |
+| `NewMusic_Run` | Run theme |
+| `NewMusic_SlowSad` | Slow Sad theme |
+| `NewMusic_TheyWereOnceHere` | They Were Once Here theme |
+| `NewMusic_SayingGoodbye` | Saying Goodbye theme |
+| `NewMusic_TheHorde` | The Horde theme |
+| `NewMusic_Death` | Death theme |
+| `NewMusic_TheInevitable` | The Inevitable theme |
+| `NewMusic_TheZombieThreat` | The Zombie Threat theme |
+| `NewMusic_WhatWasLost` | What Was Lost theme |
+| `NewMusic_WhatWasLostActive` | What Was Lost Active theme |
+| `NewMusic_WhatWasLostActive2` | What Was Lost Active 2 theme |
+| `NewMusic_WhereIsEveryone` | Where is Everyone theme |
+| `NewMusic_WorkFast` | Work Fast theme |
+
+### Ambient Music
+
+| Sound Name | Type |
+|------------|------|
+| `NewMusic_Ambient` | Ambient track |
+| `NewMusic_AmbientGuitar` | Ambient Guitar track |
+| `NewMusic_AmbientLow` | Ambient Low track |
+| `NewMusic_AmbientPiano` | Ambient Piano track |
+| `NewMusic_AmbientRaider` | Ambient Raider track |
+| `AmbientMusic_BrassAmbient` | Brass ambient |
+| `AmbientMusic_CreepyAmbient` | Creepy ambient |
+| `AmbientMusic_IntenseAmbient` | Intense ambient |
+| `AmbientMusic_PercussiveAmbient` | Percussive ambient |
+| `AmbientMusic_RhythmicAmbient` | Rhythmic ambient |
+| `AmbientMusic_VoiceAmbient` | Voice ambient |
+| `AmbientMusic_ZombieAmbient` | Zombie ambient |
+
+**Total Music Sounds: ~100+** (includes legacy tracks not listed)
+
+---
+
+## Usage Examples
+
+### Basic Recipe with Sound
+
+```
+recipe Make Plank
+{
+    WoodLog,
+    keep Saw,
+
+    Result: Plank=4,
+    Time: 50.0,
+    Sound: Sawing,
+    Category: Carpentry,
+}
+```
+
+### Multiple Item Recipe
+
+```
+recipe Rip Sheets
+{
+    Sheet,
+
+    Result: RippedSheets=2,
+    Time: 20.0,
+    Sound: ClothesRipping,
+    Category: Survivalist,
+}
+```
+
+### Food Recipe with Sound
+
+```
+recipe Slice Bread
+{
+    Bread,
+    keep KitchenKnife,
+
+    Result: BreadSlice=6,
+    Time: 10.0,
+    Sound: SliceBread,
+    Category: Cooking,
+}
+```
+
+### Butchering Recipe
+
+```
+recipe Butcher Rabbit
+{
+    DeadRabbit,
+    keep KitchenKnife,
+
+    Result: Rabbit=1,
+    Time: 50.0,
+    Sound: SliceMeat,
+    Category: Cooking,
+}
+```
+
+### Disassembly Recipe
+
+```
+recipe Dismantle Radio
+{
+    Radio,
+    keep Screwdriver,
+
+    Result: ElectronicsScrap=3,
+    Result: ScrapMetal=2,
+    Time: 100.0,
+    Sound: Dismantle,
+    Category: Electrical,
+}
+```
+
+### Crafting Recipe with Generic Sound
+
+```
+recipe Craft Molotov Cocktail
+{
+    WhiskeyFull,
+    RippedSheets,
+
+    Result: MolotovCocktail,
+    Time: 30.0,
+    Sound: PutItemInBag,
+    Category: Survivalist,
+}
+```
+
+### Hammering Recipe
+
+```
+recipe Build Wooden Box
+{
+    Plank=4,
+    Nails=8,
+    keep Hammer,
+
+    Result: CratePlank,
+    Time: 80.0,
+    Sound: Hammering,
+    Category: Carpentry,
+}
+```
+
+### Opening Container Recipe
+
+```
+recipe Open Can of Soup
+{
+    TinnedSoup,
+    keep CanOpener,
+
+    Result: OpenTinned,
+    Time: 10.0,
+    Sound: OpenCannedFood,
+    Category: Cooking,
+}
+```
+
+---
+
+## Sound System Notes
+
+### Important Considerations
+
+1. **Case Sensitivity**: Sound names are case-sensitive. Use exact capitalization as shown.
+
+2. **Sound Parameter**: Use `Sound:SoundName,` in recipe definitions.
+
+3. **Evolved Recipe Sounds**: Evolved recipes can use `AddIngredientSound:SoundName,` for ingredient addition.
+
+4. **MultiStageBuild Sounds**: Construction can use:
+   - `CraftingSound:SoundName,` - Sound while building
+   - `CompletionSound:SoundName,` - Sound when completed
+   - `ThumpSound:SoundName,` - Sound when zombies attack (typically `ZombieThumpMetal`)
+
+5. **Most Versatile Sounds for Recipes**:
+   - **PutItemInBag** - Generic item handling, combining
+   - **Sawing** - Wood cutting, sawing
+   - **Hammering** - Building, nailing, construction
+   - **ClothesRipping** - Fabric work, tearing
+   - **SliceMeat** - Butchering, cutting
+   - **SliceBread** - Slicing soft materials
+   - **OpenCannedFood** - Opening containers
+   - **Screwdriver** - Electronics, mechanical work
+   - **Dismantle** - Taking apart items
+
+6. **Sound Events**: Sounds are tied to FMOD events in the format:
+   - `Character/Foley/Bag/Open`
+   - `Character/Survival/Carpentry/Sawing`
+   - `Character/Survival/Cooking/SliceBread`
+
+7. **Sound Categories**: Sounds belong to categories (Item, Player, Object, World, Zombie, UI, Meta, Music) which affect how they're processed by the engine.
+
+### Testing Sounds
+
+To test sounds in your recipes:
+1. Create a simple recipe with the sound
+2. Set a short Time value for quick testing
+3. Test in Debug Mode
+4. Verify the sound plays when the recipe executes
+
+### Common Issues
+
+**Issue**: Sound doesn't play
+- Check sound name spelling and capitalization
+- Verify sound exists in vanilla sound files
+- Ensure sound category is appropriate for recipe context
+
+**Issue**: Wrong sound plays
+- Double-check sound name matches intended sound
+- Review sound descriptions in this document
+- Test with vanilla recipes that use the same sound
+
+---
+
+## Sound File Locations
+
+### Script Files (Definitions)
+- `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_item.txt`
+- `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_object.txt`
+- `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_player.txt`
+- `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_world.txt`
+- `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_zombie.txt`
+- `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_ui.txt`
+- `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_meta.txt`
+- `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_music.txt`
+
+### Audio Files (Actual Sound Data)
+- `R:\Games\Steam\steamapps\common\ProjectZomboid\media\sound\` - Contains .ogg and .wav files
+
+### FMOD Banks (Sound Engine)
+- `R:\Games\Steam\steamapps\common\ProjectZomboid\media\sound\banks\` - FMOD sound banks
+
+---
+
+## Quick Reference Commands
+
+To browse sound definitions:
+```bash
+# View item sounds
+type "R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_item.txt"
+
+# Search for specific sound
+findstr /i "sawing" "R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\sounds_*.txt"
+
+# View recipe sound usage
+findstr /i "Sound:" "R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\recipes.txt"
+```
+
+---
+
+## Summary Statistics
+
+- **Item Sounds:** ~30
+- **Object Sounds:** ~150
+- **Player Sounds:** ~90
+- **World Sounds:** ~30
+- **Zombie Sounds:** ~20
+- **UI Sounds:** ~10
+- **Meta Sounds:** ~15
+- **Music Sounds:** ~100+
+
+**Total Unique Sounds:** 400+ sound definitions
+
+**Most Common in Recipes:**
+1. PutItemInBag (30+ uses)
+2. OpenCannedFood (25+ uses)
+3. Hammering (20+ uses)
+4. Sawing (15+ uses)
+5. SliceMeat (10+ uses)
+
+---
+
+## Version History
+
+- **v1.0** (November 2025) - Initial documentation created
+  - 400+ sound definitions documented
+  - 8 sound categories catalogued
+  - Usage examples and best practices
+  - Recipe frequency analysis
+
+---
+
+## Credits
+
+This documentation compiled from:
+- Project Zomboid Build 41 game files
+- TIS official modding documentation
+- Community modding resources
+- Direct file analysis of vanilla game data
+
+**Game Installation Path**: `R:\Games\Steam\steamapps\common\ProjectZomboid`
+
+---
+
+## License
+
+This documentation is for educational and modding reference purposes.
+Project Zomboid is © The Indie Stone. All rights reserved. 

@@ -1,0 +1,120 @@
+---
+id: vanilla-evolved-recipes-reference
+slug: vanilla-evolved-recipes-reference
+title: Vanilla Evolved Recipes Reference
+excerpt: Complete reference for all **38 evolved recipes** in Project Zomboid Build 41. Evolved recipes are **dynamic crafting recipes** that allow players to combine multiple ingredients into a single dish....
+game: pz
+version: build-41
+section: modding
+category: vanilla-reference
+subcategory: null
+difficulty: beginner
+tags:
+  - reference
+  - recipes
+  - evolved
+  - vanilla
+  - cooking
+last_updated: 2026-01-18
+---
+# Vanilla Evolved Recipes Reference
+
+Complete reference for all **38 evolved recipes** in Project Zomboid Build 41.
+
+## What are Evolved Recipes?
+
+Evolved recipes are **dynamic crafting recipes** that allow players to combine multiple ingredients into a single dish. Unlike regular recipes with fixed ingredients, evolved recipes:
+
+- Accept **any valid ingredient** from a large pool
+- Allow **multiple ingredients** (up to MaxItems)
+- Track nutritional values from all ingredients
+- Support **cooking** (making raw dishes cookable)
+
+## Evolved Recipe Syntax
+
+```
+evolvedrecipe Soup
+{
+    BaseItem:WaterPot,       // Starting container
+    MaxItems:6,              // Max ingredients
+    ResultItem:PotOfSoupRecipe,  // Output item
+    Cookable:true,           // Can be cooked
+    Name:Prepare Soup,       // Display name
+}
+```
+
+## Properties
+
+| Property | Description |
+|----------|-------------|
+| `BaseItem` | The container/base item to start with |
+| `MaxItems` | Maximum number of ingredients allowed |
+| `ResultItem` | The item produced |
+| `Cookable` | Whether the result can be cooked |
+| `Name` | Display name in crafting menu |
+| `CanAddSpicesEmpty` | Allow spices even with no other ingredients |
+| `AddIngredientIfCooked` | Only add ingredients if base is cooked |
+
+## How Items Become Ingredients
+
+Food items declare which evolved recipes they can be added to using the `EvolvedRecipe` property:
+
+```
+item Tomato
+{
+    Type = Food,
+    EvolvedRecipe = Soup:12;Stew:12;Salad:6;Sandwich:6,
+    // ...
+}
+```
+
+The number after the colon is the **hunger value** contributed when added.
+
+## All Evolved Recipes
+
+| Recipe | Base Item | Result | Max Items | Cookable |
+|--------|-----------|--------|-----------|----------|
+| Pour Tumbler of Beer | `GlassTumbler` | `Beer` | 1 | No |
+| Pour Cup of Beer | `PlasticCup` | `Beer2` | 1 | No |
+| Prepare Beverage in Tumbler | `GlassTumbler` | `Beverage` | 2 | No |
+| Prepare Beverage in Cup | `PlasticCup` | `Beverage2` | 2 | No |
+| Prepare Bread | `BreadDough` | `BreadDough` | 2 | Yes |
+| Prepare Burger | `BreadSlices` | `BurgerRecipe` | 4 | No |
+| Burrito | `Tortilla` | `BurritoRecipe` | 5 | No |
+| Prepare Cake | `CakePrep` | `CakeRaw` | 4 | Yes |
+| Prepare Ice Cream Cone | `ConeIcecream` | `ConeIcecreamToppings` | 3 | No |
+| Make Fruit Salad | `Bowl` | `Base.FruitSalad` | 6 | No |
+| Prepare Beverage | `WaterMug` | `HotDrink` | 3 | Yes |
+| Prepare Beverage | `WaterMugRed` | `HotDrinkRed` | 3 | Yes |
+| Prepare Beverage | `WaterMugSpiffo` | `HotDrinkSpiffo` | 3 | Yes |
+| Prepare Beverage | `WaterTeacup` | `HotDrinkTea` | 3 | Yes |
+| Prepare Beverage | `WaterMugWhite` | `HotDrinkWhite` | 3 | Yes |
+| Muffin | `BakingTray_Muffin` | `BakingTray_Muffin_Recipe` | 1 | Yes |
+| Oatmeal | `Oatmeal` | `Oatmeal` | 3 | No |
+| Omelette | `OmeletteRecipe` | `OmeletteRecipe` | 3 | No |
+| Pancakes | `Pancakes` | `PancakesRecipe` | 3 | No |
+| Prepare Pasta | `WaterSaucepanPasta` | `PastaPan` | 4 | Yes |
+| Prepare Pasta | `WaterPotPasta` | `PastaPot` | 4 | Yes |
+| Prepare Pie | `PiePrep` | `PieWholeRaw` | 4 | Yes |
+| Prepare Sweet Pie | `PiePrep` | `PieWholeRawSweet` | 4 | Yes |
+| Prepare Pizza | `PizzaRecipe` | `PizzaRecipe` | 6 | Yes |
+| Prepare Rice | `WaterSaucepanRice` | `RicePan` | 4 | Yes |
+| Prepare Rice | `WaterPotRice` | `RicePot` | 4 | Yes |
+| Place Ingredients in Roasting Pan | `RoastingPan` | `PanFriedVegetables2` | 6 | Yes |
+| Make Salad | `Bowl` | `farming.Salad` | 6 | No |
+| Make Sandwich | `BreadSlices` | `Sandwich` | 4 | No |
+| Make Sandwich | `Baguette` | `BaguetteSandwich` | 4 | No |
+| Prepare Soup | `WaterPot` | `PotOfSoupRecipe` | 6 | Yes |
+| Prepare Stew | `WaterPot` | `PotOfStew` | 6 | Yes |
+| Prepare Stir-fry | `Pan` | `PanFriedVegetables` | 6 | Yes |
+| Prepare Stir-fry | `GridlePan` | `GriddlePanFriedVegetables` | 6 | Yes |
+| Taco | `TacoShell` | `TacoRecipe` | 5 | No |
+| Prepare Toast | `Toast` | `Toast` | 3 | No |
+| Waffles | `Waffles` | `WafflesRecipe` | 3 | No |
+| Pour Glass of Wine | `GlassWine` | `WineInGlass` | 1 | No |
+
+---
+
+## Source
+
+Definitions from `media/scripts/evolvedrecipes.txt` 

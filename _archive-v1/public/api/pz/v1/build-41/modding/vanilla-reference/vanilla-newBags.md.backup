@@ -1,0 +1,42 @@
+# Vanilla Items Reference (newBags.txt)
+
+Complete reference for all **21 items** defined in `newBags.txt`.
+
+## Items by Type
+
+### Container (21 items)
+
+| Item | Weight | Description |
+|------|--------|-------------|
+| Doctor Bag | 1 | `Base.Bag_DoctorBag` |
+| Duffel Bag | 1 | `Base.Bag_FoodCanned` |
+| Duffel Bag | 1 | `Base.Bag_FoodSnacks` |
+| Duffel Bag | 1 | `Base.Bag_Military` |
+| Duffel Bag | 1 | `Base.Bag_ToolBag` |
+| Gun Case | 1 | `Base.ShotgunCase1` |
+| Gun Case | 1 | `Base.RifleCase1` |
+| Gun Case | 1 | `Base.RifleCase2` |
+| Gun Case | 1 | `Base.RifleCase3` |
+| Gun Case | 1 | `Base.ShotgunCase1` |
+| Gun Case | 1 | `Base.ShotgunCase2` |
+| Plastic Bag | 0.1 | `Base.GroceryBag1` |
+| Plastic Bag | 0.1 | `Base.GroceryBag2` |
+| Plastic Bag | 0.1 | `Base.GroceryBag3` |
+| Plastic Bag | 0.1 | `Base.GroceryBag4` |
+| Plastic Bag | 0.1 | `Base.GroceryBag5` |
+| Sack | 0.1 | `Base.SackCabbages` |
+| Sack | 0.1 | `Base.SackCarrots` |
+| Sack | 0.1 | `Base.SackPotatoes` |
+| Sack | 0.1 | `Base.SackOnions` |
+| Trauma Bag | 1 | `Base.Bag_MedicalBag` |
+
+---
+
+## Metadata
+
+- **Version**: build-41
+- **Section**: modding
+- **Category**: vanilla-reference
+- **Tags**: reference, vanilla, items
+- **Difficulty**: beginner
+- **Last Updated**: 2026-01-18
