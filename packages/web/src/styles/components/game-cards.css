@@ -60,30 +60,63 @@
   right: 0;
   height: 4px;
   background: var(--game-color, var(--color-accent-500));
-  opacity: 0.8;
+  opacity: 1;
+  transition: opacity var(--transition-fast), height var(--transition-fast);
+}
+
+.game-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--game-color, var(--color-accent-500)) 8%, transparent) 0%,
+    transparent 40%
+  );
+  pointer-events: none;
   transition: opacity var(--transition-fast);
 }
 
 .game-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
+  box-shadow: 0 8px 30px color-mix(in srgb, var(--game-color, var(--color-accent-500)) 30%, transparent);
   border-color: var(--game-color, var(--color-accent-500));
   text-decoration: none;
 }
 
 .game-card:hover::before {
-  opacity: 1;
+  height: 6px;
 }
 
-/* Coming Soon State */
+.game-card:hover::after {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--game-color, var(--color-accent-500)) 15%, transparent) 0%,
+    transparent 50%
+  );
+}
+
+/* Coming Soon State - same styling, just no navigation */
 .game-card--coming-soon {
-  cursor: not-allowed;
-  opacity: 0.7;
+  cursor: default;
 }
 
 .game-card--coming-soon:hover {
-  transform: none;
-  box-shadow: none;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px color-mix(in srgb, var(--game-color, var(--color-accent-500)) 30%, transparent);
+  border-color: var(--game-color, var(--color-accent-500));
+}
+
+.game-card--coming-soon:hover::before {
+  height: 6px;
+}
+
+.game-card--coming-soon:hover::after {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--game-color, var(--color-accent-500)) 15%, transparent) 0%,
+    transparent 50%
+  );
 }
 
 /* Icon Wrapper */

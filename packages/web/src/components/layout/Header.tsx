@@ -1,4 +1,4 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { FuzzySearchBar } from '../search/FuzzySearchBar';
 import { AuthButton } from '../auth/AuthButton';
 import '../../styles/components/header.css';
@@ -17,6 +17,14 @@ interface HeaderProps {
 }
 
 export function Header({ onMobileMenuToggle }: HeaderProps) {
+  const location = useLocation();
+
+  // Check if we're on homepage or game-specific pages
+  const isHomePage = location.pathname === '/';
+  const isInPZContext = location.pathname.startsWith('/pz') ||
+                        location.pathname.startsWith('/build-41') ||
+                        location.pathname.startsWith('/learning-path');
+
   return (
     <header className="header">
       <div className="header__container">
@@ -30,32 +38,63 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
           <span className="header__logo-text">PZ Modding Wiki</span>
         </Link>
 
-        {/* Navigation */}
+        {/* Navigation - changes based on context */}
         <nav className="header__nav">
-          <NavLink
-            to="/learning-path"
-            className={({ isActive }) =>
-              `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
-            }
-          >
-            Learning Path
-          </NavLink>
-          <NavLink
-            to="/build-41/modding"
-            className={({ isActive }) =>
-              `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
-            }
-          >
-            Modding
-          </NavLink>
-          <NavLink
-            to="/build-41/mapping"
-            className={({ isActive }) =>
-              `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
-            }
-          >
-            Mapping
-          </NavLink>
+          {isHomePage ? (
+            // Homepage: Show game options
+            <>
+              <NavLink
+                to="/pz/build-41/modding"
+                className="header__nav-link"
+              >
+                Project Zomboid
+              </NavLink>
+              <NavLink
+                to="/vs"
+                className="header__nav-link header__nav-link--disabled"
+                onClick={(e) => e.preventDefault()}
+              >
+                Vintage Story
+                <span className="header__nav-badge">Soon</span>
+              </NavLink>
+            </>
+          ) : isInPZContext ? (
+            // PZ context: Show section links
+            <>
+              <NavLink
+                to="/learning-path"
+                className={({ isActive }) =>
+                  `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
+                }
+              >
+                Learning Path
+              </NavLink>
+              <NavLink
+                to="/build-41/modding"
+                className={({ isActive }) =>
+                  `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
+                }
+              >
+                Modding
+              </NavLink>
+              <NavLink
+                to="/build-41/mapping"
+                className={({ isActive }) =>
+                  `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
+                }
+              >
+                Mapping
+              </NavLink>
+            </>
+          ) : (
+            // Other contexts (like VS when it's ready): placeholder
+            <NavLink
+                to="/"
+                className="header__nav-link"
+              >
+                All Games
+              </NavLink>
+          )}
         </nav>
 
         {/* Search Bar */}

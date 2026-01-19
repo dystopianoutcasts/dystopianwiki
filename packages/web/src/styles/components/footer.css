@@ -65,6 +65,30 @@
   border-radius: var(--border-radius-sm);
 }
 
+.footer__legal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-2);
+  font-size: var(--font-size-xs);
+}
+
+.footer__legal-link {
+  color: var(--color-text-tertiary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer__legal-link:hover {
+  color: var(--color-accent-400);
+  text-decoration: underline;
+}
+
+.footer__legal-separator {
+  color: var(--color-text-tertiary);
+}
+
 .footer__copyright {
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);

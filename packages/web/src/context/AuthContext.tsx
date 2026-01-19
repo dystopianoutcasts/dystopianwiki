@@ -73,7 +73,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const sendPasswordResetEmail = async (email: string) => {
-    const { error } = await api.sendPasswordResetEmail(email)
+    const redirectUrl = `${window.location.origin}/reset-password`
+    const { error } = await api.sendPasswordResetEmail(email, redirectUrl)
     if (error) throw error
   }
 

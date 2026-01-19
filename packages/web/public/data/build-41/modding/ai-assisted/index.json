@@ -30,6 +30,13 @@
       "slug": "context-library",
       "difficulty": "intermediate",
       "order": 4
+    },
+    {
+      "id": "research-methodology",
+      "title": "AI Research Methodology",
+      "slug": "research-methodology",
+      "difficulty": "intermediate",
+      "order": 5
     }
   ]
 }

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import '../../styles/components/footer.css';
 
 // Icons
@@ -50,6 +51,11 @@ export function Footer() {
               className="footer__branding-logo"
             />
             <span>Dystopian Outcasts</span>
+          </div>
+          <div className="footer__legal">
+            <Link to="/terms" className="footer__legal-link">Terms of Service</Link>
+            <span className="footer__legal-separator">•</span>
+            <Link to="/privacy-policy" className="footer__legal-link">Privacy Policy</Link>
           </div>
           <p className="footer__copyright">
             &copy; {currentYear} Dystopian Outcasts. Not affiliated with The Indie Stone.

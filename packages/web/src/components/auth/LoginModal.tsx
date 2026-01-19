@@ -419,6 +419,10 @@ export function LoginModal({ onClose }: LoginModalProps) {
                   <a href="/terms" target="_blank" rel="noopener noreferrer">
                     Terms of Service
                   </a>
+                  {' '}and{' '}
+                  <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">
+                    Privacy Policy
+                  </a>
                 </span>
               </label>
             </div>

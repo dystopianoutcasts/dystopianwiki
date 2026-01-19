@@ -179,8 +179,14 @@ export class ApiService {
    * Get current user session
    */
   async getSession() {
-    const { data, error } = await this.supabase.auth.getSession()
-    return { session: data.session, error }
+    return await this.supabase.auth.getSession()
+  }
+
+  /**
+   * Subscribe to auth state changes
+   */
+  onAuthStateChange(callback: (event: string, session: any) => void) {
+    return this.supabase.auth.onAuthStateChange(callback)
   }
 
   /**
@@ -196,12 +202,13 @@ export class ApiService {
   async signUp(email: string, password: string, metadata?: {
     username?: string
     display_name?: string
-  }) {
+  }, emailRedirectUrl?: string) {
     return await this.supabase.auth.signUp({
       email,
       password,
       options: {
-        data: metadata // Passed to handle_new_user() trigger
+        data: metadata, // Passed to handle_new_user() trigger
+        emailRedirectTo: emailRedirectUrl
       }
     })
   }
@@ -216,9 +223,22 @@ export class ApiService {
   /**
    * Send password reset email
    */
-  async sendPasswordResetEmail(email: string) {
+  async sendPasswordResetEmail(email: string, redirectUrl: string) {
     return await this.supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`
+      redirectTo: redirectUrl
+    })
+  }
+
+  /**
+   * Resend verification email
+   */
+  async resendVerificationEmail(email: string, redirectUrl: string) {
+    return await this.supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: {
+        emailRedirectTo: redirectUrl
+      }
     })
   }
 

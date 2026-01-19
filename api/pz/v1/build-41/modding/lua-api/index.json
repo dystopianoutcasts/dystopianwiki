@@ -4,32 +4,67 @@
   "slug": "lua-api",
   "articles": [
     {
-      "id": "official-examples",
-      "title": "Official Lua Examples",
-      "slug": "official-examples",
+      "id": "lua-source-learning-path",
+      "title": "Lua Source Learning Path",
+      "slug": "lua-source-learning-path",
       "difficulty": "beginner",
       "order": 1
     },
     {
-      "id": "isbaseobject",
-      "title": "ISBaseObject Inheritance System",
-      "slug": "isbaseobject",
-      "difficulty": "intermediate",
+      "id": "official-examples",
+      "title": "Official Lua Examples",
+      "slug": "official-examples",
+      "difficulty": "beginner",
       "order": 2
     },
     {
-      "id": "timed-actions",
-      "title": "TimedAction Lifecycle",
-      "slug": "timed-actions",
+      "id": "isbaseobject",
+      "title": "ISBaseObject: The Foundation",
+      "slug": "isbaseobject",
       "difficulty": "intermediate",
       "order": 3
+    },
+    {
+      "id": "timed-actions",
+      "title": "ISBaseTimedAction: The Action System",
+      "slug": "timed-actions",
+      "difficulty": "intermediate",
+      "order": 4
+    },
+    {
+      "id": "context-menus",
+      "title": "Context Menu System",
+      "slug": "context-menus",
+      "difficulty": "intermediate",
+      "order": 5
+    },
+    {
+      "id": "events-overview",
+      "title": "Events Overview",
+      "slug": "events-overview",
+      "difficulty": "intermediate",
+      "order": 6
+    },
+    {
+      "id": "events-player",
+      "title": "Player Events",
+      "slug": "events-player",
+      "difficulty": "intermediate",
+      "order": 7
+    },
+    {
+      "id": "events-lifecycle",
+      "title": "Lifecycle Events",
+      "slug": "events-lifecycle",
+      "difficulty": "intermediate",
+      "order": 8
     },
     {
       "id": "weapon-model-swapping",
       "title": "Weapon 3D Model Swapping",
       "slug": "weapon-model-swapping",
       "difficulty": "advanced",
-      "order": 4
+      "order": 9
     }
   ]
 }

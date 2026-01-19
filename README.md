@@ -20,7 +20,15 @@ A community-driven wiki for Project Zomboid modding, powered by Supabase and Rea
 
 ## Documentation
 
-All documentation is in the [`docs/`](docs/) directory:
+### For Content Contributors
+
+📝 **[Creating Articles Guide](docs/CREATING_ARTICLES.md)** - Complete guide for writing and publishing articles
+⚡ **[Quick Reference](content/README.md)** - Quick start for content creators
+🤝 **[Contributing Guide](CONTRIBUTING.md)** - How to contribute to the project
+
+### For Developers
+
+All technical documentation is in the [`docs/`](docs/) directory:
 - `/docs/guides` - Setup and usage guides
 - `/docs/planning` - Active planning documents
 - `/docs/archive` - Completed phase documentation

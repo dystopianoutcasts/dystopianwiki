@@ -1,0 +1,76 @@
+{
+  "id": "lua-api-learning-path",
+  "title": "Lua Source Learning Path",
+  "slug": "lua-source-learning-path",
+  "version": "build-41",
+  "section": "modding",
+  "category": "lua-api",
+  "tags": [
+    "beginner",
+    "guide",
+    "learning",
+    "roadmap",
+    "lua"
+  ],
+  "content": "# Lua Source Learning Path\n\n## The Goal\n\nProject Zomboid has **888 Lua files** that control everything from UI panels to player actions to game systems. This guide shows you **the order to learn them** so each piece builds on the last.\n\n---\n\n## The Learning Sequence\n\n```\n┌─────────────────────────────────────────────────────────────┐\n│  1. ISBaseObject                                            │\n│     The foundation - how ALL PZ objects work                │\n│     (You should read this first)                            │\n└─────────────────────────┬───────────────────────────────────┘\n                          │\n          ┌───────────────┼───────────────┐\n          ▼               ▼               ▼\n┌─────────────────┐ ┌───────────┐ ┌─────────────────┐\n│ 2A. TimedActions│ │2B. UI     │ │ 2C. Events      │\n│ Player actions  │ │ ISPanel   │ │ Game hooks      │\n│ (recommended)   │ │ Windows   │ │                 │\n└────────┬────────┘ └─────┬─────┘ └────────┬────────┘\n         │                │                │\n         ▼                │                │\n┌─────────────────┐       │                │\n│ 3. Context Menus│◄──────┴────────────────┘\n│ Right-click opts│\n│ Connects it all │\n└────────┬────────┘\n         │\n         ▼\n┌─────────────────────────────────────────────────────────────┐\n│  4. Game Systems                                            │\n│     Farming, Foraging, Vehicles, Health, etc.               │\n│     (Pick based on what you want to mod)                    │\n└─────────────────────────────────────────────────────────────┘\n```\n\n---\n\n## Step 1: ISBaseObject (Foundation)\n\n**What you learn:** How PZ's object-oriented programming works\n\n**Why it matters:** Every single UI component, timed action, and game system inherits from ISBaseObject. You can't understand anything else without this.\n\n**Key concepts:**\n- `derive()` - Creating new classes\n- `new()` - Creating instances\n- Metatable inheritance\n- The `Type` property\n\n**Read:** [ISBaseObject: The Foundation of Everything](/build-41/modding/lua-api/isbaseobject)\n\n---\n\n## Step 2: Choose Your Path\n\nAfter ISBaseObject, your next step depends on **what you want to build**:\n\n### Path A: Timed Actions (Recommended First)\n\n**Best for:** Adding new player interactions, custom crafting, special abilities\n\n**What you learn:**\n- The action lifecycle (start → update → perform → stop)\n- How to validate actions\n- How actions connect to the game\n\n**Why recommended first:**\n- More immediately practical than UI\n- Simpler than building windows\n- Every mod that adds \"do something\" needs this\n\n**Read:** [ISBaseTimedAction: The Action Lifecycle](/build-41/modding/lua-api/timed-actions)\n\n### Path B: UI Framework\n\n**Best for:** Custom windows, HUD elements, menus\n\n**What you learn:**\n- ISUIElement and ISPanel\n- Creating windows and buttons\n- The render/update cycle\n\n**When to choose this:**\n- You specifically need a custom UI\n- You're building a complex mod with configuration screens\n\n**Read:** [ISUI Framework Overview](/build-41/modding/ui-framework/overview)\n\n### Path C: Events System\n\n**Best for:** Reacting to game events, passive mods\n\n**What you learn:**\n- Available game events\n- How to hook into them\n- Event timing and order\n\n**When to choose this:**\n- Your mod reacts to things (player dies, item picked up)\n- You don't need new actions or UI yet\n\n**Read:** [Events Overview](/build-41/modding/lua-api/events-overview)\n\n---\n\n## Step 3: Context Menus\n\n**What you learn:** How right-click menus work and how to add options\n\n**Why it's step 3:** Context menus **connect everything**:\n- They trigger **timed actions** (Step 2A)\n- They can open **UI windows** (Step 2B)\n- They respond to **events** (Step 2C)\n\nYou need to understand at least one of those systems first.\n\n**Key concepts:**\n- Building menu structures\n- Adding options conditionally\n- Connecting to actions\n\n**Read:** [Context Menu System](/build-41/modding/lua-api/context-menus)\n\n---\n\n## Step 4: Game Systems\n\nOnce you understand the core patterns, dive into specific systems based on your mod:\n\n| If you're modding... | Study these systems |\n|---------------------|--------------------|\n| Food/Cooking | Nutrition, Evolved Recipes, ISEatFoodAction |\n| Weapons | HandWeapon API, Reloading system |\n| Medical | BodyDamage, Health system, Medical actions |\n| Building | ISBuildingObject, Construction actions |\n| Farming | Farming system (client + server) |\n| Vehicles | Vehicle API, Part system |\n| Loot/Spawning | Distributions, ProceduralDistributions |\n\n---\n\n## The 888 Files: Where Things Live\n\n```\nmedia/lua/\n├── shared/              # Used by both client and server\n│   ├── ISBaseObject.lua      # THE foundation\n│   ├── luautils.lua          # Utility functions\n│   ├── defines.lua           # Game constants\n│   └── TimedActions/         # Base action class\n│\n├── client/              # Client-side (UI, player interaction)\n│   ├── ISUI/                 # UI framework (166 files!)\n│   ├── TimedActions/         # All player actions (130+ files)\n│   ├── Context/              # Right-click menus\n│   ├── Farming/              # Farming UI\n│   ├── Foraging/             # Foraging UI\n│   └── ...\n│\n└── server/              # Server-side (game logic)\n    ├── Items/                # Item spawning\n    ├── Farming/              # Farming logic\n    ├── Vehicles/             # Vehicle spawning\n    └── ...\n```\n\n---\n\n## Tips for Learning\n\n### 1. Read Vanilla Code\n\nThe best teacher is PZ itself. When you want to know how something works:\n\n```lua\n-- Want to know how eating works?\n-- Read: media/lua/client/TimedActions/ISEatFoodAction.lua\n\n-- Want to know how crafting UI works?\n-- Read: media/lua/client/ISUI/ISCraftingUI.lua\n\n-- Want to know how context menus are built?\n-- Read: media/lua/client/Context/ISContextMenu.lua\n```\n\n### 2. Trace the Inheritance\n\nWhen you open a file, first look at what it derives from:\n\n```lua\nISEatFoodAction = ISBaseTimedAction:derive(\"ISEatFoodAction\");\n-- ^ This tells you to also read ISBaseTimedAction.lua\n```\n\n### 3. Search for Usage\n\nFind where something is used:\n\n```bash\n# Find everywhere ISEatFoodAction is created\ngrep -r \"ISEatFoodAction:new\" media/lua/\n```\n\n### 4. Start Small\n\nYour first mod should be simple:\n- Add one context menu option\n- That triggers one timed action\n- That does one thing\n\nThen expand from there.\n\n---\n\n## Quick Reference: What Inherits From What\n\n```\nISBaseObject\n├── ISUIElement → ISPanel → ISButton, ISCollapsableWindow, etc.\n├── ISBaseTimedAction → ISEatFoodAction, ISCraftAction, etc.\n├── ISBuildingObject → ISWoodenWall, ISWoodenDoor, etc.\n└── ISReloadable → ISReloadableMagazine, ISReloadableWeapon\n```\n\nEverything traces back to ISBaseObject.\n\n---\n\n## Recommended Reading Order\n\nFor a complete understanding, read in this order:\n\n1. **[ISBaseObject](/build-41/modding/lua-api/isbaseobject)** - The foundation\n2. **[ISBaseTimedAction](/build-41/modding/lua-api/timed-actions)** - Player actions\n3. **[Context Menus](/build-41/modding/lua-api/context-menus)** - Right-click system\n4. **[Events Overview](/build-41/modding/lua-api/events-overview)** - Game hooks\n5. **[luautils Reference](/build-41/modding/lua-api/luautils)** - Utility functions\n6. **[ISUI Framework](/build-41/modding/ui-framework/overview)** - UI components\n\nThis order ensures each article builds on knowledge from the previous ones.",
+  "excerpt": "A guided path through PZ's 888 Lua files. Learn the optimal order to study the codebase: ISBaseObject → Timed Actions → Context Menus → Game Systems.",
+  "lastUpdated": "2026-01-19",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "the-goal",
+      "text": "The Goal",
+      "level": 2
+    },
+    {
+      "id": "the-learning-sequence",
+      "text": "The Learning Sequence",
+      "level": 2
+    },
+    {
+      "id": "step-1-isbaseobject-foundation",
+      "text": "Step 1: ISBaseObject",
+      "level": 2
+    },
+    {
+      "id": "step-2-choose-your-path",
+      "text": "Step 2: Choose Your Path",
+      "level": 2
+    },
+    {
+      "id": "step-3-context-menus",
+      "text": "Step 3: Context Menus",
+      "level": 2
+    },
+    {
+      "id": "step-4-game-systems",
+      "text": "Step 4: Game Systems",
+      "level": 2
+    },
+    {
+      "id": "the-888-files-where-things-live",
+      "text": "The 888 Files: Where Things Live",
+      "level": 2
+    },
+    {
+      "id": "tips-for-learning",
+      "text": "Tips for Learning",
+      "level": 2
+    },
+    {
+      "id": "quick-reference-what-inherits-from-what",
+      "text": "Quick Reference: Inheritance",
+      "level": 2
+    },
+    {
+      "id": "recommended-reading-order",
+      "text": "Recommended Reading Order",
+      "level": 2
+    }
+  ],
+  "nextSteps": [
+    {"title": "ISBaseObject", "url": "/build-41/modding/lua-api/isbaseobject", "description": "Start here - the foundation of everything"},
+    {"title": "Timed Actions", "url": "/build-41/modding/lua-api/timed-actions", "description": "How player actions work"},
+    {"title": "Context Menus", "url": "/build-41/modding/lua-api/context-menus", "description": "Right-click menu system"}
+  ]
+}

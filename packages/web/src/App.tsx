@@ -10,6 +10,7 @@ import { LearningPathPage } from './pages/LearningPathPage';
 import { BookmarksPage } from './pages/BookmarksPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { TermsPage } from './pages/TermsPage';
+import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { ArticleProvider } from './context/ArticleContext';
@@ -44,6 +45,7 @@ function App() {
         <Route path="/bookmarks" element={<BookmarksPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         {/* Learning Path - PZ specific for now */}

@@ -19,7 +19,7 @@ const games: GameCard[] = [
     shortName: 'PZ',
     description: 'Modding guides, Lua API reference, and vanilla documentation for the ultimate zombie survival sandbox.',
     icon: '/assets/games/pz-icon.png',
-    color: '#4a7c59', // Zombie green
+    color: '#22c55e', // Vibrant zombie green
     url: '/pz/build-41/modding',
   },
   {
@@ -28,7 +28,7 @@ const games: GameCard[] = [
     shortName: 'VS',
     description: 'Coming soon: modding documentation, server guides, and gameplay tips for the wilderness survival game.',
     icon: '/assets/games/vs-icon.png',
-    color: '#8b6914', // Vintage amber/brown
+    color: '#f59e0b', // Vibrant amber/gold
     url: '/vs',
     comingSoon: true,
   },

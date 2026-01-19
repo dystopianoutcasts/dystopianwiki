@@ -12,10 +12,21 @@
     "web:preview": "npm run preview --workspace=packages/web",
     "mobile": "npm run start --workspace=packages/mobile",
     "shared:build": "npm run build --workspace=packages/shared",
+    "sync": "tsx scripts/sync-articles.ts",
+    "sync:dry-run": "tsx scripts/sync-articles.ts --dry-run",
     "install:all": "npm install && npm install --workspaces",
     "clean": "rm -rf node_modules packages/*/node_modules packages/*/dist"
   },
   "devDependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "@types/node": "^20.10.0",
+    "dotenv": "^16.3.1",
+    "glob": "^10.3.10",
+    "gray-matter": "^4.0.3",
+    "tsx": "^4.7.0",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "react": "19.1.0"
   }
 }
