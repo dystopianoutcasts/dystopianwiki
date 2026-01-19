@@ -5,12 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "tsx scripts/generate-manifest.ts",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "build:search": "tsx scripts/build-search-index.ts",
-    "generate-manifest": "tsx scripts/generate-manifest.ts"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@dystopianwiki/shared": "file:../shared",

@@ -66,7 +66,7 @@ export function SearchPage() {
       category: result.category,
       tags: result.tags || [],
       excerpt: result.excerpt || '',
-      difficulty: result.difficulty,
+      difficulty: result.difficulty || undefined,
       score: 0, // Supabase search doesn't return score
     }));
   }, [rawResults]);

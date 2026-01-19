@@ -3,6 +3,7 @@
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../lib/supabase'
+// @ts-ignore - Types are used in return types
 import type { Article, Category } from '@dystopianwiki/shared'
 
 // ============================================================================

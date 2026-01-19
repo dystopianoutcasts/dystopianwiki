@@ -3,7 +3,7 @@
  * Provides game context for URL generation and navigation
  */
 
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 export type GameId = 'pz' | 'vs' | null;
 
@@ -24,7 +24,6 @@ const GAME_NAMES: Record<string, string> = {
  */
 export function useGameContext(): GameContext {
   const location = useLocation();
-  const params = useParams();
 
   // Check if URL starts with a game prefix
   const pathParts = location.pathname.split('/').filter(Boolean);

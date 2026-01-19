@@ -1,5 +1,6 @@
 import { Link, NavLink } from 'react-router-dom';
 import { FuzzySearchBar } from '../search/FuzzySearchBar';
+// import { AuthButton } from '../auth/AuthButton'; // Temporarily disabled
 import '../../styles/components/header.css';
 
 // Icons
@@ -64,6 +65,9 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
 
         {/* Actions */}
         <div className="header__actions">
+          {/* Auth Button - Temporarily disabled */}
+          {/* <AuthButton /> */}
+
           {/* Version Selector */}
           <select className="header__version-select" defaultValue="build-41">
             <option value="build-41">Build 41</option>

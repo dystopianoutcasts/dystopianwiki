@@ -93,9 +93,9 @@ export function SectionPage() {
                     <div className="section-page__category-content">
                       <h3 className="section-page__category-name">{category.name}</h3>
                       <p className="section-page__category-description">{category.description}</p>
-                      {category.articleCount !== undefined && (
+                      {category.article_count !== undefined && (
                         <span className="section-page__category-count">
-                          {category.articleCount} {category.articleCount === 1 ? 'article' : 'articles'}
+                          {category.article_count} {category.article_count === 1 ? 'article' : 'articles'}
                         </span>
                       )}
                     </div>

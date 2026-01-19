@@ -126,12 +126,21 @@
   color: var(--color-highlight-300);
 }
 
+.wiki-article__title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-2);
+}
+
 .wiki-article__title {
+  flex: 1;
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
-  margin-bottom: var(--spacing-2);
   line-height: var(--line-height-tight);
+  margin: 0;
 }
 
 .wiki-article__excerpt {

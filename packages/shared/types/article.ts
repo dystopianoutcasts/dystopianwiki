@@ -40,7 +40,7 @@ export interface TOCItem {
 
 export interface NextStep {
   title: string
-  path: string
+  url: string
   description?: string
 }
 
@@ -65,5 +65,7 @@ export interface SearchResult {
   version: string
   section: string
   category: string
+  tags: string[]
+  difficulty: 'beginner' | 'intermediate' | 'advanced' | null
   rank: number
 }

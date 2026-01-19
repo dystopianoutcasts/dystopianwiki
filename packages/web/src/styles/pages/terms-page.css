@@ -1,0 +1,142 @@
+/* Terms Page */
+.terms-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  min-height: calc(100vh - 140px);
+}
+
+.terms-page__content {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  padding: 3rem;
+  line-height: 1.7;
+}
+
+.terms-page__content h1 {
+  font-family: var(--font-family-display);
+  font-size: 2.5rem;
+  color: var(--color-text-primary);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.terms-page__updated {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 2rem;
+  font-style: italic;
+}
+
+.terms-page__content > p {
+  color: var(--color-text-secondary);
+  margin-bottom: 2rem;
+}
+
+.terms-page__content section {
+  margin-bottom: 3rem;
+}
+
+.terms-page__content section:last-child {
+  margin-bottom: 0;
+}
+
+.terms-page__content h2 {
+  font-family: var(--font-family-display);
+  font-size: 1.75rem;
+  color: var(--color-accent-500);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--color-border);
+  letter-spacing: -0.01em;
+}
+
+.terms-page__content h3 {
+  font-family: var(--font-family-display);
+  font-size: 1.25rem;
+  color: var(--color-text-primary);
+  margin: 1.5rem 0 1rem;
+  letter-spacing: -0.01em;
+}
+
+.terms-page__content p {
+  color: var(--color-text-secondary);
+  margin-bottom: 1rem;
+  line-height: 1.7;
+}
+
+.terms-page__content ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 1rem 0 1.5rem 0;
+}
+
+.terms-page__content ul li {
+  position: relative;
+  padding-left: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+.terms-page__content ul li::before {
+  content: '▸';
+  position: absolute;
+  left: 0.5rem;
+  color: var(--color-accent-500);
+  font-weight: bold;
+}
+
+.terms-page__content strong {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.terms-page__content a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.terms-page__content a:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .terms-page {
+    padding: 2rem 1rem;
+  }
+
+  .terms-page__content {
+    padding: 2rem 1.5rem;
+  }
+
+  .terms-page__content h1 {
+    font-size: 2rem;
+  }
+
+  .terms-page__content h2 {
+    font-size: 1.5rem;
+  }
+
+  .terms-page__content h3 {
+    font-size: 1.125rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .terms-page {
+    padding: 1.5rem 0.75rem;
+  }
+
+  .terms-page__content {
+    padding: 1.5rem 1rem;
+  }
+
+  .terms-page__content h1 {
+    font-size: 1.75rem;
+  }
+}

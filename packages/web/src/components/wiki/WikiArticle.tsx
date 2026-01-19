@@ -5,6 +5,7 @@ import { MarkdownRenderer } from './MarkdownRenderer';
 import { TableOfContents, extractTOCFromMarkdown } from './TableOfContents';
 import { RelatedArticles } from './RelatedArticles';
 import { ArticleCTA } from './ArticleCTA';
+import { BookmarkButton } from '../article/BookmarkButton';
 import { useArticleContext } from '../../context/ArticleContext';
 import '../../styles/components/wiki-article.css';
 
@@ -113,7 +114,10 @@ export function WikiArticle({
               )}
             </div>
 
-            <h1 className="wiki-article__title">{article.title}</h1>
+            <div className="wiki-article__title-row">
+              <h1 className="wiki-article__title">{article.title}</h1>
+              <BookmarkButton articleId={article.id} articleTitle={article.title} />
+            </div>
 
             {article.excerpt && (
               <p className="wiki-article__excerpt">{article.excerpt}</p>

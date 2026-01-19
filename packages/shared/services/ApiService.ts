@@ -193,8 +193,17 @@ export class ApiService {
   /**
    * Sign up with email/password
    */
-  async signUp(email: string, password: string) {
-    return await this.supabase.auth.signUp({ email, password })
+  async signUp(email: string, password: string, metadata?: {
+    username?: string
+    display_name?: string
+  }) {
+    return await this.supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: metadata // Passed to handle_new_user() trigger
+      }
+    })
   }
 
   /**
@@ -202,6 +211,24 @@ export class ApiService {
    */
   async signOut() {
     return await this.supabase.auth.signOut()
+  }
+
+  /**
+   * Send password reset email
+   */
+  async sendPasswordResetEmail(email: string) {
+    return await this.supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`
+    })
+  }
+
+  /**
+   * Update password (called from reset page with valid token)
+   */
+  async updatePassword(newPassword: string) {
+    return await this.supabase.auth.updateUser({
+      password: newPassword
+    })
   }
 
   /**
@@ -251,12 +278,15 @@ export class ApiService {
   // ============================================================================
 
   /**
-   * Get user's bookmarks
+   * Get user's bookmarks with article details
    */
-  async getBookmarks(userId: string): Promise<Bookmark[]> {
+  async getBookmarks(userId: string): Promise<(Bookmark & { article: Article })[]> {
     const { data, error } = await this.supabase
       .from('bookmarks')
-      .select('*')
+      .select(`
+        *,
+        article:articles(*)
+      `)
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
 
@@ -265,7 +295,7 @@ export class ApiService {
       return []
     }
 
-    return data as Bookmark[]
+    return data as (Bookmark & { article: Article })[]
   }
 
   /**

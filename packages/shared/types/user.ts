@@ -3,6 +3,7 @@
  */
 export interface UserProfile {
   id: string
+  username: string
   display_name: string | null
   avatar_url: string | null
   preferred_game: string

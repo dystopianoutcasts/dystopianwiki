@@ -7,9 +7,13 @@ import { CategoryPage } from './pages/CategoryPage';
 import { ArticlePage } from './pages/ArticlePage';
 import { SearchPage } from './pages/SearchPage';
 import { LearningPathPage } from './pages/LearningPathPage';
+import { BookmarksPage } from './pages/BookmarksPage';
+import { SettingsPage } from './pages/SettingsPage';
+import { TermsPage } from './pages/TermsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { ArticleProvider } from './context/ArticleContext';
 import { LearningPathProvider } from './context/LearningPathContext';
+import { AuthProvider } from './context/AuthContext';
 import { checkForContentUpdates } from './utils/manifestChecker';
 
 // Import global styles
@@ -25,6 +29,7 @@ function App() {
 
   return (
     <BrowserRouter basename="/">
+      <AuthProvider>
       <LearningPathProvider>
       <ArticleProvider>
       <Routes>
@@ -33,6 +38,11 @@ function App() {
 
         {/* Search Page */}
         <Route path="/search" element={<SearchPage />} />
+
+        {/* User Pages */}
+        <Route path="/bookmarks" element={<BookmarksPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/terms" element={<TermsPage />} />
 
         {/* Learning Path - PZ specific for now */}
         <Route path="/learning-path" element={<LearningPathPage />} />
@@ -63,6 +73,7 @@ function App() {
       </Routes>
       </ArticleProvider>
       </LearningPathProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

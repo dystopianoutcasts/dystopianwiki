@@ -7,7 +7,30 @@ import { SEOHead } from '../components/seo/SEOHead';
 import { useArticle as useSupabaseArticle, useArticlesByCategory } from '../hooks/useSupabase';
 import { useGameContext } from '../hooks/useGameContext';
 import { useLearningPathContext } from '../context/LearningPathContext';
+import type { Article } from '@dystopianwiki/shared';
+import type { WikiArticle as WikiArticleType } from '../types/wiki';
 import '../styles/pages/article-page.css';
+
+// Helper to convert Supabase Article to WikiArticle format
+function toWikiArticle(article: Article): WikiArticleType {
+  return {
+    id: article.id,
+    slug: article.slug,
+    title: article.title,
+    content: article.content,
+    excerpt: article.excerpt || '',
+    version: article.version,
+    section: article.section,
+    category: article.category,
+    subcategory: article.subcategory || undefined,
+    tags: article.tags,
+    relatedArticles: article.related_articles,
+    lastUpdated: article.last_updated,
+    difficulty: article.difficulty || undefined,
+    tableOfContents: article.table_of_contents,
+    nextSteps: article.next_steps || undefined,
+  };
+}
 
 export function ArticlePage() {
   const { version = 'build-41', section = '', category = '', slug = '' } = useParams<{
@@ -98,11 +121,11 @@ export function ArticlePage() {
     .map((a) => ({
       slug: a.slug,
       title: a.title,
-      excerpt: a.excerpt,
+      excerpt: a.excerpt || '',
       category,
       section,
       version,
-      difficulty: a.difficulty,
+      difficulty: a.difficulty || undefined,
     }));
 
   if (loading) {
@@ -138,6 +161,9 @@ export function ArticlePage() {
     );
   }
 
+  // Convert article to WikiArticle format
+  const wikiArticle = toWikiArticle(article);
+
   return (
     <Layout>
       <SEOHead
@@ -154,7 +180,7 @@ export function ArticlePage() {
       <WikiLayout>
         <div className="article-page">
           <WikiArticle
-            article={article}
+            article={wikiArticle}
             relatedArticles={relatedArticles}
             prevArticle={prevArticle}
             nextArticle={nextArticle}
