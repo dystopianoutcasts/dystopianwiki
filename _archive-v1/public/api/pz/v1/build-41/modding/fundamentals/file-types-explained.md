@@ -2,7 +2,7 @@
 id: file-types-explained
 slug: file-types-explained
 title: File Types Explained
-excerpt: Project Zomboid modding uses several file types, each with specific syntax rules. This guide covers the most important ones: script files (`.txt`) for items and recipes, and Lua files (`.lua`) for...
+excerpt: "Project Zomboid modding uses several file types, each with specific syntax rules. This guide covers the most important ones: script files (.txt) for items and recipes, and Lua files (.lua) for custom logic."
 game: pz
 version: build-41
 section: modding

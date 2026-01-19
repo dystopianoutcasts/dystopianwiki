@@ -2,7 +2,7 @@
 id: first-item-file
 slug: first-item-file
 title: Your First Custom Item
-excerpt: Time to create a custom item from scratch. We'll make a food item - a homemade energy bar - that you can find, eat, and eventually craft with a recipe. An **Energy Bar** with: In your mod folder,...
+excerpt: "Time to create a custom item from scratch. We'll make a food item - a homemade energy bar - that you can find, eat, and eventually craft with a recipe. An **Energy Bar** with: In your mod folder,..."
 game: pz
 version: build-41
 section: modding

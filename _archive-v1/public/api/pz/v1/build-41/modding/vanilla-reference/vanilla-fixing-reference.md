@@ -2,7 +2,7 @@
 id: vanilla-fixing-reference
 slug: vanilla-fixing-reference
 title: Vanilla Fixing (Repair) System Reference
-excerpt: Complete reference for all **76 fixing entries** in Project Zomboid Build 41. The `fixing` system allows players to repair items using consumable materials. Unlike `recipe`, fixing entries: fixing...
+excerpt: "Complete reference for all **76 fixing entries** in Project Zomboid Build 41. The `fixing` system allows players to repair items using consumable materials. Unlike `recipe`, fixing entries: fixing..."
 game: pz
 version: build-41
 section: modding

@@ -2,7 +2,7 @@
 id: vanilla-vehicle-items-reference
 slug: vanilla-vehicle-items-reference
 title: Vanilla Vehicle Items Reference
-excerpt: Complete reference for all **97 vehicle-related items** in Project Zomboid Build 41. Vehicle parts in PZ use a quality tier system: | Tier | Examples | Quality | |------|----------|---------| |...
+excerpt: "Complete reference for all **97 vehicle-related items** in Project Zomboid Build 41. Vehicle parts in PZ use a quality tier system: | Tier | Examples | Quality | |------|----------|---------| |..."
 game: pz
 version: build-41
 section: modding

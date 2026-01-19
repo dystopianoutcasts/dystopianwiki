@@ -2,7 +2,7 @@
 id: repair-formulas
 slug: repair-formulas
 title: Repair Formulas and Calculations
-excerpt: When using a weapon, condition loss is calculated per action: if ZombRand(conditionLowerChance * 2 + maintenanceMod * 2) == 0 then condition = condition - 1 else AddXP(Perks.Maintenance, 1) end...
+excerpt: "When using a weapon, condition loss is calculated per action: if ZombRand(conditionLowerChance * 2 + maintenanceMod * 2) == 0 then condition = condition - 1 else AddXP(Perks.Maintenance, 1) end..."
 game: pz
 version: build-41
 section: modding

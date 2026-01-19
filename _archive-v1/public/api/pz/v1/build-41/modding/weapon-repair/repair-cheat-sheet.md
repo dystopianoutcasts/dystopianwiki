@@ -2,7 +2,7 @@
 id: repair-cheat-sheet
 slug: repair-cheat-sheet
 title: Weapon Repair Quick Reference Cheat Sheet
-excerpt: fixing Fix [ItemType] { Require : [ItemType], GlobalItem : [Tool]=[Uses],           // Optional ConditionModifier : [decimal],         // Optional Fixer : [Item]=[Uses], Fixer : [Item]=[Uses];...
+excerpt: "fixing Fix [ItemType] { Require : [ItemType], GlobalItem : [Tool]=[Uses],           // Optional ConditionModifier : [decimal],         // Optional Fixer : [Item]=[Uses], Fixer : [Item]=[Uses];..."
 game: pz
 version: build-41
 section: modding

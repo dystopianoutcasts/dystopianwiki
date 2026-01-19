@@ -2,7 +2,7 @@
 id: mod-info-file
 slug: mod-info-file
 title: The mod.info File
-excerpt: The `mod.info` file is your mod's ID card. It tells Project Zomboid everything it needs to know: the mod's name, what it does, who made it, and what it requires. Without this file, PZ won't recognize...
+excerpt: "The `mod.info` file is your mod's ID card. It tells Project Zomboid everything it needs to know: the mod's name, what it does, who made it, and what it requires. Without this file, PZ won't recognize..."
 game: pz
 version: build-41
 section: modding

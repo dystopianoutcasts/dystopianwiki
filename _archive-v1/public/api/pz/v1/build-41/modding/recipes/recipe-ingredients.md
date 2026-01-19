@@ -2,7 +2,7 @@
 id: recipe-ingredients
 slug: recipe-ingredients
 title: Recipe Ingredients Deep Dive
-excerpt: Basic recipes use simple ingredients. Real mods need more: alternative items, tool types, quantities, and special behaviors. This guide covers all ingredient patterns. TreeBranch, Requires exactly...
+excerpt: "Basic recipes use simple ingredients. Real mods need more: alternative items, tool types, quantities, and special behaviors. This guide covers all ingredient patterns. TreeBranch, Requires exactly..."
 game: pz
 version: build-41
 section: modding

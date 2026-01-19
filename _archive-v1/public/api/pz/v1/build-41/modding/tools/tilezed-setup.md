@@ -2,7 +2,7 @@
 id: tilezed-setup
 slug: tilezed-setup
 title: TileZed Setup Guide - Outcast Antique Oven
-excerpt: This guide provides step-by-step instructions for creating the Outcast Antique Oven tiles in TileZed. 1. **TileZed Installed**: Download from...
+excerpt: "This guide provides step-by-step instructions for creating the Outcast Antique Oven tiles in TileZed. 1. **TileZed Installed**: Download from..."
 game: pz
 version: build-41
 section: modding

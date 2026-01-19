@@ -2,7 +2,7 @@
 id: repair-system-guide
 slug: repair-system-guide
 title: Understanding Repair Systems in Project Zomboid
-excerpt: Project Zomboid has **two completely different repair systems**: one for items (weapons, tools, instruments) and one for vehicles. This guide explains both systems in depth and how to make your...
+excerpt: "Project Zomboid has **two completely different repair systems**: one for items (weapons, tools, instruments) and one for vehicles. This guide explains both systems in depth and how to make your..."
 game: pz
 version: build-41
 section: modding

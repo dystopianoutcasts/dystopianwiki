@@ -2,7 +2,7 @@
 id: first-recipe-file
 slug: first-recipe-file
 title: Your First Recipe File
-excerpt: Time to write a real recipe. By the end of this guide, you'll have a working mod that adds a custom crafting recipe to Project Zomboid. A recipe to craft a **makeshift torch** from: Before starting,...
+excerpt: "Time to write a real recipe. By the end of this guide, you'll have a working mod that adds a custom crafting recipe to Project Zomboid. A recipe to craft a **makeshift torch** from: Before starting,..."
 game: pz
 version: build-41
 section: modding

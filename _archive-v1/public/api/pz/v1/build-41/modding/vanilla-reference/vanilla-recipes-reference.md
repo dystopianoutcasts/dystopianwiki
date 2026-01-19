@@ -2,7 +2,7 @@
 id: vanilla-recipes-reference
 slug: vanilla-recipes-reference
 title: Vanilla Recipes Reference
-excerpt: Complete reference for all **292 vanilla recipes** in Project Zomboid Build 41. Recipes in PZ use a colon (`:`) for properties, unlike items which use equals (`=`): recipe Make Stake { TreeBranch,   ...
+excerpt: "Complete reference for all **292 vanilla recipes** in Project Zomboid Build 41. Recipes in PZ use a colon (`:`) for properties, unlike items which use equals (`=`): recipe Make Stake { TreeBranch,   ..."
 game: pz
 version: build-41
 section: modding

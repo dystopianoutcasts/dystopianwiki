@@ -2,7 +2,7 @@
 id: repair-system-overview
 slug: repair-system-overview
 title: Project Zomboid Repair System Overview
-excerpt: The repair system in Project Zomboid consists of three main layers: ┌─────────────────────────────────────────────────────────┐ │                    SCRIPT LAYER                         │ │ ...
+excerpt: "The repair system in Project Zomboid consists of three main layers: ┌─────────────────────────────────────────────────────────┐ │                    SCRIPT LAYER                         │ │ ..."
 game: pz
 version: build-41
 section: modding
