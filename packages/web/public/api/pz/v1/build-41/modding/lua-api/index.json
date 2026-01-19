@@ -1,0 +1,35 @@
+{
+  "id": "lua-api",
+  "name": "Lua API",
+  "slug": "lua-api",
+  "articles": [
+    {
+      "id": "official-examples",
+      "title": "Official Lua Examples",
+      "slug": "official-examples",
+      "difficulty": "beginner",
+      "order": 1
+    },
+    {
+      "id": "isbaseobject",
+      "title": "ISBaseObject Inheritance System",
+      "slug": "isbaseobject",
+      "difficulty": "intermediate",
+      "order": 2
+    },
+    {
+      "id": "timed-actions",
+      "title": "TimedAction Lifecycle",
+      "slug": "timed-actions",
+      "difficulty": "intermediate",
+      "order": 3
+    },
+    {
+      "id": "weapon-model-swapping",
+      "title": "Weapon 3D Model Swapping",
+      "slug": "weapon-model-swapping",
+      "difficulty": "advanced",
+      "order": 4
+    }
+  ]
+}

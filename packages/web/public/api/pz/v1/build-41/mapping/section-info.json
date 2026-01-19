@@ -1,0 +1,6 @@
+{
+  "id": "mapping",
+  "name": "Mapping",
+  "description": "Create custom maps for Project Zomboid using TileZed and WorldEd. From your first building to full custom regions.",
+  "icon": "map"
+}

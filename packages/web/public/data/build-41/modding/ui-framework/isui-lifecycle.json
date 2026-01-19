@@ -1,0 +1,87 @@
+{
+  "id": "ui-framework-isui-lifecycle",
+  "title": "UI Element Lifecycle",
+  "slug": "isui-lifecycle",
+  "version": "build-41",
+  "section": "modding",
+  "category": "ui-framework",
+  "tags": [
+    "intermediate",
+    "lua",
+    "ui",
+    "isui",
+    "lifecycle",
+    "api"
+  ],
+  "content": "# UI Element Lifecycle\n\n## Overview\n\nEvery ISUI component goes through a well-defined lifecycle. Understanding these phases is essential for creating custom UI elements that initialize correctly and clean up properly.\n\n---\n\n## Lifecycle Diagram\n\n```\n┌─────────────────────────────────────────────────────────┐\n│                    CREATION PHASE                       │\n├─────────────────────────────────────────────────────────┤\n│  1. new(x, y, width, height)                            │\n│     └── Creates Lua object, sets dimensions             │\n│         └── Position clamped to screen bounds           │\n│                                                         │\n│  2. initialise()                                        │\n│     └── Creates children table                          │\n│         └── Assigns unique ID                           │\n│                                                         │\n│  3. instantiate()                                       │\n│     └── Creates Java UIElement                          │\n│         └── Syncs properties to Java                    │\n│             └── Calls createChildren()                  │\n│                                                         │\n│  4. createChildren()                                    │\n│     └── Add child components (buttons, labels, etc.)    │\n│                                                         │\n│  5. addToUIManager()                                    │\n│     └── Registers with game's UI system                 │\n│         └── Element now visible and receiving events    │\n└─────────────────────────────────────────────────────────┘\n                          │\n                          ▼\n┌─────────────────────────────────────────────────────────┐\n│                    ACTIVE PHASE                         │\n├─────────────────────────────────────────────────────────┤\n│  6. Render Loop (repeating each frame):                 │\n│     ├── update()      - Logic updates                   │\n│     ├── prerender()   - Draw backgrounds                │\n│     │   └── (children prerender)                        │\n│     │       └── (children render)                       │\n│     └── render()      - Draw foreground                 │\n└─────────────────────────────────────────────────────────┘\n                          │\n                          ▼\n┌─────────────────────────────────────────────────────────┐\n│                   CLEANUP PHASE                         │\n├─────────────────────────────────────────────────────────┤\n│  7. removeFromUIManager()                               │\n│     └── Unregisters from UI system                      │\n│         └── Sets removed = true                         │\n└─────────────────────────────────────────────────────────┘\n```\n\n---\n\n## Phase 1: Construction - `new()`\n\n```lua\nfunction ISUIElement:new(x, y, width, height)\n    local o = {}\n    setmetatable(o, self)\n    self.__index = self\n\n    -- Screen boundary clamping\n    local maxY = getCore():getScreenHeight()\n    local maxX = getCore():getScreenWidth()\n    o.x = math.max(0, math.min(x, maxX - width))\n    o.y = math.max(0, math.min(y, maxY - height))\n\n    -- Core dimensions\n    o.width = width\n    o.height = height\n\n    -- Default anchoring (top-left)\n    o.anchorLeft = true\n    o.anchorRight = false\n    o.anchorTop = true\n    o.anchorBottom = false\n\n    -- Other defaults\n    o.dock = \"none\"\n    o.minimumWidth = 0\n    o.minimumHeight = 0\n    o.removed = false\n\n    return o\nend\n```\n\n**Key Points:**\n- Creates the Lua table object\n- Position is clamped to keep element on screen\n- Sets default anchoring to top-left\n- `javaObject` does NOT exist yet\n\n**Override Pattern:**\n```lua\nfunction MyPanel:new(x, y, width, height)\n    local o = ISPanel:new(x, y, width, height)  -- Call parent\n    setmetatable(o, self)\n    self.__index = self\n    \n    -- Set your custom properties\n    o.myCustomData = {}\n    o.backgroundColor = {r=0.1, g=0.1, b=0.1, a=0.9}\n    \n    return o\nend\n```\n\n---\n\n## Phase 2: Initialization - `initialise()`\n\n```lua\nfunction ISUIElement:initialise()\n    self.children = {}\n    self.ID = ISUIElement.IDMax\n    ISUIElement.IDMax = ISUIElement.IDMax + 1\nend\n```\n\n**Key Points:**\n- Creates the `children` table for storing child elements\n- Assigns a unique ID from a global counter\n- Called exactly ONCE per element\n- `javaObject` still does NOT exist\n\n**Override Pattern:**\n```lua\nfunction MyPanel:initialise()\n    ISPanel.initialise(self)  -- ALWAYS call parent first\n    \n    -- Initialize your custom state\n    self.selectedItem = nil\n    self.isAnimating = false\nend\n```\n\n---\n\n## Phase 3: Instantiation - `instantiate()`\n\n```lua\nfunction ISUIElement:instantiate()\n    -- Create the Java-side element\n    self.javaObject = UIElement.new(self)\n    \n    -- Sync Lua properties to Java\n    self.javaObject:setX(self.x)\n    self.javaObject:setY(self.y)\n    self.javaObject:setHeight(self.height)\n    self.javaObject:setWidth(self.width)\n    self.javaObject:setAnchorLeft(self.anchorLeft)\n    self.javaObject:setAnchorRight(self.anchorRight)\n    self.javaObject:setAnchorTop(self.anchorTop)\n    self.javaObject:setAnchorBottom(self.anchorBottom)\n    self.javaObject:setWantKeyEvents(self.wantKeyEvents or false)\n    self.javaObject:setForceCursorVisible(self.forceCursorVisible or false)\n    \n    -- Automatically calls createChildren\n    self:createChildren()\nend\n```\n\n**Key Points:**\n- Creates the Java `UIElement` that handles actual rendering\n- Syncs all Lua properties to the Java object\n- Automatically triggers `createChildren()`\n- After this, `self.javaObject` is available\n\n**Override Pattern:**\n```lua\nfunction MyPanel:instantiate()\n    ISPanel.instantiate(self)  -- ALWAYS call parent\n    \n    -- Do things that require javaObject\n    self.javaObject:setUIName(\"MyCustomPanel\")\nend\n```\n\n---\n\n## Phase 4: Child Creation - `createChildren()`\n\n```lua\nfunction ISUIElement:createChildren()\n    -- Empty by default - override in derived classes\nend\n```\n\n**Key Points:**\n- Override this to add child components\n- Called automatically by `instantiate()`\n- `javaObject` IS available in this phase\n- Use `self:addChild()` to add children\n\n**Override Pattern (Most Important):**\n```lua\nfunction MyPanel:createChildren()\n    ISPanel.createChildren(self)  -- Call parent if it has children\n    \n    -- Add a label\n    self.titleLabel = ISLabel:new(\n        10, 10, 25,\n        \"My Panel Title\",\n        1, 1, 1, 1,\n        UIFont.Medium, true\n    )\n    self.titleLabel:initialise()\n    self:addChild(self.titleLabel)\n    \n    -- Add a button\n    self.okButton = ISButton:new(\n        self.width - 90, self.height - 35,\n        80, 25,\n        \"OK\",\n        self, MyPanel.onOK\n    )\n    self.okButton:initialise()\n    self.okButton:instantiate()\n    self.okButton.anchorTop = false\n    self.okButton.anchorBottom = true\n    self:addChild(self.okButton)\nend\n```\n\n---\n\n## Phase 5: UI Manager Addition - `addToUIManager()`\n\n```lua\nfunction ISUIElement:addToUIManager()\n    if self.javaObject == nil then\n        self:instantiate()  -- Auto-instantiate if needed\n    end\n    UIManager.AddUI(self.javaObject)\nend\n```\n\n**Key Points:**\n- Auto-instantiates if you skipped that step\n- Registers the element with the game's UI system\n- After this, the element renders and receives events\n\n**Usage:**\n```lua\nlocal panel = MyPanel:new(100, 100, 300, 200)\npanel:initialise()\npanel:addToUIManager()  -- Now visible!\n```\n\n---\n\n## Phase 6: Render Loop\n\nOnce added to the UI manager, these methods are called every frame:\n\n### update()\n```lua\nfunction ISUIElement:update()\n    -- Called each frame for logic updates\nend\n```\n\n**Use for:** Animations, state checks, data updates\n\n```lua\nfunction MyPanel:update()\n    -- Animate a rotation\n    self.rotation = self.rotation + 0.01\n    \n    -- Check for changes\n    if self.needsRefresh then\n        self:refreshData()\n        self.needsRefresh = false\n    end\nend\n```\n\n### prerender()\n```lua\nfunction ISUIElement:prerender()\n    -- Called BEFORE children render\n    -- Draw backgrounds, borders here\nend\n```\n\n**Use for:** Backgrounds, borders, content that should appear behind children\n\n```lua\nfunction MyPanel:prerender()\n    -- Draw background\n    self:drawRect(0, 0, self.width, self.height,\n        self.backgroundColor.a,\n        self.backgroundColor.r,\n        self.backgroundColor.g,\n        self.backgroundColor.b)\n    \n    -- Draw border\n    self:drawRectBorder(0, 0, self.width, self.height,\n        self.borderColor.a,\n        self.borderColor.r,\n        self.borderColor.g,\n        self.borderColor.b)\nend\n```\n\n### render()\n```lua\nfunction ISUIElement:render()\n    -- Called AFTER children render\n    -- Draw overlays, foreground content here\nend\n```\n\n**Use for:** Overlays, highlights, content that should appear in front of children\n\n```lua\nfunction MyPanel:render()\n    -- Draw highlight over selected item\n    if self.selectedItem then\n        self:drawRect(0, self.selectedItem.y, self.width, 25,\n            0.3, 0.4, 0.6, 1.0)\n    end\nend\n```\n\n---\n\n## Phase 7: Removal - `removeFromUIManager()`\n\n```lua\nfunction ISUIElement:removeFromUIManager()\n    if self.javaObject == nil then\n        return\n    end\n    UIManager.RemoveElement(self.javaObject)\n    self.removed = true\nend\n```\n\n**Key Points:**\n- Unregisters from UI system\n- Sets `removed` flag to true\n- Element stops rendering and receiving events\n\n**Usage:**\n```lua\nfunction MyPanel:onClose()\n    self:removeFromUIManager()\n    -- or just hide without removing:\n    -- self:setVisible(false)\nend\n```\n\n---\n\n## Shortcut: Typical Usage Pattern\n\nFor most cases, you only need:\n\n```lua\n-- Create\nlocal panel = MyPanel:new(100, 100, 300, 200)\npanel:initialise()\npanel:addToUIManager()  -- instantiate() called automatically\n\n-- Later, to remove:\npanel:removeFromUIManager()\n```\n\n---\n\n## Child Element Pattern\n\nChildren go through a slightly different flow:\n\n```lua\nfunction MyPanel:createChildren()\n    -- Create child\n    self.myButton = ISButton:new(10, 10, 80, 25, \"Click\", self, self.onClick)\n    \n    -- Initialize child\n    self.myButton:initialise()\n    \n    -- Optional: instantiate (addChild will do it if needed)\n    self.myButton:instantiate()\n    \n    -- Add to parent (this registers it)\n    self:addChild(self.myButton)\n    -- Children do NOT call addToUIManager()\n    -- They render as part of their parent\nend\n```\n\n---\n\n## Common Mistakes\n\n### 1. Forgetting to call parent methods\n```lua\n-- WRONG\nfunction MyPanel:initialise()\n    self.myData = {}  -- Parent never initializes!\nend\n\n-- CORRECT\nfunction MyPanel:initialise()\n    ISPanel.initialise(self)  -- Call parent FIRST\n    self.myData = {}\nend\n```\n\n### 2. Accessing javaObject too early\n```lua\n-- WRONG - javaObject doesn't exist in new()\nfunction MyPanel:new(x, y, w, h)\n    local o = ISPanel:new(x, y, w, h)\n    o.javaObject:setUIName(\"test\")  -- CRASH!\n    return o\nend\n\n-- CORRECT - wait until createChildren() or later\nfunction MyPanel:createChildren()\n    ISPanel.createChildren(self)\n    self.javaObject:setUIName(\"test\")  -- Works!\nend\n```\n\n### 3. Adding children to UI manager\n```lua\n-- WRONG - children should not be added to UI manager\nself.myButton:addToUIManager()\n\n-- CORRECT - just add to parent\nself:addChild(self.myButton)\n```\n\n---\n\n## Related\n\n- [ISUI Framework Overview](/build-41/modding/ui-framework/isui-overview) - Framework introduction\n- [Panels and Containers](/build-41/modding/ui-framework/isui-panels) - ISPanel documentation\n- [ISBaseObject Inheritance](/build-41/modding/lua-api/isbaseobject) - The base class system",
+  "excerpt": "Complete guide to the ISUIElement lifecycle phases: new, initialise, instantiate, createChildren, addToUIManager, render loop, and removal.",
+  "lastUpdated": "2026-01-10",
+  "difficulty": "intermediate",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "lifecycle-diagram",
+      "text": "Lifecycle Diagram",
+      "level": 2
+    },
+    {
+      "id": "phase-1-construction---new",
+      "text": "Phase 1: Construction - new()",
+      "level": 2
+    },
+    {
+      "id": "phase-2-initialization---initialise",
+      "text": "Phase 2: Initialization - initialise()",
+      "level": 2
+    },
+    {
+      "id": "phase-3-instantiation---instantiate",
+      "text": "Phase 3: Instantiation - instantiate()",
+      "level": 2
+    },
+    {
+      "id": "phase-4-child-creation---createchildren",
+      "text": "Phase 4: Child Creation - createChildren()",
+      "level": 2
+    },
+    {
+      "id": "phase-5-ui-manager-addition---addtouimanager",
+      "text": "Phase 5: UI Manager Addition - addToUIManager()",
+      "level": 2
+    },
+    {
+      "id": "phase-6-render-loop",
+      "text": "Phase 6: Render Loop",
+      "level": 2
+    },
+    {
+      "id": "phase-7-removal---removefromuimanager",
+      "text": "Phase 7: Removal - removeFromUIManager()",
+      "level": 2
+    },
+    {
+      "id": "shortcut-typical-usage-pattern",
+      "text": "Shortcut: Typical Usage Pattern",
+      "level": 2
+    },
+    {
+      "id": "child-element-pattern",
+      "text": "Child Element Pattern",
+      "level": 2
+    },
+    {
+      "id": "common-mistakes",
+      "text": "Common Mistakes",
+      "level": 2
+    },
+    {
+      "id": "related",
+      "text": "Related",
+      "level": 2
+    }
+  ]
+}

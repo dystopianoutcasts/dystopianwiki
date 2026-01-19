@@ -1,0 +1,12 @@
+{
+  "articles": [
+    {
+      "id": "map-making-quick-guide",
+      "title": "Map Making Quick Guide (Video Series)",
+      "slug": "map-making-quick-guide",
+      "excerpt": "Complete 29-part video tutorial series covering everything from setting up tools to publishing your map on Steam Workshop.",
+      "difficulty": "beginner",
+      "tags": ["video", "tutorial", "tilezed", "worlded", "mapping", "workshop"]
+    }
+  ]
+}

@@ -1,0 +1,179 @@
+/**
+ * Code Block Styles
+ * Syntax highlighted code with copy button
+ */
+
+.code-block {
+  position: relative;
+  margin: var(--spacing-4) 0;
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  background-color: var(--color-code-bg);
+  border: 1px solid var(--color-border);
+}
+
+/* Header with language label and copy button */
+.code-block__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-2) var(--spacing-4);
+  background-color: var(--color-neutral-200);
+  border-bottom: 1px solid var(--color-border);
+}
+
+[data-theme="dark"] .code-block__header {
+  background-color: var(--color-primary-900);
+}
+
+.code-block__language {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Copy Button */
+.code-block__copy {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding: var(--spacing-1) var(--spacing-2);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.code-block__copy:hover {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  border-color: var(--color-text-muted);
+}
+
+.code-block__copy--copied {
+  background-color: var(--color-accent-100);
+  color: var(--color-accent-700);
+  border-color: var(--color-accent-300);
+}
+
+[data-theme="dark"] .code-block__copy--copied {
+  background-color: var(--color-accent-900);
+  color: var(--color-accent-300);
+  border-color: var(--color-accent-700);
+}
+
+.code-block__copy-icon {
+  width: 14px;
+  height: 14px;
+}
+
+/* Code Content */
+.code-block__content {
+  overflow-x: auto;
+  padding: var(--spacing-4);
+}
+
+.code-block__content pre {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+.code-block__content code {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  background: transparent;
+  padding: 0;
+  color: var(--color-code-text);
+}
+
+/* Line numbers (optional) */
+.code-block--with-lines .code-block__content {
+  display: flex;
+}
+
+.code-block__line-numbers {
+  flex-shrink: 0;
+  padding-right: var(--spacing-4);
+  margin-right: var(--spacing-4);
+  border-right: 1px solid var(--color-border);
+  text-align: right;
+  user-select: none;
+  color: var(--color-text-muted);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+
+/* Inline code (not in a block) */
+.inline-code {
+  font-family: var(--font-family-mono);
+  font-size: 0.9em;
+  background-color: var(--color-code-bg);
+  color: var(--color-code-text);
+  padding: 0.125em 0.375em;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--color-border-light);
+}
+
+/* Syntax Highlighting - Lua focused */
+.code-block .hljs-keyword {
+  color: #c678dd;
+}
+
+.code-block .hljs-string {
+  color: #98c379;
+}
+
+.code-block .hljs-number {
+  color: #d19a66;
+}
+
+.code-block .hljs-function {
+  color: #61afef;
+}
+
+.code-block .hljs-comment {
+  color: #5c6370;
+  font-style: italic;
+}
+
+.code-block .hljs-variable,
+.code-block .hljs-attr {
+  color: #e06c75;
+}
+
+.code-block .hljs-built_in {
+  color: #e6c07b;
+}
+
+.code-block .hljs-title {
+  color: #61afef;
+}
+
+.code-block .hljs-params {
+  color: #abb2bf;
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .code-block .hljs-keyword {
+  color: #c678dd;
+}
+
+[data-theme="dark"] .code-block .hljs-string {
+  color: #98c379;
+}
+
+[data-theme="dark"] .code-block .hljs-comment {
+  color: #7f848e;
+}

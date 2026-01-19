@@ -1,0 +1,11 @@
+{
+  "categories": [
+    {
+      "id": "video-tutorials",
+      "name": "Video Tutorials",
+      "icon": "video",
+      "description": "Complete 29-part video guide series for learning PZ map making from scratch",
+      "articleCount": 1
+    }
+  ]
+}

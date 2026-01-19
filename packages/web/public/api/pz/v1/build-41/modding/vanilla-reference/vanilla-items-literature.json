@@ -1,0 +1,18 @@
+{
+  "id": "vanilla-items-literature",
+  "title": "Vanilla Items: items_literature.txt",
+  "slug": "vanilla-items-literature",
+  "version": "build-41",
+  "section": "modding",
+  "category": "vanilla-reference",
+  "tags": [
+    "reference",
+    "vanilla",
+    "items"
+  ],
+  "difficulty": "beginner",
+  "content": "# Vanilla Items Reference (items_literature.txt)\n\nComplete reference for all **103 items** defined in `items_literature.txt`.\n\n## Items by Type\n\n### Literature (103 items)\n\n| Item | Weight | Description |\n|------|--------|-------------|\n| Angler USA Magazine Vol. 1 | 0.1 | `Base.FishingMag1` |\n| Angler USA Magazine Vol. 2 | 0.1 | `Base.FishingMag2` |\n| Blacksmith Vol. 1 | 0.8 | `Base.BookBlacksmith1` |\n| Blacksmith Vol. 2 | 0.8 | `Base.BookBlacksmith2` |\n| Blacksmith Vol. 3 | 0.8 | `Base.BookBlacksmith3` |\n| Blacksmith Vol. 4 | 0.8 | `Base.BookBlacksmith4` |\n| Blacksmith Vol. 5 | 0.8 | `Base.BookBlacksmith5` |\n| Book | 0.5 | `Base.Book` |\n| Carpentry Vol. 1 | 0.8 | `Base.BookCarpentry1` |\n| Carpentry Vol. 2 | 0.8 | `Base.BookCarpentry2` |\n| Carpentry Vol. 3 | 0.8 | `Base.BookCarpentry3` |\n| Carpentry Vol. 4 | 0.8 | `Base.BookCarpentry4` |\n| Carpentry Vol. 5 | 0.8 | `Base.BookCarpentry5` |\n| Comic Book | 0.1 | `Base.ComicBook` |\n| Cooking Vol. 1 | 0.8 | `Base.BookCooking1` |\n| Cooking Vol. 2 | 0.8 | `Base.BookCooking2` |\n| Cooking Vol. 3 | 0.8 | `Base.BookCooking3` |\n| Cooking Vol. 4 | 0.8 | `Base.BookCooking4` |\n| Cooking Vol. 5 | 0.8 | `Base.BookCooking5` |\n| Crossword Magazine | 0.2 | `Base.MagazineCrossword1` |\n| Crossword Magazine | 0.2 | `Base.MagazineCrossword2` |\n| Crossword Magazine | 0.2 | `Base.MagazineCrossword3` |\n| Doodle | 0.3 | `Base.Doodle` |\n| Electrician Vol. 1 | 0.8 | `Base.BookElectrician1` |\n| Electrician Vol. 2 | 0.8 | `Base.BookElectrician2` |\n| Electrician Vol. 3 | 0.8 | `Base.BookElectrician3` |\n| Electrician Vol. 4 | 0.8 | `Base.BookElectrician4` |\n| Electrician Vol. 5 | 0.8 | `Base.BookElectrician5` |\n| Electronics Magazine Vol. 1 | 0.1 | `Base.ElectronicsMag1` |\n| Electronics Magazine Vol. 2 | 0.1 | `Base.ElectronicsMag2` |\n| Electronics Magazine Vol. 3 | 0.1 | `Base.ElectronicsMag3` |\n| Electronics Magazine Vol. 4 | 0.1 | `Base.ElectronicsMag5` |\n| Empty Notebook | 0.5 | `Base.Notebook` |\n| Engineer Magazine Vol. 1 | 0.1 | `Base.EngineerMagazine1` |\n| Engineer Magazine Vol. 2 | 0.1 | `Base.EngineerMagazine2` |\n| Farming Vol. 1 | 0.8 | `Base.BookFarming1` |\n| Farming Vol. 2 | 0.8 | `Base.BookFarming2` |\n| Farming Vol. 3 | 0.8 | `Base.BookFarming3` |\n| Farming Vol. 4 | 0.8 | `Base.BookFarming4` |\n| Farming Vol. 5 | 0.8 | `Base.BookFarming5` |\n| First Aid Vol. 1 | 0.8 | `Base.BookFirstAid1` |\n| First Aid Vol. 2 | 0.8 | `Base.BookFirstAid2` |\n| First Aid Vol. 3 | 0.8 | `Base.BookFirstAid3` |\n| First Aid Vol. 4 | 0.8 | `Base.BookFirstAid4` |\n| First Aid Vol. 5 | 0.8 | `Base.BookFirstAid5` |\n| Fishing Vol. 1 | 0.8 | `Base.BookFishing1` |\n| Fishing Vol. 2 | 0.8 | `Base.BookFishing2` |\n| Fishing Vol. 3 | 0.8 | `Base.BookFishing3` |\n| Fishing Vol. 4 | 0.8 | `Base.BookFishing4` |\n| Fishing Vol. 5 | 0.8 | `Base.BookFishing5` |\n| *... and 53 more* | | |\n",
+  "excerpt": "Reference for 103 items from items_literature.txt.",
+  "lastUpdated": "2026-01-18",
+  "relatedArticles": []
+}

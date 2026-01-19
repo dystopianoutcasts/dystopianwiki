@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Homepage -->
+  <url>
+    <loc>https://dystopianoutcasts.wiki/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Learning Path -->
+  <url>
+    <loc>https://dystopianoutcasts.wiki/learning-path</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Search Page -->
+  <url>
+    <loc>https://dystopianoutcasts.wiki/search</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Version Landing -->
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Section Landing: Modding -->
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Category: Lua API -->
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/lua-api</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/lua-api/events-overview</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/lua-api/weapon-model-swapping</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Category: Recipes -->
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/recipes</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/recipes/recipe-basics</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/recipes/vanilla-recipe-anatomy</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/recipes/consumable-recipes</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/recipes/crafting-tables</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Category: Items -->
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/items</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/items/item-creation</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/items/vanilla-item-anatomy</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/items/ammunition-items</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Category: Game Mechanics -->
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/game-mechanics</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/game-mechanics/injury-system</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/game-mechanics/animation-reference</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/game-mechanics/sound-reference</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Category: Weapon Repair -->
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/weapon-repair</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/weapon-repair/repair-system-overview</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/weapon-repair/fixing-txt-anatomy</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/weapon-repair/repair-formulas</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/weapon-repair/repair-items-reference</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/weapon-repair/repairable-weapons</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/weapon-repair/lua-repair-mechanics</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/weapon-repair/repair-cheat-sheet</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Category: Foraging -->
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/foraging</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/foraging/vanilla-foraging</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Category: Tools -->
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/tools</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/tools/mod-quickstart</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.wiki/build-41/modding/tools/tilezed-setup</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+</urlset>

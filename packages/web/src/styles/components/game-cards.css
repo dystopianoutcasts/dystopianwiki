@@ -1,0 +1,192 @@
+/**
+ * Game Cards Styles
+ * Top-level game selector on the landing page
+ */
+
+.game-cards {
+  padding: var(--spacing-12) var(--spacing-4);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.game-cards__title {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+  text-align: center;
+  margin-bottom: var(--spacing-2);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.game-cards__subtitle {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin-bottom: var(--spacing-8);
+}
+
+.game-cards__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--spacing-6);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Individual Game Card */
+.game-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-6);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-xl);
+  text-decoration: none;
+  transition: transform var(--transition-fast),
+              box-shadow var(--transition-fast),
+              border-color var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.game-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--game-color, var(--color-accent-500));
+  opacity: 0.8;
+  transition: opacity var(--transition-fast);
+}
+
+.game-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--game-color, var(--color-accent-500));
+  text-decoration: none;
+}
+
+.game-card:hover::before {
+  opacity: 1;
+}
+
+/* Coming Soon State */
+.game-card--coming-soon {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.game-card--coming-soon:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Icon Wrapper */
+.game-card__icon-wrapper {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-tertiary);
+  border-radius: var(--border-radius-lg);
+  margin-bottom: var(--spacing-4);
+  position: relative;
+}
+
+.game-card__icon {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.game-card__icon-fallback {
+  position: absolute;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--game-color, var(--color-accent-500));
+}
+
+.game-card__icon + .game-card__icon-fallback {
+  display: none;
+}
+
+/* Content */
+.game-card__content {
+  text-align: center;
+  flex: 1;
+}
+
+.game-card__name {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-2);
+  text-transform: uppercase;
+}
+
+.game-card__description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* Arrow */
+.game-card__arrow {
+  margin-top: var(--spacing-4);
+  color: var(--game-color, var(--color-accent-500));
+  opacity: 0.6;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.game-card:hover .game-card__arrow {
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+/* Coming Soon Badge */
+.game-card__badge {
+  margin-top: var(--spacing-4);
+  padding: var(--spacing-1) var(--spacing-3);
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .game-cards {
+    padding: var(--spacing-8) var(--spacing-4);
+  }
+
+  .game-cards__grid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
+
+  .game-card {
+    padding: var(--spacing-4);
+  }
+
+  .game-card__icon-wrapper {
+    width: 64px;
+    height: 64px;
+  }
+
+  .game-card__icon {
+    width: 48px;
+    height: 48px;
+  }
+}

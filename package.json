@@ -1,0 +1,21 @@
+{
+  "name": "dystopianwiki-monorepo",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Dystopian Outcasts Wiki - Monorepo for Web & Mobile",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "web": "npm run dev --workspace=packages/web",
+    "web:build": "npm run build --workspace=packages/web",
+    "web:preview": "npm run preview --workspace=packages/web",
+    "mobile": "npm run start --workspace=packages/mobile",
+    "shared:build": "npm run build --workspace=packages/shared",
+    "install:all": "npm install && npm install --workspaces",
+    "clean": "rm -rf node_modules packages/*/node_modules packages/*/dist"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

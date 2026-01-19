@@ -1,0 +1,62 @@
+/**
+ * Why This Wiki Section
+ * Explains the purpose of this wiki alongside PZwiki.net
+ */
+
+.why-this-wiki {
+  padding: var(--spacing-8) var(--spacing-4);
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+}
+
+.why-this-wiki__content {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-4);
+}
+
+.why-this-wiki__icon {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  opacity: 0.7;
+}
+
+.why-this-wiki__text {
+  flex: 1;
+}
+
+.why-this-wiki__title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-2) 0;
+}
+
+.why-this-wiki__description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-relaxed);
+  margin: 0;
+}
+
+.why-this-wiki__link {
+  color: var(--color-link);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+}
+
+.why-this-wiki__link:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+/* @breakpoint-md: 768px - Tablet: Stack vertically */
+@media (max-width: 768px) {
+  .why-this-wiki__content {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+}

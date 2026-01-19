@@ -1,0 +1,246 @@
+/**
+ * PZ Modding Wiki - Design Tokens
+ * Color palette derived from Dystopian Outcasts branding
+ */
+
+:root {
+  /* ═══════════════════════════════════════════════════════════════
+     PRIMARY - Navy Blue (from shield logo background)
+     ═══════════════════════════════════════════════════════════════ */
+  --color-primary-950: #060d18;  /* Near black with blue undertone */
+  --color-primary-900: #0a1628;  /* Deep midnight navy */
+  --color-primary-800: #0f1f35;  /* Dark navy */
+  --color-primary-700: #1e3a5f;  /* Main navy */
+  --color-primary-600: #264a78;
+  --color-primary-500: #2e5a91;
+  --color-primary-400: #4a7ab3;
+  --color-primary-300: #7199c7;
+  --color-primary-200: #a3bfdb;
+  --color-primary-100: #d5e3f0;
+
+  /* ═══════════════════════════════════════════════════════════════
+     ACCENT - Orange/Copper (from "OUTCASTS" text)
+     ═══════════════════════════════════════════════════════════════ */
+  --color-accent-900: #7a3d0a;
+  --color-accent-800: #9c4e0d;
+  --color-accent-700: #b85f12;
+  --color-accent-600: #d4782c;  /* Main orange */
+  --color-accent-500: #e08a3c;
+  --color-accent-400: #e9a35e;
+  --color-accent-300: #f0bb82;
+  --color-accent-200: #f5d4ab;
+  --color-accent-100: #faecd5;
+
+  /* ═══════════════════════════════════════════════════════════════
+     HIGHLIGHT - Purple (from Season 3 logo, special elements)
+     ═══════════════════════════════════════════════════════════════ */
+  --color-highlight-900: #3d2a52;
+  --color-highlight-800: #4e3668;
+  --color-highlight-700: #5f427e;
+  --color-highlight-600: #6b4d8a;  /* Main purple */
+  --color-highlight-500: #7d5f9c;
+  --color-highlight-400: #9578b0;
+  --color-highlight-300: #ad94c4;
+  --color-highlight-200: #c9b8d8;
+  --color-highlight-100: #e5dced;
+
+  /* ═══════════════════════════════════════════════════════════════
+     NEUTRAL - Grays with cream tint (from "DYSTOPIAN" text)
+     ═══════════════════════════════════════════════════════════════ */
+  --color-neutral-900: #1a1a1a;
+  --color-neutral-800: #2d2d2d;
+  --color-neutral-700: #404040;
+  --color-neutral-600: #525252;
+  --color-neutral-500: #6b6b6b;
+  --color-neutral-400: #8a8a8a;
+  --color-neutral-300: #a8a8a8;
+  --color-neutral-200: #d4d4d4;
+  --color-neutral-100: #f0f0f0;
+  --color-neutral-50: #f8f6f3;   /* Cream tint */
+
+  /* ═══════════════════════════════════════════════════════════════
+     SEMANTIC COLORS - Default Theme (Dystopian Navy)
+     Deep midnight navy with orange accents - the signature look
+     ═══════════════════════════════════════════════════════════════ */
+  --color-background: var(--color-primary-900);
+  --color-surface: var(--color-primary-800);
+  --color-surface-elevated: var(--color-primary-700);
+  --color-text-primary: #f0f4f8;  /* Blue-tinted white */
+  --color-text-secondary: #94a3b8;  /* Muted blue-gray */
+  --color-text-muted: #64748b;
+  --color-border: var(--color-primary-700);
+  --color-border-light: var(--color-primary-800);
+
+  /* Interactive - warm orange pops against deep blue */
+  --color-link: var(--color-accent-400);
+  --color-link-hover: var(--color-accent-300);
+  --color-focus-ring: var(--color-accent-500);
+
+  /* Badges & Alerts */
+  --color-badge-new: var(--color-highlight-500);
+  --color-badge-advanced: var(--color-highlight-400);
+  --color-badge-beginner: var(--color-accent-400);
+  --color-badge-intermediate: var(--color-primary-400);
+  --color-alert-info-bg: var(--color-highlight-900);
+  --color-alert-info-border: var(--color-highlight-700);
+  --color-alert-warning-bg: var(--color-accent-900);
+  --color-alert-warning-border: var(--color-accent-700);
+
+  /* Code - slightly elevated surface */
+  --color-code-bg: var(--color-primary-800);
+  --color-code-text: var(--color-accent-300);
+
+  /* Deeper shadows for the dark base */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 30px rgba(0, 0, 0, 0.6), 0 10px 15px rgba(0, 0, 0, 0.3);
+
+  /* ═══════════════════════════════════════════════════════════════
+     TYPOGRAPHY
+     ═══════════════════════════════════════════════════════════════ */
+  --font-family-display: 'Russo One', 'Impact', sans-serif;  /* Bold headers, matches logo style */
+  --font-family-sans: 'Rajdhani', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;  /* Body text with industrial feel */
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 1.875rem;  /* 30px */
+  --font-size-4xl: 2.25rem;   /* 36px */
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* ═══════════════════════════════════════════════════════════════
+     SPACING
+     ═══════════════════════════════════════════════════════════════ */
+  --spacing-1: 0.25rem;   /* 4px */
+  --spacing-2: 0.5rem;    /* 8px */
+  --spacing-3: 0.75rem;   /* 12px */
+  --spacing-4: 1rem;      /* 16px */
+  --spacing-5: 1.25rem;   /* 20px */
+  --spacing-6: 1.5rem;    /* 24px */
+  --spacing-8: 2rem;      /* 32px */
+  --spacing-10: 2.5rem;   /* 40px */
+  --spacing-12: 3rem;     /* 48px */
+  --spacing-16: 4rem;     /* 64px */
+
+  /* ═══════════════════════════════════════════════════════════════
+     BORDERS & SHADOWS
+     ═══════════════════════════════════════════════════════════════ */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  --border-radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15), 0 10px 10px rgba(0, 0, 0, 0.04);
+
+  /* ═══════════════════════════════════════════════════════════════
+     TRANSITIONS
+     ═══════════════════════════════════════════════════════════════ */
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow: 300ms ease;
+
+  /* ═══════════════════════════════════════════════════════════════
+     LAYOUT - Flex-based proportions
+     ═══════════════════════════════════════════════════════════════ */
+  --header-height: 64px;
+  --content-max-width: 1400px;
+
+  /* Sidebar and TOC use flex-basis with min/max constraints */
+  --sidebar-flex: 0 0 15%;       /* 15% of parent, doesn't grow/shrink */
+  --sidebar-min: 180px;          /* Minimum readable width */
+  --sidebar-max: 250px;          /* Maximum to prevent over-expansion */
+
+  --toc-flex: 0 0 15%;           /* 15% of parent */
+  --toc-min: 180px;
+  --toc-max: 250px;
+
+  /* Content takes remaining space */
+  --content-flex: 1 1 70%;       /* Grows to fill, starts at 70% */
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BREAKPOINTS - Responsive design reference
+   ═══════════════════════════════════════════════════════════════════
+
+   Note: CSS custom properties cannot be used in media queries.
+   These values are documented here for reference and consistency.
+
+   BREAKPOINT SYSTEM (desktop-down approach with max-width):
+   ─────────────────────────────────────────────────────────────────
+
+   --breakpoint-xl: 1280px   │ Large desktop - Full layout with sidebars & TOC
+                             │ @media (max-width: 1280px) { ... }
+   ─────────────────────────────────────────────────────────────────
+   --breakpoint-lg: 1024px   │ Desktop/Large tablet - Sidebar becomes overlay
+                             │ @media (max-width: 1024px) { ... }
+   ─────────────────────────────────────────────────────────────────
+   --breakpoint-md: 768px    │ Tablet - Mobile nav, stacked layouts
+                             │ @media (max-width: 768px) { ... }
+   ─────────────────────────────────────────────────────────────────
+   --breakpoint-sm: 640px    │ Mobile - Single column, reduced spacing
+                             │ @media (max-width: 640px) { ... }
+   ─────────────────────────────────────────────────────────────────
+
+   USAGE PATTERN:
+   Base styles = desktop (largest screens)
+   Then add @media (max-width: X) for progressively smaller screens
+
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   LIGHT THEME - Deep Royal Blue with Cyan Highlights
+   Deep navy background (#000d23) with bright cyan (#00FFFF) accents
+   ═══════════════════════════════════════════════════════════════════ */
+[data-theme="light"] {
+  /* Deep royal blue backgrounds - from palette */
+  --color-background: #000d23;           /* Deep midnight blue */
+  --color-surface: #001334;              /* Slightly lighter navy */
+  --color-surface-elevated: #002567;     /* Elevated surface blue */
+
+  /* White/light text for contrast on deep blue */
+  --color-text-primary: #ffffff;         /* Pure white for maximum contrast */
+  --color-text-secondary: #b8d4f0;       /* Soft blue-white */
+  --color-text-muted: #7aa3c9;           /* Muted light blue */
+
+  /* Borders - calm mid-blues */
+  --color-border: #003189;               /* Mid-tone blue border */
+  --color-border-light: #0046c5;         /* Brighter blue border */
+
+  /* Interactive - bright cyan highlights + orange accent */
+  --color-link: #00e5ff;                 /* Bright cyan link */
+  --color-link-hover: #00ffff;           /* Full cyan on hover */
+  --color-focus-ring: #00ffff;           /* Cyan focus ring */
+
+  /* Code - deeper blue with cyan text */
+  --color-code-bg: #001945;              /* Deep blue code background */
+  --color-code-text: #00ffff;            /* Cyan code text */
+
+  /* Badges - cyan highlights for special elements */
+  --color-badge-new: #00e5ff;            /* Cyan for new badges */
+  --color-badge-advanced: #00bfff;       /* Lighter cyan */
+  --color-badge-beginner: var(--color-accent-400);  /* Keep orange */
+  --color-badge-intermediate: #0058f8;   /* Royal blue */
+
+  /* Shadows with deep blue tint */
+  --shadow-sm: 0 1px 2px rgba(0, 10, 30, 0.4);
+  --shadow-md: 0 4px 6px rgba(0, 10, 30, 0.45), 0 2px 4px rgba(0, 10, 30, 0.3);
+  --shadow-lg: 0 10px 15px rgba(0, 10, 30, 0.45), 0 4px 6px rgba(0, 10, 30, 0.3);
+  --shadow-xl: 0 20px 25px rgba(0, 10, 30, 0.5), 0 10px 10px rgba(0, 10, 30, 0.3);
+}

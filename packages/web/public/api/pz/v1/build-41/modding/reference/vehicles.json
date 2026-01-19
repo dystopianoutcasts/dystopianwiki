@@ -1,0 +1,101 @@
+{
+  "id": "reference-vehicles",
+  "title": "Vehicle Script Reference",
+  "slug": "vehicles",
+  "version": "build-41",
+  "section": "modding",
+  "category": "reference",
+  "tags": [
+    "intermediate",
+    "vehicles",
+    "scripts",
+    "reference",
+    "mechanics"
+  ],
+  "content": "# Vehicle Script Reference\n\n## Overview\n\nVehicle scripts define all vehicle properties including physics, parts, seats, areas, sounds, and textures. Vehicle scripts are located in `media/scripts/vehicles/`.\n\n## File Structure\n\n```\nmedia/scripts/vehicles/\n├── template_*.txt        # Part templates (reusable)\n├── vehicle_*.txt         # Vehicle definitions\n├── vehiclesfixing.txt    # Vehicle repair definitions\n├── vehiclesitems.txt     # Vehicle-specific items\n├── models_vehicles.txt   # 3D model definitions\n└── sounds_vehicle.txt    # Sound definitions\n```\n\n---\n\n## Basic Vehicle Structure\n\n```\nmodule Base\n{\n    model Vehicles_MyVehicle\n    {\n        mesh = vehicles/Vehicles_MyVehicle,\n        shader = vehicle_multiuv,\n        invertX = FALSE,\n        scale = 0.01,\n    }\n    \n    vehicle MyVehicle\n    {\n        template! = MyVehicleTemplate,\n        \n        model\n        {\n            file = Vehicles_MyVehicle,\n            scale = 1.8200,\n            offset = 0.0000 0.2692 0.0000,\n        }\n        \n        /* Passenger and part definitions */\n    }\n    \n    template vehicle MyVehicleTemplate\n    {\n        /* All vehicle properties */\n    }\n}\n```\n\n---\n\n## Core Vehicle Properties\n\n### Basic Properties\n\n| Property | Type | Description | Example |\n|----------|------|-------------|----------|\n| `mechanicType` | int | Mechanic skill type | `mechanicType = 1,` |\n| `engineRepairLevel` | int | Skill to repair engine | `engineRepairLevel = 4,` |\n| `playerDamageProtection` | float | Crash damage reduction | `playerDamageProtection = 1.0,` |\n| `seats` | int | Total seat count | `seats = 4,` |\n| `mass` | int | Vehicle mass (kg) | `mass = 800,` |\n\n### Speed and Engine\n\n| Property | Type | Description | Example |\n|----------|------|-------------|----------|\n| `maxSpeed` | float | Max speed (km/h) | `maxSpeed = 90f,` |\n| `engineForce` | int | Engine power | `engineForce = 4000,` |\n| `engineLoudness` | int | Engine noise (0-100) | `engineLoudness = 80,` |\n| `engineQuality` | int | Engine reliability | `engineQuality = 70,` |\n| `brakingForce` | int | Brake strength | `brakingForce = 90,` |\n\n### Gear Ratios\n\n| Property | Type | Description | Example |\n|----------|------|-------------|----------|\n| `gearRatioCount` | int | Number of gears | `gearRatioCount = 4,` |\n| `gearRatioR` | float | Reverse gear ratio | `gearRatioR = 4.7,` |\n| `gearRatio1` | float | First gear ratio | `gearRatio1 = 3.6,` |\n| `gearRatio2` | float | Second gear ratio | `gearRatio2 = 2.2,` |\n| `gearRatio3` | float | Third gear ratio | `gearRatio3 = 1.3,` |\n| `gearRatio4` | float | Fourth gear ratio | `gearRatio4 = 1.0,` |\n\n### Physics\n\n| Property | Type | Description | Example |\n|----------|------|-------------|----------|\n| `extents` | vec3 | Collision box size | `extents = 0.8901 0.6484 2.6044,` |\n| `physicsChassisShape` | vec3 | Physics shape | `physicsChassisShape = 0.8901 0.6484 2.6044,` |\n| `centerOfMassOffset` | vec3 | Center of mass | `centerOfMassOffset = 0.0 0.30 0.0,` |\n| `stoppingMovementForce` | float | Stop force | `stoppingMovementForce = 4.0f,` |\n| `rollInfluence` | float | Roll resistance | `rollInfluence = 1.0f,` |\n\n### Steering\n\n| Property | Type | Description | Example |\n|----------|------|-------------|----------|\n| `steeringIncrement` | float | Turn rate | `steeringIncrement = 0.04,` |\n| `steeringClamp` | float | Max turn angle | `steeringClamp = 0.3,` |\n\n### Suspension\n\n| Property | Type | Description | Example |\n|----------|------|-------------|----------|\n| `suspensionStiffness` | int | Spring stiffness | `suspensionStiffness = 40,` |\n| `suspensionCompression` | float | Compression rate | `suspensionCompression = 3.83,` |\n| `suspensionDamping` | float | Damping rate | `suspensionDamping = 2.88,` |\n| `maxSuspensionTravelCm` | int | Max travel (cm) | `maxSuspensionTravelCm = 10,` |\n| `suspensionRestLength` | float | Rest length | `suspensionRestLength = 0.20f,` |\n\n### Health\n\n| Property | Type | Description | Example |\n|----------|------|-------------|----------|\n| `frontEndHealth` | int | Front health | `frontEndHealth = 150,` |\n| `rearEndHealth` | int | Rear health | `rearEndHealth = 150,` |\n| `wheelFriction` | float | Tire grip | `wheelFriction = 1.4f,` |\n\n---\n\n## Texture Properties\n\n| Property | Type | Description |\n|----------|------|-------------|\n| `textureMask` | string | Color regions mask |\n| `textureLights` | string | Light regions texture |\n| `textureDamage1Overlay` | string | Light damage overlay |\n| `textureDamage2Overlay` | string | Heavy damage overlay |\n| `textureDamage1Shell` | string | Light shell damage |\n| `textureDamage2Shell` | string | Heavy shell damage |\n| `textureRust` | string | Rust texture |\n\n```\ntextureMask = Vehicles/vehicle_carnormal_mask,\ntextureLights = Vehicles/vehicle_carnormal_lights,\ntextureDamage1Overlay = Vehicles/Veh_Blood_Mask,\ntextureDamage2Overlay = Vehicles/Veh_Blood_Hvy,\ntextureDamage1Shell = Vehicles/Veh_Damage1,\ntextureDamage2Shell = Vehicles/Veh_Damage2,\ntextureRust = Vehicles/Veh_Rust,\n```\n\n---\n\n## Sound Block\n\n```\nsound\n{\n    engine = VehicleEngineCarNormal,\n    engineStart = VehicleEngineCarNormal,\n    engineTurnOff = VehicleEngineCarNormal,\n    horn = VehicleHornStandard,\n    ignitionFail = VehicleIgnitionFailCarNormal,\n}\n```\n\n| Property | Description |\n|----------|-------------|\n| `engine` | Running engine sound |\n| `engineStart` | Startup sound |\n| `engineTurnOff` | Shutdown sound |\n| `horn` | Horn sound |\n| `ignitionFail` | Failed start sound |\n\n---\n\n## Skin Block\n\nDefine vehicle color variations:\n\n```\nskin\n{\n    texture = Vehicles/vehicle_carnormalshell,\n}\n\nskin\n{\n    texture = Vehicles/vehicle_carnormalshell_blue,\n}\n\nskin\n{\n    texture = Vehicles/vehicle_carnormalshell_red,\n}\n```\n\n---\n\n## Wheel Definition\n\n```\nwheel FrontLeft\n{\n    front = true,\n    offset = 0.3626 -0.3022 0.8516,\n    radius = 0.15f,\n    width = 0.2f,\n}\n\nwheel FrontRight\n{\n    front = true,\n    offset = -0.3626 -0.3022 0.8516,\n    radius = 0.15f,\n    width = 0.2f,\n}\n\nwheel RearLeft\n{\n    front = false,\n    offset = 0.3626 -0.3022 -0.6099,\n    radius = 0.15f,\n    width = 0.2f,\n}\n\nwheel RearRight\n{\n    front = false,\n    offset = -0.3626 -0.3022 -0.6099,\n    radius = 0.15f,\n    width = 0.2f,\n}\n```\n\n| Property | Type | Description |\n|----------|------|-------------|\n| `front` | bool | Is front wheel (steering) |\n| `offset` | vec3 | Position (X Y Z) |\n| `radius` | float | Wheel radius |\n| `width` | float | Wheel width |\n\n---\n\n## Passenger Definition\n\n```\npassenger FrontLeft\n{\n    position inside\n    {\n        offset = 0.1758 -0.1374 0.0879,\n        rotate = 0.0000 0.0000 0.0000,\n    }\n\n    position outside\n    {\n        offset = 0.6209 -0.4121 0.1209,\n        rotate = 0.0000 0.0000 0.0000,\n        area = SeatFrontLeft,\n    }\n}\n```\n\n| Block | Description |\n|-------|-------------|\n| `position inside` | Position when seated |\n| `position outside` | Position when exiting |\n| `offset` | XYZ coordinates |\n| `rotate` | XYZ rotation |\n| `area` | Linked interaction area |\n\n---\n\n## Area Definition\n\nAreas define interaction zones:\n\n```\narea Engine\n{\n    xywh = 0.0000 1.5385 0.8901 0.4725,\n}\n\narea TruckBed\n{\n    xywh = 0.0000 -1.5385 0.8901 0.4725,\n}\n\narea GasTank\n{\n    xywh = 0.6813 -0.6099 0.4725 0.4725,\n}\n\narea SeatFrontLeft\n{\n    xywh = 0.6813 0.1209 0.4725 0.4725,\n}\n\narea TireFrontLeft\n{\n    xywh = 0.6813 0.8516 0.4725 0.4725,\n}\n```\n\n| Property | Description |\n|----------|-------------|\n| `xywh` | X position, Y position, Width, Height |\n\n---\n\n## Part Templates\n\nVehicles use templates for common parts:\n\n```\ntemplate = PassengerSeat4,\ntemplate = TrunkDoor,\ntemplate = Trunk/part/TruckBed,\ntemplate = Seat/part/SeatFrontLeft,\ntemplate = GloveBox,\ntemplate = GasTank,\ntemplate = Battery,\ntemplate = Engine,\ntemplate = Muffler,\ntemplate = EngineDoor,\ntemplate = Windshield/part/Windshield,\ntemplate = Window/part/WindowFrontLeft,\ntemplate = Door/part/DoorFrontLeft,\ntemplate = Tire,\ntemplate = Brake,\ntemplate = Suspension,\ntemplate = Radio,\ntemplate = Headlight,\n```\n\n### Template Files\n\n| File | Parts Defined |\n|------|---------------|\n| `template_battery.txt` | Battery |\n| `template_brake.txt` | Brake systems |\n| `template_door.txt` | Doors |\n| `template_engine.txt` | Engine |\n| `template_gastank.txt` | Gas tanks |\n| `template_glovebox.txt` | Glove boxes |\n| `template_headlight.txt` | Headlights |\n| `template_heater.txt` | Heaters |\n| `template_muffler.txt` | Mufflers |\n| `template_passenger.txt` | Passenger seats |\n| `template_radio.txt` | Radios |\n| `template_seat.txt` | Seats |\n| `template_suspension.txt` | Suspension |\n| `template_tire.txt` | Tires |\n| `template_trunk.txt` | Trunks |\n| `template_window.txt` | Windows |\n| `template_windshield.txt` | Windshields |\n\n---\n\n## Part Definition\n\n```\npart GloveBox\n{\n    category = engine,\n    \n    container\n    {\n        capacity = 5,\n    }\n}\n\npart Heater\n{\n    category = engine,\n\n    lua\n    {\n        update = Vehicles.Update.Heater,\n    }\n}\n\npart PassengerCompartment\n{\n    category = nodisplay,\n\n    lua\n    {\n        update = Vehicles.Update.PassengerCompartment,\n    }\n}\n```\n\n### Part Categories\n\n| Category | Description |\n|----------|-------------|\n| `engine` | Engine compartment parts |\n| `bodywork` | Body panels |\n| `window` | Windows and windshields |\n| `seat` | Seating |\n| `tire` | Wheels and tires |\n| `nodisplay` | Hidden/internal parts |\n\n### Part Lua Functions\n\n| Function | Purpose |\n|----------|----------|\n| `update` | Called each tick |\n| `init` | Called on spawn |\n| `create` | Called on creation |\n| `checkEngine` | Engine state check |\n| `checkOperate` | Operation check |\n\n---\n\n## Attachment Points\n\nFor trailers:\n\n```\nattachment trailer\n{\n    offset = 0.0000 -0.2747 -1.3462,\n    rotate = 0.0000 0.0000 0.0000,\n    zoffset = -1,\n}\n\nattachment trailerfront\n{\n    offset = 0.0000 -0.2747 1.3187,\n    rotate = 0.0000 0.0000 0.0000,\n    zoffset = 1,\n}\n```\n\n---\n\n## Model Definition\n\n```\nmodel Vehicles_CarNormal\n{\n    mesh = vehicles/Vehicles_CarNormal,\n    shader = vehicle_multiuv,\n    invertX = FALSE,\n    scale = 0.01,\n}\n```\n\n| Property | Description |\n|----------|-------------|\n| `mesh` | Path to 3D model file |\n| `shader` | Shader type |\n| `invertX` | Mirror model |\n| `scale` | Model scale |\n\n---\n\n## Complete Vehicle Example\n\n```\nmodule Base\n{\n    model Vehicles_CustomCar\n    {\n        mesh = vehicles/Vehicles_CustomCar,\n        shader = vehicle_multiuv,\n        invertX = FALSE,\n        scale = 0.01,\n    }\n    \n    vehicle CustomCar\n    {\n        template! = CustomCarTemplate,\n        \n        model\n        {\n            file = Vehicles_CustomCar,\n            scale = 1.82,\n            offset = 0.0 0.27 0.0,\n        }\n        \n        template = PassengerSeat4,\n        \n        passenger FrontLeft\n        {\n            position inside { offset = 0.18 -0.14 0.09, rotate = 0 0 0, }\n            position outside { offset = 0.62 -0.41 0.12, rotate = 0 0 0, area = SeatFrontLeft, }\n        }\n        \n        passenger FrontRight\n        {\n            position inside { offset = -0.18 -0.14 0.09, rotate = 0 0 0, }\n            position outside { offset = -0.62 -0.41 0.12, rotate = 0 0 0, area = SeatFrontRight, }\n        }\n        \n        area SeatFrontLeft { xywh = 0.68 0.12 0.47 0.47, }\n        area SeatFrontRight { xywh = -0.68 0.12 0.47 0.47, }\n        area Engine { xywh = 0.0 1.54 0.89 0.47, }\n        area GasTank { xywh = 0.68 -0.61 0.47 0.47, }\n    }\n    \n    template vehicle CustomCarTemplate\n    {\n        mechanicType = 1,\n        engineRepairLevel = 4,\n        playerDamageProtection = 1.0,\n        \n        skin { texture = Vehicles/vehicle_customshell, }\n        \n        sound\n        {\n            engine = VehicleEngineCarNormal,\n            engineStart = VehicleEngineCarNormal,\n            engineTurnOff = VehicleEngineCarNormal,\n            horn = VehicleHornStandard,\n            ignitionFail = VehicleIgnitionFailCarNormal,\n        }\n        \n        textureMask = Vehicles/vehicle_custom_mask,\n        textureLights = Vehicles/vehicle_custom_lights,\n        extents = 0.89 0.65 2.60,\n        physicsChassisShape = 0.89 0.65 2.60,\n        mass = 800,\n        centerOfMassOffset = 0.0 0.30 0.0,\n        engineForce = 4000,\n        maxSpeed = 90f,\n        engineLoudness = 80,\n        engineQuality = 70,\n        brakingForce = 90,\n        seats = 2,\n        \n        gearRatioCount = 4,\n        gearRatioR = 4.7,\n        gearRatio1 = 3.6,\n        gearRatio2 = 2.2,\n        gearRatio3 = 1.3,\n        gearRatio4 = 1.0,\n        \n        wheel FrontLeft { front = true, offset = 0.36 -0.30 0.85, radius = 0.15f, width = 0.2f, }\n        wheel FrontRight { front = true, offset = -0.36 -0.30 0.85, radius = 0.15f, width = 0.2f, }\n        wheel RearLeft { front = false, offset = 0.36 -0.30 -0.61, radius = 0.15f, width = 0.2f, }\n        wheel RearRight { front = false, offset = -0.36 -0.30 -0.61, radius = 0.15f, width = 0.2f, }\n        \n        template = Seat/part/SeatFrontLeft,\n        template = Seat/part/SeatFrontRight,\n        template = GloveBox,\n        template = GasTank,\n        template = Battery,\n        template = Engine,\n        template = EngineDoor,\n        template = Door/part/DoorFrontLeft,\n        template = Door/part/DoorFrontRight,\n        template = Windshield/part/Windshield,\n        template = Window/part/WindowFrontLeft,\n        template = Window/part/WindowFrontRight,\n        template = Tire,\n        template = Brake,\n        template = Suspension,\n        template = Radio,\n        template = Headlight,\n    }\n}\n```\n\n---\n\n## Related\n\n- [Fixing Script Reference](/build-41/modding/reference/fixing) - Repair definitions\n- [Script Properties](/build-41/modding/reference/script-properties) - Item and recipe properties\n- [Events Reference](/build-41/modding/reference/events) - Vehicle-related events",
+  "excerpt": "Complete reference for Project Zomboid vehicle script definitions including physics, parts, passengers, and templates.",
+  "lastUpdated": "2026-01-10",
+  "difficulty": "intermediate",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "file-structure",
+      "text": "File Structure",
+      "level": 2
+    },
+    {
+      "id": "basic-vehicle-structure",
+      "text": "Basic Vehicle Structure",
+      "level": 2
+    },
+    {
+      "id": "core-vehicle-properties",
+      "text": "Core Vehicle Properties",
+      "level": 2
+    },
+    {
+      "id": "texture-properties",
+      "text": "Texture Properties",
+      "level": 2
+    },
+    {
+      "id": "sound-block",
+      "text": "Sound Block",
+      "level": 2
+    },
+    {
+      "id": "skin-block",
+      "text": "Skin Block",
+      "level": 2
+    },
+    {
+      "id": "wheel-definition",
+      "text": "Wheel Definition",
+      "level": 2
+    },
+    {
+      "id": "passenger-definition",
+      "text": "Passenger Definition",
+      "level": 2
+    },
+    {
+      "id": "area-definition",
+      "text": "Area Definition",
+      "level": 2
+    },
+    {
+      "id": "part-templates",
+      "text": "Part Templates",
+      "level": 2
+    },
+    {
+      "id": "part-definition",
+      "text": "Part Definition",
+      "level": 2
+    },
+    {
+      "id": "attachment-points",
+      "text": "Attachment Points",
+      "level": 2
+    },
+    {
+      "id": "model-definition",
+      "text": "Model Definition",
+      "level": 2
+    },
+    {
+      "id": "complete-vehicle-example",
+      "text": "Complete Vehicle Example",
+      "level": 2
+    },
+    {
+      "id": "related",
+      "text": "Related",
+      "level": 2
+    }
+  ]
+}

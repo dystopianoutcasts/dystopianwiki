@@ -1,0 +1,63 @@
+{
+  "id": "recipes",
+  "name": "Recipes",
+  "slug": "recipes",
+  "articles": [
+    {
+      "id": "recipe-anatomy",
+      "title": "Anatomy of a Recipe",
+      "slug": "recipe-anatomy",
+      "difficulty": "beginner",
+      "order": 1
+    },
+    {
+      "id": "first-recipe-file",
+      "title": "Your First Recipe File",
+      "slug": "first-recipe-file",
+      "difficulty": "beginner",
+      "order": 2
+    },
+    {
+      "id": "testing-recipes",
+      "title": "Testing Your Recipe",
+      "slug": "testing-recipes",
+      "difficulty": "beginner",
+      "order": 3
+    },
+    {
+      "id": "recipe-ingredients",
+      "title": "Recipe Ingredients Deep Dive",
+      "slug": "recipe-ingredients",
+      "difficulty": "intermediate",
+      "order": 4
+    },
+    {
+      "id": "recipe-basics",
+      "title": "Recipe Creation Basics",
+      "slug": "recipe-basics",
+      "difficulty": "beginner",
+      "order": 5
+    },
+    {
+      "id": "consumable-recipes",
+      "title": "Consumable vs Reusable Items",
+      "slug": "consumable-recipes",
+      "difficulty": "beginner",
+      "order": 6
+    },
+    {
+      "id": "vanilla-recipe-anatomy",
+      "title": "Vanilla Recipe Anatomy Reference",
+      "slug": "vanilla-recipe-anatomy",
+      "difficulty": "intermediate",
+      "order": 7
+    },
+    {
+      "id": "crafting-tables",
+      "title": "Recipes with Crafting Tables",
+      "slug": "crafting-tables",
+      "difficulty": "intermediate",
+      "order": 8
+    }
+  ]
+}

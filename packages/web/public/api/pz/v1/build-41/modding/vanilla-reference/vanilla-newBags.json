@@ -1,0 +1,18 @@
+{
+  "id": "vanilla-newBags",
+  "title": "Vanilla Items: newBags.txt",
+  "slug": "vanilla-newBags",
+  "version": "build-41",
+  "section": "modding",
+  "category": "vanilla-reference",
+  "tags": [
+    "reference",
+    "vanilla",
+    "items"
+  ],
+  "difficulty": "beginner",
+  "content": "# Vanilla Items Reference (newBags.txt)\n\nComplete reference for all **21 items** defined in `newBags.txt`.\n\n## Items by Type\n\n### Container (21 items)\n\n| Item | Weight | Description |\n|------|--------|-------------|\n| Doctor Bag | 1 | `Base.Bag_DoctorBag` |\n| Duffel Bag | 1 | `Base.Bag_FoodCanned` |\n| Duffel Bag | 1 | `Base.Bag_FoodSnacks` |\n| Duffel Bag | 1 | `Base.Bag_Military` |\n| Duffel Bag | 1 | `Base.Bag_ToolBag` |\n| Gun Case | 1 | `Base.ShotgunCase1` |\n| Gun Case | 1 | `Base.RifleCase1` |\n| Gun Case | 1 | `Base.RifleCase2` |\n| Gun Case | 1 | `Base.RifleCase3` |\n| Gun Case | 1 | `Base.ShotgunCase1` |\n| Gun Case | 1 | `Base.ShotgunCase2` |\n| Plastic Bag | 0.1 | `Base.GroceryBag1` |\n| Plastic Bag | 0.1 | `Base.GroceryBag2` |\n| Plastic Bag | 0.1 | `Base.GroceryBag3` |\n| Plastic Bag | 0.1 | `Base.GroceryBag4` |\n| Plastic Bag | 0.1 | `Base.GroceryBag5` |\n| Sack | 0.1 | `Base.SackCabbages` |\n| Sack | 0.1 | `Base.SackCarrots` |\n| Sack | 0.1 | `Base.SackPotatoes` |\n| Sack | 0.1 | `Base.SackOnions` |\n| Trauma Bag | 1 | `Base.Bag_MedicalBag` |\n",
+  "excerpt": "Reference for 21 items from newBags.txt.",
+  "lastUpdated": "2026-01-18",
+  "relatedArticles": []
+}

@@ -1,0 +1,217 @@
+{
+  "articles": [
+    {
+      "id": "repair-system-guide",
+      "title": "Understanding Repair Systems in Project Zomboid",
+      "slug": "repair-system-guide",
+      "excerpt": "Comprehensive guide to both repair systems in PZ: item fixing for weapons/tools, and vehicle parts for cars. Learn how to make custom weapons repairable.",
+      "tags": ["repair", "fixing", "weapons", "vehicles", "maintenance", "guide"],
+      "difficulty": "intermediate",
+      "lastUpdated": "2026-01-18"
+    },
+    {
+      "id": "weapon-properties-guide",
+      "title": "Understanding Weapon Properties",
+      "slug": "weapon-properties-guide",
+      "excerpt": "Deep dive into what each weapon property actually does in gameplay - from how Categories connect to skills, to how ConditionLowerChanceOneIn really works.",
+      "tags": ["weapons", "properties", "guide", "combat", "skills"],
+      "difficulty": "intermediate",
+      "lastUpdated": "2026-01-18"
+    },
+    {
+      "id": "vanilla-weapons-reference",
+      "title": "Vanilla Weapons Reference",
+      "slug": "vanilla-weapons-reference",
+      "excerpt": "Complete reference for all 152 vanilla weapons, organized by category with full stats.",
+      "tags": [
+        "reference",
+        "weapons",
+        "vanilla",
+        "items"
+      ],
+      "difficulty": "beginner",
+      "lastUpdated": "2026-01-18"
+    },
+    {
+      "id": "vanilla-food-reference",
+      "title": "Vanilla Food Reference",
+      "slug": "vanilla-food-reference",
+      "excerpt": "Complete reference for all 464 vanilla food items with nutritional values.",
+      "tags": [
+        "reference",
+        "food",
+        "vanilla",
+        "items"
+      ],
+      "difficulty": "beginner",
+      "lastUpdated": "2026-01-18"
+    },
+    {
+      "id": "vanilla-items",
+      "title": "Vanilla Items: items.txt",
+      "slug": "vanilla-items",
+      "excerpt": "Reference for 92 items from items.txt.",
+      "tags": [
+        "reference",
+        "vanilla",
+        "items"
+      ],
+      "difficulty": "beginner",
+      "lastUpdated": "2026-01-18"
+    },
+    {
+      "id": "vanilla-newitems",
+      "title": "Vanilla Items: newitems.txt",
+      "slug": "vanilla-newitems",
+      "excerpt": "Reference for 374 items from newitems.txt.",
+      "tags": [
+        "reference",
+        "vanilla",
+        "items"
+      ],
+      "difficulty": "beginner",
+      "lastUpdated": "2026-01-18"
+    },
+    {
+      "id": "vanilla-items-literature",
+      "title": "Vanilla Items: items_literature.txt",
+      "slug": "vanilla-items-literature",
+      "excerpt": "Reference for 103 items from items_literature.txt.",
+      "tags": [
+        "reference",
+        "vanilla",
+        "items"
+      ],
+      "difficulty": "beginner",
+      "lastUpdated": "2026-01-18"
+    },
+    {
+      "id": "vanilla-recipes-reference",
+      "title": "Vanilla Recipes Reference",
+      "slug": "vanilla-recipes-reference",
+      "excerpt": "Complete reference for all 292 vanilla crafting recipes, organized by category.",
+      "tags": [
+        "reference",
+        "recipes",
+        "vanilla",
+        "crafting"
+      ],
+      "difficulty": "beginner",
+      "lastUpdated": "2026-01-18"
+    },
+    {
+      "id": "vanilla-fixing-reference",
+      "title": "Vanilla Fixing (Repair) System Reference",
+      "slug": "vanilla-fixing-reference",
+      "excerpt": "Complete reference for the fixing (repair) system with all 76 vanilla repair entries.",
+      "tags": [
+        "reference",
+        "fixing",
+        "repair",
+        "vanilla",
+        "maintenance"
+      ],
+      "difficulty": "beginner",
+      "lastUpdated": "2026-01-18"
+    },
+    {
+      "id": "vanilla-evolved-recipes-reference",
+      "title": "Vanilla Evolved Recipes Reference",
+      "slug": "vanilla-evolved-recipes-reference",
+      "excerpt": "Complete reference for all 38 evolved recipes - dynamic crafting for soups, stews, sandwiches, and more.",
+      "tags": [
+        "reference",
+        "recipes",
+        "evolved",
+        "vanilla",
+        "cooking"
+      ],
+      "difficulty": "beginner",
+      "lastUpdated": "2026-01-18"
+    },
+    {
+      "id": "vanilla-clothing-reference",
+      "title": "Vanilla Clothing Reference",
+      "slug": "vanilla-clothing-reference",
+      "excerpt": "Complete reference for all 776 vanilla clothing items with protection values and body locations.",
+      "tags": [
+        "reference",
+        "clothing",
+        "vanilla",
+        "items",
+        "protection"
+      ],
+      "difficulty": "beginner",
+      "lastUpdated": "2026-01-18"
+    },
+    {
+      "id": "vanilla-farming",
+      "title": "Vanilla Items: farming.txt",
+      "slug": "vanilla-farming",
+      "excerpt": "Reference for 39 items from farming.txt.",
+      "tags": [
+        "reference",
+        "vanilla",
+        "items"
+      ],
+      "difficulty": "beginner",
+      "lastUpdated": "2026-01-18"
+    },
+    {
+      "id": "vanilla-newBags",
+      "title": "Vanilla Items: newBags.txt",
+      "slug": "vanilla-newBags",
+      "excerpt": "Reference for 21 items from newBags.txt.",
+      "tags": [
+        "reference",
+        "vanilla",
+        "items"
+      ],
+      "difficulty": "beginner",
+      "lastUpdated": "2026-01-18"
+    },
+    {
+      "id": "vanilla-vehicle-items-reference",
+      "title": "Vanilla Vehicle Items Reference",
+      "slug": "vanilla-vehicle-items-reference",
+      "excerpt": "Complete reference for all 97 vehicle parts and maintenance items.",
+      "tags": [
+        "reference",
+        "vehicles",
+        "vanilla",
+        "items",
+        "mechanics"
+      ],
+      "difficulty": "beginner",
+      "lastUpdated": "2026-01-18"
+    },
+    {
+      "id": "vanilla-sounds-reference",
+      "title": "Vanilla Sound Reference",
+      "slug": "vanilla-sounds-reference",
+      "excerpt": "Complete reference for all 390 sound definitions with FMOD event paths.",
+      "tags": [
+        "reference",
+        "sounds",
+        "audio",
+        "vanilla",
+        "fmod"
+      ],
+      "difficulty": "beginner",
+      "lastUpdated": "2026-01-18"
+    },
+    {
+      "id": "vanilla-items-radio",
+      "title": "Vanilla Items: items_radio.txt",
+      "slug": "vanilla-items-radio",
+      "excerpt": "Reference for 23 items from items_radio.txt.",
+      "tags": [
+        "reference",
+        "vanilla",
+        "items"
+      ],
+      "difficulty": "beginner",
+      "lastUpdated": "2026-01-18"
+    }
+  ]
+}

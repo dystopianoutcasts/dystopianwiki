@@ -1,0 +1,112 @@
+{
+  "id": "reference-globals",
+  "title": "Global Functions Reference",
+  "slug": "globals",
+  "version": "build-41",
+  "section": "modding",
+  "category": "reference",
+  "tags": [
+    "intermediate",
+    "lua",
+    "globals",
+    "api",
+    "reference",
+    "functions"
+  ],
+  "content": "# Global Functions Reference\n\n## Overview\n\nGlobal functions are available everywhere in PZ Lua. They provide access to core game systems without needing to import anything.\n\n## Player Functions\n\n### getPlayer()\nReturns the local player object (singleplayer or your character in MP).\n\n```lua\nlocal player = getPlayer()\nif player then\n    print(\"Player: \" .. player:getUsername())\n    print(\"Health: \" .. player:getBodyDamage():getOverallBodyHealth())\nend\n```\n**Returns:** `IsoPlayer` or `nil`\n\n### getSpecificPlayer(index)\nReturns a specific player by index (0-3 for splitscreen).\n\n```lua\nlocal player = getSpecificPlayer(0)  -- First player\nlocal player2 = getSpecificPlayer(1) -- Second player (splitscreen)\n```\n**Parameters:**\n- `index` (int) - Player index (0-3)\n\n**Returns:** `IsoPlayer` or `nil`\n\n### getNumActivePlayers()\nReturns number of active players (splitscreen).\n\n```lua\nlocal count = getNumActivePlayers()\nfor i = 0, count - 1 do\n    local player = getSpecificPlayer(i)\n    -- Handle each player\nend\n```\n**Returns:** `int`\n\n---\n\n## World Functions\n\n### getWorld()\nReturns the game world object.\n\n```lua\nlocal world = getWorld()\nlocal weather = world:getWeather()\nlocal month = getGameTime():getMonth()\n```\n**Returns:** `IsoWorld`\n\n### getCell()\nReturns the current cell (loaded area).\n\n```lua\nlocal cell = getCell()\nlocal square = cell:getGridSquare(x, y, z)\n```\n**Returns:** `IsoCell`\n\n### getSquare(x, y, z)\nGets a specific grid square by coordinates.\n\n```lua\nlocal square = getSquare(5000, 5000, 0)\nif square then\n    local objects = square:getObjects()\n    -- Do something with objects\nend\n```\n**Parameters:**\n- `x` (int) - World X coordinate\n- `y` (int) - World Y coordinate\n- `z` (int) - Floor level (0 = ground)\n\n**Returns:** `IsoGridSquare` or `nil`\n\n---\n\n## Time Functions\n\n### getGameTime()\nReturns game time manager.\n\n```lua\nlocal gt = getGameTime()\nprint(\"Day: \" .. gt:getNightsSurvived())\nprint(\"Month: \" .. gt:getMonth())\nprint(\"Hour: \" .. gt:getTimeOfDay())\nprint(\"Minute: \" .. gt:getMinutes())\n```\n**Returns:** `GameTime`\n\n**Common GameTime Methods:**\n```lua\ngt:getNightsSurvived()  -- Days survived\ngt:getMonth()           -- Current month (0-11)\ngt:getDay()             -- Day of month\ngt:getYear()            -- Current year\ngt:getTimeOfDay()       -- Hour (0-23)\ngt:getMinutes()         -- Minutes (0-59)\ngt:getWorldAgeHours()   -- Total hours played\n```\n\n---\n\n## Core Functions\n\n### getCore()\nReturns the game core settings.\n\n```lua\nlocal core = getCore()\nprint(\"Debug: \" .. tostring(core:getDebug()))\nprint(\"Game Mode: \" .. core:getGameMode())\n```\n**Returns:** `Core`\n\n**Common Core Methods:**\n```lua\ncore:getDebug()         -- Is debug mode on?\ncore:getGameMode()      -- \"Sandbox\", \"Survival\", etc.\ncore:getScreenWidth()   -- Screen width\ncore:getScreenHeight()  -- Screen height\ncore:getZoom(0)         -- Current zoom level\n```\n\n### getSandboxOptions()\nReturns sandbox settings.\n\n```lua\nlocal sandbox = getSandboxOptions()\nlocal zombieLore = sandbox:getZombieLore()\nprint(\"Zombie Speed: \" .. tostring(zombieLore:getSpeed()))\n```\n**Returns:** `SandboxOptions`\n\n---\n\n## Script Functions\n\n### getScriptManager()\nReturns the script manager for item/recipe definitions.\n\n```lua\nlocal sm = getScriptManager()\n\n-- Get item definition\nlocal itemScript = sm:getItem(\"Base.Hammer\")\nif itemScript then\n    print(\"Display Name: \" .. itemScript:getDisplayName())\nend\n\n-- Get recipe definition\nlocal recipeScript = sm:getRecipe(\"Make Plank\")\nif recipeScript then\n    print(\"Recipe Time: \" .. recipeScript:getTime())\nend\n```\n**Returns:** `ScriptManager`\n\n**Common ScriptManager Methods:**\n```lua\nsm:getItem(\"Base.ItemName\")     -- Get item script\nsm:getRecipe(\"Recipe Name\")     -- Get recipe script\nsm:getAllItems()                -- Get all items\nsm:getAllRecipes()              -- Get all recipes\n```\n\n---\n\n## Text and Localization\n\n### getText(key)\nReturns translated text from translation files.\n\n```lua\nlocal text = getText(\"UI_Yes\")  -- \"Yes\"\nlocal msg = getText(\"IGUI_PlayerText_Dead\")  -- \"Dead\"\n```\n**Parameters:**\n- `key` (string) - Translation key\n\n**Returns:** `string`\n\n### getTextOrNull(key)\nLike getText but returns nil if not found (instead of key).\n\n```lua\nlocal text = getTextOrNull(\"Custom_Key\")\nif text then\n    print(text)\nelse\n    print(\"Key not found\")\nend\n```\n\n---\n\n## Texture Functions\n\n### getTexture(path)\nLoads a texture from path.\n\n```lua\nlocal tex = getTexture(\"media/ui/Container_Desktop.png\")\nif tex then\n    local width = tex:getWidth()\n    local height = tex:getHeight()\nend\n```\n**Parameters:**\n- `path` (string) - Texture path relative to game root\n\n**Returns:** `Texture` or `nil`\n\n---\n\n## Random Functions\n\n### ZombRand(max)\nReturns random int from 0 to max-1.\n\n```lua\nlocal roll = ZombRand(100)  -- 0-99\nlocal diceRoll = ZombRand(6) + 1  -- 1-6\n```\n**Parameters:**\n- `max` (int) - Upper bound (exclusive)\n\n**Returns:** `int`\n\n### ZombRand(min, max)\nReturns random int from min to max-1.\n\n```lua\nlocal damage = ZombRand(10, 20)  -- 10-19\n```\n**Parameters:**\n- `min` (int) - Lower bound (inclusive)\n- `max` (int) - Upper bound (exclusive)\n\n**Returns:** `int`\n\n### ZombRandFloat(min, max)\nReturns random float between min and max.\n\n```lua\nlocal multiplier = ZombRandFloat(0.8, 1.2)\nlocal damage = baseDamage * multiplier\n```\n**Parameters:**\n- `min` (float) - Lower bound\n- `max` (float) - Upper bound\n\n**Returns:** `float`\n\n---\n\n## Type Checking\n\n### instanceof(obj, className)\nChecks if object is instance of class.\n\n```lua\nif instanceof(item, \"Food\") then\n    print(\"This is food!\")\nend\n\nif instanceof(object, \"IsoZombie\") then\n    print(\"This is a zombie!\")\nend\n\nif instanceof(object, \"IsoPlayer\") then\n    print(\"This is a player!\")\nend\n```\n**Parameters:**\n- `obj` - Object to check\n- `className` (string) - Class name to check against\n\n**Returns:** `boolean`\n\n**Common Class Names:**\n```\nIsoPlayer       - Player character\nIsoZombie       - Zombie\nIsoSurvivor     - NPC survivor\nIsoGameCharacter - Any character\nIsoObject       - Any world object\nIsoThumpable    - Player-built object\nIsoWindow       - Window\nIsoDoor         - Door\nInventoryItem   - Any item\nFood            - Food item\nHandWeapon      - Weapon\nClothing        - Clothing item\nDrainableComboItem - Drainable item\n```\n\n---\n\n## Utility Functions\n\n### print(message)\nPrints to console.txt log.\n\n```lua\nprint(\"Debug: Something happened\")\nprint(\"Value: \" .. tostring(someValue))\n```\n\n### require(module)\nLoads and returns a Lua module.\n\n```lua\nlocal MyModule = require(\"MyMod/MyModule\")\nMyModule.doSomething()\n```\n\n### tostring(value)\nConverts value to string.\n\n```lua\nlocal str = tostring(123)  -- \"123\"\nlocal str2 = tostring(true)  -- \"true\"\n```\n\n### tonumber(str)\nConverts string to number.\n\n```lua\nlocal num = tonumber(\"123\")  -- 123\nlocal float = tonumber(\"3.14\")  -- 3.14\n```\n\n### type(value)\nReturns the type of a value.\n\n```lua\nprint(type(123))       -- \"number\"\nprint(type(\"hello\"))   -- \"string\"\nprint(type({}))        -- \"table\"\nprint(type(nil))       -- \"nil\"\nprint(type(function() end))  -- \"function\"\n```\n\n---\n\n## LuaUtils Functions\n\nThe `luautils` table provides utility functions.\n\n### luautils.split(str, sep)\nSplits string by separator.\n\n```lua\nlocal parts = luautils.split(\"a,b,c\", \",\")\n-- parts = {\"a\", \"b\", \"c\"}\n```\n\n### luautils.stringStarts(str, prefix)\nChecks if string starts with prefix.\n\n```lua\nif luautils.stringStarts(\"Hello World\", \"Hello\") then\n    print(\"Starts with Hello!\")\nend\n```\n\n### luautils.stringEnds(str, suffix)\nChecks if string ends with suffix.\n\n```lua\nif luautils.stringEnds(\"file.txt\", \".txt\") then\n    print(\"Is a text file!\")\nend\n```\n\n### luautils.walkAdj(player, square)\nMakes player walk to adjacent square.\n\n```lua\nlocal targetSquare = getSquare(x, y, z)\nluautils.walkAdj(player, targetSquare)\n```\n\n### luautils.equipItems(player, item)\nEquips item properly.\n\n```lua\nluautils.equipItems(player, weapon)\n```\n\n---\n\n## Inventory Functions\n\n### getPlayerInventory(playerIndex)\nGets player's main inventory.\n\n```lua\nlocal inv = getPlayer():getInventory()\n\n-- Add item\ninv:AddItem(\"Base.Hammer\")\n\n-- Check for item\nif inv:contains(\"Base.Hammer\") then\n    print(\"Has hammer!\")\nend\n\n-- Get item\nlocal item = inv:getFirstType(\"Base.Hammer\")\n\n-- Remove item\nif item then\n    inv:Remove(item)\nend\n```\n\n**Common Inventory Methods:**\n```lua\ninv:AddItem(\"Module.ItemID\")    -- Add item by full ID\ninv:contains(\"Module.ItemID\")   -- Check if has item\ninv:getFirstType(\"Module.ItemID\")  -- Get first matching item\ninv:getFirstTypeRecurse(\"Module.ItemID\")  -- Search containers too\ninv:getItemCount(\"Module.ItemID\")  -- Count items\ninv:Remove(item)                -- Remove specific item\ninv:getItems()                  -- Get all items (ArrayList)\ninv:getCapacity()               -- Max capacity\ninv:getCapacityWeight()         -- Current weight\n```\n\n---\n\n## Sound Functions\n\n### getSoundManager()\nReturns the sound manager.\n\n```lua\nlocal soundManager = getSoundManager()\nsoundManager:PlayWorldSound(\"ZombieEating\", square, 0, 10, 1, false)\n```\n\n### Common Sound Usage\n\n```lua\n-- Play UI sound\ngetSoundManager():PlayUISound(\"UIActivate\")\n\n-- Play world sound at location\nlocal square = player:getCurrentSquare()\ngetSoundManager():PlayWorldSound(\"HammerNail\", square, 0, 15, 1, false)\n```\n\n---\n\n## Network Functions (Multiplayer)\n\n### isClient()\nReturns true if running as client.\n\n```lua\nif isClient() then\n    print(\"This is a multiplayer client\")\nend\n```\n\n### isServer()\nReturns true if running as server.\n\n```lua\nif isServer() then\n    print(\"This is the server\")\nend\n```\n\n### isCoopHost()\nReturns true if hosting a co-op game.\n\n```lua\nif isCoopHost() then\n    print(\"Hosting co-op\")\nend\n```\n\n### isSinglePlayer()\nReturns true if singleplayer.\n\n```lua\nif isSinglePlayer() then\n    print(\"Singleplayer game\")\nend\n```\n\n### sendClientCommand(module, command, args)\nSends command from client to server.\n\n```lua\nif isClient() then\n    sendClientCommand(\"MyMod\", \"DoSomething\", {data = 123})\nend\n```\n\n### sendServerCommand(player, module, command, args)\nSends command from server to client.\n\n```lua\nif isServer() then\n    sendServerCommand(player, \"MyMod\", \"UpdateData\", {value = 456})\nend\n```\n\n---\n\n## Debug Functions\n\nOnly available when debug mode is enabled.\n\n### isDebugEnabled()\nReturns true if debug mode is on.\n\n```lua\nif isDebugEnabled() then\n    print(\"Debug mode active\")\nend\n```\n\n### isAdmin()\nReturns true if player is admin.\n\n```lua\nif isAdmin() then\n    print(\"Player is admin\")\nend\n```\n\n---\n\n## Quick Reference Table\n\n| Function | Returns | Description |\n|----------|---------|-------------|\n| `getPlayer()` | IsoPlayer | Local player |\n| `getSpecificPlayer(i)` | IsoPlayer | Player by index |\n| `getWorld()` | IsoWorld | Game world |\n| `getCell()` | IsoCell | Current cell |\n| `getSquare(x,y,z)` | IsoGridSquare | Grid square |\n| `getGameTime()` | GameTime | Time manager |\n| `getCore()` | Core | Game settings |\n| `getSandboxOptions()` | SandboxOptions | Sandbox settings |\n| `getScriptManager()` | ScriptManager | Item/recipe scripts |\n| `getText(key)` | string | Translated text |\n| `getTexture(path)` | Texture | Load texture |\n| `ZombRand(max)` | int | Random 0 to max-1 |\n| `ZombRandFloat(min,max)` | float | Random float |\n| `instanceof(obj,class)` | boolean | Type check |\n| `isClient()` | boolean | Is MP client |\n| `isServer()` | boolean | Is MP server |\n| `isSinglePlayer()` | boolean | Is singleplayer |\n\n## Related\n\n- [Events Reference](/build-41/modding/reference/events) - Game events\n- [Script Properties](/build-41/modding/reference/script-properties) - Item/recipe properties",
+  "excerpt": "Complete reference of global functions available in Project Zomboid Lua scripting, including player, world, time, and utility functions.",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "intermediate",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "player-functions",
+      "text": "Player Functions",
+      "level": 2
+    },
+    {
+      "id": "world-functions",
+      "text": "World Functions",
+      "level": 2
+    },
+    {
+      "id": "time-functions",
+      "text": "Time Functions",
+      "level": 2
+    },
+    {
+      "id": "core-functions",
+      "text": "Core Functions",
+      "level": 2
+    },
+    {
+      "id": "script-functions",
+      "text": "Script Functions",
+      "level": 2
+    },
+    {
+      "id": "text-and-localization",
+      "text": "Text and Localization",
+      "level": 2
+    },
+    {
+      "id": "texture-functions",
+      "text": "Texture Functions",
+      "level": 2
+    },
+    {
+      "id": "random-functions",
+      "text": "Random Functions",
+      "level": 2
+    },
+    {
+      "id": "type-checking",
+      "text": "Type Checking",
+      "level": 2
+    },
+    {
+      "id": "utility-functions",
+      "text": "Utility Functions",
+      "level": 2
+    },
+    {
+      "id": "luautils-functions",
+      "text": "LuaUtils Functions",
+      "level": 2
+    },
+    {
+      "id": "inventory-functions",
+      "text": "Inventory Functions",
+      "level": 2
+    },
+    {
+      "id": "sound-functions",
+      "text": "Sound Functions",
+      "level": 2
+    },
+    {
+      "id": "network-functions-multiplayer",
+      "text": "Network Functions (Multiplayer)",
+      "level": 2
+    },
+    {
+      "id": "debug-functions",
+      "text": "Debug Functions",
+      "level": 2
+    },
+    {
+      "id": "quick-reference-table",
+      "text": "Quick Reference Table",
+      "level": 2
+    },
+    {
+      "id": "related",
+      "text": "Related",
+      "level": 2
+    }
+  ]
+}
