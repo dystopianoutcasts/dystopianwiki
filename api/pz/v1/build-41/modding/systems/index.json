@@ -1,0 +1,62 @@
+{
+  "category": "systems",
+  "name": "Game Systems",
+  "description": "Core gameplay systems: loot distribution, spawning, professions, and world mechanics.",
+  "articles": [
+    {
+      "slug": "loot-overview",
+      "title": "Loot Distribution Overview",
+      "excerpt": "How Project Zomboid distributes items through room definitions and procedural tables."
+    },
+    {
+      "slug": "room-distributions",
+      "title": "Room Distributions",
+      "excerpt": "Container loot tables organized by room type (kitchen, garage, bathroom, etc.)."
+    },
+    {
+      "slug": "procedural-loot",
+      "title": "Procedural Distributions",
+      "excerpt": "The 450+ named loot lists used across the game for specific item categories."
+    },
+    {
+      "slug": "vehicle-loot",
+      "title": "Vehicle Distributions",
+      "excerpt": "Vehicle-specific loot tables for glove boxes, trunks, and seats."
+    },
+    {
+      "slug": "zombie-spawning",
+      "title": "Zombie Spawning",
+      "excerpt": "Zone-based zombie outfit distribution for location-appropriate undead."
+    },
+    {
+      "slug": "profession-system",
+      "title": "Profession System",
+      "excerpt": "The 24 vanilla professions with their costs, XP boosts, and starting traits."
+    },
+    {
+      "slug": "trait-system",
+      "title": "Trait System",
+      "excerpt": "Over 70 traits with positive/negative values and mutual exclusions."
+    },
+    {
+      "slug": "foraging-overview",
+      "title": "Foraging System",
+      "excerpt": "Zone-based foraging with item distribution, bonuses, and seasonal availability."
+    },
+    {
+      "slug": "sandbox-overview",
+      "title": "Sandbox Options",
+      "excerpt": "Configurable game settings across 100+ options and 7 presets."
+    },
+    {
+      "slug": "radio-broadcasts",
+      "title": "Radio & TV Broadcasts",
+      "excerpt": "The 12-channel broadcast system with schedules and voice colors."
+    },
+    {
+      "slug": "seasonal-mechanics",
+      "title": "Seasonal Mechanics",
+      "excerpt": "How seasons affect foraging, temperature, and gameplay."
+    }
+  ]
+}

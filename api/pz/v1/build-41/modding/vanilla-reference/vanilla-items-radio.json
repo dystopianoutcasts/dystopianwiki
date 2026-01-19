@@ -1,0 +1,18 @@
+{
+  "id": "vanilla-items-radio",
+  "title": "Vanilla Items: items_radio.txt",
+  "slug": "vanilla-items-radio",
+  "version": "build-41",
+  "section": "modding",
+  "category": "vanilla-reference",
+  "tags": [
+    "reference",
+    "vanilla",
+    "items"
+  ],
+  "difficulty": "beginner",
+  "content": "# Vanilla Items Reference (items_radio.txt)\n\nComplete reference for all **23 items** defined in `items_radio.txt`.\n\n## Items by Type\n\n### Literature (3 items)\n\n| Item | Weight | Description |\n|------|--------|-------------|\n| Guerilla Radio Vol. 1 | 0.1 | `Radio.RadioMag1` |\n| Guerilla Radio Vol. 2 | 0.1 | `Radio.RadioMag2` |\n| Guerilla Radio Vol. 3 | 0.1 | `Radio.RadioMag3` |\n\n### Normal (4 items)\n\n| Item | Weight | Description |\n|------|--------|-------------|\n| Electric Wire | 0.1 | `Radio.ElectricWire` |\n| Radio Receiver | 0.1 | `Radio.RadioReceiver` |\n| Radio Transmitter | 0.1 | `Radio.RadioTransmitter` |\n| Scanner Module | 0.1 | `Radio.ScannerModule` |\n\n### Radio (16 items)\n\n| Item | Weight | Description |\n|------|--------|-------------|\n| Antique Television | 10.0 | `Radio.TvAntique` |\n| Makeshift Ham Radio | 20.0 | `Radio.HamRadioMakeShift` |\n| Makeshift Radio | 1.5 | `Radio.RadioMakeShift` |\n| Makeshift Walkie Talkie | 1.0 | `Radio.WalkieTalkieMakeShift` |\n| Premium Tech. Walkie Talkie | 1.0 | `Radio.WalkieTalkie3` |\n| Premium Technologies Ham Radio | 20.0 | `Radio.HamRadio1` |\n| Premium Technologies Radio | 1.5 | `Radio.RadioRed` |\n| Premium Technologies Televi... | 10.0 | `Radio.TvWideScreen` |\n| Tactical Walkie Talkie | 1.25 | `Radio.WalkieTalkie4` |\n| Toys-R-Mine Walkie Talkie | 1.0 | `Radio.WalkieTalkie1` |\n| US ARMY COMM. Ham Radio | 20.0 | `Radio.HamRadio2` |\n| US Army Walkie Talkie | 1.5 | `Radio.WalkieTalkie5` |\n| ValuTech PortaDisc | 0.3 | `Radio.CDplayer` |\n| ValuTech Radio | 1.5 | `Radio.RadioBlack` |\n| ValuTech Television | 10.0 | `Radio.TvBlack` |\n| ValuTech Walkie Talkie | 1.0 | `Radio.WalkieTalkie2` |\n",
+  "excerpt": "Reference for 23 items from items_radio.txt.",
+  "lastUpdated": "2026-01-18",
+  "relatedArticles": []
+}

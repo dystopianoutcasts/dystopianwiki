@@ -1,0 +1,47 @@
+{
+  "category": "data-formats",
+  "name": "Data Formats",
+  "description": "File formats and syntax for Project Zomboid's data files: scripts, tiles, models, and more.",
+  "articles": [
+    {
+      "slug": "script-syntax",
+      "title": "Script File Syntax",
+      "excerpt": "The module-based script format used for items, recipes, vehicles, and more."
+    },
+    {
+      "slug": "item-scripts",
+      "title": "Item Script Format",
+      "excerpt": "Complete reference for item definition properties and types."
+    },
+    {
+      "slug": "sound-scripts",
+      "title": "Sound Script Format",
+      "excerpt": "Sound event definitions and FMOD bank integration."
+    },
+    {
+      "slug": "tile-definitions",
+      "title": "Tile Definitions",
+      "excerpt": "Binary tile property files (.tiles) and IsoType classes."
+    },
+    {
+      "slug": "animation-format",
+      "title": "Animation Format",
+      "excerpt": "AnimSets, action groups, and state machine definitions."
+    },
+    {
+      "slug": "clothing-xml",
+      "title": "Clothing XML Format",
+      "excerpt": "clothing.xml structure for outfits, body locations, and decals."
+    },
+    {
+      "slug": "map-zones",
+      "title": "Map Zone Format",
+      "excerpt": "Zone definitions in objects.lua for spawning and navigation."
+    },
+    {
+      "slug": "model-format",
+      "title": "3D Model Format",
+      "excerpt": "Project Zomboid's custom text-based 3D model format."
+    }
+  ]
+}

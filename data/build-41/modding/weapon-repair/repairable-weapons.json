@@ -1,0 +1,111 @@
+{
+  "id": "weapon-repair-repairable-weapons",
+  "title": "Repairable Weapons List (Vanilla)",
+  "slug": "repairable-weapons",
+  "version": "build-41",
+  "section": "modding",
+  "category": "weapon-repair",
+  "tags": [
+    "item",
+    "repair",
+    "weapon",
+    "repairable",
+    "weapons"
+  ],
+  "content": "# Repairable Weapons List (Vanilla)\r\n\r\n## Overview\r\n\r\nThis document lists all weapons that have repair definitions in vanilla Project Zomboid's `fixing.txt`.\r\n\r\n## Axes\r\n\r\n| Weapon | Fixers | Skill Required |\r\n|--------|--------|----------------|\r\n| Axe | Woodglue, DuctTape, Glue, Scotchtape | Woodwork 2 (Woodglue) |\r\n| HandAxe | Woodglue, DuctTape, Glue, Scotchtape | Woodwork 2 (Woodglue) |\r\n| WoodAxe | Woodglue, DuctTape, Glue, Scotchtape | Woodwork 2 (Woodglue) |\r\n| PickAxe | Woodglue, DuctTape, Glue, Scotchtape | Woodwork 2 (Woodglue) |\r\n| HandScythe | Woodglue, DuctTape, Glue, Scotchtape | Woodwork 2 (Woodglue) |\r\n\r\n## Baseball Bats\r\n\r\n| Weapon | Fixers | Skill Required |\r\n|--------|--------|----------------|\r\n| BaseballBat | DuctTape, Glue, Scotchtape | None |\r\n| BaseballBatNails | DuctTape, Glue, Scotchtape, Nails | None |\r\n\r\n## Heavy Tools\r\n\r\n| Weapon | Fixers | Skill Required |\r\n|--------|--------|----------------|\r\n| Sledgehammer | Woodglue, DuctTape, Glue, Scotchtape | Woodwork 2 (Woodglue) |\r\n| Sledgehammer2 | Woodglue, DuctTape, Glue, Scotchtape | Woodwork 2 (Woodglue) |\r\n| Shovel | Woodglue, DuctTape, Glue, Scotchtape | Woodwork 2 (Woodglue) |\r\n| Shovel2 | Woodglue, DuctTape, Glue, Scotchtape | Woodwork 2 (Woodglue) |\r\n| SnowShovel | DuctTape, Glue, Scotchtape | None |\r\n\r\n## Sports Equipment\r\n\r\n| Weapon | Fixers | Skill Required |\r\n|--------|--------|----------------|\r\n| TennisRacket | DuctTape, Glue, Scotchtape | None |\r\n| BadmintonRacket | DuctTape, Glue, Scotchtape | None |\r\n| HockeyStick | DuctTape, Glue, Scotchtape | None |\r\n| IceHockeyStick | DuctTape, Glue, Scotchtape | None |\r\n| LaCrosseStick | DuctTape, Glue, Scotchtape | None |\r\n| GolfClub | DuctTape, Glue, Scotchtape | None |\r\n\r\n## Hammers and Mallets\r\n\r\n| Weapon | Fixers | Skill Required |\r\n|--------|--------|----------------|\r\n| Hammer | DuctTape, Glue, Scotchtape | None |\r\n| ClubHammer | DuctTape, Glue, Scotchtape | None |\r\n| WoodenMallet | DuctTape, Glue, Scotchtape | None |\r\n\r\n## Kitchen Items\r\n\r\n| Weapon | Fixers | Skill Required |\r\n|--------|--------|----------------|\r\n| RollingPin | DuctTape, Glue, Scotchtape | None |\r\n| Pan | DuctTape, Glue, Scotchtape | None |\r\n| GridlePan | DuctTape, Glue, Scotchtape | None |\r\n| SaucePan | DuctTape, Glue, Scotchtape | None |\r\n| KitchenKnife | DuctTape, Glue, Scotchtape | None |\r\n| HuntingKnife | DuctTape, Glue, Scotchtape | None |\r\n| HandFork | DuctTape, Glue, Scotchtape | None |\r\n\r\n## Garden Tools\r\n\r\n| Weapon | Fixers | Skill Required |\r\n|--------|--------|----------------|\r\n| GardenFork | DuctTape, Glue, Scotchtape | None |\r\n| GardenHoe | DuctTape, Glue, Scotchtape | None |\r\n| Broom | DuctTape, Glue, Scotchtape | None |\r\n| LeafRake | DuctTape, Glue, Scotchtape | None |\r\n| Rake | DuctTape, Glue, Scotchtape | None |\r\n\r\n## Bladed Weapons\r\n\r\n| Weapon | Fixers | Skill Required |\r\n|--------|--------|----------------|\r\n| Machete | DuctTape, Glue, Scotchtape | None |\r\n\r\n## Paddling Equipment\r\n\r\n| Weapon | Fixers | Skill Required |\r\n|--------|--------|----------------|\r\n| CanoePadel | DuctTape, Glue, Scotchtape | None |\r\n| DoubleCanoePadel | DuctTape, Glue, Scotchtape | None |\r\n\r\n## Musical Instruments\r\n\r\n| Weapon | Fixers | Skill Required |\r\n|--------|--------|----------------|\r\n| Banjo | DuctTape, Glue, Scotchtape | None |\r\n| GuitarAcoustic | DuctTape, Glue, Scotchtape | None |\r\n| GuitarElectricBlack | DuctTape, Glue, Scotchtape | None |\r\n| GuitarElectricBlue | DuctTape, Glue, Scotchtape | None |\r\n| GuitarElectricRed | DuctTape, Glue, Scotchtape | None |\r\n| GuitarElectricBassBlack | DuctTape, Glue, Scotchtape | None |\r\n| GuitarElectricBassBlue | DuctTape, Glue, Scotchtape | None |\r\n| GuitarElectricBassRed | DuctTape, Glue, Scotchtape | None |\r\n| Saxophone | DuctTape, Glue, Scotchtape | None |\r\n| Trumpet | DuctTape, Glue, Scotchtape | None |\r\n| Violin | DuctTape, Glue, Scotchtape | None |\r\n\r\n## Spears (Crafted)\r\n\r\n| Weapon | Fixers | Notes |\r\n|--------|--------|-------|\r\n| SpearBreadKnife | DuctTape=1, Scotchtape=2 | Less uses required |\r\n| SpearButterKnife | DuctTape=1, Scotchtape=2 | |\r\n| SpearFork | DuctTape=1, Scotchtape=2 | |\r\n| SpearHandFork | DuctTape=1, Scotchtape=2 | |\r\n| SpearHuntingKnife | DuctTape=1, Scotchtape=2 | |\r\n| SpearIcePick | DuctTape=1, Scotchtape=2 | |\r\n| SpearKnife | DuctTape=1, Scotchtape=2 | |\r\n| SpearLetterOpener | DuctTape=1, Scotchtape=2 | |\r\n| SpearMachete | DuctTape=1, Scotchtape=2 | |\r\n| SpearPen | DuctTape=1, Scotchtape=2 | |\r\n| SpearPencil | DuctTape=1, Scotchtape=2 | |\r\n| SpearScalpel | DuctTape=1, Scotchtape=2 | |\r\n| SpearScissors | DuctTape=1, Scotchtape=2 | |\r\n\r\n## Pistols\r\n\r\n| Weapon | Fixers | Skill Required |\r\n|--------|--------|----------------|\r\n| Pistol | Pistol | Aiming 3 |\r\n| Pistol2 | Pistol2 | Aiming 3 |\r\n| Pistol3 | Pistol3 | Aiming 3 |\r\n\r\n## Revolvers\r\n\r\n| Weapon | Fixers | Skill Required |\r\n|--------|--------|----------------|\r\n| Revolver | Revolver, Revolver_Long, Revolver_Short | Aiming 2 |\r\n| Revolver_Long | Revolver, Revolver_Long, Revolver_Short | Aiming 2 |\r\n| Revolver_Short | Revolver, Revolver_Long, Revolver_Short | Aiming 2 |\r\n\r\n## Shotguns\r\n\r\n| Weapon | Fixers | Skill Required |\r\n|--------|--------|----------------|\r\n| Shotgun | Shotgun, ShotgunSawnoff | Aiming 2 |\r\n| ShotgunSawnoff | ShotgunSawnoff, Shotgun | Aiming 2 |\r\n| DoubleBarrelShotgun | DoubleBarrelShotgun | Aiming 2 |\r\n\r\n## Rifles\r\n\r\n| Weapon | Fixers | Skill Required |\r\n|--------|--------|----------------|\r\n| HuntingRifle | HuntingRifle | Aiming 4 |\r\n| VarmintRifle | VarmintRifle | Aiming 4 |\r\n| AssaultRifle | AssaultRifle, AssaultRifle2 | Aiming 5 |\r\n| AssaultRifle2 | AssaultRifle2, AssaultRifle | Aiming 5 |\r\n\r\n## Weapons NOT Repairable (Notable)\r\n\r\nThe following weapon types do NOT have repair definitions:\r\n- Crowbar\r\n- Lead Pipe\r\n- Metal Pipe\r\n- Metal Bar\r\n- Plunger\r\n- Most improvised weapons\r\n- Bare hands (obviously)\r\n\r\n## Summary Statistics\r\n\r\n| Category | Count |\r\n|----------|-------|\r\n| Axes & Scythes | 5 |\r\n| Baseball Bats | 2 |\r\n| Heavy Tools | 5 |\r\n| Sports Equipment | 6 |\r\n| Hammers & Mallets | 3 |\r\n| Kitchen Items | 7 |\r\n| Garden Tools | 5 |\r\n| Bladed | 1 |\r\n| Paddling | 2 |\r\n| Musical | 11 |\r\n| Spears | 13 |\r\n| Pistols | 3 |\r\n| Revolvers | 3 |\r\n| Shotguns | 3 |\r\n| Rifles | 4 |\r\n| **Total** | **73** |\r\n",
+  "excerpt": "This document lists all weapons that have repair definitions in vanilla Project Zomboid's .\r\n\r\n\r\n\r\n| Weapon | Fixers | Skill Required |\r\n|--------|--------|----------------|\r\n| Axe | Woodglue, Duct...",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "axes",
+      "text": "Axes",
+      "level": 2
+    },
+    {
+      "id": "baseball-bats",
+      "text": "Baseball Bats",
+      "level": 2
+    },
+    {
+      "id": "heavy-tools",
+      "text": "Heavy Tools",
+      "level": 2
+    },
+    {
+      "id": "sports-equipment",
+      "text": "Sports Equipment",
+      "level": 2
+    },
+    {
+      "id": "hammers-and-mallets",
+      "text": "Hammers and Mallets",
+      "level": 2
+    },
+    {
+      "id": "kitchen-items",
+      "text": "Kitchen Items",
+      "level": 2
+    },
+    {
+      "id": "garden-tools",
+      "text": "Garden Tools",
+      "level": 2
+    },
+    {
+      "id": "bladed-weapons",
+      "text": "Bladed Weapons",
+      "level": 2
+    },
+    {
+      "id": "paddling-equipment",
+      "text": "Paddling Equipment",
+      "level": 2
+    },
+    {
+      "id": "musical-instruments",
+      "text": "Musical Instruments",
+      "level": 2
+    },
+    {
+      "id": "spears-crafted",
+      "text": "Spears (Crafted)",
+      "level": 2
+    },
+    {
+      "id": "pistols",
+      "text": "Pistols",
+      "level": 2
+    },
+    {
+      "id": "revolvers",
+      "text": "Revolvers",
+      "level": 2
+    },
+    {
+      "id": "shotguns",
+      "text": "Shotguns",
+      "level": 2
+    },
+    {
+      "id": "rifles",
+      "text": "Rifles",
+      "level": 2
+    },
+    {
+      "id": "weapons-not-repairable-notable",
+      "text": "Weapons NOT Repairable (Notable)",
+      "level": 2
+    },
+    {
+      "id": "summary-statistics",
+      "text": "Summary Statistics",
+      "level": 2
+    }
+  ]
+}

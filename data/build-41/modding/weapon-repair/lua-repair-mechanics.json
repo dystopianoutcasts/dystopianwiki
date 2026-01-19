@@ -1,0 +1,134 @@
+{
+  "id": "weapon-repair-lua-repair-mechanics",
+  "title": "Lua Repair Mechanics",
+  "slug": "lua-repair-mechanics",
+  "version": "build-41",
+  "section": "modding",
+  "category": "weapon-repair",
+  "tags": [
+    "lua",
+    "recipe",
+    "item",
+    "repair",
+    "weapon",
+    "event",
+    "api",
+    "mechanics"
+  ],
+  "content": "# Lua Repair Mechanics\r\n\r\n## Core Files\r\n\r\n```\r\nR:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\lua\\client\\\r\n├── TimedActions\\\r\n│   ├── ISFixAction.lua           # Main repair action\r\n│   ├── ISRepairClothing.lua      # Clothing-specific repairs\r\n│   └── ISChopTreeAction.lua      # Shows condition degradation\r\n├── ISUI\\\r\n│   └── ISInventoryPaneContextMenu.lua  # Repair UI menus\r\n└── Vehicles\\TimedActions\\\r\n    └── ISRepairEngine.lua        # Engine repair action\r\n\r\nR:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\lua\\server\\\r\n├── Vehicles\\\r\n│   └── VehicleCommands.lua       # Server-side repair logic\r\n└── recipecode.lua                # Item type definitions\r\n```\r\n\r\n## ISFixAction.lua - Main Repair Action\r\n\r\n### Class Structure\r\n\r\n```lua\r\nISFixAction = ISBaseTimedAction:derive(\"ISFixAction\");\r\n```\r\n\r\n### Constructor\r\n\r\n```lua\r\nfunction ISFixAction:new(character, item, time, fixing, fixer, vehiclePart)\r\n    local o = {}\r\n    setmetatable(o, self)\r\n    self.__index = self\r\n    o.character = character\r\n    o.item = item\r\n    o.fixing = fixing\r\n    o.fixer = fixer\r\n    o.vehiclePart = vehiclePart\r\n    o.maxTime = time  -- Default: 60 ticks\r\n    o.haveBeenRepaired = item:getHaveBeenRepaired()\r\n    return o\r\nend\r\n```\r\n\r\n### Perform Method\r\n\r\n```lua\r\nfunction ISFixAction:perform()\r\n    -- Call Java FixingManager to perform repair\r\n    FixingManager.fixItem(self.item, self.character, self.fixing, self.fixer)\r\n\r\n    -- If repairing a vehicle part, sync to server\r\n    if self.vehiclePart then\r\n        local part = self.vehiclePart\r\n        local args = {\r\n            vehicle = part:getVehicle():getId(),\r\n            part = part:getId(),\r\n            condition = self.item:getCondition(),\r\n            haveBeenRepaired = self.item:getHaveBeenRepaired()\r\n        }\r\n        sendClientCommand(self.character, 'vehicle', 'fixPart', args)\r\n    end\r\n\r\n    ISBaseTimedAction.perform(self)\r\nend\r\n```\r\n\r\n### Validation\r\n\r\n```lua\r\nfunction ISFixAction:isValid()\r\n    -- Check if item still exists and is in inventory\r\n    return self.item and self.character:getInventory():contains(self.item)\r\nend\r\n```\r\n\r\n## ISInventoryPaneContextMenu.lua - Repair UI\r\n\r\n### Detecting Repairable Items\r\n\r\n```lua\r\n-- Line 139\r\nif testItem:isBroken() or testItem:getCondition() < testItem:getConditionMax() then\r\n    brokenObject = testItem\r\nend\r\n```\r\n\r\n### Building Repair Menu\r\n\r\n```lua\r\n-- Lines 734-744\r\nif brokenObject then\r\n    local fixingList = FixingManager.getFixes(brokenObject)\r\n    if not fixingList:isEmpty() then\r\n        local fixOption = context:addOption(\r\n            getText(\"ContextMenu_Repair\") .. getItemNameFromFullType(brokenObject:getFullType()),\r\n            items, nil\r\n        )\r\n        local subMenuFix = ISContextMenu:getNew(context)\r\n        context:addSubMenu(fixOption, subMenuFix)\r\n\r\n        for i = 0, fixingList:size() - 1 do\r\n            ISInventoryPaneContextMenu.buildFixingMenu(\r\n                brokenObject, player, fixingList:get(i),\r\n                fixOption, subMenuFix\r\n            )\r\n        end\r\n    end\r\nend\r\n```\r\n\r\n### Calculating Repair Stats\r\n\r\n```lua\r\n-- Lines 1898-1908\r\nlocal condPercentRepaired = FixingManager.getCondRepaired(\r\n    brokenObject, getSpecificPlayer(player), fixing, fixer\r\n)\r\nlocal chanceOfSuccess = 100 - FixingManager.getChanceOfFail(\r\n    brokenObject, getSpecificPlayer(player), fixing, fixer\r\n)\r\n\r\n-- Display in tooltip\r\ntooltip.description = \" \" .. color1 .. \" \" ..\r\n    getText(\"Tooltip_potentialRepair\") .. \" \" ..\r\n    math.ceil(condPercentRepaired) .. \"%\"\r\ntooltip.description = tooltip.description .. \" <LINE> \" ..\r\n    getText(\"Tooltip_chanceOfSuccess\") .. \" \" ..\r\n    math.ceil(chanceOfSuccess) .. \"%\"\r\n```\r\n\r\n### Checking Skill Requirements\r\n\r\n```lua\r\n-- Lines 1928-1943\r\nif fixer:getFixerSkills() then\r\n    local skills = fixer:getFixerSkills()\r\n    for j = 0, skills:size() - 1 do\r\n        local skill = skills:get(j)\r\n        local perk = Perks.FromString(skill:getSkillName())\r\n        local perkLvl = getSpecificPlayer(player):getPerkLevel(perk)\r\n\r\n        if perkLvl >= skill:getSkillLevel() then\r\n            color1 = ISInventoryPaneContextMenu.ghs  -- Green (has skill)\r\n        else\r\n            color1 = ISInventoryPaneContextMenu.bhs  -- Red (lacks skill)\r\n            fixOption.notAvailable = true\r\n        end\r\n\r\n        -- Display: \"Skill Name: X/Y\"\r\n        text = text .. \" <LINE> \" .. color1 .. \" \" ..\r\n            perk:getName() .. \" : \" .. perkLvl .. \"/\" .. skill:getSkillLevel()\r\n    end\r\nend\r\n```\r\n\r\n### Executing Repair\r\n\r\n```lua\r\n-- Lines 1948-1960\r\nISInventoryPaneContextMenu.onFix = function(brokenObject, player, fixing, fixer, vehiclePart)\r\n    local playerObj = getSpecificPlayer(player)\r\n\r\n    -- Transfer item to player if needed\r\n    ISInventoryPaneContextMenu.transferIfNeeded(playerObj, brokenObject)\r\n\r\n    -- Queue required items\r\n    local items = fixing:getRequiredItems(playerObj, fixer, brokenObject)\r\n    for i = 0, items:size() - 1 do\r\n        ISTimedActionQueue.add(\r\n            ISInventoryTransferAction:new(playerObj, items:get(i), ...)\r\n        )\r\n    end\r\n\r\n    -- Queue repair action (60 ticks default)\r\n    ISTimedActionQueue.add(\r\n        ISFixAction:new(playerObj, brokenObject, 60, fixing, fixer, vehiclePart)\r\n    )\r\nend\r\n```\r\n\r\n## ISRepairClothing.lua - Clothing Repairs\r\n\r\n### Duration Formula\r\n\r\n```lua\r\nfunction ISRepairClothing:new(character, clothing, part, fabric, thread, needle)\r\n    local o = {}\r\n    -- ...\r\n    o.maxTime = 150 - (character:getPerkLevel(Perks.Tailoring) * 6)\r\n    -- Level 0: 150 ticks\r\n    -- Level 5: 120 ticks\r\n    -- Level 10: 90 ticks\r\n\r\n    if character:isTimedActionInstant() then\r\n        o.maxTime = 1\r\n    end\r\n    return o\r\nend\r\n```\r\n\r\n### Perform Method\r\n\r\n```lua\r\nfunction ISRepairClothing:perform()\r\n    -- Add patch to clothing\r\n    self.clothing:addPatch(self.character, self.part, self.fabric)\r\n    self.character:resetModel()\r\n\r\n    -- Consume materials\r\n    self.character:getInventory():Remove(self.fabric)\r\n    self.thread:Use()  -- Degrades thread\r\n\r\n    -- Grant XP\r\n    self.character:getXp():AddXP(Perks.Tailoring, ZombRand(1, 3))\r\n\r\n    -- Trigger event for mods\r\n    triggerEvent(\"OnClothingUpdated\", self.character)\r\n\r\n    ISBaseTimedAction.perform(self)\r\nend\r\n```\r\n\r\n## VehicleCommands.lua - Engine Repair Formula\r\n\r\n### Condition Per Part Calculation\r\n\r\n```lua\r\n-- Lines 178-186\r\nfunction Commands.repairEngine(player, args)\r\n    local vehicle = getVehicleById(args.vehicle)\r\n    local part = vehicle:getPartById(\"Engine\")\r\n\r\n    -- Skill-based condition restoration\r\n    local condPerPart = 1 + (args.skillLevel / 2)\r\n    if condPerPart > 5 then\r\n        condPerPart = 5  -- Maximum per part\r\n    end\r\n\r\n    local done = 0\r\n    for i = 1, args.numberOfParts do\r\n        part:setCondition(part:getCondition() + condPerPart)\r\n        done = done + 1\r\n\r\n        if part:getCondition() >= 100 then\r\n            part:setCondition(100)  -- Hard cap\r\n            break\r\n        end\r\n    end\r\n\r\n    -- Grant XP (only on first repair)\r\n    if args.giveXP then\r\n        player:sendObjectChange('addXp', {\r\n            perk = Perks.Mechanics:index(),\r\n            xp = done,\r\n            noMultiplier = false\r\n        })\r\n    end\r\nend\r\n```\r\n\r\n## Condition Degradation Example\r\n\r\n### ISChopTreeAction.lua\r\n\r\n```lua\r\n-- Lines 63-68\r\nif ZombRand(self.axe:getConditionLowerChance() * 2 +\r\n            self.character:getMaintenanceMod() * 2) == 0 then\r\n    -- Condition degrades\r\n    self.axe:setCondition(self.axe:getCondition() - 1)\r\n    ISWorldObjectContextMenu.checkWeapon(self.character)\r\nelse\r\n    -- No degradation, gain Maintenance XP\r\n    self.character:getXp():AddXP(Perks.Maintenance, 1)\r\nend\r\n```\r\n\r\n## FixingManager API Reference\r\n\r\nThe FixingManager is a Java class accessed from Lua:\r\n\r\n```lua\r\n-- Get available repairs for an item\r\nlocal fixingList = FixingManager.getFixes(item)\r\n\r\n-- Calculate condition that will be restored (0-100%)\r\nlocal condRepaired = FixingManager.getCondRepaired(item, player, fixing, fixer)\r\n\r\n-- Calculate failure chance (0-100%)\r\nlocal failChance = FixingManager.getChanceOfFail(item, player, fixing, fixer)\r\n\r\n-- Perform the repair\r\nFixingManager.fixItem(item, character, fixing, fixer)\r\n```\r\n\r\n## Key Item Methods\r\n\r\n```lua\r\n-- Condition\r\nitem:getCondition()           -- Current condition\r\nitem:setCondition(value)      -- Set condition\r\nitem:getConditionMax()        -- Maximum condition (usually 100)\r\nitem:getConditionLowerChance() -- Degradation probability\r\n\r\n-- State\r\nitem:isBroken()               -- True if condition == 0\r\nitem:getHaveBeenRepaired()    -- True if previously repaired\r\nitem:setHaveBeenRepaired(bool) -- Set repair flag\r\n\r\n-- Type\r\nitem:getType()                -- Item type string\r\nitem:getFullType()            -- Full item type with module\r\n```\r\n\r\n## Key Player Methods\r\n\r\n```lua\r\n-- Skills\r\nplayer:getPerkLevel(Perks.Maintenance)  -- Get skill level\r\nplayer:getMaintenanceMod()              -- Get maintenance modifier\r\nplayer:getXp():AddXP(perk, amount)      -- Add XP\r\n\r\n-- Inventory\r\nplayer:getInventory():contains(item)\r\nplayer:getInventory():Remove(item)\r\nplayer:getInventory():getNumberOfItem(type, checkChildren, includeContainers)\r\n```\r\n",
+  "excerpt": "The FixingManager is a Java class accessed from Lua:",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "advanced",
+  "tableOfContents": [
+    {
+      "id": "core-files",
+      "text": "Core Files",
+      "level": 2
+    },
+    {
+      "id": "isfixactionlua-main-repair-action",
+      "text": "ISFixAction.lua - Main Repair Action",
+      "level": 2
+    },
+    {
+      "id": "class-structure",
+      "text": "Class Structure",
+      "level": 3
+    },
+    {
+      "id": "constructor",
+      "text": "Constructor",
+      "level": 3
+    },
+    {
+      "id": "perform-method",
+      "text": "Perform Method",
+      "level": 3
+    },
+    {
+      "id": "validation",
+      "text": "Validation",
+      "level": 3
+    },
+    {
+      "id": "isinventorypanecontextmenulua-repair-ui",
+      "text": "ISInventoryPaneContextMenu.lua - Repair UI",
+      "level": 2
+    },
+    {
+      "id": "detecting-repairable-items",
+      "text": "Detecting Repairable Items",
+      "level": 3
+    },
+    {
+      "id": "building-repair-menu",
+      "text": "Building Repair Menu",
+      "level": 3
+    },
+    {
+      "id": "calculating-repair-stats",
+      "text": "Calculating Repair Stats",
+      "level": 3
+    },
+    {
+      "id": "checking-skill-requirements",
+      "text": "Checking Skill Requirements",
+      "level": 3
+    },
+    {
+      "id": "executing-repair",
+      "text": "Executing Repair",
+      "level": 3
+    },
+    {
+      "id": "isrepairclothinglua-clothing-repairs",
+      "text": "ISRepairClothing.lua - Clothing Repairs",
+      "level": 2
+    },
+    {
+      "id": "duration-formula",
+      "text": "Duration Formula",
+      "level": 3
+    },
+    {
+      "id": "perform-method",
+      "text": "Perform Method",
+      "level": 3
+    },
+    {
+      "id": "vehiclecommandslua-engine-repair-formula",
+      "text": "VehicleCommands.lua - Engine Repair Formula",
+      "level": 2
+    },
+    {
+      "id": "condition-per-part-calculation",
+      "text": "Condition Per Part Calculation",
+      "level": 3
+    },
+    {
+      "id": "condition-degradation-example",
+      "text": "Condition Degradation Example",
+      "level": 2
+    },
+    {
+      "id": "ischoptreeactionlua",
+      "text": "ISChopTreeAction.lua",
+      "level": 3
+    },
+    {
+      "id": "fixingmanager-api-reference",
+      "text": "FixingManager API Reference",
+      "level": 2
+    },
+    {
+      "id": "key-item-methods",
+      "text": "Key Item Methods",
+      "level": 2
+    },
+    {
+      "id": "key-player-methods",
+      "text": "Key Player Methods",
+      "level": 2
+    }
+  ]
+}

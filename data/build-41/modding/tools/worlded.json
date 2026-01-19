@@ -1,0 +1,87 @@
+{
+  "id": "tools-worlded",
+  "title": "WorldEd Reference",
+  "slug": "worlded",
+  "version": "build-41",
+  "section": "modding",
+  "category": "tools",
+  "tags": [
+    "intermediate",
+    "worlded",
+    "mapping",
+    "world",
+    "cells",
+    "external"
+  ],
+  "content": "# WorldEd Reference\n\n## Overview\n\nWorldEd is the world map editor for Project Zomboid. It's used to assemble TileZed buildings into complete map cells and manage world-level data like vegetation, roads, and spawn zones.\n\n## Official Resources\n\n### Download\n\n**Build 41 Version (Unjammer Fork):**\n- GitHub: [https://github.com/Unjammer/WorldEd](https://github.com/Unjammer/WorldEd)\n\nThis is the community-maintained fork updated for Build 41 compatibility.\n\n### Primary Documentation\n\n**The One-Stop TileZed Mapping Shop:**\n- Forum Thread: [https://theindiestone.com/forums/index.php?/topic/21951-the-one-stop-tilezed-mapping-shop/](https://theindiestone.com/forums/index.php?/topic/21951-the-one-stop-tilezed-mapping-shop/)\n\nThis comprehensive forum thread covers both TileZed and WorldEd with community guides.\n\n## What WorldEd Does\n\n### Cell Management\n- Create new map cells\n- Define cell boundaries\n- Set cell metadata\n- Manage lot placement\n\n### Building Placement\n- Import TileZed .tbx buildings\n- Position buildings in cells\n- Configure building properties\n- Set spawn weights\n\n### World Features\n- Define roads and paths\n- Configure vegetation zones\n- Set water areas\n- Manage forest boundaries\n\n### Zone Definition\n- Zombie spawn zones\n- Loot distribution zones\n- Profession spawn points\n- Vehicle spawn areas\n\n## Basic Workflow\n\n1. **Create world project** in WorldEd\n2. **Define cell grid** for your map area\n3. **Import buildings** from TileZed (.tbx files)\n4. **Place buildings** in appropriate cells\n5. **Configure zones** for spawning\n6. **Generate map files** for game use\n\n## File Types\n\n| Extension | Purpose |\n|-----------|----------|\n| `.pzw` | WorldEd project file |\n| `.lotheader` | Lot header data |\n| `.lotpack` | Packed lot data |\n| `.bin` | Binary map data |\n| `.tmx` | Cell data from TileZed |\n\n## Cell Coordinates\n\nProject Zomboid uses a cell-based coordinate system:\n\n```\nCell size: 300x300 tiles\nWorld origin: (0, 0)\nMuldraugh: Around cells (35-42, 23-32)\nWest Point: Around cells (26-35, 16-22)\n```\n\n## Integration with TileZed\n\nTileZed and WorldEd work together:\n\n1. **TileZed** creates individual buildings\n2. Buildings exported as .tbx or .tmx\n3. **WorldEd** places buildings in world\n4. World data exported as game files\n5. Game loads combined map\n\n## Keyboard Shortcuts\n\n| Shortcut | Action |\n|----------|--------|\n| `Space` | Pan view |\n| `Scroll` | Zoom |\n| `G` | Toggle grid |\n| `B` | Building mode |\n| `Z` | Zone mode |\n| `Ctrl+S` | Save project |\n\n## Tips for Beginners\n\n1. **Study vanilla maps** - Load existing cells for reference\n2. **Plan cell layout** - Map out your additions first\n3. **Test incrementally** - Check in-game after major changes\n4. **Use lot mode** - Easier building placement\n5. **Back up projects** - WorldEd can corrupt files\n\n## Common Issues\n\n### Buildings Not Loading\n- Verify .tbx path is correct\n- Check file isn't corrupted\n- Ensure TileZed version compatibility\n\n### Cell Generation Fails\n- Check for overlapping buildings\n- Verify cell boundaries\n- Ensure adequate memory\n\n### Map Doesn't Show In-Game\n- Verify export completed\n- Check mod folder structure\n- Clear cache (Zomboid/Lua folder)\n\n## Map Mod Structure\n\nCustom maps need this folder structure:\n\n```\nMyMapMod/\n├── mod.info\n└── media/\n    └── maps/\n        └── MyMap/\n            ├── map.info\n            ├── objects.lua\n            ├── spawnpoints.lua\n            ├── worldX-Y.lotpack\n            └── worldX-Y.lotheader\n```\n\n## External Links\n\n- **GitHub (B41):** [https://github.com/Unjammer/WorldEd](https://github.com/Unjammer/WorldEd)\n- **Forum Guide:** [https://theindiestone.com/forums/index.php?/topic/21951-the-one-stop-tilezed-mapping-shop/](https://theindiestone.com/forums/index.php?/topic/21951-the-one-stop-tilezed-mapping-shop/)\n- **TileZed (companion tool):** [TileZed Reference](/build-41/modding/tools/tilezed)\n\n## Related Wiki Articles\n\n- [TileZed Reference](/build-41/modding/tools/tilezed) - Building and tile editor\n- [TileZed Setup Guide](/build-41/modding/tools/tilezed-setup) - Setup walkthrough",
+  "excerpt": "Reference guide for WorldEd, the world map editor for Project Zomboid, with links to official resources and documentation.",
+  "lastUpdated": "2026-01-09",
+  "difficulty": "intermediate",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "official-resources",
+      "text": "Official Resources",
+      "level": 2
+    },
+    {
+      "id": "what-worlded-does",
+      "text": "What WorldEd Does",
+      "level": 2
+    },
+    {
+      "id": "basic-workflow",
+      "text": "Basic Workflow",
+      "level": 2
+    },
+    {
+      "id": "file-types",
+      "text": "File Types",
+      "level": 2
+    },
+    {
+      "id": "cell-coordinates",
+      "text": "Cell Coordinates",
+      "level": 2
+    },
+    {
+      "id": "integration-with-tilezed",
+      "text": "Integration with TileZed",
+      "level": 2
+    },
+    {
+      "id": "keyboard-shortcuts",
+      "text": "Keyboard Shortcuts",
+      "level": 2
+    },
+    {
+      "id": "tips-for-beginners",
+      "text": "Tips for Beginners",
+      "level": 2
+    },
+    {
+      "id": "common-issues",
+      "text": "Common Issues",
+      "level": 2
+    },
+    {
+      "id": "map-mod-structure",
+      "text": "Map Mod Structure",
+      "level": 2
+    },
+    {
+      "id": "external-links",
+      "text": "External Links",
+      "level": 2
+    },
+    {
+      "id": "related-wiki-articles",
+      "text": "Related Wiki Articles",
+      "level": 2
+    }
+  ]
+}

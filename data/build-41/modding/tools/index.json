@@ -1,0 +1,35 @@
+{
+  "id": "tools",
+  "name": "Tools",
+  "slug": "tools",
+  "articles": [
+    {
+      "id": "tilezed-setup",
+      "title": "TileZed Setup Guide",
+      "slug": "tilezed-setup",
+      "difficulty": "beginner",
+      "order": 1
+    },
+    {
+      "id": "mod-quickstart",
+      "title": "Mod Development Quick Start",
+      "slug": "mod-quickstart",
+      "difficulty": "beginner",
+      "order": 2
+    },
+    {
+      "id": "tilezed",
+      "title": "TileZed Reference",
+      "slug": "tilezed",
+      "difficulty": "intermediate",
+      "order": 3
+    },
+    {
+      "id": "worlded",
+      "title": "WorldEd Reference",
+      "slug": "worlded",
+      "difficulty": "intermediate",
+      "order": 4
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "id": "reference-fixing",
+  "title": "Fixing Script Reference",
+  "slug": "fixing",
+  "version": "build-41",
+  "section": "modding",
+  "category": "reference",
+  "tags": [
+    "beginner",
+    "fixing",
+    "repair",
+    "scripts",
+    "reference"
+  ],
+  "content": "# Fixing Script Reference\n\n## Overview\n\nFixing scripts define repair recipes for items, allowing players to restore durability to damaged weapons, tools, and equipment. Fixing scripts are located in `media/scripts/fixing.txt`.\n\n## Basic Structure\n\n```\nmodule Base\n{\n    fixing Fix Item Name\n    {\n        Require : ItemToFix,\n        \n        Fixer : RepairMaterial=Amount; SkillName=Level,\n        Fixer : AlternativeMaterial=Amount,\n    }\n}\n```\n\n---\n\n## Properties\n\n### Require\n\nSpecifies which item(s) this fixing definition applies to:\n\n```\nRequire : Axe,                    -- Single item\nRequire : Axe; HandAxe; WoodAxe,  -- Multiple items (any of these)\n```\n\n### Fixer\n\nDefines repair methods. Each `Fixer` line is an alternative repair option:\n\n```\nFixer : RepairItem=Amount,           -- Basic repair\nFixer : RepairItem; SkillName=Level, -- Requires skill\nFixer : RepairItem=Amount; SkillName=Level, -- Amount + skill\n```\n\n#### Fixer Syntax\n\n| Component | Description | Example |\n|-----------|-------------|----------|\n| `RepairItem` | Item used for repair | `DuctTape` |\n| `=Amount` | Quantity required | `=2` |\n| `SkillName=Level` | Required skill | `Woodwork=2` |\n\n---\n\n## Common Repair Materials\n\n| Material | Description | Typical Use |\n|----------|-------------|-------------|\n| `DuctTape` | Universal repair | Most items |\n| `Scotchtape` | Basic repair | Light items |\n| `Glue` | Adhesive repair | General purpose |\n| `Woodglue` | Wood repair | Wooden handles |\n| `Nails` | Structural repair | Nailed weapons |\n\n---\n\n## Skill Requirements\n\nSkills can be added to any Fixer line:\n\n| Skill | Use Case |\n|-------|----------|\n| `Woodwork` | Wood item repairs |\n| `Aiming` | Firearm repairs |\n| `Metalworking` | Metal repairs |\n| `Mechanics` | Vehicle parts |\n| `Electrical` | Electronic repairs |\n\n---\n\n## Examples\n\n### Basic Melee Weapon\n\n```\nfixing Fix Axe\n{\n    Require : Axe,\n    \n    Fixer : Woodglue=2; Woodwork=2,  -- Best option (requires skill)\n    Fixer : DuctTape=2,               -- Alternative (no skill)\n    Fixer : Glue=2,                   -- Another alternative\n    Fixer : Scotchtape=4,             -- Worst option (more material)\n}\n```\n\n### Firearm\n\n```\nfixing Fix Pistol\n{\n    Require : Pistol,\n    \n    Fixer : Pistol; Aiming=3,  -- Requires another pistol + Aiming 3\n}\n\nfixing Fix Shotgun\n{\n    Require : Shotgun,\n    \n    Fixer : Shotgun; Aiming=2,\n    Fixer : ShotgunSawnoff; Aiming=2,  -- Can use sawed-off variant\n}\n```\n\n### Crafted Weapons\n\n```\nfixing Fix Nailed Baseball Bat\n{\n    Require : BaseballBatNails,\n    \n    Fixer : Woodglue=2; Woodwork=2,\n    Fixer : DuctTape=2,\n    Fixer : Glue=2,\n    Fixer : Scotchtape=4,\n    Fixer : Nails,  -- Can also use nails\n}\n```\n\n### Spear Weapons\n\n```\nfixing Fix Spear With Kitchen Knife\n{\n    Require : SpearKnife,\n    \n    Fixer : Woodglue=2; Woodwork=2,\n    Fixer : DuctTape=2,\n    Fixer : Glue=2,\n    Fixer : Scotchtape=4,\n}\n```\n\n### Multiple Items in One Definition\n\n```\nfixing Fix Guitars\n{\n    Require : GuitarAcoustic; GuitarElectricBlack; GuitarElectricBlue,\n    \n    Fixer : DuctTape=2,\n    Fixer : Scotchtape=3,\n}\n```\n\n---\n\n## Vanilla Fixing Patterns\n\n### Wood-Handled Tools\n\nMost wood-handled items use this pattern:\n\n```\nFixer : Woodglue=2; Woodwork=2,  -- Best (skill)\nFixer : DuctTape=2,               -- Good\nFixer : Glue=2,                   -- Acceptable  \nFixer : Scotchtape=4,             -- Worst (more tape)\n```\n\n### Metal Tools\n\nSimpler repair options:\n\n```\nFixer : DuctTape=2,\nFixer : Scotchtape=3,\n```\n\n### Firearms\n\nUse matching weapon + Aiming skill:\n\n```\nFixer : SameWeapon; Aiming=RequiredLevel,\n```\n\n| Weapon Type | Aiming Required |\n|-------------|----------------|\n| Shotguns | 2 |\n| Pistols | 3 |\n| Rifles | 4 |\n| Assault Rifles | 5 |\n\n---\n\n## Complete Vanilla Examples\n\n### Fix Baseball Bat\n\n```\nfixing Fix Baseball Bat\n{\n    Require : BaseballBat,\n    \n    Fixer : Woodglue=2; Woodwork=2,\n    Fixer : DuctTape=2,\n    Fixer : Glue=2,\n    Fixer : Scotchtape=4,\n}\n```\n\n### Fix Hunting Rifle\n\n```\nfixing Fix Hunting Rifle\n{\n    Require : HuntingRifle,\n    \n    Fixer : HuntingRifle; Aiming=4,\n}\n```\n\n### Fix Garden Fork\n\n```\nfixing Fix Garden Fork\n{\n    Require : GardenFork,\n    \n    Fixer : Woodglue=2; Woodwork=2,\n    Fixer : DuctTape=2,\n    Fixer : Glue=2,\n    Fixer : Scotchtape=4,\n}\n```\n\n### Fix Kitchen Knife\n\n```\nfixing Fix Kitchen Knife\n{\n    Require : KitchenKnife,\n    \n    Fixer : DuctTape,\n    Fixer : Glue,\n    Fixer : Scotchtape=2,\n}\n```\n\n---\n\n## Creating Custom Fixing Scripts\n\n### For a New Melee Weapon\n\n```\nmodule MyMod\n{\n    imports { Base }\n    \n    fixing Fix Custom Sword\n    {\n        Require : CustomSword,\n        \n        Fixer : Woodglue=2; Woodwork=3,\n        Fixer : DuctTape=3,\n        Fixer : Glue=3,\n    }\n}\n```\n\n### For a New Firearm\n\n```\nmodule MyMod\n{\n    imports { Base }\n    \n    fixing Fix Custom Rifle\n    {\n        Require : CustomRifle,\n        \n        Fixer : CustomRifle; Aiming=4,\n        Fixer : HuntingRifle; Aiming=5,  -- Can use vanilla rifle\n    }\n}\n```\n\n### Multiple Related Items\n\n```\nmodule MyMod\n{\n    imports { Base }\n    \n    fixing Fix Custom Tool Set\n    {\n        Require : CustomTool1; CustomTool2; CustomTool3,\n        \n        Fixer : DuctTape=2,\n        Fixer : Glue=2,\n    }\n}\n```\n\n---\n\n## Tips\n\n1. **Order matters**: First `Fixer` is shown first in-game context menu\n2. **Balance repair costs**: More tapes = easier but uses more resources\n3. **Skill requirements**: Higher skill = better efficiency (restores more durability)\n4. **Use vanilla patterns**: Follow existing conventions for consistency\n5. **Multiple Require items**: Items share repair options\n\n---\n\n## Related\n\n- [Weapon Repair Documentation](/build-41/modding/weapon-repair) - In-depth repair system\n- [Script Properties](/build-41/modding/reference/script-properties) - Item and recipe properties\n- [Vehicle Script Reference](/build-41/modding/reference/vehicles) - Vehicle definitions",
+  "excerpt": "Reference for Project Zomboid fixing scripts that define item repair recipes with materials and skill requirements.",
+  "lastUpdated": "2026-01-10",
+  "difficulty": "beginner",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "basic-structure",
+      "text": "Basic Structure",
+      "level": 2
+    },
+    {
+      "id": "properties",
+      "text": "Properties",
+      "level": 2
+    },
+    {
+      "id": "common-repair-materials",
+      "text": "Common Repair Materials",
+      "level": 2
+    },
+    {
+      "id": "skill-requirements",
+      "text": "Skill Requirements",
+      "level": 2
+    },
+    {
+      "id": "examples",
+      "text": "Examples",
+      "level": 2
+    },
+    {
+      "id": "vanilla-fixing-patterns",
+      "text": "Vanilla Fixing Patterns",
+      "level": 2
+    },
+    {
+      "id": "complete-vanilla-examples",
+      "text": "Complete Vanilla Examples",
+      "level": 2
+    },
+    {
+      "id": "creating-custom-fixing-scripts",
+      "text": "Creating Custom Fixing Scripts",
+      "level": 2
+    },
+    {
+      "id": "tips",
+      "text": "Tips",
+      "level": 2
+    },
+    {
+      "id": "related",
+      "text": "Related",
+      "level": 2
+    }
+  ]
+}

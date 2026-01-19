@@ -1,0 +1,56 @@
+{
+  "id": "items",
+  "name": "Items",
+  "slug": "items",
+  "articles": [
+    {
+      "id": "item-anatomy",
+      "title": "Anatomy of an Item",
+      "slug": "item-anatomy",
+      "difficulty": "beginner",
+      "order": 1
+    },
+    {
+      "id": "first-item-file",
+      "title": "Your First Custom Item",
+      "slug": "first-item-file",
+      "difficulty": "beginner",
+      "order": 2
+    },
+    {
+      "id": "item-icons",
+      "title": "Creating Item Icons",
+      "slug": "item-icons",
+      "difficulty": "beginner",
+      "order": 3
+    },
+    {
+      "id": "item-recipe-connection",
+      "title": "Connecting Items and Recipes",
+      "slug": "item-recipe-connection",
+      "difficulty": "beginner",
+      "order": 4
+    },
+    {
+      "id": "item-creation",
+      "title": "Item Creation Guide",
+      "slug": "item-creation",
+      "difficulty": "beginner",
+      "order": 5
+    },
+    {
+      "id": "vanilla-item-anatomy",
+      "title": "Vanilla Item Anatomy Reference",
+      "slug": "vanilla-item-anatomy",
+      "difficulty": "intermediate",
+      "order": 6
+    },
+    {
+      "id": "ammunition-items",
+      "title": "Vanilla Ammunition Items",
+      "slug": "ammunition-items",
+      "difficulty": "intermediate",
+      "order": 7
+    }
+  ]
+}

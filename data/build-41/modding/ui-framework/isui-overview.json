@@ -1,0 +1,82 @@
+{
+  "id": "ui-framework-isui-overview",
+  "title": "ISUI Framework Overview",
+  "slug": "isui-overview",
+  "version": "build-41",
+  "section": "modding",
+  "category": "ui-framework",
+  "tags": [
+    "intermediate",
+    "lua",
+    "ui",
+    "isui",
+    "isuielement",
+    "api"
+  ],
+  "content": "# ISUI Framework Overview\n\n## Introduction\n\nProject Zomboid's UI system is built on the **ISUI Framework** - a Lua-based component system that wraps Java rendering. Every panel, button, list, window, and custom interface in the game uses this framework.\n\nThe foundation is `ISUIElement`, from which all UI components derive.\n\n## Location\n\n```\nmedia/lua/client/ISUI/ISUIElement.lua   -- Base class (1,564 lines)\nmedia/lua/client/ISUI/ISPanel.lua       -- Basic container\nmedia/lua/client/ISUI/ISButton.lua      -- Clickable button\nmedia/lua/client/ISUI/ISLabel.lua       -- Text display\nmedia/lua/client/ISUI/*.lua             -- All other components\n```\n\n---\n\n## Inheritance Hierarchy\n\n```\nISBaseObject                    -- Root class (shared/ISBaseObject.lua)\n    └── ISUIElement             -- UI foundation (client/ISUI/ISUIElement.lua)\n            ├── ISPanel              -- Basic container with background\n            │   └── ISPanelJoypad    -- Panel with gamepad support\n            │       └── [Most UI components]\n            ├── ISScrollBar          -- Scrollbar component\n            ├── ISButton             -- Clickable button\n            ├── ISLabel              -- Text display\n            └── [Other direct derivatives]\n```\n\n### Key Inheritance Patterns\n\n- **ISPanel** - Use for containers that need backgrounds and borders\n- **ISPanelJoypad** - Use when gamepad/controller support is needed\n- **ISCollapsableWindow** - Use for movable, resizable windows with title bars\n- **ISUIElement** - Use directly only for custom rendering without standard container features\n\n---\n\n## Element Lifecycle\n\nUnderstanding the lifecycle is **critical** for creating custom UI elements.\n\n```\n1. CONSTRUCTION     new(x, y, width, height)\n        │\n        ▼\n2. INITIALIZATION   initialise()\n        │\n        ▼\n3. INSTANTIATION    instantiate()\n        │\n        ├─────────► Creates javaObject (UIElement.new)\n        │\n        ▼\n4. CHILD CREATION   createChildren()\n        │\n        ▼\n5. UI MANAGER ADD   addToUIManager()\n        │\n        ▼\n6. RENDER LOOP      prerender() → render() [repeating]\n        │\n        ▼\n7. REMOVAL          removeFromUIManager()\n```\n\n### Phase Details\n\n| Phase | Method | Purpose |\n|-------|--------|---------|\n| 1 | `new()` | Create Lua object, set dimensions and defaults |\n| 2 | `initialise()` | Initialize children table, assign unique ID |\n| 3 | `instantiate()` | Create Java UIElement, sync properties |\n| 4 | `createChildren()` | Add child components (buttons, labels, etc.) |\n| 5 | `addToUIManager()` | Register with game's UI system |\n| 6 | `prerender()`/`render()` | Draw the element each frame |\n| 7 | `removeFromUIManager()` | Cleanup when closing |\n\n---\n\n## Quick Start Example\n\n```lua\nrequire \"ISUI/ISPanel\"\nrequire \"ISUI/ISButton\"\n\nMyCustomPanel = ISPanel:derive(\"MyCustomPanel\")\n\nfunction MyCustomPanel:new(x, y, width, height)\n    local o = ISPanel:new(x, y, width, height)\n    setmetatable(o, self)\n    self.__index = self\n    \n    o.backgroundColor = {r=0.1, g=0.1, b=0.1, a=0.9}\n    o.borderColor = {r=0.4, g=0.4, b=0.4, a=1}\n    \n    return o\nend\n\nfunction MyCustomPanel:initialise()\n    ISPanel.initialise(self)\nend\n\nfunction MyCustomPanel:createChildren()\n    ISPanel.createChildren(self)\n    \n    -- Add a close button\n    self.closeButton = ISButton:new(\n        self.width - 90, self.height - 35,\n        80, 25,\n        getText(\"UI_Close\"),\n        self, MyCustomPanel.onClose\n    )\n    self.closeButton:initialise()\n    self.closeButton:instantiate()\n    self.closeButton.anchorTop = false\n    self.closeButton.anchorBottom = true\n    self:addChild(self.closeButton)\nend\n\nfunction MyCustomPanel:onClose()\n    self:setVisible(false)\nend\n```\n\n### Usage\n\n```lua\nlocal panel = MyCustomPanel:new(100, 100, 300, 200)\npanel:initialise()\npanel:addToUIManager()\n```\n\n---\n\n## Core Properties\n\n### Position and Size\n\n| Property | Type | Default | Description |\n|----------|------|---------|-------------|\n| `x` | number | (clamped) | X position in pixels |\n| `y` | number | (clamped) | Y position in pixels |\n| `width` | number | (param) | Width in pixels |\n| `height` | number | (param) | Height in pixels |\n| `minimumWidth` | number | `0` | Minimum width constraint |\n| `minimumHeight` | number | `0` | Minimum height constraint |\n\n### Anchoring\n\n| Property | Type | Default | Description |\n|----------|------|---------|-------------|\n| `anchorLeft` | boolean | `true` | Anchor to left edge on resize |\n| `anchorRight` | boolean | `false` | Anchor to right edge on resize |\n| `anchorTop` | boolean | `true` | Anchor to top edge on resize |\n| `anchorBottom` | boolean | `false` | Anchor to bottom edge on resize |\n\n### State\n\n| Property | Type | Description |\n|----------|------|-------------|\n| `children` | table | Child elements by ID |\n| `parent` | ISUIElement | Parent element reference |\n| `javaObject` | UIElement | Java-side UI element |\n| `enabled` | boolean | Whether element is enabled |\n| `removed` | boolean | Whether element was removed |\n\n---\n\n## Anchor Patterns\n\nAnchoring determines how elements resize when their parent resizes.\n\n```lua\n-- Fixed top-left corner (default)\nelement.anchorLeft = true\nelement.anchorRight = false\nelement.anchorTop = true\nelement.anchorBottom = false\n\n-- Stretch horizontally with parent\nelement.anchorLeft = true\nelement.anchorRight = true\nelement.anchorTop = true\nelement.anchorBottom = false\n\n-- Stretch both directions (fill)\nelement.anchorLeft = true\nelement.anchorRight = true\nelement.anchorTop = true\nelement.anchorBottom = true\n\n-- Fixed to bottom-right corner\nelement.anchorLeft = false\nelement.anchorRight = true\nelement.anchorTop = false\nelement.anchorBottom = true\n```\n\n---\n\n## Rendering Pipeline\n\nThe render order is:\n\n1. **prerender()** - Draw backgrounds, borders (BEFORE children)\n2. **(children render)**\n3. **render()** - Draw foreground, overlays (AFTER children)\n\n```lua\nfunction MyPanel:prerender()\n    ISPanel.prerender(self)  -- Draw background/border\n    -- Your background drawing here\nend\n\nfunction MyPanel:render()\n    -- Your foreground drawing here (after children)\nend\n\nfunction MyPanel:update()\n    -- Per-frame logic (called each frame)\nend\n```\n\n---\n\n## Java Bridge\n\nISUIElement wraps a Java `UIElement` object. Most methods delegate to Java:\n\n```lua\n-- The javaObject is created in instantiate()\nself.javaObject = UIElement.new(self)\n\n-- Access the Java object\nlocal java = self:getJavaObject()\n\n-- Pattern: auto-instantiate, then delegate\nfunction ISUIElement:setX(x)\n    if self.javaObject == nil then\n        self:instantiate()\n    end\n    self.javaObject:setX(x)\nend\n```\n\n---\n\n## Common Components\n\n| Component | Purpose | Article |\n|-----------|---------|--------|\n| `ISPanel` | Container with background | [Panels](/build-41/modding/ui-framework/isui-panels) |\n| `ISPanelJoypad` | Panel with gamepad support | [Gamepad Support](/build-41/modding/ui-framework/isui-joypad) |\n| `ISButton` | Clickable button | [Buttons](/build-41/modding/ui-framework/isui-buttons) |\n| `ISLabel` | Text display | [Tooltips](/build-41/modding/ui-framework/isui-tooltips) |\n| `ISTextEntryBox` | Text input | [Text Input](/build-41/modding/ui-framework/isui-text-input) |\n| `ISScrollingListBox` | Scrollable list | [Lists](/build-41/modding/ui-framework/isui-lists) |\n| `ISComboBox` | Dropdown selection | [Combo Boxes](/build-41/modding/ui-framework/isui-combo-boxes) |\n| `ISCollapsableWindow` | Window with title bar | [Windows](/build-41/modding/ui-framework/isui-windows) |\n| `ISModalDialog` | Yes/No dialog | [Dialogs](/build-41/modding/ui-framework/isui-dialogs) |\n| `ISTabPanel` | Tabbed content | [Tabs](/build-41/modding/ui-framework/isui-tabs) |\n| `ISToolTip` | Tooltip popup | [Tooltips](/build-41/modding/ui-framework/isui-tooltips) |\n| `ISRadialMenu` | Pie menu | [Radial Menus](/build-41/modding/ui-framework/isui-radial-menus) |\n\n---\n\n## Key Takeaways\n\n1. **Follow the lifecycle** - `new()` → `initialise()` → `addToUIManager()`\n2. **Use createChildren()** for adding child elements\n3. **prerender/render split** - backgrounds before children, overlays after\n4. **Anchoring** enables responsive layouts when parent resizes\n5. **Always call parent class methods** when overriding lifecycle hooks\n6. **ISPanelJoypad** is required for gamepad support\n\n---\n\n## Related\n\n- [UI Element Lifecycle](/build-41/modding/ui-framework/isui-lifecycle) - Detailed lifecycle phases\n- [Panels and Containers](/build-41/modding/ui-framework/isui-panels) - ISPanel documentation\n- [Gamepad Support](/build-41/modding/ui-framework/isui-joypad) - ISPanelJoypad documentation\n- [ISBaseObject Inheritance](/build-41/modding/lua-api/isbaseobject) - The base class system",
+  "excerpt": "Introduction to Project Zomboid's ISUI UI framework: ISUIElement hierarchy, element lifecycle, core properties, and component overview.",
+  "lastUpdated": "2026-01-10",
+  "difficulty": "intermediate",
+  "tableOfContents": [
+    {
+      "id": "introduction",
+      "text": "Introduction",
+      "level": 2
+    },
+    {
+      "id": "location",
+      "text": "Location",
+      "level": 2
+    },
+    {
+      "id": "inheritance-hierarchy",
+      "text": "Inheritance Hierarchy",
+      "level": 2
+    },
+    {
+      "id": "element-lifecycle",
+      "text": "Element Lifecycle",
+      "level": 2
+    },
+    {
+      "id": "quick-start-example",
+      "text": "Quick Start Example",
+      "level": 2
+    },
+    {
+      "id": "core-properties",
+      "text": "Core Properties",
+      "level": 2
+    },
+    {
+      "id": "anchor-patterns",
+      "text": "Anchor Patterns",
+      "level": 2
+    },
+    {
+      "id": "rendering-pipeline",
+      "text": "Rendering Pipeline",
+      "level": 2
+    },
+    {
+      "id": "java-bridge",
+      "text": "Java Bridge",
+      "level": 2
+    },
+    {
+      "id": "common-components",
+      "text": "Common Components",
+      "level": 2
+    },
+    {
+      "id": "key-takeaways",
+      "text": "Key Takeaways",
+      "level": 2
+    },
+    {
+      "id": "related",
+      "text": "Related",
+      "level": 2
+    }
+  ]
+}

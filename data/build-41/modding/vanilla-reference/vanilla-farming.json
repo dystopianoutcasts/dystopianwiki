@@ -1,0 +1,18 @@
+{
+  "id": "vanilla-farming",
+  "title": "Vanilla Items: farming.txt",
+  "slug": "vanilla-farming",
+  "version": "build-41",
+  "section": "modding",
+  "category": "vanilla-reference",
+  "tags": [
+    "reference",
+    "vanilla",
+    "items"
+  ],
+  "difficulty": "beginner",
+  "content": "# Vanilla Items Reference (farming.txt)\n\nComplete reference for all **39 items** defined in `farming.txt`.\n\n## Items by Type\n\n### Drainable (6 items)\n\n| Item | Weight | Description |\n|------|--------|-------------|\n| Gardening Spray Can (Full) | 1.0 | `farming.GardeningSprayFull` |\n| Insecticide Spray | 1.0 | `farming.GardeningSprayCigarettes` |\n| Mildew Spray | 1.0 | `farming.GardeningSprayMilk` |\n| Water Bottle | 0.5 | `farming.MayonnaiseWaterFull` |\n| Water Bottle | 0.5 | `farming.RemouladeWaterFull` |\n| Watering Can (Full) | 4.0 | `farming.WateredCanFull` |\n\n### Food (14 items)\n\n| Item | Weight | Description |\n|------|--------|-------------|\n| Bacon | 0.3 | `farming.Bacon` |\n| Bacon Bits | 0.1 | `farming.BaconBits` |\n| Bacon Rashers | 0.1 | `farming.BaconRashers` |\n| Bottle with Mayonnaise (Full) | 0.2 | `farming.MayonnaiseHalf` |\n| Bottle with Remoulade (Half) | 0.2 | `farming.RemouladeHalf` |\n| Cabbage | 0.2 | `farming.Cabbage` |\n| Mayonnaise | 0.5 | `farming.MayonnaiseFull` |\n| Potato | 0.2 | `farming.Potato` |\n| Radish | 0.1 | `farming.RedRadish` |\n| Remoulade | 0.5 | `farming.RemouladeFull` |\n| Salad | 0.5 | `farming.Salad` |\n| Seeding Broccoli | 0.1 | `farming.BloomingBroccoli` |\n| Strawberries | 0.1 | `farming.Strewberrie` |\n| Tomato | 0.2 | `farming.Tomato` |\n\n### Normal (18 items)\n\n| Item | Weight | Description |\n|------|--------|-------------|\n| Broccoli Seeds | 0.009 | `farming.BroccoliSeed` |\n| Broccoli Seeds Packet | 0.1 | `farming.BroccoliBagSeed` |\n| Cabbage Seeds | 0.009 | `farming.CabbageSeed` |\n| Cabbage Seeds Packet | 0.1 | `farming.CabbageBagSeed` |\n| Carrot Seeds | 0.009 | `farming.CarrotSeed` |\n| Carrot Seeds Packet | 0.1 | `farming.CarrotBagSeed` |\n| Empty Bottle | 0.1 | `farming.MayonnaiseEmpty` |\n| Empty Bottle | 0.1 | `farming.RemouladeEmpty` |\n| Gardening Spray Can (Empty) | 0.3 | `farming.GardeningSprayEmpty` |\n| Potato Seeds | 0.009 | `farming.PotatoSeed` |\n| Potato Seeds Packet | 0.1 | `farming.PotatoBagSeed` |\n| Radish Seeds | 0.009 | `farming.RedRadishSeed` |\n| Radish Seeds Packet | 0.1 | `farming.RedRadishBagSeed` |\n| Strawberries Seeds | 0.009 | `farming.StrewberrieSeed` |\n| Strawberries Seeds Packet | 0.1 | `farming.StrewberrieBagSeed` |\n| Tomato Seeds | 0.009 | `farming.TomatoSeed` |\n| Tomato Seeds Packet | 0.1 | `farming.TomatoBagSeed` |\n| Watering Can | 2.0 | `farming.WateredCan` |\n\n### Weapon (1 items)\n\n| Item | Weight | Description |\n|------|--------|-------------|\n| Trowel | 0.5 | `farming.HandShovel` |\n",
+  "excerpt": "Reference for 39 items from farming.txt.",
+  "lastUpdated": "2026-01-18",
+  "relatedArticles": []
+}
