@@ -2,7 +2,7 @@
 id: fixing-txt-anatomy
 slug: fixing-txt-anatomy
 title: Fixing.txt Anatomy - Repair Definition Structure
-excerpt: "Complete breakdown of fixing.txt syntax - how repair definitions work, with examples from vanilla game files."
+excerpt: 'R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\fixing.txt R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\vehiclesfixing.txt fixing Fix [ItemType] { Require : [ItemType],...'
 game: pz
 version: build-41
 section: modding
