@@ -2,29 +2,51 @@ import { useParams, Link } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { WikiLayout } from '../components/layout/WikiLayout';
 import { SEOHead } from '../components/seo/SEOHead';
-import { useVersionInfo, useSections } from '../hooks/useWikiData';
 import '../styles/pages/version-page.css';
+
+// Hardcoded version and section data (static metadata)
+const versionData: Record<string, {
+  name: string;
+  description: string;
+  status: 'current' | 'legacy' | 'upcoming';
+  sections: string[];
+  features?: string[];
+}> = {
+  'build-41': {
+    name: 'Build 41',
+    description: 'Current stable build with multiplayer support',
+    status: 'current',
+    sections: ['modding', 'mapping'],
+    features: [
+      'Multiplayer support',
+      'Advanced Lua API',
+      'Comprehensive modding tools'
+    ]
+  },
+  'build-42': {
+    name: 'Build 42',
+    description: 'Upcoming build with animation overhaul',
+    status: 'upcoming',
+    sections: ['modding'],
+    features: [
+      'New animation system',
+      'Enhanced crafting',
+      'Improved lighting'
+    ]
+  }
+};
+
+const sectionsData = [
+  { id: 'modding', name: 'Modding', description: 'Learn to create mods' },
+  { id: 'mapping', name: 'Mapping', description: 'Create custom maps' }
+];
 
 export function VersionPage() {
   const { version = 'build-41' } = useParams<{ version: string }>();
-  const { data: versionInfo, loading: versionLoading, error: versionError } = useVersionInfo(version);
-  const { data: sections, loading: sectionsLoading } = useSections();
 
-  const isLoading = versionLoading || sectionsLoading;
+  const versionInfo = versionData[version];
 
-  if (isLoading) {
-    return (
-      <Layout>
-        <WikiLayout>
-          <div className="version-page">
-            <div className="version-page__loading">Loading version information...</div>
-          </div>
-        </WikiLayout>
-      </Layout>
-    );
-  }
-
-  if (versionError || !versionInfo) {
+  if (!versionInfo) {
     return (
       <Layout>
         <WikiLayout>
@@ -42,9 +64,9 @@ export function VersionPage() {
     );
   }
 
-  const availableSections = sections?.filter(s =>
+  const availableSections = sectionsData.filter(s =>
     versionInfo.sections.includes(s.id)
-  ) || [];
+  );
 
   return (
     <Layout>

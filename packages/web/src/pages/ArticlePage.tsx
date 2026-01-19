@@ -4,7 +4,7 @@ import { Layout } from '../components/layout/Layout';
 import { WikiLayout } from '../components/layout/WikiLayout';
 import { WikiArticle } from '../components/wiki/WikiArticle';
 import { SEOHead } from '../components/seo/SEOHead';
-import { useArticle, useArticlesList } from '../hooks/useWikiData';
+import { useArticle as useSupabaseArticle, useArticlesByCategory } from '../hooks/useSupabase';
 import { useGameContext } from '../hooks/useGameContext';
 import { useLearningPathContext } from '../context/LearningPathContext';
 import '../styles/pages/article-page.css';
@@ -18,8 +18,9 @@ export function ArticlePage() {
   }>();
   const { buildPath, gameName } = useGameContext();
 
-  const { data: article, loading, error } = useArticle(version, section, category, slug);
-  const { data: articlesList } = useArticlesList(version, section, category);
+  const { game } = useParams<{ game?: string }>();
+  const { data: article, isLoading: loading, isError: error } = useSupabaseArticle(slug || '');
+  const { data: articlesList = [] } = useArticlesByCategory(category, game || 'pz', version);
 
   // Learning Path integration
   const {
@@ -144,8 +145,8 @@ export function ArticlePage() {
         description={article.excerpt || `Learn about ${article.title} in ${gameName || 'game'} modding.`}
         ogType="article"
         article={{
-          publishedTime: article.lastUpdated,
-          modifiedTime: article.lastUpdated,
+          publishedTime: article.last_updated,
+          modifiedTime: article.last_updated,
           section: category,
           tags: article.tags,
         }}

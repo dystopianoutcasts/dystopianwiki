@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { WikiLayout } from '../components/layout/WikiLayout';
 import { SEOHead } from '../components/seo/SEOHead';
-import { useCategories, useArticlesList } from '../hooks/useWikiData';
+import { useCategories, useArticlesByCategory } from '../hooks/useSupabase';
 import { useGameContext } from '../hooks/useGameContext';
 import type { Difficulty } from '../types/wiki';
 import '../styles/pages/category-page.css';
@@ -28,15 +28,16 @@ const difficultyLabels: Record<Difficulty, string> = {
 };
 
 export function CategoryPage() {
-  const { version = 'build-41', section = '', category = '' } = useParams<{
+  const { version = 'build-41', section = '', category = '', game } = useParams<{
     version: string;
     section: string;
     category: string;
+    game?: string;
   }>();
   const { buildPath, gameName } = useGameContext();
 
-  const { data: categories } = useCategories(version, section);
-  const { data: articles, loading, error } = useArticlesList(version, section, category);
+  const { data: categories = [] } = useCategories(game || 'pz', section);
+  const { data: articles = [], isLoading: loading, isError: error } = useArticlesByCategory(category, game || 'pz', version);
 
   const categoryInfo = categories?.find((c) => c.id === category);
 

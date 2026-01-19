@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { WikiLayout } from '../components/layout/WikiLayout';
 import { SEOHead } from '../components/seo/SEOHead';
-import { useSectionInfo, useCategories } from '../hooks/useWikiData';
+import { useCategories } from '../hooks/useSupabase';
 import { useGameContext } from '../hooks/useGameContext';
 import '../styles/pages/section-page.css';
 
@@ -21,12 +21,15 @@ const categoryIcons: Record<string, string> = {
 };
 
 export function SectionPage() {
-  const { version = 'build-41', section = '' } = useParams<{ version: string; section: string }>();
+  const { version = 'build-41', section = '', game } = useParams<{ version: string; section: string; game?: string }>();
   const { buildPath, gameName } = useGameContext();
-  const { data: sectionInfo, loading: sectionLoading, error: sectionError } = useSectionInfo(version, section);
-  const { data: categories, loading: categoriesLoading } = useCategories(version, section);
 
-  const isLoading = sectionLoading || categoriesLoading;
+  // For section info, we'll use hardcoded data since it's static
+  const sectionInfo = section === 'modding'
+    ? { name: 'Modding', description: 'Learn to create mods for Project Zomboid' }
+    : { name: 'Mapping', description: 'Create custom maps and worlds' };
+
+  const { data: categories = [], isLoading, isError } = useCategories(game || 'pz', section);
 
   if (isLoading) {
     return (
@@ -40,7 +43,7 @@ export function SectionPage() {
     );
   }
 
-  if (sectionError || !sectionInfo) {
+  if (isError || !sectionInfo) {
     return (
       <Layout>
         <WikiLayout>

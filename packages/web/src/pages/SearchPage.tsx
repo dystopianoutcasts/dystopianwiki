@@ -1,9 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
-import Fuse from 'fuse.js';
+import { useSearchParams, Link, useParams } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { WikiLayout } from '../components/layout/WikiLayout';
-import { useSearch } from '../hooks/useSearch';
+import { useSearchArticles } from '../hooks/useSupabase';
 import { SEOHead } from '../components/seo/SEOHead';
 import type { SearchResult, Difficulty } from '../types/wiki';
 import '../styles/pages/search-page.css';
@@ -30,10 +29,10 @@ const categoryDisplayNames: Record<string, string> = {
 
 export function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { game, version } = useParams<{ game?: string; version?: string }>();
   const initialQuery = searchParams.get('q') || '';
   const [query, setQuery] = useState(initialQuery);
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
-  const { searchIndex, loading: indexLoading } = useSearch();
 
   // Debounce search query
   useEffect(() => {
@@ -44,52 +43,33 @@ export function SearchPage() {
       } else {
         setSearchParams({});
       }
-    }, 200);
+    }, 300);
     return () => clearTimeout(timer);
   }, [query, setSearchParams]);
 
-  // Initialize Fuse.js
-  const fuse = useMemo(() => {
-    if (!searchIndex) return null;
-    return new Fuse(searchIndex, {
-      keys: [
-        { name: 'title', weight: 0.4 },
-        { name: 'excerpt', weight: 0.3 },
-        { name: 'tags', weight: 0.2 },
-        { name: 'category', weight: 0.1 },
-      ],
-      threshold: 0.3,
-      includeScore: true,
-      includeMatches: true,
-    });
-  }, [searchIndex]);
+  // Use Supabase search hook
+  const { data: rawResults = [], isLoading } = useSearchArticles(
+    debouncedQuery,
+    game || 'pz',
+    version
+  );
 
-  // Perform search
+  // Transform results to match SearchResult type
   const results: SearchResult[] = useMemo(() => {
-    if (!fuse || !debouncedQuery.trim()) return [];
-
-    return fuse.search(debouncedQuery).map((result) => {
-      const item = result.item;
-      return {
-        id: item.id,
-        title: item.title,
-        slug: item.slug,
-        url: item.url,
-        version: item.version,
-        section: item.section,
-        category: item.category,
-        tags: item.tags,
-        excerpt: item.excerpt,
-        difficulty: item.difficulty,
-        score: result.score ?? 1,
-        matches: result.matches?.map((m) => ({
-          key: m.key || '',
-          value: m.value || '',
-          indices: m.indices as Array<[number, number]>,
-        })),
-      };
-    });
-  }, [fuse, debouncedQuery]);
+    return rawResults.map((result) => ({
+      id: result.id,
+      title: result.title,
+      slug: result.slug,
+      url: `/${result.game}/${result.version}/${result.section}/${result.category}/${result.slug}`,
+      version: result.version,
+      section: result.section,
+      category: result.category,
+      tags: result.tags || [],
+      excerpt: result.excerpt || '',
+      difficulty: result.difficulty,
+      score: 0, // Supabase search doesn't return score
+    }));
+  }, [rawResults]);
 
   return (
     <Layout>
@@ -134,9 +114,9 @@ export function SearchPage() {
           </header>
 
           <div className="search-page__content">
-            {indexLoading ? (
+            {isLoading ? (
               <div className="search-page__loading">
-                <p>Loading search index...</p>
+                <p>Searching...</p>
               </div>
             ) : !debouncedQuery.trim() ? (
               <div className="search-page__empty">
