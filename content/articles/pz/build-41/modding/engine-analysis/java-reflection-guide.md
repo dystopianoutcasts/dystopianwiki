@@ -27,11 +27,19 @@ last_updated: 2026-01-28
 
 # Java Reflection for Lua Modders
 
-Sometimes you discover a public field in the Java source that would be perfect for your mod, but there's no getter or setter method exposed to Lua. This guide explains how to access those fields directly using Java reflection.
+You've decompiled the Java source. You found the perfect field - `public int speedType` - sitting right there in the code. You try `zombie.speedType` in Lua. Nil. You try `zombie:getSpeedType()`. Error: method doesn't exist. The field is right there in the Java class, publicly accessible, and Lua can't touch it. Why?
+
+I remember hitting this wall with vehicle mods. I could see `engineQuality` in `BaseVehicle.java` - a public field controlling engine condition. But no getter, no setter, no way to access it from Lua. I spent hours trying every API combination. Then I discovered Java reflection - the escape hatch that lets you access any field in any Java object, whether TIS exposed it or not.
+
+This guide shows you how to break through that wall.
+
+## What is Java Reflection?
+
+**Java reflection** is a feature that lets code inspect and modify fields/methods at runtime, even private ones. Project Zomboid exposes reflection functions to Lua, which means you can access any Java field directly - even if TIS never meant for you to.
 
 **You would use this when:**
 - You've confirmed a field exists in decompiled code but has no Lua getter/setter
-- You need maximum performance (field access can be faster than method calls)
+- You need maximum performance (direct field access is faster than method calls)
 - You've tried other approaches and they don't work
 
 ## Prerequisites
@@ -39,7 +47,43 @@ Sometimes you discover a public field in the Java source that would be perfect f
 - [When PZ Won't Let You Change Something](/pz/build-41/modding/engine-analysis/when-setters-dont-exist) - Understanding the problem
 - [Decompilation Setup](/pz/build-41/modding/engine-analysis/decompilation-setup) - Finding fields to access
 
-> **This is advanced material.** Most mods don't need reflection - the normal API is enough. But when you hit a wall, this is your escape hatch.
+> **This is advanced material.** Most mods don't need reflection - the normal API is enough. But when you hit a wall, this is your escape hatch. Don't worry if it feels complex at first - the pattern is actually quite simple once you see it working.
+
+## Quick Start: Access a Hidden Field
+
+Let's start with the simplest possible example: reading a field that has no getter.
+
+```lua
+-- Example: Read zombie's speedType field (normally hidden)
+local zombie = getPlayer():getCell():getZombieList():get(0)  -- Get any zombie
+
+-- Step 1: Find the field
+local fieldCount = getNumClassFields(zombie)                 -- How many fields does zombie have?
+local speedField = nil                                       -- We'll store the field here
+
+for i = 0, fieldCount - 1 do                                -- Loop through all fields
+    local field = getClassField(zombie, i)                   -- Get field object
+    local fieldName = tostring(field):match("%.(%w+)$")      -- Extract name from string
+
+    if fieldName == "speedType" then                         -- Found it!
+        speedField = field
+        break
+    end
+end
+
+-- Step 2: Read the field value
+if speedField then
+    speedField:setAccessible(true)                           -- Unlock it (needed for private fields)
+    local speed = speedField:getInt(zombie)                  -- Read the integer value
+    print("Zombie speed: " .. speed)                         -- Output: "Zombie speed: 2" (or 1, 3, etc.)
+end
+```
+
+**That's the core pattern:** Find field → setAccessible(true) → get/set value.
+
+Everything else in this guide is optimization and best practices around that simple pattern.
+
+> **Key Takeaway:** Reflection is just field lookup. You're searching through the Java object's fields by name, then reading/writing them directly. It bypasses Lua's normal API but uses the same underlying Java fields.
 
 ---
 
@@ -312,53 +356,87 @@ public int speedType;  // This is the exact field name
 
 ---
 
-## Common Pitfalls
+## Common Mistakes
 
-### 1. Forgetting setAccessible
+Let me show you the mistakes that will crash your mod or destroy performance.
+
+### ❌ Wrong: Forgetting setAccessible
 
 ```lua
--- WRONG: Will fail on private/protected fields
-field:setInt(zombie, 3)
-
--- RIGHT: Always call setAccessible first
-field:setAccessible(true)
-field:setInt(zombie, 3)
+-- Tries to access field without unlocking
+field:setInt(zombie, 3)  -- ERROR on private/protected fields!
 ```
 
-### 2. Wrong Type Method
+**Why it fails:** Java security prevents access to non-public fields. You must explicitly unlock them.
 
+✅ **Right: Always Call setAccessible First**
 ```lua
--- WRONG: speedType is int, not float
-field:getFloat(zombie)  -- Error or wrong value
-
--- RIGHT: Match the Java type
-field:getInt(zombie)
+-- Unlock the field first
+field:setAccessible(true)                                -- Required for private/protected
+field:setInt(zombie, 3)                                  -- Now it works
 ```
 
-### 3. Field String Mismatch
+### ❌ Wrong: Using Wrong Type Method
 
 ```lua
--- WRONG: Partial match might hit wrong field
+-- speedType is 'int' in Java
+field:getFloat(zombie)  -- Returns wrong value or errors!
+```
+
+**Why it fails:** Java types must match exactly. Using `getFloat()` on an `int` field gives garbage data.
+
+✅ **Right: Match the Java Type**
+```lua
+-- Check Java source: 'public int speedType'
+field:getInt(zombie)                                     -- Correct type method
+```
+
+### ❌ Wrong: Partial Field Name Match
+
+```lua
+-- Searches for any field with "speed" in name
 if fieldString:find("speed") then
-
--- RIGHT: Exact match
-if fieldString == "public int zombie.characters.IsoZombie.speedType" then
+    -- Might match speedType, speedMod, baseSpeed, etc!
+end
 ```
 
-### 4. Not Caching
+**Why it fails:** Multiple fields might contain your search term. You grab the wrong one.
+
+✅ **Right: Exact Field String Match**
+```lua
+-- Match the complete field string
+if fieldString == "public int zombie.characters.IsoZombie.speedType" then
+    -- Only matches the exact field we want
+end
+```
+
+### ❌ Wrong: Not Caching Field Lookups
 
 ```lua
--- WRONG: Searching every frame
+-- Searches through ALL fields EVERY frame!
 Events.OnTick.Add(function()
-    for i = 0, getNumClassFields(zombie) - 1 do
-        -- This is SLOW
+    for i = 0, getNumClassFields(zombie) - 1 do          -- 100+ fields scanned 60 times/sec!
+        local field = getClassField(zombie, i)
+        -- ... find and use field
     end
 end)
+```
 
--- RIGHT: Cache once, use forever
-Events.OnGameStart.Add(initializeFieldCache)
+**Why it fails:** Field lookup is expensive. Doing it every frame causes massive lag.
+
+✅ **Right: Cache Once, Use Forever**
+```lua
+-- Cache fields on game start (once)
+local cachedSpeedField = nil
+Events.OnGameStart.Add(function()
+    cachedSpeedField = findFieldOnce(zombie, "speedType")  -- Search once
+end)
+
+-- Use cached field (fast)
 Events.OnTick.Add(function()
-    cachedField:setInt(zombie, value)  -- This is FAST
+    if cachedSpeedField then
+        cachedSpeedField:setInt(zombie, value)          -- No search needed!
+    end
 end)
 ```
 
@@ -408,6 +486,117 @@ function MyVehicleMod.initVehicleFields()
     end
 end
 ```
+
+---
+
+## Try It Yourself: Debug Field Printer
+
+Let's build a useful debugging tool that prints all fields on any object. This is invaluable when exploring the Java API.
+
+**Goal:** Create a mod that prints all accessible fields on a zombie when you press a key.
+
+### Step 1: Create the Mod
+
+Create `C:\Users\[YOU]\Zomboid\mods\FieldDebugger\mod.info`:
+```
+name=Field Debugger
+id=FieldDebugger
+description=Prints all fields on objects for reflection debugging
+```
+
+### Step 2: Write the Field Printer
+
+Create `C:\Users\[YOU]\Zomboid\mods\FieldDebugger\media\lua\client\FieldDebugger.lua`:
+
+```lua
+-- FieldDebugger.lua
+-- Prints all fields and their values from any Java object
+
+local function printAllFields(obj, objName)
+    print("=== Fields for " .. objName .. " ===")
+
+    local fieldCount = getNumClassFields(obj)            -- Get number of fields
+    local successCount = 0                               -- Track how many we can read
+
+    for i = 0, fieldCount - 1 do
+        local field = getClassField(obj, i)              -- Get field object
+        local fieldStr = tostring(field)                 -- Get full field string
+        local fieldName = fieldStr:match("%.(%w+)$")     -- Extract just the name
+
+        if fieldName then
+            field:setAccessible(true)                    -- Unlock it
+
+            -- Try to read the value (may fail for some types)
+            local success, value = pcall(function()
+                return field:get(obj)                    -- Generic getter
+            end)
+
+            if success then
+                print("  " .. fieldName .. " = " .. tostring(value))
+                successCount = successCount + 1
+            else
+                print("  " .. fieldName .. " = (couldn't read)")
+            end
+        end
+    end
+
+    print("=== Read " .. successCount .. " of " .. fieldCount .. " fields ===")
+end
+
+-- Press F to print zombie fields
+local function onKeyPressed(key)
+    if key == getCore():getKey("Interact") then          -- F key
+        local player = getPlayer()
+        if not player then return end
+
+        -- Get nearest zombie
+        local zombies = player:getCell():getZombieList()
+        if zombies:size() > 0 then
+            local zombie = zombies:get(0)
+            printAllFields(zombie, "IsoZombie")
+        else
+            print("No zombies nearby")
+        end
+    end
+end
+
+Events.OnKeyPressed.Add(onKeyPressed)
+```
+
+### Step 3: Test It
+
+1. Launch PZ with your mod
+2. Start a game and find some zombies
+3. Press F (Interact key) near a zombie
+4. Check the console (press `~`) to see all fields printed
+
+### Step 4: Explore!
+
+Try printing fields for different objects:
+
+```lua
+-- Player fields
+printAllFields(getPlayer(), "IsoPlayer")
+
+-- Vehicle fields (if in a vehicle)
+local vehicle = player:getVehicle()
+if vehicle then
+    printAllFields(vehicle, "BaseVehicle")
+end
+
+-- Item fields
+local item = player:getPrimaryHandItem()
+if item then
+    printAllFields(item, "InventoryItem")
+end
+```
+
+**What You Just Built:**
+1. A reflection-based field inspector
+2. A reusable debugging tool for ANY Java object
+3. The foundation for discovering hidden fields you can modify
+
+This tool is how I discover new fields for mods. Use it whenever you're exploring the API and want to see what's available.
 
 ---
 
