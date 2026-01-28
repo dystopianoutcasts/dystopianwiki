@@ -488,6 +488,46 @@ Include when relevant:
 | `,` | "Separator" - separates items in a list |
 | `--` | "Comment" - the game ignores this, it's just for humans |
 
+### Understanding `[Object object]` Placeholders
+
+**The Problem:** We use `[Object object]` in code examples, but beginners don't know what it means or what should go there.
+
+**Always explain it explicitly:**
+
+> You'll see `[Object object]` in the example below. **This is just a placeholder** - a stand-in that means "any object would work here." Think of it like `[Your Name]` on a form.
+
+**Then give concrete Project Zomboid examples:**
+
+**Bad example:**
+```lua
+function onClick(target, button, [Object object])
+    -- code here
+end
+```
+
+**Good example:**
+```lua
+function onClick(target, button, [Object object])
+    -- [Object object] might be:
+    --   • A player character (IsoPlayer)
+    --   • An inventory item (InventoryItem)
+    --   • A vehicle (BaseVehicle)
+    --   • nil (nothing)
+    --
+    -- It depends on where this button appears!
+    -- (This is just a stand-in - the actual type will vary)
+end
+```
+
+**Pattern for introducing placeholders:**
+
+1. **Name it:** "You'll see `[Object object]` in the code"
+2. **Explain it:** "This is a placeholder that means any object could go here"
+3. **Show real examples:** "In PZ, this might be an `IsoPlayer`, `InventoryItem`, or `BaseVehicle`"
+4. **Remind them:** Add a comment like `-- (This is just a stand-in)` in the code
+
+**Why this matters:** Beginners often copy `[Object object]` literally into their code and wonder why it doesn't work. Explicit explanation prevents this.
+
 ### Include "Obvious" Navigation Details
 
 - "It's alphabetical, so it'll be in the M's"
