@@ -51,6 +51,8 @@ def extract_from_git_branch(branch: str, json_path: str) -> Optional[str]:
             ['git', 'show', f'{branch}:{json_path}'],
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='replace',
             check=True
         )
         return result.stdout
@@ -273,6 +275,8 @@ def main():
                 ['git', 'ls-tree', '-r', '--name-only', args.source_branch],
                 capture_output=True,
                 text=True,
+                encoding='utf-8',
+                errors='replace',
                 check=True
             )
 
