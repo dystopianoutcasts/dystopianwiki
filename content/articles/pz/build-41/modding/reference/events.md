@@ -1,7 +1,7 @@
 ---
 id: reference-events
 slug: events
-title: "Events Reference"
+title: "Complete Events Reference"
 game: pz
 version: build-41
 section: modding
@@ -15,10 +15,10 @@ tags:
   - api
   - reference
   - callbacks
-excerpt: "Complete reference of all 144 events in Project Zomboid Build 41, with parameters, examples, and categorization."
+excerpt: "Complete reference of all 144 events in Project Zomboid Build 41, with parameters, examples, and use cases."
 table_of_contents:
-  - text: "Overview"
-    link: "#overview"
+  - text: "What Are Events?"
+    link: "#what-are-events"
   - text: "How Events Work"
     link: "#how-events-work"
   - text: "Event Categories"
@@ -49,195 +49,381 @@ table_of_contents:
     link: "#global-object-events"
   - text: "Complete Event List"
     link: "#complete-event-list"
+  - text: "Common Mistakes"
+    link: "#common-mistakes"
+  - text: "Try It Yourself"
+    link: "#try-it-yourself"
   - text: "Best Practices"
     link: "#best-practices"
-  - text: "Related"
-    link: "#related"
-last_updated: 2026-01-09
+  - text: "Key Takeaways"
+    link: "#key-takeaways"
+next_steps:
+  - title: "Global Functions Reference"
+    path: /build-41/modding/reference/globals
+  - title: "Script Properties Reference"
+    path: /build-41/modding/reference/script-properties
+last_updated: 2026-01-28
 ---
 
-# Events Reference
+# Complete Events Reference
 
-## Overview
+> You're going to learn about every event Project Zomboid fires, what triggers them, and how to use them. By the end, you'll know exactly which event to use for any mod behavior you want to create.
 
-Events are PZ's callback system. They fire when specific things happen in the game, allowing your mod to respond. Every mod uses events.
+---
+
+## What Are Events?
+
+You know when you want your mod to "do something when the player picks up an item" or "run code when a zombie dies"? That's what events are for. They're Project Zomboid's way of telling your mod "hey, something just happened - do you want to react to it?"
+
+**Events are callbacks** - functions you register that get called automatically when specific things happen in the game. Every single mod uses events. Without them, your mod would have no way to know when things happen.
+
+Think of events like subscribing to notifications. When you subscribe to "OnPlayerDeath", you're telling the game "notify me whenever a player dies." When that happens, the game calls your function and gives you information about what happened.
+
+**You would use events when:**
+- Reacting to player actions (movement, combat, crafting)
+- Monitoring game state (time passing, weather changing)
+- Adding custom menu options (right-click menus)
+- Responding to world changes (objects added/removed, zombies spawning)
+- Syncing multiplayer data
+
+If you've ever thought "I wish my mod could detect when X happens" - that's what events are for. When I first started modding, I tried to use tick loops to constantly check for things happening. It was slow, buggy, and terrible. Learning events changed everything - the game tells you exactly when things happen, no constant checking needed.
+
+---
 
 ## How Events Work
+
+Events follow a simple pattern: subscribe to an event, provide a callback function, and the game calls it when the event fires.
+
+### Basic Pattern
 
 ```lua
 -- Subscribe to an event
 Events.EventName.Add(yourCallbackFunction)
 
 -- Your callback receives event-specific parameters
-function yourCallbackFunction(param1, param2, ...)
-    -- Your code here
+local function yourCallbackFunction(param1, param2, ...)
+    -- Your code runs when the event fires
 end
 ```
 
+### Simple Example
+
+```lua
+-- React when player dies
+local function onDeath(player)                     -- Called automatically with player object
+    print(player:getUsername() .. " has died")    -- Do something with the player
+end
+
+Events.OnPlayerDeath.Add(onDeath)                  -- Subscribe to the event
+```
+
+**What happens:**
+1. Game runs, player is playing normally
+2. Player dies (zombie bite, fall damage, etc.)
+3. Game fires `OnPlayerDeath` event
+4. Your `onDeath` function is called automatically
+5. You receive the player object as a parameter
+6. Your code runs
+
+> **Key Takeaway**
+> You don't call event callbacks yourself. You register them, and the game calls them when appropriate. Think of it like signing up for notifications - you subscribe once, then get notified automatically.
+
+---
+
 ## Event Categories
 
-- **Game Lifecycle** - Game start, load, save, quit
-- **Player Events** - Death, movement, actions, XP
-- **World Events** - Objects, containers, zombies
-- **UI Events** - Context menus, keyboard, mouse
-- **Time Events** - Ticks, minutes, hours, days
-- **Vehicle Events** - Enter, exit, damage
-- **Multiplayer Events** - Connection, commands, chat
-- **Weather Events** - Climate, thunder, seasons
+Project Zomboid has 144 events organized into these categories:
+
+| Category | Event Count | When They Fire |
+|----------|-------------|----------------|
+| **Game Lifecycle** | 12 | Game boot, start, save, load, quit |
+| **Player** | 14 | Player creation, movement, death, equipment, XP |
+| **Context Menus** | 2 | Right-click menus (inventory, world) |
+| **Time** | 9 | Ticks, minutes, hours, days, dawn/dusk |
+| **World** | 10 | Objects, containers, zombies, grid squares |
+| **Vehicles** | 7 | Enter, exit, damage, mechanics |
+| **Crafting** | 2 | Item creation, recipes |
+| **Input** | 8 | Keyboard, mouse, gamepad |
+| **Weather** | 8 | Climate, thunder, seasons |
+| **Multiplayer** | 20+ | Connection, commands, chat, trading |
+| **UI** | 6 | Screen drawing, resolution, creation |
+| **Global Objects** | 4 | Mod data, global systems |
+| **Miscellaneous** | 40+ | Steam, audio, special cases |
+
+**Most commonly used events:**
+- `OnGameStart` - Initialize your mod
+- `OnFillInventoryObjectContextMenu` - Add right-click menu options
+- `OnPlayerDeath` - React to player death
+- `EveryTenMinutes` - Periodic updates
+- `OnKeyPressed` - Custom key bindings
 
 ---
 
 ## Game Lifecycle Events
 
+These events fire at different points in the game's startup, loading, and saving process.
+
 ### OnGameBoot
-Fired when the game first boots up (before main menu).
+
+**When it fires:** Game first boots up (before main menu appears).
+
+**Use for:** One-time initialization that needs to happen before anything else.
+
 ```lua
 Events.OnGameBoot.Add(function()
-    print("Game is booting up")
+    print("Game is booting up - this runs once")
+    -- Load config files, register systems, etc.
 end)
 ```
+
 **Parameters:** None
 
+**Common use:** Initializing global tables, loading configuration, registering custom systems.
+
 ### OnMainMenuEnter
-Fired when entering the main menu.
+
+**When it fires:** Player reaches the main menu.
+
+**Use for:** Menu modifications, checking for updates.
+
 ```lua
 Events.OnMainMenuEnter.Add(function()
     print("At main menu")
+    -- Check for mod updates, modify main menu UI, etc.
 end)
 ```
+
 **Parameters:** None
 
 ### OnGameStart
-Fired when a game session starts (after loading completes).
+
+**When it fires:** Game session starts (after world loads).
+
+**Use for:** Per-game initialization. **One of the most commonly used events.**
+
 ```lua
 Events.OnGameStart.Add(function()
-    local player = getPlayer()
+    local player = getPlayer()                     -- Get the player
     print("Game started for: " .. player:getUsername())
+    -- Initialize mod state, load player data, etc.
 end)
 ```
+
 **Parameters:** None
+
+**Important:** This fires after loading completes, so the player and world are available.
 
 ### OnNewGame
-Fired when starting a new game (not loading a save).
+
+**When it fires:** Starting a brand new game (not loading a save).
+
+**Use for:** First-time setup, tutorials, welcome messages.
+
 ```lua
 Events.OnNewGame.Add(function()
-    print("Fresh game started")
+    print("Fresh game started - this is a new save")
+    -- Give starting items, show tutorial, etc.
 end)
 ```
+
 **Parameters:** None
 
+**Difference from OnGameStart:** `OnGameStart` fires every time (new or loaded game). `OnNewGame` only fires for brand new games.
+
 ### OnPreMapLoad
-Fired before the map loads.
+
+**When it fires:** Before the map loads.
+
+**Use for:** Pre-loading setup that needs to happen before map data exists.
+
 ```lua
 Events.OnPreMapLoad.Add(function()
     print("About to load map")
+    -- Prepare for map loading
 end)
 ```
+
 **Parameters:** None
 
 ### OnGameTimeLoaded
-Fired when game time data has loaded.
+
+**When it fires:** After game time data loads.
+
+**Use for:** Time-based calculations that need accurate game time.
+
 ```lua
 Events.OnGameTimeLoaded.Add(function()
     local gameTime = getGameTime()
-    print("Day: " .. gameTime:getNightsSurvived())
+    local day = gameTime:getNightsSurvived()
+    print("Day " .. day .. " of the apocalypse")
 end)
 ```
+
 **Parameters:** None
 
 ### OnSave
-Fired when the game saves.
+
+**When it fires:** Game is saving.
+
+**Use for:** Saving mod data to persist between sessions.
+
 ```lua
 Events.OnSave.Add(function()
-    -- Save your mod data here
+    -- Save your mod's data
+    local modData = ModData.getOrCreate("MyMod")
+    modData.playerScore = calculateScore()
+    ModData.transmit("MyMod")
 end)
 ```
+
 **Parameters:** None
 
+**Important:** This is when you save mod data. Don't try to save at other times.
+
 ### OnPostSave
-Fired after saving completes.
+
+**When it fires:** After saving completes.
+
+**Use for:** Post-save cleanup or notifications.
+
 ```lua
 Events.OnPostSave.Add(function()
     print("Save complete")
 end)
 ```
+
 **Parameters:** None
 
 ### OnResetLua
-Fired when Lua scripts are reset/reloaded.
+
+**When it fires:** Lua scripts are reset/reloaded (debug mode).
+
+**Use for:** Reinitializing state after script reload.
+
 ```lua
 Events.OnResetLua.Add(function()
     -- Reinitialize your mod state
+    print("Lua reset - reinitializing mod")
 end)
 ```
+
 **Parameters:** None
+
+**When this happens:** Mainly in debug mode when you reload scripts during development.
 
 ---
 
 ## Player Events
 
+Events related to player characters - creation, movement, actions, death, equipment.
+
 ### OnCreatePlayer
-Fired when a player character is created.
+
+**When it fires:** Player character is created.
+
+**Use for:** Per-player initialization.
+
 ```lua
 Events.OnCreatePlayer.Add(function(playerIndex, player)
-    print("Created player " .. playerIndex)
+    print("Created player " .. playerIndex)        -- Player number (0-3 for splitscreen)
+    print("Username: " .. player:getUsername())    -- Player's name
+    -- Initialize player-specific data
 end)
 ```
+
 **Parameters:**
-- `playerIndex` (int) - Player number (0-3 for splitscreen)
+- `playerIndex` (int) - Player number (0 for main player, 1-3 for splitscreen)
 - `player` (IsoPlayer) - The player object
 
 ### OnPlayerUpdate
-Fired every frame for each player.
+
+**When it fires:** Every frame for each player. **Very frequent - use carefully!**
+
+**Use for:** Frame-by-frame player logic (animations, effects, constant checks).
+
 ```lua
 Events.OnPlayerUpdate.Add(function(player)
-    -- Called frequently, keep it light
+    -- This runs EVERY FRAME - keep it lightweight!
+    if player:isRunning() then
+        -- Do something while running
+    end
 end)
 ```
+
 **Parameters:**
 - `player` (IsoPlayer) - The player being updated
 
+**Warning:** This fires every frame (60+ times per second). Heavy operations here will cause lag.
+
 ### OnPlayerMove
-Fired when a player moves.
+
+**When it fires:** Player moves.
+
+**Use for:** Movement tracking, footstep effects, location-based triggers.
+
 ```lua
 Events.OnPlayerMove.Add(function(player)
-    local x, y, z = player:getX(), player:getY(), player:getZ()
+    local x = player:getX()                        -- Current X coordinate
+    local y = player:getY()                        -- Current Y coordinate
+    local z = player:getZ()                        -- Current floor level
+    -- Track movement, check for trigger zones, etc.
 end)
 ```
+
 **Parameters:**
 - `player` (IsoPlayer) - The player who moved
 
 ### OnPlayerDeath
-Fired when a player dies.
+
+**When it fires:** Player dies. **Commonly used for cleanup and death penalties.**
+
+**Use for:** Death reactions, cleanup, achievements, permadeath logic.
+
 ```lua
 Events.OnPlayerDeath.Add(function(player)
     print(player:getUsername() .. " has died")
+    -- Clean up player data, save death statistics, etc.
 end)
 ```
+
 **Parameters:**
 - `player` (IsoPlayer) - The player who died
 
 ### AddXP
-Fired when XP is gained.
+
+**When it fires:** Player gains XP in any skill.
+
+**Use for:** Custom XP modifiers, skill tracking, achievements.
+
 ```lua
 Events.AddXP.Add(function(player, perk, amount)
-    print("Gained " .. amount .. " XP in " .. tostring(perk))
+    local skillName = tostring(perk)               -- Skill/perk name
+    print("Gained " .. amount .. " XP in " .. skillName)
+    -- Track XP gains, modify XP amounts, etc.
 end)
 ```
+
 **Parameters:**
-- `player` (IsoPlayer) - The player
-- `perk` (Perk) - The skill/perk
-- `amount` (float) - XP amount
+- `player` (IsoPlayer) - The player gaining XP
+- `perk` (Perk) - The skill/perk (Enum value)
+- `amount` (float) - XP amount gained
 
 ### LevelPerk
-Fired when a perk levels up.
+
+**When it fires:** Skill/perk levels up or down.
+
+**Use for:** Level-up rewards, skill-based unlocks, congratulations messages.
+
 ```lua
 Events.LevelPerk.Add(function(player, perk, level, levelUp)
-    if levelUp then
-        print("Leveled up " .. tostring(perk) .. " to " .. level)
+    if levelUp then                                -- Check if leveling up (not down)
+        local skillName = tostring(perk)
+        print("Leveled up " .. skillName .. " to level " .. level)
+        -- Give rewards, unlock recipes, etc.
     end
 end)
 ```
+
 **Parameters:**
 - `player` (IsoPlayer) - The player
 - `perk` (Perk) - The skill/perk
@@ -245,20 +431,32 @@ end)
 - `levelUp` (boolean) - True if leveled up, false if leveled down
 
 ### OnEquipPrimary
-Fired when equipping primary hand item.
+
+**When it fires:** Player equips an item in primary hand.
+
+**Use for:** Equipment tracking, bonuses, stat changes.
+
 ```lua
 Events.OnEquipPrimary.Add(function(player, item)
-    if item then
+    if item then                                   -- Check if item exists (not unequipping)
         print("Equipped: " .. item:getName())
+        -- Apply equipment bonuses, track weapon type, etc.
+    else
+        print("Unequipped primary hand")
     end
 end)
 ```
+
 **Parameters:**
 - `player` (IsoPlayer) - The player
-- `item` (InventoryItem) - The equipped item (or nil)
+- `item` (InventoryItem) - The equipped item (or nil if unequipping)
 
 ### OnEquipSecondary
-Fired when equipping secondary hand item.
+
+**When it fires:** Player equips an item in secondary hand.
+
+**Use for:** Off-hand equipment tracking.
+
 ```lua
 Events.OnEquipSecondary.Add(function(player, item)
     if item then
@@ -266,17 +464,24 @@ Events.OnEquipSecondary.Add(function(player, item)
     end
 end)
 ```
+
 **Parameters:**
 - `player` (IsoPlayer) - The player
-- `item` (InventoryItem) - The equipped item (or nil)
+- `item` (InventoryItem) - The equipped item (or nil if unequipping)
 
 ### OnPlayerAttackFinished
-Fired when a player completes an attack.
+
+**When it fires:** Player completes an attack animation.
+
+**Use for:** Post-attack effects, combo systems, stamina systems.
+
 ```lua
 Events.OnPlayerAttackFinished.Add(function(player, weapon)
-    print("Attack finished")
+    print("Attack finished with " .. weapon:getName())
+    -- Apply post-attack effects, check for combo, etc.
 end)
 ```
+
 **Parameters:**
 - `player` (IsoPlayer) - The attacker
 - `weapon` (HandWeapon) - The weapon used
@@ -285,203 +490,371 @@ end)
 
 ## Context Menu Events
 
+Events for adding options to right-click menus. **Essential for item interactions.**
+
 ### OnFillInventoryObjectContextMenu
-Fired when right-clicking items in inventory. **Most commonly used event for adding item actions.**
+
+**When it fires:** Player right-clicks items in inventory. **Most commonly used for custom item actions.**
+
+**Use for:** Adding "Use", "Craft", "Combine" options to items.
+
 ```lua
 Events.OnFillInventoryObjectContextMenu.Add(function(playerIndex, context, items)
-    -- Add custom menu options
-    context:addOption("My Option", items, myFunction)
+    -- Check if we have the right items
+    if items and #items > 0 then
+        local item = items[1]                      -- First selected item
+
+        -- Add custom menu option
+        context:addOption(
+            "My Custom Action",                    -- Text shown in menu
+            items,                                  -- Items to pass to function
+            myCustomFunction                        -- Function to call
+        )
+    end
 end)
+
+local function myCustomFunction(items)
+    -- This runs when player clicks the menu option
+    local item = items[1]
+    print("Custom action on: " .. item:getName())
+end
 ```
+
 **Parameters:**
-- `playerIndex` (int) - Player number
+- `playerIndex` (int) - Player number (0-3)
 - `context` (ISContextMenu) - The menu to add options to
-- `items` (table) - Selected items
+- `items` (table) - Array of selected items
+
+**Common pattern:** Check item types, add appropriate menu options, handle the action.
 
 ### OnFillWorldObjectContextMenu
-Fired when right-clicking objects in the world.
+
+**When it fires:** Player right-clicks objects in the world (not inventory).
+
+**Use for:** Adding interactions with furniture, doors, containers, world objects.
+
 ```lua
 Events.OnFillWorldObjectContextMenu.Add(function(playerIndex, context, worldObjects, test)
-    -- Add custom world object options
-    context:addOption("Examine", worldObjects, examineObject)
+    -- test = true means just checking if menu should appear (don't do heavy work)
+    if test then return end
+
+    -- Check what was clicked
+    for _, obj in ipairs(worldObjects) do
+        local square = obj:getSquare()             -- Grid square under object
+
+        -- Add custom option for this object
+        context:addOption(
+            "Examine Object",                      -- Menu text
+            worldObjects,                          -- Objects to pass
+            examineObject                          -- Function to call
+        )
+    end
 end)
+
+local function examineObject(worldObjects, player)
+    -- Handle the action
+    print("Examining object")
+end
 ```
+
 **Parameters:**
 - `playerIndex` (int) - Player number
-- `context` (ISContextMenu) - The menu to add options to
+- `context` (ISContextMenu) - The menu
 - `worldObjects` (table) - Objects under cursor
-- `test` (boolean) - True if just testing for valid options
+- `test` (boolean) - True if just testing (don't do heavy work)
 
 ---
 
 ## Time Events
 
+Events that fire based on time passing - ticks, minutes, hours, days.
+
 ### OnTick
-Fired every game tick (most frequent).
+
+**When it fires:** Every game tick. **Very frequent - use sparingly!**
+
+**Use for:** Frame-perfect timing, constant updates (use other time events if possible).
+
 ```lua
 Events.OnTick.Add(function()
-    -- Runs every tick - use sparingly!
+    -- This runs EVERY TICK - keep it extremely lightweight!
+    -- Prefer EveryTenMinutes or EveryOneMinute for most work
 end)
 ```
+
 **Parameters:** None
 
+**Warning:** Runs dozens of times per second. Heavy operations here will destroy performance.
+
 ### OnTickEvenPaused
-Fired every tick, even when paused.
+
+**When it fires:** Every tick, even when game is paused.
+
+**Use for:** UI updates that need to work while paused.
+
 ```lua
 Events.OnTickEvenPaused.Add(function()
-    -- UI updates can go here
+    -- Runs even when paused - good for UI
 end)
 ```
+
 **Parameters:** None
 
 ### OnRenderTick
-Fired every render frame.
+
+**When it fires:** Every render frame.
+
+**Use for:** Drawing, rendering, visual effects.
+
 ```lua
 Events.OnRenderTick.Add(function()
-    -- Drawing/rendering code
+    -- Drawing/rendering code goes here
 end)
 ```
+
 **Parameters:** None
 
 ### EveryOneMinute
-Fired every in-game minute.
+
+**When it fires:** Every in-game minute. **Good for frequent periodic checks.**
+
+**Use for:** Regular updates that don't need to be every tick.
+
 ```lua
 Events.EveryOneMinute.Add(function()
-    print("One minute passed")
+    print("One in-game minute passed")
+    -- Check conditions, update timers, etc.
 end)
 ```
+
 **Parameters:** None
+
+**Much better than OnTick for most periodic work.**
 
 ### EveryTenMinutes
-Fired every 10 in-game minutes.
+
+**When it fires:** Every 10 in-game minutes. **Commonly used for periodic updates.**
+
+**Use for:** Regular maintenance, condition checks, spawning.
+
 ```lua
 Events.EveryTenMinutes.Add(function()
-    -- Good for periodic checks
+    -- Good for periodic checks without hammering performance
+    local player = getPlayer()
+    if player:isOutside() then
+        -- Do outdoor-specific update
+    end
 end)
 ```
+
 **Parameters:** None
 
+**Best balance** between frequency and performance for most periodic tasks.
+
 ### EveryHours
-Fired every in-game hour.
+
+**When it fires:** Every in-game hour.
+
+**Use for:** Hourly updates, slow decay, weather checks.
+
 ```lua
 Events.EveryHours.Add(function()
-    -- Hourly updates
+    print("An hour has passed")
+    -- Hourly maintenance, condition updates, etc.
 end)
 ```
+
 **Parameters:** None
 
 ### EveryDays
-Fired every in-game day.
+
+**When it fires:** Every in-game day (at midnight).
+
+**Use for:** Daily resets, day counts, long-term timers.
+
 ```lua
 Events.EveryDays.Add(function()
-    -- Daily updates
+    local gameTime = getGameTime()
+    local day = gameTime:getNightsSurvived() + 1   -- Day count (starts at 0)
+    print("Day " .. day .. " of the apocalypse")
+    -- Daily resets, spawn cycles, etc.
 end)
 ```
+
 **Parameters:** None
 
 ### OnDawn
-Fired at dawn.
+
+**When it fires:** At dawn (sun rises).
+
+**Use for:** Day-specific spawning, vampire mods, solar power.
+
 ```lua
 Events.OnDawn.Add(function()
-    print("The sun rises")
+    print("The sun rises - time: " .. getGameTime():getTimeOfDay())
+    -- Day-only effects, solar recharge, etc.
 end)
 ```
+
 **Parameters:** None
 
 ### OnDusk
-Fired at dusk.
+
+**When it fires:** At dusk (sun sets).
+
+**Use for:** Night-specific effects, danger increases, lighting.
+
 ```lua
 Events.OnDusk.Add(function()
     print("Night falls")
+    -- Night-only effects, increased danger, etc.
 end)
 ```
+
 **Parameters:** None
 
 ---
 
 ## World Events
 
+Events related to the game world - zombies, objects, containers, grid squares.
+
 ### OnZombieDead
-Fired when a zombie dies.
+
+**When it fires:** Zombie dies.
+
+**Use for:** Death effects, loot drops, statistics.
+
 ```lua
 Events.OnZombieDead.Add(function(zombie)
-    print("Zombie killed at " .. zombie:getX() .. ", " .. zombie:getY())
+    local x = zombie:getX()
+    local y = zombie:getY()
+    print("Zombie killed at " .. x .. ", " .. y)
+    -- Spawn loot, track kills, create effects, etc.
 end)
 ```
+
 **Parameters:**
 - `zombie` (IsoZombie) - The dead zombie
 
 ### OnZombieUpdate
-Fired every frame for each zombie (use carefully!).
+
+**When it fires:** Every frame for each zombie. **Very frequent - use carefully!**
+
+**Use for:** Per-zombie AI modifications, visual effects.
+
 ```lua
 Events.OnZombieUpdate.Add(function(zombie)
-    -- Called very frequently
+    -- This runs EVERY FRAME for EVERY ZOMBIE - be very careful!
+    -- Only use if you absolutely need frame-perfect zombie updates
 end)
 ```
+
 **Parameters:**
 - `zombie` (IsoZombie) - The zombie being updated
 
+**Warning:** This fires for every zombie every frame. With 100 zombies, that's 6000+ calls per second.
+
 ### OnHitZombie
-Fired when a zombie is hit.
+
+**When it fires:** Zombie is hit.
+
+**Use for:** Hit effects, damage modifications, feedback.
+
 ```lua
 Events.OnHitZombie.Add(function(zombie, attacker, bodyPart, weapon)
-    print("Hit zombie!")
+    print("Hit zombie with " .. weapon:getName())
+    -- Apply special effects, modify damage, play sounds, etc.
 end)
 ```
+
 **Parameters:**
 - `zombie` (IsoZombie) - The zombie hit
 - `attacker` (IsoPlayer/IsoGameCharacter) - Who hit it
-- `bodyPart` (BodyPart) - Where it was hit
+- `bodyPart` (BodyPart) - Which body part was hit
 - `weapon` (HandWeapon) - Weapon used
 
 ### OnContainerUpdate
-Fired when a container's contents change.
+
+**When it fires:** Container contents change (items added/removed).
+
+**Use for:** Container monitoring, auto-sorting, special containers.
+
 ```lua
 Events.OnContainerUpdate.Add(function(container)
     -- Container inventory changed
+    local itemCount = container:getItems():size()
+    print("Container now has " .. itemCount .. " items")
 end)
 ```
+
 **Parameters:**
 - `container` (ItemContainer) - The container that changed
 
 ### OnObjectAdded
-Fired when an object is added to the world.
+
+**When it fires:** Object added to the world.
+
+**Use for:** Tracking spawned objects, custom object behavior.
+
 ```lua
 Events.OnObjectAdded.Add(function(object)
     print("Object added: " .. tostring(object))
+    -- Initialize custom object behavior, track spawns, etc.
 end)
 ```
+
 **Parameters:**
 - `object` (IsoObject) - The added object
 
 ### OnObjectAboutToBeRemoved
-Fired before an object is removed.
+
+**When it fires:** Before object is removed from world.
+
+**Use for:** Cleanup, saving object state, loot drops.
+
 ```lua
 Events.OnObjectAboutToBeRemoved.Add(function(object)
     print("Object being removed")
+    -- Save state, spawn drops, cleanup, etc.
 end)
 ```
+
 **Parameters:**
 - `object` (IsoObject) - The object being removed
 
 ### OnDestroyIsoThumpable
-Fired when a player-built object is destroyed.
+
+**When it fires:** Player-built object (door, wall, furniture) is destroyed.
+
+**Use for:** Custom destruction effects, material recovery.
+
 ```lua
 Events.OnDestroyIsoThumpable.Add(function(thumpable, destroyer)
     print("Built object destroyed")
+    -- Spawn materials, create debris, etc.
 end)
 ```
+
 **Parameters:**
 - `thumpable` (IsoThumpable) - The destroyed object
 - `destroyer` (IsoGameCharacter) - Who destroyed it
 
 ### LoadGridsquare
-Fired when a grid square loads.
+
+**When it fires:** Grid square loads into memory.
+
+**Use for:** Per-square initialization, custom spawning.
+
 ```lua
 Events.LoadGridsquare.Add(function(square)
-    -- Square just loaded into memory
+    -- Square just loaded
+    local x = square:getX()
+    local y = square:getY()
+    print("Loaded square at " .. x .. ", " .. y)
 end)
 ```
+
 **Parameters:**
 - `square` (IsoGridSquare) - The loaded square
 
@@ -489,81 +862,131 @@ end)
 
 ## Vehicle Events
 
+Events related to vehicles - entering, exiting, damage, mechanics.
+
 ### OnEnterVehicle
-Fired when entering a vehicle.
+
+**When it fires:** Player enters a vehicle.
+
+**Use for:** Vehicle bonuses, UI changes, tracking.
+
 ```lua
 Events.OnEnterVehicle.Add(function(player)
     print(player:getUsername() .. " entered vehicle")
+    local vehicle = player:getVehicle()            -- Get the vehicle they entered
+    -- Apply vehicle effects, show vehicle UI, etc.
 end)
 ```
+
 **Parameters:**
 - `player` (IsoPlayer) - The player entering
 
 ### OnExitVehicle
-Fired when exiting a vehicle.
+
+**When it fires:** Player exits a vehicle.
+
+**Use for:** Cleanup, removing vehicle bonuses.
+
 ```lua
 Events.OnExitVehicle.Add(function(player)
     print(player:getUsername() .. " exited vehicle")
+    -- Remove vehicle effects, hide vehicle UI, etc.
 end)
 ```
+
 **Parameters:**
 - `player` (IsoPlayer) - The player exiting
 
 ### OnSwitchVehicleSeat
-Fired when switching seats.
+
+**When it fires:** Player switches seats in vehicle.
+
+**Use for:** Seat-specific logic.
+
 ```lua
 Events.OnSwitchVehicleSeat.Add(function(player)
-    print("Switched seats")
+    local vehicle = player:getVehicle()
+    local seat = vehicle:getSeat(player)           -- Which seat they're in now
+    print("Switched to seat: " .. tostring(seat))
 end)
 ```
+
 **Parameters:**
 - `player` (IsoPlayer) - The player switching
 
 ### OnUseVehicle
-Fired when using vehicle controls.
+
+**When it fires:** Player uses vehicle controls (horn, lights, etc).
+
+**Use for:** Custom vehicle interactions.
+
 ```lua
 Events.OnUseVehicle.Add(function(player, vehicle, pressedNotTapped)
-    -- Player interacting with vehicle
+    -- Player interacted with vehicle
+    print("Used vehicle")
 end)
 ```
+
 **Parameters:**
 - `player` (IsoPlayer) - The player
 - `vehicle` (BaseVehicle) - The vehicle
-- `pressedNotTapped` (boolean) - Long press vs tap
+- `pressedNotTapped` (boolean) - True if long press, false if tap
 
 ### OnVehicleDamageTexture
-Fired when vehicle texture updates due to damage.
+
+**When it fires:** Vehicle appearance updates due to damage.
+
+**Use for:** Visual damage effects, repair tracking.
+
 ```lua
 Events.OnVehicleDamageTexture.Add(function(player)
     -- Vehicle appearance changed
+    print("Vehicle damaged")
 end)
 ```
+
 **Parameters:**
 - `player` (IsoPlayer) - The driver/owner
 
 ### OnVehicleHorn
-Fired when honking horn.
+
+**When it fires:** Vehicle horn honked.
+
+**Use for:** Custom horn effects, zombie attraction.
+
 ```lua
 Events.OnVehicleHorn.Add(function(player, vehicle, pressed)
-    if pressed then
+    if pressed then                                -- Horn pressed
         print("HONK!")
+        -- Attract zombies, play custom sound, etc.
+    else                                            -- Horn released
+        print("Horn released")
     end
 end)
 ```
+
 **Parameters:**
 - `player` (IsoPlayer) - The player
 - `vehicle` (BaseVehicle) - The vehicle
 - `pressed` (boolean) - True if pressed, false if released
 
 ### OnMechanicActionDone
-Fired when a mechanic action completes.
+
+**When it fires:** Mechanic action completes (install part, repair, etc).
+
+**Use for:** Custom repair rewards, tracking.
+
 ```lua
 Events.OnMechanicActionDone.Add(function(player, success, vehicleId, partId)
     if success then
-        print("Repair successful")
+        print("Repair successful on part: " .. partId)
+        -- Give XP bonus, unlock achievements, etc.
+    else
+        print("Repair failed")
     end
 end)
 ```
+
 **Parameters:**
 - `player` (IsoPlayer) - The mechanic
 - `success` (boolean) - Whether it succeeded
@@ -574,25 +997,40 @@ end)
 
 ## Crafting Events
 
+Events for crafting and item creation.
+
 ### OnMakeItem
-Fired when crafting an item.
+
+**When it fires:** Player crafts an item via recipe.
+
+**Use for:** Crafting bonuses, custom item properties, tracking.
+
 ```lua
 Events.OnMakeItem.Add(function(item, player, recipe)
     print("Crafted: " .. item:getName())
+    local recipeName = recipe:getName()            -- Recipe used
+    -- Set custom properties, give bonuses, track crafts, etc.
 end)
 ```
+
 **Parameters:**
 - `item` (InventoryItem) - The crafted item
 - `player` (IsoPlayer) - The crafter
 - `recipe` (Recipe) - The recipe used
 
 ### OnDynamicMovableRecipe
-Fired for dynamic/movable recipes.
+
+**When it fires:** Dynamic/movable recipe used (furniture, etc).
+
+**Use for:** Custom furniture creation.
+
 ```lua
 Events.OnDynamicMovableRecipe.Add(function(movableRecipe, item, player)
-    -- Dynamic crafting
+    -- Dynamic crafting (furniture, etc)
+    print("Created dynamic item")
 end)
 ```
+
 **Parameters:**
 - `movableRecipe` - The recipe
 - `item` (InventoryItem) - Result item
@@ -602,66 +1040,109 @@ end)
 
 ## Input Events
 
+Events for keyboard, mouse, and gamepad input.
+
 ### OnKeyPressed
-Fired when a key is pressed.
+
+**When it fires:** Key is held down. **Fires continuously while key is down.**
+
+**Use for:** Continuous actions while key held.
+
 ```lua
 Events.OnKeyPressed.Add(function(key)
-    if key == Keyboard.KEY_F then
-        print("F pressed")
+    if key == Keyboard.KEY_F then                  -- Check which key (use Keyboard.KEY_*)
+        print("F is being pressed")
+        -- Do something while F is held
     end
 end)
 ```
+
 **Parameters:**
-- `key` (int) - Key code (use Keyboard.KEY_*)
+- `key` (int) - Key code (use `Keyboard.KEY_*` constants)
+
+**Note:** This fires repeatedly while key is down. For single press detection, use `OnKeyStartPressed`.
 
 ### OnKeyStartPressed
-Fired on initial key press.
+
+**When it fires:** Key is first pressed (initial press only).
+
+**Use for:** Single key press actions, hotkeys.
+
 ```lua
 Events.OnKeyStartPressed.Add(function(key)
-    -- Key just went down
+    if key == Keyboard.KEY_I then                  -- Inventory key example
+        print("I pressed once")
+        -- Open menu, toggle setting, etc.
+    end
 end)
 ```
+
 **Parameters:**
 - `key` (int) - Key code
 
+**Better than OnKeyPressed** for most single-press actions (opening menus, toggling, etc).
+
 ### OnKeyKeepPressed
-Fired while key is held.
+
+**When it fires:** Key continues to be held (after initial press).
+
+**Use for:** Detecting sustained key press.
+
 ```lua
 Events.OnKeyKeepPressed.Add(function(key)
-    -- Key is being held
+    -- Key is still being held
 end)
 ```
+
 **Parameters:**
 - `key` (int) - Key code
 
 ### OnCustomUIKey
-Fired for custom UI key bindings.
+
+**When it fires:** Custom UI key binding pressed.
+
+**Use for:** Mod-specific hotkeys.
+
 ```lua
 Events.OnCustomUIKey.Add(function(key)
     -- Custom key handling
+    print("Custom UI key: " .. key)
 end)
 ```
+
 **Parameters:**
 - `key` (int) - Key code
 
 ### OnMouseDown
-Fired on mouse button press.
+
+**When it fires:** Left mouse button pressed.
+
+**Use for:** Click detection, custom mouse handling.
+
 ```lua
 Events.OnMouseDown.Add(function(x, y)
-    print("Click at " .. x .. ", " .. y)
+    print("Left click at " .. x .. ", " .. y)
+    -- Custom click handling
 end)
 ```
+
 **Parameters:**
-- `x` (int) - Mouse X position
-- `y` (int) - Mouse Y position
+- `x` (int) - Mouse X position (screen coordinates)
+- `y` (int) - Mouse Y position (screen coordinates)
 
 ### OnRightMouseDown
-Fired on right mouse button press.
+
+**When it fires:** Right mouse button pressed.
+
+**Use for:** Custom right-click behavior.
+
 ```lua
 Events.OnRightMouseDown.Add(function(x, y)
     print("Right click at " .. x .. ", " .. y)
+    -- Custom right-click handling
 end)
 ```
+
 **Parameters:**
 - `x` (int) - Mouse X position
 - `y` (int) - Mouse Y position
@@ -670,129 +1151,210 @@ end)
 
 ## Weather Events
 
+Events for weather, climate, and seasons.
+
 ### OnClimateManagerInit
-Fired when climate system initializes.
+
+**When it fires:** Climate system initializes.
+
+**Use for:** Climate system modifications.
+
 ```lua
 Events.OnClimateManagerInit.Add(function(climate)
-    print("Climate initialized")
+    print("Climate system initialized")
+    -- Modify climate behavior, access climate manager, etc.
 end)
 ```
+
 **Parameters:**
 - `climate` (ClimateManager) - The climate manager
 
 ### OnClimateTick
-Fired every climate tick.
+
+**When it fires:** Every climate update tick.
+
+**Use for:** Weather-based effects, climate monitoring.
+
 ```lua
 Events.OnClimateTick.Add(function(climate)
-    -- Climate updates
+    local temp = climate:getTemperature()          -- Current temperature
+    local isRaining = getRainManager():isRaining() -- Check if raining
+    -- Weather-dependent logic
 end)
 ```
+
 **Parameters:**
 - `climate` (ClimateManager) - The climate manager
 
 ### OnThunderEvent
-Fired during thunder.
+
+**When it fires:** Thunder/lightning event.
+
+**Use for:** Lightning effects, fear systems, power outages.
+
 ```lua
 Events.OnThunderEvent.Add(function(x, y, strike)
-    if strike then
+    if strike then                                 -- Actual lightning strike
         print("Lightning strike at " .. x .. ", " .. y)
+        -- Create fire, startle player, etc.
+    else                                            -- Just thunder sound
+        print("Thunder rumbles")
     end
 end)
 ```
+
 **Parameters:**
-- `x` (int) - X coordinate
-- `y` (int) - Y coordinate
-- `strike` (boolean) - True if lightning strike
+- `x` (int) - X coordinate (if strike)
+- `y` (int) - Y coordinate (if strike)
+- `strike` (boolean) - True if lightning strike, false if just thunder
 
 ### OnWeatherPeriodStart
-Fired when a weather period starts.
+
+**When it fires:** Weather period begins.
+
+**Use for:** Weather change notifications.
+
 ```lua
 Events.OnWeatherPeriodStart.Add(function(period)
-    print("Weather changing")
+    print("Weather changing to new period")
+    -- Notify player, prepare for weather change, etc.
 end)
 ```
+
 **Parameters:**
-- `period` (WeatherPeriod) - The weather period
+- `period` (WeatherPeriod) - The starting weather period
 
 ### OnWeatherPeriodStage
-Fired during weather stage transitions.
+
+**When it fires:** Weather stage transitions (within a period).
+
+**Use for:** Gradual weather effects.
+
 ```lua
 Events.OnWeatherPeriodStage.Add(function(period)
-    -- Weather stage changed
+    -- Weather stage changed (gradual transition)
 end)
 ```
+
 **Parameters:**
 - `period` (WeatherPeriod) - The weather period
 
 ### OnWeatherPeriodComplete
-Fired when weather period ends.
+
+**When it fires:** Weather period ends.
+
+**Use for:** End-of-weather cleanup.
+
 ```lua
 Events.OnWeatherPeriodComplete.Add(function(period)
     print("Weather period ended")
+    -- Cleanup weather effects, etc.
 end)
 ```
+
 **Parameters:**
 - `period` (WeatherPeriod) - The completed period
 
 ### OnInitSeasons
-Fired when seasons initialize.
+
+**When it fires:** Season system initializes.
+
+**Use for:** Season modifications.
+
 ```lua
 Events.OnInitSeasons.Add(function()
     print("Seasons initialized")
+    -- Modify seasonal behavior
 end)
 ```
+
 **Parameters:** None
 
 ---
 
 ## Multiplayer Events
 
+Events for multiplayer, networking, and server communication. **(Multiplayer mods only)**
+
 ### OnConnected
-Fired when connected to a server.
+
+**When it fires:** Client connects to server.
+
+**Use for:** Connection initialization, syncing data.
+
 ```lua
 Events.OnConnected.Add(function()
     print("Connected to server")
+    -- Request server data, sync mod state, etc.
 end)
 ```
+
 **Parameters:** None
 
 ### OnConnectFailed
-Fired when connection fails.
+
+**When it fires:** Connection attempt fails.
+
+**Use for:** Error handling, retry logic.
+
 ```lua
 Events.OnConnectFailed.Add(function(error)
     print("Connection failed: " .. error)
+    -- Show error message, attempt retry, etc.
 end)
 ```
+
 **Parameters:**
 - `error` (string) - Error message
 
 ### OnDisconnect
-Fired when disconnected.
+
+**When it fires:** Disconnected from server.
+
+**Use for:** Cleanup, save state.
+
 ```lua
 Events.OnDisconnect.Add(function()
-    print("Disconnected")
+    print("Disconnected from server")
+    -- Save local state, cleanup, etc.
 end)
 ```
+
 **Parameters:** None
 
 ### OnServerStarted
-Fired when server starts (server-side).
+
+**When it fires:** Server starts (server-side only).
+
+**Use for:** Server initialization.
+
 ```lua
 Events.OnServerStarted.Add(function()
     print("Server started")
+    -- Initialize server-side systems
 end)
 ```
+
 **Parameters:** None
 
 ### OnClientCommand
-Fired when receiving client command (server-side).
+
+**When it fires:** Server receives command from client.
+
+**Use for:** Handling client requests (server-side).
+
 ```lua
 Events.OnClientCommand.Add(function(module, command, player, args)
-    if module == "MyMod" then
-        -- Handle command
+    if module == "MyMod" then                      -- Check if command is for your mod
+        if command == "doSomething" then           -- Check command type
+            -- Handle the command
+            local data = args.data                  -- Access command arguments
+            print(player:getUsername() .. " requested: " .. command)
+        end
     end
 end)
 ```
+
 **Parameters:**
 - `module` (string) - Module name
 - `command` (string) - Command name
@@ -800,14 +1362,22 @@ end)
 - `args` (table) - Command arguments
 
 ### OnServerCommand
-Fired when receiving server command (client-side).
+
+**When it fires:** Client receives command from server.
+
+**Use for:** Handling server updates (client-side).
+
 ```lua
 Events.OnServerCommand.Add(function(module, command, args)
     if module == "MyMod" then
-        -- Handle command
+        if command == "updateData" then
+            -- Handle server update
+            local newData = args.data
+        end
     end
 end)
 ```
+
 **Parameters:**
 - `module` (string) - Module name
 - `command` (string) - Command name
@@ -817,40 +1387,66 @@ end)
 
 ## UI Events
 
+Events for UI rendering, creation, and screen changes.
+
 ### OnCreateUI
-Fired when main UI is created.
+
+**When it fires:** Main UI is created (after game starts).
+
+**Use for:** Adding custom UI elements.
+
 ```lua
 Events.OnCreateUI.Add(function()
-    -- Add custom UI elements
+    print("UI created - add custom elements here")
+    -- Create custom UI, add windows, etc.
 end)
 ```
+
 **Parameters:** None
 
 ### OnPreUIDraw
-Fired before UI draws.
+
+**When it fires:** Before UI draws each frame.
+
+**Use for:** Drawing behind UI.
+
 ```lua
 Events.OnPreUIDraw.Add(function()
     -- Draw behind UI
+    -- Use render functions here
 end)
 ```
+
 **Parameters:** None
 
 ### OnPostUIDraw
-Fired after UI draws.
+
+**When it fires:** After UI draws each frame.
+
+**Use for:** Drawing on top of UI.
+
 ```lua
 Events.OnPostUIDraw.Add(function()
     -- Draw on top of UI
+    -- Overlays, custom displays, etc.
 end)
 ```
+
 **Parameters:** None
 
 ### OnResolutionChange
-Fired when screen resolution changes.
+
+**When it fires:** Screen resolution changes.
+
+**Use for:** Repositioning UI, recalculating layouts.
+
 ```lua
 Events.OnResolutionChange.Add(function(oldW, oldH, newW, newH)
-    print("Resolution: " .. newW .. "x" .. newH)
+    print("Resolution changed from " .. oldW .. "x" .. oldH .. " to " .. newW .. "x" .. newH)
+    -- Reposition UI elements, recalculate layouts, etc.
 end)
 ```
+
 **Parameters:**
 - `oldW` (int) - Old width
 - `oldH` (int) - Old height
@@ -861,45 +1457,77 @@ end)
 
 ## Global Object Events
 
+Events for global mod data and systems.
+
 ### OnCGlobalObjectSystemInit
-Fired when client global object system initializes.
+
+**When it fires:** Client global object system initializes.
+
+**Use for:** Client-side global system setup.
+
 ```lua
 Events.OnCGlobalObjectSystemInit.Add(function()
-    -- Client global objects ready
+    print("Client global objects ready")
+    -- Initialize client global systems
 end)
 ```
+
 **Parameters:** None
 
 ### OnSGlobalObjectSystemInit
-Fired when server global object system initializes.
+
+**When it fires:** Server global object system initializes.
+
+**Use for:** Server-side global system setup.
+
 ```lua
 Events.OnSGlobalObjectSystemInit.Add(function()
-    -- Server global objects ready
+    print("Server global objects ready")
+    -- Initialize server global systems
 end)
 ```
+
 **Parameters:** None
 
 ### OnInitGlobalModData
-Fired when global mod data initializes.
+
+**When it fires:** Global mod data initializes (on game start or load).
+
+**Use for:** Initializing persistent mod data.
+
 ```lua
 Events.OnInitGlobalModData.Add(function(isNewGame)
-    if isNewGame then
-        -- Initialize new mod data
-    else
-        -- Load existing mod data
+    local modData = ModData.getOrCreate("MyMod")   -- Get or create mod data table
+
+    if isNewGame then                               -- Brand new game
+        print("New game - initializing fresh mod data")
+        modData.score = 0                           -- Set default values
+        modData.highScore = 0
+    else                                             -- Loading existing game
+        print("Loading game - mod data exists")
+        print("Score: " .. (modData.score or 0))   -- Use existing values
     end
 end)
 ```
+
 **Parameters:**
 - `isNewGame` (boolean) - True if new game, false if loading
 
+**Most important event for persistent mod data.**
+
 ### OnReceiveGlobalModData
-Fired when receiving global mod data (multiplayer).
+
+**When it fires:** Client receives global mod data from server (multiplayer).
+
+**Use for:** Syncing mod data in multiplayer.
+
 ```lua
 Events.OnReceiveGlobalModData.Add(function(key, data)
     print("Received mod data: " .. key)
+    -- Update local copy of global data
 end)
 ```
+
 **Parameters:**
 - `key` (string) - Data key
 - `data` (table) - The data
@@ -908,143 +1536,443 @@ end)
 
 ## Complete Event List
 
-All 144 events found in Build 41:
+All 144 events in Build 41, organized by category:
 
-### Game/System
-- OnGameBoot, OnMainMenuEnter, OnGameStart, OnNewGame
-- OnPreMapLoad, OnGameTimeLoaded, OnInitWorld, OnLoadMapZones
-- OnLoadedMapZones, OnSave, OnPostSave, OnResetLua
-- OnModsModified, OnChallengeQuery, OnGameStateEnter
+### Game/System (15)
+OnGameBoot, OnMainMenuEnter, OnGameStart, OnNewGame, OnPreMapLoad, OnGameTimeLoaded, OnInitWorld, OnLoadMapZones, OnLoadedMapZones, OnSave, OnPostSave, OnResetLua, OnModsModified, OnChallengeQuery, OnGameStateEnter
 
-### Player
-- OnCreatePlayer, OnCreateSurvivor, OnPlayerUpdate, OnPlayerMove
-- OnPlayerDeath, OnPlayerAttackFinished, AddXP, LevelPerk
-- OnEquipPrimary, OnEquipSecondary, OnCharacterCreateStats
-- OnClothingUpdated
+### Player (12)
+OnCreatePlayer, OnCreateSurvivor, OnPlayerUpdate, OnPlayerMove, OnPlayerDeath, OnPlayerAttackFinished, AddXP, LevelPerk, OnEquipPrimary, OnEquipSecondary, OnCharacterCreateStats, OnClothingUpdated
 
-### Zombies
-- OnZombieDead, OnZombieUpdate, OnHitZombie
+### Zombies (3)
+OnZombieDead, OnZombieUpdate, OnHitZombie
 
-### World/Objects
-- OnContainerUpdate, OnObjectAdded, OnObjectAboutToBeRemoved
-- OnDestroyIsoThumpable, LoadGridsquare, OnWaterAmountChange
-- OnDoTileBuilding2, OnDoTileBuilding3
+### World/Objects (8)
+OnContainerUpdate, OnObjectAdded, OnObjectAboutToBeRemoved, OnDestroyIsoThumpable, LoadGridsquare, OnWaterAmountChange, OnDoTileBuilding2, OnDoTileBuilding3
 
-### Vehicles
-- OnEnterVehicle, OnExitVehicle, OnSwitchVehicleSeat
-- OnUseVehicle, OnVehicleDamageTexture, OnVehicleHorn
-- OnMechanicActionDone
+### Vehicles (7)
+OnEnterVehicle, OnExitVehicle, OnSwitchVehicleSeat, OnUseVehicle, OnVehicleDamageTexture, OnVehicleHorn, OnMechanicActionDone
 
-### Combat
-- OnWeaponHitTree, OnWeaponHitXp, OnWeaponSwingHitPoint
-- OnPressRackButton, OnPressReloadButton
+### Combat (5)
+OnWeaponHitTree, OnWeaponHitXp, OnWeaponSwingHitPoint, OnPressRackButton, OnPressReloadButton
 
-### Crafting
-- OnMakeItem, OnDynamicMovableRecipe
+### Crafting (2)
+OnMakeItem, OnDynamicMovableRecipe
 
-### UI/Input
-- OnCreateUI, OnFillInventoryObjectContextMenu, OnFillWorldObjectContextMenu
-- OnPreUIDraw, OnPostUIDraw, OnResolutionChange
-- OnKeyPressed, OnKeyStartPressed, OnKeyKeepPressed, OnCustomUIKey
-- OnMouseDown, OnRightMouseDown, OnPressWalkTo
-- OnObjectLeftMouseButtonDown, OnObjectLeftMouseButtonUp
-- OnObjectRightMouseButtonDown, OnObjectRightMouseButtonUp
+### UI/Input (16)
+OnCreateUI, OnFillInventoryObjectContextMenu, OnFillWorldObjectContextMenu, OnPreUIDraw, OnPostUIDraw, OnResolutionChange, OnKeyPressed, OnKeyStartPressed, OnKeyKeepPressed, OnCustomUIKey, OnMouseDown, OnRightMouseDown, OnPressWalkTo, OnObjectLeftMouseButtonDown, OnObjectLeftMouseButtonUp, OnObjectRightMouseButtonDown, OnObjectRightMouseButtonUp
 
-### Time
-- OnTick, OnTickEvenPaused, OnRenderTick
-- EveryOneMinute, EveryTenMinutes, EveryHours, EveryDays
-- OnDawn, OnDusk
+### Time (9)
+OnTick, OnTickEvenPaused, OnRenderTick, EveryOneMinute, EveryTenMinutes, EveryHours, EveryDays, OnDawn, OnDusk
 
-### Weather
-- OnClimateManagerInit, OnClimateTick, OnClimateTickDebug
-- OnThunderEvent, OnWeatherPeriodStart, OnWeatherPeriodStage
-- OnWeatherPeriodComplete, OnInitSeasons
+### Weather (8)
+OnClimateManagerInit, OnClimateTick, OnClimateTickDebug, OnThunderEvent, OnWeatherPeriodStart, OnWeatherPeriodStage, OnWeatherPeriodComplete, OnInitSeasons
 
-### Multiplayer
-- OnConnected, OnConnectFailed, OnConnectionStateChanged, OnDisconnect
-- OnServerStarted, OnServerStartSaving, OnServerFinishSaving
-- OnClientCommand, OnServerCommand, OnAdminMessage
-- OnCoopJoinFailed, OnCoopServerMessage, OnLoginState, OnLoginStateSuccess
-- OnServerStatisticReceived, OnAcceptInvite
+### Multiplayer (24)
+OnConnected, OnConnectFailed, OnConnectionStateChanged, OnDisconnect, OnServerStarted, OnServerStartSaving, OnServerFinishSaving, OnClientCommand, OnServerCommand, OnAdminMessage, OnCoopJoinFailed, OnCoopServerMessage, OnLoginState, OnLoginStateSuccess, OnServerStatisticReceived, OnAcceptInvite, AcceptedFactionInvite, ReceiveFactionInvite, SyncFaction, AcceptedSafehouseInvite, ReceiveSafehouseInvite, OnSafehousesChanged, AcceptedTrade, RequestTrade, TradingUIAddItem, TradingUIRemoveItem, TradingUIUpdateState
 
-### Chat/Social
-- OnAddMessage, OnChatWindowInit, SwitchChatStream
-- OnScoreboardUpdate, OnMiniScoreboardUpdate
-- AcceptedFactionInvite, ReceiveFactionInvite, SyncFaction
-- AcceptedSafehouseInvite, ReceiveSafehouseInvite, OnSafehousesChanged
-- AcceptedTrade, RequestTrade, TradingUIAddItem, TradingUIRemoveItem, TradingUIUpdateState
+### Chat/Social (10)
+OnAddMessage, OnChatWindowInit, SwitchChatStream, OnScoreboardUpdate, OnMiniScoreboardUpdate
 
-### Gamepad/Controller
-- OnGamepadConnect, OnGamepadDisconnect
-- OnJoypadActivate, OnJoypadActivateUI, OnJoypadDeactivate
-- OnJoypadReactivate, OnJoypadBeforeDeactivate, OnJoypadBeforeReactivate
-- OnJoypadRenderUI
+### Gamepad (7)
+OnGamepadConnect, OnGamepadDisconnect, OnJoypadActivate, OnJoypadActivateUI, OnJoypadDeactivate, OnJoypadReactivate, OnJoypadBeforeDeactivate, OnJoypadBeforeReactivate, OnJoypadRenderUI
 
-### Global Objects
-- OnCGlobalObjectSystemInit, OnSGlobalObjectSystemInit
-- OnInitGlobalModData, OnReceiveGlobalModData
+### Global Objects (4)
+OnCGlobalObjectSystemInit, OnSGlobalObjectSystemInit, OnInitGlobalModData, OnReceiveGlobalModData
 
-### Misc
-- OnDeviceText, OnDistributionMerge, OnPreDistributionMerge, OnPostDistributionMerge
-- OnDoSpecialTooltip, onEnableSearchMode, onUpdateIcon
-- OnGetDBSchema, OnGetTableResult, MngInvReceiveItems
-- OnInitRecordedMedia, OnLoadRadioScripts, OnLoadSoundBanks
-- OnReceiveUserlog, OnSetDefaultTab, OnTabAdded, OnTabRemoved
-- OnTemplateTextInit, ServerPinged, ViewTickets
+### Misc (14)
+OnDeviceText, OnDistributionMerge, OnPreDistributionMerge, OnPostDistributionMerge, OnDoSpecialTooltip, onEnableSearchMode, onUpdateIcon, OnGetDBSchema, OnGetTableResult, MngInvReceiveItems, OnInitRecordedMedia, OnLoadRadioScripts, OnLoadSoundBanks, OnReceiveUserlog, OnSetDefaultTab, OnTabAdded, OnTabRemoved, OnTemplateTextInit, ServerPinged, ViewTickets
 
-### Steam
-- OnSteamFriendStatusChanged, OnSteamGameJoin
-- OnSteamRefreshInternetServers, OnSteamRulesRefreshComplete
-- OnSteamServerFailedToRespond2, OnSteamServerResponded, OnSteamServerResponded2
-- OnSteamWorkshopItemCreated, OnSteamWorkshopItemNotCreated
-- OnSteamWorkshopItemUpdated, OnSteamWorkshopItemNotUpdated
-- OnServerWorkshopItems
+### Steam (12)
+OnSteamFriendStatusChanged, OnSteamGameJoin, OnSteamRefreshInternetServers, OnSteamRulesRefreshComplete, OnSteamServerFailedToRespond2, OnSteamServerResponded, OnSteamServerResponded2, OnSteamWorkshopItemCreated, OnSteamWorkshopItemNotCreated, OnSteamWorkshopItemUpdated, OnSteamWorkshopItemNotUpdated, OnServerWorkshopItems
+
+---
+
+## Common Mistakes
+
+### Mistake 1: Heavy Work in OnTick/OnPlayerUpdate
+
+❌ **Wrong - Performance Killer:**
+
+```lua
+Events.OnTick.Add(function()
+    -- This runs 60+ times per second!
+    for i = 1, 1000 do
+        -- Expensive calculations
+    end
+    -- Will cause severe lag
+end)
+```
+
+✅ **Correct - Use Appropriate Timing:**
+
+```lua
+Events.EveryTenMinutes.Add(function()
+    -- Runs every 10 minutes instead
+    for i = 1, 1000 do
+        -- Same work, but only every 10 minutes
+    end
+    -- No performance impact
+end)
+```
+
+**The rule:** Use the least frequent event that works for your use case. OnTick should be extremely rare.
+
+### Mistake 2: Not Checking for Nil
+
+❌ **Wrong - Will Crash:**
+
+```lua
+Events.OnEquipPrimary.Add(function(player, item)
+    print("Equipped: " .. item:getName())     -- Crashes if unequipping (item is nil)
+end)
+```
+
+✅ **Correct - Always Check:**
+
+```lua
+Events.OnEquipPrimary.Add(function(player, item)
+    if item then                               -- Check if item exists
+        print("Equipped: " .. item:getName())
+    else
+        print("Unequipped")
+    end
+end)
+```
+
+**The rule:** Many events can pass nil parameters. Always check before using them.
+
+### Mistake 3: Not Using Guard Clauses
+
+❌ **Wrong - Wastes Performance:**
+
+```lua
+Events.OnPlayerUpdate.Add(function(player)
+    -- Runs all this code every frame
+    if player and not player:isDead() then
+        -- Do something
+    end
+end)
+```
+
+✅ **Correct - Exit Early:**
+
+```lua
+Events.OnPlayerUpdate.Add(function(player)
+    if not player then return end              -- Exit immediately if no player
+    if player:isDead() then return end         -- Exit immediately if dead
+
+    -- Only runs if player exists and is alive
+    -- Do something
+end)
+```
+
+**The rule:** Exit early if conditions aren't met. Don't nest your entire function in if statements.
+
+### Mistake 4: Forgetting to Remove Event Handlers
+
+❌ **Wrong - Memory Leak:**
+
+```lua
+-- Add handler but never remove it
+local function myHandler()
+    -- Do stuff
+end
+
+Events.OnGameStart.Add(myHandler)
+-- Handler stays forever, even if you don't need it
+```
+
+✅ **Correct - Remove When Done:**
+
+```lua
+local function myHandler()
+    -- Do stuff
+
+    -- If this only needs to run once:
+    Events.OnGameStart.Remove(myHandler)       -- Remove self after running
+end
+
+Events.OnGameStart.Add(myHandler)
+```
+
+**The rule:** If a handler only needs to run once or for a limited time, remove it when done.
+
+### Mistake 5: Wrong Event for Context Menus
+
+❌ **Wrong - Won't Work:**
+
+```lua
+Events.OnGameStart.Add(function()
+    -- Trying to add menu options here doesn't work
+    -- Menu hasn't been created yet
+end)
+```
+
+✅ **Correct - Use Appropriate Event:**
+
+```lua
+Events.OnFillInventoryObjectContextMenu.Add(function(playerIndex, context, items)
+    -- This is the right place for inventory menu options
+    context:addOption("My Option", items, myFunction)
+end)
+```
+
+**The rule:** Use `OnFillInventoryObjectContextMenu` for inventory menus, `OnFillWorldObjectContextMenu` for world menus.
+
+---
+
+## Try It Yourself
+
+Let's practice using events with real examples.
+
+### Exercise 1: Create a Simple Death Message
+
+**Challenge:** When a player dies, print a custom message with their name and how many days they survived.
+
+**Requirements:**
+- Use OnPlayerDeath event
+- Get player's username
+- Get days survived from game time
+- Print a message
+
+Try writing it yourself first!
+
+---
+
+**Solution:**
+
+```lua
+Events.OnPlayerDeath.Add(function(player)
+    local name = player:getUsername()              -- Get player name
+    local gameTime = getGameTime()                 -- Get game time object
+    local days = gameTime:getNightsSurvived() + 1  -- Days survived (starts at 0)
+
+    print(name .. " survived " .. days .. " days before dying")
+end)
+```
+
+### Exercise 2: Create a Periodic Health Check
+
+**Challenge:** Every 10 in-game minutes, check if the player's health is below 50% and print a warning.
+
+**Requirements:**
+- Use EveryTenMinutes event
+- Get player
+- Check health
+- Print warning if low
+
+---
+
+**Solution:**
+
+```lua
+Events.EveryTenMinutes.Add(function()
+    local player = getPlayer()                     -- Get the player
+    if not player then return end                  -- Guard clause
+
+    local bodyDamage = player:getBodyDamage()      -- Get body damage object
+    local health = bodyDamage:getOverallBodyHealth() -- Get health (0-100)
+
+    if health < 50 then                            -- Check if below 50%
+        print("WARNING: Health is low! (" .. math.floor(health) .. "%)")
+    end
+end)
+```
+
+### Exercise 3: Add a Custom Item Menu Option
+
+**Challenge:** Add a "Inspect" option to the right-click menu for all items that prints the item's name and weight.
+
+**Requirements:**
+- Use OnFillInventoryObjectContextMenu
+- Add menu option
+- Create function to handle the option
+- Print item details
+
+---
+
+**Solution:**
+
+```lua
+-- The menu function - called when player clicks the option
+local function inspectItem(items)
+    local item = items[1]                          -- Get first item
+    local name = item:getName()                    -- Item name
+    local weight = item:getWeight()                -- Item weight
+
+    print("Item: " .. name)
+    print("Weight: " .. weight)
+end
+
+-- Add the menu option
+Events.OnFillInventoryObjectContextMenu.Add(function(playerIndex, context, items)
+    if items and #items > 0 then                   -- Check if items exist
+        context:addOption(
+            "Inspect",                             -- Menu text
+            items,                                  -- Items to pass to function
+            inspectItem                             -- Function to call
+        )
+    end
+end)
+```
 
 ---
 
 ## Best Practices
 
-### Performance
+### Performance - Choose the Right Timing Event
+
 ```lua
--- BAD: Heavy work in OnTick
+-- ❌ BAD: Heavy work every tick
 Events.OnTick.Add(function()
-    for i = 1, 1000 do
-        -- Don't do this every tick!
-    end
+    expensiveCalculation()                         -- Runs 60+ times per second
 end)
 
--- GOOD: Use appropriate timing
+-- ✅ GOOD: Use appropriate interval
 Events.EveryTenMinutes.Add(function()
-    -- Periodic work goes here
+    expensiveCalculation()                         -- Runs every 10 minutes
 end)
 ```
 
-### Cleanup
+**Event hierarchy** (most frequent to least):
+1. OnTick / OnPlayerUpdate - Every frame (60+ per second)
+2. OnRenderTick - Every render frame
+3. EveryOneMinute - Every in-game minute
+4. EveryTenMinutes - Every 10 minutes ← **Sweet spot for most periodic work**
+5. EveryHours - Hourly
+6. EveryDays - Daily
+
+**Rule:** Use the least frequent event that works for your needs.
+
+### Cleanup - Remove Handlers When Done
+
 ```lua
--- Store function reference for removal
-local function myCallback()
-    -- Do stuff
+-- Store function reference
+local function oneTimeSetup()
+    -- Do initialization
+    print("Setup complete")
+
+    -- Remove self - only runs once
+    Events.OnGameStart.Remove(oneTimeSetup)
 end
 
--- Add
-Events.OnGameStart.Add(myCallback)
-
--- Remove when done
-Events.OnGameStart.Remove(myCallback)
+-- Add handler
+Events.OnGameStart.Add(oneTimeSetup)
 ```
 
-### Guard Clauses
+**Why:** Prevents memory leaks and unnecessary function calls.
+
+### Guard Clauses - Exit Early
+
 ```lua
 Events.OnPlayerUpdate.Add(function(player)
-    -- Exit early if conditions aren't met
-    if not player then return end
-    if player:isDead() then return end
-    
-    -- Your code here
+    -- Exit early if conditions not met
+    if not player then return end                  -- No player
+    if player:isDead() then return end             -- Player dead
+    if player:isAsleep() then return end           -- Player sleeping
+
+    -- Only runs if all conditions met
+    -- Do actual work here
 end)
 ```
 
-## Related
+**Why:** Better performance, cleaner code, avoids nil errors.
 
-- [Global Functions](/build-41/modding/reference/globals) - Available global functions
-- [Script Properties](/build-41/modding/reference/script-properties) - Item/recipe properties
+### Nil Checking - Always Validate
+
+```lua
+Events.OnEquipPrimary.Add(function(player, item)
+    -- item can be nil when unequipping!
+    if item then
+        -- Safe to use item
+        print("Equipped: " .. item:getName())
+    end
+end)
+```
+
+**Why:** Many events can pass nil. Always check before using optional parameters.
+
+### Event Namespacing - Organize Your Handlers
+
+```lua
+-- Group related handlers in a table
+MyMod = MyMod or {}
+MyMod.Events = {}
+
+-- Store handlers with descriptive names
+MyMod.Events.onPlayerDeath = function(player)
+    -- Death handling
+end
+
+MyMod.Events.onGameStart = function()
+    -- Initialization
+end
+
+-- Register them
+Events.OnPlayerDeath.Add(MyMod.Events.onPlayerDeath)
+Events.OnGameStart.Add(MyMod.Events.onGameStart)
+```
+
+**Why:** Easier to organize, debug, and remove handlers later.
+
+---
+
+## Key Takeaways
+
+1. **Events are callbacks**
+   - You subscribe, the game calls your function
+   - Don't call event callbacks yourself
+   - Think of it like subscribing to notifications
+
+2. **Choose appropriate timing events**
+   - OnTick = Every frame (use sparingly!)
+   - EveryTenMinutes = Sweet spot for most periodic work
+   - OnGameStart = Initialization
+   - Right event = good performance
+
+3. **Always check for nil**
+   - Many events can pass nil parameters
+   - Check before using: `if item then ... end`
+   - Guard clauses at the start of functions
+
+4. **Context menu events are special**
+   - OnFillInventoryObjectContextMenu = Inventory right-clicks
+   - OnFillWorldObjectContextMenu = World right-clicks
+   - Use these to add custom actions
+
+5. **Most commonly used events**
+   - OnGameStart - Initialization
+   - OnPlayerDeath - Death handling
+   - OnFillInventoryObjectContextMenu - Item actions
+   - EveryTenMinutes - Periodic updates
+   - OnKeyStartPressed - Hotkeys
+
+6. **Performance matters**
+   - Don't use OnTick unless absolutely necessary
+   - Use guard clauses to exit early
+   - Remove handlers when done
+   - Profile your code
+
+7. **There are 144 events total**
+   - You'll use about 10-15 regularly
+   - Reference this document when you need specific events
+   - Check vanilla code for examples
+
+8. **Events fire automatically**
+   - You register once
+   - Game calls your function when event fires
+   - You receive event-specific parameters
+   - React to what happened
+
+You now have a complete reference of Project Zomboid's event system. Use this as your go-to resource when you need to know "which event fires when X happens."
+
+---
+
+## What's Next?
+
+Ready to use events in your mods?
+
+- [Global Functions Reference](/build-41/modding/reference/globals) - Functions available in events
+- [Script Properties Reference](/build-41/modding/reference/script-properties) - Item and recipe properties
+- [Your First Lua Script](/build-41/modding/lua/first-script) - Create a mod that uses events
