@@ -307,10 +307,285 @@ end
 2. Completely restart PZ
 3. Re-enable mod if needed
 
+## Common Mistakes
+
+### 1. Forgetting to Enable Debug Mode
+
+❌ **Wrong:**
+```
+Launch game normally, press ~ key, nothing happens
+```
+
+✅ **Right:**
+```
+1. Add -debug to Steam launch options
+2. Restart the game
+3. Look for "DEBUG" watermark in corner
+4. Press ~ to open console
+```
+
+**Why:** Debug mode must be explicitly enabled. The ~ key does nothing without `-debug` flag.
+
+---
+
+### 2. Using Wrong Path in reloadLuaFile()
+
+❌ **Wrong:**
+```lua
+-- Using absolute path or including "media/lua/"
+reloadLuaFile("C:/MyMod/media/lua/client/MyMod/MyScript.lua")
+reloadLuaFile("media/lua/client/MyMod/MyScript.lua")
+```
+
+✅ **Right:**
+```lua
+-- Path relative to media/lua/ folder
+reloadLuaFile("client/MyMod/MyScript.lua")
+```
+
+**Why:** `reloadLuaFile()` expects a path relative to `media/lua/`, not an absolute path.
+
+---
+
+### 3. Trying to Hot Reload Script Files (.txt)
+
+❌ **Wrong:**
+```lua
+-- Trying to reload item script
+reloadLuaFile("scripts/items.txt")
+```
+
+✅ **Right:**
+```
+1. Make changes to .txt script file
+2. Quit to main menu
+3. Start/continue game (reloads all scripts)
+```
+
+**Why:** Hot reloading only works for Lua files (.lua). Script files (.txt) require returning to main menu.
+
+---
+
+### 4. Not Using tostring() When Printing Objects
+
+❌ **Wrong:**
+```lua
+local item = getPlayer():getPrimaryHandItem()
+print("Item: " .. item)  -- CRASHES if item is nil!
+```
+
+✅ **Right:**
+```lua
+local item = getPlayer():getPrimaryHandItem()
+print("Item: " .. tostring(item))  -- Safely prints "nil" if no item
+```
+
+**Why:** Lua's `..` concatenation operator crashes when trying to concatenate nil. `tostring()` converts nil to the string "nil".
+
+---
+
+### 5. Missing the Error Location in Console
+
+❌ **Wrong:**
+```
+"There's an error somewhere in my mod, but I don't know where"
+(Didn't read the stack trace)
+```
+
+✅ **Right:**
+```
+ERROR: MyMod/MyScript.lua:45
+       ^ This tells you exactly: file name and line number
+```
+
+**Why:** Error messages include file paths and line numbers. Always read the stack trace to find the exact location.
+
+---
+
+## Try It Yourself
+
+### Exercise 1: Spawn Items and Test Recipe
+
+**Goal:** Use debug console to test a recipe without gathering ingredients.
+
+**Steps:**
+1. Enable debug mode and launch the game
+2. Press `~` to open console
+3. Spawn recipe ingredients:
+   ```lua
+   getPlayer():getInventory():AddItem("Base.Axe")
+   getPlayer():getInventory():AddItem("Base.Plank", 3)
+   getPlayer():getInventory():AddItem("Base.Nails", 10)
+   ```
+4. Open crafting menu and verify recipe appears
+
+<details>
+<summary><strong>Solution</strong></summary>
+
+**Complete workflow:**
+```lua
+-- Open console (~)
+getPlayer():getInventory():AddItem("Base.Axe")
+getPlayer():getInventory():AddItem("Base.Plank", 3)
+getPlayer():getInventory():AddItem("Base.Nails", 10)
+```
+
+**Verification:**
+- Press `B` to open crafting menu
+- Check if "Wooden Spear" appears in crafting list
+- Recipe should be craftable with ingredients in inventory
+
+**This is faster than:**
+- Finding an axe (5 minutes)
+- Chopping trees (2 minutes)
+- Finding nails (10 minutes)
+- **Total saved: ~17 minutes per test**
+</details>
+
+---
+
+### Exercise 2: Hot Reload Lua After Making Changes
+
+**Goal:** Change Lua code and reload without restarting the game.
+
+**Setup:**
+Create a simple test mod at `MyTestMod/media/lua/client/test.lua`:
+```lua
+function TestFunction()
+    print("Version 1")
+end
+
+Events.OnGameStart.Add(TestFunction)
+```
+
+**Steps:**
+1. Start game with mod enabled, see "Version 1" in console
+2. Edit file to print "Version 2"
+3. In-game, open console (~)
+4. Type: `reloadLuaFile("client/test.lua")`
+5. Trigger function again (or restart game event)
+
+<details>
+<summary><strong>Solution</strong></summary>
+
+**Full workflow:**
+
+1. **Initial version:**
+```lua
+function TestFunction()
+    print("Version 1")
+end
+Events.OnGameStart.Add(TestFunction)
+```
+
+2. **Make change:**
+```lua
+function TestFunction()
+    print("Version 2 - Changed!")
+end
+Events.OnGameStart.Add(TestFunction)
+```
+
+3. **Hot reload in console:**
+```lua
+reloadLuaFile("client/test.lua")
+```
+
+4. **Test by manually calling function:**
+```lua
+TestFunction()  -- Should print "Version 2 - Changed!"
+```
+
+**Result:** No game restart needed. Changes applied immediately.
+</details>
+
+---
+
+### Exercise 3: Debug a Nil Error
+
+**Goal:** Use print statements to find why a variable is nil.
+
+**Buggy code:**
+```lua
+function GetItemWeight()
+    local player = getPlayer()
+    local item = player:getPrimaryHandItem()
+    local weight = item:getActualWeight()  -- Crashes here!
+    print("Weight: " .. weight)
+end
+```
+
+**Task:** Add print statements to debug why it crashes.
+
+<details>
+<summary><strong>Solution</strong></summary>
+
+**Fixed code with debug prints:**
+```lua
+function GetItemWeight()
+    -- Print when function starts
+    print("GetItemWeight() called")
+
+    -- Get player and verify
+    local player = getPlayer()
+    print("Player object: " .. tostring(player))
+
+    -- Get primary hand item and verify
+    local item = player:getPrimaryHandItem()
+    print("Primary item: " .. tostring(item))
+
+    -- Check if item exists before accessing methods
+    if not item then
+        print("ERROR: No item in primary hand!")
+        return nil
+    end
+
+    -- Now safe to get weight
+    local weight = item:getActualWeight()
+    print("Weight: " .. tostring(weight))
+
+    return weight
+end
+```
+
+**What the prints reveal:**
+```
+GetItemWeight() called
+Player object: IsoPlayer
+Primary item: nil              <- Found the problem!
+ERROR: No item in primary hand!
+```
+
+**The bug:** Function assumes player is always holding an item. The fix is to check `if not item then return nil end` before accessing `item:getActualWeight()`.
+</details>
+
+---
+
+## Best Practices
+
+1. **Always enable debug mode during development** - The time saved from hot reloading and spawning items far outweighs the setup time. Never develop without it.
+
+2. **Use print() liberally when debugging** - Add print statements at the start of every function, before important operations, and after calculations. Remove them once code works.
+
+3. **Watch console.txt in a second monitor or window** - Use a text editor with auto-refresh or the PowerShell command. You'll catch errors immediately instead of discovering them later.
+
+4. **Hot reload after every Lua change** - Get in the habit: Save file → Switch to game → Open console → `reloadLuaFile()` → Test immediately. Makes iteration 10x faster.
+
+5. **Use god mode and unlimited carry during testing** - Press F11, enable "God Mode" and "Unlimited Carry". Prevents dying or being encumbered while testing your mod.
+
+6. **Learn common error patterns** - "attempted index of nil value" = forgot to check for nil. "attempt to call a nil value" = function doesn't exist or typo. These appear constantly.
+
+7. **Keep a spawning cheat sheet** - Create a text file with common spawn commands for your mod's items. Copy-paste them into console instead of typing each time.
+
+---
+
 ## Key Takeaways
 
-1. **Enable with `-debug`** launch option or debug file
-2. **Press ~ for console** - spawn items, run Lua commands
-3. **Press F11 for debug menu** - god mode, teleport, spawning
-4. **Hot reload Lua** with `reloadLuaFile()` - no restart needed
-5. **Check console.txt** for error messages and logs
+1. **Enable with `-debug`** launch option (Steam Properties → Launch Options) or create empty `debug` file in install folder
+2. **Press ~ for console** - spawn items instantly, run Lua commands, check for errors
+3. **Press F11 for debug menu** - god mode, unlimited carry, teleport, item/zombie spawning GUI
+4. **Hot reload Lua** with `reloadLuaFile("path/to/file.lua")` - test changes in seconds, no restart needed
+5. **Script files (.txt) require main menu reload** - quit to menu and continue to reload item/recipe scripts
+6. **Check console.txt** at `%UserProfile%\Zomboid\console.txt` for full error messages and print output
+7. **Always use tostring()** when printing objects that might be nil - prevents crashes in debug code
+8. **Debug workflow is: Edit → Save → Hot reload → Test** - with practice, this takes 5-10 seconds per iteration
