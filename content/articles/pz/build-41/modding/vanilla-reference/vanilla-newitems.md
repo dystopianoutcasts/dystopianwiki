@@ -18,7 +18,54 @@ last_updated: 2026-01-18
 
 # Vanilla Items Reference (newitems.txt)
 
-Complete reference for all **374 items** defined in `newitems.txt`.
+## Introduction
+
+You're creating a custom trap mod and need to know what weight vanilla bombs have. Or you're adding weapon attachments and want them to feel authentic. Or maybe you're creating miscellaneous items and need to know what diverse items exist in the base game.
+
+If you're feeling overwhelmed by the sheer variety of items in Project Zomboid's newitems.txt, you're not alone. This file contains 374 different items spanning 10 categories: alarm clocks, containers, drainable items, food, keys, maps, moveable objects, normal items, weapons (traps/bombs), and weapon parts. It's a catch-all file for items that don't fit into specialized categories like clothing or vehicles. Figuring out what's "normal" for any given item category can feel impossible.
+
+Here's the good news: this reference organizes all 374 vanilla items by type, so you can quickly find similar items and see what properties they use. I'll show you exactly how to use this reference to create balanced miscellaneous item mods.
+
+## How to Use This Reference
+
+When creating custom miscellaneous items, follow this pattern:
+
+### Step 1: Find Similar Vanilla Items
+
+Look through the item tables below and find items similar to what you're creating:
+
+- **Making a trap/bomb?** Look at Weapon category (aerosol bombs, pipe bombs, smoke bombs, flame traps)
+- **Making a weapon attachment?** Look at WeaponPart category (scopes, slings, gun lights, choke tubes)
+- **Making a drainable item?** Look at Drainable category (duct tape, glue, hair dye, welding rods)
+- **Making a key/lock?** Look at Key category (padlocks, keys, key ring)
+- **Making a map?** Look at Map category (all maps weigh 0.1)
+- **Making a general item?** Look at Normal category (231 items - tools, toys, electronics, crafting materials)
+
+### Step 2: Compare Properties
+
+Notice the patterns in vanilla miscellaneous items:
+
+| Type | Weight Range | Examples |
+|------|--------------|----------|
+| **Maps** | 0.1 (ALL) | ALL maps weigh exactly 0.1 (Louisville, Muldraugh, Riverside, etc.) |
+| **Keys** | 0.0-0.2 | Keys weigh 0.0 (weightless), Padlocks weigh 0.2 |
+| **Traps/Bombs** | 1.5 (ALL) | ALL traps and bombs weigh 1.5 (consistent weight) |
+| **Weapon Parts** | 0.1-1.0 | Scopes/sights (0.1-0.4), Slings/straps (0.5), Stocks (1.0) |
+| **Hair Dyes** | 1.0 (ALL) | ALL hair dyes weigh 1.0 (bottle size) |
+| **Drainable Household** | 0.1-0.3 | Soap (0.1), Duct tape (0.3), Bath towel (0.3) |
+| **Moveable Objects** | 0.5-8.0 | Lamps/toasters (0.5), Mattress (8.0) |
+| **Crafting Materials** | 0.1-5.0 | Aluminum (0.1), Bullets molds (0.5), Workable iron (5.0) |
+
+### Step 3: Make Your Decision
+
+Choose values that match the vanilla pattern:
+
+- **Maps** → Always use weight 0.1 (every single vanilla map weighs 0.1)
+- **Traps/bombs** → Always use weight 1.5 (all vanilla traps/bombs are 1.5)
+- **Hair dyes** → Always use weight 1.0 (all vanilla hair dyes are 1.0)
+- **Keys** → Use weight 0.0 (keys are weightless in vanilla)
+- **Weapon attachments** → Use weight 0.1-1.0 based on size (scopes = light, stocks = heavy)
+- **General items** → Look at similar items in Normal category for guidance
 
 ## Items by Type
 
@@ -265,3 +312,160 @@ Complete reference for all **374 items** defined in `newitems.txt`.
 | x2 Scope | 0.3 | `Base.x2Scope` |
 | x4 Scope | 0.4 | `Base.x4Scope` |
 | x8 Scope | 0.8 | `Base.x8Scope` |
+
+---
+
+## Common Mistakes
+
+### ❌ Wrong: Custom Map with Wrong Weight
+
+```
+item MyCustomCityMap
+{
+    Type = Map,
+    DisplayName = Custom City Map,
+    Weight = 0.5,                           // WRONG! All maps weigh 0.1
+}
+```
+
+**Why it's wrong:** Looking at vanilla maps (Louisville, Muldraugh, Riverside, Rosewood, Westpoint, March Ridge), EVERY SINGLE MAP weighs 0.1. Maps are folded paper - they're very light. Your custom map at 0.5 weight is 5x heavier than any vanilla map.
+
+✅ **Right:**
+
+```
+item MyCustomCityMap
+{
+    Type = Map,
+    DisplayName = Custom City Map,
+    Weight = 0.1,                            // Matches ALL vanilla maps
+    Map = CustomCity,                        // Map ID for the area
+    DisplayCategory = Literature,            // Shows in literature category
+}
+```
+
+### ❌ Wrong: Custom Trap with Inconsistent Weight
+
+```
+item MyCustomTrap
+{
+    Type = Weapon,
+    DisplayName = Custom Noise Trap,
+    Weight = 3.0,                           // WRONG! Traps don't weigh 3.0
+}
+```
+
+**Why it's wrong:** Looking at vanilla traps and bombs (Aerosol Bomb, Pipe Bomb, Smoke Bomb, Flame Trap, Noise Maker), ALL traps and bombs weigh 1.5. Your custom trap at 3.0 weight is 2x heavier than any vanilla trap.
+
+✅ **Right:**
+
+```
+item MyCustomNoiseTrap
+{
+    Type = Weapon,
+    DisplayName = Custom Noise Trap,
+    Weight = 1.5,                            // Matches ALL vanilla traps/bombs
+    ExplosionSound = TrapExplosion,          // Sound when triggered
+    ExplosionPower = 0,                      // No damage (noise only)
+    ExplosionRange = 50,                     // Noise range
+}
+```
+
+### ❌ Wrong: Hair Dye with Wrong Weight
+
+```
+item MyCustomPurpleHairDye
+{
+    Type = Drainable,
+    DisplayName = Purple Hair Dye,
+    Weight = 0.3,                           // WRONG! Hair dyes don't weigh 0.3
+    UseDelta = 0.25,
+}
+```
+
+**Why it's wrong:** Looking at vanilla hair dyes (Black, Blonde, Blue, Green, Light Brown, Pink, Red, White, Yellow, Ginger), ALL hair dyes weigh 1.0. Hair dye comes in bottles - they're heavier than small items. Your custom hair dye at 0.3 weight is 3x lighter than vanilla hair dyes.
+
+✅ **Right:**
+
+```
+item MyCustomPurpleHairDye
+{
+    Type = Drainable,
+    DisplayName = Purple Hair Dye,
+    Weight = 1.0,                            // Matches ALL vanilla hair dyes
+    UseDelta = 0.25,                         // 4 uses per bottle (same as vanilla)
+    DisplayCategory = FirstAid,              // Shows in first aid category
+}
+```
+
+## Try It Yourself
+
+Let's create a custom weapon scope using vanilla weapon part patterns.
+
+### Step 1: Research Similar Items
+
+Look at the reference above and find weapon scopes:
+- Iron Sight: Weight 0.1
+- Red Dot: Weight 0.2
+- x2 Scope: Weight 0.3
+- x4 Scope: Weight 0.4
+- x8 Scope: Weight 0.8
+
+Pattern: Higher magnification = heavier scope (0.3 for x2, 0.4 for x4, 0.8 for x8)
+
+### Step 2: Create the Item File
+
+Create `media/scripts/my_weaponparts.txt`:
+
+```
+module MyMod
+{
+    imports
+    {
+        Base
+    }
+
+    item x6Scope
+    {
+        Type = WeaponPart,                       // Identifies this as a weapon attachment
+        DisplayName = x6 Scope,
+        Icon = x4Scope,                          // Using vanilla x4 scope icon
+        Weight = 0.6,                            // Between x4 (0.4) and x8 (0.8)
+        MountOn = Rifle;AssaultRifle,            // Can mount on rifles and assault rifles
+        AimingPerkRangeIncrease = 2,             // Increases aiming range by 2
+        AimingTime = 30,                         // Time to aim (30 frames)
+        DisplayCategory = WeaponPart,            // Shows in weapon part category
+    }
+}
+```
+
+### Step 3: Test in Game
+
+1. Start Project Zomboid in debug mode
+2. Press **F** to bring up item spawner
+3. Type "x6 Scope" and spawn it
+4. Also spawn a rifle (e.g., "Hunting Rifle")
+5. Right-click the rifle and look for attachment options
+
+**What You Should See:**
+- x6 Scope appears with scope icon
+- Shows "Attach x6 Scope" when right-clicking compatible rifles
+- After attaching: increases aiming range by 2
+- Item weighs 0.6 (between x4 and x8 scopes)
+- Can be removed and reattached
+
+### Why This Works
+
+This x6 scope uses vanilla patterns:
+- **Weight (0.6)** follows the progression pattern (x2=0.3, x4=0.4, x6=0.6, x8=0.8)
+- **Type = WeaponPart** makes it function as an attachment
+- **MountOn** specifies compatible weapon types
+- **AimingPerkRangeIncrease** provides meaningful benefit (better range)
+- **Weight scales with magnification** just like vanilla scopes
+
+---
+
+## Source
+
+Definitions from `media/scripts/newitems.txt`
+
+**Note:** This reference contains miscellaneous items that don't fit into specialized categories (food, clothing, weapons, vehicles). It's a catch-all file covering diverse item types.
