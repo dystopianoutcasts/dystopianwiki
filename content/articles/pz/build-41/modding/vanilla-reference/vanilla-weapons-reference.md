@@ -304,6 +304,257 @@ Uncategorized weapons.
 
 ---
 
+## Common Mistakes
+
+### ❌ Wrong: Knife with Axe-Level Damage
+
+```
+item MyCustomKnife
+{
+    Type = Weapon,
+    DisplayName = Custom Combat Knife,
+    MinDamage = 1.3,                        // WRONG! This is Wood Axe damage
+    MaxDamage = 3.0,                        // Way too high for a knife
+    Categories = SmallBlade,
+}
+```
+
+**Why it's wrong:** Looking at vanilla SmallBlade weapons, knives have damage ranges of 0.1-1.2 (Hunting Knife is 0.6-1.2, Kitchen Knife is 0.3-0.7). Your custom knife at 1.3-3.0 damage would hit as hard as a wood axe, which is unrealistic for a small blade.
+
+✅ **Right:**
+
+```
+item MyCustomKnife
+{
+    Type = Weapon,
+    DisplayName = Custom Combat Knife,
+    MinDamage = 0.6,                        // Matches Hunting Knife
+    MaxDamage = 1.2,                        // Realistic for combat knife
+    CriticalChance = 40,                    // Good crit for quality knife
+    MaxRange = 0.9,                         // Short range (knife reach)
+    MinRange = 0.61,                        // Minimum effective range
+    MinimumSwingTime = 2,                   // Attack speed
+    SwingTime = 2,                          // Fast knife attacks
+    WeaponWeight = 0.5,                     // Standard knife weight
+    MaxHitCount = 1,                        // Hits one target
+    DoorDamage = 5,                         // Damage against doors
+    Categories = SmallBlade,                // Uses Short Blade skill
+}
+```
+
+### ❌ Wrong: Missing Critical Hit Chance
+
+```
+item MyCustomBaseballBat
+{
+    Type = Weapon,
+    DisplayName = Custom Baseball Bat,
+    MinDamage = 0.6,
+    MaxDamage = 1.2,
+    Categories = Blunt,
+    // Missing CriticalChance!                // WRONG! All weapons should have crit chance
+}
+```
+
+**Why it's wrong:** Looking at vanilla Blunt weapons, ALL weapons have a critical hit chance defined. Baseball Bat has 30%, Crowbar has 10%, even sledgehammers have 0%. Your weapon without CriticalChance will have unpredictable critical hit behavior.
+
+✅ **Right:**
+
+```
+item MyCustomBaseballBat
+{
+    Type = Weapon,
+    DisplayName = Custom Baseball Bat,
+    MinDamage = 0.6,                        // Matches vanilla Baseball Bat
+    MaxDamage = 1.2,
+    CriticalChance = 30,                    // Standard for baseball bats
+    MaxRange = 1.5,                         // Long reach for blunt weapon
+    MinRange = 0.61,                        // Minimum effective range
+    SwingAnim = Bat,                        // Baseball bat swing animation
+    WeaponWeight = 1.8,                     // Realistic bat weight
+    ConditionLowerChanceOneIn = 30,         // Durability (1 in 30 hits damages)
+    ConditionMax = 10,                      // 10 condition points total
+    Categories = Blunt,                     // Uses Long Blunt skill
+}
+```
+
+### ❌ Wrong: Unrealistic Durability
+
+```
+item MyCustomMachete
+{
+    Type = Weapon,
+    DisplayName = Custom Machete,
+    MinDamage = 2,
+    MaxDamage = 3,
+    Categories = LongBlade,
+    ConditionMax = 100,                     // WRONG! Way too durable
+    ConditionLowerChanceOneIn = 5,          // WRONG! Breaks too fast
+}
+```
+
+**Why it's wrong:** Looking at vanilla LongBlade weapons, machete has ConditionMax = 13 and ConditionLowerChanceOneIn = 5. Your custom machete with ConditionMax = 100 would last 7x longer than vanilla, breaking game balance. Also, ConditionLowerChanceOneIn = 5 means it takes damage every 5 hits, which is correct for machetes but your comments suggest confusion.
+
+✅ **Right:**
+
+```
+item MyCustomMachete
+{
+    Type = Weapon,
+    DisplayName = Custom Machete,
+    MinDamage = 2,                          // Matches vanilla Machete
+    MaxDamage = 3,
+    CriticalChance = 20,                    // Standard machete crit
+    MaxRange = 1.23,                        // Machete reach
+    MinRange = 0.61,                        // Minimum effective range
+    SwingAnim = Bat,                        // Machete swing animation
+    WeaponWeight = 2,                       // Realistic machete weight
+    ConditionLowerChanceOneIn = 5,          // Durability: damages 1 in 5 hits
+    ConditionMax = 13,                      // Matches vanilla Machete durability
+    Categories = LongBlade,                 // Uses Long Blade skill
+    TreeDamage = 15,                        // Good at chopping vegetation
+}
+```
+
+### ❌ Wrong: Wrong Weight for Weapon Type
+
+```
+item MyCustomSledgehammer
+{
+    Type = Weapon,
+    DisplayName = Custom Sledgehammer,
+    MinDamage = 2,
+    MaxDamage = 3,
+    Categories = Blunt,
+    WeaponWeight = 0.5,                     // WRONG! Way too light for sledgehammer
+}
+```
+
+**Why it's wrong:** Looking at vanilla Blunt weapons, sledgehammers weigh 6.0 (heavy two-handed weapon). Your custom sledgehammer at 0.5 weight would be lighter than a knife (0.5-1.0), which is unrealistic for a heavy demolition tool.
+
+✅ **Right:**
+
+```
+item MyCustomSledgehammer
+{
+    Type = Weapon,
+    DisplayName = Custom Sledgehammer,
+    MinDamage = 2,                          // Matches vanilla Sledgehammer
+    MaxDamage = 3,
+    CriticalChance = 0,                     // Sledgehammers have 0% crit (too slow/heavy)
+    MaxRange = 1.35,                        // Good reach for two-handed weapon
+    MinRange = 0.61,                        // Minimum effective range
+    SwingAnim = Sledgehammer,               // Special sledgehammer animation
+    WeaponWeight = 6,                       // Heavy weight (matches vanilla)
+    SwingTime = 4.5,                        // Slow swing (0.9 speed modifier)
+    ConditionMax = 10,                      // Standard tool durability
+    Categories = Blunt,                     // Uses Long Blunt skill
+    KnockdownMod = 2,                       // Excellent knockdown (heavy weapon)
+    TreeDamage = 10,                        // Can damage trees/structures
+}
+```
+
+---
+
+## Try It Yourself
+
+Let's create a custom survival machete using vanilla weapon patterns.
+
+### Step 1: Research Similar Weapons
+
+Look at the reference above and find LongBlade weapons:
+- Machete: Damage 2-3, Crit 20%, Weight 2, Durability 13
+- Katana: Damage 8-8, Crit 30%, Weight 2, Durability 10
+
+Machete is the best match for our survival machete (similar function and balance).
+
+### Step 2: Create the Weapon File
+
+Create `media/scripts/my_weapons.txt`:
+
+```
+module MyMod
+{
+    imports
+    {
+        Base
+    }
+
+    item SurvivalMachete
+    {
+        Type = Weapon,                          // Identifies this as a weapon
+        DisplayName = Survival Machete,
+        Icon = Machete,                         // Using vanilla machete icon
+
+        /* Damage Stats */
+        MinDamage = 2.2,                        // Slightly higher than vanilla machete (2-3)
+        MaxDamage = 3.2,                        // Better max damage for survival tool
+        CriticalChance = 25,                    // Better crit than vanilla (20%)
+
+        /* Combat Properties */
+        MaxRange = 1.25,                        // Slightly longer reach than vanilla (1.23)
+        MinRange = 0.61,                        // Standard minimum range
+        SwingAnim = Bat,                        // Machete-style swing
+        WeaponWeight = 2,                       // Matches vanilla Machete weight
+
+        /* Speed and Handling */
+        MinimumSwingTime = 3,                   // Attack speed (lower = faster)
+        SwingTime = 3,                          // Same as min for consistent speed
+
+        /* Durability */
+        ConditionLowerChanceOneIn = 6,          // More durable than vanilla (5)
+        ConditionMax = 15,                      // Better durability than vanilla (13)
+
+        /* Utility Properties */
+        TreeDamage = 18,                        // Excellent at chopping vegetation
+        Categories = LongBlade,                 // Uses Long Blade skill
+
+        /* Other Properties */
+        MaxHitCount = 2,                        // Can hit 2 zombies per swing
+        DoorDamage = 8,                         // Good door breaking
+        KnockBackOnNoDeath = true,              // Knocks back zombies
+        PushBackMod = 0.5,                      // Moderate pushback force
+    }
+}
+```
+
+### Step 3: Test in Game
+
+1. Start Project Zomboid in debug mode
+2. Press **F** to bring up item spawner
+3. Type "Survival Machete" and spawn it
+4. Equip the machete and test combat
+
+**What You Should See:**
+- Machete appears with machete icon
+- Damage 2.2-3.2 per hit (visible in info panel)
+- 25% critical hit chance (occasional big damage spikes)
+- Can hit 2 zombies per swing (cleave effect)
+- Weighs 2.0 (same as vanilla machete)
+- Excellent at chopping trees and vegetation (TreeDamage 18)
+- Lasts longer than vanilla machete (ConditionMax 15 vs 13)
+
+### Why This Works
+
+This survival machete uses vanilla patterns:
+- **Damage (2.2-3.2)** is slightly better than vanilla Machete (2-3) but not overpowered
+- **CriticalChance (25)** is between vanilla Machete (20) and Katana (30)
+- **Weight (2)** matches all vanilla LongBlade weapons
+- **ConditionMax (15)** is higher than vanilla Machete (13) but realistic for "survival" quality
+- **TreeDamage (18)** makes it useful for clearing vegetation (survival tool)
+- **MaxHitCount (2)** allows hitting multiple zombies like other machetes
+- **Categories = LongBlade** ensures it scales with Long Blade skill
+
+---
+
+## Source
+
+Weapon definitions extracted from game files (`media/scripts/*.txt`).
+
+**Note:** This reference includes melee weapons, firearms, and ammunition. Stats are based on Build 41 vanilla values.
+
+---
+
 ## Property Reference
 
 ### Combat Properties
