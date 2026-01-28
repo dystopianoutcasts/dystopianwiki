@@ -1,0 +1,293 @@
+---
+id: foraging-vanilla-foraging
+slug: vanilla-foraging
+title: "VANILLA FORAGING SYSTEM - RESEARCH NOTES"
+game: pz
+version: build-41
+section: modding
+category: foraging
+subcategory: null
+difficulty: beginner
+tags:
+  - lua
+  - item
+  - foraging
+  - vanilla
+  - notes
+excerpt: "Date: 2025-12-22 Researched For: Iron Pyrite Foraging Implementation  ---     -    - Contains all foraging item definitions   - Uses global  table  -    - Core foraging logic/system ..."
+table_of_contents:
+  - text: "HOW VANILLA FORAGING WORKS"
+    link: "#how-vanilla-foraging-works"
+  - text: "**Core Files:**"
+    link: "#core-files"
+  - text: "KEY STRUCTURE"
+    link: "#key-structure"
+  - text: "**Adding New Foraging Items (Non-Overwriting Method):**"
+    link: "#adding-new-foraging-items-non-overwriting-method"
+  - text: "FAUNA MOD APPROACH (How to Add Without Overwriting)"
+    link: "#fauna-mod-approach-how-to-add-without-overwriting"
+  - text: "VANILLA STONE DEFINITION (Baseline)"
+    link: "#vanilla-stone-definition-baseline"
+  - text: "IRON PYRITE DESIGN GOALS"
+    link: "#iron-pyrite-design-goals"
+  - text: "COMPARISON TABLE"
+    link: "#comparison-table"
+  - text: "AVAILABLE ZONES"
+    link: "#available-zones"
+  - text: "SPRITE AFFINITIES (Optional)"
+    link: "#sprite-affinities-optional"
+  - text: "IMPLEMENTATION PATH"
+    link: "#implementation-path"
+  - text: "EXAMPLE IMPLEMENTATION"
+    link: "#example-implementation"
+  - text: "TESTING CHECKLIST"
+    link: "#testing-checklist"
+last_updated: 2026-01-09
+---
+
+# VANILLA FORAGING SYSTEM - RESEARCH NOTES
+
+**Date:** 2025-12-22
+**Researched For:** Iron Pyrite Foraging Implementation
+
+---
+
+## HOW VANILLA FORAGING WORKS
+
+### **Core Files:**
+- `R:\Games\Steam\steamapps\common\ProjectZomboid\media\lua\shared\Foraging\forageDefinitions.lua`
+  - Contains all foraging item definitions
+  - Uses global `forageDefs` table
+
+- `R:\Games\Steam\steamapps\common\ProjectZomboid\media\lua\shared\Foraging\forageSystem.lua`
+  - Core foraging logic/system
+
+---
+
+## KEY STRUCTURE
+
+### **Adding New Foraging Items (Non-Overwriting Method):**
+
+```lua
+require 'Foraging/forageSystem'
+
+forageDefs.ItemName = {
+    type = "ModName.ItemType",      -- Full item type with module
+    minCount = 1,                    -- Min amount found
+    maxCount = 1,                    -- Max amount found
+    skill = 0,                       -- Foraging skill level required to see
+    xp = 1,                          -- XP reward on pickup
+    categories = { "Stones" },       -- Category for the item
+    zones = {
+        Forest      = 5,             -- Number of ROLLS, NOT percent!
+        DeepForest  = 5,
+        Vegitation  = 5,
+        FarmLand    = 5,
+        Farm        = 5,
+        TrailerPark = 5,
+        TownZone    = 5,
+        Nav         = 5,
+    },
+    snowChance = -50,                -- % modifier in snow (negative = less common)
+    months = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 },  -- Available all year
+}
+```
+
+**IMPORTANT:** The `zones` numbers are **number of rolls**, NOT percentages!
+- Higher number = more common
+- Each roll gives a chance for the item to spawn
+
+---
+
+## FAUNA MOD APPROACH (How to Add Without Overwriting)
+
+**File:** `FaunaForage_ForageDefinitionNormal.lua`
+
+```lua
+require 'Foraging/forageSystem'
+
+forageDefs.Armadillo = {
+    type = "Fauna.Armadillo",
+    minCount = 1,
+    maxCount = 1,
+    skill = 7,
+    xp = 20,
+    categories = { "Animals" },
+    zones = {
+        Forest          = 20,
+        Vegitation      = 10,
+        FarmLand        = 10,
+        Farm            = 10,
+        TrailerPark     = 10,
+        TownZone        = 10,
+        Nav             = 20,
+    },
+    bonusMonths = { 6, 7, 8 },  -- More common in summer
+    malusMonths = { 11, 12 },   -- Less common in winter
+}
+```
+
+**Key Points:**
+- Simply `require 'Foraging/forageSystem'`
+- Add to global `forageDefs` table
+- No overwriting needed - table merges automatically
+- Place file in: `media/lua/shared/Foraging/`
+
+---
+
+## VANILLA STONE DEFINITION (Baseline)
+
+```lua
+Stone = {
+    type = "Base.Stone",
+    snowChance = -50,
+    xp = 1,
+    categories = { "Stones" },
+    zones = {
+        Forest      = 5,
+        DeepForest  = 5,
+        Vegitation  = 5,
+        FarmLand    = 5,
+        Farm        = 5,
+        TrailerPark = 5,
+        TownZone    = 5,
+        Nav         = 5,
+    },
+    months = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 },
+},
+```
+
+**Analysis:**
+- 5 rolls per zone
+- -50% chance in snow
+- 1 XP reward
+- Available all year
+- Found in all zones
+
+---
+
+## IRON PYRITE DESIGN GOALS
+
+**User Requirements:**
+- Semi-common (more common than stone)
+- Players should be able to find this easily
+- Probably more common than vanilla stone
+
+**Recommended Stats:**
+- **Zones:** 8-10 rolls (vs stone's 5)
+- **Skill:** 0-1 (easy to spot)
+- **XP:** 2-3 (more than stone)
+- **Snow:** -30 (less penalty than stone)
+- **Months:** All year
+- **Category:** "Stones" or new "Minerals" category
+
+---
+
+## COMPARISON TABLE
+
+| Item | Rolls | Skill | XP | Snow % |
+|------|-------|-------|----|----|
+| Stone (Vanilla) | 5 | 0 | 1 | -50 |
+| Sharped Stone | 5 | 0 | 2 | -50 |
+| **Iron Pyrite (Proposed)** | **8** | **0** | **2** | **-30** |
+
+**Rationale:**
+- 60% more rolls than stone (8 vs 5) = Much more common
+- Same skill requirement = Easy to find
+- 2 XP = Rewarding but not OP
+- -30% snow = Still findable in winter
+
+---
+
+## AVAILABLE ZONES
+
+All vanilla zones available:
+- `Forest` - Forest areas
+- `DeepForest` - Dense forest
+- `Vegitation` - Generic vegetation
+- `FarmLand` - Rural farmland
+- `Farm` - Farm areas
+- `TrailerPark` - Trailer parks
+- `TownZone` - Town/urban areas
+- `Nav` - Navigation zones
+
+---
+
+## SPRITE AFFINITIES (Optional)
+
+Vanilla uses sprite affinities to attach items to specific world sprites:
+
+```lua
+spriteAffinities = {
+    stones = {
+        "d_generic_1_13",
+        "d_generic_1_22",
+        "d_generic_1_23",
+        "d_generic_1_24",
+        "d_generic_1_25",
+        -- ... many more ...
+    },
+}
+```
+
+**For Iron Pyrite:** Can reuse vanilla `stones` sprite affinities OR create custom ones.
+
+---
+
+## IMPLEMENTATION PATH
+
+1. Create file: `OutcastAC_ForageDefinitions.lua`
+2. Place in: `media/lua/shared/Foraging/`
+3. Require vanilla system
+4. Add `forageDefs.IronPyrite` entry
+5. Test in-game
+
+---
+
+## EXAMPLE IMPLEMENTATION
+
+```lua
+require 'Foraging/forageSystem'
+
+-- Iron Pyrite - Semi-common sulfur-bearing rock for chemistry
+forageDefs.IronPyrite = {
+    type = "OutcastAC.IronPyrite",
+    minCount = 1,
+    maxCount = 2,                    -- Can find 1-2 at once
+    skill = 0,                       -- No skill required
+    xp = 2,                          -- More XP than stone
+    categories = { "Stones" },
+    snowChance = -30,                -- Less penalty than stone
+    zones = {
+        Forest      = 8,             -- More common than stone (5)
+        DeepForest  = 10,            -- Even more in deep forest
+        Vegitation  = 7,
+        FarmLand    = 6,
+        Farm        = 6,
+        TrailerPark = 5,
+        TownZone    = 4,             -- Less common in town
+        Nav         = 7,
+    },
+    months = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 },
+}
+```
+
+---
+
+## TESTING CHECKLIST
+
+- [ ] Item appears in foraging icons
+- [ ] Item spawns at appropriate frequency
+- [ ] XP is awarded on pickup
+- [ ] Item works in all zones
+- [ ] Item appears in all months
+- [ ] Snow modifier works correctly
+- [ ] Item can be found by all skill levels
+
+---
+
+**How to do it:**
+1. Implement foraging file
+2. Test spawn rates
+3. Adjust zones/rolls if too common/rare
+4. Document final values

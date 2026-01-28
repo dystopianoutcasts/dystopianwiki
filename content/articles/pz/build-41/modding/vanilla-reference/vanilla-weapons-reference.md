@@ -1,0 +1,296 @@
+---
+id: vanilla-weapons-reference
+slug: vanilla-weapons-reference
+title: "Vanilla Weapons Reference"
+game: pz
+version: build-41
+section: modding
+category: vanilla-reference
+subcategory: null
+difficulty: beginner
+tags:
+  - reference
+  - weapons
+  - vanilla
+  - items
+excerpt: "Complete reference for all 152 vanilla weapons, organized by category with full stats."
+related_articles:
+  - item-anatomy
+  - weapon-repair-system-overview
+last_updated: 2026-01-18
+---
+
+# Vanilla Weapons Reference
+
+Complete reference for all **152 vanilla weapons** in Project Zomboid Build 41.
+
+## Understanding Weapon Stats
+
+| Stat | Description |
+|------|-------------|
+| **Damage** | Min-Max damage per hit |
+| **Crit** | Critical hit chance (%) |
+| **Speed** | Attack speed (1.0 = normal) |
+| **Range** | Maximum attack distance |
+| **Durability** | Hits before breaking |
+| **Weight** | Inventory weight |
+
+## Quick Navigation
+
+- [Axe](#axe) (5 weapons)
+- [LongBlade](#longblade) (2 weapons)
+- [SmallBlade](#smallblade) (16 weapons)
+- [Blunt](#blunt) (22 weapons)
+- [SmallBlunt](#smallblunt) (12 weapons)
+- [Improvised](#improvised) (56 weapons)
+- [Unarmed](#unarmed) (1 weapons)
+- [Uncategorized](#uncategorized) (38 weapons)
+
+## Axe
+
+Axes excel at chopping trees and can deal devastating critical hits.
+ Affected by **Axe** skill.
+
+| Weapon | Damage | Crit | Speed | Range | Durability | Weight |
+|--------|--------|------|-------|-------|------------|--------|
+| **Wood Axe** | 1.3-3 | 50% | 1 | 1.35 | 15 | 3 |
+| **PickAxe** | 1-2.2 | 25% | 0.8 | 1.6 | 13 | 3 |
+| **Axe** | 0.8-2 | 20% | 1 | 1.2 | 13 | 3 |
+| **Hand Axe** | 0.7-1.5 | 15% | 1 | 1.1 | 10 | 2 |
+| **Raw Axe** | 0.5-1.5 | 15% | 1 | 1.2 | 5 | 1.2 |
+
+## LongBlade
+
+Long bladed weapons like katanas and machetes. High damage.
+ Affected by **Long Blade** skill.
+
+| Weapon | Damage | Crit | Speed | Range | Durability | Weight |
+|--------|--------|------|-------|-------|------------|--------|
+| **Katana** | 8-8 | 30% | 1 | 1.4 | 10 | 2 |
+| **Machete** | 2-3 | 20% | 1 | 1.23 | 13 | 2 |
+
+## SmallBlade
+
+Knives, cleavers, and other small cutting weapons. Fast attacks.
+ Affected by **Short Blade** skill.
+
+| Weapon | Damage | Crit | Speed | Range | Durability | Weight |
+|--------|--------|------|-------|-------|------------|--------|
+| **Hand Scythe** | 0.6-1.2 | 15% | 1.1 | 1.1 | 5 | 0.5 |
+| **Hunting Knife** | 0.6-1.2 | 50% | 1 | 0.9 | 10 | 0.5 |
+| **Ice Pick** | 0.6-0.9 | 10% | 1 | 0.8 | 10 | 0.3 |
+| **Meat Cleaver** | 0.4-0.8 | 15% | 1.2 | 1 | 10 | 1 |
+| **Kitchen Knife** | 0.3-0.7 | 25% | 1 | 0.9 | 10 | 0.3 |
+| **Stone Knife** | 0.4-0.6 | 20% | 1 | 0.85 | 6 | 0.75 |
+| **Stake** | 0.25-0.53 | 10% | 1 | 0.85 | 5 | 0.3 |
+| **Smashed Bottle** | 0.2-0.5 | 5% | 1.4 | 0.8 | 3 | 1 |
+| **Hand Fork** | 0.2-0.4 | 10% | 1 | 0.9 | 6 | 0.5 |
+| **Scalpel** | 0.1-0.4 | 10% | 1 | 0.8 | 5 | 0.3 |
+| **Butter Knife** | 0.1-0.4 | 7% | 1 | 0.8 | 3 | 0.3 |
+| **Bread Knife** | 0.1-0.4 | 15% | 1 | 1 | 5 | 0.3 |
+| **Letter Opener** | 0.1-0.1 | 5% | 1 | 0.8 | 5 | 0.3 |
+| **Fork** | 0.1-0.1 | 5% | 1 | 0.8 | 3 | 0.3 |
+| **Scissors** | 0.1-0.1 | 5% | 1 | 0.9 | 10 | 0.4 |
+| **Spoon** | 0.1-0.1 | 0% | 1 | 0.8 | 3 | 0.3 |
+
+## Blunt
+
+Large blunt weapons like baseball bats. Good knockback.
+ Affected by **Long Blunt** skill.
+
+| Weapon | Damage | Crit | Speed | Range | Durability | Weight |
+|--------|--------|------|-------|-------|------------|--------|
+| **Sledgehammer** | 2-3 | 0% | 0.9 | 1.35 | 10 | 6 |
+| **Sledgehammer** | 2-3 | 0% | 0.9 | 1.35 | 10 | 6 |
+| **Barbell** | 1.8-2.8 | 0% | 0.7 | 1.35 | 15 | 6 |
+| **Snow Shovel** | 0.8-1.9 | 40% | 0.8 | 1.6 | 10 | 1.5 |
+| **Shovel** | 0.8-1.9 | 40% | 0.8 | 1.6 | 10 | 1.5 |
+| **Shovel** | 0.8-1.9 | 40% | 0.8 | 1.6 | 10 | 1.5 |
+| **Garden Hoe** | 0.6-1.7 | 35% | 0.85 | 1.6 | 10 | 1.5 |
+| **Spiked Baseball Bat** | 1-1.5 | 30% | 0.95 | 1.28 | 15 | 2 |
+| **Black Electric Bass** | 0.9-1.4 | 70% | 1 | 1.35 | 12 | 3.5 |
+| **Blue Electric Bass** | 0.9-1.4 | 70% | 1 | 1.35 | 12 | 3.5 |
+| **Red Electric Bass** | 0.9-1.4 | 70% | 1 | 1.35 | 12 | 3.5 |
+| **Black Electric Guitar** | 0.8-1.2 | 55% | 1.1 | 1.35 | 10 | 2.8 |
+| **Blue Electric Guitar** | 0.8-1.2 | 55% | 1.1 | 1.35 | 10 | 2.8 |
+| **Red Electric Guitar** | 0.8-1.2 | 55% | 1.1 | 1.35 | 10 | 2.8 |
+| **Crowbar** | 0.6-1.15 | 20% | 1 | 1.25 | 15 | 2 |
+| **Chainsaw** | 0.6-1.1 | 25% | 1 | 1.2 | 15 | 3 |
+| **Baseball Bat** | 0.8-1.1 | 40% | 1 | 1.25 | 15 | 2 |
+| **Golfclub** | 0.5-1 | 25% | 1 | 1.42 | 5 | 2 |
+| **Saxophone** | 0.4-0.8 | 70% | 0.9 | 1.2 | 5 | 3 |
+| **Trumpet** | 0.4-0.8 | 20% | 1 | 1.15 | 5 | 1 |
+| **Acoustic Guitar** | 0.3-0.8 | 20% | 0.9 | 1.3 | 2 | 2.3 |
+| **Keytar** | 0.2-0.7 | 20% | 1.2 | 1.25 | 2 | 2 |
+
+## SmallBlunt
+
+Hammers, pipes, and other small blunt weapons.
+ Affected by **Short Blunt** skill.
+
+| Weapon | Damage | Crit | Speed | Range | Durability | Weight |
+|--------|--------|------|-------|-------|------------|--------|
+| **Nightstick** | 0.6-1.1 | 25% | 1 | 1.2 | 15 | 1.5 |
+| **Pipe Wrench** | 0.5-1 | 25% | 1 | 1.1 | 10 | 1.5 |
+| **Club Hammer** | 0.5-1 | 20% | 1 | 1 | 10 | 1 |
+| **Ball Peen Hammer** | 0.5-1 | 20% | 1 | 1 | 10 | 1 |
+| **Wrench** | 0.5-1 | 20% | 1 | 1.1 | 9 | 1 |
+| **Hammer** | 0.5-1 | 20% | 1 | 1.1 | 10 | 1 |
+| **DumbBell** | 0.5-1 | 25% | 0.90 | 1 | 10 | 5 |
+| **Wooden Mallet** | 0.4-0.9 | 17% | 1.1 | 1 | 8 | 1 |
+| **Stone Hammer** | 0.3-0.7 | 15% | 1 | 1.05 | 5 | 1.2 |
+| **Banjo** | 0.3-0.6 | 5% | 1.1 | 1.25 | 3 | 3 |
+| **Rolling Pin** | 0.2-0.5 | 15% | 1.2 | 1.1 | 8 | 1.5 |
+| **Violin** | 0.2-0.4 | 5% | 1.2 | 1 | 1 | 0.7 |
+
+## Improvised
+
+Improvised weapons not designed for combat.
+
+| Weapon | Damage | Crit | Speed | Range | Durability | Weight |
+|--------|--------|------|-------|-------|------------|--------|
+| **Spear With Machete** | 1.3-2 | 30% | 0.9 | 1.55 | 12 | 3.7 |
+| **Canoe Paddle Double** | 0.8-1.9 | 50% | 0.8 | 1.6 | 10 | 2.2 |
+| **Spear With Hunting Knife** | 1.2-1.7 | 30% | 1 | 1.48 | 9 | 2.2 |
+| **Spear With Bread Knife** | 1-1.6 | 30% | 1 | 1.55 | 6 | 2.0 |
+| **Spear With Butter Knife** | 1-1.6 | 30% | 1 | 1.42 | 6 | 2.0 |
+| **Spear With Fork** | 1-1.6 | 30% | 0.95 | 1.42 | 6 | 2.0 |
+| **Spear With Letter Opener** | 1-1.6 | 30% | 1 | 1.42 | 6 | 2.0 |
+| **Spear With Scalpel** | 1-1.6 | 30% | 1 | 1.42 | 6 | 2.0 |
+| **Spear With Spoon** | 1-1.6 | 30% | 1 | 1.4 | 6 | 2.0 |
+| **Spear With Scissors** | 1-1.6 | 30% | 1 | 1.42 | 6 | 2.1 |
+| **Spear With Hand Fork** | 1.1-1.6 | 30% | 0.95 | 1.45 | 7 | 2.2 |
+| **Spear With Screwdriver** | 1.2-1.6 | 30% | 1 | 1.45 | 7 | 2.1 |
+| **Spear With Ice Pick** | 1-1.6 | 30% | 1 | 1.42 | 6 | 2.0 |
+| **Spear With Knife** | 1-1.6 | 30% | 1 | 1.45 | 7 | 2.0 |
+| **Garden Fork** | 1-1.5 | 30% | 0.9 | 1.37 | 10 | 1.5 |
+| **Crafted Spear** | 1-1.5 | 30% | 1 | 1.4 | 5 | 1.7 |
+| **Wooden Spear** | 1-1.4 | 30% | 1 | 1.4 | 7 | 1.7 |
+| **Canoe Paddle** | 0.5-1.3 | 40% | 0.85 | 1.6 | 10 | 2 |
+| **Lead Pipe** | 0.7-1.2 | 30% | 0.93 | 1.15 | 15 | 1.5 |
+| **Metal Bar** | 0.7-1.1 | 30% | 0.95 | 1.2 | 8 | 1.5 |
+| **Metal Pipe** | 0.6-1 | 30% | 0.95 | 1.2 | 8 | 1.5 |
+| **Spiked PickAxe Handle** | 0.7-1 | 10% | 1 | 1.1 | 4 | 3 |
+| **Table Leg** | 0.5-0.9 | 10% | 1 | 1 | 4 | 1.5 |
+| **Chair Leg** | 0.4-0.8 | 5% | 1.1 | 1 | 3 | 1 |
+| **PickAxe Handle** | 0.4-0.8 | 10% | 1.1 | 1.05 | 4 | 3 |
+| **Spiked Plank** | 0.5-0.8 | 25% | 0.85 | 1.32 | 10 | 3.1 |
+| **Saucepan** | 0.2-0.7 | 30% | 1 | 1 | 5 | 0.7 |
+| **Hockey Stick** | 0.3-0.7 | 30% | 0.9 | 1.6 | 7 | 1.5 |
+| **Ice Hockey Stick** | 0.3-0.7 | 30% | 0.9 | 1.6 | 7 | 1.5 |
+| **LaCrosse Stick** | 0.3-0.7 | 30% | 0.9 | 1.6 | 10 | 0.4 |
+| **Screwdriver** | 0.3-0.7 | 10% | 1 | 0.85 | 10 | 0.4 |
+| **Closed Umbrella** | 0.5-0.7 | 10% | 0.9 | 1.1 | 7 | 1 |
+| **Closed Umbrella** | 0.5-0.7 | 10% | 0.9 | 1.1 | 7 | 1 |
+| **Closed Umbrella** | 0.5-0.7 | 10% | 0.9 | 1.1 | 7 | 1 |
+| **Closed Umbrella** | 0.5-0.7 | 10% | 0.9 | 1.1 | 7 | 1 |
+| **Plank** | 0.4-0.6 | 30% | 0.9 | 1.3 | 10 | 3 |
+| **Plunger** | 0.3-0.5 | 5% | 1.2 | 1.1 | 3 | 0.5 |
+| **Tennis Racket** | 0.3-0.5 | 5% | 1.1 | 1.25 | 4 | 1 |
+| **Frying Pan** | 0.3-0.5 | 30% | 1 | 1.1 | 10 | 1 |
+| **Broom** | 0.2-0.5 | 5% | 1.2 | 1.6 | 3 | 1 |
+| **Griddle Pan** | 0.25-0.45 | 30% | 1 | 1.1 | 10 | 1.2 |
+| **Poolcue** | 0.2-0.4 | 0% | 1.2 | 1.6 | 10 | 1 |
+| **Leaf Rake** | 0.2-0.4 | 5% | 1.2 | 1.6 | 4 | 1.5 |
+| **Rake** | 0.2-0.4 | 5% | 1.2 | 1.6 | 4 | 1.5 |
+| **Fishing Rod** | 0.2-0.3 | 5% | 1.3 | 1.55 | 3 | 0.4 |
+| **Fishing Rod** | 0.2-0.3 | 5% | 1.3 | 1.55 | 3 | 0.4 |
+| **Fishing Rod** | 0.2-0.3 | 5% | 1.3 | 1.55 | 3 | 0.4 |
+| **Fishing Rod Without line** | 0.2-0.3 | 5% | 1.3 | 1.55 | 3 | 0.4 |
+| **Fishing Rod** | 0.2-0.3 | 5% | 1.3 | 1.55 | 3 | 0.4 |
+| **Drumstick** | 0.1-0.2 | 0% | 1.3 | 0.9 | 1 | 3 |
+| **Flute** | 0.1-0.2 | 0% | 1.3 | 0.9 | 1 | 3 |
+| **Badminton Racket** | 0.1-0.2 | 0% | 1.2 | 1.25 | 4 | 1 |
+| **Red Pen** | 0.1-0.1 | 0% | 1 | 0.8 | 2 | 0.1 |
+| **Blue Pen** | 0.1-0.1 | 0% | 1 | 0.8 | 2 | 0.1 |
+| **Pen** | 0.1-0.1 | 0% | 1 | 0.8 | 2 | 0.1 |
+| **Pencil** | 0.1-0.1 | 0% | 1 | 0.8 | 1 | 0.1 |
+
+## Unarmed
+
+Items that enhance unarmed combat.
+
+| Weapon | Damage | Crit | Speed | Range | Durability | Weight |
+|--------|--------|------|-------|-------|------------|--------|
+| **Bare Hands** | 0.2-0.4 | 0% | 1 | 1.1 | ? | 1 |
+
+## Uncategorized
+
+Uncategorized weapons.
+
+| Weapon | Damage | Crit | Speed | Range | Durability | Weight |
+|--------|--------|------|-------|-------|------------|--------|
+| **Double Barrel Shotgun** | 2-2.7 | 80% | 1 | 9 | 10 | 4 |
+| **Sawn Off Double Barrel Shotgun** | 2-2.7 | 80% | 1 | 8 | 10 | 3.5 |
+| **JS-2000 Shotgun** | 1.5-2.2 | 60% | 1 | 7 | 10 | 4 |
+| **Sawn Off JS-2000 Shotgun** | 1.5-2.2 | 60% | 1 | 6 | 10 | 3.5 |
+| **MSR788 Rifle** | 1.2-2 | 30% | 1 | 10 | 10 | 4 |
+| **M14 Single Shot Assault Rifle** | 1.2-2 | 30% | 1 | 10 | 10 | 4 |
+| **D-E Pistol** | 1-1.9 | 20% | 1 | 10 | 10 | 1.5 |
+| **Magnum** | 1.2-1.9 | 20% | 1 | 11 | 10 | 2 |
+| **M625 Revolver** | 1-1.6 | 20% | 1 | 9 | 10 | 1.75 |
+| **M1911 Pistol** | 1-1.4 | 20% | 1 | 8 | 10 | 1.5 |
+| **M16 Assault Rifle** | 0.8-1.4 | 25% | 1 | 11 | 10 | 4 |
+| **MSR700 Rifle** | 0.6-1.3 | 25% | 1 | 10 | 10 | 4 |
+| **M36 Revolver** | 0.7-1.2 | 20% | 1 | 6 | 10 | 1.5 |
+| **M9 Pistol** | 0.6-1 | 20% | 1 | 7 | 10 | 1.5 |
+| **Molotov Cocktail** | 0-0 | 0% | 1 | 8 | ? | 1.5 |
+| **9mm Rounds** | 0-0 | 0% | 1 | 1 | ? | 0.01 |
+| **Box of 9mm Bullets** | 0-0 | 0% | 1 | 1 | ? | 0.2 |
+| **9mm Magazine** | 0-0 | 0% | 1 | 1 | ? | 0.2 |
+| **.45 Auto** | 0-0 | 0% | 1 | 1 | ? | 0.04 |
+| **Box of .45 Auto Bullets** | 0-0 | 0% | 1 | 1 | ? | 1 |
+| **.45 Auto Magazine** | 0-0 | 0% | 1 | 1 | ? | 0.2 |
+| **.44 Magnum Bullets** | 0-0 | 0% | 1 | 1 | ? | 0.04 |
+| **Box of .44 Magnum Bullets** | 0-0 | 0% | 1 | 1 | ? | 0.38 |
+| **.44 Magazine** | 0-0 | 0% | 1 | 1 | ? | 0.2 |
+| **.38 Special Bullets** | 0-0 | 0% | 1 | 1 | ? | 0.015 |
+| **Box of .38 Special Bullets** | 0-0 | 0% | 1 | 1 | ? | 0.35 |
+| **Shotgun Shells** | 0-0 | 0% | 1 | 1 | ? | 0.05 |
+| **Box of Shotgun Shells** | 0-0 | 0% | 1 | 1 | ? | 0.9 |
+| **.223 Ammo** | 0-0 | 0% | 1 | 1 | ? | 0.02 |
+| **Box of .223 Bullets** | 0-0 | 0% | 1 | 1 | ? | 0.6 |
+| **.223 Magazine** | 0-0 | 0% | 1 | 1 | ? | 0.2 |
+| **.308 Ammo** | 0-0 | 0% | 1 | 1 | ? | 0.02 |
+| **Box of .308 Bullets** | 0-0 | 0% | 1 | 1 | ? | 0.6 |
+| **.308 Magazine** | 0-0 | 0% | 1 | 1 | ? | 0.2 |
+| **.556 Ammo** | 0-0 | 0% | 1 | 1 | ? | 0.025 |
+| **Box of .556 Bullets** | 0-0 | 0% | 1 | 1 | ? | 1.2 |
+| **.556 Magazine** | 0-0 | 0% | 1 | 1 | ? | 0.2 |
+| **.308 Magazine** | 0-0 | 0% | 1 | 1 | ? | 0.2 |
+
+---
+
+## Property Reference
+
+### Combat Properties
+
+| Property | Description |
+|----------|-------------|
+| `MinDamage` / `MaxDamage` | Damage range per hit |
+| `CriticalChance` | % chance for critical hit |
+| `CritDmgMultiplier` | Damage multiplier on crit |
+| `MaxHitCount` | Max zombies hit per swing |
+| `KnockdownMod` | Knockdown chance modifier |
+| `PushBackMod` | Push back force |
+
+### Range & Speed
+
+| Property | Description |
+|----------|-------------|
+| `MinRange` / `MaxRange` | Attack range |
+| `BaseSpeed` | Attack speed multiplier |
+| `SwingTime` | Swing duration |
+
+### Durability
+
+| Property | Description |
+|----------|-------------|
+| `ConditionMax` | Maximum durability |
+| `ConditionLowerChanceOneIn` | 1-in-X chance to lose condition |
+
+---
+
+## Source
+
+Definitions from `media/scripts/items_weapons.txt`

@@ -1,0 +1,456 @@
+---
+id: vanilla-recipes-reference
+slug: vanilla-recipes-reference
+title: "Vanilla Recipes Reference"
+game: pz
+version: build-41
+section: modding
+category: vanilla-reference
+subcategory: null
+difficulty: beginner
+tags:
+  - reference
+  - recipes
+  - vanilla
+  - crafting
+excerpt: "Complete reference for all 292 vanilla crafting recipes, organized by category."
+related_articles:
+  - item-anatomy
+last_updated: 2026-01-18
+---
+
+# Vanilla Recipes Reference
+
+Complete reference for all **292 vanilla recipes** in Project Zomboid Build 41.
+
+## Recipe Syntax
+
+Recipes in PZ use a colon (`:`) for properties, unlike items which use equals (`=`):
+
+```
+recipe Make Stake
+{
+    TreeBranch,                           // Ingredient (consumed)
+    keep [Recipe.GetItemTypes.SharpKnife], // Kept tool (not consumed)
+
+    Result:Stake,                         // Output item
+    Time:80.0,                            // Crafting time
+    Category:Survivalist,                 // Recipe category
+    OnGiveXP:Recipe.OnGiveXP.WoodWork5,   // XP callback
+}
+```
+
+## Recipe Properties
+
+| Property | Description |
+|----------|-------------|
+| `Result` | Item produced by the recipe |
+| `Time` | Base crafting time in ticks |
+| `Category` | UI category (Cooking, Carpentry, etc.) |
+| `SkillRequired` | Required skill and level (e.g., `Woodwork=2`) |
+| `OnCreate` | Lua callback when recipe completes |
+| `OnCanPerform` | Lua callback to check if recipe can be made |
+| `OnGiveXP` | Lua callback for XP rewards |
+| `NeedToBeLearn` | Recipe must be learned from schematic |
+| `AnimNode` | Animation to play during crafting |
+| `Sound` | Sound to play during crafting |
+
+## Ingredient Syntax
+
+| Syntax | Meaning |
+|--------|---------|
+| `ItemName` | Consume 1 of the item |
+| `ItemName=3` | Consume 3 of the item |
+| `keep ItemName` | Use but don't consume the item |
+| `destroy ItemName` | Destroy the item (for containers) |
+| `Item1/Item2/Item3` | Any of these items works |
+| `[Recipe.GetItemTypes.X]` | Dynamic item type lookup |
+
+## Quick Navigation
+
+- [Cooking](#cooking) (81 recipes)
+- [Uncategorized](#uncategorized) (49 recipes)
+- [Electrical](#electrical) (41 recipes)
+- [Smithing](#smithing) (38 recipes)
+- [Survivalist](#survivalist) (31 recipes)
+- [Health](#health) (19 recipes)
+- [Carpentry](#carpentry) (13 recipes)
+- [Fishing](#fishing) (6 recipes)
+- [Trapper](#trapper) (5 recipes)
+- [Welding](#welding) (5 recipes)
+- [Engineer](#engineer) (4 recipes)
+
+## Cooking
+
+Food preparation and cooking recipes
+
+| Recipe | Result | Time | Skill Required |
+|--------|--------|------|----------------|
+| Butcher Bird | Smallbirdmeat | 50.0 | - |
+| Butcher Rabbit | Rabbitmeat | 50.0 | - |
+| Butcher Small Animal | Smallanimalmeat | 50.0 | - |
+| Empty Frying Pan | Pan | 40.0 | - |
+| Empty Frying Pan | Pan | 40.0 | - |
+| Empty Griddle Pan | GridlePan | 40.0 | - |
+| Empty Roasting Pan | RoastingPan | 40.0 | - |
+| Get 6 Biscuits | Biscuit=6 | 60 | - |
+| Make 2 Bowls of Pasta | PastaBowl=2 | 80.0 | - |
+| Make 2 Bowls of Rice | RiceBowl=2 | 80.0 | - |
+| Make 2 Bowls of Soup | SoupBowl=2 | 80.0 | - |
+| Make 2 Bowls of Stew | StewBowl=2 | 80.0 | - |
+| Make 4 Bowls of Pasta | PastaBowl=4 | 80.0 | - |
+| Make 4 Bowls of Rice | RiceBowl=4 | 80.0 | - |
+| Make 4 Bowls of Soup | SoupBowl=4 | 80.0 | - |
+| Make 4 Bowls of Stew | StewBowl=4 | 80.0 | - |
+| Make Biscuits | Muffintray_Biscuit | 50 | - |
+| Make Bowl of Beans | BeanBowl | 80.0 | - |
+| Make Bowl of Beans | BeanBowl | 130.0 | - |
+| Make Bowl of Cereal | CerealBowl | 20.0 | - |
+| Make Bowl of Oatmeal | Oatmeal | 20.0 | - |
+| Make Bread Dough | BreadDough | 50.0 | - |
+| Make Bread Dough | BaguetteDough | 50.0 | - |
+| Make Cake Batter | CakeBatter | 50.0 | - |
+| Make Jar of Bell Peppers | CannedBellPepper | 100.0 | - |
+| Make Jar of Broccoli | CannedBroccoli | 100.0 | - |
+| Make Jar of Cabbage | CannedCabbage | 100.0 | - |
+| Make Jar of Carrots | CannedCarrots | 100.0 | - |
+| Make Jar of Eggplants | CannedEggplant | 100.0 | - |
+| Make Jar of Leeks | CannedLeek | 100.0 | - |
+| Make Jar of Potatoes | CannedPotato | 100.0 | - |
+| Make Jar of Red Radishes | CannedRedRadish | 100.0 | - |
+| Make Jar of Tomatoes | CannedTomato | 100.0 | - |
+| Make Pie Dough | PieDough | 50.0 | - |
+| Make Pizza | PizzaRecipe | 50.0 | - |
+| Open Candy Package | Lollipop=5 | 5.0 | - |
+| Open Canned Beans | OpenBeans | 80.0 | - |
+| Open Canned Bolognese | CannedBologneseOpen | 80.0 | - |
+| Open Canned Carrots | CannedCarrotsOpen | 80.0 | - |
+| Open Canned Chili | CannedChiliOpen | 80.0 | - |
+| Open Canned Corn | CannedCornOpen | 80.0 | - |
+| Open Canned Corned Beef | CannedCornedBeefOpen | 60.0 | - |
+| Open Canned Fruit Beverage | CannedFruitBeverageOpen | 80.0 | - |
+| Open Canned Fruit Cocktail | CannedFruitCocktailOpen | 80.0 | - |
+| Open Canned Mushroom Soup | CannedMushroomSoupOpen | 80.0 | - |
+| Open Canned Peaches | CannedPeachesOpen | 80.0 | - |
+| Open Canned Peas | CannedPeasOpen | 80.0 | - |
+| Open Canned Pineapple | CannedPineappleOpen | 80.0 | - |
+| Open Canned Potato | CannedPotatoOpen | 80.0 | - |
+| Open Canned Sardines | CannedSardinesOpen | 60.0 | - |
+| Open Canned Soup | TinnedSoupOpen | 80.0 | - |
+| Open Canned Tomato | CannedTomatoOpen | 80.0 | - |
+| Open Canned Tuna | TunaTinOpen | 80.0 | - |
+| Open Condensed Milk | CannedMilkOpen | 80.0 | - |
+| Open Dog Food | DogfoodOpen | 80.0 | - |
+| Open Egg Carton | Egg=12 | 5.0 | - |
+| Open Jar of Bell Peppers | BellPepper=5 | 30.0 | - |
+| Open Jar of Broccoli | Broccoli=5 | 30.0 | - |
+| Open Jar of Cabbage | farming.Cabbage=3 | 30.0 | - |
+| Open Jar of Carrots | Carrots=5 | 30.0 | - |
+| Open Jar of Eggplants | Eggplant=5 | 30.0 | - |
+| Open Jar of Leeks | Leek=5 | 30.0 | - |
+| Open Jar of Potatoes | farming.Potato=5 | 30.0 | - |
+| Open Jar of Red Radishes | farming.RedRadish=5 | 30.0 | - |
+| Open Jar of Tomatoes | farming.Tomato=5 | 30.0 | - |
+| Place Cake in Baking Pan | CakePrep | 30.0 | - |
+| Place Pasta in Cooking Pot | WaterPotPasta | 50.0 | - |
+| Place Pasta in Saucepan | WaterSaucepanPasta | 50.0 | - |
+| Place Pie in Baking Pan | PiePrep | 30.0 | - |
+| Place Rice in Cooking Pot | WaterPotRice | 50.0 | - |
+| Place Rice in Saucepan | WaterSaucepanRice | 50.0 | - |
+| Put Eggs in Carton | EggCarton | 5.0 | - |
+| Slice Bread | BreadSlices=3 | 40.0 | - |
+| Slice Bread | BreadSlices=3 | 40.0 | - |
+| Slice Cake | CakeSlice=5 | 20.0 | - |
+| Slice Fillet | FishFillet=2 | 50.0 | - |
+| Slice Frog | FrogMeat | 50.0 | - |
+| Slice Ham | HamSlice=6 | 50.0 | - |
+| Slice Pie | Pie=5 | 20.0 | - |
+| Slice Watermelon | WatermelonSliced=10 | 70.0 | - |
+| Smash Watermelon | WatermelonSmashed=5 | 50.0 | - |
+
+## Uncategorized
+
+Uncategorized recipes.
+
+| Recipe | Result | Time | Skill Required |
+|--------|--------|------|----------------|
+| Close Umbrella | ClosedUmbrellaBlue | 10.0 | - |
+| Close Umbrella | ClosedUmbrellaRed | 10.0 | - |
+| Close Umbrella | ClosedUmbrellaBlack | 10.0 | - |
+| Close Umbrella | ClosedUmbrellaWhite | 10.0 | - |
+| Craft Sheet Rope | SheetRope | 10.0 | - |
+| Drill Plank | PercedWood | 40.0 | - |
+| Extinguish Candle | Candle | 30.0 | - |
+| Gather Gunpowder | GunPowder | 30.0 | - |
+| HockeyMaskSmashBottle | SmashedBottle | 20 | - |
+| Insert Battery into Duck | Rubberducky2 | 30 | - |
+| Insert Battery into Flashlight | Torch | 30 | - |
+| Insert Battery into Flashlight | HandTorch | 30 | - |
+| Light Candle | CandleLit | 30.0 | - |
+| Make Molotov Cocktail | Molotov | 50.0 | - |
+| Make Molotov Cocktail | Molotov | 50.0 | - |
+| Make Molotov Cocktail | Molotov | 50.0 | - |
+| Make Sturdy Stick | WoodenStick=8 | 50.0 | - |
+| Open Box of .223 Ammo | 223Bullets=8 | 15.0 | - |
+| Open Box of .308 Ammo | 308Bullets=8 | 15.0 | - |
+| Open Box of .38 Special Bullets | Bullets38=6 | 15.0 | - |
+| Open Box of .44 Magnum Bullets | Bullets44=4 | 15.0 | - |
+| Open Box of .45 Auto Bullets | Bullets45=6 | 15.0 | - |
+| Open Box of .556 Ammo | 556Bullets=12 | 15.0 | - |
+| Open Box of 9mm Bullets | Bullets9mm=6 | 15.0 | - |
+| Open Box of Jars | EmptyJar=6 | 15.0 | - |
+| Open Box of Nails | Nails=20 | 5.0 | - |
+| Open Box of Paperclip | Paperclip=40 | 5.0 | - |
+| Open Box of Screws | Screws=20 | 5.0 | - |
+| Open Box of Shotgun Shells | ShotgunShells=4 | 15.0 | - |
+| Open Umbrella | UmbrellaBlue | 10.0 | - |
+| Open Umbrella | UmbrellaRed | 10.0 | - |
+| Open Umbrella | UmbrellaBlack | 10.0 | - |
+| Open Umbrella | UmbrellaWhite | 10.0 | - |
+| Place .223 Ammo in Box | 223Box | 15.0 | - |
+| Place .308 Ammo in Box | 308Box | 15.0 | - |
+| Place .38 Speciam Bullets in Box | Bullets38Box | 15.0 | - |
+| Place .44 Magnum Bullets in Box | Bullets44Box | 15.0 | - |
+| Place .45 Auto Bullets in Box | Bullets45Box | 15.0 | - |
+| Place .556 Ammo in Box | 556Box | 15.0 | - |
+| Place 9mm Bullets in Box | Bullets9mmBox | 15.0 | - |
+| Place Nails in Box | NailsBox | 5.0 | - |
+| Place Paperclips in Box | PaperclipBox | 5.0 | - |
+| Place Screws in Box | ScrewsBox | 5.0 | - |
+| Place Shotgun Shells in Box | ShotgunShellsBox | 15.0 | - |
+| Remove Battery | Battery | 30 | - |
+| Rip Clothing | RippedSheets | 100.0 | - |
+| Saw Off Double Barrel Shotgun | DoubleBarrelShotgunSawnoff | 200.0 | - |
+| Saw Off Shotgun | ShotgunSawnoff | 200.0 | - |
+| Smash Bottle | SmashedBottle | 20 | - |
+
+## Electrical
+
+Electronics and electrical recipes
+
+| Recipe | Result | Time | Skill Required |
+|--------|--------|------|----------------|
+| Add Crafted Trigger | AerosolbombRemote | 80.0 | Electricity=2 |
+| Add Crafted Trigger | FlameTrapRemote | 80.0 | Electricity=2 |
+| Add Crafted Trigger | NoiseTrapRemote | 80.0 | Electricity=2 |
+| Add Crafted Trigger | SmokeBombRemote | 80.0 | Electricity=2 |
+| Add Crafted Trigger | PipeBombRemote | 80.0 | Electricity=2 |
+| Add Motion Sensor V1 | AerosolbombSensorV1 | 80.0 | Electricity=2 |
+| Add Motion Sensor V1 | FlameTrapSensorV1 | 80.0 | Electricity=2 |
+| Add Motion Sensor V1 | NoiseTrapSensorV1 | 80.0 | Electricity=2 |
+| Add Motion Sensor V1 | SmokeBombSensorV1 | 80.0 | Electricity=2 |
+| Add Motion Sensor V1 | PipeBombSensorV1 | 80.0 | Electricity=2 |
+| Add Motion Sensor V2 | AerosolbombSensorV2 | 80.0 | Electricity=4 |
+| Add Motion Sensor V2 | FlameTrapSensorV2 | 80.0 | Electricity=4 |
+| Add Motion Sensor V2 | NoiseTrapSensorV2 | 80.0 | Electricity=4 |
+| Add Motion Sensor V2 | SmokeBombSensorV2 | 80.0 | Electricity=4 |
+| Add Motion Sensor V2 | PipeBombSensorV2 | 80.0 | Electricity=4 |
+| Add Motion Sensor V3 | AerosolbombSensorV3 | 80.0 | Electricity=6 |
+| Add Motion Sensor V3 | FlameTrapSensorV3 | 80.0 | Electricity=6 |
+| Add Motion Sensor V3 | NoiseTrapSensorV3 | 80.0 | Electricity=6 |
+| Add Motion Sensor V3 | SmokeBombSensorV3 | 80.0 | Electricity=6 |
+| Add Motion Sensor V3 | PipeBombSensorV3 | 80.0 | Electricity=6 |
+| Add Timer | AerosolbombTriggered | 80.0 | - |
+| Add Timer | FlameTrapTriggered | 80.0 | - |
+| Add Timer | NoiseTrapTriggered | 80.0 | - |
+| Add Timer | SmokeBombTriggered | 80.0 | - |
+| Add Timer | PipeBombTriggered | 80.0 | - |
+| Dismantle CD Player | ElectronicsScrap=2 | 30.0 | - |
+| Dismantle Cordless Phone | ElectronicsScrap | 30.0 | - |
+| Dismantle Digital Watch | ElectronicsScrap | 30.0 | - |
+| Dismantle Earbuds | ElectronicsScrap | 30.0 | - |
+| Dismantle Flashlight | ElectronicsScrap | 30.0 | - |
+| Dismantle Headphones | ElectronicsScrap | 30.0 | - |
+| Dismantle Home Alarm | MotionSensor | 30.0 | - |
+| Dismantle Speaker | Amplifier | 30.0 | - |
+| Dismantle TV Remote | Receiver | 30.0 | - |
+| Dismantle Video Game | ElectronicsScrap | 30.0 | - |
+| Make Noise Maker | NoiseTrap | 80.0 | Electricity=3 |
+| Make Remote Controller V1 | RemoteCraftedV1 | 50.0 | Electricity=2 |
+| Make Remote Controller V2 | RemoteCraftedV2 | 50.0 | Electricity=4 |
+| Make Remote Controller V3 | RemoteCraftedV3 | 50.0 | Electricity=6 |
+| Make Remote Trigger | TriggerCrafted | 50.0 | Electricity=2 |
+| Make Timer | TimerCrafted | 50.0 | Electricity=1 |
+
+## Smithing
+
+Smithing recipes.
+
+| Recipe | Result | Time | Skill Required |
+|--------|--------|------|----------------|
+| Make 223 Bullets | 223Bullets=2 | 180.0 | Blacksmith=8 |
+| Make 223 Bullets Mold | 223BulletsMold | 200.0 | Blacksmith=8 |
+| Make 308 Bullets | 308Bullets=2 | 180.0 | Blacksmith=8 |
+| Make 308 Bullets Mold | 308BulletsMold | 200.0 | Blacksmith=8 |
+| Make 9mm Bullets | Bullets9mm=2 | 180.0 | Blacksmith=8 |
+| Make 9mm Bullets Mold | 9mmBulletsMold | 200.0 | Blacksmith=8 |
+| Make Axe | Axe | 300.0 | Blacksmith=10 |
+| Make Baking Pan | BakingPan | 220.0 | Blacksmith=2 |
+| Make Baking Tray | BakingTray | 220.0 | Blacksmith=2 |
+| Make Ball Peen Hammer | BallPeenHammer | 170.0 | Blacksmith=4 |
+| Make Butter Knife | ButterKnife | 180.0 | Blacksmith=3 |
+| Make Cooking Pot | Pot | 190.0 | Blacksmith=2 |
+| Make Crowbar | Crowbar | 300.0 | Blacksmith=9 |
+| Make Door Knob | Doorknob | 150.0 | Blacksmith=3 |
+| Make Fork | Fork | 100.0 | - |
+| Make Golfclub | Golfclub | 250.0 | Blacksmith=9 |
+| Make Hammer | Hammer | 170.0 | Blacksmith=4 |
+| Make Hinge | Hinge | 150.0 | Blacksmith=3 |
+| Make Hunting Knife | HuntingKnife | 180.0 | Blacksmith=8 |
+| Make Kitchen Knife | KitchenKnife | 180.0 | Blacksmith=7 |
+| Make Letter Opener | LetterOpener | 120.0 | Blacksmith=3 |
+| Make Metal Drum | MetalDrum | 250.0 | Blacksmith=6 |
+| Make Nails | Nails=2 | 120.0 | Blacksmith=3 |
+| Make Pan | Pan | 220.0 | Blacksmith=2 |
+| Make Paperclips | Paperclip=10 | 120.0 | Blacksmith=3 |
+| Make Roasting Pan | Pot | 220.0 | Blacksmith=2 |
+| Make Saucepan | Saucepan | 170.0 | Blacksmith=2 |
+| Make Saw | Saw | 250.0 | Blacksmith=7 |
+| Make Scissors | Scissors | 120.0 | Blacksmith=3 |
+| Make Sheet Metal | SheetMetal | 190.0 | Blacksmith=4 |
+| Make Shotgun Shells | ShotgunShells=2 | 180.0 | Blacksmith=8 |
+| Make Shotgun Shells Mold | ShotgunShellsMold | 200.0 | Blacksmith=8 |
+| Make Sledgehammer | Sledgehammer | 300.0 | Blacksmith=10 |
+| Make Spoon | Spoon | 100.0 | - |
+| Make Suture Needle | SutureNeedle | 150.0 | Blacksmith=6 |
+| Make Suture Needle Holder | SutureNeedleHolder | 150.0 | Blacksmith=5 |
+| Make Tongs | Tongs | 170.0 | Blacksmith=4 |
+| Make Tweezers | Tweezers | 120.0 | Blacksmith=5 |
+
+## Survivalist
+
+Survival crafting recipes
+
+| Recipe | Result | Time | Skill Required |
+|--------|--------|------|----------------|
+| Attach Bread Knife to Spear | SpearBreadKnife | 100.0 | - |
+| Attach Butter Knife to Spear | SpearButterKnife | 100.0 | - |
+| Attach Fork to Spear | SpearFork | 100.0 | - |
+| Attach Hand Fork to Spear | SpearHandFork | 100.0 | - |
+| Attach Hunting Knife to Spear | SpearHuntingKnife | 100.0 | - |
+| Attach Ice Pick to Spear | SpearIcePick | 100.0 | - |
+| Attach Kitchen Knife to Spear | SpearKnife | 100.0 | - |
+| Attach Letter Opener to Spear | SpearLetterOpener | 100.0 | - |
+| Attach Machete to Spear | SpearMachete | 100.0 | - |
+| Attach Scalpel to Spear | SpearScalpel | 100.0 | - |
+| Attach Scissors to Spear | SpearScissors | 100.0 | - |
+| Attach Screwdriver to Spear | SpearScrewdriver | 100.0 | - |
+| Attach Spoon to Spear | SpearSpoon | 100.0 | - |
+| Create Spear | SpearCrafted | 100.0 | - |
+| Make Stake | Stake | 80.0 | - |
+| Make Stone Axe | AxeStone | 80.0 | - |
+| Make Stone Hammer | HammerStone | 80.0 | - |
+| Make Stone Knife | FlintKnife | 80.0 | - |
+| Reclaim Bread Knife from Spear | BreadKnife | 60.0 | - |
+| Reclaim Butter Knife from Spear | ButterKnife | 60.0 | - |
+| Reclaim Fork from Spear | Fork | 60.0 | - |
+| Reclaim Hand Fork from Spear | HandFork | 60.0 | - |
+| Reclaim Hunting Knife from Spear | HuntingKnife | 60.0 | - |
+| Reclaim Ice Pick from Spear | IcePick | 60.0 | - |
+| Reclaim Kitchen Knife from Spear | KitchenKnife | 60.0 | - |
+| Reclaim Letter Opener from Spear | LetterOpener | 60.0 | - |
+| Reclaim Machete from Spear | Machete | 60.0 | - |
+| Reclaim Scalpel from Spear | Scalpel | 60.0 | - |
+| Reclaim Scissors from Spear | Scissors | 60.0 | - |
+| Reclaim Screwdriver from Spear | Screwdriver | 60.0 | - |
+| Reclaim Spoon from Spear | Spoon | 60.0 | - |
+
+## Health
+
+Health recipes.
+
+| Recipe | Result | Time | Skill Required |
+|--------|--------|------|----------------|
+| Clean Bandage | Bandage | 40.0 | - |
+| Clean Denim Strips | DenimStrips | 40.0 | - |
+| Clean Leather Strips | LeatherStrips | 40.0 | - |
+| Clean Rag | RippedSheets | 40.0 | - |
+| Disinfect Bandage | AlcoholBandage | 40.0 | - |
+| Disinfect Bandage | AlcoholBandage | 100.0 | - |
+| Disinfect Bandage | AlcoholBandage | 100.0 | - |
+| Disinfect Bandage | AlcoholBandage | 40.0 | - |
+| Disinfect Rag | AlcoholRippedSheets | 40.0 | - |
+| Disinfect Rag | AlcoholRippedSheets | 100.0 | - |
+| Disinfect Rag | AlcoholRippedSheets | 100.0 | - |
+| Disinfect Rag | AlcoholRippedSheets | 40.0 | - |
+| Douse Cotton in Alcohol | AlcoholedCottonBalls | 20 | - |
+| Make Comfrey Poultice | ComfreyCataplasm | 60.0 | - |
+| Make Plantain Poultice | PlantainCataplasm | 60.0 | - |
+| Make Splint | Splint | 70.0 | - |
+| Make Wild Garlic Poultice | WildGarlicCataplasm | 60.0 | - |
+| Make Wild Garlic Poultice | WildGarlicCataplasm | 60.0 | - |
+| Put Alcohol on Cotton | AlcoholedCottonBalls | 40.0 | - |
+
+## Carpentry
+
+Woodworking and construction recipes
+
+| Recipe | Result | Time | Skill Required |
+|--------|--------|------|----------------|
+| Build Drawer | Drawer | 150.0 | - |
+| Build Spiked Baseball Bat | BaseballBatNails | 150.0 | - |
+| Build Spiked Plank | PlankNail | 150.0 | - |
+| Make Bucket of Plaster | BucketPlasterFull | 150.0 | - |
+| Make Four-Log Stack | LogStacks4 | 60.0 | - |
+| Make Mattress | Mattress | 180.0 | - |
+| Make Mortar and Pestle | MortarPestle | 50.0 | Woodwork=2 |
+| Make Three-Log Stack | LogStacks3 | 60.0 | - |
+| Make Two-Log Stack | LogStacks2 | 60.0 | - |
+| Saw Logs | Plank=3 | 230.0 | - |
+| Unstack Logs | Log=2 | 60.0 | - |
+| Unstack Logs | Log=3 | 60.0 | - |
+| Unstack Logs | Log=4 | 60.0 | - |
+
+## Fishing
+
+Fishing recipes.
+
+| Recipe | Result | Time | Skill Required |
+|--------|--------|------|----------------|
+| Fix Fishing Rod | FishingRodTwineLine | 80.0 | - |
+| Fix Fishing Rod | FishingRod | 80.0 | - |
+| Get Wire Back | Wire;3 | 100.0 | - |
+| Make Fishing Net | FishingNet | 150.0 | - |
+| Make Fishing Rod | CraftedFishingRodTwineLine | 80.0 | - |
+| Make Fishing Rod | CraftedFishingRod | 80.0 | - |
+
+## Trapper
+
+Trapper recipes.
+
+| Recipe | Result | Time | Skill Required |
+|--------|--------|------|----------------|
+| Make Cage Trap | TrapCage | 180.0 | Trapping=3; |
+| Make Snare Trap | TrapSnare | 130.0 | Trapping=1 |
+| Make Stick Trap | TrapStick | 120.0 | - |
+| Make Trap Box | TrapBox | 150.0 | Woodwork=1;Trapping=2; |
+| Make Wooden Box Trap | TrapCrate | 120.0 | - |
+
+## Welding
+
+Welding recipes.
+
+| Recipe | Result | Time | Skill Required |
+|--------|--------|------|----------------|
+| Make Metal Bar | MetalBar | 150.0 | MetalWelding=2 |
+| Make Metal Pipe | MetalPipe | 150.0 | - |
+| Make Metal Sheet | SheetMetal | 250.0 | MetalWelding=4 |
+| Make Small Metal Sheet | SmallSheetMetal=3 | 250.0 | MetalWelding=4 |
+| Refill Blow Torch | BlowTorch | 50.0 | - |
+
+## Engineer
+
+Engineer recipes.
+
+| Recipe | Result | Time | Skill Required |
+|--------|--------|------|----------------|
+| Make Aerosol bomb | Aerosolbomb | 80.0 | - |
+| Make Flame bomb | FlameTrap | 80.0 | - |
+| Make Pipe bomb | PipeBomb | 100.0 | - |
+| Make Smoke Bomb | SmokeBomb | 80.0 | - |
+
+---
+
+## Source
+
+Definitions from `media/scripts/recipes.txt`

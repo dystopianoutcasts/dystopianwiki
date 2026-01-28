@@ -1,0 +1,471 @@
+---
+id: items-item-recipe-connection
+slug: item-recipe-connection
+title: "Connecting Items and Recipes"
+game: pz
+version: build-41
+section: modding
+category: items
+subcategory: null
+difficulty: beginner
+tags:
+  - beginner
+  - item
+  - recipe
+  - integration
+  - learning-path
+  - workflow
+excerpt: "Learn how to create recipes that produce your custom items and use custom items as ingredients in Project Zomboid mods."
+table_of_contents:
+  - text: "Overview"
+    link: "#overview"
+  - text: "The Basic Connection"
+    link: "#the-basic-connection"
+  - text: "File Organization"
+    link: "#file-organization"
+  - text: "Creating a Complete Item-Recipe Set"
+    link: "#creating-a-complete-item-recipe-set"
+  - text: "Using Custom Items in Recipes"
+    link: "#using-custom-items-in-recipes"
+  - text: "Reference by Module"
+    link: "#reference-by-module"
+  - text: "Common Patterns"
+    link: "#common-patterns"
+  - text: "Testing Your Connection"
+    link: "#testing-your-connection"
+  - text: "Troubleshooting"
+    link: "#troubleshooting"
+  - text: "Complete Working Example"
+    link: "#complete-working-example"
+  - text: "Key Takeaways"
+    link: "#key-takeaways"
+  - text: "You've Completed the Learning Path!"
+    link: "#youve-completed-the-learning-path"
+last_updated: 2026-01-09
+---
+
+# Connecting Items and Recipes
+
+## Overview
+
+Custom items become useful when players can craft them. This guide shows how to create recipes that produce your custom items and use them as ingredients.
+
+## The Basic Connection
+
+### Item Definition
+
+```
+module Base {
+    item EnergyBar {
+        Type = Food,
+        DisplayName = Energy Bar,
+        Icon = Chocolate,
+        Weight = 0.1,
+        HungerChange = -15,
+        Calories = 250,
+        DisplayCategory = Food,
+    }
+}
+```
+
+### Recipe That Creates It
+
+```
+module Base {
+    imports {
+        Base
+    }
+
+    recipe Make Energy Bar {
+        Chocolate,
+        Oats,
+        Honey,
+
+        Result:EnergyBar,
+        Time:60.0,
+        Category:Cooking,
+    }
+}
+```
+
+The `Result:EnergyBar` references our custom item.
+
+## File Organization
+
+### Option 1: Separate Files
+
+```
+MyMod/media/scripts/
+├── my_items.txt       <- Item definitions
+└── my_recipes.txt     <- Recipe definitions
+```
+
+**Pros:** Clean separation, easier to manage
+**Cons:** More files to track
+
+### Option 2: Combined File
+
+```
+MyMod/media/scripts/
+└── my_content.txt     <- Both items and recipes
+```
+
+Inside the file:
+```
+module Base {
+    imports {
+        Base
+    }
+
+    /* =========== ITEMS =========== */
+
+    item EnergyBar {
+        Type = Food,
+        DisplayName = Energy Bar,
+        Icon = Chocolate,
+        Weight = 0.1,
+        HungerChange = -15,
+        Calories = 250,
+    }
+
+    /* =========== RECIPES =========== */
+
+    recipe Make Energy Bar {
+        Chocolate,
+        Oats,
+        Honey,
+
+        Result:EnergyBar,
+        Time:60.0,
+        Category:Cooking,
+    }
+}
+```
+
+**Pros:** Everything in one place
+**Cons:** File gets long with many items
+
+## Creating a Complete Item-Recipe Set
+
+Let's create a full example: a craftable bandage kit.
+
+### Step 1: Define the Items
+
+```
+module Base {
+    /* The final product */
+    item BandageKit {
+        Type = Normal,
+        DisplayName = Bandage Kit,
+        Icon = FirstAidKit,
+        Weight = 0.5,
+        DisplayCategory = FirstAid,
+        Tooltip = Tooltip_FirstAidKit,
+    }
+
+    /* Intermediate crafting material */
+    item SterilizedBandage {
+        Type = Normal,
+        DisplayName = Sterilized Bandage,
+        Icon = Bandage,
+        Weight = 0.1,
+        DisplayCategory = FirstAid,
+    }
+}
+```
+
+### Step 2: Create the Recipes
+
+```
+module Base {
+    imports {
+        Base
+    }
+
+    /* Recipe 1: Make sterilized bandages */
+    recipe Sterilize Bandage {
+        Bandage,
+        AlcoholBandage/Disinfectant,
+
+        Result:SterilizedBandage,
+        Time:30.0,
+        Category:Health,
+    }
+
+    /* Recipe 2: Assemble the kit */
+    recipe Make Bandage Kit {
+        SterilizedBandage=3,
+        RippedSheets=2,
+        Thread,
+        keep Needle,
+
+        Result:BandageKit,
+        Time:120.0,
+        Category:Health,
+    }
+}
+```
+
+This creates a **crafting chain**:
+1. Bandage + Alcohol → Sterilized Bandage
+2. 3 Sterilized Bandages + materials → Bandage Kit
+
+## Using Custom Items in Recipes
+
+### As Ingredients
+
+```
+recipe Make Deluxe Kit {
+    BandageKit,              <- Your custom item as input
+    Painkillers,
+    Antibiotics,
+    keep Bag_FannyPackFront,
+
+    Result:DeluxeMedKit,
+    Time:60.0,
+    Category:Health,
+}
+```
+
+### As Tools
+
+```
+item RepairKit {
+    Type = Drainable,
+    DisplayName = Repair Kit,
+    Icon = Toolbox,
+    Weight = 2.0,
+    UseDelta = 0.1,
+}
+
+recipe Field Repair Weapon {
+    keep RepairKit,          <- Custom tool
+    DuctTape,
+    
+    OnCreate:Recipe.OnCreate.RepairWeapon,
+    Time:120.0,
+    Category:Survivalist,
+}
+```
+
+## Reference by Module
+
+### Same Module (Base)
+
+When both are in `module Base`:
+```
+Result:EnergyBar,           <- Just the item name
+```
+
+### Custom Module
+
+If your item is in a custom module:
+
+```
+module MyMod {
+    item SpecialItem {
+        Type = Normal,
+        DisplayName = Special Item,
+        Icon = Box,
+        Weight = 1.0,
+    }
+}
+```
+
+Reference it with the full path:
+
+```
+module Base {
+    imports {
+        Base,
+        MyMod
+    }
+
+    recipe Use Special Item {
+        MyMod.SpecialItem,       <- Full module.item path
+        
+        Result:SomeResult,
+        Time:50.0,
+    }
+}
+```
+
+## Common Patterns
+
+### Disassembly Recipe
+
+Break items down into components:
+
+```
+recipe Disassemble Bandage Kit {
+    BandageKit,
+
+    Result:SterilizedBandage=2,   <- Get materials back
+    Time:30.0,
+    Category:Health,
+}
+```
+
+### Upgrade Recipe
+
+Improve an item:
+
+```
+recipe Upgrade Energy Bar {
+    EnergyBar,
+    Chocolate,
+    Nuts,
+
+    Result:EnergyBarDeluxe,
+    Time:45.0,
+    Category:Cooking,
+}
+```
+
+### Conversion Recipe
+
+Transform between forms:
+
+```
+recipe Crush Pills {
+    PillsAntiDep,
+
+    Result:PowderedMedicine,
+    Time:20.0,
+    Category:Health,
+}
+```
+
+## Testing Your Connection
+
+### Verify Item Exists
+
+```lua
+local item = getScriptManager():getItem("Base.EnergyBar")
+if item then
+    print("Item found: " .. item:getDisplayName())
+else
+    print("Item NOT found!")
+end
+```
+
+### Verify Recipe Exists
+
+```lua
+local recipe = getScriptManager():getRecipe("Make Energy Bar")
+if recipe then
+    print("Recipe found!")
+else
+    print("Recipe NOT found!")
+end
+```
+
+### Spawn and Test
+
+```lua
+local inv = getPlayer():getInventory()
+inv:AddItem("Base.Chocolate")
+inv:AddItem("Base.Oats")
+inv:AddItem("Base.Honey")
+-- Now try crafting!
+```
+
+## Troubleshooting
+
+### Recipe Doesn't Show Item as Result
+
+- Verify item ID matches exactly (case-sensitive)
+- Check both are in the same module or using imports
+- Ensure item definition has no parse errors
+
+### "Unknown Item Type" Error
+
+- Item script file has errors
+- Wrong module reference
+- File not in `media/scripts/`
+
+### Recipe Works But Item Has Wrong Properties
+
+- Check you're spawning the right item ID
+- Verify the item definition is being loaded (no parse errors)
+- Clear PZ's cache (delete `Zomboid/Lua` folder)
+
+## Complete Working Example
+
+**my_craftables.txt:**
+
+```
+module Base {
+    imports {
+        Base
+    }
+
+    /* ========== ITEMS ========== */
+
+    item TrailMix {
+        Type = Food,
+        DisplayName = Trail Mix,
+        Icon = Cereal,
+        Weight = 0.2,
+        HungerChange = -20,
+        ThirstChange = -10,
+        Calories = 350,
+        Carbohydrates = 40,
+        Proteins = 10,
+        Lipids = 15,
+        DaysFresh = 90,
+        DaysTotallyRotten = 180,
+        DisplayCategory = Food,
+    }
+
+    item EmptyTrailMixBag {
+        Type = Normal,
+        DisplayName = Empty Trail Mix Bag,
+        Icon = PlasticBag,
+        Weight = 0.01,
+        DisplayCategory = Junk,
+    }
+
+    /* ========== RECIPES ========== */
+
+    recipe Make Trail Mix {
+        Nuts/Peanuts,
+        Raisins/DriedFruit,
+        Cereal,
+        PlasticBag,
+
+        Result:TrailMix,
+        Time:30.0,
+        Category:Cooking,
+    }
+
+    recipe Empty Trail Mix Bag {
+        TrailMix,
+
+        Result:EmptyTrailMixBag,
+        Time:5.0,
+        Category:Cooking,
+        OnCreate:Recipe.OnCreate.EmptyFoodContainer,
+    }
+}
+```
+
+## Key Takeaways
+
+1. **Items and recipes use the same module** for easy referencing
+2. **Result: references item ID** exactly as defined
+3. **Create crafting chains** for depth (raw → processed → final)
+4. **Test both item and recipe** separately, then together
+5. **Use imports** when referencing items from other modules
+
+## You've Completed the Learning Path!
+
+Congratulations! You now understand:
+- PZ's architecture and file types
+- Setting up your mod environment
+- Using AI to assist your modding
+- Creating recipes from scratch
+- Defining custom items
+- Connecting items and recipes
+
+**Next:** Explore the wiki's other categories for advanced topics like Lua scripting, weapons, vehicles, and more!

@@ -1,0 +1,266 @@
+---
+id: weapon-repair-repair-system-overview
+slug: repair-system-overview
+title: "Project Zomboid Repair System Overview"
+game: pz
+version: build-41
+section: modding
+category: weapon-repair
+subcategory: null
+difficulty: beginner
+tags:
+  - lua
+  - item
+  - repair
+  - weapon
+  - event
+  - system
+  - overview
+excerpt: "The repair system in Project Zomboid consists of three main layers:        Items become repairable by having an entry in :    Key Components: -  - The item type that can be repaired -..."
+table_of_contents:
+  - text: "Architecture"
+    link: "#architecture"
+  - text: "How Repairs Work"
+    link: "#how-repairs-work"
+  - text: "1. Defining Repairs (Script Layer)"
+    link: "#1-defining-repairs-script-layer"
+  - text: "2. Calculating Repairs (Java Layer)"
+    link: "#2-calculating-repairs-java-layer"
+  - text: "3. User Interface (Lua Layer)"
+    link: "#3-user-interface-lua-layer"
+  - text: "Condition System"
+    link: "#condition-system"
+  - text: "Item Properties"
+    link: "#item-properties"
+  - text: "Condition States"
+    link: "#condition-states"
+  - text: "Condition Degradation"
+    link: "#condition-degradation"
+  - text: "Skill Requirements"
+    link: "#skill-requirements"
+  - text: "Common Repair Skills"
+    link: "#common-repair-skills"
+  - text: "Skill Level Requirements (Examples)"
+    link: "#skill-level-requirements-examples"
+  - text: "Repair Items (Fixers)"
+    link: "#repair-items-fixers"
+  - text: "Common Repair Items"
+    link: "#common-repair-items"
+  - text: "Usage Amounts"
+    link: "#usage-amounts"
+  - text: "Special Mechanics"
+    link: "#special-mechanics"
+  - text: "Firearms Self-Repair"
+    link: "#firearms-self-repair"
+  - text: "GlobalItem (Consumable Tools)"
+    link: "#globalitem-consumable-tools"
+  - text: "ConditionModifier"
+    link: "#conditionmodifier"
+  - text: "HaveBeenRepaired Flag"
+    link: "#havebeenrepaired-flag"
+  - text: "Repair Limitations"
+    link: "#repair-limitations"
+last_updated: 2026-01-09
+---
+
+# Project Zomboid Repair System Overview
+
+## Architecture
+
+The repair system in Project Zomboid consists of three main layers:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    SCRIPT LAYER                         │
+│  fixing.txt / vehiclesfixing.txt                        │
+│  Defines WHAT can be repaired and WITH what             │
+└─────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────┐
+│                   JAVA LAYER                            │
+│  FixingManager                                          │
+│  Core repair logic, calculations, validation            │
+└─────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────┐
+│                    LUA LAYER                            │
+│  ISFixAction, ISInventoryPaneContextMenu, etc.          │
+│  UI, timed actions, player interaction                  │
+└─────────────────────────────────────────────────────────┘
+```
+
+## How Repairs Work
+
+### 1. Defining Repairs (Script Layer)
+
+Items become repairable by having an entry in `fixing.txt`:
+
+```
+fixing Fix Axe
+{
+   Require : Axe,
+   Fixer : Woodglue=2; Woodwork=2,
+   Fixer : DuctTape=2,
+   Fixer : Glue=2,
+   Fixer : Scotchtape=4,
+}
+```
+
+**Key Components:**
+- `Require` - The item type that can be repaired
+- `Fixer` - Items that can perform the repair, with optional skill requirements
+
+### 2. Calculating Repairs (Java Layer)
+
+The `FixingManager` class handles:
+- `getFixes(item)` - Returns available repair definitions for an item
+- `getCondRepaired(item, player, fixing, fixer)` - Calculates condition restoration %
+- `getChanceOfFail(item, player, fixing, fixer)` - Calculates failure probability
+- `fixItem(item, character, fixing, fixer)` - Performs the actual repair
+
+### 3. User Interface (Lua Layer)
+
+When a player right-clicks a damaged item:
+
+1. `ISInventoryPaneContextMenu` checks if item is broken/damaged
+2. `FixingManager.getFixes()` retrieves available repairs
+3. Submenu displays repair options with:
+   - Required items and quantities
+   - Required skill levels
+   - Potential repair percentage
+   - Success chance percentage
+4. Player selects a fixer option
+5. `ISFixAction` queues the timed repair action
+
+## Condition System
+
+### Item Properties
+
+Weapons have these durability-related properties in their script definitions:
+
+```
+item Axe
+{
+    ConditionMax = 15,           // Maximum condition value
+    ConditionLowerChanceOneIn = 15,  // Higher = more durable
+    // ... other properties
+}
+```
+
+### Condition States
+
+| Condition | State |
+|-----------|-------|
+| `condition == ConditionMax` | Perfect condition |
+| `0 < condition < ConditionMax` | Damaged (repairable) |
+| `condition == 0` | Broken (`isBroken() == true`) |
+
+### Condition Degradation
+
+When using a weapon, condition loss is calculated as:
+
+```lua
+if ZombRand(item:getConditionLowerChance() * 2 + character:getMaintenanceMod() * 2) == 0 then
+    item:setCondition(item:getCondition() - 1)
+else
+    -- No degradation, gain Maintenance XP
+    character:getXp():AddXP(Perks.Maintenance, 1)
+end
+```
+
+**Factors:**
+- Higher `ConditionLowerChanceOneIn` = less frequent degradation
+- Higher Maintenance skill = less frequent degradation
+- When degradation doesn't occur, player gains Maintenance XP
+
+## Skill Requirements
+
+### Common Repair Skills
+
+| Skill | Used For |
+|-------|----------|
+| **Woodwork** | Wooden-handled weapons (axes, sledgehammers, bats) |
+| **Aiming** | Firearms (pistols, rifles, shotguns) |
+| **Mechanics** | Vehicle parts |
+| **MetalWelding** | Welded vehicle repairs |
+| **Tailoring** | Clothing patches |
+| **Maintenance** | Passive: reduces condition loss on all weapons |
+
+### Skill Level Requirements (Examples)
+
+| Weapon Type | Skill | Level Required |
+|-------------|-------|----------------|
+| Axe (with Woodglue) | Woodwork | 2 |
+| Pistol | Aiming | 3 |
+| Shotgun | Aiming | 2 |
+| Hunting Rifle | Aiming | 4 |
+| Assault Rifle | Aiming | 5 |
+| Vehicle Engine | Mechanics | Varies by vehicle |
+
+## Repair Items (Fixers)
+
+### Common Repair Items
+
+| Item | Skill Requirement | Best For |
+|------|-------------------|----------|
+| **Woodglue** | Woodwork 1-2 | Wooden weapons (most effective) |
+| **DuctTape** | None | General repairs (quick) |
+| **Glue** | None | General repairs |
+| **Scotchtape** | None | General repairs (less efficient) |
+| **Same Weapon Type** | Aiming 2-5 | Firearms only |
+
+### Usage Amounts
+
+Fixers have a "uses" value indicating how much is consumed:
+- `Woodglue=2` means 2 uses of Woodglue
+- `Scotchtape=4` means 4 uses of Scotchtape (less efficient)
+
+## Special Mechanics
+
+### Firearms Self-Repair
+
+Firearms cannot be repaired with tape or glue. They require the same weapon type:
+
+```
+fixing Fix Pistol
+{
+   Require : Pistol,
+   Fixer : Pistol; Aiming=3,
+}
+```
+
+This means you sacrifice one pistol to repair another.
+
+### GlobalItem (Consumable Tools)
+
+Some repairs require tools that consume fuel/uses:
+
+```
+GlobalItem : BlowTorch=2,
+```
+
+The BlowTorch uses 2 units of fuel during the repair.
+
+### ConditionModifier
+
+Some repairs have effectiveness multipliers:
+
+```
+ConditionModifier : 1.2,  // 20% more effective
+ConditionModifier : 0.5,  // 50% less effective
+```
+
+### HaveBeenRepaired Flag
+
+Items track whether they've been repaired:
+- Affects XP gain (prevents grinding)
+- May affect repair effectiveness in some scenarios
+- Accessed via `item:getHaveBeenRepaired()` and `item:setHaveBeenRepaired()`
+
+## Repair Limitations
+
+1. **Maximum Condition**: Items cannot exceed 100 condition
+2. **Skill Requirements**: Must meet minimum skill level for skilled repairs
+3. **Item Availability**: Must have required fixer items in inventory
+4. **Success Chance**: Repairs can fail based on skill level
+5. **Failure Penalties**: Failed vehicle part repairs cost 5-10 condition points

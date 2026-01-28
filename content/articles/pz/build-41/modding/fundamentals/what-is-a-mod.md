@@ -1,0 +1,469 @@
+---
+id: fundamentals-what-is-a-mod
+slug: what-is-a-mod
+title: "What Is a Mod?"
+game: pz
+version: build-41
+section: modding
+category: fundamentals
+subcategory: null
+difficulty: beginner
+tags:
+  - beginner
+  - introduction
+  - mod
+  - modding
+  - basics
+  - getting-started
+  - overview
+excerpt: "A mod is simply a collection of files that add new content to Project Zomboid. No coding required - just text files with simple patterns. Learn by creating a custom weapon in this hands-on guide."
+table_of_contents:
+  - text: "Overview"
+    link: "#overview"
+  - text: "What Can Mods Do?"
+    link: "#what-can-mods-do"
+  - text: "The Two Things Every Mod Needs"
+    link: "#the-two-things-every-mod-needs"
+  - text: "The Secret: PZ's \"Exposed\" Files"
+    link: "#the-secret-pzs-exposed-files"
+  - text: "How the Media Folder Works"
+    link: "#how-the-media-folder-works"
+  - text: "Let's Prove It: Creating a Super Katana"
+    link: "#lets-prove-it-creating-a-super-katana"
+  - text: "Step 1: Find the Vanilla Katana"
+    link: "#step-1-find-the-vanilla-katana"
+  - text: "Step 2: Understanding What We're Looking At"
+    link: "#step-2-understanding-what-were-looking-at"
+  - text: "Step 3: Create Your Mod's File Structure"
+    link: "#step-3-create-your-mods-file-structure"
+  - text: "Step 4: Understanding Modules"
+    link: "#step-4-understanding-modules"
+  - text: "Step 5: Create the Wicked Katana"
+    link: "#step-5-create-the-wicked-katana"
+  - text: "Step 6: That's It!"
+    link: "#step-6-thats-it"
+  - text: "The Quick Summary"
+    link: "#the-quick-summary"
+  - text: "Understanding Item Properties"
+    link: "#understanding-item-properties"
+  - text: "Syntax: The Patterns That Matter"
+    link: "#syntax-the-patterns-that-matter"
+  - text: "What's Next?"
+    link: "#whats-next"
+  - text: "Key Takeaways"
+    link: "#key-takeaways"
+next_steps:
+  - title: "Mod Folder Structure"
+    path: /build-41/modding/setup/mod-folder-structure
+  - title: "The mod.info File"
+    path: /build-41/modding/setup/mod-info-file
+  - title: "Debug Mode"
+    path: /build-41/modding/setup/debug-mode
+last_updated: 2026-01-10
+---
+
+# What Is a Mod?
+
+## Overview
+
+A mod (short for modification) is simply a collection of files that add new content or change existing game behavior in Project Zomboid. That's it. No magic, no advanced computer science degree required.
+
+If you're reading this thinking "I'm not a coder, this isn't for me" - stop right there. **Most modding in Project Zomboid doesn't require any coding at all.** The developers at The Indie Stone specifically designed the game to be moddable by regular people who just want to add cool stuff to their favorite game.
+
+## What Can Mods Do?
+
+Mods can:
+
+- **Add new items** - weapons, tools, food, materials, clothing
+- **Create recipes** - new ways to craft and combine items
+- **Add textures and icons** - custom visuals for your items
+- **Change sounds** - new audio for weapons and actions
+- **Modify game behavior** - through Lua scripting (we'll get there eventually)
+- **Extend game systems** - skills, traits, foraging, farming, and more
+
+But let's not get ahead of ourselves. Today, we're going to demystify what a mod actually is and prove to you that you can do this.
+
+## The Two Things Every Mod Needs
+
+At its core, every mod has just two things:
+
+1. **A `mod.info` file** - This tells the game "hey, I'm a mod, here's my name and some info about me"
+2. **A `media` folder** - This is where all your actual mod content lives
+
+That's the foundation. Everything else builds on top of these two things.
+
+## The Secret: PZ's "Exposed" Files
+
+Here's the beautiful thing that The Indie Stone did for us modders:
+
+They **exposed** their game files. What does "exposed" mean? It means they put a lot of the game's content out in the open as simple text files that we can look at, copy, and modify. More importantly, they configured Project Zomboid so that we can write our own text files following a simple pattern - and the game will load them just like the vanilla content.
+
+**No compiling. No special tools. Just text files.**
+
+When you write a `.txt` file in the right format and put it in the right place, the game's engine reads it and says "oh, here's a new item" or "here's a new recipe" and adds it to the game. It's that simple.
+
+## How the Media Folder Works
+
+The `media` folder in your mod mirrors the game's own `media` folder. When Project Zomboid loads, it reads the vanilla `media` folder first, then reads all the mod `media` folders and combines everything together.
+
+If you create the same folder structure in your mod that exists in vanilla, the game will load your files right alongside the original ones. Your custom katana sits next to the vanilla katana. Your new recipe appears in the crafting menu. The game doesn't care if it's vanilla or modded - it just loads it all.
+
+## Let's Prove It: Creating a Super Katana
+
+Enough theory. Let's actually do something.
+
+**Our goal:** Create a "Wicked Katana" that does twice the damage of the regular Katana.
+
+### Step 1: Find the Vanilla Katana
+
+First, we need to see how the original Katana is defined. To do this, we need to find Project Zomboid's game files.
+
+> **Finding PZ's Game Files:**
+> 
+> The easy way: In Steam, right-click Project Zomboid → **Manage** → **Browse Local Files**
+> 
+> This opens the game folder. Look for the `media` folder (it's alphabetical, so it'll be in the M's).
+>
+> The typical path looks like:
+> `C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid\media`
+
+Now we need to find where weapons are defined. Navigate to:
+
+```
+ProjectZomboid/media/scripts/items_weapons.txt
+```
+
+Open this file in any text editor (Notepad works fine, but VS Code or Notepad++ are better). Use **Ctrl+F** to search for "Katana" and you'll find:
+
+```
+item Katana
+{
+    DisplayCategory = Weapon,
+    MaxRange = 1.4,
+    WeaponSprite = Katana,
+    MinAngle = 0.8,
+    Type = Weapon,
+    MinimumSwingTime = 3,
+    HitFloorSound = KatanaHit,
+    ImpactSound = KatanaHit,
+    DoorHitSound = KatanaHit,
+    HitSound = KatanaHit,
+    SwingSound = KatanaSwing,
+    KnockBackOnNoDeath = TRUE,
+    SwingAmountBeforeImpact = 0.02,
+    Categories = LongBlade,
+    Weight = 2,
+    ConditionLowerChanceOneIn = 15,
+    PushBackMod = 0.5,
+    SubCategory = Swinging,
+    ConditionMax = 10,
+    MaxHitCount = 3,
+    DoorDamage = 8,
+    SwingAnim = Bat,
+    CriticalChance = 30,
+    CritDmgMultiplier = 10,
+    DisplayName = Katana,
+    MinRange = 0.61,
+    SwingTime = 3,
+    HitAngleMod = -30,
+    KnockdownMod = 0,
+    Icon = Katana,
+    RunAnim = Run_Weapon2,
+    BreakSound = KatanaBreak,
+    TreeDamage = 1,
+    MinDamage = 8,
+    MaxDamage = 8,
+    BaseSpeed = 1,
+    WeaponLength = 0.4,
+    DamageCategory = Slash,
+    DamageMakeHole = TRUE,
+    TwoHandWeapon = TRUE,
+    AttachmentType = BigBlade,
+}
+```
+
+Look at that. It's just a list of properties with values. No scary code. No mysterious symbols. Just `PropertyName = Value` over and over.
+
+### Step 2: Understanding What We're Looking At
+
+Before we copy this, let's understand the key parts:
+
+**The item declaration:**
+```
+item Katana
+```
+This is the **internal name** - what the game uses to identify this item. When you spawn items or reference them in recipes, you use this name.
+
+**The curly braces `{ }`:**
+Everything between these braces belongs to this item. Think of it like a container.
+
+**The properties:**
+Each line like `MinDamage = 8` sets one attribute of the item. Change the number, change the item.
+
+The key damage properties for our Super Katana:
+- `MinDamage = 8` - Minimum damage per hit
+- `MaxDamage = 8` - Maximum damage per hit (same as min means consistent damage)
+
+### Step 3: Create Your Mod's File Structure
+
+Now for your mod. You need to create folders that match where the Katana file lives:
+
+```
+YourModName/
+└── media/
+    └── scripts/
+        └── my_weapons.txt
+```
+
+> **Important Naming Note:**
+> 
+> Do NOT name your file `items_weapons.txt` (the same as vanilla). If you do, you might overwrite vanilla content or cause conflicts. Always use unique file names like `my_weapons.txt`, `wickedweapons.txt`, or `[YourModName]_items.txt`.
+
+### Step 4: Understanding Modules
+
+Open your new `my_weapons.txt` file. Before we add our item, we need to understand **modules**.
+
+A module is like a namespace - it's a container that holds items and prevents naming conflicts. The vanilla game uses a module called `Base` for most items.
+
+Here's the structure:
+
+```
+module Base {
+    imports {
+        Base
+    }
+
+    item YourItemHere {
+        // properties go here
+    }
+}
+```
+
+**Why `module Base`?**
+
+Using `module Base` puts your item alongside vanilla items. This works fine, but has a downside: your items get mixed in with hundreds of vanilla items, making them harder to find when testing or using admin commands.
+
+**Better approach - Your Own Module:**
+
+You can create your own module:
+
+```
+module WickedWeapons {
+    imports {
+        Base
+    }
+
+    item WickedKatana {
+        // properties
+    }
+}
+```
+
+Now your item's full name is `WickedWeapons.WickedKatana` instead of `Base.WickedKatana`. Much easier to find!
+
+> **Module Naming Rules:**
+> - No spaces
+> - Start with a letter
+> - Letters, numbers, and underscores only
+> - Keep it short - you'll type this a lot
+> - Examples: `MyMod`, `WickedWeapons`, `BobsItems`
+
+**What does `imports { Base }` do?**
+
+This imports all vanilla items so you can reference them. If a recipe needs `Base.Plank`, the import makes that work. You generally always want to import Base.
+
+### Step 5: Create the Wicked Katana
+
+Now let's write our item. We'll copy the Katana but change the name and double the damage:
+
+```
+module WickedWeapons {
+    imports {
+        Base
+    }
+
+    item WickedKatana
+    {
+        /* Display */
+        DisplayCategory = Weapon,
+        DisplayName = Wicked Katana,
+        Icon = Katana,
+        
+        /* Type & Category */
+        Type = Weapon,
+        SubCategory = Swinging,
+        Categories = LongBlade,
+        DamageCategory = Slash,
+        DamageMakeHole = TRUE,
+        TwoHandWeapon = TRUE,
+        AttachmentType = BigBlade,
+        
+        /* Visual */
+        WeaponSprite = Katana,
+        
+        /* Range */
+        MinRange = 0.61,
+        MaxRange = 1.4,
+        MinAngle = 0.8,
+        WeaponLength = 0.4,
+        
+        /* Speed & Animation */
+        SwingTime = 3,
+        MinimumSwingTime = 3,
+        BaseSpeed = 1,
+        SwingAnim = Bat,
+        RunAnim = Run_Weapon2,
+        SwingAmountBeforeImpact = 0.02,
+        
+        /* DAMAGE - Doubled from vanilla! */
+        MinDamage = 16,
+        MaxDamage = 16,
+        CriticalChance = 30,
+        CritDmgMultiplier = 10,
+        
+        /* Combat Modifiers */
+        MaxHitCount = 3,
+        PushBackMod = 0.5,
+        KnockdownMod = 0,
+        KnockBackOnNoDeath = TRUE,
+        HitAngleMod = -30,
+        
+        /* Durability */
+        ConditionMax = 10,
+        ConditionLowerChanceOneIn = 15,
+        
+        /* Weight */
+        Weight = 2,
+        
+        /* Environmental Damage */
+        DoorDamage = 8,
+        TreeDamage = 1,
+        
+        /* Sounds */
+        SwingSound = KatanaSwing,
+        HitSound = KatanaHit,
+        HitFloorSound = KatanaHit,
+        ImpactSound = KatanaHit,
+        DoorHitSound = KatanaHit,
+        BreakSound = KatanaBreak,
+    }
+}
+```
+
+Notice what we changed:
+- `item WickedKatana` - New internal name
+- `DisplayName = Wicked Katana` - What players see in-game
+- `MinDamage = 16` and `MaxDamage = 16` - Doubled from 8!
+
+We kept `Icon = Katana` and `WeaponSprite = Katana` so our weapon uses the vanilla Katana's appearance. You could create custom graphics later, but this works perfectly for now.
+
+### Step 6: That's It!
+
+Save the file. Your mod now adds a Wicked Katana to Project Zomboid.
+
+To test it, you'd enable the mod and use debug mode to spawn `WickedWeapons.WickedKatana` - but we'll cover testing in another article.
+
+## The Quick Summary
+
+What we actually did:
+
+1. Found the vanilla Katana definition in `media/scripts/items_weapons.txt`
+2. Created a mod with `media/scripts/my_weapons.txt`
+3. Copied the Katana definition
+4. Changed the name and damage values
+5. Done
+
+That's modding. Copy, paste, change some numbers. The game handles everything else.
+
+## Understanding Item Properties
+
+Let's break down what those properties actually do, organized by category:
+
+### Display Properties
+| Property | What It Does | Example |
+|----------|--------------|----------|
+| `DisplayName` | Name shown to players | `Wicked Katana` |
+| `DisplayCategory` | Category in spawn menus | `Weapon` |
+| `Icon` | Inventory icon sprite | `Katana` |
+
+### Type Properties
+| Property | What It Does | Example |
+|----------|--------------|----------|
+| `Type` | Item type (Weapon, Food, Normal, etc.) | `Weapon` |
+| `SubCategory` | Weapon subtype | `Swinging` |
+| `Categories` | Skill category | `LongBlade` |
+| `DamageCategory` | Damage type | `Slash` |
+
+### Damage Properties
+| Property | What It Does | Example |
+|----------|--------------|----------|
+| `MinDamage` | Minimum damage per hit | `16` |
+| `MaxDamage` | Maximum damage per hit | `16` |
+| `CriticalChance` | % chance to crit | `30` |
+| `CritDmgMultiplier` | Critical hit multiplier | `10` |
+
+### Combat Properties
+| Property | What It Does | Example |
+|----------|--------------|----------|
+| `MaxHitCount` | Max zombies hit per swing | `3` |
+| `PushBackMod` | How much knockback | `0.5` |
+| `KnockdownMod` | Chance to knock down | `0` |
+
+### Durability Properties
+| Property | What It Does | Example |
+|----------|--------------|----------|
+| `ConditionMax` | Maximum durability | `10` |
+| `ConditionLowerChanceOneIn` | 1-in-X chance to lose durability per hit | `15` |
+
+## Syntax: The Patterns That Matter
+
+Since these are text files (not code), the game's engine **parses** them - it reads through expecting specific patterns. If you break the pattern, the item won't load.
+
+**Key syntax rules:**
+
+1. **Commas after every property** (except the last one)
+   ```
+   MinDamage = 8,
+   MaxDamage = 8,    <- comma
+   Weight = 2,       <- no comma on last property is OK, but comma works too
+   ```
+
+2. **Curly braces must match**
+   ```
+   item Katana {
+       // properties
+   }   <- this closes the item
+   ```
+
+3. **Module wraps everything**
+   ```
+   module Base {
+       item Thing { }
+   }   <- this closes the module
+   ```
+
+4. **No special characters in names** - Letters, numbers, underscores only
+
+5. **Case matters** - `MinDamage` is not the same as `mindamage`
+
+## What's Next?
+
+You've just created your first item mod. The same principles apply to:
+- Adding new foods
+- Creating clothing
+- Making tools
+- And much more
+
+Recipes work similarly - just a different set of properties in a different pattern.
+
+When you're ready to go deeper, the next articles cover the full mod folder structure, the `mod.info` file, and how to test your creations in-game.
+
+## Key Takeaways
+
+1. **Mods are just folders** with a `mod.info` file and a `media` folder
+2. **The Indie Stone exposed their files** so we can mod without coding
+3. **Items are defined in `.txt` files** using simple `Property = Value` patterns
+4. **Copy vanilla, change values** - that's the core workflow
+5. **Use your own module name** to keep your items organized
+6. **Syntax matters** - commas, braces, and spelling must be exact
+7. **You don't need to be a programmer** - this is data entry, not coding
