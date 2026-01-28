@@ -21,18 +21,58 @@ last_updated: 2026-01-18
 
 # Vanilla Food Reference
 
-Complete reference for all **464 vanilla food items** in Project Zomboid Build 41.
+## Introduction
 
-## Food Properties
+You're creating a custom energy bar mod and need to know how many calories vanilla snacks have. Or you're making a luxury restaurant mod and want your steak to match vanilla steak's hunger reduction. Or maybe you just want your custom food to feel balanced alongside the game's existing 464 food items.
+
+If you're feeling overwhelmed by the sheer number of food items in Project Zomboid, you're not alone. There are 464 different food items with different hunger values, calorie counts, perishability, and weights. Figuring out what's "normal" for a sandwich or what properties a fruit should have can feel impossible.
+
+Here's the good news: this reference organizes all vanilla food by type, so you can quickly find similar items to yours and see what properties they use. I'll show you exactly how to use this reference to make balanced, realistic food mods.
+
+## How to Use This Reference
+
+When creating a custom food item, follow this pattern:
+
+### Step 1: Find Similar Vanilla Food
+
+Scroll through the food table below and find items similar to what you're creating:
+
+- **Making a snack?** Look at chips, crackers, candy
+- **Making a meal?** Look at burgers, pizza, steak
+- **Making a vegetable?** Look at carrots, tomatoes, lettuce
+- **Making a drink?** Look at soda, beer, water bottles
+- **Making a dessert?** Look at cake, cookies, ice cream
+
+### Step 2: Compare Properties
+
+Look at the properties of similar vanilla items:
+
+| Property | What It Means | Typical Values |
+|----------|---------------|----------------|
+| **Hunger** | How much hunger it reduces (negative = fills you up) | Snacks: -5 to -15<br>Meals: -20 to -40<br>Large items: -50 to -60 |
+| **Calories** | Caloric content (affects nutrition and weight gain) | Vegetables: 10-100<br>Snacks: 100-200<br>Meals: 200-500<br>High-calorie: 500+ |
+| **Perishable** | Does it spoil? | Fresh food: Yes<br>Canned/packaged: No |
+| **Weight** | Item weight in inventory | Snacks: 0.1-0.2<br>Meals: 0.3-0.5<br>Large items: 0.6-1.0 |
+
+### Step 3: Make Your Decision
+
+Choose values that match the vanilla pattern:
+
+- **Don't make hunger reduction too extreme** (-5 to -60 range is normal)
+- **Match calories to real-world expectations** (apple = 95, pizza slice = 990)
+- **Perishability should be realistic** (fresh = perishable, packaged = not)
+- **Weight should feel reasonable** (candy bar = 0.1, burger = 0.3)
+
+## Food Properties Reference
 
 | Property | Description |
 |----------|-------------|
 | **Hunger** | Hunger reduction (negative = fills you up) |
-| **Thirst** | Thirst change |
+| **Thirst** | Thirst change (usually 0 for solid food, negative for drinks) |
 | **Calories** | Caloric content |
-| **Carbs/Protein/Fat** | Nutritional values |
-| **Unhappy** | Unhappiness change |
-| **Boredom** | Boredom change |
+| **Carbs/Protein/Fat** | Nutritional values (affects long-term nutrition) |
+| **Unhappy** | Unhappiness change (eating variety reduces this) |
+| **Boredom** | Boredom change (eating same food repeatedly increases this) |
 
 ## All Food Items
 
@@ -502,6 +542,195 @@ Complete reference for all **464 vanilla food items** in Project Zomboid Build 4
 | **Yogurt** | -10 | 30 | Yes | 0.3 |
 | **Zucchini** | -10 | 33 | Yes | 0.3 |
 | **in a Glass** | 0 | ? | No | 0.3 |
+
+---
+
+## Common Mistakes
+
+### ❌ Wrong: Making Hunger Reduction Too Extreme
+
+```
+item MyCustomSuperFood
+{
+    Type = Food,
+    DisplayName = Super Food Bar,
+    HungerChange = -200,                    // WRONG! Way too high
+    Weight = 0.1,
+}
+```
+
+**Why it's wrong:** Looking at vanilla food items, even the largest items (watermelon, pizza, can of oats) only give -60 to -150 hunger reduction. A tiny 0.1-weight bar shouldn't give -200.
+
+✅ **Right:**
+
+```
+item MyCustomEnergyBar
+{
+    Type = Food,
+    DisplayName = Energy Bar,
+    HungerChange = -15,                     // Matches vanilla granola bar (-15)
+    Calories = 270,                         // Matches vanilla granola bar
+    Weight = 0.2,
+}
+```
+
+### ❌ Wrong: Mismatched Calories and Hunger
+
+```
+item MyCustomApple
+{
+    Type = Food,
+    DisplayName = Custom Apple,
+    HungerChange = -50,                     // Says it fills you up a lot
+    Calories = 95,                          // But has same calories as vanilla apple
+    Weight = 0.2,
+}
+```
+
+**Why it's wrong:** Vanilla apple has HungerChange = -16 and Calories = 95. Your custom apple claims to fill you up 3x more (-50 vs -16) but has the same calories. The hunger reduction and calories should be proportional.
+
+✅ **Right:**
+
+```
+item MyCustomApple
+{
+    Type = Food,
+    DisplayName = Custom Apple,
+    HungerChange = -16,                     // Matches vanilla apple
+    Calories = 95,                          // Matches vanilla apple
+    Weight = 0.2,
+}
+```
+
+### ❌ Wrong: Fresh Food That Doesn't Spoil
+
+```
+item MyCustomSteak
+{
+    Type = Food,
+    DisplayName = Custom Steak,
+    HungerChange = -40,
+    Calories = 220,
+    DaysFresh = 0,                          // WRONG! Fresh meat should spoil
+    DaysTotallyRotten = 0,
+    Weight = 0.3,
+}
+```
+
+**Why it's wrong:** Looking at vanilla items, all raw meat (steak, chicken, pork chop) has `DaysFresh = 2` and `DaysTotallyRotten = 6`. Your custom steak with `DaysFresh = 0` means it starts rotten immediately, which doesn't match vanilla patterns.
+
+✅ **Right:**
+
+```
+item MyCustomSteak
+{
+    Type = Food,
+    DisplayName = Custom Steak,
+    HungerChange = -40,                     // Matches vanilla steak
+    Calories = 220,                         // Matches vanilla steak
+    DaysFresh = 2,                          // Fresh for 2 days (like vanilla steak)
+    DaysTotallyRotten = 6,                  // Rots after 6 days (like vanilla steak)
+    Weight = 0.3,
+}
+```
+
+### ❌ Wrong: Unrealistic Weight Values
+
+```
+item MyCustomCandyBar
+{
+    Type = Food,
+    DisplayName = Custom Candy Bar,
+    HungerChange = -10,
+    Calories = 200,
+    Weight = 2.5,                           // WRONG! Way too heavy for candy
+}
+```
+
+**Why it's wrong:** Looking at vanilla snacks (chocolate, chips, candy), they weigh 0.1-0.2. A candy bar weighing 2.5 (same as watermelon at 3.0!) is unrealistic.
+
+✅ **Right:**
+
+```
+item MyCustomCandyBar
+{
+    Type = Food,
+    DisplayName = Custom Candy Bar,
+    HungerChange = -10,                     // Matches vanilla chocolate (-20) scaled down
+    Calories = 200,                         // Similar to vanilla choco cakes
+    Weight = 0.2,                           // Matches vanilla chocolate/candy weight
+}
+```
+
+## Try It Yourself
+
+Let's create a custom protein shake item using vanilla food patterns.
+
+### Step 1: Research Similar Items
+
+Look at the reference above and find drinks with high calories:
+- Milk: Hunger -10, Calories 110, Weight 1.0
+- Melted Ice Cream: Hunger -30, Calories 1680, Weight 0.2
+- Chardonnay: Hunger -20, Calories 481, Weight 1.0
+
+A protein shake should:
+- Fill you up moderately (between milk and ice cream)
+- Have decent calories (protein-rich)
+- Weigh like a drink bottle
+
+### Step 2: Create the Item File
+
+Create `media/scripts/my_custom_food.txt`:
+
+```
+module MyMod
+{
+    imports
+    {
+        Base
+    }
+
+    item MyProteinShake
+    {
+        Type = Food,
+        DisplayName = Protein Shake,
+        Icon = WaterBottle,                     // Using vanilla icon for now
+        Weight = 0.7,                            // Similar to water bottle (0.7)
+        HungerChange = -20,                      // More filling than milk, less than melted ice cream
+        ThirstChange = -10,                      // Drinks reduce thirst
+        Calories = 300,                          // High protein = higher calories than milk
+        Carbohydrates = 10,
+        Proteins = 30,                           // High protein content
+        Lipids = 5,
+        DaysFresh = 3,                           // Fresh for 3 days (refrigerated)
+        DaysTotallyRotten = 7,                   // Rots after 7 days
+        CustomContextMenu = Drink,               // Shows "Drink" in context menu
+    }
+}
+```
+
+### Step 3: Test in Game
+
+1. Start Project Zomboid in debug mode
+2. Press **F** to bring up item spawner
+3. Type "Protein Shake" and spawn it
+4. Right-click the protein shake in your inventory
+
+**What You Should See:**
+- Item appears with water bottle icon
+- Shows "Drink Protein Shake" in context menu
+- After drinking: hunger reduces by 20, thirst reduces by 10
+- Item weight is 0.7 (same as water bottle)
+- Item will spoil after 3 days fresh → 7 days totally rotten
+
+### Why This Works
+
+This protein shake uses vanilla patterns:
+- **Hunger reduction (-20)** matches vanilla drinks that fill you up (beer, chardonnay)
+- **Calories (300)** are realistic for protein shakes
+- **Weight (0.7)** matches vanilla bottle drinks
+- **Perishability (3 fresh/7 rotten)** matches vanilla fresh drinks
+- **High protein (30)** makes it nutritionally distinct from other drinks
 
 ---
 
