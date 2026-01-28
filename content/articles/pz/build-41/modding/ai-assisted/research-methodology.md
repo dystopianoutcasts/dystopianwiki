@@ -15,6 +15,35 @@ tags:
   - methodology
   - documentation
 excerpt: Learn a research-first approach to AI-assisted modding where AI documents and understands game systems before implementing, resulting in dramatically better output.
+table_of_contents:
+  - text: "What Is Research-First Modding?"
+    link: "#what-is-research-first-modding"
+  - text: "Prerequisites"
+    link: "#prerequisites"
+  - text: "Your First Research Session"
+    link: "#your-first-research-session"
+  - text: "Why Research-First Works"
+    link: "#why-research-first-works"
+  - text: "The Research-First Workflow"
+    link: "#the-research-first-workflow"
+  - text: "Step 1: Identify the Closest Equivalent"
+    link: "#step-1-identify-the-closest-equivalent"
+  - text: "Step 2: Direct AI to Research"
+    link: "#step-2-direct-ai-to-research"
+  - text: "Step 3: AI Produces Documentation"
+    link: "#step-3-ai-produces-documentation"
+  - text: "Step 4: Reference the Documentation"
+    link: "#step-4-reference-the-documentation"
+  - text: "Step 5: Implement with Understanding"
+    link: "#step-5-implement-with-understanding"
+  - text: "Common Mistakes"
+    link: "#common-mistakes"
+  - text: "Try It Yourself"
+    link: "#try-it-yourself"
+  - text: "Practical Example: Complete Workflow"
+    link: "#practical-example-complete-workflow"
+  - text: "Key Takeaways"
+    link: "#key-takeaways"
 related_articles:
   - context-library
   - writing-prompts
@@ -24,20 +53,175 @@ last_updated: 2026-01-19
 
 # AI Research Methodology
 
-## Overview
+> Learn how to make AI understand game systems deeply before coding, resulting in dramatically better mod quality.
 
-The most effective way to use AI for modding isn't to point it at code and say "copy this." AI models work best when they have **deep understanding** of the problem they're solving. This guide teaches a research-first methodology that dramatically improves AI output quality.
+---
 
-## The Core Principle
+## What Is Research-First Modding?
 
-AI models have vast training data, but that knowledge isn't always "active" during your conversation. When you ask AI to research a topic and write documentation about it, two things happen:
+You want to create a custom fishing rod for Project Zomboid. You open ChatGPT and type: "Create a fishing rod item for PZ Build 41."
 
-1. **The AI retrieves and synthesizes** relevant knowledge from its training
-2. **That understanding becomes part of the active context** - it's "fresh" in the AI's mind
+AI gives you this:
 
-This is fundamentally different from pasting raw code. Raw code gives the AI *syntax* to copy. Research documentation gives the AI *understanding* to apply.
+```
+item FishingRod {
+    Name = Fishing Rod,
+    Weight = 1.5,
+    Type = Tool,
+    Durability = 100,
+}
+```
+
+You test it. Half the properties don't exist in PZ. The ones that do are named wrong. You spend an hour fixing AI's guesses.
+
+Now imagine a different approach. You ask AI: "Research how fishing works in PZ Build 41. Document the fishing rod properties, the fishing action system, and how fish are caught."
+
+AI spends 3 minutes researching and produces a detailed document explaining the entire fishing system with correct property names, file locations, and code patterns. *Then* you say "Now create my custom fishing rod" - and AI generates perfect code on the first try because it actually understands the system.
+
+That's research-first modding. When I discovered this approach, my AI-generated code went from "needs 5 rounds of fixes" to "works immediately" about 80% of the time. The difference is that AI isn't guessing anymore - it's working from understanding.
+
+Let me show you exactly how this works, starting with the simplest possible example.
+
+**You would use research-first modding when:**
+- You're creating something based on vanilla systems (weapons, recipes, vehicles)
+- AI keeps generating code with wrong property names
+- You want to understand a system before modifying it
+- You're starting a complex mod and need to map out how things work
+
+---
+
+## Prerequisites
+
+Before this article, you should understand:
+- How to use AI tools for modding ([AI Tools for Modding](./ai-for-modding))
+- Basic PZ modding concepts (items, recipes, Lua scripts)
+- Where vanilla PZ files are located
+
+You don't need to be an expert - this methodology actually helps beginners learn faster because AI explains systems as it researches them.
+
+---
+
+## Your First Research Session
+
+Let's do the simplest possible research-first workflow. We'll research one vanilla item, then create a custom version.
+
+### Step 1: Pick a Research Target
+
+You want to create a custom backpack. The vanilla game already has backpacks, so that's your research target.
+
+### Step 2: Ask AI to Research
+
+Open ChatGPT or Claude and paste this:
+
+```
+I'm modding Project Zomboid Build 41.
+
+Research the vanilla "Bag_BigHikingBag" item and write a short document explaining:
+1. What properties it has
+2. What each property does
+3. The file location
+
+Keep it focused - just this one item for now.
+```
+
+### Step 3: AI Researches and Documents
+
+AI will produce something like:
+
+```markdown
+# BigHikingBag Analysis (PZ Build 41)
+
+## Location
+Found in: media/scripts/items_bags.txt
+
+## Item Definition
+item Bag_BigHikingBag {
+    DisplayCategory = Container,
+    Type = Container,
+    Capacity = 22,
+    WeightReduction = 70,
+    Weight = 1.5,
+    Icon = Bag_BigHikingBag,
+    DisplayName = Big Hiking Bag,
+}
+
+## Properties Explained
+- **Capacity = 22**: Can hold 22 weight units of items
+- **WeightReduction = 70**: Items inside weigh 70% less (30% of normal weight)
+- **Weight = 1.5**: The bag itself weighs 1.5 units when empty
+- **DisplayCategory = Container**: Shows up in "Container" category in inventory
+- **Type = Container**: Tells the game this is a container item
+```
+
+### Step 4: Create Your Custom Item
+
+Now, in the same conversation, say:
+
+```
+Based on your research above, create a "Bag_MilitaryRucksack" that:
+- Has 25 capacity (more than the hiking bag)
+- Has 75 weight reduction (better than hiking bag)
+- Weighs 2.0 (heavier than hiking bag)
+- Use the same property structure you documented
+```
+
+AI will generate:
+
+```
+item Bag_MilitaryRucksack {
+    DisplayCategory = Container,  -- Same category as hiking bag
+    Type = Container,              -- Must be Container for bags
+    Capacity = 25,                 -- More storage than hiking bag's 22
+    WeightReduction = 75,          -- Better reduction than hiking bag's 70
+    Weight = 2.0,                  -- Heavier than hiking bag's 1.5
+    Icon = Bag_MilitaryRucksack,
+    DisplayName = Military Rucksack,
+}
+```
+
+Perfect! AI used the correct properties because it just researched them. No guessing.
+
+> **Key Takeaway**
+> Research-first means AI documents a system before coding. This "activates" AI's knowledge of that system, resulting in accurate code instead of guesses.
+
+---
+
+## Why Research-First Works
+
+Let's understand what happens in AI's "mind" during research vs. direct coding.
+
+### Without Research: AI Guesses
+
+**You ask:** "Create a fishing rod item for PZ Build 41"
+
+**AI's process:**
+1. "I know general game item properties exist"
+2. "Fishing rods probably have durability, damage, maybe fishing_power?"
+3. Generates code based on *generic game item concepts*
+
+**Result:** Wrong property names, missing required properties, incorrect syntax.
+
+---
+
+### With Research: AI Understands
+
+**You ask:** "First research how fishing rods work in PZ Build 41, then create one"
+
+**AI's process:**
+1. Recalls training data about PZ fishing systems
+2. Organizes that knowledge into documentation
+3. That documentation becomes "active context" in the conversation
+4. When generating code, AI references the exact patterns it just documented
+
+**Result:** Correct properties, proper syntax, follows vanilla conventions.
+
+**Why this works:** AI models have vast knowledge, but not all of it is "active" at once. Research brings specific knowledge to the front of AI's attention. It's like the difference between knowing something is "somewhere in your memory" vs. having it written on a notepad in front of you.
+
+---
 
 ## The Research-First Workflow
+
+Here's the complete 5-step process you'll use for every complex modding task.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -56,32 +240,41 @@ This is fundamentally different from pasting raw code. Raw code gives the AI *sy
 └─────────────────────────────────────────────────────────────┘
 ```
 
+Let's go through each step in detail.
+
+---
+
 ## Step 1: Identify the Closest Equivalent
 
 Before asking AI to build anything, ask yourself:
 
-> "What existing feature in vanilla PZ or another mod is closest to what I want?"
+> "What existing feature in vanilla PZ is closest to what I want?"
 
-This is critical. If you want to create:
-- A new weapon → Research how vanilla weapons work
-- A crafting system → Research vanilla recipes and crafting
-- A custom UI → Research existing UI implementations
-- A timed event → Research how vanilla handles scheduled events
+This is critical because AI researches best when given a specific target.
 
-### Example: Custom Fishing Rod
+### Good Research Targets
 
-You want to create a custom fishing rod with special properties.
+| What You Want to Create | Research Target |
+|------------------------|-----------------|
+| Custom weapon | Vanilla weapons (pick one similar to yours) |
+| New recipe | Vanilla recipes (pick similar complexity) |
+| Timed action | Existing timed actions (ISTimedAction examples) |
+| Custom UI panel | Vanilla UI panels (ISPanel examples) |
+| Special item effect | Items with similar effects (buffs, debuffs) |
 
-**Wrong approach:** "Make me a fishing rod item"
+### Example: Custom Torch That Burns Forever
 
-**Right approach:** First identify that vanilla already has fishing rods. Your research target is the vanilla fishing system.
+**What you want:** A torch that never runs out of fuel.
 
-## Step 2: Direct the AI to Research
+**Closest equivalent:** The vanilla torch (Base.Torch) which *does* run out.
 
-Now ask the AI to research that specific functionality. Be explicit about:
-- The game version (Build 41, Build 42, etc.)
-- What aspects to focus on
-- That you want a documentation-style output
+**Research target:** "How does the vanilla torch work, specifically its fuel/condition system?"
+
+---
+
+## Step 2: Direct AI to Research
+
+Now give AI a focused research task. Be specific about what you want to understand.
 
 ### Research Prompt Template
 
@@ -91,266 +284,484 @@ I'm modding Project Zomboid Build 41.
 I need you to research [SPECIFIC FEATURE] thoroughly.
 
 Please write a markdown document that explains:
-1. How this feature works in vanilla
-2. The relevant file locations and structure
+1. How this works in vanilla
+2. Relevant file locations
 3. Key properties/parameters and what they do
-4. Code examples with explanations
+4. Code examples with inline comments
 5. Common patterns and conventions
-6. Any quirks or gotchas to be aware of
 
-Search for Build 41 specific information. I want to understand
-this deeply before implementing my own version.
+I want to understand this before implementing my own version.
 ```
 
-### Example Research Request
+### Example Research Prompts
 
+**For an item:**
 ```
-I'm modding Project Zomboid Build 41.
+Research the vanilla "Base.Torch" item in PZ Build 41.
 
-I need you to research the vanilla fishing system thoroughly.
+Document:
+1. All properties it uses
+2. What each property does
+3. How the light/fuel system works
+4. File location
 
-Please write a markdown document that explains:
-1. How fishing works in vanilla (mechanics, items, skills)
-2. Where fishing-related files are located
-3. The FishingRod item properties and what each does
-4. How the fishing action/timed action works in Lua
-5. How fish are defined and caught
-6. Common patterns for fishing-related recipes
-
-Search for Build 41 specific information. I want to understand
-this deeply before implementing my custom fishing rod.
+I want to create a custom torch variant.
 ```
+
+**For a recipe:**
+```
+Research how "Make Campfire" recipe works in PZ Build 41.
+
+Document:
+1. The recipe syntax
+2. How it handles multiple ingredients
+3. How it consumes items vs. keeping tools
+4. What OnCreate or OnGiveXP means
+
+I want to create similar outdoor crafting recipes.
+```
+
+**For a Lua system:**
+```
+Research how "ISTimedAction" works in PZ Build 41.
+
+Document:
+1. The base class structure
+2. Required methods (perform, start, update, stop)
+3. How to pass data to the action
+4. Common patterns in vanilla timed actions
+
+I want to create a custom action for my mod.
+```
+
+---
 
 ## Step 3: AI Produces Documentation
 
-The AI will produce a comprehensive document. This document contains:
+AI will research and produce a document. This document should include:
 
-- **Explanations** - Not just code, but *why* things work
-- **Examples** - Real syntax from vanilla or documented sources
-- **Context** - How pieces connect together
-- **Patterns** - Conventions that should be followed
+- **Clear explanations** of how things work
+- **Code examples** with comments
+- **File locations** so you can verify
+- **Patterns** that you should follow
 
 ### What Good Research Output Looks Like
 
 ```markdown
-# Project Zomboid Fishing System (Build 41)
+# Vanilla Torch System (PZ Build 41)
 
-## Overview
-The fishing system in PZ involves several interconnected components:
-the fishing rod item, the fishing action (timed action), fish items,
-and the fishing skill...
+## Item Definition Location
+`media/scripts/items_lighting.txt`
 
-## File Locations
-- Items: `media/scripts/items_fishing.txt`
-- Lua Actions: `media/lua/client/TimedActions/ISFishingAction.lua`
-- Fish Definitions: `media/scripts/items_food.txt`
+## Properties
 
-## FishingRod Item Properties
+| Property | Value | What It Does |
+|----------|-------|--------------|
+| `LightDistance` | 15 | Radius of light emitted |
+| `LightStrength` | 1.0 | Brightness intensity |
+| `TorchCone` | true | Creates directional cone of light |
+| `UseDelta` | 0.0005 | Condition loss per use |
+| `UseWhileEquipped` | true | Can be activated from hotbar |
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `UseWhileEquipped` | boolean | Allows use from hotbar |
-| `UseDelta` | float | Condition loss per use |
-| `FishingLure` | boolean | Whether it has a lure attached |
-
-## Example: Vanilla Fishing Rod
+## Full Definition
 ```lua
-item FishingRod {
-    Weight = 1.5,
-    Type = Normal,
-    DisplayName = Fishing Rod,
-    Icon = FishingRod,
-    UseWhileEquipped = TRUE,
-    ...
+item Torch {
+    Weight = 0.8,              -- Light enough to carry multiple
+    Type = Drainable,          -- Has a condition that drains
+    DisplayName = Torch,
+    Icon = Torch,
+    LightDistance = 15,        -- How far the light reaches
+    LightStrength = 1.0,       -- How bright it is
+    TorchCone = true,          -- Directional light
+    UseDelta = 0.0005,         -- Drains 0.0005 condition per tick
+    UseWhileEquipped = true,   -- Works from hotbar
 }
 ```
 
-## How Fishing Actions Work
-The `ISFishingAction` extends `ISBaseTimedAction` and...
+## How It Works
+The torch uses the "Drainable" type, meaning it has a condition value (0-1).
+Each game tick while active, it loses UseDelta from its condition.
+When condition reaches 0, the torch is consumed/destroyed.
 
-[continues with detailed explanations]
+## Key Pattern
+For infinite-use items, either:
+- Set UseDelta to 0 (never drains)
+- Don't use Type = Drainable
 ```
+
+Notice how this explains *why* things work, not just *what* the code is. This understanding is what AI will use when creating your custom version.
+
+---
 
 ## Step 4: Reference the Documentation
 
-Now comes the key insight: **point the AI back to its own documentation**.
+Here's the key insight: **point AI back to its own documentation**.
 
-The documentation is now part of your conversation context. The AI has:
-- Retrieved the relevant knowledge
-- Organized it coherently
-- Made it "active" in the current session
+The documentation is now part of your conversation. AI can reference it directly.
 
 ### Implementation Prompt Template
 
 ```
-Based on the fishing system documentation above, I now want to
-create a custom fishing rod for my mod.
+Based on your documentation above, now create [MY CUSTOM THING]:
 
 Requirements:
-- [Your specific requirements]
-- [More requirements]
+- [Requirement 1]
+- [Requirement 2]
+- [Requirement 3]
 
-Using the patterns and syntax from the documentation, please create:
-1. The item definition
-2. Any necessary Lua modifications
-3. Related recipes if applicable
-
-Follow the conventions documented above.
+Follow the syntax and patterns you documented.
 ```
+
+### Example
+
+```
+Based on your torch documentation above, create "Base.EternalTorch":
+
+Requirements:
+- Same light distance and strength as vanilla torch
+- Never runs out (doesn't drain condition)
+- Weighs slightly more (1.0 instead of 0.8)
+- Uses the patterns you documented
+
+Follow the vanilla torch structure but modify for infinite use.
+```
+
+AI will generate:
+
+```lua
+item EternalTorch {
+    Weight = 1.0,              -- Heavier than vanilla torch's 0.8
+    Type = Normal,             -- NOT Drainable - won't run out
+    DisplayName = Eternal Torch,
+    Icon = Torch,              -- Reuse vanilla icon
+    LightDistance = 15,        -- Same as vanilla torch
+    LightStrength = 1.0,       -- Same brightness
+    TorchCone = true,          -- Same directional light
+    -- NO UseDelta - doesn't drain since Type != Drainable
+    UseWhileEquipped = true,   -- Works from hotbar
+}
+```
+
+Perfect! AI understood:
+- Type = Drainable causes fuel drain
+- Removing that makes it infinite
+- Other properties stay the same
+- Syntax matches vanilla patterns
+
+---
 
 ## Step 5: Implement with Understanding
 
-The AI now creates your mod content with:
+The AI now creates your mod with:
+
 - **Correct syntax** - Because it just documented the exact format
-- **Proper conventions** - Because it analyzed vanilla patterns
-- **Appropriate structure** - Because it understands how pieces connect
-- **Fewer errors** - Because it's working from understanding, not guessing
+- **Proper patterns** - Because it analyzed how vanilla does it
+- **Appropriate structure** - Because it understands the system
+- **Fewer bugs** - Because it's not guessing
 
-## Targeting Specific Builds
+**Compare the results:**
 
-PZ modding differs significantly between builds. Always specify your target:
+**Without research:**
+- 5+ rounds of "this property doesn't work"
+- Missing required properties
+- Wrong syntax
+- Takes 30+ minutes to get working
 
-### Build 41 Research
+**With research:**
+- Works on first or second try
+- All required properties included
+- Correct syntax from the start
+- Takes 5-10 minutes total (including research time)
+
+---
+
+## Common Mistakes
+
+### Mistake 1: Skipping Research Phase
+
+❌ **Doesn't work:**
 ```
-Research this for Project Zomboid Build 41 specifically.
-Build 41 uses the older Lua API and ISUI system.
+User: "Create a custom vehicle for PZ Build 41"
+AI: [Generates vehicle with guessed properties]
+User: [Spends an hour fixing wrong properties]
 ```
 
-### Build 42 Research
+✅ **Works:**
 ```
-Research this for Project Zomboid Build 42 specifically.
-Build 42 introduced significant changes including [relevant changes].
-Look for Build 42 documentation and changelogs.
+User: "First, research how vehicles work in PZ Build 41. Document the BaseVehicle properties, templates, and script structure."
+AI: [Produces detailed vehicle documentation]
+User: "Based on that documentation, create a custom pickup truck."
+AI: [Generates correct vehicle using documented patterns]
 ```
 
-The AI can also search online for build-specific information, API changes, and community documentation.
+**Why:** Vehicles are complex with dozens of properties. Research ensures AI knows the correct structure before coding.
 
-## Using Online Sources
+---
 
-Ask the AI to incorporate online research:
+### Mistake 2: Research Request Too Broad
+
+❌ **Doesn't work:**
+```
+"Research everything about PZ modding"
+```
+
+**What happens:** AI produces generic, shallow information because the request is unfocused.
+
+✅ **Works:**
+```
+"Research how the ISTimedAction system works in PZ Build 41, specifically the perform() and start() methods and how to create custom timed actions."
+```
+
+**Why:** Focused research produces deep, actionable understanding of one system instead of shallow knowledge of many systems.
+
+---
+
+### Mistake 3: Not Specifying Build Version
+
+❌ **Doesn't work:**
+```
+"How do recipes work in Project Zomboid?"
+```
+
+**What happens:** AI might give Build 40 information, or mix versions, leading to incompatible code.
+
+✅ **Works:**
+```
+"How do recipes work in Project Zomboid Build 41 specifically? Include evolved recipes if they exist in Build 41."
+```
+
+**Why:** PZ syntax changes significantly between builds. Build 41 and Build 42 have different APIs.
+
+---
+
+### Mistake 4: Not Referencing the Documentation
+
+❌ **Doesn't work:**
+```
+[Gets detailed documentation]
+[Starts new conversation]
+"Create a fishing rod"
+[AI has no context, guesses again]
+```
+
+✅ **Works:**
+```
+[Gets detailed documentation]
+"Based on the fishing system documentation above, create a fishing rod with these properties..."
+[AI references the documentation it just wrote]
+```
+
+**Why:** Documentation is only useful if you reference it in the same conversation. Starting fresh loses all that context.
+
+---
+
+### Mistake 5: Accepting First Draft Without Verification
+
+❌ **Doesn't work:**
+```
+[AI researches and documents]
+[User assumes it's all correct]
+[Implements without checking]
+[Code has errors because AI's research had mistakes]
+```
+
+✅ **Works:**
+```
+[AI researches and documents]
+[User checks a few facts against vanilla files]
+"The documentation says UseDelta, but I see ConditionLowerChance in vanilla. Which is correct for Build 41?"
+[AI corrects the documentation]
+[Then implementation uses correct properties]
+```
+
+**Why:** AI research is usually good but not perfect. Quick verification catches errors before they become code bugs.
+
+---
+
+## Try It Yourself
+
+Let's practice the complete research-first workflow. This exercise takes about 20 minutes.
+
+### Your Goal
+
+Research the vanilla baseball bat, then create a custom weapon based on that research.
+
+### Step 1: Open AI and Start Research
+
+Open ChatGPT or Claude and paste:
 
 ```
-Research the PZ vehicle system for Build 41.
+I'm modding Project Zomboid Build 41.
 
-Please also search for:
-- PZ Wiki documentation on vehicles
-- Community modding guides for vehicle mods
-- The PZ Modding Discord resources
-- GitHub examples of vehicle mods
+Research the vanilla "Base.BaseballBat" weapon item.
 
-Combine what you find with your existing knowledge to create
-comprehensive documentation.
+Document:
+1. All properties it has
+2. What each weapon-specific property does (MaxRange, MaxDamage, etc.)
+3. The file location
+4. Which properties are required vs. optional
+
+Keep it focused on weapon properties.
 ```
+
+### Step 2: Read the Documentation
+
+AI will produce documentation. Read through it and make sure you understand:
+- What properties exist
+- What they mean
+- Which ones you'll need for your custom weapon
+
+### Step 3: Create Your Custom Weapon
+
+In the same conversation, say:
+
+```
+Based on your baseball bat documentation above, create "Base.MetalPipe":
+
+Requirements:
+- Longer reach than baseball bat (maybe +0.2 to MaxRange)
+- Less damage than baseball bat (reduce Max/MinDamage by 20%)
+- Weighs the same as baseball bat
+- Can hit 2 targets like baseball bat
+- Follow the exact property structure you documented
+
+Use inline comments explaining key differences from the baseball bat.
+```
+
+### Step 4: Review the Output
+
+AI should generate something like:
+
+```lua
+item MetalPipe {
+    MaxRange = 1.5,              -- Baseball bat is 1.3, this is +0.2 longer
+    WeaponSprite = MetalPipe,
+    Type = Weapon,
+    Weight = 2,                  -- Same as baseball bat
+    MaxDamage = 0.96,            -- Baseball bat is 1.2, this is 20% less (1.2 * 0.8)
+    MinDamage = 0.64,            -- Baseball bat is 0.8, this is 20% less (0.8 * 0.8)
+    DisplayName = Metal Pipe,
+    Icon = MetalPipe,
+    Categories = Blunt,
+    MaxHitCount = 2,             -- Can hit 2 zombies like baseball bat
+    SubCategory = Swinging,
+    SwingAnim = Bat,
+    ConditionMax = 15,           -- Same durability as baseball bat
+}
+```
+
+### Step 5: Verify Success
+
+Check if:
+- All property names match the documented pattern
+- Math is correct (20% reduction from baseball bat values)
+- Comments explain the reasoning
+- Structure follows vanilla format
+
+If yes, you've successfully used research-first methodology!
+
+**Optional Challenge:** In the same conversation, ask AI to create a recipe for crafting the metal pipe. AI already understands weapon properties from its research, so it will create a sensible recipe.
+
+---
 
 ## Practical Example: Complete Workflow
 
-### Goal: Create a Custom Weapon with Special Effects
+Let's see a full research-first session from start to finish.
 
-**Session 1: Research**
+### Goal: Custom Weapon with Fire Effect
 
-```
-User: I want to create a weapon that sets zombies on fire when it hits them.
-      First, I need to understand how weapons work in PZ Build 41.
-
-      Please research and document:
-      1. Weapon item definitions (melee focus)
-      2. How weapon damage/effects are processed in Lua
-      3. How vanilla handles special weapon effects
-      4. The OnWeaponHitCharacter event or similar
-      5. How fire/burning works on characters
-
-      Write this as a reference document I can use.
-
-AI: [Produces comprehensive documentation on weapons and damage]
-```
-
-**Session 1: Implement**
+**Session Start: Research Phase**
 
 ```
-User: Based on your documentation above, create my fire weapon:
-      - A torch club that has a chance to ignite zombies
-      - Uses the OnWeaponHitCharacter hook you documented
-      - Moderate damage, slow swing
-      - Follows vanilla weapon conventions
+User: I want to create a torch-club weapon that sets zombies on fire when it hits them. Before implementing, I need to understand the relevant systems in PZ Build 41.
 
-AI: [Creates weapon with correct syntax and working Lua code]
+Please research and document:
+1. How melee weapon damage works (OnWeaponHitCharacter event or similar)
+2. How to apply fire/burning to characters
+3. Example weapon that has special effects on hit
+4. The structure of weapon item definitions
+
+Write this as a reference document.
+
+AI: [Produces 2-3 page documentation covering:]
+- Weapon item structure with all properties explained
+- OnWeaponHitCharacter event hook in Lua
+- Character:setOnFire() method for applying fire
+- Example showing how vanilla implements weapon effects
+- File locations for items and Lua scripts
 ```
 
-## Saving Research Documents
+**Session Continue: Implementation Phase**
 
-Don't lose your research! Save valuable documentation:
+```
+User: Perfect! Based on your documentation, now create my torch-club:
+
+Item requirements:
+- Moderate damage (between baseball bat and axe)
+- Slow swing speed (bigger/heavier weapon feel)
+- Can be used as a light source (like torch properties)
+- 30% chance to ignite zombies on hit
+
+Lua requirements:
+- Hook OnWeaponHitCharacter
+- Check if weapon is our torch-club
+- Roll for 30% ignite chance
+- Apply fire to zombie if successful
+
+Follow the patterns you documented. Include inline comments.
+
+AI: [Generates complete item definition and Lua script with:]
+- Properly formatted item with weapon + torch properties
+- Correct event hook usage
+- Proper zombie:setOnFire() implementation
+- All following documented patterns
+```
+
+**Result:** Working torch-club weapon on first try because AI understood the systems before coding.
+
+---
+
+## Saving Your Research
+
+Don't lose valuable research! Create a knowledge base:
 
 ```
 MyMod/
 ├── _ai_research/
-│   ├── fishing_system.md
-│   ├── weapon_effects.md
-│   ├── timed_actions.md
-│   └── vehicle_mechanics.md
+│   ├── 01_weapons_system.md
+│   ├── 02_timed_actions.md
+│   ├── 03_vehicle_mechanics.md
+│   ├── 04_ui_panels.md
+│   └── 05_farming_system.md
 ├── media/
 └── mod.info
 ```
 
-Benefits:
-- Reference for future sessions
-- Share with other modders
-- Track what you've learned
-- Paste into new AI conversations
+**Benefits:**
+- Reference in future sessions (paste into new AI conversations)
+- Share with teammates or the community
+- Track what systems you understand
+- Build up over time
 
-## Why This Works Better Than Copy-Paste
+**Tip:** Number your research files in the order you created them. This tracks your learning progression.
 
-| Approach | What AI Has | Result |
-|----------|-------------|--------|
-| "Copy this code" | Raw syntax | May miss context, wrong assumptions |
-| "Look at this file" | Structure only | Doesn't understand purpose |
-| **Research methodology** | Deep understanding | Correct, contextual output |
-
-When AI researches and documents, it:
-- Activates relevant knowledge from training
-- Connects concepts together
-- Identifies patterns and conventions
-- Creates a mental model of the system
-
-This mental model then informs every line of code it writes.
-
-## Common Mistakes to Avoid
-
-### Mistake 1: Skipping Research
-```
-❌ "Make me a custom vehicle"
-✓ "First, research how vehicles work in PZ Build 41, then we'll create one"
-```
-
-### Mistake 2: Too Broad
-```
-❌ "Research everything about PZ modding"
-✓ "Research specifically how timed actions work in PZ Build 41"
-```
-
-### Mistake 3: Not Specifying Build
-```
-❌ "How do recipes work in PZ?"
-✓ "How do recipes work in PZ Build 41? Include evolved recipes."
-```
-
-### Mistake 4: Forgetting to Reference
-```
-❌ [Get documentation] → [Start new topic without referencing it]
-✓ [Get documentation] → "Based on the documentation above, create..."
-```
+---
 
 ## Key Takeaways
 
-1. **Research before implementation** - Understanding beats copying
-2. **AI documentation activates knowledge** - It becomes "fresh" context
-3. **Specify your build version** - 41 and 42 differ significantly
-4. **Target specific systems** - Focused research produces better results
-5. **Reference the documentation** - Point AI back to what it wrote
-6. **Save your research** - Build a knowledge base over time
+1. **Research before implementing** - AI generates better code when it understands systems first
+2. **Focus research on specific systems** - "How do timed actions work" not "How does everything work"
+3. **Always specify Build 41 or 42** - Syntax differs significantly between versions
+4. **Reference the documentation** - Point AI back to what it wrote: "Based on your docs above..."
+5. **Verify AI's research** - Check a few facts against vanilla files to catch mistakes early
+6. **Save your research documents** - Build a knowledge base for future reference
+7. **One research session = many implementations** - Research vehicles once, create dozens of vehicle mods
 
-## Next Steps
+---
 
-Combine this methodology with:
-- **Context Library** - Store research documents for reuse
-- **Good Prompts** - Structure your research requests effectively
-- **Debugging with AI** - Use research docs when troubleshooting
+## What's Next?
+
+Combine research methodology with:
+- [Context Library](./context-library) - Store research documents for reuse across sessions
+- [Writing Good Prompts](./writing-prompts) - Structure research requests for best results
+- [AI for Debugging](./ai-debugging) - Use research docs when troubleshooting errors
