@@ -11,6 +11,7 @@
  *   npm run sync -- --file content/articles/pz/build-41/modding/items/my-article.md
  */
 
+import 'dotenv/config'
 import fs from 'fs'
 import path from 'path'
 import { createClient } from '@supabase/supabase-js'
@@ -112,7 +113,6 @@ async function syncArticle(article: ParsedArticle): Promise<boolean> {
       title: dbData.title,
       excerpt: dbData.excerpt,
       content: dbData.content,
-      markdown_content: markdown_content,
       game: dbData.game,
       version: dbData.version,
       section: dbData.section,

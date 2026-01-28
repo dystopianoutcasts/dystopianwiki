@@ -7,6 +7,8 @@ export default defineConfig({
   plugins: [react()],
   // Use '/' for custom domain, or '/repo-name/' for GitHub Pages subdirectory
   base: '/',
+  // Load .env from monorepo root
+  envDir: '../../',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
