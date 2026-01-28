@@ -24,6 +24,16 @@ last_updated: 2026-01-18
 
 # Understanding Weapon Properties
 
+## Introduction
+
+You've copied a weapon definition from the vanilla files and you're staring at properties like `ConditionLowerChanceOneIn = 30`. What does that number mean? Or you set `Categories = Blunt` and wonder why your weapon isn't training the Blunt skill. Or maybe you're confused why `MinDamage = 1.0` feels different from what you expected in combat.
+
+If you're feeling lost trying to understand what weapon properties actually **do**, you're not alone. Weapon definitions have 30+ possible properties spanning damage, durability, skills, animations, sounds, and more. The names don't always explain the behavior (looking at you, `ConditionLowerChanceOneIn`), and the numbers can be confusing (is 1.0 damage a lot or a little?).
+
+Here's the good news: once you understand what these properties actually do in gameplay, creating balanced weapons becomes straightforward. I'll explain each property category, show you what the numbers mean in practice, and walk you through how everything works together.
+
+## Overview
+
 This guide explains what each weapon property actually **does** in gameplay - not just what it's called, but how it affects combat, skills, and durability.
 
 ## Categories and Skills

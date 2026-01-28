@@ -59,13 +59,17 @@ last_updated: 2026-01-28
 
 # Decompilation Setup Guide
 
+Have you ever wondered if there's a `zombie.setSpeed()` method, but the wiki doesn't mention it? Or wished you could see exactly how zombies choose their targets? The answer is hiding in plain sight - right in your game files. Every time you launch Project Zomboid, thousands of Java class files sit there waiting to reveal their secrets.
+
+I remember the first time I decompiled `IsoZombie.java`. I spent hours searching the wiki for how to change zombie attributes, finding only workarounds and half-answers. Then I opened the decompiled file and saw it: `public int speedType`, `public int cognition`, `public int hearing` - all sitting right there, publicly accessible. That single discovery changed how I approached modding forever.
+
+Let me show you how to unlock this same power. You don't need to be a Java expert - if you can read Lua, you can read enough Java to find what you need.
+
 ## What is Decompilation?
 
-When developers write code, they write it in human-readable form (like Java or Lua). That code gets compiled into machine-friendly format (.class files) that computers can run but humans can't easily read. **Decompilation** is the process of converting that machine code back into readable source code.
+When developers write code, they write it in human-readable form (like Java or Lua). That code gets compiled into machine-friendly format (`.class files`) that computers can run but humans can't easily read. **Decompilation** is the process of converting that machine code back into readable source code.
 
-For PZ modding, this means we can read the game's Java source code to discover undocumented features, find optimization opportunities, and understand how systems really work.
-
-> **This sounds technical, but don't worry.** You don't need to understand Java deeply - you're just reading code to find useful things. If you can read Lua, you can read enough Java to find what you need.
+Think of it like this: The game ships with a recipe book written in code. Decompilation translates it back into English so you can read the recipes.
 
 **You would use this when:**
 - The wiki doesn't document what you need
@@ -84,6 +88,79 @@ Before starting:
 ## Legal Note
 
 > Decompilation for modding research is acceptable. You may study the code, find APIs, and share techniques. Do NOT redistribute PZ's decompiled source or use it commercially.
+
+## Your First Decompilation (5 Minutes)
+
+Let's start with the simplest possible example: decompiling just one file. We'll decompile `IsoZombie.java` because it's full of useful discoveries.
+
+### What You'll Need
+
+1. **Java** - [Download here](https://adoptium.net/) if you don't have it
+2. **Vineflower** - [Download the jar file](https://github.com/Vineflower/vineflower/releases)
+3. **Project Zomboid installed** (obviously!)
+
+### The Five-Minute Process
+
+**Step 1:** Create a folder for your work
+```bash
+mkdir C:\PZ_Decompiled          # Create workspace folder
+cd C:\PZ_Decompiled             # Move into it
+```
+
+**Step 2:** Download Vineflower (the decompiler tool)
+- Go to the [releases page](https://github.com/Vineflower/vineflower/releases)
+- Download `vineflower-X.X.X.jar` (get the latest version)
+- Put it in `C:\PZ_Decompiled`
+
+**Step 3:** Find your IsoZombie.class file
+
+It's in your PZ installation. Right-click PZ in Steam → Manage → Browse Local Files.
+
+Then navigate to: `zombie\characters\IsoZombie.class`
+
+The full path is usually:
+```
+C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid\zombie\characters\IsoZombie.class
+```
+
+**Step 4:** Run the decompiler
+```bash
+java -jar vineflower.jar -d ./output "C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid\zombie\characters\IsoZombie.class"
+```
+
+Let's break down what this command does:
+- `java -jar vineflower.jar` - Run the decompiler tool
+- `-d ./output` - Put results in an "output" folder
+- `"C:\...IsoZombie.class"` - The file to decompile (in quotes because of spaces in path)
+
+**Step 5:** Look at your results
+
+Open `C:\PZ_Decompiled\output\zombie\characters\IsoZombie.java` in any text editor.
+
+Search for "public int" and you'll see:
+
+```java
+public int speedType = -1;        // Zombie speed (0=Sprinter, 1=Fast Shambler, 2=Shambler)
+public int cognition = -1;        // How smart (0-3, higher = smarter)
+public int hearing = -1;          // Hearing range
+public int strength = -1;         // Damage multiplier
+public int memory = -1;           // How long they remember seeing you
+public int sight = -1;            // Vision range
+public boolean bCrawling;         // Is this zombie crawling?
+public boolean bLunger;           // Can this zombie lunge?
+```
+
+**That's it!** You just discovered undocumented fields you can modify from Lua:
+
+```lua
+-- Now you can do this in your mods:
+local zombie = getSpecificPlayer(0):getZombieList():get(0)  -- Get a zombie
+zombie.speedType = 0           -- Make it a sprinter
+zombie.cognition = 3           -- Make it smart
+zombie.bLunger = true          -- Make it a lunger
+```
+
+> **Key Takeaway:** You just found the zombie attribute fields that aren't documented anywhere in the official wiki. This is the power of decompilation - discovering what's possible by reading the source.
 
 ## Why Decompile?
 
@@ -208,36 +285,30 @@ ProjectZomboid/
 | `IsoGridSquare.java` | ~8,814 | Grid squares and objects |
 | `ItemContainer.java` | ~1,500 | Inventory containers |
 
-## Step-by-Step Decompilation
+## Decompiling Everything (The Full Package)
 
-### Step 1: Set Up Your Environment
+Now that you've seen how to decompile one file, let's decompile the entire `zombie` package. This gives you access to all of PZ's systems - AI, vehicles, inventory, crafting, everything.
 
-Create a workspace for decompiled sources:
+Don't worry, this is almost identical to what you just did. The only difference is you're pointing at a folder instead of a single file.
 
-```bash
-mkdir C:\PZ_Decompiled
-```
+### Step 1: Increase Memory Allocation
 
-### Step 2: Download a Decompiler
-
-Download Vineflower (recommended):
-1. Go to the releases page
-2. Download `vineflower-X.X.X.jar`
-3. Save to your workspace
-
-### Step 3: Run Decompilation
-
-Decompile the entire zombie package:
+The full zombie package has 1,200+ files. We need to give Java more memory:
 
 ```bash
-cd C:\PZ_Decompiled
+cd C:\PZ_Decompiled                                                           # Move to workspace
 
-java -Xmx4g -jar vineflower.jar -d ./output "C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid\zombie"
+java -Xmx4g -jar vineflower.jar -d ./output_full "C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid\zombie"
 ```
 
-The `-Xmx4g` flag allocates 4GB of memory (PZ has a lot of classes).
+Let's break this down:
+- `-Xmx4g` - Give Java 4GB of memory (PZ has a LOT of classes)
+- `-d ./output_full` - Put results in "output_full" folder
+- Last parameter is now pointing to the `zombie` *folder*, not a single file
 
-### Step 4: Navigate the Output
+This will take 2-5 minutes depending on your computer. Go grab some water!
+
+### Step 2: Navigate the Output
 
 After decompilation, you'll have:
 
