@@ -20,7 +20,48 @@ last_updated: 2026-01-18
 
 # Vanilla Sound Reference
 
-Complete reference for all **390 sound definitions** in Project Zomboid Build 41.
+## Introduction
+
+You're adding sound effects to your custom item and need to know what FMOD event paths vanilla uses. Or you're creating ambient audio and want to match vanilla sound patterns. Or maybe you just need to find a specific sound to reuse or understand how it's defined.
+
+If you're feeling overwhelmed by the sound system in Project Zomboid, you're not alone. There are 390 different sound definitions spanning 8 categories using FMOD event paths. The FMOD integration, event paths, and sound definition syntax can all feel mysterious if you've never worked with audio systems before.
+
+Here's the good news: this reference organizes all 390 vanilla sound definitions by category, so you can quickly find similar sounds and see what FMOD event paths they use. I'll show you exactly how to use this reference to add sounds to your mods.
+
+## How to Use This Reference
+
+When adding sounds to your mod, follow this pattern:
+
+### Step 1: Find Similar Vanilla Sounds
+
+Use the Quick Navigation below to jump to the category closest to your sound:
+
+- **Adding item sounds?** Look at Item category (26 sounds - bags, tools, crafting)
+- **Adding player sounds?** Look at Player category (98 sounds - eating, drinking, footsteps)
+- **Adding object sounds?** Look at Object category (92 sounds - doors, windows, furniture)
+- **Adding zombie sounds?** Look at Zombie category (21 sounds - groans, attacks)
+- **Adding ambient sounds?** Look at World category (31 sounds - weather, environment)
+- **Adding music?** Look at Music category (101 sounds - combat, ambient themes)
+
+### Step 2: Compare Properties
+
+Notice the patterns in vanilla sound definitions:
+
+| Property | Typical Values | When to Use |
+|----------|----------------|-------------|
+| **category** | Item, Player, Object, World, Zombie, Music, Meta, UI | Matches where sound is used (Item for items, Player for character actions) |
+| **event path** | Character/Foley/..., Object/Door/..., World/Ambient/... | FMOD event path structure (Character for people, Object for world items) |
+| **loop** | true/false | Use `loop = true` for continuous sounds (rain, engine), false for one-shots (gunshot, door close) |
+| **is3D** | true/false | Use `is3D = true` for positional sounds (footsteps, doors), false for UI sounds |
+
+### Step 3: Make Your Decision
+
+Choose values that match vanilla patterns:
+
+- **Category** → Match the category of what's making the sound (Item, Player, Object, etc.)
+- **FMOD event path** → Follow vanilla path structure (Character/Action/..., Object/Type/...)
+- **Loop** → true for continuous sounds, false for one-shot sounds
+- **is3D** → true for positional world sounds, false for UI/music
 
 ## Sound System Overview
 
@@ -516,6 +557,176 @@ getSoundManager():PlaySound("OpenBag", false, 1.0)
 -- Play a 3D sound at position
 getSoundManager():PlayWorldSoundImpl("ZombieThumpGeneric", nil, x, y, z, 1.0, 60, 1.0, true)
 ```
+
+---
+
+## Common Mistakes
+
+### ❌ Wrong: Using Non-Existent FMOD Event Path
+
+```
+sound MyCustomFootstep
+{
+    category = Player,
+    clip
+    {
+        event = MyCustomFolder/Footstep/Walk,  // WRONG! This FMOD event doesn't exist
+    }
+}
+```
+
+**Why it's wrong:** FMOD event paths must exist in the FMOD project. Looking at vanilla footstep sounds, they use paths like `Character/Movement/Footsteps/Grass`. Your custom event path `MyCustomFolder/Footstep/Walk` doesn't exist in the FMOD bank, so the sound won't play.
+
+✅ **Right:**
+
+```
+sound MyCustomFootstep
+{
+    category = Player,                         // Player action category
+    clip
+    {
+        event = Character/Movement/Footsteps/Grass,  // Valid vanilla FMOD event
+    }
+}
+```
+
+**Note:** To use custom sounds, you need to either modify the FMOD project or reuse existing vanilla FMOD events.
+
+### ❌ Wrong: Wrong Category for Sound
+
+```
+sound MyCustomDoorOpen
+{
+    category = Item,                           // WRONG! Doors are Objects, not Items
+    clip
+    {
+        event = Object/Door/Open,
+    }
+}
+```
+
+**Why it's wrong:** Looking at vanilla door sounds, ALL door sounds use `category = Object`. Doors are world objects, not items. Using `category = Item` will cause issues with sound management and may not play at the right volume/priority.
+
+✅ **Right:**
+
+```
+sound MyCustomDoorOpen
+{
+    category = Object,                         // Object category for world objects
+    clip
+    {
+        event = Object/Door/Open,              // Door FMOD event
+    }
+    loop = false,                              // One-shot sound (doesn't loop)
+    is3D = true,                               // Positional sound (players hear it from the door location)
+}
+```
+
+### ❌ Wrong: Forgetting 3D Flag for Positional Sounds
+
+```
+sound MyCustomGunshot
+{
+    category = Player,
+    clip
+    {
+        event = Character/Combat/Gunshot/Pistol,
+    }
+    loop = false,
+    // Missing is3D!                          // WRONG! Gunshots should be positional
+}
+```
+
+**Why it's wrong:** Looking at vanilla gunshot and combat sounds, they ALL use `is3D = true` because players need to hear WHERE the sound is coming from. Without `is3D = true`, the sound will play at full volume everywhere, making it impossible to locate gunshots.
+
+✅ **Right:**
+
+```
+sound MyCustomGunshot
+{
+    category = Player,                         // Player action
+    clip
+    {
+        event = Character/Combat/Gunshot/Pistol,  // Gunshot FMOD event
+    }
+    loop = false,                              // One-shot sound
+    is3D = true,                               // Positional (players can locate sound direction)
+}
+```
+
+## Try It Yourself
+
+Let's create a custom sound definition for a tool using vanilla patterns.
+
+### Step 1: Research Similar Sounds
+
+Look in the Item category above and find tool sounds:
+- All item sounds use `category = Item`
+- Most use FMOD events under `Character/Foley/`
+- Item sounds are typically 3D (positional)
+- Tool sounds don't loop (one-shot sounds)
+
+### Step 2: Create the Sound File
+
+Create `media/scripts/my_sounds.txt`:
+
+```
+module MyMod
+{
+    sound MyCustomHammerHit
+    {
+        category = Item,                        // Item interaction category
+        clip
+        {
+            event = Character/Foley/Tool/Hammer,  // Reusing vanilla hammer FMOD event
+        }
+        loop = false,                           // One-shot sound (doesn't repeat)
+        is3D = true,                            // Positional (players hear it from tool location)
+    }
+}
+```
+
+### Step 3: Play the Sound in Game
+
+Add this to your item's Lua script:
+
+```lua
+-- Play the custom hammer hit sound
+local function onHammerHit(player, item)
+    local sound = "MyCustomHammerHit"          -- Your sound definition name
+    local volume = 1.0                         -- Full volume
+    getSoundManager():PlaySound(sound, false, volume)
+end
+
+-- Attach to your item's use event
+Events.OnUseItem.Add(function(player, item)
+    if item:getType() == "MyCustomHammer" then
+        onHammerHit(player, item)
+    end
+end)
+```
+
+### Step 4: Test in Game
+
+1. Start Project Zomboid in debug mode
+2. Spawn your custom hammer item
+3. Use the hammer (right-click → use)
+
+**What You Should See:**
+- Sound plays when using the hammer
+- Sound is positional (louder when closer, directional)
+- Sound doesn't loop (plays once per use)
+- Other players hear the sound from your location
+
+### Why This Works
+
+This custom sound definition uses vanilla patterns:
+- **category = Item** matches vanilla item interaction sounds
+- **FMOD event path** reuses existing vanilla hammer sound
+- **loop = false** matches vanilla one-shot tool sounds
+- **is3D = true** makes the sound positional (players hear where it came from)
+
+---
 
 ## Source
 
