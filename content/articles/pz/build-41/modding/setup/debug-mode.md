@@ -49,6 +49,16 @@ last_updated: 2026-01-09
 
 # Debug Mode
 
+## What Is Debug Mode?
+
+You know that moment when your mod crashes the game, and you have no idea why? Or when you need to test a new recipe but don't want to spend 20 minutes gathering ingredients? Or when you change one line of Lua code and have to restart the entire game just to see if it worked?
+
+**Debug mode solves all of these problems.** It's a special game mode that unlocks powerful testing tools: spawn any item instantly, see detailed error messages with line numbers, reload Lua scripts without restarting, teleport anywhere, and become invincible while testing. Without debug mode, mod development would take 10 times longer.
+
+When I first started modding, I didn't know debug mode existed. I was restarting the game every single time I changed one line of code. It took 2-3 minutes per restart. I was testing a simple recipe that required 50 attempts to get right. That's over 2 hours of just waiting for the game to restart. Then someone told me about debug mode and hot reloading - I could test changes in seconds instead of minutes. It changed everything.
+
+**This guide will show you how to enable debug mode, use the console to spawn items and reload scripts, read error messages to fix bugs faster, and set up an efficient testing workflow.** By the end, you'll wonder how you ever developed mods without it.
+
 ## Overview
 
 Debug mode unlocks powerful testing tools in Project Zomboid. You can spawn items, teleport, see detailed error messages, and reload Lua scripts without restarting the game. Essential for mod development.
@@ -103,22 +113,30 @@ Press `~` (tilde) to open the Lua console.
 ### Spawning Items
 
 ```lua
+-- Get your player object and add an axe to inventory
 getPlayer():getInventory():AddItem("Base.Axe")
+
+-- Add a hammer
 getPlayer():getInventory():AddItem("Base.Hammer")
+
+-- Add 5 canned beans (third parameter = quantity)
 getPlayer():getInventory():AddItem("Base.CannedBeans", 5)
 ```
 
-The third parameter is quantity.
+The third parameter is quantity. If omitted, it defaults to 1.
 
 ### Testing Your Mod's Items
 
 If your mod adds `MyMod.CustomSword`:
 
 ```lua
+-- Spawn your custom item using: ModuleName.ItemID
 getPlayer():getInventory():AddItem("MyMod.CustomSword")
 ```
 
-Use your module name and item ID from your script files.
+**Format:** `ModuleName.ItemID` where:
+- `ModuleName` = The module name from your item script (`module MyMod`)
+- `ItemID` = The item name from your item script (`item CustomSword`)
 
 ## Debug Menu (F11)
 
@@ -153,10 +171,21 @@ The most useful feature for modders: reload Lua files without restarting.
 ### From Console
 
 ```lua
+-- Reload a specific Lua file (path relative to media/lua/)
 reloadLuaFile("client/MyMod/MyScript.lua")
 ```
 
-Path is relative to your mod's `media/lua/` folder.
+**Path structure:** Relative to your mod's `media/lua/` folder.
+
+**Example:** If your file is at:
+```
+MyMod/media/lua/client/MyMod/MyScript.lua
+```
+
+You would use:
+```lua
+reloadLuaFile("client/MyMod/MyScript.lua")
+```
 
 ### From Debug Menu
 
@@ -213,8 +242,14 @@ Open this file to see:
 Use VS Code or a text editor that auto-refreshes, or use PowerShell:
 
 ```powershell
+# Watch the last 50 lines of console.txt and auto-refresh when new lines are added
 Get-Content "$env:USERPROFILE\Zomboid\console.txt" -Wait -Tail 50
 ```
+
+**What this does:**
+- `-Wait` keeps the command running and shows new lines as they're added
+- `-Tail 50` shows only the last 50 lines (prevents overwhelming output)
+- `$env:USERPROFILE` expands to your Windows user folder (e.g., `C:\Users\YourName`)
 
 ## Debug Print Statements
 
@@ -222,22 +257,31 @@ Add debugging output to your Lua:
 
 ```lua
 function MyFunction()
+    -- Always print when function starts (confirms it's being called)
     print("MyFunction started")
-    
+
+    -- Get the item in player's primary hand
     local item = getPlayer():getPrimaryHandItem()
+
+    -- Print the item object (use tostring() for objects that might be nil)
     print("Primary item: " .. tostring(item))
-    
+
+    -- Check if item exists before accessing its methods
     if item then
+        -- Print the item's type (safe because we checked for nil)
         print("Item type: " .. item:getType())
     else
+        -- Print when no item is held (helps debug why code isn't working)
         print("No item in hand")
     end
 end
 ```
 
-`print()` output appears in:
-- The ~ console
-- The console.txt file
+**Where `print()` output appears:**
+- The ~ console (live output)
+- The `console.txt` file (permanent record)
+
+**Pro tip:** Always use `tostring()` when printing objects that might be nil. `print("Item: " .. item)` will crash if `item` is nil, but `print("Item: " .. tostring(item))` will print "Item: nil" safely.
 
 ## Testing Workflow
 
