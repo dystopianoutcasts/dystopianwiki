@@ -132,6 +132,12 @@ Use conventional commits format:
 - `test`: Adding/updating tests
 - `chore`: Build/tooling changes
 
+**Important:**
+- **DO NOT** add `Co-Authored-By` lines to commits
+- Keep commit messages concise and descriptive
+- Use present tense ("add" not "added")
+- Keep the first line under 72 characters
+
 **Examples:**
 ```
 content: add weapon creation guide
