@@ -22,19 +22,60 @@ last_updated: 2026-01-18
 
 # Vanilla Clothing Reference
 
-Complete reference for all **776 vanilla clothing items** in Project Zomboid Build 41.
+## Introduction
+
+You're creating a leather jacket mod and need to know what bite defense vanilla jackets have. Or you're making riot gear and want to match the protection of existing gear. Or maybe you just want your custom clothing to feel balanced alongside the game's 776 existing clothing items.
+
+If you're feeling overwhelmed by the sheer number of clothing items in Project Zomboid, you're not alone. There are 776 different clothing items spread across 60+ body locations, each with different insulation, protection, and fabric properties. Figuring out what's "normal" for a jacket or what properties a shirt should have can feel impossible.
+
+Here's the good news: this reference organizes all vanilla clothing by body location, so you can quickly find similar items to yours and see what properties they use. I'll show you exactly how to use this reference to make balanced, realistic clothing mods.
+
+## What You're Actually Doing
+
+When you're modding clothing, you're typically:
+
+1. **Finding similar vanilla items** - "I'm making a tactical vest, what do other vests have?"
+2. **Checking protection values** - "What bite defense should my leather jacket have?"
+3. **Balancing insulation** - "Is 0.8 insulation too warm for a t-shirt?"
+4. **Matching fabric types** - "What fabric type do denim jeans use?"
+
+This reference lets you quickly look up any vanilla item and see its exact properties, so you can make informed decisions about your mod's balance.
+
+## How to Use This Reference
+
+### Step 1: Find Similar Items
+
+1. Look at the **Quick Navigation** section below
+2. Find the body location that matches your item (e.g., if making a jacket, look for "Jacket")
+3. Click the link to jump to that section's table
+
+### Step 2: Compare Properties
+
+4. Scan the table for items similar to yours
+5. Note their Insulation, Wind Resistance, Bite Defense, and Scratch Defense values
+6. Look for patterns (e.g., "Most leather jackets have 20 bite defense, 40 scratch defense")
+
+### Step 3: Make Informed Decisions
+
+7. Use the vanilla values as a baseline for your mod
+8. Adjust up or down based on your item's intended power level
+9. Example: "Vanilla leather jackets have 20/40 defense, so my reinforced jacket should be 25/45"
+
+---
 
 ## Clothing Properties
 
-| Property | Description |
-|----------|-------------|
-| `BodyLocation` | Where the item is worn |
-| `Insulation` | Cold protection (higher = warmer) |
-| `WindResistance` | Wind protection |
-| `BiteDefense` | Protection against zombie bites |
-| `ScratchDefense` | Protection against scratches |
-| `FabricType` | Material type (Cotton, Denim, Leather, etc.) |
-| `BloodLocation` | Where blood splatters appear |
+| Property | Description | What It Means |
+|----------|-------------|---------------|
+| `BodyLocation` | Where the item is worn | Determines which clothing slot it occupies (Jacket, Pants, Hat, etc.) |
+| `Insulation` | Cold protection (higher = warmer) | Values typically 0.10-1.0. Padded jackets ~1.0, T-shirts ~0.2 |
+| `WindResistance` | Wind protection | Values typically 0.05-1.0. Windbreakers ~1.0, thin shirts ~0.05 |
+| `BiteDefense` | Protection against zombie bites | Usually 0, 10, 20, 30, 50, or 100. Helmets/boots often 100, leather ~20-40 |
+| `ScratchDefense` | Protection against scratches | Usually 0, 5, 10, 15, 20, 30, 40, or 100. Always ≥ bite defense |
+| `FabricType` | Material type (Cotton, Denim, Leather, etc.) | Affects stain behavior and item feel. Most common: Cotton, Denim, Leather |
+| `BloodLocation` | Where blood splatters appear | Visual detail for how blood shows on clothing |
+
+> **Understanding Defense Values:** `-` in the table means 0 defense (no protection). `100` means full protection (zombies can't damage this body part through this clothing). Most clothing has low or no defense - protection is rare!
 
 ## Body Locations
 
@@ -1177,6 +1218,208 @@ PZ uses a layered clothing system. Common body locations:
 | Item | Insulation | Wind Res | Bite Def | Scratch Def | Fabric |
 |------|------------|----------|----------|-------------|--------|
 | Underwear | - | - | - | - | - |
+
+---
+
+## Common Mistakes
+
+### ❌ Wrong: Assuming All Protective Clothing Has High Defense
+
+```
+// Someone thinks: "It's a leather jacket, so it must have protection"
+item MyLeatherJacket
+{
+    Type = Clothing,
+    BodyLocation = Jacket,
+    BiteDefense = 100,              // WRONG! Way too high
+    ScratchDefense = 100,
+}
+```
+
+**Why it's wrong:** Looking at the vanilla reference, most leather jackets have **20 bite defense and 40 scratch defense**, not 100. Only full helmets and boots get 100 defense.
+
+✅ **Right:**
+
+```
+item MyLeatherJacket
+{
+    Type = Clothing,
+    BodyLocation = Jacket,
+    BiteDefense = 20,               // Matches vanilla leather jackets
+    ScratchDefense = 40,
+}
+```
+
+---
+
+### ❌ Wrong: Not Checking If Defense Values Make Sense Together
+
+```
+item MyVest
+{
+    Type = Clothing,
+    BodyLocation = TorsoExtraVest,
+    BiteDefense = 40,               // WRONG! Bite defense higher than scratch
+    ScratchDefense = 20,
+}
+```
+
+**Why it's wrong:** In vanilla, scratch defense is **always equal to or higher than bite defense**. This makes sense - if something protects against bites, it definitely protects against scratches (which are less severe).
+
+✅ **Right:**
+
+```
+item MyVest
+{
+    Type = Clothing,
+    BodyLocation = TorsoExtraVest,
+    BiteDefense = 30,               // Bite defense lower than scratch
+    ScratchDefense = 55,            // Scratch defense higher (correct relationship)
+}
+```
+
+---
+
+### ❌ Wrong: Using Unrealistic Insulation Values
+
+```
+item MyTShirt
+{
+    Type = Clothing,
+    BodyLocation = Tshirt,
+    Insulation = 0.9,               // WRONG! Way too warm for a T-shirt
+    WindResistance = 0.8,
+}
+```
+
+**Why it's wrong:** Looking at vanilla T-shirts, they have insulation around **0.15-0.3**, not 0.9. A value of 0.9 is for thick winter coats and padded jackets.
+
+✅ **Right:**
+
+```
+item MyTShirt
+{
+    Type = Clothing,
+    BodyLocation = Tshirt,
+    Insulation = 0.2,               // Matches vanilla T-shirt range
+    WindResistance = 0.05,          // T-shirts don't block wind well
+}
+```
+
+**Insulation Guidelines:**
+- T-shirts/Light clothing: 0.10-0.30
+- Shirts/Medium clothing: 0.25-0.50
+- Jackets/Sweaters: 0.40-0.70
+- Winter coats/Padded: 0.80-1.0
+
+---
+
+### ❌ Wrong: Not Using Fabric Type
+
+```
+item MyDenimJeans
+{
+    Type = Clothing,
+    BodyLocation = Pants,
+    // Missing FabricType!
+}
+```
+
+**Why it's wrong:** Vanilla denim items always specify `FabricType = Denim`. This affects how the clothing behaves (staining, wear, etc.).
+
+✅ **Right:**
+
+```
+item MyDenimJeans
+{
+    Type = Clothing,
+    BodyLocation = Pants,
+    FabricType = Denim,             // Now it's properly classified as denim
+}
+```
+
+**Common Fabric Types:**
+- Cotton (most clothing)
+- Denim (jeans, denim jackets)
+- Leather (leather jackets, boots)
+
+---
+
+## Try It Yourself
+
+Let's use this reference to create a balanced custom hoodie, step by step.
+
+### Step 1: Find Similar Vanilla Items
+
+1. Scroll up to the **Quick Navigation** section
+2. Look for `Sweater` (hoodies are in the Sweater category)
+3. Click the [Sweater](#sweater) link to jump to that section
+
+### Step 2: Analyze Vanilla Hoodies
+
+4. Look at the "Hoodie" entries in the Sweater table
+5. You'll see:
+   - Insulation: 0.6
+   - Wind Resistance: 0.25
+   - Bite Defense: - (meaning 0)
+   - Scratch Defense: 10
+   - Fabric: Cotton
+
+### Step 3: Create Your Hoodie
+
+6. Create `media/scripts/items.txt` in your mod folder
+7. Add this code:
+
+```
+module MyMod
+{
+    item CustomHoodie
+    {
+        Type = Clothing,
+        DisplayName = Custom Hoodie,
+
+        BodyLocation = Sweater,
+
+        Insulation = 0.6,           // Same as vanilla hoodie (warm but not too warm)
+        WindResistance = 0.25,      // Light wind protection
+
+        BiteDefense = 0,            // Hoodies don't protect against bites
+        ScratchDefense = 10,        // Slight scratch protection (fabric layer)
+
+        FabricType = Cotton,        // Standard hoodie material
+    }
+}
+```
+
+### Step 4: Test In-Game
+
+8. Load your mod and spawn your hoodie using Debug Mode
+9. Wear it and check the stats panel (health screen)
+10. Compare to a vanilla hoodie:
+    - Does your custom hoodie feel similar in warmth?
+    - Does it provide similar protection?
+
+### Step 5: Adjust Based on Intent
+
+11. If you want a **heavy winter hoodie**, increase insulation:
+    - Change `Insulation = 0.6` to `Insulation = 0.75` (warmer than normal)
+
+12. If you want a **reinforced tactical hoodie**, add protection:
+    - Change `ScratchDefense = 10` to `ScratchDefense = 20`
+    - This is still balanced (less than leather jackets at 40)
+
+### What You Should See
+
+- **Your hoodie appears in-game** when spawned via debug
+- **Warmth feels appropriate** - not too hot, not too cold
+- **Protection values match intent** - standard hoodie = low protection
+- **Balanced with vanilla** - not overpowered compared to other sweaters
+
+### If Something Feels Wrong
+
+- **Too warm/cold:** Check insulation value against similar vanilla items
+- **Too much protection:** Most clothing has 0-20 defense, only specialized gear goes higher
+- **Doesn't fit right:** Verify BodyLocation matches the type of clothing (Sweater for hoodies)
 
 ---
 
