@@ -21,7 +21,49 @@ last_updated: 2026-01-18
 
 # Vanilla Recipes Reference
 
-Complete reference for all **292 vanilla recipes** in Project Zomboid Build 41.
+## Introduction
+
+You're creating a custom crafting recipe and need to know what crafting times vanilla recipes use. Or you're building on existing recipes and want your mod to feel consistent. Or maybe you just need to find a specific vanilla recipe to understand how it works.
+
+If you're feeling overwhelmed by the sheer number of crafting recipes in Project Zomboid, you're not alone. There are 292 different vanilla recipes spanning 11 categories: Cooking (81), Uncategorized (49), Electrical (41), Smithing (38), Survivalist (31), Health (19), Carpentry (13), and more. Figuring out what's "normal" for crafting time, skill requirements, or ingredient syntax can feel impossible.
+
+Here's the good news: this reference organizes all 292 vanilla recipes by category, so you can quickly find similar recipes and see what patterns they use. I'll show you exactly how to use this reference to create balanced, consistent crafting recipes.
+
+## How to Use This Reference
+
+When creating custom recipes, follow this pattern:
+
+### Step 1: Find Similar Vanilla Recipes
+
+Use the Quick Navigation below to jump to the category closest to your recipe:
+
+- **Making a cooking recipe?** Look at Cooking category (81 recipes - butchering, baking, meal prep)
+- **Making electrical items?** Look at Electrical category (41 recipes - circuits, radios, lights)
+- **Making metal items?** Look at Smithing category (38 recipes - metal working, weapons)
+- **Making survival items?** Look at Survivalist category (31 recipes - traps, tools, campfire items)
+- **Making medical items?** Look at Health category (19 recipes - bandages, poultices, splints)
+
+### Step 2: Compare Properties
+
+Notice the patterns in vanilla recipes:
+
+| Property | Typical Values | Examples |
+|----------|----------------|----------|
+| **Time** | 40-250 ticks | Quick craft (40-80), Standard (80-150), Complex (150-250) |
+| **Skill Required** | Level 0-7 | Beginner (0-2), Intermediate (3-5), Advanced (6-7) |
+| **Category** | 11 categories | Cooking, Electrical, Smithing, Survivalist, Health, Carpentry, Fishing, Trapper, Welding, Engineer, Uncategorized |
+| **Keep vs Consume** | `keep` for tools | Hammer (keep), Nails (consume) |
+| **Result Count** | Usually 1 | Single item (most), Multiple (e.g., `Biscuit=6`) |
+
+### Step 3: Make Your Decision
+
+Choose values that match vanilla patterns:
+
+- **Crafting time** → Quick (40-80), Standard (80-150), Complex (150-250)
+- **Skill required** → Match similar vanilla recipes' skill levels
+- **Tools** → Use `keep` for reusable tools (hammer, saw), consume ingredients
+- **Category** → Use existing categories or create new ones (will group in UI)
+- **Result** → Single item most common, multiple for batch crafting
 
 ## Recipe Syntax
 
@@ -448,6 +490,178 @@ Engineer recipes.
 | Make Flame bomb | FlameTrap | 80.0 | - |
 | Make Pipe bomb | PipeBomb | 100.0 | - |
 | Make Smoke Bomb | SmokeBomb | 80.0 | - |
+
+---
+
+## Common Mistakes
+
+### ❌ Wrong: Using Equals Instead of Colon
+
+```
+recipe Make Custom Stake
+{
+    TreeBranch,
+    keep Knife,
+
+    Result = CustomStake,                   // WRONG! Recipes use colon, not equals
+    Time = 80.0,
+    Category = Survivalist,
+}
+```
+
+**Why it's wrong:** Recipe properties use colon (`:`) syntax, NOT equals (`=`) syntax. Items use equals, but recipes are different. This will cause parse errors when loading your mod.
+
+✅ **Right:**
+
+```
+recipe Make Custom Stake
+{
+    TreeBranch,                              // Ingredient (consumed)
+    keep [Recipe.GetItemTypes.SharpKnife],   // Tool (kept, not consumed)
+
+    Result:CustomStake,                      // Colon for recipe properties
+    Time:80.0,                               // Colon for all properties
+    Category:Survivalist,                    // Matches vanilla category
+    OnGiveXP:Recipe.OnGiveXP.WoodWork5,     // XP callback
+}
+```
+
+### ❌ Wrong: Unrealistic Crafting Time
+
+```
+recipe Make Custom Weapon
+{
+    MetalBar,
+    keep Hammer,
+
+    Result:CustomSword,
+    Time:10.0,                              // WRONG! Way too fast
+    Category:Smithing,
+    SkillRequired:MetalWelding=5,
+}
+```
+
+**Why it's wrong:** Looking at vanilla smithing recipes, metal weapons take 150-250 ticks to craft. Your custom sword at 10 ticks would craft in 1 second, which is unrealistic for a complex metal item.
+
+✅ **Right:**
+
+```
+recipe Make Custom Weapon
+{
+    MetalBar,                                // Metal material
+    keep Hammer,                             // Tool (kept)
+
+    Result:CustomSword,
+    Time:200.0,                              // Matches vanilla weapon crafting (150-250)
+    Category:Smithing,                       // Smithing category
+    SkillRequired:MetalWelding=5,           // Skill requirement
+    OnGiveXP:Recipe.OnGiveXP.SmithingXP,    // XP callback
+}
+```
+
+### ❌ Wrong: Forgetting to Keep Tools
+
+```
+recipe Make Custom Table
+{
+    Plank=4,
+    Nails=8,
+    Hammer,                                  // WRONG! Hammer will be consumed
+    Saw,                                     // WRONG! Saw will be consumed too
+
+    Result:CustomTable,
+    Time:150.0,
+    Category:Carpentry,
+}
+```
+
+**Why it's wrong:** Looking at vanilla carpentry recipes, tools like Hammer and Saw are ALWAYS marked with `keep` - they're reusable tools, not consumable ingredients. Your recipe will eat the hammer and saw, forcing players to have multiple tools.
+
+✅ **Right:**
+
+```
+recipe Make Custom Table
+{
+    Plank=4,                                 // 4 planks (consumed)
+    Nails=8,                                 // 8 nails (consumed)
+    keep Hammer,                             // Tool (kept, not consumed)
+    keep Saw,                                // Tool (kept, not consumed)
+
+    Result:CustomTable,
+    Time:150.0,                              // Standard furniture time
+    Category:Carpentry,                      // Carpentry category
+    SkillRequired:Carpentry=3,              // Skill requirement
+}
+```
+
+## Try It Yourself
+
+Let's create a custom campfire cooking recipe using vanilla patterns.
+
+### Step 1: Research Similar Recipes
+
+Look in the Cooking category above and find campfire recipes:
+- Cooking recipes generally take 40-100 ticks
+- Food recipes often don't require skills (or low skill like Cooking=1)
+- Cooking uses `keep` for pots/pans (they're reused)
+
+### Step 2: Create the Recipe File
+
+Create `media/scripts/my_recipes.txt`:
+
+```
+module MyMod
+{
+    imports
+    {
+        Base
+    }
+
+    recipe Make Campfire Stew
+    {
+        WildPlantMix,                         // Foraged plants (consumed)
+        SmallAnimalMeat,                      // Meat (consumed)
+        WaterBottleFull,                      // Water (consumed)
+        keep CampfireKit,                     // Campfire (kept, not consumed)
+        keep Pot,                             // Cooking pot (kept, not consumed)
+
+        Result:StewBowl,                      // Output: bowl of stew
+        Time:100.0,                           // Standard cooking time (matches vanilla)
+        Category:Cooking,                     // Shows in Cooking tab
+        OnCreate:Recipe.OnCreate.Soup,        // Use vanilla soup creation callback
+    }
+}
+```
+
+### Step 3: Test in Game
+
+1. Start Project Zomboid in debug mode
+2. Press **F** to spawn the required items:
+   - WildPlantMix (foraged plants)
+   - SmallAnimalMeat (from hunting)
+   - WaterBottleFull (water bottle)
+   - CampfireKit (campfire)
+   - Pot (cooking pot)
+3. Open crafting menu (press **B**)
+4. Go to Cooking category
+5. Find "Make Campfire Stew"
+
+**What You Should See:**
+- Recipe appears in Cooking category
+- Shows required items with icons
+- Takes 100 ticks to craft (about 2 minutes)
+- Campfire and Pot are kept (not consumed)
+- Plants, meat, and water are consumed
+- Produces one StewBowl
+
+### Why This Works
+
+This campfire stew recipe uses vanilla patterns:
+- **Time (100)** matches vanilla cooking recipes (40-100 range)
+- **Category: Cooking** groups it with other food recipes
+- **keep CampfireKit/Pot** follows vanilla pattern (tools are kept)
+- **Consumed ingredients** match vanilla cooking (food items consumed)
+- **OnCreate callback** uses vanilla soup logic for proper item creation
 
 ---
 
