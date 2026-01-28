@@ -22,7 +22,47 @@ last_updated: 2026-01-18
 
 # Vanilla Vehicle Items Reference
 
-Complete reference for all **97 vehicle-related items** in Project Zomboid Build 41.
+## Introduction
+
+You're creating a custom vehicle part mod and need to know what weight vanilla parts have. Or you're adding a new tire type and want it to feel balanced. Or maybe you're creating a custom vehicle and need to know what parts to reference.
+
+If you're feeling overwhelmed by the vehicle part system in Project Zomboid, you're not alone. There are 97 different vehicle-related items including tires, brakes, engines, doors, windows, and maintenance tools. Each part comes in multiple quality tiers (Old, Normal, Performance) and vehicle types (standard, heavy duty, sport). Figuring out what's "normal" for weight, condition, or quality can feel confusing.
+
+Here's the good news: this reference organizes all 97 vanilla vehicle items by type and tier, so you can quickly find similar parts and see what properties they use. I'll show you exactly how to use this reference to create balanced vehicle part mods.
+
+## How to Use This Reference
+
+When creating custom vehicle parts, follow this pattern:
+
+### Step 1: Find Similar Vanilla Parts
+
+Look through the item tables below and find parts similar to what you're creating:
+
+- **Making a tire?** Look at tire entries (Valu-Tire, Regular Tire, Performance Tire)
+- **Making an engine part?** Look at brake/suspension/muffler entries
+- **Making body parts?** Look at door/window/hood entries
+- **Making storage?** Look at trunk/glove box entries
+- **Making tools?** Look at Tool category (jack, lug wrench, tire pump, wrench)
+
+### Step 2: Compare Properties
+
+Notice the patterns in vanilla vehicle parts:
+
+| Property | Pattern | Examples |
+|----------|---------|----------|
+| **Weight by Part Type** | Consistent per part | All car batteries = 5, All front doors = 10, All tires = 15 |
+| **Vehicle Type (1/2/3)** | All parts have 3 variants | 1 = standard, 2 = heavy duty, 3 = sport |
+| **Quality Tiers** | Old < Normal < Performance | Old Brake (low), Regular Brake (standard), Performance Brake (high) |
+| **Weight Scaling** | Heavier parts for heavier vehicles | Big Gas Tank: Type 1 = 15, Type 2 = 22, Type 3 = 14 |
+
+### Step 3: Make Your Decision
+
+Choose values that match vanilla patterns:
+
+- **Weight** → Match similar vanilla parts (tire = 15, door = 10, window = 3, battery = 5)
+- **Vehicle Types** → Create 3 variants (Type 1, 2, 3) like vanilla parts
+- **Quality Tiers** → Follow Old/Normal/Performance naming if creating part variants
+- **Naming Convention** → Use descriptive names (Front Door, Rear Window, Regular Brake)
 
 ## Vehicle System Overview
 
@@ -164,6 +204,210 @@ Vehicle parts in PZ use a quality tier system:
 | Item | Weight | Vehicle Type | ID |
 |------|--------|--------------|-----|
 | Car Key | 0 | - | `Base.CarKey` |
+
+---
+
+## Common Mistakes
+
+### ❌ Wrong: Creating Only One Vehicle Type Variant
+
+```
+item MyCustomTire
+{
+    Type = VehicleMaintenance,
+    DisplayName = Custom Tire,
+    Weight = 15.0,
+    VehicleType = 1,                        // WRONG! Only Type 1, missing Type 2 and 3
+}
+```
+
+**Why it's wrong:** Looking at vanilla tires (Valu-Tire, Regular Tire, Performance Tire), EVERY tire type has 3 variants for VehicleType 1, 2, and 3. Players need tires for all vehicle classes. Your custom tire only works on standard cars (Type 1), not heavy duty (Type 2) or sport (Type 3) vehicles.
+
+✅ **Right:**
+
+```
+item MyCustomTire1
+{
+    Type = VehicleMaintenance,               // Vehicle part type
+    DisplayName = Custom Tire,
+    Weight = 15.0,                           // Matches all vanilla tires
+    VehicleType = 1,                         // Standard vehicles
+    ConditionMax = 100,                      // Maximum condition
+    WheelFriction = 90,                      // Tire grip
+}
+
+item MyCustomTire2
+{
+    Type = VehicleMaintenance,
+    DisplayName = Custom Tire,
+    Weight = 15.0,                           // Same weight across types
+    VehicleType = 2,                         // Heavy duty vehicles
+    ConditionMax = 100,
+    WheelFriction = 90,
+}
+
+item MyCustomTire3
+{
+    Type = VehicleMaintenance,
+    DisplayName = Custom Tire,
+    Weight = 15.0,                           // Consistent weight
+    VehicleType = 3,                         // Sport vehicles
+    ConditionMax = 100,
+    WheelFriction = 90,
+}
+```
+
+### ❌ Wrong: Inconsistent Part Weight
+
+```
+item MyCustomDoor1
+{
+    Type = VehicleMaintenance,
+    DisplayName = Custom Front Door,
+    Weight = 5.0,                           // WRONG! Too light for a door
+    VehicleType = 1,
+}
+```
+
+**Why it's wrong:** Looking at vanilla doors (Front Door, Rear Door), ALL doors weigh 10.0. Doors are large metal pieces - they're heavy. Your custom door at 5.0 weight is half the weight of every vanilla door.
+
+✅ **Right:**
+
+```
+item MyCustomDoor1
+{
+    Type = VehicleMaintenance,               // Vehicle part type
+    DisplayName = Custom Front Door,
+    Weight = 10.0,                           // Matches all vanilla doors
+    VehicleType = 1,                         // Standard vehicles
+    MechanicsItem = true,                    // Appears in mechanics interface
+    ConditionMax = 100,                      // Maximum condition
+}
+```
+
+### ❌ Wrong: Missing Quality Tier Naming
+
+```
+item MyCustomBrake1
+{
+    Type = VehicleMaintenance,
+    DisplayName = Custom Brake,             // WRONG! No quality indicator in name
+    Weight = 3.0,
+    VehicleType = 1,
+}
+```
+
+**Why it's wrong:** Looking at vanilla brakes, they use quality tier naming: Old Brake (low quality), Regular Brake (standard), Performance Brake (high quality). This helps players identify part quality at a glance. Your "Custom Brake" doesn't indicate quality level.
+
+✅ **Right:**
+
+```
+item MyCustomRegularBrake1
+{
+    Type = VehicleMaintenance,               // Vehicle part type
+    DisplayName = Regular Custom Brake,      // Includes quality tier
+    Weight = 3.0,                            // Matches vanilla brake weight
+    VehicleType = 1,                         // Standard vehicles
+    ConditionMax = 100,                      // Standard condition
+}
+
+item MyCustomPerformanceBrake1
+{
+    Type = VehicleMaintenance,
+    DisplayName = Performance Custom Brake,  // Clear quality indicator
+    Weight = 3.0,                            // Same weight, better performance
+    VehicleType = 1,
+    ConditionMax = 120,                      // Higher condition than regular
+}
+```
+
+## Try It Yourself
+
+Let's create a custom tire using vanilla vehicle part patterns.
+
+### Step 1: Research Similar Parts
+
+Look at the VehicleMaintenance table above and find tires:
+- All tires weigh 15.0 (Valu-Tire, Regular Tire, Performance Tire)
+- All tires have 3 vehicle type variants (1, 2, 3)
+- Tires use VehicleType to determine compatibility
+
+### Step 2: Create the Item File
+
+Create `media/scripts/my_vehicle_items.txt`:
+
+```
+module MyMod
+{
+    imports
+    {
+        Base
+    }
+
+    item OffroadTire1
+    {
+        Type = VehicleMaintenance,               // Vehicle maintenance part
+        DisplayName = Offroad Tire,
+        Icon = tire,                             // Using vanilla tire icon
+        Weight = 15.0,                           // Matches all vanilla tires
+        VehicleType = 1,                         // Standard vehicles
+        ConditionMax = 120,                      // Durable offroad tire
+        ConditionLowerOffroad = 0.5,             // Better offroad wear (lower = less wear)
+        WheelFriction = 95,                      // High grip
+        MechanicsItem = true,                    // Shows in mechanics menu
+    }
+
+    item OffroadTire2
+    {
+        Type = VehicleMaintenance,
+        DisplayName = Offroad Tire,
+        Icon = tire,
+        Weight = 15.0,                           // Consistent weight
+        VehicleType = 2,                         // Heavy duty vehicles
+        ConditionMax = 120,
+        ConditionLowerOffroad = 0.5,
+        WheelFriction = 95,
+        MechanicsItem = true,
+    }
+
+    item OffroadTire3
+    {
+        Type = VehicleMaintenance,
+        DisplayName = Offroad Tire,
+        Icon = tire,
+        Weight = 15.0,                           // Consistent weight
+        VehicleType = 3,                         // Sport vehicles
+        ConditionMax = 120,
+        ConditionLowerOffroad = 0.5,
+        WheelFriction = 95,
+        MechanicsItem = true,
+    }
+}
+```
+
+### Step 3: Test in Game
+
+1. Start Project Zomboid in debug mode
+2. Press **F** to spawn an Offroad Tire (Type 1, 2, or 3)
+3. Find a vehicle matching the tire's vehicle type
+4. Press **V** near the vehicle to open mechanics menu
+5. Install the offroad tire
+
+**What You Should See:**
+- Offroad Tire appears in inventory with tire icon
+- Shows "Offroad Tire" in mechanics menu
+- Can be installed on matching vehicle type
+- Better offroad performance than regular tires
+- Item weighs 15.0 (same as vanilla tires)
+
+### Why This Works
+
+This offroad tire uses vanilla patterns:
+- **Weight (15.0)** matches ALL vanilla tires
+- **3 vehicle type variants** covers all vehicle classes (1, 2, 3)
+- **ConditionMax (120)** is higher than regular tires (more durable)
+- **ConditionLowerOffroad (0.5)** provides better offroad performance
+- **MechanicsItem = true** makes it appear in mechanics interface
 
 ---
 
