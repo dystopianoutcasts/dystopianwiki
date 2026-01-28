@@ -22,7 +22,50 @@ last_updated: 2026-01-18
 
 # Vanilla Weapons Reference
 
-Complete reference for all **152 vanilla weapons** in Project Zomboid Build 41.
+## Introduction
+
+You're creating a custom melee weapon and need to know what damage values vanilla weapons use. Or you're balancing a mod and want your axe to feel authentic. Or maybe you just need to compare weapon stats to understand what makes the katana so powerful.
+
+If you're feeling overwhelmed by the weapon system in Project Zomboid, you're not alone. There are 152 different vanilla weapons spanning 8 categories, each with unique damage, critical chance, speed, range, and durability values. Figuring out what's "normal" for a knife's damage or what makes an axe balanced can feel impossible.
+
+Here's the good news: this reference organizes all 152 vanilla weapons by category with complete stats, so you can quickly find similar weapons and see what values they use. I'll show you exactly how to use this reference to create balanced weapon mods.
+
+## How to Use This Reference
+
+When creating custom weapons, follow this pattern:
+
+### Step 1: Find Similar Vanilla Weapons
+
+Use the Quick Navigation below to jump to the weapon category closest to yours:
+
+- **Making an axe/hatchet?** Look at Axe category (5 weapons - high crit, tree chopping)
+- **Making a sword/machete?** Look at LongBlade category (2 weapons - katana, machete)
+- **Making a knife?** Look at SmallBlade category (16 weapons - knives, scissors, forks)
+- **Making a bat/club?** Look at Blunt category (22 weapons - baseball bats, pipes, crowbars)
+- **Making a hammer/wrench?** Look at SmallBlunt category (12 weapons - tools, hammers, wrenches)
+- **Making an improvised weapon?** Look at Improvised category (56 weapons - found objects)
+
+### Step 2: Compare Weapon Stats
+
+Notice the patterns in vanilla weapons by category:
+
+| Category | Damage Range | Crit % | Weight | Durability | Examples |
+|----------|--------------|--------|--------|------------|----------|
+| **Axe** | 0.5-3.0 | 15-50% | 1.2-3.0 | 5-15 | Wood Axe (1.3-3), Hand Axe (0.7-1.5) |
+| **LongBlade** | 2-8 | 20-30% | 2.0 | 10-13 | Katana (8-8 flat), Machete (2-3) |
+| **SmallBlade** | 0.1-1.2 | 5-50% | 0.3-1.0 | 3-10 | Hunting Knife (0.6-1.2), Kitchen Knife (0.3-0.7) |
+| **Blunt** | 0.3-3.5 | 5-35% | 0.5-7.0 | 5-100 | Baseball Bat (0.6-1.2), Crowbar (0.8-2) |
+| **SmallBlunt** | 0.2-2.0 | 5-30% | 0.3-2.5 | 5-20 | Hammer (0.5-1), Wrench (0.5-1) |
+
+### Step 3: Make Your Decision
+
+Choose values that match vanilla patterns for your weapon category:
+
+- **Damage** → Match similar category weapons (axes high, knives low-medium)
+- **Crit** → Axes high (15-50%), blunt low (5-35%), blades medium (15-30%)
+- **Weight** → Realistic for weapon size (knife 0.3-1.0, bat 1-2, axe 2-3)
+- **Durability** → Tools/quality weapons high (10-15), improvised low (3-6)
+- **Speed** → Most weapons 1.0, fast weapons 1.1-1.4, slow weapons 0.8-0.9
 
 ## Understanding Weapon Stats
 
