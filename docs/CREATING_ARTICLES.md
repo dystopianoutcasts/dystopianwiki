@@ -579,6 +579,41 @@ local success = inventory:AddItem("Base.Axe")
 
 ---
 
+## Writing Standards: V3 Template
+
+**IMPORTANT:** All articles should follow the **V3 Article Standards** for beginner-friendly, emotionally scaffolded content.
+
+See: [docs/article-standards.md](article-standards.md)
+
+### Key V3 Principles
+
+1. **Write AS IF you ARE a beginner** - Not writing FOR beginners, but experiencing it with them
+2. **Emotional scaffolding** - Acknowledge overwhelm, promise manageability, prove it, summarize
+3. **Game experience opening** - Start with something the reader has seen in-game
+4. **Simplest example first** - 5-line minimum viable code before complexity
+5. **Progressive building** - Show Version 1, 2, 3 of the same feature
+6. **Common Mistakes** - Show wrong code vs right code with explanations
+7. **Try It Yourself** - Step-by-step verification instructions
+8. **Term definitions** - Define technical terms inline when first used
+9. **Mid-article Key Takeaways** - Summarize complex sections immediately
+10. **Pattern teaching** - Use 4-step templates for complex sections (show pattern, explain parts, demonstrate variations, when to use)
+
+### Quick V3 Checklist
+
+✅ Opens with game experience reader has seen
+✅ Has "Prerequisites" section with links
+✅ Shows simplest example first (5-10 lines max)
+✅ Includes "Try It Yourself" section
+✅ Has "Common Mistakes" with wrong/right code
+✅ Defines technical terms inline
+✅ Uses emotional scaffolding phrases
+✅ Progressive building (Version 1 → 2 → 3)
+✅ "What's Next?" section with related articles
+
+For complete details, examples, and phrase libraries, see [article-standards.md](article-standards.md).
+
+---
+
 ## Need Help?
 
 - **Template:** `content/ARTICLE_TEMPLATE.md`
