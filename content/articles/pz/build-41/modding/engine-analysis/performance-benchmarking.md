@@ -17,8 +17,12 @@ tags:
   - profiling
 excerpt: "Learn to measure and compare Lua code performance in Project Zomboid. Covers benchmark templates, getTimestampMs() usage, statistical analysis, and common measurement mistakes to avoid."
 table_of_contents:
-  - text: "Overview"
-    link: "#overview"
+  - text: "What This Guide Covers"
+    link: "#what-this-guide-covers"
+  - text: "Prerequisites"
+    link: "#prerequisites"
+  - text: "Your First Benchmark (2 Minutes)"
+    link: "#your-first-benchmark-2-minutes"
   - text: "Core Benchmark Function"
     link: "#core-benchmark-function"
   - text: "The getTimestampMs() Function"
@@ -27,8 +31,8 @@ table_of_contents:
     link: "#comparing-approaches"
   - text: "Bulk Operation Benchmarks"
     link: "#bulk-operation-benchmarks"
-  - text: "Avoiding Common Mistakes"
-    link: "#avoiding-common-mistakes"
+  - text: "Common Mistakes"
+    link: "#common-mistakes"
   - text: "Statistical Benchmarking"
     link: "#statistical-benchmarking"
   - text: "In-Game Profiling"
@@ -37,6 +41,8 @@ table_of_contents:
     link: "#benchmark-results-documentation"
   - text: "Quick Reference: Common Operations"
     link: "#quick-reference-common-operations"
+  - text: "Try It Yourself: Compare Two Approaches"
+    link: "#try-it-yourself-compare-two-approaches"
   - text: "Key Takeaways"
     link: "#key-takeaways"
 next_steps:
@@ -51,7 +57,13 @@ last_updated: 2026-01-28
 
 # Performance Benchmarking Guide
 
-## Overview
+You spent hours rewriting your zombie mod to be "faster." You load it up, test it, and... it feels about the same. Maybe even slower? You're not sure. You changed so much code, but you have no idea if it actually helped. Without measurement, you're flying blind.
+
+I remember my first optimization attempt - I spent a whole weekend "improving" my inventory mod. I cached references, reduced loops, rewrote algorithms. Felt proud. Then I actually measured it: **3% faster**. Meanwhile, I'd introduced two new bugs. If I'd measured from the start, I would have known that my real bottleneck was elsewhere - a single `getInventory()` call happening 60 times per second that I never noticed.
+
+Let me show you how to measure, not guess.
+
+## What This Guide Covers
 
 "I optimized my code!" But did you actually measure it? When optimizing PZ mods, you need to measure actual performance - not just assume one approach is faster. This guide covers how to benchmark Lua code in Project Zomboid, compare approaches, and avoid common measurement mistakes.
 
@@ -68,6 +80,29 @@ last_updated: 2026-01-28
 - Understanding that "feeling faster" isn't the same as being faster
 
 > **Start simple.** The basic benchmark template in this guide will handle 90% of your needs. The advanced stuff is here when you need it.
+
+## Your First Benchmark (2 Minutes)
+
+Let's measure something simple: how long does it take to add 1000 items to a table?
+
+```lua
+-- Start timing
+local startTime = getTimestampMs()                       -- Get current time in milliseconds
+
+-- Do the work
+local myTable = {}                                       -- Create empty table
+for i = 1, 1000 do
+    table.insert(myTable, i)                             -- Add each number
+end
+
+-- Stop timing
+local elapsed = getTimestampMs() - startTime             -- Calculate how long it took
+print("Took " .. elapsed .. "ms")                        -- Output: "Took 2ms" (or similar)
+```
+
+**That's it!** You just measured actual performance. Everything else in this guide is building on this pattern: start timer → do work → measure elapsed time.
+
+> **Key Takeaway:** `getTimestampMs()` returns the current time in milliseconds. Subtract the start time from the end time to get how long something took. This is the foundation of all performance measurement.
 
 ## Core Benchmark Function
 
@@ -243,90 +278,130 @@ benchmarkBulk(
 -- Output: [BENCHMARK] Zombie attribute update: 12ms for 2400 entities (0.0050ms each)
 ```
 
-## Avoiding Common Mistakes
+## Common Mistakes
 
-### 1. Not Warming Up
+Let me show you the mistakes that will give you misleading benchmark results. I've made all of these!
 
-Lua uses JIT compilation. First runs may be slower:
+### ❌ Wrong: Not Warming Up First
 
 ```lua
--- BAD: First run includes JIT compilation time
+-- Measures JIT compilation + actual work
 local start = getTimestampMs()
 for i = 1, 1000 do myFunction() end
-local elapsed = getTimestampMs() - start
+local elapsed = getTimestampMs() - start                 -- Includes JIT compile time!
+```
 
--- GOOD: Warm up first
-for i = 1, 100 do myFunction() end  -- Warm up
+**Why it fails:** Lua uses JIT (Just-In-Time) compilation. The first run compiles the code, making it slower than subsequent runs.
+
+✅ **Right: Warm Up Before Measuring**
+```lua
+-- Run it once to compile
+for i = 1, 100 do myFunction() end                       -- Warm up (compiles code)
+
+-- Now measure actual performance
 local start = getTimestampMs()
 for i = 1, 1000 do myFunction() end
-local elapsed = getTimestampMs() - start
+local elapsed = getTimestampMs() - start                 -- Pure execution time
 ```
 
-### 2. Too Few Iterations
+### ❌ Wrong: Too Few Iterations
 
 ```lua
--- BAD: Single iteration, noise dominates
+-- Single run, 0 or 1ms result
 local start = getTimestampMs()
-myFunction()
-local elapsed = getTimestampMs() - start  -- Could be 0 or 1ms
-
--- GOOD: Many iterations for accurate average
-local start = getTimestampMs()
-for i = 1, 10000 do myFunction() end
-local elapsed = getTimestampMs() - start
-local avg = elapsed / 10000  -- Accurate average
+myFunction()                                             -- Runs once
+local elapsed = getTimestampMs() - start                 -- Result: 0ms or 1ms (useless!)
 ```
 
-### 3. Including Setup in Measurement
+**Why it fails:** `getTimestampMs()` has millisecond precision. Fast operations complete in under 1ms, giving you 0 or 1.
+
+✅ **Right: Many Iterations for Average**
+```lua
+-- Run many times for accurate average
+local start = getTimestampMs()
+for i = 1, 10000 do myFunction() end                     -- 10,000 iterations
+local elapsed = getTimestampMs() - start                 -- Total time
+local avg = elapsed / 10000                              -- Average per call: 0.0045ms (useful!)
+```
+
+### ❌ Wrong: Including Setup in Measurement
 
 ```lua
--- BAD: Setup included in timing
+-- Measures setup + work
 local start = getTimestampMs()
-local zombies = getCell():getZombieList()  -- This takes time!
+local zombies = getCell():getZombieList()                -- This takes time too!
 for i = 0, zombies:size() - 1 do
     processZombie(zombies:get(i))
 end
-local elapsed = getTimestampMs() - start
+local elapsed = getTimestampMs() - start                 -- Includes getting zombie list!
+```
 
--- GOOD: Setup outside timing
-local zombies = getCell():getZombieList()  -- Setup
+**Why it fails:** You're measuring both the setup (getting zombies) and the work (processing them). That's two things, not one.
+
+✅ **Right: Setup Outside Timing**
+```lua
+-- Setup first
+local zombies = getCell():getZombieList()                -- Setup (not timed)
+
+-- Measure only the work
 local start = getTimestampMs()
 for i = 0, zombies:size() - 1 do
     processZombie(zombies:get(i))
 end
-local elapsed = getTimestampMs() - start
+local elapsed = getTimestampMs() - start                 -- Pure processing time
 ```
 
-### 4. Garbage Collection Interference
+### ❌ Wrong: Ignoring Garbage Collection
 
 ```lua
--- BAD: GC might run during benchmark
+-- GC might pause during test
 local start = getTimestampMs()
 for i = 1, 100000 do
-    local t = {}  -- Creates garbage
+    local t = {}                                         -- Creates garbage every iteration
     table.insert(t, i)
 end
-local elapsed = getTimestampMs() - start  -- Includes GC pauses
+local elapsed = getTimestampMs() - start                 -- Includes GC pauses!
+```
 
--- BETTER: Force GC before benchmark
-collectgarbage("collect")  -- Clear garbage first
+**Why it fails:** Lua's garbage collector can pause execution to clean up memory. Your benchmark might measure GC time instead of your code.
+
+✅ **Right: Force GC Before Benchmark**
+```lua
+-- Clear garbage first
+collectgarbage("collect")                                -- Run GC now, not during test
+
+-- Now measure
 local start = getTimestampMs()
 for i = 1, 100000 do
     local t = {}
     table.insert(t, i)
 end
-local elapsed = getTimestampMs() - start
+local elapsed = getTimestampMs() - start                 -- More consistent results
 ```
 
-### 5. Testing in Debug Mode
-
-Debug mode can significantly slow down code. Test in release mode for accurate results:
+### ❌ Wrong: Testing in Debug Mode
 
 ```lua
--- Check if debug mode affects your benchmarks
+-- Debug mode enabled (slower)
+local start = getTimestampMs()
+myFunction()
+local elapsed = getTimestampMs() - start                 -- 2x-10x slower than production!
+```
+
+**Why it fails:** Debug mode adds overhead for logging, error checking, and debugging features. Production runs faster.
+
+✅ **Right: Test in Release Mode**
+```lua
+-- Check if debug mode is affecting results
 if isDebugEnabled() then
-    print("WARNING: Debug mode is ON. Results may not reflect production performance.")
+    print("WARNING: Debug mode is ON. Results don't reflect production performance.")
+    return                                               -- Don't benchmark in debug mode
 end
+
+-- Benchmark in release mode
+local start = getTimestampMs()
+myFunction()
+local elapsed = getTimestampMs() - start                 -- Accurate production timing
 ```
 
 ## Statistical Benchmarking
@@ -528,6 +603,138 @@ Document your benchmarks consistently:
 - Creating tables in tight loops
 - Recursive inventory searches
 - Any operation called every frame
+
+## Try It Yourself: Compare Two Approaches
+
+Let's build a real benchmark to answer a real question: Which is faster - string concatenation or table.concat()?
+
+**Goal:** Measure and compare two methods of building a long string.
+
+### Step 1: Create the Benchmark Mod
+
+Create `C:\Users\[YOU]\Zomboid\mods\BenchmarkTest\mod.info`:
+```
+name=Benchmark Test
+id=BenchmarkTest
+description=Testing string building performance
+```
+
+### Step 2: Write the Comparison
+
+Create `C:\Users\[YOU]\Zomboid\mods\BenchmarkTest\media\lua\client\StringBenchmark.lua`:
+
+```lua
+-- StringBenchmark.lua
+-- Compare two methods of building strings
+
+local function benchmarkStringConcat()
+    -- Method 1: String concatenation with ..
+    local iterations = 10000
+
+    -- Warm up
+    for i = 1, 100 do
+        local str = ""
+        for j = 1, 100 do
+            str = str .. tostring(j)                     -- Concatenate with ..
+        end
+    end
+
+    -- Measure
+    local start = getTimestampMs()
+    for i = 1, iterations do
+        local str = ""
+        for j = 1, 100 do
+            str = str .. tostring(j)
+        end
+    end
+    local elapsed = getTimestampMs() - start
+
+    print("[BENCHMARK] String concatenation (..):")
+    print("  Total: " .. elapsed .. "ms")
+    print("  Average: " .. string.format("%.4f", elapsed / iterations) .. "ms")
+
+    return elapsed
+end
+
+local function benchmarkTableConcat()
+    -- Method 2: table.concat
+    local iterations = 10000
+
+    -- Warm up
+    for i = 1, 100 do
+        local parts = {}
+        for j = 1, 100 do
+            table.insert(parts, tostring(j))
+        end
+        local str = table.concat(parts)
+    end
+
+    -- Measure
+    local start = getTimestampMs()
+    for i = 1, iterations do
+        local parts = {}
+        for j = 1, 100 do
+            table.insert(parts, tostring(j))            -- Add to table
+        end
+        local str = table.concat(parts)                  -- Concatenate all at once
+    end
+    local elapsed = getTimestampMs() - start
+
+    print("[BENCHMARK] table.concat:")
+    print("  Total: " .. elapsed .. "ms")
+    print("  Average: " .. string.format("%.4f", elapsed / iterations) .. "ms")
+
+    return elapsed
+end
+
+-- Run comparison when game starts
+Events.OnGameStart.Add(function()
+    print("=== String Building Benchmark ===")
+
+    local timeA = benchmarkStringConcat()
+    local timeB = benchmarkTableConcat()
+
+    -- Calculate winner
+    if timeA < timeB then
+        local speedup = timeB / timeA
+        print("RESULT: String concatenation (..) is " .. string.format("%.1f", speedup) .. "x faster")
+    else
+        local speedup = timeA / timeB
+        print("RESULT: table.concat is " .. string.format("%.1f", speedup) .. "x faster")
+    end
+
+    print("================================")
+end)
+```
+
+### Step 3: Test It
+
+1. Launch PZ with your mod
+2. Start a new game
+3. Check the console (press `~`) to see results
+
+### Step 4: Analyze Results
+
+You should see output like:
+```
+=== String Building Benchmark ===
+[BENCHMARK] String concatenation (..):
+  Total: 842ms
+  Average: 0.0842ms
+[BENCHMARK] table.concat:
+  Total: 124ms
+  Average: 0.0124ms
+RESULT: table.concat is 6.8x faster
+================================
+```
+
+**What you learned:**
+1. How to warm up before benchmarking
+2. How to measure total and average time
+3. How to compare two approaches
+4. That table.concat is actually much faster for building long strings!
+
+This benchmark pattern works for any comparison: different algorithms, different data structures, different approaches. Measure, don't guess!
 
 ## Key Takeaways
 
