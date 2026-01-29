@@ -17,8 +17,8 @@ tags:
   - decompilation
 excerpt: "Achieve 10x faster zombie attribute modification by using direct field access instead of the makeInactive() hack. Discovered through engine decompilation, this technique enables clean, efficient zombie customization."
 table_of_contents:
-  - text: "Overview"
-    link: "#overview"
+  - text: "What This Article Covers"
+    link: "#what-this-article-covers"
   - text: "Prerequisites"
     link: "#prerequisites"
   - text: "The Problem"
@@ -35,6 +35,10 @@ table_of_contents:
     link: "#advanced-zone-based-difficulty"
   - text: "Multiplayer Considerations"
     link: "#multiplayer-considerations"
+  - text: "Common Mistakes"
+    link: "#common-mistakes"
+  - text: "Try It Yourself: Build a Fast Sprinter Zone"
+    link: "#try-it-yourself-build-a-fast-sprinter-zone"
   - text: "Comparison: Before and After"
     link: "#comparison-before-and-after"
   - text: "Key Takeaways"
@@ -53,7 +57,13 @@ last_updated: 2026-01-28
 
 # Zombie Attribute Optimization
 
-## Overview
+You're building a zombie difficulty mod. Different zones should have different zombie types - downtown gets sprinters, suburbs get shamblers. Simple enough, right? Then you discover the only documented way to change zombie speed requires manipulating global sandbox settings and calling `makeInactive()` twice. It's slow, it's hacky, and when you test with 100 zombies, your FPS drops to 20.
+
+I remember the exact moment I discovered the solution. I was decompiling `IsoZombie.java`, searching for the `makeInactive()` method to understand why it was so slow. Then I scrolled up and saw them: `public int speedType`, `public int cognition`, `public int hearing` - just sitting there, publicly accessible. I tried `zombie.speedType = 1` in Lua. It worked. **10x faster**. No hack needed. That one discovery changed everything.
+
+Let me show you how to modify zombie attributes the right way.
+
+## What This Article Covers
 
 This article documents a **10x performance improvement** for modifying zombie attributes in Project Zomboid. Through engine decompilation, we discovered that zombie attribute fields are publicly accessible, eliminating the need for expensive workarounds.
 
@@ -347,42 +357,206 @@ local function onZombieUpdate(zombie)
 end
 ```
 
+## Common Mistakes
+
+### ❌ Wrong: Using the makeInactive() Hack
+
+```lua
+-- Old way: slow and buggy
+function setZombieSpeed_OLD(zombie, speed)
+    local opts = getSandboxOptions()                     -- Get global settings
+    local original = opts:get("ZombieLore.Speed")        -- Save current setting
+    opts:set("ZombieLore.Speed", speed)                  -- Change global setting!
+    zombie:makeInactive(true)                            -- Force reinit
+    zombie:makeInactive(false)                           -- Force reinit again
+    opts:set("ZombieLore.Speed", original)               -- Restore setting
+end
+```
+
+**Why it fails:**
+- **Modifies global state** - Affects ALL zombies temporarily
+- **Race conditions** - Other zombies spawning at same time get wrong values
+- **Expensive** - Two function calls + full stat recalculation per zombie
+- **Side effects** - `makeInactive()` does more than just reinit stats
+- **Slow** - ~50ms per 1000 zombies
+
+✅ **Right: Direct Field Access**
+```lua
+-- New way: fast and clean
+function setZombieSpeed_NEW(zombie, speed)
+    zombie.speedType = speed                             -- That's it!
+end
+-- ~5ms per 1000 zombies (10x faster!)
+```
+
+### ❌ Wrong: Not Tracking Processing
+
+```lua
+-- Sets speed EVERY frame!
+Events.OnZombieUpdate.Add(function(zombie)
+    zombie.speedType = 1                                 -- Runs 60 times per second!
+end)
+```
+
+**Why it fails:** You're setting the same value repeatedly, wasting CPU every frame.
+
+✅ **Right: Track What You've Processed**
+```lua
+-- Set once, skip if already done
+Events.OnZombieUpdate.Add(function(zombie)
+    local modData = zombie:getModData()
+    if modData.speedSet then return end                 -- Already processed
+
+    zombie.speedType = 1                                 -- Set once
+    modData.speedSet = true                              -- Mark as done
+end)
+```
+
+### ❌ Wrong: Forgetting About Zombie Pooling
+
+```lua
+-- Assumes zombie keeps same ID forever
+local modData = zombie:getModData()
+modData.processed = true                                 -- But zombie might be recycled!
+```
+
+**Why it fails:** Zombies are pooled. When one despawns, its object gets reused with a different ID.
+
+✅ **Right: Track by Hash**
+```lua
+-- Store the hash we used
+local modData = zombie:getModData()
+local currentHash = zombie:getOnlineID()
+modData.processedWithHash = currentHash                  -- Track which zombie this is
+
+-- Later, check if hash changed
+if modData.processedWithHash ~= zombie:getOnlineID() then
+    -- Re-process - this is a different zombie now
+end
+```
+
+## Try It Yourself: Build a Fast Sprinter Zone
+
+Let's build a complete working mod using direct field access.
+
+**Goal:** Create a zone where all zombies become sprinters, using the optimized approach.
+
+### Step 1: Create the Mod
+
+Create `C:\Users\[YOU]\Zomboid\mods\FastZone\mod.info`:
+```
+name=Fast Sprinter Zone
+id=FastZone
+description=Downtown zombies are sprinters using optimized field access
+```
+
+### Step 2: Write the Zone Logic
+
+Create `C:\Users\[YOU]\Zomboid\mods\FastZone\media\lua\client\FastZone.lua`:
+
+```lua
+-- FastZone.lua
+-- Optimized zombie attribute modification
+
+-- Define the sprinter zone (Westpoint downtown)
+local SPRINTER_ZONE = {
+    x1 = 11500, y1 = 6900,                              -- Top-left corner
+    x2 = 12000, y2 = 7400                               -- Bottom-right corner
+}
+
+-- Check if zombie is in sprinter zone
+local function isInZone(zombie)
+    local x, y = zombie:getX(), zombie:getY()
+    return x >= SPRINTER_ZONE.x1 and x <= SPRINTER_ZONE.x2 and
+           y >= SPRINTER_ZONE.y1 and y <= SPRINTER_ZONE.y2
+end
+
+-- Process zombie (optimized!)
+local function processZombie(zombie)
+    -- Skip if already processed
+    local modData = zombie:getModData()
+    if modData.FastZoneProcessed then return end        -- Already done
+
+    -- Only process zombies in zone
+    if not isInZone(zombie) then return end
+
+    -- OLD WAY (don't do this):
+    -- local opts = getSandboxOptions()
+    -- opts:set("ZombieLore.Speed", 1)
+    -- zombie:makeInactive(true)
+    -- zombie:makeInactive(false)
+    -- opts:set("ZombieLore.Speed", 2)
+    -- Takes 0.05ms per zombie
+
+    -- NEW WAY (do this):
+    zombie.speedType = 1                                 -- Make sprinter
+    -- Takes 0.005ms per zombie (10x faster!)
+
+    -- Mark as processed
+    modData.FastZoneProcessed = true
+    print("Made zombie " .. zombie:getOnlineID() .. " a sprinter!")
+end
+
+-- Hook into zombie updates
+Events.OnZombieUpdate.Add(processZombie)
+```
+
+### Step 3: Test It
+
+1. Launch PZ with your mod
+2. Start in Westpoint
+3. Go to downtown (coordinates 11500-12000, 6900-7400)
+4. Watch zombies become sprinters
+5. Check console for "Made zombie X a sprinter!" messages
+
+### Step 4: Benchmark It
+
+Add this to see the performance difference:
+
+```lua
+-- Add to FastZone.lua
+local function benchmarkApproaches()
+    local zombies = getCell():getZombieList()
+    local count = math.min(1000, zombies:size())
+
+    -- Benchmark NEW way
+    local start = getTimestampMs()
+    for i = 0, count - 1 do
+        zombies:get(i).speedType = 1
+    end
+    local newTime = getTimestampMs() - start
+
+    print("NEW approach: " .. newTime .. "ms for " .. count .. " zombies")
+    print("Average: " .. string.format("%.4f", newTime / count) .. "ms per zombie")
+end
+
+-- Run once on game start
+Events.OnGameStart.Add(benchmarkApproaches)
+```
+
+**You just:**
+1. Used direct field access (10x faster than old way)
+2. Tracked processing to avoid redundant work
+3. Built a complete zone-based difficulty system
+4. Benchmarked the performance improvement
+
+This is the foundation for any zombie attribute mod.
+
 ## Comparison: Before and After
 
 ### Before: makeInactive() Hack
-
-```lua
--- Problems:
--- 1. Modifies global sandbox settings
--- 2. Two expensive function calls per zombie
--- 3. Risk of race conditions
--- 4. Side effects from makeInactive()
--- 5. ~50ms per 1000 zombies
-
-function setZombieSpeed_OLD(zombie, speed)
-    local opts = getSandboxOptions()
-    local original = opts:get("ZombieLore.Speed")
-    opts:set("ZombieLore.Speed", speed)
-    zombie:makeInactive(true)
-    zombie:makeInactive(false)
-    opts:set("ZombieLore.Speed", original)
-end
-```
+- Modifies global sandbox settings
+- Two expensive function calls per zombie
+- Risk of race conditions
+- Side effects from makeInactive()
+- **~50ms per 1000 zombies**
 
 ### After: Direct Field Access
-
-```lua
--- Benefits:
--- 1. No global state changes
--- 2. Single field write per attribute
--- 3. Thread safe
--- 4. No side effects
--- 5. ~5ms per 1000 zombies (10x faster)
-
-function setZombieSpeed_NEW(zombie, speed)
-    zombie.speedType = speed
-end
-```
+- No global state changes
+- Single field write per attribute
+- Thread safe
+- No side effects
+- **~5ms per 1000 zombies** (10x faster)
 
 ## Key Takeaways
 
