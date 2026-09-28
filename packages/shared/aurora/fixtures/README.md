@@ -1,5 +1,28 @@
 # Aurora log fixtures
 
+## `2026-09-28_21-10_Aurora.txt` - the first REAL log, reconstructed
+
+The v0.0 exporter's first live log (STATUS "T03 PASS", 2026-09-28): `boot`,
+`probe`, one `hb`, on an empty server with `PauseEmpty=true`. The JSON field
+values are the ones recorded verbatim in that STATUS block (every probed API and
+event true, `schema:1`, `v:"0.0.0"`, `players:0`, probe `t:1790629890628`, hb
+`t:1790629892835`). Two things are NOT verbatim, because the session that wrote
+this fixture had no SFTP access: the boot record's `t` (placed 2.2 s before the
+hb, as STATUS measured) and PZ's own line prefix (rendered from `t` in UTC).
+Replace this file with the downloaded original when one is to hand; nothing in
+the tests depends on the two reconstructed values.
+
+## `2026-09-28_22-00_Aurora.txt` - SYNTHETIC, revision 2 heartbeat shape
+
+Generated to exercise the T08 rev 2 mapping before T09 ships: one `statkeys`
+record, six `src:"tick"` heartbeats 10 s apart with the three `st` tables (the
+key names are the engine's, including the `avg-update-period` trap and a
+`Pool<...>` key in each table that the exporter is meant to drop and the ingest
+must drop regardless), one `src:"gametime"` heartbeat that must NOT become a
+health sample, one `pos`, and a final tick heartbeat reporting 0 players that
+must flip the roster offline. The values are invented; only the shape is the
+contract.
+
 ## `2026-09-28_03-06_Aurora.txt` - SYNTHETIC, not a capture
 
 T08 asks for 200 real lines copied from the T03 spike's log. **T03 has not run**,

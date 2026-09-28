@@ -19,19 +19,26 @@
 // backfill bundle may contain anything.
 //
 // ---------------------------------------------------------------------------
-// Record contract - READ THIS BEFORE WRITING THE EXPORTER (T09/WP-A)
+// Record contract - READ THIS BEFORE CHANGING THE EXPORTER (T09)
 // ---------------------------------------------------------------------------
-// No exporter existed when this was written (T03 has not run), so there is no
-// observed sample to derive the payload from. The shapes below are a CONTRACT
-// this parser defines and T09 must emit; they are not measured facts. Keys are
-// short because the log rotates at 10 MiB and `pos` lines dominate it.
+// `boot`, `probe` and the v0.0 `hb` are OBSERVED (first live log, STATUS "T03
+// PASS", 2026-09-28). `hb.st`, `hb.src` and `statkeys` are the revision 2
+// shapes T08 rev 2 and T09 agreed on and T09 is emitting; the rest is still the
+// contract this parser defines. Keys are short because the log rotates at
+// 10 MiB and `pos` lines dominate it.
 //
 // Every record carries `k` (kind) and `t` (server epoch ms). No record carries a
 // server id: the ingest caller supplies that, so a relabelled log cannot write
-// into another server's rows.
+// into another server's rows. The launch stamp is NOT in any record either: it
+// is the log file's own name (<yyyy-MM-dd_HH-mm>_Aurora.txt), see
+// launchStampFromFileName below.
 //
-//   boot     gv game_version, ls launch stamp, ev [event names], api [api names]
-//   hb       np players online
+//   boot     v exporter version, schema, players, apis {name: bool}, events {name: bool}
+//   probe    fileWriter bool (v0.0 diagnostic; no table)
+//   statkeys perf [names], game [names], net [names] (once per launch; no table)
+//   hb       players online count, src "tick" | "gametime",
+//            st { perf {name: number}, game {...}, net {...} } - the three
+//            server statistics tables; only src "tick" becomes a health sample
 //   pos      u username, x, y, z, v vehicle id or null
 //   veh      id vehicle id, sc script name, x, y, z, d driver username or null
 //   sh       id, x, y, w, h, o owner, ti title, p [usernames], lv last visited ms,
@@ -51,10 +58,21 @@ export const KINDS = [
   'zgrid',
   'catalog',
   'link',
-  // v0.0 only: the getFileWriter diagnostic. Known so it is not reported as an
-  // unknown kind, but it maps to no table - buildPlan produces no rows for it.
+  // Diagnostic kinds: known so they are not reported as unknown, but they map
+  // to no table - buildPlan produces no rows for them.
   'probe',
+  'statkeys',
 ] as const;
+
+/**
+ * The exporter opens one log per server launch and PZ names it after the
+ * launch time, so the file name IS the launch stamp. Returns null for a name
+ * that does not follow the <yyyy-MM-dd_HH-mm>_Aurora.txt pattern.
+ */
+export function launchStampFromFileName(fileName: string): string | null {
+  const m = /^(\d{4}-\d{2}-\d{2}_\d{2}-\d{2})_Aurora\.txt$/.exec(fileName.split('/').pop() ?? '');
+  return m ? m[1] : null;
+}
 
 export type Kind = (typeof KINDS)[number];
 
@@ -65,14 +83,9 @@ export interface BaseRecord {
 
 export interface BootRecord extends BaseRecord {
   k: 'boot';
-  // v0.1 (planned): game version and launch stamp, for aurora.servers.
-  gv?: string;
-  ls?: string;
-  ev?: string[];
-  api?: string[];
-  // v0.0 (OBSERVED, OutcastMods commit 9aad789). These are what the shipped
-  // exporter actually emits; the fields above are still contract-only. Keeping
-  // both means the parser accepts the real emitter without waiting for T09.
+  // OBSERVED shape (OutcastMods 9aad789, live log 2026-09-28_21-10). The exporter
+  // does not emit a game version or a launch stamp: the stamp is the file name
+  // and game_version stays null until the exporter reports one.
   v?: string;
   schema?: number;
   apis?: Record<string, boolean>;
@@ -86,12 +99,35 @@ export interface ProbeRecord extends BaseRecord {
   err?: string | null;
 }
 
+/** One record per launch listing the statistics keys the host exposes. Diagnostic only. */
+export interface StatkeysRecord extends BaseRecord {
+  k: 'statkeys';
+  perf?: string[];
+  game?: string[];
+  net?: string[];
+}
+
+/** The three server statistics tables, keyed exactly as the engine names them. */
+export interface StatTables {
+  perf?: Record<string, number>;
+  game?: Record<string, number>;
+  net?: Record<string, number>;
+}
+
 export interface HbRecord extends BaseRecord {
   k: 'hb';
-  np?: number;
-  // v0.0 spells the online count `players`. The first hb also carries a settled
-  // re-probe of apis/events - see the T03 block in STATUS.md for why.
+  /** Online count. v0.0 spells it `players`; the synthetic fixture used `np`. */
   players?: number;
+  np?: number;
+  /**
+   * Revision 2: which clock fired this heartbeat. "tick" is OnTick + wall clock
+   * and is the health feed; "gametime" pauses on an empty server (measured) and
+   * must not become a health sample. A v0.0 heartbeat has no src at all.
+   */
+  src?: string;
+  /** Revision 2: the statistics tables, with `Pool<...>` keys dropped by the exporter. */
+  st?: StatTables;
+  // The first hb of a launch also carries a settled re-probe of apis/events.
   apis?: Record<string, boolean>;
   events?: Record<string, boolean>;
 }
@@ -164,6 +200,7 @@ export interface LinkRecord extends BaseRecord {
 export type AuroraRecord =
   | BootRecord
   | ProbeRecord
+  | StatkeysRecord
   | HbRecord
   | PosRecord
   | VehRecord
@@ -196,17 +233,30 @@ function isStr(v: unknown): v is string {
   return typeof v === 'string';
 }
 
-function isStrArray(v: unknown): v is string[] {
-  return Array.isArray(v) && v.every(isStr);
+function isPlainObject(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null && !Array.isArray(v);
+}
+
+function isStatTables(v: unknown): v is StatTables {
+  if (!isPlainObject(v)) return false;
+  for (const name of ['perf', 'game', 'net']) {
+    const table = v[name];
+    if (table !== undefined && !isPlainObject(table)) return false;
+  }
+  return true;
 }
 
 /** Validate the kind-specific required fields. Optional fields are not policed. */
 function checkShape(o: Record<string, unknown>): boolean {
   switch (o.k) {
     case 'boot':
-    case 'hb':
     case 'probe':
+    case 'statkeys':
       return true;
+    case 'hb':
+      // `st`, when present, must be an object of objects; a heartbeat whose
+      // tables are malformed is rejected whole rather than half-mapped.
+      return o.st === undefined || isStatTables(o.st);
     case 'pos':
       return isStr(o.u) && isNum(o.x) && isNum(o.y);
     case 'veh':

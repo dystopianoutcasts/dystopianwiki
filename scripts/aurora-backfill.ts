@@ -25,7 +25,12 @@ import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import process from 'node:process';
 
-import { emptyStats, splitLines, type SplitStats } from '../packages/shared/aurora/parser.ts';
+import {
+  emptyStats,
+  launchStampFromFileName,
+  splitLines,
+  type SplitStats,
+} from '../packages/shared/aurora/parser.ts';
 import { buildPlan, chunk } from '../packages/shared/aurora/ingest-core.ts';
 import { AuroraRest } from '../packages/shared/aurora/rest.ts';
 
@@ -104,7 +109,9 @@ async function main(): Promise<number> {
     if (!text.endsWith('\n')) text += '\n';
 
     const { records } = splitLines(text, '', stats);
-    const plan = buildPlan(records, args.server);
+    // The file name is the launch stamp; "now" for the online reconcile is the
+    // newest record in the file (buildPlan's default), not the replay time.
+    const plan = buildPlan(records, args.server, { launchStamp: launchStampFromFileName(name) });
 
     for (const [kind, n] of Object.entries(plan.counts)) {
       kindTotals[kind] = (kindTotals[kind] ?? 0) + n;
@@ -127,6 +134,9 @@ async function main(): Promise<number> {
           rowsWritten += batch.length;
         }
       }
+      for (const patch of plan.patches) {
+        await rest.patch(`${patch.table}?${patch.filter}`, patch.body);
+      }
       for (const link of plan.links) {
         try {
           await rest.rpc('consume_link_code', {
@@ -142,7 +152,8 @@ async function main(): Promise<number> {
       }
     }
 
-    console.log(`${name}  ${summarise(stats)}`);
+    const planned = plan.upserts.map((u) => `${u.table}=${u.rows.length}`).join(' ');
+    console.log(`${name}  ${summarise(stats)}  rows[${planned}] patches=${plan.patches.length}`);
   }
 
   console.log('');

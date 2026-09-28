@@ -1,6 +1,7 @@
 // Run with: deno test packages/shared/aurora/parser.test.ts
 import {
   emptyStats,
+  launchStampFromFileName,
   parseLine,
   parseLineDetailed,
   splitChunkBytes,
@@ -176,4 +177,36 @@ Deno.test('v0.0 hb parses, including the settled re-probe on the first one', () 
   assertEquals(rec?.k, 'hb');
   assertEquals(rec.players, 2);
   assertEquals(rec.apis['getCell().getVehicles'], true);
+});
+
+// --- revision 2 shapes (T08 rev 2 / T09 contract) --------------------------
+
+Deno.test('a revision 2 hb parses with src and the three statistics tables', () => {
+  const line = `${V0} A1 {"k":"hb","players":1,"src":"tick","st":{"game":{"players":1,"zombies-total":40},` +
+    `"net":{"sent-bps":10},"perf":{"fps":104,"min-update-period":98}},"t":1759000000000}.`;
+  const rec = parseLine(line) as { src: string; st: { perf: Record<string, number>; game: Record<string, number> } };
+  assertEquals(rec.src, 'tick');
+  assertEquals(rec.st.perf.fps, 104);
+  assertEquals(rec.st.game['zombies-total'], 40);
+});
+
+Deno.test('an hb whose st is not an object of objects is bad-shape, not half-mapped', () => {
+  for (const st of ['5', '[1]', '{"perf":7}']) {
+    const r = parseLineDetailed(`${V0} A1 {"k":"hb","t":1,"src":"tick","st":${st}}.`);
+    assertEquals(r.ok, false, `st=${st} must be rejected`);
+    assertEquals((r as { reason: string }).reason, 'bad-shape');
+  }
+});
+
+Deno.test('statkeys is a known diagnostic kind', () => {
+  const r = parseLineDetailed(`${V0} A1 {"game":["players"],"k":"statkeys","net":[],"perf":["fps"],"t":1}.`);
+  assertEquals(r.ok, true);
+  assertEquals((r as { record: { k: string } }).record.k, 'statkeys');
+});
+
+Deno.test('the launch stamp is read from the log file name', () => {
+  assertEquals(launchStampFromFileName('2026-09-28_21-10_Aurora.txt'), '2026-09-28_21-10');
+  assertEquals(launchStampFromFileName('server-data/Logs/2026-09-28_21-10_Aurora.txt'), '2026-09-28_21-10');
+  assertEquals(launchStampFromFileName('2026-09-28_21-10_DebugLog-server.txt'), null);
+  assertEquals(launchStampFromFileName('aurora-sample.txt'), null);
 });

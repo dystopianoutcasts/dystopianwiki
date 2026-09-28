@@ -1,13 +1,13 @@
 // Pure record -> row mapping for the aurora schema. No I/O: the Edge Function and
 // the backfill CLI both build a plan here and then execute it against PostgREST.
 //
-// Two things in here are correctness-critical and easy to get wrong:
+// Three things in here are correctness-critical and easy to get wrong:
 //
 // 1. ORDER. aurora.player_positions has a composite foreign key into
 //    aurora.players, which in turn references aurora.servers, and vehicles /
-//    safehouses / zones / zombie_grid / item_catalog all reference servers. So
-//    the plan is an ORDERED list, servers first, and the executor must not
-//    parallelise it.
+//    safehouses / zones / zombie_grid / item_catalog / health_samples all
+//    reference servers. So the plan is an ORDERED list, servers first, and the
+//    executor must not parallelise it. Patches run AFTER the upserts.
 //
 // 2. DEDUPE. Postgres rejects an INSERT ... ON CONFLICT DO UPDATE whose payload
 //    touches the same key twice ("cannot affect row a second time"), and a 50 s
@@ -15,14 +15,20 @@
 //    keyed table is therefore deduped to the newest record per key before it is
 //    sent. player_position_history is the deliberate exception: it is append-only
 //    and keeps every sample.
+//
+// 3. HEALTH COMES FROM THE EXPORTER, NOT RCON. RCON was retired (STATUS "RCON
+//    OPEN QUESTION ANSWERED"): it is plaintext over the public internet and every
+//    counter it offered is in the heartbeat's `st` tables. Nothing in this file
+//    knows how to talk to RCON and nothing should be added that does.
 
 import type {
   AuroraRecord,
   BootRecord,
   CatalogRecord,
+  HbRecord,
   LinkRecord,
-  PosRecord,
   ShRecord,
+  StatTables,
   VehRecord,
   ZgridRecord,
   ZoneRecord,
@@ -37,13 +43,38 @@ export interface TableUpsert {
   rows: Row[];
 }
 
+/** A PATCH against `table?filter`, run after every upsert in the plan. */
+export interface TablePatch {
+  table: string;
+  /** PostgREST filter query string, already encoded. */
+  filter: string;
+  body: Row;
+  why: string;
+}
+
 export interface IngestPlan {
   /** Dependency-ordered. Execute sequentially. */
   upserts: TableUpsert[];
+  /** Run after the upserts, in order. */
+  patches: TablePatch[];
   /** Consumed via the consume_link_code RPC, not an upsert. */
   links: LinkRecord[];
   counts: Record<string, number>;
 }
+
+export interface PlanOptions {
+  /** From the log file name (parser.launchStampFromFileName). Written to servers.last_launch_stamp. */
+  launchStamp?: string | null;
+  /**
+   * "Now" for the online reconcile, in server epoch ms. Defaults to the newest
+   * `t` in the batch, because the log is the clock: a backfill of an old bundle
+   * must not mark everyone offline just because the replay happens later.
+   */
+  now?: number;
+}
+
+/** A player seen this recently in a `pos` record is online. */
+export const ONLINE_WINDOW_MS = 2 * 60_000;
 
 /** Server epoch milliseconds -> Postgres timestamptz. */
 export function toIso(ms: number): string {
@@ -68,13 +99,17 @@ function byKind<K extends AuroraRecord['k']>(
   return records.filter((r) => r.k === kind) as Extract<AuroraRecord, { k: K }>[];
 }
 
+function newestOf<T extends { t: number }>(items: T[]): T | undefined {
+  return items.length > 0 ? items.reduce((a, b) => (b.t >= a.t ? b : a)) : undefined;
+}
+
 /**
  * Build the ordered upsert plan for one batch of records.
  *
  * `serverId` comes from the caller, never from the log, so a log file copied
  * between servers cannot write into the wrong server's rows.
  */
-export function buildPlan(records: AuroraRecord[], serverId: string): IngestPlan {
+export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanOptions = {}): IngestPlan {
   const counts: Record<string, number> = {};
   for (const r of records) counts[r.k] = (counts[r.k] ?? 0) + 1;
 
@@ -84,39 +119,67 @@ export function buildPlan(records: AuroraRecord[], serverId: string): IngestPlan
   const zones = byKind(records, 'zone');
   const zgrid = byKind(records, 'zgrid');
   const catalog = byKind(records, 'catalog');
-  const boots = byKind(records, 'boot');
+  const heartbeats = byKind(records, 'hb');
   const links = byKind(records, 'link');
 
+  const newestT = records.length > 0 ? Math.max(...records.map((r) => r.t)) : undefined;
+  const now = opts.now ?? newestT ?? Date.now();
+
   const upserts: TableUpsert[] = [];
+  const patches: TablePatch[] = [];
 
   // --- servers -------------------------------------------------------------
   // Always present so the foreign keys below resolve on a cold database. The
-  // newest boot line, if any, supplies the launch stamp and version.
-  const newestBoot = boots.length > 0
-    ? boots.reduce((a: BootRecord, b: BootRecord) => (b.t >= a.t ? b : a))
-    : undefined;
-  const lastSeen = records.length > 0 ? Math.max(...records.map((r) => r.t)) : Date.now();
-  const serverRow: Row = { id: serverId, last_seen: toIso(lastSeen) };
-  if (newestBoot?.gv !== undefined) serverRow.game_version = newestBoot.gv;
-  if (newestBoot?.ls !== undefined) serverRow.last_launch_stamp = newestBoot.ls;
+  // exporter's boot record carries no version or stamp (observed shape); the
+  // launch stamp is the file name, supplied by the caller. game_version is left
+  // untouched until the exporter emits one.
+  const serverRow: Row = { id: serverId, last_seen: toIso(newestT ?? now) };
+  if (opts.launchStamp) serverRow.last_launch_stamp = opts.launchStamp;
   upserts.push({ table: 'servers', onConflict: 'id', rows: [serverRow] });
 
+  // --- health_samples ------------------------------------------------------
+  // Right after servers: nothing else depends on it and it must not wait behind
+  // a large position batch.
+  const healthRows = buildHealthRows(heartbeats, serverId);
+  if (healthRows.length > 0) {
+    upserts.push({ table: 'health_samples', onConflict: 'server_id,t', rows: healthRows });
+  }
+
   // --- players -------------------------------------------------------------
-  // Derived from position lines: seeing a player move is proof they are online.
+  // Derived from position lines. A player whose newest position is within the
+  // online window is online; one seen in this batch but not that recently is
+  // offline (they were online earlier in the window and have since stopped
+  // producing positions, which is what logging off looks like).
   // Only these columns are sent, so an upsert never clobbers hours_survived,
-  // access_level or linked_user_id, which come from other sources.
-  const playerRows = dedupe(positions, (p) => p.u, (p) => p.t).map((p): Row => ({
+  // access_level, linked_user_id or the players.db columns.
+  const newestPositions = dedupe(positions, (p) => p.u, (p) => p.t);
+  const playerRows = newestPositions.map((p): Row => ({
     server_id: serverId,
     username: p.u,
     last_seen: toIso(p.t),
-    online: true,
+    online: now - p.t <= ONLINE_WINDOW_MS,
   }));
   if (playerRows.length > 0) {
     upserts.push({ table: 'players', onConflict: 'server_id,username', rows: playerRows });
   }
 
+  // When the newest heartbeat says nobody is online AND it is the latest word
+  // in the batch (no position is newer than it), everyone on the server is
+  // offline, including players this batch never saw. Applied after the upserts
+  // so the heartbeat overrides positions older than itself.
+  const newestHb = newestOf(heartbeats);
+  const newestPosT = newestOf(positions)?.t ?? -Infinity;
+  if (newestHb !== undefined && onlineCount(newestHb) === 0 && newestHb.t >= newestPosT) {
+    patches.push({
+      table: 'players',
+      filter: `server_id=eq.${encodeURIComponent(serverId)}&online=is.true`,
+      body: { online: false },
+      why: `heartbeat at ${toIso(newestHb.t)} reports 0 players online`,
+    });
+  }
+
   // --- player_positions ----------------------------------------------------
-  const positionRows = dedupe(positions, (p) => p.u, (p) => p.t).map((p): Row => ({
+  const positionRows = newestPositions.map((p): Row => ({
     server_id: serverId,
     username: p.u,
     x: p.x,
@@ -243,62 +306,154 @@ export function buildPlan(records: AuroraRecord[], serverId: string): IngestPlan
     });
   }
 
-  return { upserts, links, counts };
+  return { upserts, patches, links, counts };
 }
 
 // ---------------------------------------------------------------------------
-// RCON -> health_samples
+// hb -> health_samples
 // ---------------------------------------------------------------------------
 
 /**
- * RCON stat key -> health_samples column.
+ * Statistics key -> health_samples column, per table. The engine's names are
+ * kept verbatim on the left. Two traps recorded in migration 014:
  *
- * Unit note: avg-update-period lands in avg_update_period_ms on the assumption
- * that the server already reports milliseconds. T01 recorded the key names but
- * not their units, so if the dashboard shows an implausible figure this mapping
- * is the first thing to check.
+ * - `fps` in the perf table is the main-loop cycle DURATION in ms (~104 on the
+ *   10 Hz server loop), not a frame rate. It is the tick time.
+ * - `avg-update-period` is ~5% of the cycle time after a perishable reset, not
+ *   an average of anything. It is deliberately NOT mapped and must never be
+ *   stored as a tick figure; it survives only inside `raw`.
  */
-export const HEALTH_KEYS: Record<string, string> = {
-  'players': 'players',
-  'zombies-total': 'zombies_total',
-  'zombies-loaded': 'zombies_loaded',
-  'zombies-simulated': 'zombies_simulated',
-  'zombies-culled': 'zombies_culled',
-  'loaded-cells': 'loaded_cells',
-  'memory-used': 'memory_used',
-  'memory-max': 'memory_max',
-  'avg-update-period': 'avg_update_period_ms',
-  'sent-bps': 'sent_bps',
-  'received-bps': 'received_bps',
+export const HEALTH_COLUMNS: { readonly [T in keyof StatTables]-?: Readonly<Record<string, string>> } = {
+  game: {
+    'zombies-total': 'zombies_total',
+    'zombies-loaded': 'zombies_loaded',
+    'zombies-simulated': 'zombies_simulated',
+    'zombies-culled': 'zombies_culled',
+    'loaded-cells': 'loaded_cells',
+  },
+  perf: {
+    'memory-used': 'memory_used',
+    'memory-max': 'memory_max',
+    'fps': 'tick_ms',
+    'min-update-period': 'tick_min_ms',
+    'max-update-period': 'tick_max_ms',
+  },
+  net: {
+    'sent-bps': 'sent_bps',
+    'received-bps': 'received_bps',
+  },
 };
 
+/** Heartbeat sources that become health samples. */
+export const HEALTH_SOURCES: ReadonlySet<string> = new Set(['tick']);
+
+/** Per-object-pool counters: ~200 keys of allocator noise, dropped from raw. */
+export function isPoolKey(key: string): boolean {
+  return key.startsWith('Pool<');
+}
+
+function onlineCount(hb: HbRecord): number | undefined {
+  const fromTables = hb.st?.game?.players;
+  if (typeof fromTables === 'number' && Number.isFinite(fromTables)) return fromTables;
+  if (typeof hb.players === 'number' && Number.isFinite(hb.players)) return hb.players;
+  if (typeof hb.np === 'number' && Number.isFinite(hb.np)) return hb.np;
+  return undefined;
+}
+
 /**
- * Build one health_samples row. Every stat goes into `raw`; the eleven mapped
- * keys are additionally promoted to typed columns.
- *
- * `playerCount` comes from the `players` roster rather than the stats block,
- * because the roster is what the site's online list is built from and the two
- * must not disagree.
+ * Whether a heartbeat is a health sample. Revision 2 heartbeats say which clock
+ * fired them; only the wall-clock ("tick") ones count, because game-time ones
+ * stop on an empty server and would read as gaps. A heartbeat with no `src` at
+ * all is a v0.0 record from before the field existed and is kept, so the logs
+ * already on the host still yield their (players-only) samples.
  */
-export function buildHealthSample(
-  serverId: string,
-  at: Date,
-  stats: Record<string, number>,
-  playerCount: number,
-): Row {
+export function isHealthHeartbeat(hb: HbRecord): boolean {
+  return hb.src === undefined || HEALTH_SOURCES.has(hb.src);
+}
+
+function stripPools(table: Record<string, number> | undefined): Record<string, number> | undefined {
+  if (table === undefined) return undefined;
+  const out: Record<string, number> = {};
+  for (const [k, v] of Object.entries(table)) if (!isPoolKey(k)) out[k] = v;
+  return out;
+}
+
+/** One health_samples row from one heartbeat. Exported for the tests; buildPlan calls it. */
+export function buildHealthRow(hb: HbRecord, serverId: string): Row {
+  const st = hb.st ?? {};
   const row: Row = {
     server_id: serverId,
-    t: at.toISOString(),
-    players: playerCount,
-    raw: stats,
+    t: toIso(hb.t),
   };
-  for (const [statKey, column] of Object.entries(HEALTH_KEYS)) {
-    if (column === 'players') continue; // roster wins
-    const value = stats[statKey];
-    if (value !== undefined && Number.isFinite(value)) row[column] = value;
+  const players = onlineCount(hb);
+  if (players !== undefined) row.players = players;
+
+  for (const tableName of ['game', 'perf', 'net'] as const) {
+    const table = st[tableName];
+    if (!table) continue;
+    for (const [statKey, column] of Object.entries(HEALTH_COLUMNS[tableName])) {
+      const value = table[statKey];
+      if (typeof value === 'number' && Number.isFinite(value)) row[column] = value;
+    }
   }
+
+  // Everything else survives in raw, minus the pool counters. The tables keep
+  // their names so a key that appears in two of them stays distinguishable.
+  const raw: Row = {};
+  if (hb.src !== undefined) raw.src = hb.src;
+  for (const tableName of ['game', 'perf', 'net'] as const) {
+    const stripped = stripPools(st[tableName]);
+    if (stripped !== undefined) raw[tableName] = stripped;
+  }
+  row.raw = raw;
   return row;
 }
+
+/** Health rows for a batch: only tick-sourced heartbeats, one row per timestamp. */
+export function buildHealthRows(heartbeats: HbRecord[], serverId: string): Row[] {
+  const eligible = heartbeats.filter(isHealthHeartbeat);
+  return dedupe(eligible, (h) => String(h.t), (h) => h.t).map((h) => buildHealthRow(h, serverId));
+}
+
+// ---------------------------------------------------------------------------
+// players.db -> players
+// ---------------------------------------------------------------------------
+
+export interface SavedPlayer {
+  /** Account name: the key of aurora.players. */
+  username: string;
+  /** Character name, shown on the site. */
+  name: string;
+  x: number;
+  y: number;
+}
+
+/**
+ * Rows for aurora.players from the server's players.db. Only the columns the
+ * save file owns are sent: the character name and the last saved square, which
+ * is what the map shows for an offline character. Coordinates are stored as
+ * whole squares (the columns are INT). Rows without a username are skipped,
+ * and a username that appears twice keeps its last occurrence.
+ */
+export function buildSavedPlayerRows(players: SavedPlayer[], serverId: string): Row[] {
+  const byName = new Map<string, Row>();
+  for (const p of players) {
+    if (!p.username) continue;
+    if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) continue;
+    byName.set(p.username, {
+      server_id: serverId,
+      username: p.username,
+      display_name: p.name || null,
+      last_saved_x: Math.round(p.x),
+      last_saved_y: Math.round(p.y),
+    });
+  }
+  return [...byName.values()];
+}
+
+// ---------------------------------------------------------------------------
+// Batching, cursor
+// ---------------------------------------------------------------------------
 
 /** Split rows into batches. PostgREST is given at most `size` rows per call. */
 export function chunk<T>(rows: T[], size: number): T[][] {
@@ -340,3 +495,6 @@ export function planRead(
   const length = Math.max(0, Math.min(fileSize - offset, maxBytes));
   return { offset, length, reset: rotated || !sameFile };
 }
+
+// Referenced for the type only; keeps the import honest if BootRecord grows.
+export type { BootRecord };

@@ -1,12 +1,16 @@
 // Run with: deno test packages/shared/aurora/ingest-core.test.ts
 import {
-  buildHealthSample,
+  buildHealthRow,
+  buildHealthRows,
   buildPlan,
+  buildSavedPlayerRows,
   chunk,
+  isHealthHeartbeat,
+  ONLINE_WINDOW_MS,
   planRead,
   type TableUpsert,
 } from './ingest-core.ts';
-import type { AuroraRecord } from './parser.ts';
+import type { AuroraRecord, HbRecord } from './parser.ts';
 
 function assertEquals<T>(actual: T, expected: T, msg = ''): void {
   const a = JSON.stringify(actual);
@@ -133,14 +137,16 @@ Deno.test('server_id comes from the caller, never from the log', () => {
   }
 });
 
-Deno.test('boot supplies the launch stamp and version', () => {
+Deno.test('the launch stamp comes from the file name, and boot sets no game version', () => {
   const recs: AuroraRecord[] = [
-    { k: 'boot', t: 10, gv: '42.20.4', ls: '2026-09-28_03-06' },
-    { k: 'boot', t: 20, gv: '42.20.5', ls: '2026-09-28_04-00' },
+    { k: 'boot', t: 10, v: '0.0.0', schema: 1, players: 0, apis: { getOnlinePlayers: true } },
   ];
-  const row = buildPlan(recs, SERVER).upserts[0].rows[0];
-  assertEquals(row.game_version, '42.20.5', 'newest boot wins');
-  assertEquals(row.last_launch_stamp, '2026-09-28_04-00');
+  const withStamp = buildPlan(recs, SERVER, { launchStamp: '2026-09-28_21-10' }).upserts[0].rows[0];
+  assertEquals(withStamp.last_launch_stamp, '2026-09-28_21-10');
+  assertEquals('game_version' in withStamp, false, 'the exporter emits no game version yet');
+
+  const without = buildPlan(recs, SERVER).upserts[0].rows[0];
+  assertEquals('last_launch_stamp' in without, false, 'no stamp when the caller has none');
 });
 
 Deno.test('link records are routed to the RPC, not to an upsert', () => {
@@ -155,40 +161,187 @@ Deno.test('timestamps become ISO strings', () => {
   assertEquals(table(plan.upserts, 'player_positions')?.rows[0].t, '1970-01-01T00:00:00.000Z');
 });
 
-// --- health sample ---------------------------------------------------------
+// --- hb -> health_samples --------------------------------------------------
 
-Deno.test('health sample promotes the mapped keys and keeps everything in raw', () => {
-  const stats = {
-    'zombies-total': 12000,
-    'zombies-loaded': 800,
-    'zombies-simulated': 120,
-    'zombies-culled': 40,
-    'loaded-cells': 36,
-    'memory-used': 3000000000,
-    'memory-max': 8000000000,
-    'avg-update-period': 16.7,
-    'sent-bps': 4096,
-    'received-bps': 2048,
-    'pool-something-obscure': 7,
+/** A revision 2 tick heartbeat with every mapped key plus the two traps. */
+function tickHb(over: Partial<HbRecord> = {}): HbRecord {
+  return {
+    k: 'hb',
+    t: 1790629892835,
+    players: 2,
+    src: 'tick',
+    st: {
+      perf: {
+        'fps': 104,
+        'min-update-period': 98,
+        'max-update-period': 131,
+        'avg-update-period': 5,
+        'memory-used': 3000000000,
+        'memory-max': 8000000000,
+        'Pool<IsoGridSquare>': 512,
+        'Pool<Vector2>': 9000,
+      },
+      game: {
+        'players': 3,
+        'zombies-total': 12000,
+        'zombies-loaded': 800,
+        'zombies-simulated': 120,
+        'zombies-culled': 40,
+        'loaded-cells': 36,
+      },
+      net: { 'sent-bps': 4096, 'received-bps': 2048, 'Pool<Packet>': 12 },
+    },
+    ...over,
   };
-  const row = buildHealthSample(SERVER, new Date(0), stats, 5);
+}
+
+type Raw = { src?: string; perf?: Record<string, number>; game?: Record<string, number>; net?: Record<string, number> };
+
+Deno.test('a tick heartbeat maps every named column from the three tables', () => {
+  const row = buildHealthRow(tickHb(), SERVER);
+  assertEquals(row.server_id, SERVER);
+  assertEquals(row.t, '2026-09-28T21:11:32.835Z');
+  assertEquals(row.tick_ms, 104, 'perf.fps is the tick DURATION');
+  assertEquals(row.tick_min_ms, 98);
+  assertEquals(row.tick_max_ms, 131);
+  assertEquals(row.memory_used, 3000000000);
+  assertEquals(row.memory_max, 8000000000);
   assertEquals(row.zombies_total, 12000);
+  assertEquals(row.zombies_loaded, 800);
+  assertEquals(row.zombies_simulated, 120);
+  assertEquals(row.zombies_culled, 40);
   assertEquals(row.loaded_cells, 36);
-  assertEquals(row.avg_update_period_ms, 16.7);
+  assertEquals(row.sent_bps, 4096);
   assertEquals(row.received_bps, 2048);
-  assertEquals(row.players, 5, 'roster count wins over any stats key');
-  assertEquals((row.raw as Record<string, number>)['pool-something-obscure'], 7);
 });
 
-Deno.test('the roster count wins even when the stats block disagrees', () => {
-  const row = buildHealthSample(SERVER, new Date(0), { players: 99 }, 3);
-  assertEquals(row.players, 3);
-  assertEquals((row.raw as Record<string, number>).players, 99, 'raw still records it');
+Deno.test('avg-update-period is never promoted to a column, only kept in raw', () => {
+  const row = buildHealthRow(tickHb(), SERVER);
+  for (const col of Object.keys(row)) {
+    assert(!/avg/i.test(col), `no column may be derived from avg-update-period, found ${col}`);
+  }
+  assertEquals((row.raw as Raw).perf?.['avg-update-period'], 5, 'raw keeps it for forensics');
 });
 
-Deno.test('missing stats leave their columns unset rather than zero', () => {
-  const row = buildHealthSample(SERVER, new Date(0), {}, 0);
-  assertEquals('zombies_total' in row, false);
+Deno.test('Pool< keys are dropped from raw but every other key survives', () => {
+  const raw = buildHealthRow(tickHb(), SERVER).raw as Raw;
+  const allKeys = [...Object.keys(raw.perf ?? {}), ...Object.keys(raw.game ?? {}), ...Object.keys(raw.net ?? {})];
+  assertEquals(allKeys.some((k) => k.startsWith('Pool<')), false, 'pool counters must not be stored');
+  assertEquals(raw.perf?.fps, 104);
+  assertEquals(raw.net?.['sent-bps'], 4096);
+  assertEquals(raw.src, 'tick');
+});
+
+Deno.test('the online count prefers the game table over the top-level field', () => {
+  assertEquals(buildHealthRow(tickHb(), SERVER).players, 3, 'st.game.players wins');
+  assertEquals(buildHealthRow(tickHb({ st: { perf: {} } }), SERVER).players, 2, 'falls back to hb.players');
+});
+
+Deno.test('only tick heartbeats become health samples; gametime ones are skipped', () => {
+  assertEquals(isHealthHeartbeat(tickHb()), true);
+  assertEquals(isHealthHeartbeat(tickHb({ src: 'gametime' })), false);
+  const rows = buildHealthRows([tickHb(), tickHb({ t: 1790629902835, src: 'gametime' })], SERVER);
+  assertEquals(rows.length, 1);
+  assertEquals(rows[0].t, '2026-09-28T21:11:32.835Z');
+});
+
+Deno.test('a v0.0 heartbeat with no src and no st still yields a players-only sample', () => {
+  const hb: HbRecord = { k: 'hb', t: 1790629892835, players: 0 };
+  assertEquals(isHealthHeartbeat(hb), true, 'pre-revision-2 logs on the host must still count');
+  const row = buildHealthRow(hb, SERVER);
+  assertEquals(row.players, 0);
+  assertEquals('tick_ms' in row, false, 'no table, no tick figure - never zero');
+  assertEquals(row.raw, {}, 'nothing to keep');
+});
+
+Deno.test('a malformed table value leaves its column unset rather than NaN', () => {
+  const row = buildHealthRow(tickHb({ st: { perf: { fps: Number.NaN } } }), SERVER);
+  assertEquals('tick_ms' in row, false);
+});
+
+Deno.test('health rows are deduped on t, the primary key', () => {
+  const rows = buildHealthRows([tickHb(), tickHb({ players: 9 })], SERVER);
+  assertEquals(rows.length, 1);
+});
+
+Deno.test('buildPlan places health_samples right after servers', () => {
+  const names = buildPlan([tickHb(), { k: 'pos', t: 1790629892835, u: 'a', x: 1, y: 2 }], SERVER).upserts.map((u) => u.table);
+  assertEquals(names[0], 'servers');
+  assertEquals(names[1], 'health_samples');
+  assertEquals(table(buildPlan([tickHb()], SERVER).upserts, 'health_samples')?.onConflict, 'server_id,t');
+});
+
+// --- players.online reconcile ----------------------------------------------
+
+const NOW = 1790629892835;
+
+Deno.test('a position inside the online window marks the player online, an older one offline', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'pos', t: NOW, u: 'fresh', x: 1, y: 1 },
+    { k: 'pos', t: NOW - ONLINE_WINDOW_MS - 1, u: 'stale', x: 1, y: 1 },
+  ];
+  const rows = table(buildPlan(recs, SERVER).upserts, 'players')?.rows ?? [];
+  assertEquals(rows.find((r) => r.username === 'fresh')?.online, true);
+  assertEquals(rows.find((r) => r.username === 'stale')?.online, false);
+});
+
+Deno.test('"now" defaults to the newest record, so a replayed old bundle is not marked offline', () => {
+  const recs: AuroraRecord[] = [{ k: 'pos', t: 1000, u: 'a', x: 1, y: 1 }];
+  assertEquals(table(buildPlan(recs, SERVER).upserts, 'players')?.rows[0].online, true);
+  assertEquals(
+    table(buildPlan(recs, SERVER, { now: 1000 + ONLINE_WINDOW_MS + 1 }).upserts, 'players')?.rows[0].online,
+    false,
+    'an explicit now is honoured',
+  );
+});
+
+Deno.test('a heartbeat reporting 0 players, newer than every position, marks everyone offline', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'pos', t: NOW - 1000, u: 'a', x: 1, y: 1 },
+    { k: 'hb', t: NOW, players: 0, src: 'tick' },
+  ];
+  const plan = buildPlan(recs, SERVER);
+  assertEquals(plan.patches.length, 1);
+  assertEquals(plan.patches[0].table, 'players');
+  assertEquals(plan.patches[0].body, { online: false });
+  assert(plan.patches[0].filter.includes('online=is.true'), 'only flips rows that are online');
+  assert(plan.patches[0].filter.includes(`server_id=eq.${SERVER}`), 'scoped to the server');
+});
+
+Deno.test('a 0-player heartbeat older than a position does not override it', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'hb', t: NOW - 1000, players: 0, src: 'tick' },
+    { k: 'pos', t: NOW, u: 'a', x: 1, y: 1 },
+  ];
+  assertEquals(buildPlan(recs, SERVER).patches.length, 0);
+});
+
+Deno.test('a heartbeat with players online produces no patch', () => {
+  const recs: AuroraRecord[] = [{ k: 'hb', t: NOW, players: 2, src: 'tick' }];
+  assertEquals(buildPlan(recs, SERVER).patches.length, 0);
+});
+
+// --- players.db rows -------------------------------------------------------
+
+Deno.test('players.db rows are keyed on the account name and store whole squares', () => {
+  const rows = buildSavedPlayerRows([
+    { username: 'Fanare', name: 'Bob Bingy', x: 11854.4, y: 6602.9 },
+    { username: '', name: 'ghost', x: 1, y: 1 },
+    { username: 'kitten', name: 'kitten pitten', x: 9987.6, y: 9789.4 },
+    { username: 'kitten', name: 'kitten pitten', x: 10000.2, y: 9800.7 },
+    { username: 'nan', name: 'x', x: Number.NaN, y: 1 },
+  ], SERVER);
+  assertEquals(rows.length, 2, 'blank username and NaN coordinates are skipped, duplicates collapse');
+  const bob = rows.find((r) => r.username === 'Fanare');
+  assertEquals(bob?.display_name, 'Bob Bingy');
+  assertEquals(bob?.last_saved_x, 11854);
+  assertEquals(bob?.last_saved_y, 6603);
+  assertEquals(rows.find((r) => r.username === 'kitten')?.last_saved_x, 10000, 'last occurrence wins');
+  assertEquals(
+    Object.keys(bob ?? {}).sort(),
+    ['display_name', 'last_saved_x', 'last_saved_y', 'server_id', 'username'],
+    'must not clobber online, last_seen, linked_user_id or hours_survived',
+  );
 });
 
 // --- cursor / rotation -----------------------------------------------------
