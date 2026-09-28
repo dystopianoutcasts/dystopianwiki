@@ -301,6 +301,19 @@ async function readPlayersDb(session: SftpSession, db: AuroraRest, cfg: Config):
 
 Deno.serve(async (req: Request) => {
   const started = Date.now();
+
+  // Bearer check first, against the one variable it needs, so an unauthenticated
+  // caller neither triggers any work nor learns which other variables are unset.
+  const expectedBearer = Deno.env.get('AURORA_INGEST_KEY') ?? Deno.env.get('AURORA_SERVICE_KEY') ?? '';
+  const auth = req.headers.get('Authorization') ?? '';
+  const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+  if (expectedBearer === '' || !secretEquals(token, expectedBearer)) {
+    return new Response(JSON.stringify({ error: 'unauthorized' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
   let cfg: Config;
   try {
     cfg = readConfig();
@@ -308,15 +321,6 @@ Deno.serve(async (req: Request) => {
     console.error(JSON.stringify({ at: 'config', error: String(err) }));
     return new Response(JSON.stringify({ error: String(err) }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  const auth = req.headers.get('Authorization') ?? '';
-  const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
-  if (!secretEquals(token, cfg.ingestKey)) {
-    return new Response(JSON.stringify({ error: 'unauthorized' }), {
-      status: 401,
       headers: { 'Content-Type': 'application/json' },
     });
   }
