@@ -60,3 +60,9 @@ Both synthetic fixtures were rewritten to those names; `2026-09-28_22-00_Aurora.
 also gained one line of every world kind so the backfill dry run covers the whole
 contract. The earlier `kd`/`n`/`wt`/`c` names came from the parser's own guess and are
 rejected on purpose (parser.test.ts asserts it).
+
+## 2026-09-28_23-00_Aurora.txt (REAL, exporter v0.1 on the host)
+Twenty-seven lines curated from the first live v0.1 round (two players, 23:01-23:22 UTC):
+boot, probe, statkeys, five tick heartbeats and one gametime one, six pos across both
+players, four veh, six zgrid, both link lines. Verbatim, no edits. Dry run: 27 of 27
+parsed, 0 badShape. This is the reference for the exporter contract; prefer it over the synthetic files.
