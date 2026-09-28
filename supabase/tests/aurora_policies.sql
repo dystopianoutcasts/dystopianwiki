@@ -75,7 +75,10 @@ INSERT INTO aurora.player_position_history (server_id, username, x, y, z, t)
 VALUES
   ('test-aurora', 'alice',  100.0,  100.0, 0, NOW() - INTERVAL '90 minutes'),
   ('test-aurora', 'bob',    200.0,  200.0, 0, NOW() - INTERVAL '90 minutes'),
-  ('test-aurora', 'carol', 1000.0, 2000.0, 0, NOW() - INTERVAL '90 minutes');
+  ('test-aurora', 'carol', 1000.0, 2000.0, 0, NOW() - INTERVAL '90 minutes'),
+  -- Inside the 30 minute window, so it must NOT be the row the view returns.
+  -- This is the only fixture row that makes delayMinutes load-bearing.
+  ('test-aurora', 'carol', 5000.0, 6000.0, 0, NOW() - INTERVAL '5 minutes');
 
 INSERT INTO aurora.safehouses (server_id, id, x, y, w, h, owner, title, players)
 VALUES ('test-aurora', 'SH1', 90, 90, 20, 20, 'alice', 'Alice and Bob',
@@ -227,6 +230,15 @@ BEGIN
   END IF;
   RAISE NOTICE 'PASS a stranger arrives delayed and rounded to the cell centre (896)';
 
+  -- The delay window itself. carol has a 5-minute-old history row at x=5000
+  -- (cell centre 4992). With delayMinutes=30 it is too recent to be shown, so
+  -- the 90-minute-old row must win. If the delay were ignored, the fresher row
+  -- would surface instead -- which is the leak the whole design exists to stop.
+  IF v_x IS NOT DISTINCT FROM 4992.0::REAL THEN
+    RAISE EXCEPTION 'FAIL: the delay window was ignored - carol''s 5-minute-old position leaked';
+  END IF;
+  RAISE NOTICE 'PASS a position newer than delayMinutes is withheld';
+
   -- Exactly one row per character, no duplicate between the two halves.
   SELECT count(*) INTO v_count FROM aurora.player_positions_visible;
   IF v_count <> 3 THEN
@@ -345,8 +357,8 @@ BEGIN
   RAISE NOTICE 'PASS admin sees every character live, exact and un-rounded';
 
   SELECT count(*) INTO v_count FROM aurora.player_position_history;
-  IF v_count <> 3 THEN
-    RAISE EXCEPTION 'FAIL: admin read % history rows, expected 3', v_count;
+  IF v_count <> 4 THEN
+    RAISE EXCEPTION 'FAIL: admin read % history rows, expected 4', v_count;
   END IF;
   RAISE NOTICE 'PASS admin reads aurora.player_position_history';
 END;
