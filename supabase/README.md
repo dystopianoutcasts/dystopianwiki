@@ -55,9 +55,27 @@ supabase db push
 | `011_aurora_realtime.sql` | OutcastAurora: publish three aurora tables to `supabase_realtime` |
 | `012_aurora_cron.sql` | OutcastAurora: pg_cron + pg_net and the ingest job enable/disable helpers (job left unscheduled) |
 | `013_request_log_rls.sql` | Enable RLS on `public.request_log` and revoke its anon/authenticated grants |
+| `014_aurora_tick_ms.sql` | OutcastAurora: rename `health_samples.avg_update_period_ms` to `tick_ms`, add `tick_min_ms`/`tick_max_ms` |
 
 Apply 008 through 012 strictly in that order: 009 calls helper functions defined at
 the bottom of 008, and 010 depends on the grants in 009.
+
+### 014 must not be applied on its own
+
+Applying 014 renames a column that `packages/aurora` still selects by its old
+name, and PostgREST answers an unknown column in a `select` list with HTTP 400 -
+so the Health panel fails outright rather than degrading. Edit and commit the
+readers first (`src/data/types.ts`, `src/data/queries.ts`, `src/panels/Health.tsx`
+and the fixtures in `src/data/health.test.ts`), then apply, then verify the
+dashboard. `packages/shared/aurora/ingest-core.ts` also names the old column, but
+it belongs to the T08 revision, which drops that mapping with the RCON half.
+
+Why the column was renamed: it was named after the engine counter
+`avg-update-period`, which is neither an average nor a duration - it reports
+about 5% of the cycle time. The real tick duration is the performance counter
+named `fps`, in milliseconds, despite the name. The `COMMENT ON COLUMN` entries
+in 014 carry the full provenance; read them before changing what feeds these
+columns.
 
 ### CLI migration history
 
