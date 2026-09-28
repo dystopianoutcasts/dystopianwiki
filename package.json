@@ -10,6 +10,9 @@
     "web": "npm run dev --workspace=packages/web",
     "web:build": "npm run build --workspace=packages/web",
     "web:preview": "npm run preview --workspace=packages/web",
+    "aurora": "npm run dev --workspace=packages/aurora",
+    "aurora:build": "npm run build --workspace=packages/aurora",
+    "aurora:test": "npm run test --workspace=packages/aurora",
     "mobile": "npm run start --workspace=packages/mobile",
     "shared:build": "npm run build --workspace=packages/shared",
     "sync": "tsx scripts/sync-articles.ts",
@@ -27,6 +30,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "react": "19.1.0"
+    "react": "19.1.0",
+    "sql.js": "^1.14.2"
   }
 }
