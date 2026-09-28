@@ -1,5 +1,5 @@
 import { buildSparkline, describeAge, toSparkPoints } from '../layers/transform'
-import { isStale, memoryPercent } from '../data/health'
+import { describeTick, isStale, memoryPercent } from '../data/health'
 import type { HealthSample } from '../data/types'
 
 const WINDOW_MINUTES = 60
@@ -57,12 +57,13 @@ export function HealthPanel({ latest, samples, error, now }: {
       </p>
       <dl className="stats">
         <div><dt>Players</dt><dd>{latest.players ?? '-'}</dd></div>
-        <div><dt>Tick time</dt><dd>{latest.avg_update_period_ms != null ? `${round(latest.avg_update_period_ms)} ms` : '-'}</dd></div>
+        <div><dt>Tick time</dt><dd>{describeTick(latest)}</dd></div>
         <div><dt>Zombies</dt><dd>{latest.zombies_total ?? '-'}</dd></div>
         <div><dt>Loaded</dt><dd>{latest.zombies_loaded ?? '-'}</dd></div>
         <div><dt>Memory</dt><dd>{mem != null ? `${mem}%` : '-'}</dd></div>
       </dl>
-      <Spark label="Tick time (ms)" unit=" ms" samples={samples} pick={(s) => s.avg_update_period_ms} now={now} />
+      <Spark label="Tick time (ms)" unit=" ms" samples={samples} pick={(s) => s.tick_ms} now={now} />
+      <Spark label="Longest tick in window (ms)" unit=" ms" samples={samples} pick={(s) => s.tick_max_ms} now={now} />
       <Spark label="Players" unit="" samples={samples} pick={(s) => s.players} now={now} />
     </section>
   )

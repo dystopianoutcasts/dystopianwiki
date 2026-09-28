@@ -36,3 +36,21 @@ export const STALE_AFTER_MS = 5 * 60_000
 export function isStale(s: HealthSample, now: number = Date.now()): boolean {
   return now - Date.parse(s.t) > STALE_AFTER_MS
 }
+
+function roundMs(n: number): string {
+  return Number.isInteger(n) ? String(n) : n.toFixed(1)
+}
+
+/**
+ * Tick time for display: "104 ms (98 to 131)" when the one-second min and max are
+ * both present, "104 ms" when only the instantaneous figure is, "-" when nothing
+ * was reported. tick_ms is the engine performance counter named `fps`, which is a
+ * cycle DURATION in ms despite its name; it is never a frame rate, and the panel
+ * must not source it from avg-update-period or getServerFPS() (migration 014).
+ */
+export function describeTick(s: Pick<HealthSample, 'tick_ms' | 'tick_min_ms' | 'tick_max_ms'>): string {
+  if (s.tick_ms == null) return '-'
+  const base = `${roundMs(s.tick_ms)} ms`
+  if (s.tick_min_ms == null || s.tick_max_ms == null) return base
+  return `${base} (${roundMs(s.tick_min_ms)} to ${roundMs(s.tick_max_ms)})`
+}

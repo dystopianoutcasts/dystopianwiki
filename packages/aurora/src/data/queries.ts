@@ -100,7 +100,7 @@ export function fetchHealthSince(db: SupabaseClient, serverId: string, minutes: 
   return rows<HealthSample>(
     db
       .from('health_samples')
-      .select('server_id,t,players,zombies_total,zombies_loaded,zombies_simulated,avg_update_period_ms,memory_used,memory_max')
+      .select('server_id,t,players,zombies_total,zombies_loaded,zombies_simulated,tick_ms,tick_min_ms,tick_max_ms,memory_used,memory_max')
       .eq('server_id', serverId)
       .gte('t', since)
       .order('t', { ascending: true }),
@@ -113,7 +113,7 @@ export async function fetchLatestHealth(db: SupabaseClient, serverId: string): P
   const list = await rows<HealthSample>(
     db
       .from('health_samples')
-      .select('server_id,t,players,zombies_total,zombies_loaded,zombies_simulated,avg_update_period_ms,memory_used,memory_max')
+      .select('server_id,t,players,zombies_total,zombies_loaded,zombies_simulated,tick_ms,tick_min_ms,tick_max_ms,memory_used,memory_max')
       .eq('server_id', serverId)
       .order('t', { ascending: false })
       .limit(1),

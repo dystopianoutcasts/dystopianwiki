@@ -138,8 +138,8 @@ describe('sparkline', () => {
   it('skips null readings when picking a column', () => {
     const pts = toSparkPoints(
       [
-        { server_id: 's', t: '2026-09-28T10:00:00Z', players: 2, zombies_total: null, zombies_loaded: null, zombies_simulated: null, avg_update_period_ms: null, memory_used: null, memory_max: null },
-        { server_id: 's', t: '2026-09-28T10:01:00Z', players: null, zombies_total: null, zombies_loaded: null, zombies_simulated: null, avg_update_period_ms: null, memory_used: null, memory_max: null },
+        { server_id: 's', t: '2026-09-28T10:00:00Z', players: 2, zombies_total: null, zombies_loaded: null, zombies_simulated: null, tick_ms: null, tick_min_ms: null, tick_max_ms: null, memory_used: null, memory_max: null },
+        { server_id: 's', t: '2026-09-28T10:01:00Z', players: null, zombies_total: null, zombies_loaded: null, zombies_simulated: null, tick_ms: null, tick_min_ms: null, tick_max_ms: null, memory_used: null, memory_max: null },
       ],
       (s) => s.players,
     )

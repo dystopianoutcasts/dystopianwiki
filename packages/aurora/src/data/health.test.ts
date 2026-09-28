@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { appendSample, isStale, memoryPercent, newest } from './health'
+import { appendSample, describeTick, isStale, memoryPercent, newest } from './health'
 import type { HealthSample } from './types'
 
 function sample(t: string, over: Partial<HealthSample> = {}): HealthSample {
   return {
     server_id: 's', t, players: 1, zombies_total: null, zombies_loaded: null, zombies_simulated: null,
-    avg_update_period_ms: 5, memory_used: null, memory_max: null, ...over,
+    tick_ms: 104, tick_min_ms: 98, tick_max_ms: 131, memory_used: null, memory_max: null, ...over,
   }
 }
 const now = Date.parse('2026-09-28T12:00:00Z')
@@ -55,5 +55,24 @@ describe('memoryPercent and staleness', () => {
   it('a sample older than five minutes is stale', () => {
     expect(isStale(sample('2026-09-28T11:56:00Z'), now)).toBe(false)
     expect(isStale(sample('2026-09-28T11:54:00Z'), now)).toBe(true)
+  })
+})
+
+describe('describeTick', () => {
+  it('shows the cycle time with the one-second min and max when all three are present', () => {
+    expect(describeTick(sample('2026-09-28T11:00:00Z'))).toBe('104 ms (98 to 131)')
+  })
+
+  it('shows only the cycle time when either bound is missing', () => {
+    expect(describeTick(sample('2026-09-28T11:00:00Z', { tick_min_ms: null }))).toBe('104 ms')
+    expect(describeTick(sample('2026-09-28T11:00:00Z', { tick_max_ms: null }))).toBe('104 ms')
+  })
+
+  it('is a dash when no tick was reported, even if bounds are present', () => {
+    expect(describeTick(sample('2026-09-28T11:00:00Z', { tick_ms: null }))).toBe('-')
+  })
+
+  it('keeps one decimal for fractional readings', () => {
+    expect(describeTick(sample('2026-09-28T11:00:00Z', { tick_ms: 104.25, tick_min_ms: 97.5, tick_max_ms: 131 }))).toBe('104.3 ms (97.5 to 131)')
   })
 })

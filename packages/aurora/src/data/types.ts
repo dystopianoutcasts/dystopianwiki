@@ -82,7 +82,11 @@ export interface HealthSample {
   zombies_total: number | null
   zombies_loaded: number | null
   zombies_simulated: number | null
-  avg_update_period_ms: number | null
+  /** Main-loop cycle duration in ms (the engine counter named `fps`, a duration despite its name). */
+  tick_ms: number | null
+  /** Shortest and longest cycle over the last one-second window; a stall shows up here first. */
+  tick_min_ms: number | null
+  tick_max_ms: number | null
   memory_used: number | null
   memory_max: number | null
 }
