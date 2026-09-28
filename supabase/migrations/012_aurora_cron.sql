@@ -13,16 +13,21 @@
 -- ---------------------------------------------------------------------------
 -- Supabase Vault, read at job run time, never at schedule time. The scheduled
 -- command text stored in cron.job contains the SUBQUERY, not the key, so the
--- service role JWT never lands in cron.job.command, in cron.job_run_details, in
+-- secret key never lands in cron.job.command, in cron.job_run_details, in
 -- this migration, or in the repository. Nothing here hardcodes it.
 --
 -- One-time setup, run by the owner in the SQL editor (not committed):
 --
 --   SELECT vault.create_secret(
---     '<service role JWT>',
+--     '<secret key, sb_secret_...>',
 --     'aurora_service_role_key',
 --     'Bearer token for the aurora-ingest cron job'
 --   );
+--
+-- NOT a legacy service_role JWT. Legacy API keys are DISABLED on this project:
+-- the old JWT is rejected with "Legacy API keys are disabled". Use the secret
+-- key from Settings -> API Keys, the same value the function reads as
+-- AURORA_SERVICE_KEY.
 --
 -- To rotate: SELECT vault.update_secret(id, '<new JWT>') for that secret, or
 -- delete and recreate it. The cron job needs no change, because it reads the

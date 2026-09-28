@@ -89,11 +89,16 @@ its bearer token from Supabase Vault at run time, so no key is ever stored in
 
 ```sql
 SELECT vault.create_secret(
-  '<service role JWT>',
+  '<secret key, sb_secret_...>',
   'aurora_service_role_key',
   'Bearer token for the aurora-ingest cron job'
 );
 ```
+
+This must be the **secret key** (`sb_secret_...`) from Settings -> API Keys,
+not the legacy `service_role` JWT: legacy API keys are disabled on this
+project and the old JWT is rejected with "Legacy API keys are disabled".
+It is the same value the Edge Function reads as `AURORA_SERVICE_KEY`.
 
 Then, after the function is deployed: `SELECT aurora.enable_ingest_cron();`
 
