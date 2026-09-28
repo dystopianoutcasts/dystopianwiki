@@ -7,3 +7,11 @@
 [28-09-26 22:00:31.000] A1 {"k":"hb","players":1,"src":"tick","st":{"perf":{"fps":109,"min-update-period":103,"max-update-period":136,"avg-update-period":5,"memory-used":1829000000,"memory-max":6442000000,"Pool<IsoGridSquare>":503},"game":{"players":1,"zombies-total":2400,"zombies-loaded":313,"zombies-simulated":40,"zombies-culled":2,"loaded-cells":12},"net":{"sent-bps":3003,"received-bps":900,"Pool<Packet>":7}},"t":1790632831000}.
 [28-09-26 22:00:41.000] A1 {"k":"hb","players":1,"src":"tick","st":{"perf":{"fps":112,"min-update-period":106,"max-update-period":139,"avg-update-period":5,"memory-used":1830000000,"memory-max":6442000000,"Pool<IsoGridSquare>":504},"game":{"players":1,"zombies-total":2400,"zombies-loaded":314,"zombies-simulated":40,"zombies-culled":2,"loaded-cells":12},"net":{"sent-bps":3004,"received-bps":900,"Pool<Packet>":7}},"t":1790632841000}.
 [28-09-26 22:00:51.000] A1 {"k":"hb","players":0,"src":"tick","st":{"perf":{"fps":115,"min-update-period":109,"max-update-period":142,"avg-update-period":5,"memory-used":1831000000,"memory-max":6442000000,"Pool<IsoGridSquare>":505},"game":{"players":0,"zombies-total":2400,"zombies-loaded":315,"zombies-simulated":40,"zombies-culled":2,"loaded-cells":12},"net":{"sent-bps":3005,"received-bps":900,"Pool<Packet>":7}},"t":1790632851000}.
+[28-09-26 22:01:00.000] A1 {"cr":1790632000000,"h":8,"id":3,"k":"sh","lv":1790632850000,"o":"Fanare","p":["Fanare","Bob Bingy"],"t":1790632860000,"ti":"Farmhouse","w":12,"x":11850,"y":6600}.
+[28-09-26 22:01:00.100] A1 {"k":"zone","kind":"nonpvp","t":1790632860100,"ti":"Spawn","x1":10700,"x2":10800,"y1":10200,"y2":10300}.
+[28-09-26 22:01:00.200] A1 {"c":17,"cx":46,"cy":25,"k":"zgrid","t":1790632860200}.
+[28-09-26 22:01:00.300] A1 {"c":3,"cx":47,"cy":25,"k":"zgrid","t":1790632860300}.
+[28-09-26 22:01:01.000] A1 {"cv":"9f2c1a","k":"catalogv","t":1790632861000}.
+[28-09-26 22:01:01.010] A1 {"cat":"Weapon","cv":"9f2c1a","dn":"Axe","ft":"Base.Axe","k":"catalog","t":1790632861010,"w":3}.
+[28-09-26 22:01:01.020] A1 {"cat":"Food","cv":"9f2c1a","dn":"Apple","ft":"Base.Apple","k":"catalog","t":1790632861020,"w":0.2}.
+[28-09-26 22:01:05.000] A1 {"c":"A1B2C3D4","k":"link","t":1790632865000,"u":"Fanare"}.

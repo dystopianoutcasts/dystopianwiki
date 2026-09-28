@@ -210,3 +210,34 @@ Deno.test('the launch stamp is read from the log file name', () => {
   assertEquals(launchStampFromFileName('2026-09-28_21-10_DebugLog-server.txt'), null);
   assertEquals(launchStampFromFileName('aurora-sample.txt'), null);
 });
+
+// ---- record contract, as the v0.1 exporter actually writes it (T09 "Record shapes") ----
+// These are the exporter's field names, not the parser's earlier guesses: the parser
+// follows the producer. Each line below is in the engine's exact `[stamp] A1 {json}.` form.
+
+Deno.test('sh: numeric id from SafeHouse.getId(), created in `cr`', () => {
+  const rec = parseLine(`${P1} A1 {"k":"sh","t":1,"id":7,"x":10,"y":20,"w":5,"h":6,"o":"alice","ti":"Home","p":["alice","bob"],"lv":100,"cr":50}.`);
+  assert(rec !== null && rec.k === 'sh', 'sh parses with a numeric id');
+  if (rec && rec.k === 'sh') assertEquals([rec.id, rec.cr], [7, 50]);
+  assert(parseLine(`${P1} A1 {"k":"sh","t":1,"id":"7","x":10,"y":20,"w":5,"h":6}.`) !== null, 'a string id is still accepted');
+});
+
+Deno.test('zone: kind is `kind`', () => {
+  const rec = parseLine(`${P1} A1 {"k":"zone","t":1,"kind":"nonpvp","ti":"Spawn","x1":1,"y1":2,"x2":3,"y2":4}.`);
+  assert(rec !== null && rec.k === 'zone' && rec.kind === 'nonpvp', 'zone parses with kind');
+  assertEquals(parseLineDetailed(`${P1} A1 {"k":"zone","t":1,"kd":"nonpvp","ti":"Spawn","x1":1,"y1":2}.`).ok, false, 'the old kd name is rejected');
+});
+
+Deno.test('zgrid: count is `c`', () => {
+  const rec = parseLine(`${P1} A1 {"k":"zgrid","t":1,"cx":42,"cy":40,"c":17}.`);
+  assert(rec !== null && rec.k === 'zgrid' && rec.c === 17, 'zgrid parses with c');
+  assertEquals(parseLineDetailed(`${P1} A1 {"k":"zgrid","t":1,"cx":42,"cy":40,"n":17}.`).ok, false, 'the old n name is rejected');
+});
+
+Deno.test('catalog: weight is `w`; catalogv is a known kind carrying only cv', () => {
+  const rec = parseLine(`${P1} A1 {"k":"catalog","t":1,"ft":"Base.Axe","dn":"Axe","cat":"Weapon","w":3,"cv":"abc"}.`);
+  assert(rec !== null && rec.k === 'catalog' && rec.w === 3, 'catalog parses with w');
+  const v = parseLineDetailed(`${P1} A1 {"k":"catalogv","t":1,"cv":"abc"}.`);
+  assert(v.ok, 'catalogv is known');
+  assertEquals(parseLineDetailed(`${P1} A1 {"k":"catalogv","t":1}.`).ok, false, 'catalogv without cv is a bad shape, not unknown');
+});

@@ -50,3 +50,13 @@ What it deliberately contains:
 The file name matches the real `<yyyy-MM-dd_HH-mm>_Aurora.txt` pattern rather
 than the `aurora-sample.txt` the task names, because `scripts/aurora-backfill.ts`
 selects files by that suffix and a fixture the CLI cannot see is not a fixture.
+
+## Contract note (2026-09-28, Fable)
+
+The parser follows the exporter's field names as T09 "Record shapes" specifies them:
+`sh.id` is numeric (stored as text), `sh.cr` is created, `zone.kind`, `zgrid.c` is the
+count, `catalog.w` is the weight, and `catalogv` is a known kind that produces no rows.
+Both synthetic fixtures were rewritten to those names; `2026-09-28_22-00_Aurora.txt`
+also gained one line of every world kind so the backfill dry run covers the whole
+contract. The earlier `kd`/`n`/`wt`/`c` names came from the parser's own guess and are
+rejected on purpose (parser.test.ts asserts it).

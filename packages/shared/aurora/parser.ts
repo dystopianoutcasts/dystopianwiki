@@ -45,7 +45,8 @@
 //            c created ms
 //   zone     kd kind, ti title, x1, y1, x2, y2
 //   zgrid    cx cell x, cy cell y, n count
-//   catalog  ft full type, dn display name, cat category, wt weight, cv version
+//   catalog  ft full type, dn display name, cat category, w weight, cv version
+//   catalogv cv version (header line before a catalog set)
 //   link     c code, u username
 
 export const KINDS = [
@@ -57,6 +58,7 @@ export const KINDS = [
   'zone',
   'zgrid',
   'catalog',
+  'catalogv',
   'link',
   // Diagnostic kinds: known so they are not reported as unknown, but they map
   // to no table - buildPlan produces no rows for them.
@@ -153,7 +155,8 @@ export interface VehRecord extends BaseRecord {
 
 export interface ShRecord extends BaseRecord {
   k: 'sh';
-  id: string;
+  /** SafeHouse.getId() is numeric in B42; older text said string. Both accepted. */
+  id: string | number;
   x: number;
   y: number;
   w: number;
@@ -162,12 +165,12 @@ export interface ShRecord extends BaseRecord {
   ti?: string;
   p?: string[];
   lv?: number;
-  c?: number;
+  cr?: number;
 }
 
 export interface ZoneRecord extends BaseRecord {
   k: 'zone';
-  kd: string;
+  kind: string;
   ti: string;
   x1: number;
   y1: number;
@@ -179,7 +182,7 @@ export interface ZgridRecord extends BaseRecord {
   k: 'zgrid';
   cx: number;
   cy: number;
-  n: number;
+  c: number;
 }
 
 export interface CatalogRecord extends BaseRecord {
@@ -187,8 +190,13 @@ export interface CatalogRecord extends BaseRecord {
   ft: string;
   dn?: string;
   cat?: string;
-  wt?: number;
+  w?: number;
   cv?: string;
+}
+
+export interface CatalogvRecord extends BaseRecord {
+  k: 'catalogv';
+  cv: string;
 }
 
 export interface LinkRecord extends BaseRecord {
@@ -208,6 +216,7 @@ export type AuroraRecord =
   | ZoneRecord
   | ZgridRecord
   | CatalogRecord
+  | CatalogvRecord
   | LinkRecord;
 
 export type ParseFailure =
@@ -262,13 +271,15 @@ function checkShape(o: Record<string, unknown>): boolean {
     case 'veh':
       return isNum(o.id) && isNum(o.x) && isNum(o.y);
     case 'sh':
-      return isStr(o.id) && isNum(o.x) && isNum(o.y) && isNum(o.w) && isNum(o.h);
+      return (isStr(o.id) || isNum(o.id)) && isNum(o.x) && isNum(o.y) && isNum(o.w) && isNum(o.h);
     case 'zone':
-      return isStr(o.kd) && isStr(o.ti) && isNum(o.x1) && isNum(o.y1);
+      return isStr(o.kind) && isStr(o.ti) && isNum(o.x1) && isNum(o.y1);
     case 'zgrid':
-      return isNum(o.cx) && isNum(o.cy) && isNum(o.n);
+      return isNum(o.cx) && isNum(o.cy) && isNum(o.c);
     case 'catalog':
       return isStr(o.ft);
+    case 'catalogv':
+      return isStr(o.cv);
     case 'link':
       return isStr(o.c) && isStr(o.u);
     default:

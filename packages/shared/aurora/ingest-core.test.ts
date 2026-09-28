@@ -85,10 +85,10 @@ Deno.test('every keyed table is deduped', () => {
     { k: 'veh', t: 2, id: 7, x: 2, y: 2 },
     { k: 'sh', t: 1, id: 'SH1', x: 0, y: 0, w: 2, h: 2 },
     { k: 'sh', t: 2, id: 'SH1', x: 0, y: 0, w: 3, h: 3 },
-    { k: 'zone', t: 1, kd: 'nonpvp', ti: 'Town', x1: 0, y1: 0 },
-    { k: 'zone', t: 2, kd: 'nonpvp', ti: 'Town', x1: 0, y1: 0 },
-    { k: 'zgrid', t: 1, cx: 1, cy: 1, n: 5 },
-    { k: 'zgrid', t: 2, cx: 1, cy: 1, n: 9 },
+    { k: 'zone', t: 1, kind: 'nonpvp', ti: 'Town', x1: 0, y1: 0 },
+    { k: 'zone', t: 2, kind: 'nonpvp', ti: 'Town', x1: 0, y1: 0 },
+    { k: 'zgrid', t: 1, cx: 1, cy: 1, c: 5 },
+    { k: 'zgrid', t: 2, cx: 1, cy: 1, c: 9 },
     { k: 'catalog', t: 1, ft: 'Base.Axe' },
     { k: 'catalog', t: 2, ft: 'Base.Axe' },
   ];
@@ -102,8 +102,8 @@ Deno.test('every keyed table is deduped', () => {
 
 Deno.test('zones with the same title but different origins are distinct keys', () => {
   const recs: AuroraRecord[] = [
-    { k: 'zone', t: 1, kd: 'nonpvp', ti: 'Town', x1: 0, y1: 0 },
-    { k: 'zone', t: 1, kd: 'nonpvp', ti: 'Town', x1: 500, y1: 500 },
+    { k: 'zone', t: 1, kind: 'nonpvp', ti: 'Town', x1: 0, y1: 0 },
+    { k: 'zone', t: 1, kind: 'nonpvp', ti: 'Town', x1: 500, y1: 500 },
   ];
   assertEquals(table(buildPlan(recs, SERVER).upserts, 'zones')?.rows.length, 2);
 });
@@ -113,8 +113,8 @@ Deno.test('on_conflict targets match the schema primary keys', () => {
     { k: 'pos', t: 1, u: 'a', x: 1, y: 1 },
     { k: 'veh', t: 1, id: 1, x: 1, y: 1 },
     { k: 'sh', t: 1, id: 'S', x: 0, y: 0, w: 1, h: 1 },
-    { k: 'zone', t: 1, kd: 'k', ti: 't', x1: 0, y1: 0 },
-    { k: 'zgrid', t: 1, cx: 0, cy: 0, n: 1 },
+    { k: 'zone', t: 1, kind: 'k', ti: 't', x1: 0, y1: 0 },
+    { k: 'zgrid', t: 1, cx: 0, cy: 0, c: 1 },
     { k: 'catalog', t: 1, ft: 'Base.X' },
   ];
   const plan = buildPlan(recs, SERVER);
@@ -390,4 +390,24 @@ Deno.test('chunk rejects a non-positive size instead of looping forever', () => 
     threw = true;
   }
   assert(threw, 'chunk(rows, 0) must throw');
+});
+
+Deno.test('every exporter field name lands in its column (T09 record shapes)', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'sh', t: 1, id: 7, x: 10, y: 20, w: 5, h: 6, o: 'alice', ti: 'Home', p: ['alice'], lv: 100000, cr: 50000 },
+    { k: 'zone', t: 1, kind: 'nonpvp', ti: 'Spawn', x1: 1, y1: 2, x2: 3, y2: 4 },
+    { k: 'zgrid', t: 1, cx: 42, cy: 40, c: 17 },
+    { k: 'catalogv', t: 1, cv: 'abc' },
+    { k: 'catalog', t: 1, ft: 'Base.Axe', dn: 'Axe', cat: 'Weapon', w: 3, cv: 'abc' },
+  ];
+  const plan = buildPlan(recs, SERVER);
+  const sh = table(plan.upserts, 'safehouses')?.rows[0] ?? {};
+  assertEquals([sh.id, sh.owner, sh.title, sh.created_at, sh.last_visited], ['7', 'alice', 'Home', '1970-01-01T00:00:50.000Z', '1970-01-01T00:01:40.000Z'], 'sh: numeric id stored as text, cr is created_at');
+  const zone = table(plan.upserts, 'zones')?.rows[0] ?? {};
+  assertEquals([zone.kind, zone.title, zone.x2, zone.y2], ['nonpvp', 'Spawn', 3, 4], 'zone: kind field');
+  const cell = table(plan.upserts, 'zombie_grid')?.rows[0] ?? {};
+  assertEquals([cell.cell_x, cell.cell_y, cell.count], [42, 40, 17], 'zgrid: c is count');
+  const item = table(plan.upserts, 'item_catalog')?.rows[0] ?? {};
+  assertEquals([item.full_type, item.display_name, item.category, item.weight, item.catalog_version], ['Base.Axe', 'Axe', 'Weapon', 3, 'abc'], 'catalog: w is weight');
+  assertEquals(plan.upserts.some((u) => u.table === 'catalogv'), false, 'catalogv produces no table rows');
 });

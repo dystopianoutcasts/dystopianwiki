@@ -232,9 +232,9 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
   }
 
   // --- safehouses ----------------------------------------------------------
-  const safehouseRows = dedupe(safehouses, (s: ShRecord) => s.id, (s) => s.t).map((s): Row => ({
+  const safehouseRows = dedupe(safehouses, (s: ShRecord) => String(s.id), (s) => s.t).map((s): Row => ({
     server_id: serverId,
-    id: s.id,
+    id: String(s.id),
     x: s.x,
     y: s.y,
     w: s.w,
@@ -243,7 +243,7 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
     title: s.ti ?? null,
     players: s.p ?? [],
     last_visited: s.lv === undefined ? null : toIso(s.lv),
-    created_at: s.c === undefined ? null : toIso(s.c),
+    created_at: s.cr === undefined ? null : toIso(s.cr),
   }));
   if (safehouseRows.length > 0) {
     upserts.push({ table: 'safehouses', onConflict: 'server_id,id', rows: safehouseRows });
@@ -252,11 +252,11 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
   // --- zones ---------------------------------------------------------------
   const zoneRows = dedupe(
     zones,
-    (z: ZoneRecord) => `${z.kd}\u0000${z.ti}\u0000${z.x1}\u0000${z.y1}`,
+    (z: ZoneRecord) => `${z.kind}\u0000${z.ti}\u0000${z.x1}\u0000${z.y1}`,
     (z) => z.t,
   ).map((z): Row => ({
     server_id: serverId,
-    kind: z.kd,
+    kind: z.kind,
     title: z.ti,
     x1: z.x1,
     y1: z.y1,
@@ -277,7 +277,7 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
       server_id: serverId,
       cell_x: g.cx,
       cell_y: g.cy,
-      count: g.n,
+      count: g.c,
       t: toIso(g.t),
     }),
   );
@@ -295,7 +295,7 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
     full_type: c.ft,
     display_name: c.dn ?? null,
     category: c.cat ?? null,
-    weight: c.wt ?? null,
+    weight: c.w ?? null,
     catalog_version: c.cv ?? null,
   }));
   if (catalogRows.length > 0) {
