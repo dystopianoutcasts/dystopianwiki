@@ -54,6 +54,7 @@ supabase db push
 | `010_aurora_functions.sql` | OutcastAurora: `players_public`, `player_positions_visible`, `consume_link_code()`, `prune_history()` |
 | `011_aurora_realtime.sql` | OutcastAurora: publish three aurora tables to `supabase_realtime` |
 | `012_aurora_cron.sql` | OutcastAurora: pg_cron + pg_net and the ingest job enable/disable helpers (job left unscheduled) |
+| `013_request_log_rls.sql` | Enable RLS on `public.request_log` and revoke its anon/authenticated grants |
 
 Apply 008 through 012 strictly in that order: 009 calls helper functions defined at
 the bottom of 008, and 010 depends on the grants in 009.
