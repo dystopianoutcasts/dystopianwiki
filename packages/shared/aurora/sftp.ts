@@ -4,6 +4,8 @@
 // `Client` is loaded lazily so a load failure surfaces as a catchable error with
 // the exact message, instead of failing the whole function at boot.
 
+import { hostKeyMatches } from './hostkey.ts';
+
 // deno-lint-ignore no-explicit-any
 type Any = any;
 
@@ -13,6 +15,13 @@ export interface SftpOptions {
   username: string;
   password: string;
   connectTimeoutMs?: number;
+  /**
+   * Allowed host-key fingerprints (`SHA256:...`, see hostkey.ts). When set, the
+   * connection is refused unless the server presents one of them. Without it the
+   * password is sent to whatever answers on the host, so production callers must
+   * set it (AURORA_SFTP_HOSTKEYS).
+   */
+  hostKeySha256?: string[];
 }
 
 export interface DirEntry {
@@ -112,6 +121,12 @@ export async function connect(opts: SftpOptions): Promise<SftpSession> {
       username: opts.username,
       password: opts.password,
       readyTimeout: opts.connectTimeoutMs ?? 10000,
+      // A two-argument verifier is asynchronous in ssh2: call verify(ok) when done.
+      hostVerifier: opts.hostKeySha256
+        ? (key: Uint8Array, verify: (ok: boolean) => void) => {
+          hostKeyMatches(key, opts.hostKeySha256!).then(verify, () => verify(false));
+        }
+        : undefined,
     });
   });
 }
