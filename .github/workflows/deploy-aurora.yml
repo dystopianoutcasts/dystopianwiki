@@ -1,0 +1,45 @@
+name: deploy-aurora
+
+# Builds packages/aurora and publishes it to the aurora-site repo's gh-pages
+# branch (map.dystopianoutcasts.wiki), a second GitHub Pages site kept
+# separate from the wiki's own deploy. See docs/planning/OutcastAurora/deploy.md.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/aurora/**'
+      - 'packages/shared/aurora/**'
+      - 'scripts/tiles/**'
+      - '.github/workflows/deploy-aurora.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npm run aurora:build
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_AURORA_TILES_BASE_URL: https://map.dystopianoutcasts.wiki/tiles
+      # GitHub Pages has no SPA rewrite rule: it serves 404.html for any path
+      # it doesn't recognize, so react-router's BrowserRouter can take over.
+      - run: cp packages/aurora/dist/index.html packages/aurora/dist/404.html
+      - uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
+        with:
+          deploy_key: ${{ secrets.AURORA_SITE_DEPLOY_KEY }}
+          external_repository: dystopianoutcasts/aurora-site
+          publish_branch: gh-pages
+          publish_dir: packages/aurora/dist
+          cname: map.dystopianoutcasts.wiki
+          # The tiles/ folder is published separately by scripts/tiles/publish-tiles.ts
+          # (T11); a re-render is far less frequent than an app deploy, so this
+          # workflow must never delete it.
+          keep_files: true
