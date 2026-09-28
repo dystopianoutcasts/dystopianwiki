@@ -1,0 +1,341 @@
+// Pure parser for OutcastAurora exporter log lines. No I/O, no Supabase, no Deno
+// APIs - the ingest function, the backfill CLI and the tests all share this.
+//
+// ---------------------------------------------------------------------------
+// Line format
+// ---------------------------------------------------------------------------
+//   [dd-MM-yy HH:mm:ss.SSS] [ game-time] A1 {"k":"pos","t":1759...} .
+//
+// The leading bracket groups come from PZ's own logger, not from the exporter.
+// T08's task text describes ONE group; the T02 spike read a real server log and
+// recorded TWO ("[dd-mm-yy hh:mm:ss.mmm] [ game-time]"). Rather than bet on
+// either, the prefix matcher accepts one or more bracket groups and ignores all
+// of them: the authoritative timestamp is `t` inside the JSON, which the
+// exporter writes as server epoch milliseconds. The trailing period is PZ's and
+// is stripped.
+//
+// `A1` is the wire-format version marker. A line without it is not ours and is
+// skipped silently - the Aurora log shares a directory with PZ's own logs and a
+// backfill bundle may contain anything.
+//
+// ---------------------------------------------------------------------------
+// Record contract - READ THIS BEFORE WRITING THE EXPORTER (T09/WP-A)
+// ---------------------------------------------------------------------------
+// No exporter existed when this was written (T03 has not run), so there is no
+// observed sample to derive the payload from. The shapes below are a CONTRACT
+// this parser defines and T09 must emit; they are not measured facts. Keys are
+// short because the log rotates at 10 MiB and `pos` lines dominate it.
+//
+// Every record carries `k` (kind) and `t` (server epoch ms). No record carries a
+// server id: the ingest caller supplies that, so a relabelled log cannot write
+// into another server's rows.
+//
+//   boot     gv game_version, ls launch stamp, ev [event names], api [api names]
+//   hb       np players online
+//   pos      u username, x, y, z, v vehicle id or null
+//   veh      id vehicle id, sc script name, x, y, z, d driver username or null
+//   sh       id, x, y, w, h, o owner, ti title, p [usernames], lv last visited ms,
+//            c created ms
+//   zone     kd kind, ti title, x1, y1, x2, y2
+//   zgrid    cx cell x, cy cell y, n count
+//   catalog  ft full type, dn display name, cat category, wt weight, cv version
+//   link     c code, u username
+
+export const KINDS = [
+  'boot',
+  'hb',
+  'pos',
+  'veh',
+  'sh',
+  'zone',
+  'zgrid',
+  'catalog',
+  'link',
+] as const;
+
+export type Kind = (typeof KINDS)[number];
+
+export interface BaseRecord {
+  k: Kind;
+  t: number;
+}
+
+export interface BootRecord extends BaseRecord {
+  k: 'boot';
+  gv?: string;
+  ls?: string;
+  ev?: string[];
+  api?: string[];
+}
+
+export interface HbRecord extends BaseRecord {
+  k: 'hb';
+  np?: number;
+}
+
+export interface PosRecord extends BaseRecord {
+  k: 'pos';
+  u: string;
+  x: number;
+  y: number;
+  z?: number;
+  v?: number | null;
+}
+
+export interface VehRecord extends BaseRecord {
+  k: 'veh';
+  id: number;
+  sc?: string;
+  x: number;
+  y: number;
+  z?: number;
+  d?: string | null;
+}
+
+export interface ShRecord extends BaseRecord {
+  k: 'sh';
+  id: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  o?: string;
+  ti?: string;
+  p?: string[];
+  lv?: number;
+  c?: number;
+}
+
+export interface ZoneRecord extends BaseRecord {
+  k: 'zone';
+  kd: string;
+  ti: string;
+  x1: number;
+  y1: number;
+  x2?: number;
+  y2?: number;
+}
+
+export interface ZgridRecord extends BaseRecord {
+  k: 'zgrid';
+  cx: number;
+  cy: number;
+  n: number;
+}
+
+export interface CatalogRecord extends BaseRecord {
+  k: 'catalog';
+  ft: string;
+  dn?: string;
+  cat?: string;
+  wt?: number;
+  cv?: string;
+}
+
+export interface LinkRecord extends BaseRecord {
+  k: 'link';
+  c: string;
+  u: string;
+}
+
+export type AuroraRecord =
+  | BootRecord
+  | HbRecord
+  | PosRecord
+  | VehRecord
+  | ShRecord
+  | ZoneRecord
+  | ZgridRecord
+  | CatalogRecord
+  | LinkRecord;
+
+export type ParseFailure =
+  | 'not-aurora' // no A1 marker: someone else's log line
+  | 'bad-json' // A1 present but the payload does not parse
+  | 'unknown-kind' // parses, but `k` is not a kind this version knows
+  | 'bad-shape'; // known kind, required field missing or wrong type
+
+export type ParseResult =
+  | { ok: true; record: AuroraRecord }
+  | { ok: false; reason: ParseFailure; kind?: string };
+
+// One or more `[...]` groups, then A1, then the JSON object, then an optional
+// trailing period. The JSON capture is greedy so a `}` inside a string value
+// does not truncate it.
+const LINE = /^\s*(?:\[[^\]]*\]\s*)+A1\s+(\{.*\})\s*\.?\s*$/;
+
+function isNum(v: unknown): v is number {
+  return typeof v === 'number' && Number.isFinite(v);
+}
+
+function isStr(v: unknown): v is string {
+  return typeof v === 'string';
+}
+
+function isStrArray(v: unknown): v is string[] {
+  return Array.isArray(v) && v.every(isStr);
+}
+
+/** Validate the kind-specific required fields. Optional fields are not policed. */
+function checkShape(o: Record<string, unknown>): boolean {
+  switch (o.k) {
+    case 'boot':
+    case 'hb':
+      return true;
+    case 'pos':
+      return isStr(o.u) && isNum(o.x) && isNum(o.y);
+    case 'veh':
+      return isNum(o.id) && isNum(o.x) && isNum(o.y);
+    case 'sh':
+      return isStr(o.id) && isNum(o.x) && isNum(o.y) && isNum(o.w) && isNum(o.h);
+    case 'zone':
+      return isStr(o.kd) && isStr(o.ti) && isNum(o.x1) && isNum(o.y1);
+    case 'zgrid':
+      return isNum(o.cx) && isNum(o.cy) && isNum(o.n);
+    case 'catalog':
+      return isStr(o.ft);
+    case 'link':
+      return isStr(o.c) && isStr(o.u);
+    default:
+      return false;
+  }
+}
+
+/** Full result including why a line was rejected. Used for ingest counters. */
+export function parseLineDetailed(line: string): ParseResult {
+  const m = LINE.exec(line);
+  if (!m) return { ok: false, reason: 'not-aurora' };
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(m[1]);
+  } catch {
+    return { ok: false, reason: 'bad-json' };
+  }
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+    return { ok: false, reason: 'bad-json' };
+  }
+
+  const o = parsed as Record<string, unknown>;
+  if (!isStr(o.k) || !(KINDS as readonly string[]).includes(o.k)) {
+    return { ok: false, reason: 'unknown-kind', kind: isStr(o.k) ? o.k : undefined };
+  }
+  if (!isNum(o.t)) return { ok: false, reason: 'bad-shape', kind: o.k };
+  if (!checkShape(o)) return { ok: false, reason: 'bad-shape', kind: o.k };
+
+  return { ok: true, record: o as unknown as AuroraRecord };
+}
+
+/** Convenience form named by the T08 task: a record, or null if unusable. */
+export function parseLine(line: string): AuroraRecord | null {
+  const r = parseLineDetailed(line);
+  return r.ok ? r.record : null;
+}
+
+export interface SplitStats {
+  lines: number;
+  parsed: number;
+  notAurora: number;
+  badJson: number;
+  badShape: number;
+  unknownKind: Record<string, number>;
+}
+
+export function emptyStats(): SplitStats {
+  return { lines: 0, parsed: 0, notAurora: 0, badJson: 0, badShape: 0, unknownKind: {} };
+}
+
+export interface SplitResult {
+  records: AuroraRecord[];
+  carry: string;
+  stats: SplitStats;
+}
+
+/**
+ * Split a text chunk into records, carrying an unterminated trailing line over to
+ * the next call. `carry` from the previous call is prepended.
+ *
+ * A chunk that does not end in a newline ends mid-line, so that fragment becomes
+ * the new carry and is NOT parsed. Callers that have reached end-of-file and want
+ * the final unterminated line must pass it back in a last call ending in "\n".
+ */
+export function splitLines(chunk: string, carry = '', stats = emptyStats()): SplitResult {
+  const text = carry + chunk;
+  const parts = text.split('\n');
+  const nextCarry = parts.pop() ?? '';
+  const records: AuroraRecord[] = [];
+
+  for (const raw of parts) {
+    const line = raw.endsWith('\r') ? raw.slice(0, -1) : raw;
+    if (line.trim() === '') continue;
+    stats.lines++;
+    const r = parseLineDetailed(line);
+    if (r.ok) {
+      stats.parsed++;
+      records.push(r.record);
+      continue;
+    }
+    switch (r.reason) {
+      case 'not-aurora':
+        stats.notAurora++;
+        break;
+      case 'bad-json':
+        stats.badJson++;
+        break;
+      case 'bad-shape':
+        stats.badShape++;
+        break;
+      case 'unknown-kind': {
+        const key = r.kind ?? '(missing)';
+        stats.unknownKind[key] = (stats.unknownKind[key] ?? 0) + 1;
+        break;
+      }
+    }
+  }
+
+  return { records, carry: nextCarry, stats };
+}
+
+const LF = 0x0a;
+
+export interface ChunkResult {
+  records: AuroraRecord[];
+  carry: Uint8Array;
+  stats: SplitStats;
+}
+
+/**
+ * Byte-safe variant for the SFTP tail.
+ *
+ * A range read can split a multi-byte UTF-8 character across chunk boundaries,
+ * and decoding each chunk independently would turn that character into a
+ * replacement character permanently. So the carry here is BYTES, not text: only
+ * the portion up to the last newline is decoded, and everything after it is
+ * handed back untouched for the next call. This matters because PZ usernames are
+ * free text and are routinely non-ASCII.
+ */
+export function splitChunkBytes(
+  chunk: Uint8Array,
+  carry: Uint8Array = new Uint8Array(0),
+  stats = emptyStats(),
+): ChunkResult {
+  const buf = new Uint8Array(carry.length + chunk.length);
+  buf.set(carry, 0);
+  buf.set(chunk, carry.length);
+
+  let lastNl = -1;
+  for (let i = buf.length - 1; i >= 0; i--) {
+    if (buf[i] === LF) {
+      lastNl = i;
+      break;
+    }
+  }
+  if (lastNl === -1) {
+    return { records: [], carry: buf, stats };
+  }
+
+  const text = new TextDecoder().decode(buf.subarray(0, lastNl + 1));
+  const out = splitLines(text, '', stats);
+  // `text` ends in a newline, so splitLines leaves an empty string carry.
+  return { records: out.records, carry: buf.slice(lastNl + 1), stats: out.stats };
+}
