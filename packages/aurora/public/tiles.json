@@ -5,24 +5,61 @@
   "maxLevel": 15,
   "format": "webp",
   "cellSize": 256,
-  "originSquare": { "x": 0, "y": 0 },
+  "originSquare": {
+    "x": 0,
+    "y": 0
+  },
   "squaresPerPixelAtMax": 1,
   "world": {
-    "pixels": { "w": 19968, "h": 16128 },
-    "cells": { "w": 78, "h": 63 },
-    "squares": { "w": 19968, "h": 16128 }
+    "pixels": {
+      "w": 19968,
+      "h": 16128
+    },
+    "cells": {
+      "w": 78,
+      "h": 63
+    },
+    "squares": {
+      "w": 19968,
+      "h": 16128
+    }
   },
-  "cellRects": [[0, 18, 45, 45], [45, 3, 13, 60], [58, 0, 20, 63]],
-  "layers": { "min": -32, "max": 32, "ground": 0, "populated": 47 },
+  "cellRects": [
+    [
+      0,
+      18,
+      45,
+      45
+    ],
+    [
+      45,
+      3,
+      13,
+      60
+    ],
+    [
+      58,
+      0,
+      20,
+      63
+    ]
+  ],
+  "layers": {
+    "min": -32,
+    "max": 32,
+    "ground": 0,
+    "populated": 47
+  },
   "baseUrl": "",
   "tileUrlTemplate": "{baseUrl}/base_top/layer{layer}_files/{z}/{x}_{y}.webp",
   "sparse": true,
-  "renderedWithMapMods": true,
+  "renderedWithMapMods": false,
   "source": {
     "tool": "pzmap2dzi",
     "version": "1.1.17",
     "commit": "5025122c1a6de655122d79ef84dfcb40a632ea68",
     "renderedAt": "2026-09-28",
     "renderSeconds": 1903
-  }
+  },
+  "_mapModsNote": "Vanilla Muldraugh, KY only: conf.yaml has base_map=default and mod_maps fully commented out. Mod texture folders under out/texture/ are a side effect of use_depend_texture_only=false and do NOT mean those maps were rendered. PLAN section 8 item 5 remains open."
 }
