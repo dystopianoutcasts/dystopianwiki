@@ -64,6 +64,7 @@ export const KINDS = [
   // to no table - buildPlan produces no rows for them.
   'probe',
   'statkeys',
+  'guard',
 ] as const;
 
 /**
@@ -107,6 +108,18 @@ export interface StatkeysRecord extends BaseRecord {
   perf?: string[];
   game?: string[];
   net?: string[];
+}
+
+/**
+ * One line per emitter-guard event in the exporter (v0.2+): a failure with its
+ * consecutive count, or the catalog decision. Diagnostic only; the host's
+ * Outcast.log proved unobservable, so these live in the Aurora log itself.
+ */
+export interface GuardRecord extends BaseRecord {
+  k: 'guard';
+  kind: string;
+  n?: number;
+  err?: string;
 }
 
 /** The three server statistics tables, keyed exactly as the engine names them. */
@@ -209,6 +222,7 @@ export type AuroraRecord =
   | BootRecord
   | ProbeRecord
   | StatkeysRecord
+  | GuardRecord
   | HbRecord
   | PosRecord
   | VehRecord
@@ -262,6 +276,8 @@ function checkShape(o: Record<string, unknown>): boolean {
     case 'probe':
     case 'statkeys':
       return true;
+    case 'guard':
+      return isStr(o.kind);
     case 'hb':
       // `st`, when present, must be an object of objects; a heartbeat whose
       // tables are malformed is rejected whole rather than half-mapped.

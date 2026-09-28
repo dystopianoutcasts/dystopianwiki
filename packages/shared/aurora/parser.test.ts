@@ -204,6 +204,14 @@ Deno.test('statkeys is a known diagnostic kind', () => {
   assertEquals((r as { record: { k: string } }).record.k, 'statkeys');
 });
 
+Deno.test('guard is a known diagnostic kind that needs its emitter kind (T17)', () => {
+  const ok = parseLineDetailed(`${V0} A1 {"err":"java.lang.IndexOutOfBoundsException","k":"guard","kind":"zgrid","n":1,"t":1}.`);
+  assertEquals(ok.ok, true);
+  assertEquals((ok as { record: { k: string; kind: string } }).record.kind, 'zgrid');
+  const bad = parseLineDetailed(`${V0} A1 {"k":"guard","n":1,"t":1}.`);
+  assertEquals(bad.ok, false);
+});
+
 Deno.test('the launch stamp is read from the log file name', () => {
   assertEquals(launchStampFromFileName('2026-09-28_21-10_Aurora.txt'), '2026-09-28_21-10');
   assertEquals(launchStampFromFileName('server-data/Logs/2026-09-28_21-10_Aurora.txt'), '2026-09-28_21-10');
