@@ -51,6 +51,9 @@ export const KINDS = [
   'zgrid',
   'catalog',
   'link',
+  // v0.0 only: the getFileWriter diagnostic. Known so it is not reported as an
+  // unknown kind, but it maps to no table - buildPlan produces no rows for it.
+  'probe',
 ] as const;
 
 export type Kind = (typeof KINDS)[number];
@@ -62,15 +65,35 @@ export interface BaseRecord {
 
 export interface BootRecord extends BaseRecord {
   k: 'boot';
+  // v0.1 (planned): game version and launch stamp, for aurora.servers.
   gv?: string;
   ls?: string;
   ev?: string[];
   api?: string[];
+  // v0.0 (OBSERVED, OutcastMods commit 9aad789). These are what the shipped
+  // exporter actually emits; the fields above are still contract-only. Keeping
+  // both means the parser accepts the real emitter without waiting for T09.
+  v?: string;
+  schema?: number;
+  apis?: Record<string, boolean>;
+  events?: Record<string, boolean>;
+  players?: number;
+}
+
+export interface ProbeRecord extends BaseRecord {
+  k: 'probe';
+  fileWriter?: boolean;
+  err?: string | null;
 }
 
 export interface HbRecord extends BaseRecord {
   k: 'hb';
   np?: number;
+  // v0.0 spells the online count `players`. The first hb also carries a settled
+  // re-probe of apis/events - see the T03 block in STATUS.md for why.
+  players?: number;
+  apis?: Record<string, boolean>;
+  events?: Record<string, boolean>;
 }
 
 export interface PosRecord extends BaseRecord {
@@ -140,6 +163,7 @@ export interface LinkRecord extends BaseRecord {
 
 export type AuroraRecord =
   | BootRecord
+  | ProbeRecord
   | HbRecord
   | PosRecord
   | VehRecord
@@ -181,6 +205,7 @@ function checkShape(o: Record<string, unknown>): boolean {
   switch (o.k) {
     case 'boot':
     case 'hb':
+    case 'probe':
       return true;
     case 'pos':
       return isStr(o.u) && isNum(o.x) && isNum(o.y);

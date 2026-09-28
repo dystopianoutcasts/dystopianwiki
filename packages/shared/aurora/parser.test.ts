@@ -145,3 +145,35 @@ Deno.test('splitChunkBytes returns everything as carry when no newline is presen
   assertEquals(out.records.length, 0);
   assertEquals(out.carry.length, 28);
 });
+
+// --- the shapes the shipped v0.0 exporter really emits ---------------------
+// Copied from OutcastAurora's own test harness output (OutcastMods 9aad789),
+// not from the task text. These are the only OBSERVED records that exist; the
+// rest of the contract above is still defined rather than measured.
+
+const V0 = '[28-09-26 03:06:11.412]';
+
+Deno.test('v0.0 boot parses with its real field names', () => {
+  const line = `${V0} A1 {"apis":{"getOnlinePlayers":true,"getGameLocal":false},` +
+    `"events":{"EveryOneMinute":true},"k":"boot","players":2,"schema":1,` +
+    `"t":1759000000000,"v":"0.0.0"}.`;
+  const rec = parseLine(line) as { k: string; v: string; apis: Record<string, boolean> };
+  assertEquals(rec?.k, 'boot');
+  assertEquals(rec.v, '0.0.0');
+  assertEquals(rec.apis.getOnlinePlayers, true);
+  assertEquals(rec.apis.getGameLocal, false, 'an absent api must survive as false, not vanish');
+});
+
+Deno.test('v0.0 probe is a known kind, not an unknown one', () => {
+  const r = parseLineDetailed(`${V0} A1 {"fileWriter":true,"k":"probe","t":1759000000000}.`);
+  assertEquals(r.ok, true);
+});
+
+Deno.test('v0.0 hb parses, including the settled re-probe on the first one', () => {
+  const line = `${V0} A1 {"apis":{"getCell().getVehicles":true},"events":{"OnTick":true},` +
+    `"k":"hb","players":2,"t":1759000000000}.`;
+  const rec = parseLine(line) as { k: string; players: number; apis: Record<string, boolean> };
+  assertEquals(rec?.k, 'hb');
+  assertEquals(rec.players, 2);
+  assertEquals(rec.apis['getCell().getVehicles'], true);
+});
