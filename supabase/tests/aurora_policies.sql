@@ -14,7 +14,9 @@
 --   bob    - unlinked, shares safehouse SH1 with alice
 --   carol  - unlinked, no safehouse in common with anyone
 -- History holds a 90-minute-old row for each, so the delayed feed has something
--- to return under the default delayMinutes of 30.
+-- to return under the default delayMinutes of 30, plus one 5-minute-old row for
+-- carol that must NOT be returned - that row is what makes delayMinutes
+-- load-bearing rather than decorative.
 
 BEGIN;
 
@@ -431,6 +433,56 @@ BEGIN
   ON CONFLICT (server_id) DO UPDATE SET byte_offset = EXCLUDED.byte_offset;
 
   RAISE NOTICE 'PASS service_role writes positions and the ingest cursor';
+END;
+$$;
+
+RESET ROLE;
+
+-- ============================================================================
+-- 7. HEALTH SAMPLE TICK COLUMNS (migration 014)
+-- ============================================================================
+--
+-- 014 renamed avg_update_period_ms to tick_ms and added tick_min_ms/tick_max_ms.
+-- Two separate things are checked, because either can regress on its own: that
+-- the rename happened at all, and that anon can still read the columns. The
+-- second is not implied by the first - 009 grants SELECT on the whole table
+-- today, but aurora.players is already column-granted, so this table changing
+-- shape the same way later is a live possibility, and it would hide the new
+-- columns without any error at migration time.
+
+DO $$
+DECLARE
+  v_cols TEXT[];
+BEGIN
+  SELECT array_agg(attname ORDER BY attname) INTO v_cols
+    FROM pg_attribute
+   WHERE attrelid = 'aurora.health_samples'::REGCLASS
+     AND attnum > 0
+     AND NOT attisdropped
+     AND attname IN ('tick_ms', 'tick_min_ms', 'tick_max_ms', 'avg_update_period_ms');
+
+  IF v_cols IS DISTINCT FROM ARRAY['tick_max_ms', 'tick_min_ms', 'tick_ms'] THEN
+    RAISE EXCEPTION
+      'FAIL: aurora.health_samples tick columns are %, expected exactly {tick_max_ms,tick_min_ms,tick_ms} and no avg_update_period_ms',
+      COALESCE(v_cols::TEXT, 'none');
+  END IF;
+  RAISE NOTICE 'PASS health_samples carries tick_ms/tick_min_ms/tick_max_ms and avg_update_period_ms is gone';
+END;
+$$;
+
+SET LOCAL ROLE anon;
+
+DO $$
+BEGIN
+  -- A column the role cannot read raises insufficient_privilege at plan time,
+  -- so this proves the grant regardless of how many rows the table holds.
+  PERFORM h.tick_ms, h.tick_min_ms, h.tick_max_ms
+     FROM aurora.health_samples h
+    LIMIT 1;
+  RAISE NOTICE 'PASS anon reads the three tick columns of aurora.health_samples';
+EXCEPTION WHEN insufficient_privilege THEN
+  RAISE EXCEPTION
+    'FAIL: anon cannot read the tick columns of aurora.health_samples - 014 added columns that the grant in 009 does not cover';
 END;
 $$;
 
