@@ -12,6 +12,11 @@
 
 .EXAMPLE
   ./scripts/tiles/render.ps1 -GamePath R:\Games\Steam\steamapps\common\ProjectZomboid -Out R:\tmp\pzmap2dzi\out
+
+.NOTES
+  Two commands take a render from nothing to published:
+    ./scripts/tiles/render.ps1 -GamePath <pz install> -Out <out dir>
+    npx tsx scripts/tiles/publish-tiles.ts --from <out dir>\html\map_data\base_top --to <aurora-site clone>
 #>
 param(
   [Parameter(Mandatory)][string]$GamePath,
@@ -49,6 +54,11 @@ $confPath = Join-Path $RepoPath 'conf\aurora-render.yaml'
 if ($ConfigOnly) { Write-Host "config written: $confPath"; return }
 
 $clock = [System.Diagnostics.Stopwatch]::StartNew()
+# make-tiles-json.ts reads these two files back from the render root (the
+# parent of -Out) to fill tiles.json's source.renderedAt / renderSeconds.
+$renderRoot = Split-Path $Out
+if (-not (Test-Path -LiteralPath $renderRoot)) { New-Item -ItemType Directory -Path $renderRoot | Out-Null }
+[System.IO.File]::WriteAllText((Join-Path $renderRoot 'render-start.txt'), [DateTimeOffset]::UtcNow.ToUnixTimeSeconds())
 Push-Location $RepoPath
 try {
   foreach ($step in @(@('deploy'), @('unpack'), @('render', 'base_top'))) {
@@ -57,6 +67,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "pzmap2dzi $($step -join ' ') failed with exit code $LASTEXITCODE" }
   }
 } finally { Pop-Location }
+[System.IO.File]::WriteAllText((Join-Path $renderRoot 'render-end.txt'), [DateTimeOffset]::UtcNow.ToUnixTimeSeconds())
 Write-Host ("render finished in {0:N0} s" -f $clock.Elapsed.TotalSeconds)
 
 $layer0 = Join-Path $Out 'html\map_data\base_top\layer0_files'
