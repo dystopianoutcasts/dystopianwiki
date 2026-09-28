@@ -1,10 +1,10 @@
-// aurora-ingest - polls RCON for health, tails the exporter log over SFTP, and
-// upserts both into the `aurora` schema. Invoked once a minute by pg_cron (see
-// migration 012) or by hand with the same bearer token.
+// aurora-ingest - tails the exporter log over SFTP and upserts records into
+// the `aurora` schema. Health data comes from the exporter's heartbeat records
+// (T03), not from RCON. Invoked once a minute by pg_cron (see migration 012)
+// or by hand with the same bearer token.
 //
-// Budget: the platform allows 150 s wall and 2 s CPU. This runs a 50 s loop,
-// polling RCON every 10 s (about five health samples a minute), and tails the
-// log ONCE per invocation because the SSH handshake alone costs ~2 s (T02).
+// Budget: the platform allows 150 s wall and 2 s CPU. This tails the log
+// ONCE per invocation because the SSH handshake alone costs ~2 s (T02).
 //
 // ---------------------------------------------------------------------------
 // Two things about this project that are easy to trip over
@@ -27,23 +27,15 @@
 // crash mid-batch harmless - at worst some rows are upserted twice, and every
 // upsert is idempotent.
 
-import {
-  connect as rconConnect,
-  parsePlayers,
-  parseStats,
-} from '../../../packages/shared/aurora/rcon.ts';
 import { connect as sftpConnect } from '../../../packages/shared/aurora/sftp.ts';
 import { emptyStats, splitChunkBytes, type SplitStats } from '../../../packages/shared/aurora/parser.ts';
 import {
-  buildHealthSample,
   buildPlan,
   chunk,
   planRead,
 } from '../../../packages/shared/aurora/ingest-core.ts';
 import { AuroraRest, inList, type Row } from '../../../packages/shared/aurora/rest.ts';
 
-const LOOP_BUDGET_MS = 50_000;
-const POLL_INTERVAL_MS = 10_000;
 const BATCH_ROWS = 500;
 const DEFAULT_MAX_READ = 262_144; // 256 KiB: CPU, not bandwidth, is the limit
 
@@ -52,7 +44,6 @@ interface Config {
   serviceKey: string;
   ingestKey: string;
   serverId: string;
-  rcon: { host: string; port: number; password: string };
   sftp: { host: string; port: number; username: string; password: string };
   logDir: string;
   maxReadBytes: number;
@@ -77,11 +68,6 @@ function readConfig(): Config {
     // pg_cron job in 012 works with no extra configuration.
     ingestKey: Deno.env.get('AURORA_INGEST_KEY') ?? serviceKey,
     serverId: Deno.env.get('AURORA_SERVER_ID') ?? 'outcasts-main',
-    rcon: {
-      host: required('AURORA_RCON_HOST'),
-      port: Number(Deno.env.get('AURORA_RCON_PORT') ?? '27015'),
-      password: required('AURORA_RCON_PASSWORD'),
-    },
     sftp: {
       host: required('AURORA_SFTP_HOST'),
       port: Number(Deno.env.get('AURORA_SFTP_PORT') ?? '22'),
@@ -101,63 +87,6 @@ function secretEquals(a: string, b: string): boolean {
   const n = Math.max(ab.length, bb.length);
   for (let i = 0; i < n; i++) diff |= (ab[i] ?? 0) ^ (bb[i] ?? 0);
   return diff === 0;
-}
-
-// ---------------------------------------------------------------------------
-// RCON
-// ---------------------------------------------------------------------------
-
-interface HealthPoll {
-  roster: string[];
-  stats: Record<string, number>;
-}
-
-async function pollRcon(client: { exec(c: string): Promise<string> }): Promise<HealthPoll> {
-  const roster = parsePlayers(await client.exec('players'));
-  const stats: Record<string, number> = {};
-  for (const family of ['game', 'performance', 'network']) {
-    Object.assign(stats, parseStats(await client.exec(`stats ${family} all`)));
-  }
-  return { roster, stats };
-}
-
-/**
- * Mark the roster online and anyone previously online but now absent offline.
- *
- * The offline half is computed by reading the currently-online usernames and
- * diffing in memory, rather than a `not.in` filter: a PZ username is free text
- * and building a negative filter out of it is the sort of quoting that fails
- * quietly on one unusual name.
- */
-async function reconcileOnline(db: AuroraRest, serverId: string, roster: string[]): Promise<number> {
-  if (roster.length > 0) {
-    await db.upsert(
-      'players',
-      roster.map((u) => ({
-        server_id: serverId,
-        username: u,
-        online: true,
-        last_seen: new Date().toISOString(),
-      })),
-      'server_id,username',
-    );
-  }
-
-  const online = (await db.select(
-    `players?select=username&server_id=eq.${encodeURIComponent(serverId)}&online=is.true`,
-  )) as { username: string }[];
-
-  const present = new Set(roster);
-  const stale = online.map((r) => r.username).filter((u) => !present.has(u));
-  if (stale.length === 0) return 0;
-
-  await db.patch(
-    `players?server_id=eq.${encodeURIComponent(serverId)}&username=in.${
-      encodeURIComponent(inList(stale))
-    }`,
-    { online: false },
-  );
-  return stale.length;
 }
 
 // ---------------------------------------------------------------------------
@@ -264,8 +193,6 @@ async function tailLog(db: AuroraRest, cfg: Config): Promise<TailResult> {
 // Entry point
 // ---------------------------------------------------------------------------
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
 Deno.serve(async (req: Request) => {
   const started = Date.now();
   let cfg: Config;
@@ -290,60 +217,17 @@ Deno.serve(async (req: Request) => {
 
   const summary = {
     server: cfg.serverId,
-    polls: 0,
-    healthRows: 0,
-    wentOffline: 0,
     tail: null as TailResult | null,
     errors: [] as string[],
     ms: 0,
   };
 
-  let rcon: Awaited<ReturnType<typeof rconConnect>> | undefined;
   try {
-    rcon = await rconConnect(cfg.rcon);
     const db = new AuroraRest({ url: cfg.supabaseUrl, serviceKey: cfg.serviceKey });
-
-    // First poll immediately, so a health sample lands even if the tail fails.
-    const first = await pollRcon(rcon);
-    await db.upsert(
-      'health_samples',
-      [buildHealthSample(cfg.serverId, new Date(), first.stats, first.roster.length)],
-      'server_id,t',
-    );
-    summary.polls++;
-    summary.healthRows++;
-    summary.wentOffline += await reconcileOnline(db, cfg.serverId, first.roster);
-
-    try {
-      summary.tail = await tailLog(db, cfg);
-    } catch (err) {
-      summary.errors.push(`tail: ${String(err).slice(0, 300)}`);
-      console.error(JSON.stringify({ at: 'tail', error: String(err) }));
-    }
-
-    while (Date.now() - started < LOOP_BUDGET_MS) {
-      await sleep(POLL_INTERVAL_MS);
-      if (Date.now() - started >= LOOP_BUDGET_MS) break;
-      try {
-        const poll = await pollRcon(rcon);
-        await db.upsert(
-          'health_samples',
-          [buildHealthSample(cfg.serverId, new Date(), poll.stats, poll.roster.length)],
-          'server_id,t',
-        );
-        summary.polls++;
-        summary.healthRows++;
-        summary.wentOffline += await reconcileOnline(db, cfg.serverId, poll.roster);
-      } catch (err) {
-        summary.errors.push(`poll: ${String(err).slice(0, 200)}`);
-        console.error(JSON.stringify({ at: 'poll', error: String(err) }));
-      }
-    }
+    summary.tail = await tailLog(db, cfg);
   } catch (err) {
-    summary.errors.push(`fatal: ${String(err).slice(0, 300)}`);
-    console.error(JSON.stringify({ at: 'fatal', error: String(err) }));
-  } finally {
-    rcon?.close();
+    summary.errors.push(`tail: ${String(err).slice(0, 300)}`);
+    console.error(JSON.stringify({ at: 'tail', error: String(err) }));
   }
 
   summary.ms = Date.now() - started;
