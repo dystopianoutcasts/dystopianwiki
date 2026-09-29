@@ -1,0 +1,6 @@
+{
+  "name": "UI",
+  "description": "The ISUIElement engine layer and the traps that only show up in a running game.",
+  "icon": "book",
+  "displayOrder": 10
+}

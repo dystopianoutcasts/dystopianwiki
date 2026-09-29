@@ -1,0 +1,6 @@
+{
+  "name": "Animation",
+  "description": "How to make a Build 42 vehicle part visibly animate, and the silent-failure catalogue behind it.",
+  "icon": "gear",
+  "displayOrder": 2
+}

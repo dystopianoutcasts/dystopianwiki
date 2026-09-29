@@ -1,0 +1,6 @@
+{
+  "name": "World and Tiles",
+  "description": "Multi-Z, basements, the tile and tiledef system, and the map-modding toolchain.",
+  "icon": "map",
+  "displayOrder": 9
+}

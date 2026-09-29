@@ -1,0 +1,114 @@
+{
+  "sources_root": "R:/ZOMBOID/_dev/B42_Mapping",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "intermediate",
+    "target": "articles",
+    "provenance": { "compiled": "2026-08-02", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "README.md",
+      "section": "mapping",
+      "category": "fundamentals",
+      "slug": "mapping-overview",
+      "title": "Mapping overview",
+      "split": "none",
+      "difficulty": "beginner",
+      "tags": ["mapping-overview", "worlded", "tilezed", "getting-started"]
+    },
+    {
+      "source": "01-tools-setup.md",
+      "section": "mapping",
+      "category": "fundamentals",
+      "slug": "tools-setup",
+      "title": "Mapping tools setup",
+      "split": "none",
+      "difficulty": "beginner",
+      "tags": ["mapping-tools", "worlded-setup", "tiles-folder", "pz-mapping-tools"]
+    },
+    {
+      "source": "08-b41-vs-b42.md",
+      "section": "mapping",
+      "category": "fundamentals",
+      "slug": "b41-vs-b42-mapping-delta",
+      "title": "Build 41 vs Build 42 mapping delta",
+      "split": "none",
+      "difficulty": "beginner",
+      "tags": ["b41-vs-b42", "mapping-delta", "migration"]
+    },
+    {
+      "source": "02-world-and-cells.md",
+      "section": "mapping",
+      "category": "fundamentals",
+      "slug": "world-and-cells-overview",
+      "title": "World and cells",
+      "split": "h2",
+      "tags": ["cell-size", "worldmap", "biomemap", "lot-export"]
+    },
+    {
+      "source": "03-buildings.md",
+      "section": "mapping",
+      "category": "buildings-and-tiles",
+      "slug": "buildings-and-buildinged",
+      "title": "Buildings and BuildingEd",
+      "split": "none",
+      "tags": ["buildinged", "room-templates", "basements", "building-checklist"]
+    },
+    {
+      "source": "04-tiles.md",
+      "section": "mapping",
+      "category": "buildings-and-tiles",
+      "slug": "tiles-and-tiledefs",
+      "title": "Tiles and tiledefs",
+      "split": "none",
+      "tags": ["tilesets", "tiledefs", "depthmaps", "tile-slicing"]
+    },
+    {
+      "source": "05-zones-and-spawns.md",
+      "section": "mapping",
+      "category": "zones-and-packaging",
+      "slug": "zones-and-spawns-overview",
+      "title": "Zones and spawns",
+      "split": "h2",
+      "tags": ["zones", "objects-lua", "spawn-points", "loot-distribution"]
+    },
+    {
+      "source": "06-mod-packaging.md",
+      "section": "mapping",
+      "category": "zones-and-packaging",
+      "slug": "mod-packaging-for-maps",
+      "title": "Mod packaging for maps",
+      "split": "none",
+      "tags": ["map-info", "mod-packaging", "biomemap-placement"]
+    },
+    {
+      "source": "07-troubleshooting.md",
+      "section": "mapping",
+      "category": "troubleshooting",
+      "slug": "mapping-troubleshooting",
+      "title": "Mapping troubleshooting",
+      "split": "none",
+      "tags": ["troubleshooting", "known-failures", "fixes"]
+    },
+    {
+      "source": "10-lua-and-modding-practices.md",
+      "section": "mapping",
+      "category": "troubleshooting",
+      "slug": "lua-and-modding-practices",
+      "title": "Lua and modding practices for maps",
+      "split": "none",
+      "tags": ["lua-load-order", "zedscript", "distribution-practices"]
+    },
+    {
+      "source": "09-sources.md",
+      "section": "mapping",
+      "category": "sources",
+      "slug": "sources-and-provenance",
+      "title": "Sources and provenance",
+      "split": "none",
+      "tags": ["sources", "provenance", "link-index"]
+    }
+  ]
+}

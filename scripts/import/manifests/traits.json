@@ -1,0 +1,30 @@
+{
+  "sources_root": "R:/ZOMBOID/_dev/B42_Traits",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "intermediate",
+    "target": "articles",
+    "provenance": { "compiled": "2026-08-05", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "01-b42-trait-reference.md",
+      "section": "modding",
+      "category": "skills-and-traits",
+      "slug": "trait-reference",
+      "title": "Vanilla trait reference",
+      "split": "none",
+      "tags": ["traits", "character-trait-definition", "vanilla-traits", "b42-traits"]
+    },
+    {
+      "source": "03-b42-trait-api.md",
+      "section": "modding",
+      "category": "skills-and-traits",
+      "slug": "trait-api",
+      "title": "Trait API reference",
+      "split": "none",
+      "tags": ["trait-api", "traitfactory", "gettraits", "engine-gotchas"]
+    }
+  ]
+}

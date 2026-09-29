@@ -1,0 +1,6 @@
+{
+  "name": "Reference",
+  "description": "The verified Build 42 vehicle API, engine hooks, UI, and lessons learned building vehicle mods.",
+  "icon": "car",
+  "displayOrder": 1
+}

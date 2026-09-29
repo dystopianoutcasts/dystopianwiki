@@ -1,0 +1,6 @@
+{
+  "name": "Crafting",
+  "description": "The craftRecipe schema: inputs, outputs, itemMappers, and how it differs from the legacy recipe block.",
+  "icon": "wrench",
+  "displayOrder": 4
+}

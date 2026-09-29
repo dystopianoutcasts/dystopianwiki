@@ -1,0 +1,6 @@
+{
+  "name": "Cookbook",
+  "description": "Copy-ready skeletons for every common Build 42 mod type, from a new item to a new vehicle.",
+  "icon": "wrench",
+  "displayOrder": 11
+}

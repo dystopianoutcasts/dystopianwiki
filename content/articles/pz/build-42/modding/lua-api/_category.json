@@ -1,0 +1,6 @@
+{
+  "name": "Lua API",
+  "description": "Events, ModData, multiplayer command patterns, timed actions, and calling Java from Lua.",
+  "icon": "book",
+  "displayOrder": 6
+}

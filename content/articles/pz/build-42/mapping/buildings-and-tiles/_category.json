@@ -1,0 +1,6 @@
+{
+  "name": "Buildings and Tiles",
+  "description": "BuildingEd, room templates, tilesets, tiledefs, and tile slicing.",
+  "icon": "map",
+  "displayOrder": 2
+}

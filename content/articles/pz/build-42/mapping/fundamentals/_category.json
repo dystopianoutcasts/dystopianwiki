@@ -1,0 +1,6 @@
+{
+  "name": "Fundamentals",
+  "description": "Tool setup, cell geometry, world authoring from PNGs, and the Build 41 to Build 42 mapping delta.",
+  "icon": "map",
+  "displayOrder": 1
+}

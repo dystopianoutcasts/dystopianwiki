@@ -1,0 +1,179 @@
+{
+  "sources_root": "R:/ZOMBOID/DystopeanOutcasts/02_KNOWLEDGE_BASE/PZ_Research/12_BUILD42_READINESS",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "intermediate",
+    "target": "articles",
+    "provenance": { "compiled": "2026-07-29", "game_version": "42.20" },
+    "strip_header_until": "^---\\s*$"
+  },
+  "entries": [
+    {
+      "source": "00_INDEX.md",
+      "section": "modding",
+      "category": "getting-started",
+      "slug": "start-here",
+      "title": "Start here: what changed in Build 42",
+      "split": "none",
+      "difficulty": "beginner",
+      "tags": ["getting-started", "mod-compatibility", "registries-lua", "craftrecipe", "build-42"]
+    },
+    {
+      "source": "01_MODDING_FOUNDATIONS_AND_TOOLCHAIN.md",
+      "section": "modding",
+      "category": "foundations",
+      "slug": "foundations-and-toolchain",
+      "title": "Modding foundations and toolchain",
+      "split": "h2",
+      "difficulty": "beginner",
+      "tags": ["mod-info", "registries-lua", "project-structure", "workshop-upload", "debug-mode"]
+    },
+    {
+      "source": "02_SCRIPTING_ITEMS_AND_CRAFTING.md",
+      "section": "modding",
+      "category": "items-and-scripting",
+      "slug": "items-and-crafting-overview",
+      "title": "Items, tags and crafting overview",
+      "split": "h2",
+      "tags": ["item-scripts", "tags", "workstation", "tech-tiers", "timedaction"],
+      "skip_headings": [
+        "5. The new `craftRecipe` block (basics)",
+        "6. `craftRecipe` inputs in depth",
+        "7. `craftRecipe` outputs and itemMappers",
+        "9. `craftRecipe` vs legacy `recipe`",
+        "12. The fluid system",
+        "ADDENDUM: Canonical craftRecipe schema (pzwiki cache, CONFIRMED)"
+      ]
+    },
+    {
+      "source": "02_SCRIPTING_ITEMS_AND_CRAFTING.md",
+      "section": "modding",
+      "category": "crafting",
+      "slug": "craftrecipe-reference",
+      "title": "craftRecipe reference",
+      "split": "h2",
+      "tags": ["craftrecipe", "crafting", "itemmapper", "recipe-tags"],
+      "only_headings": [
+        "5. The new `craftRecipe` block (basics)",
+        "6. `craftRecipe` inputs in depth",
+        "7. `craftRecipe` outputs and itemMappers",
+        "9. `craftRecipe` vs legacy `recipe`",
+        "ADDENDUM: Canonical craftRecipe schema (pzwiki cache, CONFIRMED)"
+      ]
+    },
+    {
+      "source": "02_SCRIPTING_ITEMS_AND_CRAFTING.md",
+      "section": "modding",
+      "category": "fluids",
+      "slug": "fluid-system-reference",
+      "title": "The fluid system",
+      "split": "h2",
+      "tags": ["fluids", "fluidcontainer", "liquids"],
+      "only_headings": [
+        "12. The fluid system"
+      ]
+    },
+    {
+      "source": "03_LUA_API_AND_ENGINE.md",
+      "section": "modding",
+      "category": "lua-api",
+      "slug": "lua-api-and-engine-overview",
+      "title": "Lua API and engine reference",
+      "split": "h2",
+      "tags": ["lua-api", "events", "moddata", "timed-actions", "multiplayer"]
+    },
+    {
+      "source": "04_FARMING_FORAGING_ANIMALS.md",
+      "section": "modding",
+      "category": "farming-and-animals",
+      "slug": "farming-and-animals-overview",
+      "title": "Farming, foraging and animals",
+      "split": "h2",
+      "tags": ["animaldefinitions", "farming", "ranch-zones", "foraging", "husbandry"]
+    },
+    {
+      "source": "05_SKILLS_TRAITS_PROGRESSION.md",
+      "section": "modding",
+      "category": "skills-and-traits",
+      "slug": "skills-traits-and-progression-overview",
+      "title": "Skills, traits and progression",
+      "split": "h2",
+      "tags": ["skills", "traits", "professions", "xp", "craftrecipe-gating"]
+    },
+    {
+      "source": "06_WORLD_MAP_BASEMENTS_TILES.md",
+      "section": "modding",
+      "category": "world-and-tiles",
+      "slug": "world-map-and-tiles-overview",
+      "title": "World, map and tiles",
+      "split": "h2",
+      "tags": ["tiles", "multi-z", "basements", "map-modding", "tiledefs"]
+    },
+    {
+      "source": "07_VEHICLES_POWER_COMBAT_MISC.md",
+      "section": "modding",
+      "category": "getting-started",
+      "slug": "vehicles-power-and-combat-misc",
+      "title": "Power, combat and misc systems",
+      "split": "h2",
+      "tags": ["electricity", "combat", "animation", "power", "misc-systems"],
+      "skip_headings": [
+        "2. Vehicles"
+      ]
+    },
+    {
+      "source": "07_VEHICLES_POWER_COMBAT_MISC.md",
+      "section": "vehicles",
+      "category": "reference",
+      "slug": "vehicles-and-power-misc-vehicle-systems",
+      "title": "Vehicle systems (from the readiness track)",
+      "split": "h2",
+      "tags": ["vehicles", "vehicle-api", "b42-vehicles"],
+      "only_headings": [
+        "2. Vehicles"
+      ]
+    },
+    {
+      "source": "08_MOD_CREATION_TOOLKIT.md",
+      "section": "modding",
+      "category": "cookbook",
+      "slug": "cookbook-index",
+      "title": "Mod creation cookbook",
+      "split": "h2",
+      "difficulty": "beginner",
+      "tags": ["cookbook", "mod-recipes", "from-scratch", "skeletons"],
+      "skip_headings": [
+        "Table of Contents",
+        "Gaps",
+        "Sources"
+      ],
+      "parts": {
+        "1. Project skeleton (mod.info, common/42 layout, registries.lua)": { "slug": "project-skeleton", "title": "Project skeleton" },
+        "2. New item (normal)": { "slug": "new-item", "title": "New item" },
+        "3. New food": { "slug": "new-food", "title": "New food" },
+        "4. New weapon": { "slug": "new-weapon", "title": "New weapon" },
+        "5. New clothing (+ Body Location)": { "slug": "new-clothing", "title": "New clothing" },
+        "6. New craftRecipe": { "slug": "new-craftrecipe", "title": "New craftRecipe" },
+        "7. New workstation / craft bench (entity + components)": { "slug": "new-workstation", "title": "New workstation or craft bench" },
+        "8. New fluid (+ FluidContainer)": { "slug": "new-fluid", "title": "New fluid" },
+        "9. Item repair (fixing)": { "slug": "item-repair", "title": "Item repair" },
+        "10. Evolved / cooking recipe": { "slug": "evolved-recipe", "title": "Evolved or cooking recipe" },
+        "11. New trait": { "slug": "new-trait", "title": "New trait" },
+        "12. New profession": { "slug": "new-profession", "title": "New profession" },
+        "13. New skill / perk": { "slug": "new-skill", "title": "New skill or perk" },
+        "14. New animal / breed": { "slug": "new-animal", "title": "New animal or breed" },
+        "15. New crop": { "slug": "new-crop", "title": "New crop" },
+        "16. Lua gameplay mod (events, ModData, MP commands)": { "slug": "lua-gameplay-mod", "title": "Lua gameplay mod" },
+        "17. Custom UI / HUD (ISUI)": { "slug": "custom-ui", "title": "Custom UI or HUD" },
+        "18. Custom moodle": { "slug": "custom-moodle", "title": "Custom moodle" },
+        "19. Sound mod": { "slug": "sound-mod", "title": "Sound mod" },
+        "20. Custom / dynamic radio channel": { "slug": "radio-channel", "title": "Custom or dynamic radio channel" },
+        "21. Translations / localization": { "slug": "translations", "title": "Translations and localization" },
+        "22. Map / building / basement": { "slug": "map-building-basement", "title": "Map, building, or basement" },
+        "23. Vehicle": { "slug": "vehicle-mod", "title": "Vehicle" },
+        "ADDENDUM: Workshop-verified corrections (2026-07-29)": { "slug": "workshop-verified-corrections", "title": "Workshop-verified corrections" }
+      }
+    }
+  ]
+}

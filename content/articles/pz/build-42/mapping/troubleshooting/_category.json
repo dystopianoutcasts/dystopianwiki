@@ -1,0 +1,6 @@
+{
+  "name": "Troubleshooting",
+  "description": "Known mapping failure modes and their fixes, plus Lua load-order and distribution practices.",
+  "icon": "book",
+  "displayOrder": 4
+}

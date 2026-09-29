@@ -1,0 +1,6 @@
+{
+  "name": "Fluids",
+  "description": "The Build 42 fluid system and FluidContainer component.",
+  "icon": "book",
+  "displayOrder": 5
+}

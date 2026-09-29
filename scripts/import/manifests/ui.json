@@ -1,0 +1,30 @@
+{
+  "sources_root": "R:/ZOMBOID/_dev/B42_UI",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "intermediate",
+    "target": "articles",
+    "provenance": { "compiled": "2026-08-09", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "00-README.md",
+      "section": "modding",
+      "category": "ui",
+      "slug": "ui-overview",
+      "title": "UI research overview",
+      "split": "none",
+      "tags": ["ui-overview", "isui", "vehicle-mechanics-ui", "engine-traps"]
+    },
+    {
+      "source": "01-ui-engine-reference.md",
+      "section": "modding",
+      "category": "ui",
+      "slug": "ui-engine-reference",
+      "title": "UI engine reference and gotchas",
+      "split": "none",
+      "tags": ["isui", "anchors", "iscollapsablewindow", "engine-reference"]
+    }
+  ]
+}

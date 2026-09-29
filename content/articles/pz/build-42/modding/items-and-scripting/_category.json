@@ -1,0 +1,6 @@
+{
+  "name": "Items and Scripting",
+  "description": "Item scripts, tags, workstations, tech tiers, and the timedAction block.",
+  "icon": "book",
+  "displayOrder": 3
+}

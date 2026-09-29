@@ -1,0 +1,6 @@
+{
+  "name": "Foundations",
+  "description": "The Build 42 mod project structure, mod.info, registries.lua, load order, debug mode, and packaging.",
+  "icon": "book",
+  "displayOrder": 2
+}

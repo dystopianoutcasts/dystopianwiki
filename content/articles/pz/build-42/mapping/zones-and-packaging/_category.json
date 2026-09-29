@@ -1,0 +1,6 @@
+{
+  "name": "Zones and Packaging",
+  "description": "objects.lua zones for vehicles, animals and loot, plus map mod folder structure and packaging.",
+  "icon": "map",
+  "displayOrder": 3
+}

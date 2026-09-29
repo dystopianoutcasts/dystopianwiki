@@ -1,0 +1,72 @@
+{
+  "sources_root": "R:/ZOMBOID/_dev/B42_Vehicles",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "intermediate",
+    "target": "articles",
+    "provenance": { "compiled": "2026-09-01", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "09-verified-api-reference.md",
+      "section": "vehicles",
+      "category": "reference",
+      "slug": "verified-api-reference",
+      "title": "Verified vehicle API reference",
+      "split": "none",
+      "tags": ["vehicle-api", "vehicles-lua", "decompile", "verified"],
+      "provenance": { "compiled": "2026-08-05", "game_version": "42.20" }
+    },
+    {
+      "source": "20-vehicle-engine-reference.md",
+      "section": "vehicles",
+      "category": "reference",
+      "slug": "vehicle-engine-reference",
+      "title": "Vehicle engine reference",
+      "split": "none",
+      "difficulty": "advanced",
+      "tags": ["vehicle-engine", "update-hooks", "vehicles-lua", "engine-reference"]
+    },
+    {
+      "source": "21-vehicle-ui-reference.md",
+      "section": "vehicles",
+      "category": "reference",
+      "slug": "vehicle-ui-reference",
+      "title": "Vehicle UI reference",
+      "split": "none",
+      "tags": ["vehicle-ui", "mechanics-window", "isui"]
+    },
+    {
+      "source": "22-lessons-and-guards.md",
+      "section": "vehicles",
+      "category": "reference",
+      "slug": "lessons-and-guards",
+      "title": "Lessons and guards",
+      "split": "none",
+      "tags": ["lessons-learned", "validators", "vehicle-mods", "guards"]
+    },
+    {
+      "source": "17-vehicle-animation-reference.md",
+      "section": "vehicles",
+      "category": "animation",
+      "slug": "vehicle-animation-reference-index",
+      "title": "Vehicle part animation reference",
+      "split": "h2",
+      "difficulty": "advanced",
+      "tags": ["vehicle-animation", "rig", "fbx", "silent-failures"],
+      "provenance": { "compiled": "2026-08-09", "game_version": "42.20" }
+    },
+    {
+      "source": "18-how-to-animate-a-vehicle-part.md",
+      "section": "vehicles",
+      "category": "animation",
+      "slug": "how-to-animate-a-vehicle-part",
+      "title": "How to animate a vehicle part",
+      "split": "none",
+      "difficulty": "advanced",
+      "tags": ["vehicle-animation", "how-to", "rig-recipe", "animated-parts"],
+      "provenance": { "compiled": "2026-08-10", "game_version": "42.20" }
+    }
+  ]
+}

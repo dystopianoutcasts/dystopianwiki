@@ -1,0 +1,6 @@
+{
+  "name": "Modding",
+  "description": "Scripts, Lua, crafting, items, traits, and the toolchain for building Build 42 mods from scratch.",
+  "icon": "plug",
+  "displayOrder": 1
+}
