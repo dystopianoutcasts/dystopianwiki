@@ -1,22 +1,26 @@
 # Creating Articles - Complete Guide
 
-**Last Updated:** 2026-01-19
+**Last Updated:** 2026-09-29
 
 ## Quick Start (TL;DR)
 
 1. Copy `content/ARTICLE_TEMPLATE.md`
 2. Fill in YAML frontmatter (metadata at the top)
 3. Write content in markdown
-4. Save as `content/articles/pz/build-41/modding/category/your-slug.md`
-5. Run `npm run sync:dry-run` to preview
-6. Run `npm run sync` to publish to Supabase
-7. Changes appear on the website immediately
+4. Save as `content/articles/pz/build-42/{section}/{category}/your-slug.md`
+5. Run `npm run nav` to regenerate navigation (and `npm run sitemap`)
+6. Run `npm run sync:dry-run` to preview
+7. Run `npm run sync` to publish to Supabase (and `npm run nav:db` if you added a category)
+8. Changes appear on the website immediately
 
 ---
 
 ## Table of Contents
 
 - [File Structure](#file-structure)
+- [Sections, Categories and Navigation](#sections-categories-and-navigation)
+- [Drafts](#drafts)
+- [Importing Build 42 Reference Documents](#importing-build-42-reference-documents)
 - [Step-by-Step Tutorial](#step-by-step-tutorial)
 - [YAML Frontmatter Reference](#yaml-frontmatter-reference)
 - [Markdown Writing Tips](#markdown-writing-tips)
@@ -30,20 +34,30 @@
 
 ```
 dystopianwiki/
-├── content/
-│   ├── ARTICLE_TEMPLATE.md          # Copy this to create new articles
-│   ├── README.md                    # Quick reference
-│   └── articles/
-│       └── pz/                      # Game: Project Zomboid
-│           └── build-41/            # Version: Build 41
-│               └── modding/         # Section: Modding
-│                   ├── items/       # Category: Items
-│                   │   └── your-article.md
-│                   ├── recipes/     # Category: Recipes
-│                   ├── lua-api/     # Category: Lua API
-│                   └── ...
-└── scripts/
-    └── sync-articles.ts             # Sync script (don't edit)
+  content/
+    ARTICLE_TEMPLATE.md              # Copy this to create new articles
+    README.md                        # Quick reference
+    versions.config.json             # Version list and defaultVersion (build-42)
+    articles/
+      pz/                            # Game: Project Zomboid (the only game)
+        build-42/                    # Version: Build 42 (current)
+          modding/                   # Section: Modding
+            _section.json            # Section name, description, icon, order
+            cookbook/                # Category: Cookbook
+              _category.json         # Category name, description, icon, order
+              project-skeleton.md
+            lua-api/
+            ...
+          mapping/
+          vehicles/
+          outcast-mods/
+        build-41/                    # Version: Build 41 (legacy, kept as written)
+    drafts/                          # Unpublished articles, gitignored, never synced
+  scripts/
+    sync-articles.ts                 # Sync script
+    build-nav.ts                     # Navigation generator (npm run nav)
+    build-sitemap.ts                 # Sitemap generator (npm run sitemap)
+    import/                          # Build 42 import tool (npm run import:b42)
 ```
 
 ### Path Structure
@@ -54,10 +68,76 @@ content/articles/{game}/{version}/{section}/{category}/{slug}.md
 ```
 
 **Valid values:**
-- **game**: `pz` (Project Zomboid), `vs` (Vintage Story)
-- **version**: `build-41`, `build-42`, etc.
-- **section**: `modding`, `mapping`, `scripting`, etc.
-- **category**: `items`, `recipes`, `lua-api`, `weapons`, etc.
+- **game**: `pz` (Project Zomboid)
+- **version**: `build-42` (current) or `build-41` (legacy)
+- **section**: `modding`, `mapping`, `vehicles`, `outcast-mods` (build-42); `modding`, `mapping` (build-41)
+- **category**: a folder name inside the section, such as `cookbook`, `lua-api`, `fundamentals`
+
+The article URL is the path without `content/articles` and `.md`, for example
+`/pz/build-42/modding/cookbook/project-skeleton`.
+
+---
+
+## Sections, Categories and Navigation
+
+Sections and categories are discovered from the folders. Their display data lives in two
+small files next to the articles:
+
+- `content/articles/pz/{version}/{section}/_section.json`
+- `content/articles/pz/{version}/{section}/{category}/_category.json`
+
+Both hold the same four keys:
+
+```json
+{
+  "name": "Cookbook",
+  "description": "Copy-ready skeletons for every common Build 42 mod type.",
+  "icon": "wrench",
+  "displayOrder": 11
+}
+```
+
+`icon` is a short word (`plug`, `map`, `car`, `book`, `wrench`), never an emoji. Without the
+file the name is the title-cased folder name, the icon `book` and the order 999.
+
+After adding, moving or removing an article, category or section, regenerate navigation:
+
+```bash
+npm run nav        # versions.json, categories.json, section-info.json, search-index.json,
+                   # packages/web/src/config/versions.generated.ts
+npm run sitemap    # packages/web/public/sitemap.xml
+npm run nav:db     # also upsert public.categories and delete rows the tree no longer has
+```
+
+The version list and the default version live in `content/versions.config.json`.
+Never hand-edit `versions.generated.ts` or the files under `packages/web/public/data/`
+that the generator writes.
+
+---
+
+## Drafts
+
+`content/drafts/pz/{version}/{section}/{category}/` holds articles that are not ready. The
+folder is gitignored: drafts are never committed and the sync never reads them. To publish
+one, edit it, move it to the same path under `content/articles/`, run `npm run nav`, then
+sync. A published article must not link to a draft; `npm run import:check-links` fails when
+one does.
+
+---
+
+## Importing Build 42 Reference Documents
+
+Most Build 42 articles are generated from local reference documents by the import tool.
+Its manifests live in `scripts/import/manifests/`; the rules are in `scripts/import/README.md`.
+
+```bash
+npm run import:b42 -- --dry-run   # print what would be written
+npm run import:b42                # write articles and drafts
+npm run import:check-links        # zero dead links, zero published links to drafts
+```
+
+Edit an imported article through its manifest or source document, not by hand: the next
+import overwrites it.
 
 ---
 
@@ -67,7 +147,7 @@ content/articles/{game}/{version}/{section}/{category}/{slug}.md
 
 ```bash
 # Copy the template
-cp content/ARTICLE_TEMPLATE.md content/articles/pz/build-41/modding/items/my-first-weapon.md
+cp content/ARTICLE_TEMPLATE.md content/articles/pz/build-42/modding/items-and-scripting/my-first-weapon.md
 ```
 
 ### 2. Edit the YAML Frontmatter
@@ -76,13 +156,13 @@ Open the file and edit the metadata section at the top:
 
 ```yaml
 ---
-id: my-first-weapon                    # Unique ID (URL-safe)
-slug: my-first-weapon                  # URL slug (usually same as id)
+id: build-42-my-first-weapon           # Unique ID; build-42 ids are build-42-{slug}
+slug: my-first-weapon                  # URL slug, unique within the version
 title: Creating Your First Weapon      # Display title
 game: pz                               # Game identifier
-version: build-41                      # Game version
-section: modding                       # Section
-category: items                        # Category
+version: build-42                      # Game version (matches the folder)
+section: modding                       # Section (matches the folder)
+category: items-and-scripting          # Category (matches the folder)
 subcategory: null                      # Optional subcategory
 difficulty: beginner                   # beginner | intermediate | advanced
 tags:                                  # Searchable tags (lowercase, hyphenated)
@@ -93,7 +173,7 @@ excerpt: Learn how to create your first weapon mod in Project Zomboid by definin
 related_articles:                      # Related article slugs
   - item-properties
   - weapon-stats
-last_updated: 2026-01-19               # Today's date (YYYY-MM-DD)
+last_updated: 2026-09-29               # Today's date (YYYY-MM-DD)
 ---
 ```
 
@@ -146,21 +226,23 @@ npm run sync:dry-run
 
 Output:
 ```
-🚀 Markdown → Supabase Sync
+Markdown -> Supabase Sync
 
-🔍 DRY RUN MODE - No changes will be made
+[DRY RUN] No changes will be made
 
-📂 Found 1 markdown files
+Found 1 markdown files
 
-   [DRY RUN] Would upsert: my-first-weapon
+[OK] No collisions among 1 articles (game, version, slug) and id
 
-📊 Summary:
-   ✅ Synced: 1
-   ❌ Failed: 0
-   ⏭️  Skipped: 0
-   📝 Total: 1
+   [DRY RUN] Would upsert: build-42/my-first-weapon (id build-42-my-first-weapon)
 
-💡 Run without --dry-run to actually sync to Supabase
+Summary:
+   [OK] Would sync: 1
+   [OK] Failed: 0
+   [SKIP] Skipped: 0
+   Total: 1
+
+[DRY RUN] Run without --dry-run to actually sync to Supabase
 ```
 
 ### 5. Publish to Supabase
@@ -180,11 +262,11 @@ Your article is now live on the website!
 
 | Field | Type | Description | Example |
 |-------|------|-------------|---------|
-| `id` | string | Unique identifier (URL-safe) | `weapon-basics` |
+| `id` | string | Unique identifier (URL-safe); derived as `build-42-{slug}` when omitted | `build-42-weapon-basics` |
 | `slug` | string | URL slug (usually same as id) | `weapon-basics` |
 | `title` | string | Display title | `Weapon Basics Guide` |
-| `game` | string | Game identifier | `pz` or `vs` |
-| `version` | string | Game version | `build-41` |
+| `game` | string | Game identifier | `pz` |
+| `version` | string | Game version | `build-42` |
 | `section` | string | Section category | `modding` |
 | `category` | string | Article category | `items` |
 
@@ -204,7 +286,8 @@ Your article is now live on the website!
 ### Field Rules
 
 **id/slug:**
-- Must be unique across all articles
+- `id` must be unique across all articles; `slug` must be unique within its version
+  (the same slug may exist in build-41 and build-42)
 - Use lowercase letters, numbers, and hyphens only
 - No spaces or special characters
 - Example: `lua-basics`, `item-properties-guide`
@@ -308,7 +391,7 @@ npm install
 
 ```markdown
 **Internal links** (to other articles):
-[Item Properties Guide](/build-41/modding/items/item-properties)
+[Project Skeleton](/pz/build-42/modding/cookbook/project-skeleton)
 
 **External links:**
 [Official Wiki](https://pzwiki.net)
@@ -336,11 +419,9 @@ npm install
 
 ### Prerequisites
 
-1. **Environment variables set up** (`.env` file in project root):
-   ```env
-   VITE_SUPABASE_URL=https://your-project.supabase.co
-   VITE_SUPABASE_ANON_KEY=your-anon-key-here
-   ```
+1. **Environment variables set up** (`.env` file in project root): `SUPABASE_URL` or
+   `VITE_SUPABASE_URL`, and `SUPABASE_SERVICE_KEY`. Writing articles and categories needs
+   the service key; ask the project owner. Never commit `.env`.
 
 2. **Dependencies installed:**
    ```bash
@@ -357,7 +438,11 @@ npm run sync:dry-run
 npm run sync
 
 # Sync a single article
-npm run sync -- --file content/articles/pz/build-41/modding/items/my-article.md
+npm run sync -- --file content/articles/pz/build-42/modding/cookbook/my-article.md
+
+# Regenerate navigation and write category rows to the database
+npm run nav
+npm run nav:db
 ```
 
 ### What Happens During Sync
@@ -366,27 +451,28 @@ npm run sync -- --file content/articles/pz/build-41/modding/items/my-article.md
 2. Parses YAML frontmatter and markdown content
 3. Validates required fields (id, slug, title, game, version, section, category)
 4. Auto-generates excerpt if missing
-5. Upserts to Supabase `articles` table (updates existing or creates new)
-6. Shows summary of synced/failed/skipped articles
+5. Refuses to run when two articles share (game, version, slug) or an id
+6. Upserts to Supabase `articles` table on (game, version, slug) (updates existing or creates new)
+7. Shows summary of synced/failed/skipped articles
 
 ### Sync Output
 
 ```
-🚀 Markdown → Supabase Sync
+Markdown -> Supabase Sync
 
-📂 Found 5 markdown files
+Found 376 markdown files
 
-   ✅ Synced: weapon-basics
-   ✅ Synced: item-properties
-   ⚠️  Skipping recipe-guide.md: Missing required fields: excerpt
-   ✅ Synced: lua-introduction
-   ✅ Synced: modding-setup
+[OK] No collisions among 376 articles (game, version, slug) and id
 
-📊 Summary:
-   ✅ Synced: 4
-   ❌ Failed: 0
-   ⏭️  Skipped: 1
-   📝 Total: 5
+   [OK] Synced: build-42/project-skeleton (id build-42-project-skeleton)
+   [OK] Synced: build-41/item-anatomy (id items-item-anatomy)
+   ...
+
+Summary:
+   [OK] Synced: 376
+   [OK] Failed: 0
+   [SKIP] Skipped: 0
+   Total: 376
 ```
 
 ---
@@ -404,9 +490,9 @@ id: unique-id
 slug: unique-slug
 title: Article Title
 game: pz
-version: build-41
+version: build-42
 section: modding
-category: items
+category: items-and-scripting
 ---
 ```
 
@@ -415,7 +501,7 @@ category: items
 **Problem:** Another article already uses this slug.
 
 **Solution:**
-1. Make the slug more specific: `weapon-guide` → `pz-weapon-guide`
+1. Make the slug more specific: `weapon-guide` -> `melee-weapon-guide`
 2. Or update the existing article instead of creating a new one
 
 ### Issue: Sync script doesn't find my article
@@ -427,7 +513,8 @@ category: items
 content/articles/{game}/{version}/{section}/{category}/your-article.md
 ```
 
-Example: `content/articles/pz/build-41/modding/items/weapon-guide.md`
+Example: `content/articles/pz/build-42/modding/items-and-scripting/weapon-guide.md`
+(files under `content/drafts/` are never synced)
 
 ### Issue: Changes not appearing on website
 
@@ -435,7 +522,7 @@ Example: `content/articles/pz/build-41/modding/items/weapon-guide.md`
 
 **Solutions:**
 1. Clear browser cache (Ctrl+Shift+R or Cmd+Shift+R)
-2. Check article is published (no draft status)
+2. Check the article is under `content/articles/`, not `content/drafts/`, and run `npm run nav` so the sidebar lists it
 3. Verify Supabase connection in web app
 4. Check browser console for errors
 
@@ -445,17 +532,17 @@ Example: `content/articles/pz/build-41/modding/items/weapon-guide.md`
 
 ### Example 1: Beginner Tutorial
 
-**File:** `content/articles/pz/build-41/modding/items/first-item.md`
+**File:** `content/articles/pz/build-42/modding/items-and-scripting/first-item.md`
 
 ```yaml
 ---
-id: first-item
+id: build-42-first-item
 slug: first-item
 title: Creating Your First Item
 game: pz
-version: build-41
+version: build-42
 section: modding
-category: items
+category: items-and-scripting
 difficulty: beginner
 tags:
   - tutorial
@@ -486,15 +573,15 @@ Navigate to your mods directory...
 
 ### Example 2: Advanced Reference
 
-**File:** `content/articles/pz/build-41/modding/lua-api/inventory-api.md`
+**File:** `content/articles/pz/build-42/modding/lua-api/inventory-api.md`
 
 ```yaml
 ---
-id: inventory-api-reference
+id: build-42-inventory-api-reference
 slug: inventory-api-reference
 title: Inventory API Reference
 game: pz
-version: build-41
+version: build-42
 section: modding
 category: lua-api
 difficulty: advanced
@@ -541,12 +628,12 @@ local success = inventory:AddItem("Base.Axe")
 
 ### File Naming
 
-✅ **Good:**
+**Good:**
 - `weapon-basics.md`
 - `lua-api-intro.md`
 - `recipe-creation-guide.md`
 
-❌ **Bad:**
+**Bad:**
 - `Weapon Basics.md` (spaces)
 - `weaponBasics.md` (camelCase)
 - `weapon_basics.md` (underscores)
@@ -555,27 +642,28 @@ local success = inventory:AddItem("Base.Axe")
 
 ```yaml
 ---
-✅ id: unique-slug
-✅ slug: same-as-id
-✅ title: Human Readable Title
-✅ game: pz
-✅ version: build-41
-✅ section: modding
-✅ category: items
-✅ difficulty: beginner
-✅ tags: [tag1, tag2]
-✅ excerpt: Short description
-✅ last_updated: 2026-01-19
+id: build-42-unique-slug
+slug: unique-slug
+title: Human Readable Title
+game: pz
+version: build-42
+section: modding
+category: items-and-scripting
+difficulty: beginner
+tags: [tag1, tag2]
+excerpt: Short description
+last_updated: 2026-09-29
 ---
 ```
 
 ### Workflow
 
-1. **Create** → Copy template
-2. **Edit** → Fill frontmatter + write content
-3. **Preview** → `npm run sync:dry-run`
-4. **Publish** → `npm run sync`
-5. **Verify** → Check website
+1. **Create** -> Copy template
+2. **Edit** -> Fill frontmatter + write content
+3. **Navigation** -> `npm run nav` and `npm run sitemap`
+4. **Preview** -> `npm run sync:dry-run`
+5. **Publish** -> `npm run sync` (and `npm run nav:db` for a new category)
+6. **Verify** -> Check website
 
 ---
 
@@ -600,15 +688,15 @@ See: [docs/article-standards.md](article-standards.md)
 
 ### Quick V3 Checklist
 
-✅ Opens with game experience reader has seen
-✅ Has "Prerequisites" section with links
-✅ Shows simplest example first (5-10 lines max)
-✅ Includes "Try It Yourself" section
-✅ Has "Common Mistakes" with wrong/right code
-✅ Defines technical terms inline
-✅ Uses emotional scaffolding phrases
-✅ Progressive building (Version 1 → 2 → 3)
-✅ "What's Next?" section with related articles
+- Opens with game experience reader has seen
+- Has "Prerequisites" section with links
+- Shows simplest example first (5-10 lines max)
+- Includes "Try It Yourself" section
+- Has "Common Mistakes" with wrong/right code
+- Defines technical terms inline
+- Uses emotional scaffolding phrases
+- Progressive building (Version 1 -> 2 -> 3)
+- "What's Next?" section with related articles
 
 For complete details, examples, and phrase libraries, see [article-standards.md](article-standards.md).
 
@@ -625,14 +713,14 @@ For complete details, examples, and phrase libraries, see [article-standards.md]
 
 ## Don'ts
 
-❌ **Don't** create JSON files - Use markdown with YAML frontmatter
-❌ **Don't** follow old v1 documentation - Use this guide
-❌ **Don't** edit files in `_archive-v1/` - Create new files in `content/articles/`
-❌ **Don't** manually insert into Supabase - Use `npm run sync`
-❌ **Don't** forget to run `npm run sync` after creating articles
+- **Don't** create JSON files - Use markdown with YAML frontmatter
+- **Don't** follow old v1 documentation - Use this guide
+- **Don't** edit files in `_archive-v1/` - Create new files in `content/articles/`
+- **Don't** manually insert into Supabase - Use `npm run sync`
+- **Don't** forget to run `npm run sync` after creating articles
 
-✅ **Do** use the template
-✅ **Do** preview with `--dry-run` first
-✅ **Do** follow the file structure
-✅ **Do** write in markdown
-✅ **Do** ask if you're unsure!
+- **Do** use the template
+- **Do** preview with `--dry-run` first
+- **Do** follow the file structure
+- **Do** write in markdown
+- **Do** ask if you're unsure!
