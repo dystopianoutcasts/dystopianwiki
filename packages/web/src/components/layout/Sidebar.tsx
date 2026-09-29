@@ -40,7 +40,7 @@ const iconMap: Record<string, string> = {
   mountain: '⛰️',
 };
 
-function resolveIcon(icon: string): string {
+export function resolveIcon(icon: string): string {
   return iconMap[icon] || iconMap.book;
 }
 

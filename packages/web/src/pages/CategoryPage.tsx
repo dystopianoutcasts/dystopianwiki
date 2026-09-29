@@ -2,25 +2,12 @@ import { useParams, Link } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { WikiLayout } from '../components/layout/WikiLayout';
 import { SEOHead } from '../components/seo/SEOHead';
-import { useCategories, useArticlesByCategory } from '../hooks/useSupabase';
+import { useArticlesByCategory } from '../hooks/useSupabase';
 import { useGameContext } from '../hooks/useGameContext';
-import { DEFAULT_VERSION } from '../config/versions.generated';
+import { DEFAULT_VERSION, getSection } from '../config/versions.generated';
+import { resolveIcon } from '../components/layout/Sidebar';
 import type { Difficulty } from '../types/wiki';
 import '../styles/pages/category-page.css';
-
-const categoryIcons: Record<string, string> = {
-  'lua-api': '📜',
-  'recipes': '🔧',
-  'items': '🎮',
-  'game-mechanics': '🩹',
-  'weapon-repair': '⚔️',
-  'foraging': '🌿',
-  'tools': '🛠️',
-  'tilezed': '🏗️',
-  'worlded': '🌍',
-  'buildings': '🏠',
-  'terrain': '⛰️',
-};
 
 const difficultyLabels: Record<Difficulty, string> = {
   beginner: 'Beginner',
@@ -37,10 +24,10 @@ export function CategoryPage() {
   }>();
   const { buildPath, gameName } = useGameContext();
 
-  const { data: categories = [] } = useCategories(game || 'pz', section);
   const { data: articles = [], isLoading: loading, isError: error } = useArticlesByCategory(category, game || 'pz', version);
 
-  const categoryInfo = categories?.find((c) => c.id === category);
+  // Category display data comes from the generated navigation module (contract C1).
+  const categoryInfo = getSection(version, section)?.categories.find((c) => c.id === category);
 
   if (loading) {
     return (
@@ -85,7 +72,7 @@ export function CategoryPage() {
         <div className="category-page">
           <header className="category-page__header">
             <span className="category-page__icon">
-              {categoryIcons[category] || '📁'}
+              {resolveIcon(categoryInfo?.icon ?? 'book')}
             </span>
             <h1 className="category-page__title">
               {categoryInfo?.name || category}

@@ -2,49 +2,21 @@ import { useParams, Link } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { WikiLayout } from '../components/layout/WikiLayout';
 import { SEOHead } from '../components/seo/SEOHead';
-import { useCategories } from '../hooks/useSupabase';
 import { useGameContext } from '../hooks/useGameContext';
-import { DEFAULT_VERSION } from '../config/versions.generated';
+import { DEFAULT_VERSION, getSection } from '../config/versions.generated';
+import { resolveIcon } from '../components/layout/Sidebar';
 import '../styles/pages/section-page.css';
 
-const categoryIcons: Record<string, string> = {
-  'lua-api': '📜',
-  'recipes': '🔧',
-  'items': '🎮',
-  'game-mechanics': '🩹',
-  'weapon-repair': '⚔️',
-  'foraging': '🌿',
-  'tools': '🛠️',
-  'tilezed': '🏗️',
-  'worlded': '🌍',
-  'buildings': '🏠',
-  'terrain': '⛰️',
-};
-
 export function SectionPage() {
-  const { version = DEFAULT_VERSION, section = '', game } = useParams<{ version: string; section: string; game?: string }>();
+  const { version = DEFAULT_VERSION, section = '' } = useParams<{ version: string; section: string }>();
   const { buildPath, gameName } = useGameContext();
 
-  // For section info, we'll use hardcoded data since it's static
-  const sectionInfo = section === 'modding'
-    ? { name: 'Modding', description: 'Learn to create mods for Project Zomboid' }
-    : { name: 'Mapping', description: 'Create custom maps and worlds' };
+  // Section and category data come from the generated navigation module
+  // (contract C1), the same source the sidebar reads. Empty categories are hidden.
+  const sectionInfo = getSection(version, section);
+  const categories = (sectionInfo?.categories ?? []).filter((category) => category.articleCount > 0);
 
-  const { data: categories = [], isLoading, isError } = useCategories(game || 'pz', section);
-
-  if (isLoading) {
-    return (
-      <Layout>
-        <WikiLayout>
-          <div className="section-page">
-            <div className="section-page__loading">Loading section...</div>
-          </div>
-        </WikiLayout>
-      </Layout>
-    );
-  }
-
-  if (isError || !sectionInfo) {
+  if (!sectionInfo) {
     return (
       <Layout>
         <WikiLayout>
@@ -72,13 +44,13 @@ export function SectionPage() {
         <div className="section-page">
           <header className="section-page__header">
             <span className="section-page__icon">
-              {section === 'modding' ? '🔌' : '🗺️'}
+              {resolveIcon(sectionInfo.icon)}
             </span>
             <h1 className="section-page__title">{sectionInfo.name}</h1>
             <p className="section-page__description">{sectionInfo.description}</p>
           </header>
 
-          {categories && categories.length > 0 && (
+          {categories.length > 0 && (
             <section className="section-page__categories">
               <h2 className="section-page__categories-title">Categories</h2>
               <div className="section-page__categories-grid">
@@ -89,16 +61,14 @@ export function SectionPage() {
                     className="section-page__category-card"
                   >
                     <span className="section-page__category-icon">
-                      {categoryIcons[category.id] || '📁'}
+                      {resolveIcon(category.icon)}
                     </span>
                     <div className="section-page__category-content">
                       <h3 className="section-page__category-name">{category.name}</h3>
                       <p className="section-page__category-description">{category.description}</p>
-                      {category.article_count !== undefined && (
-                        <span className="section-page__category-count">
-                          {category.article_count} {category.article_count === 1 ? 'article' : 'articles'}
-                        </span>
-                      )}
+                      <span className="section-page__category-count">
+                        {category.articleCount} {category.articleCount === 1 ? 'article' : 'articles'}
+                      </span>
                     </div>
                   </Link>
                 ))}
