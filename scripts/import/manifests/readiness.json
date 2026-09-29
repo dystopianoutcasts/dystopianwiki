@@ -27,7 +27,8 @@
       "title": "Modding foundations and toolchain",
       "split": "h2",
       "difficulty": "beginner",
-      "tags": ["mod-info", "registries-lua", "project-structure", "workshop-upload", "debug-mode"]
+      "tags": ["mod-info", "registries-lua", "project-structure", "workshop-upload", "debug-mode"],
+      "skip_headings": ["Table of Contents", "Gaps to revisit", "Sources"]
     },
     {
       "source": "02_SCRIPTING_ITEMS_AND_CRAFTING.md",
@@ -38,6 +39,9 @@
       "split": "h2",
       "tags": ["item-scripts", "tags", "workstation", "tech-tiers", "timedaction"],
       "skip_headings": [
+        "Table of Contents",
+        "Gaps to revisit",
+        "Sources",
         "5. The new `craftRecipe` block (basics)",
         "6. `craftRecipe` inputs in depth",
         "7. `craftRecipe` outputs and itemMappers",
@@ -81,7 +85,8 @@
       "slug": "lua-api-and-engine-overview",
       "title": "Lua API and engine reference",
       "split": "h2",
-      "tags": ["lua-api", "events", "moddata", "timed-actions", "multiplayer"]
+      "tags": ["lua-api", "events", "moddata", "timed-actions", "multiplayer"],
+      "skip_headings": ["Table of Contents", "Gaps to revisit", "Sources"]
     },
     {
       "source": "04_FARMING_FORAGING_ANIMALS.md",
@@ -90,7 +95,8 @@
       "slug": "farming-and-animals-overview",
       "title": "Farming, foraging and animals",
       "split": "h2",
-      "tags": ["animaldefinitions", "farming", "ranch-zones", "foraging", "husbandry"]
+      "tags": ["animaldefinitions", "farming", "ranch-zones", "foraging", "husbandry"],
+      "skip_headings": ["Table of Contents", "Gaps to revisit", "Sources"]
     },
     {
       "source": "05_SKILLS_TRAITS_PROGRESSION.md",
@@ -99,7 +105,8 @@
       "slug": "skills-traits-and-progression-overview",
       "title": "Skills, traits and progression",
       "split": "h2",
-      "tags": ["skills", "traits", "professions", "xp", "craftrecipe-gating"]
+      "tags": ["skills", "traits", "professions", "xp", "craftrecipe-gating"],
+      "skip_headings": ["Table of Contents", "Gaps to revisit", "Sources"]
     },
     {
       "source": "06_WORLD_MAP_BASEMENTS_TILES.md",
@@ -108,17 +115,21 @@
       "slug": "world-map-and-tiles-overview",
       "title": "World, map and tiles",
       "split": "h2",
-      "tags": ["tiles", "multi-z", "basements", "map-modding", "tiledefs"]
+      "tags": ["tiles", "multi-z", "basements", "map-modding", "tiledefs"],
+      "skip_headings": ["Table of Contents", "Gaps to revisit", "Sources"]
     },
     {
       "source": "07_VEHICLES_POWER_COMBAT_MISC.md",
       "section": "modding",
-      "category": "getting-started",
-      "slug": "vehicles-power-and-combat-misc",
-      "title": "Power, combat and misc systems",
+      "category": "foundations",
+      "slug": "electricity-power-and-combat",
+      "title": "Electricity, power and combat",
       "split": "h2",
       "tags": ["electricity", "combat", "animation", "power", "misc-systems"],
       "skip_headings": [
+        "Table of Contents",
+        "Gaps to revisit",
+        "Sources",
         "2. Vehicles"
       ]
     },
