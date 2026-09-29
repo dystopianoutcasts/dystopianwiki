@@ -1,13 +1,17 @@
 // All of the map's data: what to fetch, how often, and the small amount of
 // client-side shaping (the health window, "updated HH:MM:SS") that isn't a database
-// query. No realtime channel is opened here (T19): the ingest writes one batch a
-// minute, so a poll at that same interval sees exactly what a realtime subscriber
-// would have, at REST's per-byte cost instead of realtime's per-row-times-viewer cost.
+// query. No realtime channel is opened here (T19): polling costs REST's per-byte
+// price instead of realtime's per-row-times-viewer price. Since T23 the ingest writes
+// a batch every ~5 s, so the live datasets (positions, roster, vehicles, health) poll
+// every LIVE_POLL_MS, incrementally, with a full fetch every INGEST_INTERVAL_MS.
 import { useEffect, useMemo, useState } from 'react'
 import type { SupabaseClient, User } from '@supabase/supabase-js'
-import { INGEST_INTERVAL_MS, SLOW_POLL_MS, VERY_SLOW_POLL_MS, LINK_FEATURE_ENABLED } from '../config'
+import { INGEST_INTERVAL_MS, LIVE_POLL_MS, SLOW_POLL_MS, VERY_SLOW_POLL_MS, LINK_FEATURE_ENABLED } from '../config'
 import { useDataset } from './useDataset'
+import { useLiveDataset } from './useLiveDataset'
+import { newestT } from './live'
 import {
+  fetchHealthAfter,
   fetchHealthSince,
   fetchLatestHealth,
   fetchMapObjects,
@@ -33,11 +37,34 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
   const [now, setNow] = useState(() => Date.now())
   const [lastUpdated, setLastUpdated] = useState<number | null>(null)
 
-  const profiles = useDataset(true, () => fetchPlayerProfiles(client, serverId), INGEST_INTERVAL_MS)
-  const positions = useDataset(true, () => fetchPositions(client, serverId), INGEST_INTERVAL_MS)
-  const vehicles = useDataset(prefs.vehicles, () => fetchVehicles(client, serverId), INGEST_INTERVAL_MS)
+  const live = { liveMs: LIVE_POLL_MS, fullMs: INGEST_INTERVAL_MS }
+  const profiles = useLiveDataset({
+    enabled: true,
+    fetchFull: () => fetchPlayerProfiles(client, serverId),
+    fetchSince: (since) => fetchPlayerProfiles(client, serverId, since),
+    keyOf: (p) => p.username,
+    tOf: (p) => p.last_seen,
+    ...live,
+  })
+  const positions = useLiveDataset({
+    enabled: true,
+    fetchFull: () => fetchPositions(client, serverId),
+    fetchSince: (since) => fetchPositions(client, serverId, since),
+    keyOf: (p) => p.username,
+    tOf: (p) => p.t,
+    ...live,
+  })
+  const vehicles = useLiveDataset({
+    enabled: prefs.vehicles,
+    fetchFull: () => fetchVehicles(client, serverId),
+    fetchSince: (since) => fetchVehicles(client, serverId, since),
+    keyOf: (v) => String(v.vehicle_id),
+    tOf: (v) => v.t,
+    ...live,
+  })
   const safehouses = useDataset(prefs.safehouses, () => fetchSafehouses(client, serverId), SLOW_POLL_MS)
   const zones = useDataset(prefs.zones, () => fetchZones(client, serverId), VERY_SLOW_POLL_MS)
+  // The zombie grid changes once a minute (the exporter's zgrid cadence), so it stays at the ingest interval.
   const grid = useDataset(prefs.zombieHeat, () => fetchZombieGrid(client, serverId), INGEST_INTERVAL_MS)
   const objects = useDataset(prefs.mapObjects, () => fetchMapObjects(client, serverId), VERY_SLOW_POLL_MS)
   const visibility = useDataset(
@@ -51,7 +78,16 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
   // Dormant with the link feature (T21): no linked characters can exist, so a signed-in
   // viewer polling link_codes every minute would only ever read nothing.
   const myCodes = useDataset(LINK_FEATURE_ENABLED && user !== null, () => fetchMyLinkCodes(client), INGEST_INTERVAL_MS)
-  const healthSince = useDataset(true, () => fetchHealthSince(client, serverId, HEALTH_WINDOW_MINUTES), INGEST_INTERVAL_MS)
+  const healthSince = useLiveDataset({
+    enabled: true,
+    fetchFull: () => fetchHealthSince(client, serverId, HEALTH_WINDOW_MINUTES),
+    fetchSince: (since) => fetchHealthAfter(client, serverId, since),
+    keyOf: (s) => s.t,
+    tOf: (s) => s.t,
+    ...live,
+  })
+  // Only for "last report N minutes ago" once the series is empty; the series' own
+  // newest sample supersedes it whenever it is newer (below), so this stays at 60 s.
   const healthLatest = useDataset(
     true,
     async () => {
@@ -70,14 +106,19 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uid])
 
-  // Health series: filled entirely by polling health_samples (no push events). Each
-  // poll already returns the whole window, so the series is the fetch result as-is;
-  // `appendSample`'s only remaining job is trimming as the window slides between polls.
+  // Health series: filled entirely by polling health_samples (no push events). The
+  // full fetch returns the whole window and each delta appends to it, so the held rows
+  // only ever grow between full fetches; `appendSample` orders them and trims what
+  // has slid out of the window.
   const samples = useMemo(
     () => healthSince.data.reduce((acc, row) => appendSample(acc, row, HEALTH_WINDOW_MINUTES, now), [] as typeof healthSince.data),
     [healthSince.data, now],
   )
-  const latest = healthLatest.data[0] ?? null
+  const latest = useMemo(() => {
+    const candidates = [samples.at(-1), healthLatest.data[0]].filter((s) => s !== undefined)
+    const t = newestT(candidates, (s) => s.t)
+    return candidates.find((s) => s.t === t) ?? null
+  }, [samples, healthLatest.data])
 
   const own = useMemo(
     () => new Set(myCodes.data.filter((c) => c.consumed_at && c.username).map((c) => c.username as string)),

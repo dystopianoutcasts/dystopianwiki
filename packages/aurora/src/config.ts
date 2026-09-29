@@ -26,6 +26,13 @@ export const DEFAULT_TILES_BASE_URL = '/map/tiles'
  * constant: a later cron cadence change is then one edit here.
  */
 export const INGEST_INTERVAL_MS = 60_000
+/**
+ * T23: each ingest run now holds its SFTP session for ~55 s and writes a batch every
+ * 5 s, so positions, the roster, vehicles and health poll at this instead. Those polls
+ * are incremental (data/live.ts) with a full fetch every INGEST_INTERVAL_MS, which
+ * must stay a whole multiple of this.
+ */
+export const LIVE_POLL_MS = 10_000
 /** Safehouses change rarely; polled at 5x the ingest interval. */
 export const SLOW_POLL_MS = INGEST_INTERVAL_MS * 5
 /** Zones and map objects change rarer still; polled at 10x the ingest interval. */

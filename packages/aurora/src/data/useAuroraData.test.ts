@@ -42,8 +42,34 @@ describe('T19: the health series is wired to a poll, not a push', () => {
     expect(useAuroraData).not.toMatch(/onHealthSample|setLive\b/)
   })
 
-  it('the health dataset polls at INGEST_INTERVAL_MS, not a push-driven interval of null', () => {
-    const call = useAuroraData.match(/fetchHealthSince\([^)]*\)[\s\S]{0,80}/)?.[0] ?? ''
-    expect(call).toMatch(/INGEST_INTERVAL_MS/)
+  it('the health dataset polls, not a push-driven interval of null', () => {
+    // T23: a live dataset - the full window via fetchHealthSince, deltas via
+    // fetchHealthAfter, on the shared `live` intervals.
+    const call = useAuroraData.match(/const healthSince = useLiveDataset\(\{[\s\S]*?\}\)/)?.[0] ?? ''
+    expect(call).toMatch(/fetchFull: \(\) => fetchHealthSince\(/)
+    expect(call).toMatch(/fetchSince: \(since\) => fetchHealthAfter\(/)
+    expect(call).toMatch(/\.\.\.live/)
+  })
+})
+
+describe('T23: live datasets poll at LIVE_POLL_MS with an INGEST_INTERVAL_MS self-heal', () => {
+  it('the shared intervals are the two config constants', () => {
+    expect(useAuroraData).toMatch(/const live = \{ liveMs: LIVE_POLL_MS, fullMs: INGEST_INTERVAL_MS \}/)
+  })
+
+  it('positions, roster, vehicles and health are live datasets with a since-filtered delta', () => {
+    for (const [name, fn] of [
+      ['positions', 'fetchPositions'],
+      ['profiles', 'fetchPlayerProfiles'],
+      ['vehicles', 'fetchVehicles'],
+    ]) {
+      const call = useAuroraData.match(new RegExp(`const ${name} = useLiveDataset\\(\\{[\\s\\S]*?\\}\\)`))?.[0] ?? ''
+      expect(call, name).toMatch(new RegExp(`fetchSince: \\(since\\) => ${fn}\\(client, serverId, since\\)`))
+      expect(call, name).toMatch(/\.\.\.live/)
+    }
+  })
+
+  it('the zombie grid stays at the ingest interval', () => {
+    expect(useAuroraData).toMatch(/const grid = useDataset\([^\n]*INGEST_INTERVAL_MS\)/)
   })
 })

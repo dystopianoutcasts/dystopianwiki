@@ -35,35 +35,32 @@ export async function fetchVisibility(db: SupabaseClient): Promise<{ delayMinute
   }
 }
 
+// The live datasets (T23) take an optional `since`: with it, only rows strictly newer
+// than that timestamp come back, and the caller merges them (live.ts).
+
 /** Every player profile the map may show, online or not. Positions come from the view, which applies delay and rounding. */
-export function fetchPlayerProfiles(db: SupabaseClient, serverId: string): Promise<PlayerPublic[]> {
-  return rows<PlayerPublic>(
-    db
-      .from('players_public')
-      .select('server_id,username,display_name,last_seen,online,hours_survived,access_level,is_dead')
-      .eq('server_id', serverId),
-    'players',
-  )
+export function fetchPlayerProfiles(db: SupabaseClient, serverId: string, since?: string): Promise<PlayerPublic[]> {
+  const q = db
+    .from('players_public')
+    .select('server_id,username,display_name,last_seen,online,hours_survived,access_level,is_dead')
+    .eq('server_id', serverId)
+  return rows<PlayerPublic>(since ? q.gt('last_seen', since) : q, 'players')
 }
 
-export function fetchPositions(db: SupabaseClient, serverId: string): Promise<VisiblePosition[]> {
-  return rows<VisiblePosition>(
-    db
-      .from('player_positions_visible')
-      .select('server_id,username,x,y,z,t,vehicle_id,is_delayed,is_rounded')
-      .eq('server_id', serverId),
-    'positions',
-  )
+export function fetchPositions(db: SupabaseClient, serverId: string, since?: string): Promise<VisiblePosition[]> {
+  const q = db
+    .from('player_positions_visible')
+    .select('server_id,username,x,y,z,t,vehicle_id,is_delayed,is_rounded')
+    .eq('server_id', serverId)
+  return rows<VisiblePosition>(since ? q.gt('t', since) : q, 'positions')
 }
 
-export function fetchVehicles(db: SupabaseClient, serverId: string): Promise<Vehicle[]> {
-  return rows<Vehicle>(
-    db
-      .from('vehicles')
-      .select('server_id,vehicle_id,script_name,x,y,z,t,driver_username')
-      .eq('server_id', serverId),
-    'vehicles',
-  )
+export function fetchVehicles(db: SupabaseClient, serverId: string, since?: string): Promise<Vehicle[]> {
+  const q = db
+    .from('vehicles')
+    .select('server_id,vehicle_id,script_name,x,y,z,t,driver_username')
+    .eq('server_id', serverId)
+  return rows<Vehicle>(since ? q.gt('t', since) : q, 'vehicles')
 }
 
 export function fetchSafehouses(db: SupabaseClient, serverId: string): Promise<Safehouse[]> {
@@ -103,6 +100,19 @@ export function fetchHealthSince(db: SupabaseClient, serverId: string, minutes: 
       .select('server_id,t,players,zombies_total,zombies_loaded,zombies_simulated,tick_ms,tick_min_ms,tick_max_ms,memory_used,memory_max')
       .eq('server_id', serverId)
       .gte('t', since)
+      .order('t', { ascending: true }),
+    'health',
+  )
+}
+
+/** Samples strictly newer than `since`, oldest first: the health series' delta poll. */
+export function fetchHealthAfter(db: SupabaseClient, serverId: string, since: string): Promise<HealthSample[]> {
+  return rows<HealthSample>(
+    db
+      .from('health_samples')
+      .select('server_id,t,players,zombies_total,zombies_loaded,zombies_simulated,tick_ms,tick_min_ms,tick_max_ms,memory_used,memory_max')
+      .eq('server_id', serverId)
+      .gt('t', since)
       .order('t', { ascending: true }),
     'health',
   )
