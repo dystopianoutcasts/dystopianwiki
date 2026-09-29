@@ -1,3 +1,4 @@
+// Unused for now: the home page panel is a static map picture (2026-09-29); kept for a later live-status phase.
 /**
  * Data for the read-only "Server right now" panel on the home page
  * (components/landing/ServerNow.tsx). No realtime, no interaction: a snapshot

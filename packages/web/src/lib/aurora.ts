@@ -1,3 +1,4 @@
+// Unused for now: the home page panel is a static map picture (2026-09-29); kept for a later live-status phase.
 /**
  * Cached Supabase client for the `aurora` schema, used only by the read-only
  * "server right now" panel on the home page (components/landing/ServerNow.tsx).
