@@ -21,9 +21,45 @@ describe('T34: the top bar is gone', () => {
     expect(appSrc).not.toMatch(/SignInButtons/)
   })
 
-  it('the brand and account control now live in the side panel head instead', () => {
+  it('the side panel keeps its own title head', () => {
     expect(mapPageSrc).toMatch(/side-head/)
-    expect(mapPageSrc).toMatch(/<AccountControl/)
+  })
+})
+
+describe('T39: the site header replaces the account control in the side panel', () => {
+  it('MapPage.tsx no longer renders or imports AccountControl (it lives in the site header)', () => {
+    expect(mapPageSrc).not.toMatch(/AccountControl/)
+  })
+
+  it('App.tsx renders SiteHeader after the skip link and before <main>', () => {
+    expect(appSrc).toMatch(/className="skip-link"[\s\S]*<SiteHeader \/>[\s\S]*<main id="main"/)
+  })
+
+  it('the skip link moves focus itself instead of changing the HashRouter route to "main"', () => {
+    expect(appSrc).toMatch(/onClick=\{skipToMain\}/)
+    expect(appSrc).toMatch(/e\.preventDefault\(\)/)
+    expect(appSrc).toMatch(/<main id="main" tabIndex=\{-1\}>/)
+  })
+})
+
+describe('T39: the map opens on Rosewood at zoom 15', () => {
+  const m = mapPageSrc.match(/const DEFAULT_VIEW: View = \{ x: (\d+), y: (\d+), zoom: (\d+) \}/)
+
+  it('DEFAULT_VIEW is a literal the test can read', () => {
+    expect(m).not.toBeNull()
+  })
+
+  it('is Rosewood from areas.json (x 8350, y 11750)', () => {
+    expect(Number(m?.[1])).toBe(8350)
+    expect(Number(m?.[2])).toBe(11750)
+  })
+
+  it('is zoom 15, the owner\'s number', () => {
+    expect(Number(m?.[3])).toBe(15)
+  })
+
+  it('a position in the link still wins: DEFAULT_VIEW is only parseView\'s fallback', () => {
+    expect(mapPageSrc).toMatch(/parseView\(window\.location\.search, DEFAULT_VIEW,/)
   })
 })
 

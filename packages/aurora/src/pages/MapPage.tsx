@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import { useIsAdmin } from '../auth/useIsAdmin'
-import { AccountControl } from '../auth/AccountControl'
 import { getAurora } from '../lib/supabase'
 import { MapView, MIN_ZOOM } from '../map/MapView'
 import type { TilesConfig } from '../map/tiles'
@@ -32,7 +31,9 @@ import { LINK_FEATURE_ENABLED } from '../config'
 import { playersNote } from './playersNote'
 import { SEARCH_STREET_ZOOM, SEARCH_PLAYER_ZOOM } from '../map/MapView'
 
-const DEFAULT_VIEW: View = { x: 10770, y: 10271, zoom: 9 }
+// Rosewood (public/data/areas.json: x 8350, y 11750) at zoom 15, one pixel per square:
+// the owner's opening view (T39). A position in the link (?x=&y=&zoom=) still wins.
+const DEFAULT_VIEW: View = { x: 8350, y: 11750, zoom: 15 }
 
 function useStreets(): { streets: StreetRaw[]; error: string | null } {
   const [streets, setStreets] = useState<StreetRaw[]>([])
@@ -248,7 +249,6 @@ export function MapPage() {
       <aside id="aurora-side" className={sheetOpen ? 'aurora-side open' : 'aurora-side'} aria-label="Server information">
         <div className="side-head">
           <span className="brand">Aurora</span>
-          <AccountControl />
         </div>
         <p className="rt-status" role="status">{statusText}</p>
         <StreetSearch streets={streets} onSelect={onSelectStreet} />
