@@ -56,6 +56,9 @@ supabase db push
 | `012_aurora_cron.sql` | OutcastAurora: pg_cron + pg_net and the ingest job enable/disable helpers (job left unscheduled) |
 | `013_request_log_rls.sql` | Enable RLS on `public.request_log` and revoke its anon/authenticated grants |
 | `014_aurora_tick_ms.sql` | OutcastAurora: rename `health_samples.avg_update_period_ms` to `tick_ms`, add `tick_min_ms`/`tick_max_ms` |
+| `015_aurora_cron_bearer.sql` | OutcastAurora: `aurora.ingest_bearer()` raises on a missing or empty Vault secret so the ingest cron fails loudly instead of posting an empty bearer |
+| `016_aurora_ingest_lock.sql` | OutcastAurora: `aurora.ingest_lock` row lease so only one ingest run holds the log at a time, and a cron timeout long enough for the whole run |
+| `017_versioned_slugs.sql` | Articles unique per `(game, version, slug)` instead of `slug`; `categories.version` added and the primary key moved to `(game, version, section, id)`; category counts per version |
 
 Apply 008 through 012 strictly in that order: 009 calls helper functions defined at
 the bottom of 008, and 010 depends on the grants in 009.
@@ -76,6 +79,28 @@ about 5% of the cycle time. The real tick duration is the performance counter
 named `fps`, in milliseconds, despite the name. The `COMMENT ON COLUMN` entries
 in 014 carry the full provenance; read them before changing what feeds these
 columns.
+
+### 017 apply notes
+
+017 lets Build 41 and Build 42 articles share a slug. It replaces the
+`UNIQUE (slug)` constraint on `articles` with `UNIQUE (game, version, slug)`,
+adds `categories.version` (existing rows become `build-41`), moves the
+`categories` primary key to `(game, version, section, id)`, and rewrites
+`update_category_article_count()` to count per version (it also fixes the
+delete trigger, which never lowered a count).
+
+- `scripts/sync-articles.ts` must be the updated version before 017 is applied:
+  it upserts with `onConflict: 'game,version,slug'`, and the old script's
+  `onConflict: 'slug'` fails once the slug-only constraint is gone. Both changes
+  are committed together.
+- Nothing else depends on the old constraints: no foreign key references
+  `categories`, and `bookmarks` / `reading_progress` reference `articles.id`,
+  which stays the primary key. The migration aborts rather than cascading if a
+  foreign key to `categories` ever appears.
+- Do not re-run `005_initial_data.sql` afterwards: its `ON CONFLICT (id)` no
+  longer matches a unique constraint. `npx tsx scripts/build-nav.ts --db` writes
+  `categories` from now on.
+- The file is one transaction and idempotent; running it twice is a no-op.
 
 ### CLI migration history
 
@@ -139,7 +164,7 @@ first failure.
 ```
 articles
 ├── id (TEXT, PK)
-├── slug (TEXT, UNIQUE)
+├── slug (TEXT, UNIQUE per game + version since 017)
 ├── title (TEXT)
 ├── content (TEXT)
 ├── excerpt (TEXT)
@@ -149,8 +174,7 @@ articles
 └── version (UUID, ETag for caching)
 
 categories
-├── id (TEXT, PK)
-├── game, section (TEXT)
+├── game, version, section, id (TEXT, composite PK since 017)
 ├── name, description (TEXT)
 └── article_count (INTEGER, auto-updated)
 
