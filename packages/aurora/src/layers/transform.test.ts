@@ -7,6 +7,7 @@ import {
   buildSparkline,
   describeAge,
   describeDuration,
+  findablePlayers,
   heatPoints,
   playerFeatures,
   safehouseFeatures,
@@ -55,6 +56,57 @@ describe('player features', () => {
 
   it('an anonymous caller who is shown no rows gets no markers', () => {
     expect(playerFeatures([], [prof()])).toEqual([])
+  })
+})
+
+describe('findablePlayers (T38)', () => {
+  it('excludes an offline player even with a position row', () => {
+    const out = findablePlayers([pos()], [prof({ online: false })])
+    expect(out).toEqual([])
+  })
+
+  it('excludes a dead player', () => {
+    const out = findablePlayers([pos()], [prof({ is_dead: true })])
+    expect(out).toEqual([])
+  })
+
+  it('excludes an online player with no position row', () => {
+    const out = findablePlayers([], [prof()])
+    expect(out).toEqual([])
+  })
+
+  it('uses display_name, falling back to username only when there is none', () => {
+    const [withName] = findablePlayers([pos()], [prof()])
+    expect(withName.name).toBe('Alice W')
+    const [withoutName] = findablePlayers([pos({ username: 'bob' })], [prof({ username: 'bob', display_name: null })])
+    expect(withoutName.name).toBe('bob')
+  })
+
+  it('sorts by name, case-insensitive', () => {
+    const out = findablePlayers(
+      [pos({ username: 'bob' }), pos({ username: 'alice' })],
+      [prof({ username: 'bob', display_name: 'zed' }), prof({ username: 'alice', display_name: 'Amy' })],
+    )
+    expect(out.map((p) => p.name)).toEqual(['Amy', 'zed'])
+  })
+
+  it('numbers duplicate names, in a stable order by key', () => {
+    const out = findablePlayers(
+      [pos({ username: 'zed' }), pos({ username: 'amy' })],
+      [prof({ username: 'zed', display_name: 'Same Name' }), prof({ username: 'amy', display_name: 'Same Name' })],
+    )
+    // 'amy' sorts before 'zed' by key, so amy keeps the bare name and zed gets " (2)",
+    // regardless of the order the two rows were passed in.
+    expect(out.find((p) => p.key === 'amy')?.name).toBe('Same Name')
+    expect(out.find((p) => p.key === 'zed')?.name).toBe('Same Name (2)')
+  })
+
+  it('key never equals the displayed name unless there is no display name', () => {
+    const [f] = findablePlayers([pos()], [prof()])
+    expect(f.key).toBe('alice')
+    expect(f.key).not.toBe(f.name)
+    const [g] = findablePlayers([pos({ username: 'bob' })], [prof({ username: 'bob', display_name: null })])
+    expect(g.key).toBe(g.name)
   })
 })
 

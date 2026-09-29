@@ -12,6 +12,7 @@ import type { LayerKey } from '../state/layerPrefs'
 import { useAuroraData } from '../data/useAuroraData'
 import {
   areaFeatures,
+  findablePlayers,
   heatPoints,
   objectFeatures,
   playerFeatures,
@@ -26,9 +27,10 @@ import { HealthPanel } from '../panels/Health'
 import { RosterPanel } from '../panels/Roster'
 import { LayerToggles } from '../panels/LayerToggles'
 import { StreetSearch } from '../panels/StreetSearch'
+import { FindPlayer } from '../panels/FindPlayer'
 import { LINK_FEATURE_ENABLED } from '../config'
 import { playersNote } from './playersNote'
-import { SEARCH_STREET_ZOOM } from '../map/MapView'
+import { SEARCH_STREET_ZOOM, SEARCH_PLAYER_ZOOM } from '../map/MapView'
 
 const DEFAULT_VIEW: View = { x: 10770, y: 10271, zoom: 9 }
 
@@ -156,6 +158,7 @@ export function MapPage() {
   const worldMap = useMemo(() => worldMapFeatures(rawWorldMap), [rawWorldMap])
   const areas = useMemo(() => areaFeatures(rawAreas), [rawAreas])
   const players = useMemo(() => playerFeatures(positions.data, profiles.data), [positions.data, profiles.data])
+  const findable = useMemo(() => findablePlayers(positions.data, profiles.data), [positions.data, profiles.data])
   const vehicleList = useMemo(() => vehicleFeatures(vehicles.data), [vehicles.data])
   const safehouseList = useMemo(() => safehouseFeatures(safehouses.data), [safehouses.data])
   const zoneList = useMemo(() => zoneFeatures(zones.data), [zones.data])
@@ -249,6 +252,7 @@ export function MapPage() {
         </div>
         <p className="rt-status" role="status">{statusText}</p>
         <StreetSearch streets={streets} onSelect={onSelectStreet} />
+        <FindPlayer players={findable} onSelect={(pos) => setFlyTo({ x: pos.x, y: pos.y, zoom: SEARCH_PLAYER_ZOOM })} />
         <RosterPanel profiles={profiles.data} error={profiles.error} />
         {isAdmin ? <HealthPanel latest={latest} samples={samples} error={healthError} now={now} /> : null}
         <LayerToggles prefs={prefs} onChange={setLayer} notes={notes} />

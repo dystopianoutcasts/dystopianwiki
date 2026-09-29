@@ -35,6 +35,54 @@ export function playerFeatures(positions: VisiblePosition[], profiles: PlayerPub
   return out
 }
 
+export interface FindablePlayer {
+  /** Opaque identifier for the control's own bookkeeping - never rendered. Today the
+   * username; T27 replaces it with a public id in this one place. */
+  key: string
+  name: string
+  x: number
+  y: number
+}
+
+/**
+ * T38: the list `panels/FindPlayer.tsx` offers. Built from exactly the same two
+ * datasets `playerFeatures` already has (`profiles.data`, `positions.data`) - no new
+ * query. A player can be online with no position row (VISIBILITY.md: a position is only
+ * ever written for a live, tracked character); such a player cannot be found on the map
+ * and is not offered here, same as `playerFeatures` never draws one. Two characters can
+ * share a display name, so a duplicate gets " (2)", " (3)" appended - assigned in a
+ * stable order by `key` (not raw input order, which is not guaranteed stable) so the
+ * numbering does not flap between refreshes while both stay online.
+ */
+export function findablePlayers(positions: VisiblePosition[], profiles: PlayerPublic[]): FindablePlayer[] {
+  const posByUsername = new Map(positions.map((p) => [p.username, p]))
+  type Candidate = { key: string; baseName: string; x: number; y: number }
+  const candidates: Candidate[] = []
+  for (const profile of profiles) {
+    if (!profile.online || profile.is_dead) continue
+    const pos = posByUsername.get(profile.username)
+    if (!pos) continue
+    candidates.push({ key: profile.username, baseName: profile.display_name || profile.username, x: pos.x, y: pos.y })
+  }
+
+  const byName = new Map<string, Candidate[]>()
+  for (const c of candidates) {
+    if (!byName.has(c.baseName)) byName.set(c.baseName, [])
+    byName.get(c.baseName)!.push(c)
+  }
+
+  const out: FindablePlayer[] = []
+  for (const group of byName.values()) {
+    group.sort((a, b) => a.key.localeCompare(b.key))
+    group.forEach((c, i) => {
+      out.push({ key: c.key, name: i === 0 ? c.baseName : `${c.baseName} (${i + 1})`, x: c.x, y: c.y })
+    })
+  }
+
+  out.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
+  return out
+}
+
 export interface VehicleFeature {
   key: string
   label: string

@@ -13,6 +13,7 @@ const signInDialogSrc = readFileSync(fileURLToPath(new URL('../auth/SignInDialog
 // be imported under this suite's node environment (see data/useAuroraData.test.ts's
 // header comment) - its exported numeric constants are asserted on as source text too.
 const mapViewSrc = readFileSync(fileURLToPath(new URL('../map/MapView.tsx', import.meta.url)), 'utf8')
+const findPlayerSrc = readFileSync(fileURLToPath(new URL('../panels/FindPlayer.tsx', import.meta.url)), 'utf8')
 
 describe('T34: the top bar is gone', () => {
   it('App.tsx has no aurora-header and does not import SignInButtons', () => {
@@ -68,5 +69,31 @@ describe('T42: a street search result uses the fixed search zoom, not the old br
     const m = mapViewSrc.match(/export const SEARCH_STREET_ZOOM = (\d+)/)
     expect(m).not.toBeNull()
     expect(Number(m?.[1])).toBe(15)
+  })
+})
+
+describe('T38: find a player', () => {
+  it('FindPlayer.tsx labels its select with a <label htmlFor> tied to the select\'s id', () => {
+    expect(findPlayerSrc).toMatch(/<label htmlFor="find-player-select">/)
+    expect(findPlayerSrc).toMatch(/id="find-player-select"/)
+  })
+
+  it('FindPlayer.tsx never renders a raw username - only `name` and the opaque `key`', () => {
+    expect(findPlayerSrc).not.toMatch(/username/)
+  })
+
+  it('each option shows the player\'s name, never the opaque key, as its visible text', () => {
+    expect(findPlayerSrc).toMatch(/<option key=\{p\.key\} value=\{p\.key\}>\{p\.name\}<\/option>/)
+  })
+
+  it('MapPage.tsx wires FindPlayer to SEARCH_PLAYER_ZOOM', () => {
+    expect(mapPageSrc).toMatch(/<FindPlayer/)
+    expect(mapPageSrc).toMatch(/SEARCH_PLAYER_ZOOM/)
+  })
+
+  it('MapView.tsx defines SEARCH_PLAYER_ZOOM as 17, the owner\'s number', () => {
+    const m = mapViewSrc.match(/export const SEARCH_PLAYER_ZOOM = (\d+)/)
+    expect(m).not.toBeNull()
+    expect(Number(m?.[1])).toBe(17)
   })
 })

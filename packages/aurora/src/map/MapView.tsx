@@ -50,6 +50,14 @@ export const STREETS_MIN_ZOOM = MIN_ZOOM + 2
  */
 export const SEARCH_STREET_ZOOM = 15
 
+/**
+ * T38: a "find a player" result flies here - the map's own maximum (owner's number).
+ * Above the pyramid's native levels (15), so 16 and 17 both stretch the zoom-15 tiles
+ * rather than showing sharper ones; the owner asked for 17 anyway, close enough to
+ * read a single marker clearly without needing a new native render level.
+ */
+export const SEARCH_PLAYER_ZOOM = 17
+
 interface Props {
   cfg: TilesConfig
   tilesBase?: string
