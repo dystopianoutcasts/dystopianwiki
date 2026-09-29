@@ -574,6 +574,127 @@ BEGIN
 END;
 $$;
 
+-- ============================================================================
+-- 9. INGEST LOCK AND CRON TIMEOUT (migration 016)
+-- ============================================================================
+--
+-- T23 runs hold the SFTP session for ~55 s and re-read every 5 s, so two
+-- overlapping runs would read the same bytes twice and duplicate the
+-- append-only player_position_history. aurora.ingest_lock() must refuse a
+-- second holder, let a claim expire, and release only for its holder.
+--
+-- The live ingest may hold the lock while this file runs, so the row is
+-- deleted first. That DELETE is inside this file's one transaction and is
+-- undone by the ROLLBACK at the bottom; a live run calling ingest_lock()
+-- meanwhile waits on the row lock for the few seconds this takes, then carries
+-- on as if nothing happened.
+--
+-- now() is frozen for the whole transaction, so expiry is simulated by
+-- back-dating expires_at as postgres, not by waiting.
+
+DELETE FROM aurora.ingest_lock;
+
+SET LOCAL ROLE service_role;
+
+DO $$
+BEGIN
+  IF NOT aurora.ingest_lock('t23-run-a', 90) THEN
+    RAISE EXCEPTION 'FAIL: a free lock was refused to run a';
+  END IF;
+  IF aurora.ingest_lock('t23-run-b', 90) THEN
+    RAISE EXCEPTION 'FAIL: run b was granted the lock while run a holds it';
+  END IF;
+  IF NOT aurora.ingest_lock('t23-run-a', 90) THEN
+    RAISE EXCEPTION 'FAIL: the holder could not renew its own claim';
+  END IF;
+  IF aurora.ingest_unlock('t23-run-b') THEN
+    RAISE EXCEPTION 'FAIL: run b released a lock it does not hold';
+  END IF;
+  IF (SELECT run_id FROM aurora.ingest_lock) IS DISTINCT FROM 't23-run-a' THEN
+    RAISE EXCEPTION 'FAIL: the lock row does not name run a after the refusals';
+  END IF;
+  RAISE NOTICE 'PASS ingest_lock refuses a second holder while the first holds it';
+END;
+$$;
+
+RESET ROLE;
+UPDATE aurora.ingest_lock SET expires_at = now() - INTERVAL '1 second';
+SET LOCAL ROLE service_role;
+
+DO $$
+BEGIN
+  IF NOT aurora.ingest_lock('t23-run-b', 90) THEN
+    RAISE EXCEPTION 'FAIL: an expired claim was not taken over';
+  END IF;
+  -- Run a outlived its claim; on the way out it must not free run b's lock.
+  IF aurora.ingest_unlock('t23-run-a') THEN
+    RAISE EXCEPTION 'FAIL: the expired former holder released its successor''s lock';
+  END IF;
+  IF NOT aurora.ingest_unlock('t23-run-b') THEN
+    RAISE EXCEPTION 'FAIL: the holder could not release';
+  END IF;
+  IF EXISTS (SELECT 1 FROM aurora.ingest_lock) THEN
+    RAISE EXCEPTION 'FAIL: the lock row survived its release';
+  END IF;
+  IF NOT aurora.ingest_lock('t23-run-c', 90) THEN
+    RAISE EXCEPTION 'FAIL: a released lock was refused';
+  END IF;
+  RAISE NOTICE 'PASS ingest_lock expires, is taken over, and releases only for its holder';
+END;
+$$;
+
+RESET ROLE;
+
+DO $$
+DECLARE
+  v_raised BOOLEAN := FALSE;
+BEGIN
+  BEGIN
+    PERFORM aurora.ingest_lock('bad', 0);
+  EXCEPTION WHEN OTHERS THEN
+    v_raised := TRUE;
+  END;
+  IF NOT v_raised THEN
+    RAISE EXCEPTION 'FAIL: ingest_lock accepted a zero TTL';
+  END IF;
+  RAISE NOTICE 'PASS ingest_lock rejects a zero TTL';
+END;
+$$;
+
+SET LOCAL ROLE anon;
+
+DO $$
+DECLARE
+  v_denied BOOLEAN := FALSE;
+BEGIN
+  BEGIN
+    PERFORM aurora.ingest_lock('anon-run', 90);
+  EXCEPTION WHEN insufficient_privilege THEN
+    v_denied := TRUE;
+  END;
+  IF NOT v_denied THEN
+    RAISE EXCEPTION 'FAIL: anon can call aurora.ingest_lock';
+  END IF;
+  RAISE NOTICE 'PASS anon cannot take the ingest lock';
+END;
+$$;
+
+RESET ROLE;
+
+DO $$
+BEGIN
+  IF pg_get_functiondef('aurora.enable_ingest_cron(text)'::regprocedure)
+       NOT LIKE '%timeout_milliseconds := 58000%' THEN
+    RAISE EXCEPTION 'FAIL: enable_ingest_cron does not schedule the 58 s pg_net timeout';
+  END IF;
+  IF pg_get_functiondef('aurora.enable_ingest_cron(text)'::regprocedure)
+       NOT LIKE '%aurora.ingest_bearer()%' THEN
+    RAISE EXCEPTION 'FAIL: enable_ingest_cron lost the 015 bearer resolver';
+  END IF;
+  RAISE NOTICE 'PASS enable_ingest_cron schedules timeout 58000 with the 015 bearer';
+END;
+$$;
+
 DO $$ BEGIN RAISE NOTICE 'ALL AURORA POLICY TESTS PASSED'; END; $$;
 
 ROLLBACK;
