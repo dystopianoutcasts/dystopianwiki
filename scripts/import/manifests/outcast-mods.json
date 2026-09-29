@@ -5,7 +5,10 @@
     "version": "build-42",
     "difficulty": "beginner",
     "target": "articles",
-    "provenance": { "compiled": "2026-08-10", "game_version": "42.20" }
+    "provenance": {
+      "compiled": "2026-08-10",
+      "game_version": "42.20"
+    }
   },
   "entries": [
     {
@@ -15,9 +18,16 @@
       "slug": "outcast-911",
       "title": "Outcast 911",
       "split": "none",
-      "tags": ["outcast-911", "vehicles", "overview"],
+      "tags": [
+        "outcast-911",
+        "vehicles",
+        "overview"
+      ],
       "difficulty": "beginner",
-      "provenance": { "compiled": "2026-08-10", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-10",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastHearing/README.md",
@@ -26,9 +36,16 @@
       "slug": "outcast-hearing",
       "title": "Outcast Hearing",
       "split": "none",
-      "tags": ["outcast-hearing", "hearing", "overview"],
+      "tags": [
+        "outcast-hearing",
+        "hearing",
+        "overview"
+      ],
       "difficulty": "beginner",
-      "provenance": { "compiled": "2026-08-10", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-10",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastHusbandry/README.md",
@@ -37,9 +54,16 @@
       "slug": "outcast-husbandry",
       "title": "Outcast Husbandry",
       "split": "none",
-      "tags": ["outcast-husbandry", "animals", "overview"],
+      "tags": [
+        "outcast-husbandry",
+        "animals",
+        "overview"
+      ],
       "difficulty": "beginner",
-      "provenance": { "compiled": "2026-09-24", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-09-24",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastHusbandry/docs/MULTIPLAYER.md",
@@ -49,9 +73,16 @@
       "title": "Outcast Husbandry -- multiplayer",
       "strip_header_until": "^# ",
       "split": "none",
-      "tags": ["outcast-husbandry", "multiplayer", "animals"],
+      "tags": [
+        "outcast-husbandry",
+        "multiplayer",
+        "animals"
+      ],
       "difficulty": "intermediate",
-      "provenance": { "compiled": "2026-09-24", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-09-24",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastLadders/README.md",
@@ -60,9 +91,16 @@
       "slug": "outcast-ladders",
       "title": "Outcast Ladders",
       "split": "none",
-      "tags": ["outcast-ladders", "ladders", "overview"],
+      "tags": [
+        "outcast-ladders",
+        "ladders",
+        "overview"
+      ],
       "difficulty": "beginner",
-      "provenance": { "compiled": "2026-08-04", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-04",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastLadders/docs/ENGINE.md",
@@ -72,9 +110,16 @@
       "title": "Outcast Ladders -- engine notes",
       "strip_header_until": "^# ",
       "split": "none",
-      "tags": ["outcast-ladders", "engine", "sheet-rope"],
+      "tags": [
+        "outcast-ladders",
+        "engine",
+        "sheet-rope"
+      ],
       "difficulty": "advanced",
-      "provenance": { "compiled": "2026-08-04", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-04",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastLadders/docs/ANIMATION.md",
@@ -84,9 +129,16 @@
       "title": "Outcast Ladders -- animation",
       "strip_header_until": "^# ",
       "split": "h2",
-      "tags": ["outcast-ladders", "animation", "clips"],
+      "tags": [
+        "outcast-ladders",
+        "animation",
+        "clips"
+      ],
       "difficulty": "advanced",
-      "provenance": { "compiled": "2026-08-04", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-04",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastLib/README.md",
@@ -95,9 +147,16 @@
       "slug": "outcast-lib",
       "title": "Outcast Lib",
       "split": "none",
-      "tags": ["outcast-lib", "shared-runtime", "overview"],
+      "tags": [
+        "outcast-lib",
+        "shared-runtime",
+        "overview"
+      ],
       "difficulty": "beginner",
-      "provenance": { "compiled": "2026-08-10", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-10",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastLib/docs/API.md",
@@ -107,12 +166,26 @@
       "title": "Outcast Lib -- API reference",
       "strip_header_until": "^# ",
       "split": "h2",
-      "tags": ["outcast-lib", "api", "ol-init", "containers"],
+      "tags": [
+        "outcast-lib",
+        "api",
+        "ol-init",
+        "containers"
+      ],
       "difficulty": "advanced",
-      "provenance": { "compiled": "2026-09-08", "game_version": "42.20" },
+      "provenance": {
+        "compiled": "2026-09-08",
+        "game_version": "42.20"
+      },
       "parts": {
-        "The log now goes to `Logs/`, which is the folder you can actually download": { "slug": "log-file-location", "title": "Where the log file goes" },
-        "Where a log line has to go to be READABLE, which is not where you think": { "slug": "log-line-visibility", "title": "Where a log line has to go to be readable" }
+        "The log now goes to `Logs/`, which is the folder you can actually download": {
+          "slug": "log-file-location",
+          "title": "Where the log file goes"
+        },
+        "Where a log line has to go to be READABLE, which is not where you think": {
+          "slug": "log-line-visibility",
+          "title": "Where a log line has to go to be readable"
+        }
       }
     },
     {
@@ -123,9 +196,16 @@
       "title": "Outcast Lib -- logging integration",
       "strip_header_until": "^# ",
       "split": "none",
-      "tags": ["outcast-lib", "logging", "multiplayer"],
+      "tags": [
+        "outcast-lib",
+        "logging",
+        "multiplayer"
+      ],
       "difficulty": "intermediate",
-      "provenance": { "compiled": "2026-09-08", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-09-08",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastLightLoad/README.md",
@@ -134,9 +214,16 @@
       "slug": "outcast-light-load",
       "title": "Outcast Light Load",
       "split": "none",
-      "tags": ["outcast-light-load", "resource-weights", "overview"],
+      "tags": [
+        "outcast-light-load",
+        "resource-weights",
+        "overview"
+      ],
       "difficulty": "beginner",
-      "provenance": { "compiled": "2026-08-10", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-10",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastMotors/README.md",
@@ -145,9 +232,17 @@
       "slug": "outcast-motors",
       "title": "Outcast Motors",
       "split": "none",
-      "tags": ["outcast-motors", "vehicles", "engine-bay", "overview"],
+      "tags": [
+        "outcast-motors",
+        "vehicles",
+        "engine-bay",
+        "overview"
+      ],
       "difficulty": "beginner",
-      "provenance": { "compiled": "2026-09-05", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-09-05",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastMotorsAnimated/README.md",
@@ -156,9 +251,17 @@
       "slug": "outcast-motors-animated",
       "title": "Outcast Motors Animated",
       "split": "none",
-      "tags": ["outcast-motors-animated", "vehicles", "animation", "overview"],
+      "tags": [
+        "outcast-motors-animated",
+        "vehicles",
+        "animation",
+        "overview"
+      ],
       "difficulty": "beginner",
-      "provenance": { "compiled": "2026-09-27", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-09-27",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastMotorsUI/README.md",
@@ -167,9 +270,17 @@
       "slug": "outcast-motors-ui",
       "title": "Outcast Motors UI",
       "split": "none",
-      "tags": ["outcast-motors-ui", "vehicles", "ui", "overview"],
+      "tags": [
+        "outcast-motors-ui",
+        "vehicles",
+        "ui",
+        "overview"
+      ],
       "difficulty": "beginner",
-      "provenance": { "compiled": "2026-09-28", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-09-28",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastProximity/README.md",
@@ -178,9 +289,16 @@
       "slug": "outcast-proximity",
       "title": "Outcast Proximity",
       "split": "none",
-      "tags": ["outcast-proximity", "inventory", "overview"],
+      "tags": [
+        "outcast-proximity",
+        "inventory",
+        "overview"
+      ],
       "difficulty": "beginner",
-      "provenance": { "compiled": "2026-08-06", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-06",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastPunch/README.md",
@@ -189,9 +307,16 @@
       "slug": "outcast-punch",
       "title": "Outcast Punch",
       "split": "none",
-      "tags": ["outcast-punch", "combat", "overview"],
+      "tags": [
+        "outcast-punch",
+        "combat",
+        "overview"
+      ],
       "difficulty": "beginner",
-      "provenance": { "compiled": "2026-08-06", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-06",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastPunch/docs/ENGINE.md",
@@ -201,9 +326,17 @@
       "title": "Outcast Punch -- engine notes",
       "strip_header_until": "^# ",
       "split": "none",
-      "tags": ["outcast-punch", "engine", "combat", "animation"],
+      "tags": [
+        "outcast-punch",
+        "engine",
+        "combat",
+        "animation"
+      ],
       "difficulty": "advanced",
-      "provenance": { "compiled": "2026-08-25", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-25",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastPunch/docs/MULTIPLAYER.md",
@@ -213,9 +346,16 @@
       "title": "Outcast Punch -- multiplayer",
       "strip_header_until": "^# ",
       "split": "none",
-      "tags": ["outcast-punch", "multiplayer", "combat"],
+      "tags": [
+        "outcast-punch",
+        "multiplayer",
+        "combat"
+      ],
       "difficulty": "intermediate",
-      "provenance": { "compiled": "2026-08-25", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-25",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastRipAll/README.md",
@@ -224,9 +364,16 @@
       "slug": "outcast-rip-all",
       "title": "Outcast Rip All",
       "split": "none",
-      "tags": ["outcast-rip-all", "crafting", "overview"],
+      "tags": [
+        "outcast-rip-all",
+        "crafting",
+        "overview"
+      ],
       "difficulty": "beginner",
-      "provenance": { "compiled": "2026-08-07", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-07",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastRipAll/docs/ENGINE.md",
@@ -236,9 +383,16 @@
       "title": "Outcast Rip All -- engine notes",
       "strip_header_until": "^# ",
       "split": "none",
-      "tags": ["outcast-rip-all", "engine", "context-menu"],
+      "tags": [
+        "outcast-rip-all",
+        "engine",
+        "context-menu"
+      ],
       "difficulty": "advanced",
-      "provenance": { "compiled": "2026-08-04", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-04",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastSawAll/README.md",
@@ -247,9 +401,16 @@
       "slug": "outcast-saw-all",
       "title": "Outcast Saw All",
       "split": "none",
-      "tags": ["outcast-saw-all", "crafting", "overview"],
+      "tags": [
+        "outcast-saw-all",
+        "crafting",
+        "overview"
+      ],
       "difficulty": "beginner",
-      "provenance": { "compiled": "2026-08-06", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-06",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastSawAll/docs/ENGINE.md",
@@ -259,9 +420,16 @@
       "title": "Outcast Saw All -- engine notes",
       "strip_header_until": "^# ",
       "split": "none",
-      "tags": ["outcast-saw-all", "engine", "context-menu"],
+      "tags": [
+        "outcast-saw-all",
+        "engine",
+        "context-menu"
+      ],
       "difficulty": "advanced",
-      "provenance": { "compiled": "2026-08-04", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-04",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastStowAll/README.md",
@@ -270,9 +438,16 @@
       "slug": "outcast-stow-all",
       "title": "Outcast Stow All",
       "split": "none",
-      "tags": ["outcast-stow-all", "inventory", "overview"],
+      "tags": [
+        "outcast-stow-all",
+        "inventory",
+        "overview"
+      ],
       "difficulty": "beginner",
-      "provenance": { "compiled": "2026-08-06", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-06",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastUpright/README.md",
@@ -281,9 +456,16 @@
       "slug": "outcast-upright",
       "title": "Outcast Upright",
       "split": "none",
-      "tags": ["outcast-upright", "vehicles", "overview"],
+      "tags": [
+        "outcast-upright",
+        "vehicles",
+        "overview"
+      ],
       "difficulty": "beginner",
-      "provenance": { "compiled": "2026-08-10", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-10",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "OutcastUpright/docs/ENGINE.md",
@@ -293,9 +475,16 @@
       "title": "Outcast Upright -- engine notes",
       "strip_header_until": "^# ",
       "split": "none",
-      "tags": ["outcast-upright", "engine", "vehicles"],
+      "tags": [
+        "outcast-upright",
+        "engine",
+        "vehicles"
+      ],
       "difficulty": "advanced",
-      "provenance": { "compiled": "2026-08-15", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-15",
+        "game_version": "42.20"
+      }
     },
     {
       "source": "PRINCIPLES.md",
@@ -305,9 +494,19 @@
       "title": "Outcast mod family -- principles",
       "strip_header_until": "^# ",
       "split": "none",
-      "tags": ["outcast-mods", "principles", "family"],
+      "tags": [
+        "outcast-mods",
+        "principles",
+        "family"
+      ],
       "difficulty": "beginner",
-      "provenance": { "compiled": "2026-08-10", "game_version": "42.20" }
+      "provenance": {
+        "compiled": "2026-08-10",
+        "game_version": "42.20"
+      },
+      "skip_headings": [
+        "Provenance"
+      ]
     }
   ]
 }
