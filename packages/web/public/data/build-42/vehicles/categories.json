@@ -1,0 +1,28 @@
+{
+  "categories": [
+    {
+      "id": "reference",
+      "name": "Reference",
+      "description": "The verified Build 42 vehicle API, engine hooks, UI, and lessons learned building vehicle mods.",
+      "icon": "car",
+      "articleCount": 6,
+      "displayOrder": 1
+    },
+    {
+      "id": "animation",
+      "name": "Animation",
+      "description": "How to make a Build 42 vehicle part visibly animate, and the silent-failure catalogue behind it.",
+      "icon": "gear",
+      "articleCount": 12,
+      "displayOrder": 2
+    },
+    {
+      "id": "mod-studies",
+      "name": "Mod studies",
+      "description": "What Project Summer Car, the physics mods and the wider community vehicle mods actually do, read from their shipped files.",
+      "icon": "car",
+      "articleCount": 29,
+      "displayOrder": 3
+    }
+  ]
+}

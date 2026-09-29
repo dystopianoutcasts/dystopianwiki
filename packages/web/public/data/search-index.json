@@ -1876,5 +1876,4713 @@
     ],
     "excerpt": "Complete reference of 73 repairable weapons in Project Zomboid - organized by category with fixer items, skill requirements, and patterns for creating repairable custom weapons.",
     "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-buildings-and-buildinged",
+    "title": "Buildings and BuildingEd",
+    "slug": "buildings-and-buildinged",
+    "url": "/pz/build-42/mapping/buildings-and-tiles/buildings-and-buildinged",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "buildings-and-tiles",
+    "tags": [
+      "buildinged",
+      "room-templates",
+      "basements",
+      "building-checklist"
+    ],
+    "excerpt": "BuildingEd is now a standalone executable in bin/, with its own red B icon, sharing the TileZed libraries, tilesets and Building catalogs. [VERIFIED]",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-tiles-and-tiledefs",
+    "title": "Tiles and tiledefs",
+    "slug": "tiles-and-tiledefs",
+    "url": "/pz/build-42/mapping/buildings-and-tiles/tiles-and-tiledefs",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "buildings-and-tiles",
+    "tags": [
+      "tilesets",
+      "tiledefs",
+      "depthmaps",
+      "tile-slicing"
+    ],
+    "excerpt": "[COMMUNITY procedure, still valid; the tool behavior notes are VERIFIED]",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-authoring-the-world-from-pngs",
+    "title": "Authoring the world from PNGs",
+    "slug": "authoring-the-world-from-pngs",
+    "url": "/pz/build-42/mapping/fundamentals/authoring-the-world-from-pngs",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "cell-size",
+      "worldmap",
+      "biomemap",
+      "lot-export"
+    ],
+    "excerpt": "The world starts as two images:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-automapper",
+    "title": "Automapper",
+    "slug": "automapper",
+    "url": "/pz/build-42/mapping/fundamentals/automapper",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "cell-size",
+      "worldmap",
+      "biomemap",
+      "lot-export"
+    ],
+    "excerpt": "A saved target TMX uses a nearby rules.txt. Each non-comment entry points to a rule-map .tmx or another .txt list; relative paths resolve from the list containing them.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-b41-vs-b42-mapping-delta",
+    "title": "Build 41 vs Build 42 mapping delta",
+    "slug": "b41-vs-b42-mapping-delta",
+    "url": "/pz/build-42/mapping/fundamentals/b41-vs-b42-mapping-delta",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "b41-vs-b42",
+      "mapping-delta",
+      "migration"
+    ],
+    "excerpt": "Read this if you already know B41 mapping. It is the delta only.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-biomemap",
+    "title": "Biomemap",
+    "slug": "biomemap",
+    "url": "/pz/build-42/mapping/fundamentals/biomemap",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "cell-size",
+      "worldmap",
+      "biomemap",
+      "lot-export"
+    ],
+    "excerpt": "A biomemap is a data grid, not a decorative image. Input pixels must align exactly with project map squares. Open via Tools > Generate Biome Map.... [VERIFIED]",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-bmp-to-tmx",
+    "title": "BMP to TMX",
+    "slug": "bmp-to-tmx",
+    "url": "/pz/build-42/mapping/fundamentals/bmp-to-tmx",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "cell-size",
+      "worldmap",
+      "biomemap",
+      "lot-export"
+    ],
+    "excerpt": "BMP-to-TMX converts the painted images into editable TMX cells.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-coordinates-use-b41-numbers",
+    "title": "Coordinates: use B41 numbers",
+    "slug": "coordinates-use-b41-numbers",
+    "url": "/pz/build-42/mapping/fundamentals/coordinates-use-b41-numbers",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "cell-size",
+      "worldmap",
+      "biomemap",
+      "lot-export"
+    ],
+    "excerpt": "When placing your map relative to the vanilla world, use B41 coordinates. Coordinates read off the B42 online map will put your map in the wrong place. [COMMUNITY -- stated explicitly, January 2026]",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-in-game-map-worldmap-generation",
+    "title": "In-game map (worldmap) generation",
+    "slug": "in-game-map-worldmap-generation",
+    "url": "/pz/build-42/mapping/fundamentals/in-game-map-worldmap-generation",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "cell-size",
+      "worldmap",
+      "biomemap",
+      "lot-export"
+    ],
+    "excerpt": "InGameMap > Generate Road Features on a cell selection derives polygons for primary/secondary/tertiary roads, trails and railways from recognized map tiles. [VERIFIED]",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-lot-generation-and-export",
+    "title": "Lot generation and export",
+    "slug": "lot-generation-and-export",
+    "url": "/pz/build-42/mapping/fundamentals/lot-generation-and-export",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "cell-size",
+      "worldmap",
+      "biomemap",
+      "lot-export"
+    ],
+    "excerpt": "Generate lots after the world is painted, buildings placed, and zones defined. Output goes into the mod's media/maps/ folder -- see 06-mod-packaging.md.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-mapping-overview",
+    "title": "Mapping overview",
+    "slug": "mapping-overview",
+    "url": "/pz/build-42/mapping/fundamentals/mapping-overview",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "mapping-overview",
+      "worlded",
+      "tilezed",
+      "getting-started"
+    ],
+    "excerpt": "Compiled: 2026-08-02 Scope: Build 42 STABLE map modding (world, cells, buildings, tiles, zones, packaging).",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-preview-modes-power-snow-jumbo",
+    "title": "Preview modes: POWER / SNOW / JUMBO",
+    "slug": "preview-modes-power-snow-jumbo",
+    "url": "/pz/build-42/mapping/fundamentals/preview-modes-power-snow-jumbo",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "cell-size",
+      "worldmap",
+      "biomemap",
+      "lot-export"
+    ],
+    "excerpt": "POWER draws the transparent same-index *_on sprite over the original tile, preserving the base image (lamp posts included), flips, source-layer order and isometric occlusion. It is an overlay, not...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-script-files-that-drive-generation",
+    "title": "Script files that drive generation",
+    "slug": "script-files-that-drive-generation",
+    "url": "/pz/build-42/mapping/fundamentals/script-files-that-drive-generation",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "cell-size",
+      "worldmap",
+      "biomemap",
+      "lot-export"
+    ],
+    "excerpt": "Documentation for the tool script files lives in the PZ Scripts Data project (contributions accepted via PR) [COMMUNITY]:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-street-names",
+    "title": "Street names",
+    "slug": "street-names",
+    "url": "/pz/build-42/mapping/fundamentals/street-names",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "cell-size",
+      "worldmap",
+      "biomemap",
+      "lot-export"
+    ],
+    "excerpt": "B42.20 ships streets.xml per map. Confirmed in the vanilla install:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-the-cell-size-question",
+    "title": "The cell-size question",
+    "slug": "the-cell-size-question",
+    "url": "/pz/build-42/mapping/fundamentals/the-cell-size-question",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "cell-size",
+      "worldmap",
+      "biomemap",
+      "lot-export"
+    ],
+    "excerpt": "B41: authoring cells and shipped game cells were both 300 x 300.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-thumbnails",
+    "title": "Thumbnails",
+    "slug": "thumbnails",
+    "url": "/pz/build-42/mapping/fundamentals/thumbnails",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "cell-size",
+      "worldmap",
+      "biomemap",
+      "lot-export"
+    ],
+    "excerpt": "A cell thumbnail is an isometric preview cached below the project's .pzeditor data. The minimap and WorldView read that cache. The Zombie Heatmap is a separate image and is not a thumbnail. [VERIFIED]",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-tools-setup",
+    "title": "Mapping tools setup",
+    "slug": "tools-setup",
+    "url": "/pz/build-42/mapping/fundamentals/tools-setup",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "mapping-tools",
+      "worlded-setup",
+      "tiles-folder",
+      "pz-mapping-tools"
+    ],
+    "excerpt": "There are three things people call \"the B42 tools\". Use the first one.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-trimming-the-world-rectangle",
+    "title": "Trimming the world rectangle",
+    "slug": "trimming-the-world-rectangle",
+    "url": "/pz/build-42/mapping/fundamentals/trimming-the-world-rectangle",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "cell-size",
+      "worldmap",
+      "biomemap",
+      "lot-export"
+    ],
+    "excerpt": "A PZW world is always a rectangle even if only a few cells hold TMX files. Cell > Remove All Empty Border Cells... trims complete empty outer rows and columns. [VERIFIED]",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-vegetation-on-upper-levels",
+    "title": "Vegetation on upper levels",
+    "slug": "vegetation-on-upper-levels",
+    "url": "/pz/build-42/mapping/fundamentals/vegetation-on-upper-levels",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "cell-size",
+      "worldmap",
+      "biomemap",
+      "lot-export"
+    ],
+    "excerpt": "Tilesets confirmed to work above ground level:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-world-and-cells-overview",
+    "title": "World and cells",
+    "slug": "world-and-cells-overview",
+    "url": "/pz/build-42/mapping/fundamentals/world-and-cells-overview",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "cell-size",
+      "worldmap",
+      "biomemap",
+      "lot-export"
+    ],
+    "excerpt": "World and cells, in 15 parts: The cell-size question, Coordinates: use B41 numbers, Authoring the world from PNGs, BMP to TMX, Script files that drive generation, Thumbnails, Trimming the world...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-zombie-heatmap",
+    "title": "Zombie heatmap",
+    "slug": "zombie-heatmap",
+    "url": "/pz/build-42/mapping/fundamentals/zombie-heatmap",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "fundamentals",
+    "tags": [
+      "cell-size",
+      "worldmap",
+      "biomemap",
+      "lot-export"
+    ],
+    "excerpt": "Enable View > ZombieMap first -- the painting tool stays disabled while the layer is hidden, to prevent editing an invisible data image. [VERIFIED]",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-sources-and-provenance",
+    "title": "Sources and provenance",
+    "slug": "sources-and-provenance",
+    "url": "/pz/build-42/mapping/sources/sources-and-provenance",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "sources",
+    "tags": [
+      "sources",
+      "provenance",
+      "link-index"
+    ],
+    "excerpt": "Installed game -- R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid Build 42 STABLE, git revision a2947723ca, Steam buildid 24449119, last updated 2026-07-29. Sealed snapshot and manifest at...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-lua-and-modding-practices",
+    "title": "Lua and modding practices for maps",
+    "slug": "lua-and-modding-practices",
+    "url": "/pz/build-42/mapping/troubleshooting/lua-and-modding-practices",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "troubleshooting",
+    "tags": [
+      "lua-load-order",
+      "zedscript",
+      "distribution-practices"
+    ],
+    "excerpt": "Not mapping-specific, but every map mod ends up shipping Lua. These are the rules that cause silent breakage when ignored.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-mapping-troubleshooting",
+    "title": "Mapping troubleshooting",
+    "slug": "mapping-troubleshooting",
+    "url": "/pz/build-42/mapping/troubleshooting/mapping-troubleshooting",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "troubleshooting",
+    "tags": [
+      "troubleshooting",
+      "known-failures",
+      "fixes"
+    ],
+    "excerpt": "Logs are in settings/logs inside the portable tools install -- not in your user profile. They record tileset loading, missing images, Building catalog loading, invalid PNG profiles, biomemap...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-editor-lua-vs-gameplay-lua",
+    "title": "Editor Lua vs gameplay Lua",
+    "slug": "editor-lua-vs-gameplay-lua",
+    "url": "/pz/build-42/mapping/zones-and-packaging/editor-lua-vs-gameplay-lua",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "zones-and-packaging",
+    "tags": [
+      "zones",
+      "objects-lua",
+      "spawn-points",
+      "loot-distribution"
+    ],
+    "excerpt": "TileZed Lua can inspect, place, delete and replace tiles by exact name and coordinate, and create/edit object-layer rectangles and properties. BuildingEd Lua can do those tile operations on...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-farm-and-wildlife-animals",
+    "title": "Farm and wildlife animals",
+    "slug": "farm-and-wildlife-animals",
+    "url": "/pz/build-42/mapping/zones-and-packaging/farm-and-wildlife-animals",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "zones-and-packaging",
+    "tags": [
+      "zones",
+      "objects-lua",
+      "spawn-points",
+      "loot-distribution"
+    ],
+    "excerpt": "Open the world cell. Select the Ranch object group (you can move objects into it later). Add a zone with Create Object (O) (rectangle) or Create Object (Polygon). Name the zone one of: chicken...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-loot-room-definitions-and-custom-distributions",
+    "title": "Loot: room definitions and custom distributions",
+    "slug": "loot-room-definitions-and-custom-distributions",
+    "url": "/pz/build-42/mapping/zones-and-packaging/loot-room-definitions-and-custom-distributions",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "zones-and-packaging",
+    "tags": [
+      "zones",
+      "objects-lua",
+      "spawn-points",
+      "loot-distribution"
+    ],
+    "excerpt": "BuildingEd exports each room's internal name into RoomDefs. TileZed's binary writer strips the RoomDef suffix and stores the room name. At runtime, ItemPickerJava looks up the room distribution...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-mannequins-as-fake-npcs",
+    "title": "Mannequins as fake NPCs",
+    "slug": "mannequins-as-fake-npcs",
+    "url": "/pz/build-42/mapping/zones-and-packaging/mannequins-as-fake-npcs",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "zones-and-packaging",
+    "tags": [
+      "zones",
+      "objects-lua",
+      "spawn-points",
+      "loot-distribution"
+    ],
+    "excerpt": "Mannequins can be placed and turned into convincing fake NPCs by combining tiles and zone logic: assign animations, facing directions and outfits, and use your own scripts and modded assets. The...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-mod-packaging-for-maps",
+    "title": "Mod packaging for maps",
+    "slug": "mod-packaging-for-maps",
+    "url": "/pz/build-42/mapping/zones-and-packaging/mod-packaging-for-maps",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "zones-and-packaging",
+    "tags": [
+      "map-info",
+      "mod-packaging",
+      "biomemap-placement"
+    ],
+    "excerpt": "Mods live in %USERPROFILE%\\Zomboid\\mods (i.e. C:\\Users\\\\Zomboid\\mods).",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-objects-lua-the-zone-export",
+    "title": "objects.lua -- the zone export",
+    "slug": "objects-lua-the-zone-export",
+    "url": "/pz/build-42/mapping/zones-and-packaging/objects-lua-the-zone-export",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "zones-and-packaging",
+    "tags": [
+      "zones",
+      "objects-lua",
+      "spawn-points",
+      "loot-distribution"
+    ],
+    "excerpt": "WorldEd objects are written to objects.lua with name, type, geometry, level and properties. The game's metazone loader registers them with the meta grid. [VERIFIED]",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-spawn-points",
+    "title": "Spawn points",
+    "slug": "spawn-points",
+    "url": "/pz/build-42/mapping/zones-and-packaging/spawn-points",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "zones-and-packaging",
+    "tags": [
+      "zones",
+      "objects-lua",
+      "spawn-points",
+      "loot-distribution"
+    ],
+    "excerpt": "media/maps//spawnpoints.lua is a plain Lua function returning named groups of coordinates. [VERIFIED -- vanilla Muldraugh]",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-vehicle-spawn-zones",
+    "title": "Vehicle spawn zones",
+    "slug": "vehicle-spawn-zones",
+    "url": "/pz/build-42/mapping/zones-and-packaging/vehicle-spawn-zones",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "zones-and-packaging",
+    "tags": [
+      "zones",
+      "objects-lua",
+      "spawn-points",
+      "loot-distribution"
+    ],
+    "excerpt": "For a map to spawn vehicles properly, the object zone must be:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-what-mapping-can-and-cannot-control",
+    "title": "What mapping can and cannot control",
+    "slug": "what-mapping-can-and-cannot-control",
+    "url": "/pz/build-42/mapping/zones-and-packaging/what-mapping-can-and-cannot-control",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "zones-and-packaging",
+    "tags": [
+      "zones",
+      "objects-lua",
+      "spawn-points",
+      "loot-distribution"
+    ],
+    "excerpt": "This table is the single most useful thing to internalize before you start painting zones. [VERIFIED -- MappingSpawnControl.html, checked against the mapping-tool sources and the game engine/Lua...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-zombie-type-outfit-zones",
+    "title": "Zombie type / outfit zones",
+    "slug": "zombie-type-outfit-zones",
+    "url": "/pz/build-42/mapping/zones-and-packaging/zombie-type-outfit-zones",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "zones-and-packaging",
+    "tags": [
+      "zones",
+      "objects-lua",
+      "spawn-points",
+      "loot-distribution"
+    ],
+    "excerpt": "The engine checks zones in zombie/characters/ZombiesZoneDefinition.java: [VERIFIED -- MappingSpawnControl]",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-zones-and-spawns-overview",
+    "title": "Zones and spawns",
+    "slug": "zones-and-spawns-overview",
+    "url": "/pz/build-42/mapping/zones-and-packaging/zones-and-spawns-overview",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "zones-and-packaging",
+    "tags": [
+      "zones",
+      "objects-lua",
+      "spawn-points",
+      "loot-distribution"
+    ],
+    "excerpt": "Zones and spawns, in 9 parts: What mapping can and cannot control, objects.lua -- the zone export, Zombie type / outfit zones, Vehicle spawn zones, Farm and wildlife animals, Loot: room...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-cookbook-index",
+    "title": "Mod creation cookbook",
+    "slug": "cookbook-index",
+    "url": "/pz/build-42/modding/cookbook/cookbook-index",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "Mod creation cookbook, in 24 parts: Project skeleton, New item, New food, New weapon, New clothing, New craftRecipe, New workstation or craft bench, New fluid, Item repair, Evolved or cooking...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-custom-moodle",
+    "title": "Custom moodle",
+    "slug": "custom-moodle",
+    "url": "/pz/build-42/modding/cookbook/custom-moodle",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: a custom moodle (the top-right status indicators). This recipe is PARTIAL / UNCERTAIN -- the cached Moodle.wiki.txt is a player-facing reference, not a creation guide, so the...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-custom-ui",
+    "title": "Custom UI or HUD",
+    "slug": "custom-ui",
+    "url": "/pz/build-42/modding/cookbook/custom-ui",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: a custom on-screen panel/HUD via the ISUI Lua framework.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-evolved-recipe",
+    "title": "Evolved or cooking recipe",
+    "slug": "evolved-recipe",
+    "url": "/pz/build-42/modding/cookbook/evolved-recipe",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: an evolved recipe (sandwich/soup/etc.) that combines a base item with opt-in ingredients into a result, optionally cookable.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-item-repair",
+    "title": "Item repair",
+    "slug": "item-repair",
+    "url": "/pz/build-42/modding/cookbook/item-repair",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: a repair definition letting a material (and optional skill) restore an item's condition.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-lua-gameplay-mod",
+    "title": "Lua gameplay mod",
+    "slug": "lua-gameplay-mod",
+    "url": "/pz/build-42/modding/cookbook/lua-gameplay-mod",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: runtime behavior in Lua -- hooking engine events, persisting state in ModData, and doing server-authoritative work in multiplayer.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-map-building-basement",
+    "title": "Map, building, or basement",
+    "slug": "map-building-basement",
+    "url": "/pz/build-42/modding/cookbook/map-building-basement",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: custom map cells, buildings, and semi-procedural basements. This recipe is pointer-oriented: map creation is a tool-driven pipeline, not a copy-paste script.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-new-animal",
+    "title": "New animal or breed",
+    "slug": "new-animal",
+    "url": "/pz/build-42/modding/cookbook/new-animal",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: a new husbandry animal (or a breed variant of an existing one) via the AnimalDefinitions global Lua table.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-new-clothing",
+    "title": "New clothing",
+    "slug": "new-clothing",
+    "url": "/pz/build-42/modding/cookbook/new-clothing",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: a wearable clothing item bound to a body location, plus (for a fully custom garment) a model + clothing.xml entry.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-new-craftrecipe",
+    "title": "New craftRecipe",
+    "slug": "new-craftrecipe",
+    "url": "/pz/build-42/modding/cookbook/new-craftrecipe",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: a crafting recipe in the B42 craftRecipe format (the replacement for the B41 recipe block).",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-new-crop",
+    "title": "New crop",
+    "slug": "new-crop",
+    "url": "/pz/build-42/modding/cookbook/new-crop",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: a plantable crop (seed item + growth behavior + farming recipes). This is YELLOW / partial -- the cached sources cover crop behavior thoroughly but do not contain the...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-new-fluid",
+    "title": "New fluid",
+    "slug": "new-fluid",
+    "url": "/pz/build-42/modding/cookbook/new-fluid",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: a custom drinkable/industrial fluid and an item that can hold it.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-new-food",
+    "title": "New food",
+    "slug": "new-food",
+    "url": "/pz/build-42/modding/cookbook/new-food",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: an edible item with nutrition, freshness, and (optionally) cooking behavior.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-new-item",
+    "title": "New item",
+    "slug": "new-item",
+    "url": "/pz/build-42/modding/cookbook/new-item",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: a plain inventory item (no food/weapon/clothing behavior).",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-new-profession",
+    "title": "New profession",
+    "slug": "new-profession",
+    "url": "/pz/build-42/modding/cookbook/new-profession",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: a selectable occupation with a point cost, XP boosts, granted traits, and granted recipes.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-new-skill",
+    "title": "New skill or perk",
+    "slug": "new-skill",
+    "url": "/pz/build-42/modding/cookbook/new-skill",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: a brand-new skill/perk (its own XP curve and UI category) referenceable as Perks.MyPerk.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-new-trait",
+    "title": "New trait",
+    "slug": "new-trait",
+    "url": "/pz/build-42/modding/cookbook/new-trait",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: a selectable character-creation trait with a point cost, XP boosts, and granted recipes.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-new-weapon",
+    "title": "New weapon",
+    "slug": "new-weapon",
+    "url": "/pz/build-42/modding/cookbook/new-weapon",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: a melee weapon or a firearm (ItemType = base:weapon).",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-new-workstation",
+    "title": "New workstation or craft bench",
+    "slug": "new-workstation",
+    "url": "/pz/build-42/modding/cookbook/new-workstation",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: a placeable workstation (an entity with components) that gates a set of craftRecipes behind a bench tag.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-project-skeleton",
+    "title": "Project skeleton",
+    "slug": "project-skeleton",
+    "url": "/pz/build-42/modding/cookbook/project-skeleton",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: the versioned B42 project scaffold every other recipe drops files into.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-radio-channel",
+    "title": "Custom or dynamic radio channel",
+    "slug": "radio-channel",
+    "url": "/pz/build-42/modding/cookbook/radio-channel",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: a dynamic radio channel that airs broadcasts at runtime (unlike static, pre-scripted channels).",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-sound-mod",
+    "title": "Sound mod",
+    "slug": "sound-mod",
+    "url": "/pz/build-42/modding/cookbook/sound-mod",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: a custom sound definition playable from scripts/Lua/vehicles.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-translations",
+    "title": "Translations and localization",
+    "slug": "translations",
+    "url": "/pz/build-42/modding/cookbook/translations",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: localized display names and UI text for your mod.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-vehicle-mod",
+    "title": "Vehicle",
+    "slug": "vehicle-mod",
+    "url": "/pz/build-42/modding/cookbook/vehicle-mod",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "What you build: a drivable vehicle (vehicle script block with model, wheels, parts, passengers, physics).",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-workshop-verified-corrections",
+    "title": "Workshop-verified corrections",
+    "slug": "workshop-verified-corrections",
+    "url": "/pz/build-42/modding/cookbook/workshop-verified-corrections",
+    "version": "build-42",
+    "section": "modding",
+    "category": "cookbook",
+    "tags": [
+      "cookbook",
+      "mod-recipes",
+      "from-scratch",
+      "skeletons"
+    ],
+    "excerpt": "Verified against shipping B42 mods in ../13_WORKSHOP_ANALYSIS/patterns/clothing_content.md (Customizable Containers, Cheese's Functional Clothing). These fill/fix the clothing + body-location...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-addendum-canonical-craftrecipe-schema",
+    "title": "ADDENDUM: Canonical craftRecipe schema",
+    "slug": "addendum-canonical-craftrecipe-schema",
+    "url": "/pz/build-42/modding/crafting/addendum-canonical-craftrecipe-schema",
+    "version": "build-42",
+    "section": "modding",
+    "category": "crafting",
+    "tags": [
+      "craftrecipe",
+      "crafting",
+      "itemmapper",
+      "recipe-tags"
+    ],
+    "excerpt": "Enriched from pzwiki cache (canonical). Source: pzwiki.net/wiki/CraftRecipe, page-version 42.19.0, revid 1441679. NOTE: the \"PZwiki (403 ... snippets only)\" caveat above is now SUPERSEDED for the...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-craftrecipe-inputs-in-depth",
+    "title": "craftRecipe inputs in depth",
+    "slug": "craftrecipe-inputs-in-depth",
+    "url": "/pz/build-42/modding/crafting/craftrecipe-inputs-in-depth",
+    "version": "build-42",
+    "section": "modding",
+    "category": "crafting",
+    "tags": [
+      "craftrecipe",
+      "crafting",
+      "itemmapper",
+      "recipe-tags"
+    ],
+    "excerpt": "The inputs{} block is where B42's expressiveness lives. Each line is one ingredient requirement.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-craftrecipe-outputs-and-itemmappers",
+    "title": "craftRecipe outputs and itemMappers",
+    "slug": "craftrecipe-outputs-and-itemmappers",
+    "url": "/pz/build-42/modding/crafting/craftrecipe-outputs-and-itemmappers",
+    "version": "build-42",
+    "section": "modding",
+    "category": "crafting",
+    "tags": [
+      "craftrecipe",
+      "crafting",
+      "itemmapper",
+      "recipe-tags"
+    ],
+    "excerpt": "item Base.ItemName — produces that many. Multiple output lines allowed. An empty outputs { } is valid — used when the recipe's effect is a state change / fluid transfer / opening a bottle (see...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-craftrecipe-reference",
+    "title": "craftRecipe reference",
+    "slug": "craftrecipe-reference",
+    "url": "/pz/build-42/modding/crafting/craftrecipe-reference",
+    "version": "build-42",
+    "section": "modding",
+    "category": "crafting",
+    "tags": [
+      "craftrecipe",
+      "crafting",
+      "itemmapper",
+      "recipe-tags"
+    ],
+    "excerpt": "craftRecipe reference, in 5 parts: The new craftRecipe block, craftRecipe inputs in depth, craftRecipe outputs and itemMappers, craftRecipe vs legacy recipe, ADDENDUM: Canonical craftRecipe schema.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-craftrecipe-vs-legacy-recipe",
+    "title": "craftRecipe vs legacy recipe",
+    "slug": "craftrecipe-vs-legacy-recipe",
+    "url": "/pz/build-42/modding/crafting/craftrecipe-vs-legacy-recipe",
+    "version": "build-42",
+    "section": "modding",
+    "category": "crafting",
+    "tags": [
+      "craftrecipe",
+      "crafting",
+      "itemmapper",
+      "recipe-tags"
+    ],
+    "excerpt": "[BREAKING] B41's recipe block and B42's craftRecipe are different systems.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-the-new-craftrecipe-block",
+    "title": "The new craftRecipe block",
+    "slug": "the-new-craftrecipe-block",
+    "url": "/pz/build-42/modding/crafting/the-new-craftrecipe-block",
+    "version": "build-42",
+    "section": "modding",
+    "category": "crafting",
+    "tags": [
+      "craftrecipe",
+      "crafting",
+      "itemmapper",
+      "recipe-tags"
+    ],
+    "excerpt": "Minimal real recipe (from entities/agricultural/workstations/entity_stone_mill.txt) [CONFIRMED]:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-agriculture-basics-from-seed-to-harvest",
+    "title": "Agriculture basics: from seed to harvest",
+    "slug": "agriculture-basics-from-seed-to-harvest",
+    "url": "/pz/build-42/modding/farming-and-animals/agriculture-basics-from-seed-to-harvest",
+    "version": "build-42",
+    "section": "modding",
+    "category": "farming-and-animals",
+    "tags": [
+      "animaldefinitions",
+      "farming",
+      "ranch-zones",
+      "foraging",
+      "husbandry"
+    ],
+    "excerpt": "The core loop (all [CONFIRMED]): obtain seeds -> plow furrows -> sow -> tend (water/weed/fertilize) -> harvest.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-animal-genetics-breeds-and-weight",
+    "title": "Animal genetics, breeds, and weight",
+    "slug": "animal-genetics-breeds-and-weight",
+    "url": "/pz/build-42/modding/farming-and-animals/animal-genetics-breeds-and-weight",
+    "version": "build-42",
+    "section": "modding",
+    "category": "farming-and-animals",
+    "tags": [
+      "animaldefinitions",
+      "farming",
+      "ranch-zones",
+      "foraging",
+      "husbandry"
+    ],
+    "excerpt": "Every animal type has a set of abstracted genes, each carrying two alleles, one inherited randomly from each parent. Named genes include milk quantity, life expectancy, strength, appearance, and...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-animal-pipeline",
+    "title": "How Build 42 loads and animates an animal",
+    "slug": "animal-pipeline",
+    "url": "/pz/build-42/modding/farming-and-animals/animal-pipeline",
+    "version": "build-42",
+    "section": "modding",
+    "category": "farming-and-animals",
+    "tags": [
+      "animals",
+      "rigging",
+      "animation",
+      "animsets"
+    ],
+    "excerpt": "What the engine requires of a new animal type, measured from the B42 decompile (R:\\ZOMBOID\\PZ_Engine_Records\\B42\\src) and the installed game files (PZ 42.19...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-animals-overview-the-b42-living-animal-system",
+    "title": "Animals overview: the B42 living-animal system",
+    "slug": "animals-overview-the-b42-living-animal-system",
+    "url": "/pz/build-42/modding/farming-and-animals/animals-overview-the-b42-living-animal-system",
+    "version": "build-42",
+    "section": "modding",
+    "category": "farming-and-animals",
+    "tags": [
+      "animaldefinitions",
+      "farming",
+      "ranch-zones",
+      "foraging",
+      "husbandry"
+    ],
+    "excerpt": "B42 living animals are defined by a stack of per-animal-type properties. The wiki groups them conceptually [CONFIRMED]:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-butchering-and-dead-animals",
+    "title": "Butchering and dead animals",
+    "slug": "butchering-and-dead-animals",
+    "url": "/pz/build-42/modding/farming-and-animals/butchering-and-dead-animals",
+    "version": "build-42",
+    "section": "modding",
+    "category": "farming-and-animals",
+    "tags": [
+      "animaldefinitions",
+      "farming",
+      "ranch-zones",
+      "foraging",
+      "husbandry"
+    ],
+    "excerpt": "Butchering skill governs meat quality harvested from an animal; quality rises each level. [CONFIRMED] (Butchering recipes and detailed mechanics are not in the cached farming/animal sources -- see...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-crop-health-water-disease",
+    "title": "Crop health, water, disease",
+    "slug": "crop-health-water-disease",
+    "url": "/pz/build-42/modding/farming-and-animals/crop-health-water-disease",
+    "version": "build-42",
+    "section": "modding",
+    "category": "farming-and-animals",
+    "tags": [
+      "animaldefinitions",
+      "farming",
+      "ranch-zones",
+      "foraging",
+      "husbandry"
+    ],
+    "excerpt": "Crops start ~50 health, modified by moon phase (below). Range 0-100; 0 kills the crop. Updated every 3 hours. Every 10 health above 50 at harvest = +1 extra vegetable.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-farming-and-animals-overview",
+    "title": "Farming, foraging and animals",
+    "slug": "farming-and-animals-overview",
+    "url": "/pz/build-42/modding/farming-and-animals/farming-and-animals-overview",
+    "version": "build-42",
+    "section": "modding",
+    "category": "farming-and-animals",
+    "tags": [
+      "animaldefinitions",
+      "farming",
+      "ranch-zones",
+      "foraging",
+      "husbandry"
+    ],
+    "excerpt": "Farming, foraging and animals, in 13 parts: Orientation: what changed in B42, The three farming skills, Agriculture basics: from seed to harvest, Crop health, water, disease, Seasons, curses, and...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-foraging-in-b42",
+    "title": "Foraging in B42",
+    "slug": "foraging-in-b42",
+    "url": "/pz/build-42/modding/farming-and-animals/foraging-in-b42",
+    "version": "build-42",
+    "section": "modding",
+    "category": "farming-and-animals",
+    "tags": [
+      "animaldefinitions",
+      "farming",
+      "ranch-zones",
+      "foraging",
+      "husbandry"
+    ],
+    "excerpt": "B42 foraging is a category + search-focus system. Items belong to categories; categories belong to broader groups; each category has per-biome spawn weights, weather and time-of-day modifiers...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-modding-procedural-distributions",
+    "title": "MODDING: procedural distributions",
+    "slug": "modding-procedural-distributions",
+    "url": "/pz/build-42/modding/farming-and-animals/modding-procedural-distributions",
+    "version": "build-42",
+    "section": "modding",
+    "category": "farming-and-animals",
+    "tags": [
+      "animaldefinitions",
+      "farming",
+      "ranch-zones",
+      "foraging",
+      "husbandry"
+    ],
+    "excerpt": "Relevant because farming/animal mods often add seeds, produce, feed, or animal products to world loot. ProceduralDistributions governs container loot. [CONFIRMED]",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-modding-ranch-zones",
+    "title": "MODDING: ranch zones",
+    "slug": "modding-ranch-zones",
+    "url": "/pz/build-42/modding/farming-and-animals/modding-ranch-zones",
+    "version": "build-42",
+    "section": "modding",
+    "category": "farming-and-animals",
+    "tags": [
+      "animaldefinitions",
+      "farming",
+      "ranch-zones",
+      "foraging",
+      "husbandry"
+    ],
+    "excerpt": "RanchZoneDefinitions controls where and which animals spawn on the map. Ranch zones are a specific zone type for spawning animals -- used for mapping and animal modding. [CONFIRMED]",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-modding-recipes-adding-a-crop-editing-an-animal-breed",
+    "title": "MODDING recipes: adding a crop / editing an animal breed",
+    "slug": "modding-recipes-adding-a-crop-editing-an-animal-breed",
+    "url": "/pz/build-42/modding/farming-and-animals/modding-recipes-adding-a-crop-editing-an-animal-breed",
+    "version": "build-42",
+    "section": "modding",
+    "category": "farming-and-animals",
+    "tags": [
+      "animaldefinitions",
+      "farming",
+      "ranch-zones",
+      "foraging",
+      "husbandry"
+    ],
+    "excerpt": "The cached farming sources describe crop behavior (seasons, water, disease, phases) and the crafting recipes that surround crops, but do not contain the crop script/data schema itself (the file...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-modding-the-animaldefinitions-global-table",
+    "title": "MODDING: the AnimalDefinitions global table",
+    "slug": "modding-the-animaldefinitions-global-table",
+    "url": "/pz/build-42/modding/farming-and-animals/modding-the-animaldefinitions-global-table",
+    "version": "build-42",
+    "section": "modding",
+    "category": "farming-and-animals",
+    "tags": [
+      "animaldefinitions",
+      "farming",
+      "ranch-zones",
+      "foraging",
+      "husbandry"
+    ],
+    "excerpt": "AnimalDefinitions is a global Lua table holding all animal definitions and properties -- behavior, characteristics, interactions. It has four sub-tables you populate, keyed by your chosen...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-orientation-what-changed-in-b42",
+    "title": "Orientation: what changed in B42",
+    "slug": "orientation-what-changed-in-b42",
+    "url": "/pz/build-42/modding/farming-and-animals/orientation-what-changed-in-b42",
+    "version": "build-42",
+    "section": "modding",
+    "category": "farming-and-animals",
+    "tags": [
+      "animaldefinitions",
+      "farming",
+      "ranch-zones",
+      "foraging",
+      "husbandry"
+    ],
+    "excerpt": "Build 42 turned Project Zomboid's food loop from \"loot until it runs out, then plant a few crops\" into a genuine homesteading system. The major B42-era additions and renames relevant to this track:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-seasons-curses-and-the-crop-table",
+    "title": "Seasons, curses, and the crop table",
+    "slug": "seasons-curses-and-the-crop-table",
+    "url": "/pz/build-42/modding/farming-and-animals/seasons-curses-and-the-crop-table",
+    "version": "build-42",
+    "section": "modding",
+    "category": "farming-and-animals",
+    "tags": [
+      "animaldefinitions",
+      "farming",
+      "ranch-zones",
+      "foraging",
+      "husbandry"
+    ],
+    "excerpt": "Each crop has a planting season (with poor and best months), a growing season, and bad months.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-the-three-farming-skills",
+    "title": "The three farming skills",
+    "slug": "the-three-farming-skills",
+    "url": "/pz/build-42/modding/farming-and-animals/the-three-farming-skills",
+    "version": "build-42",
+    "section": "modding",
+    "category": "farming-and-animals",
+    "tags": [
+      "animaldefinitions",
+      "farming",
+      "ranch-zones",
+      "foraging",
+      "husbandry"
+    ],
+    "excerpt": "B42 splits food production across three skills (all under the \"Farming\" skill group in the character sheet). [CONFIRMED]",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-fluid-system-reference",
+    "title": "The fluid system",
+    "slug": "fluid-system-reference",
+    "url": "/pz/build-42/modding/fluids/fluid-system-reference",
+    "version": "build-42",
+    "section": "modding",
+    "category": "fluids",
+    "tags": [
+      "fluids",
+      "fluidcontainer",
+      "liquids"
+    ],
+    "excerpt": "The fluid system, in 1 parts: The fluid system.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-fluid-system-research",
+    "title": "Outcast Motors -- fluid systems research",
+    "slug": "fluid-system-research",
+    "url": "/pz/build-42/modding/fluids/fluid-system-research",
+    "version": "build-42",
+    "section": "modding",
+    "category": "fluids",
+    "tags": [
+      "fluids",
+      "vehicles",
+      "outcast-motors",
+      "containers"
+    ],
+    "excerpt": "Written 2026-08-22. Answers the dive scoped in 05-state-and-next-build.md section 6. Every claim below is cited to the B42 decompile at R:/ZOMBOID/PZ_Engine_Records/B42 (revision a2947723ca...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-the-fluid-system",
+    "title": "The fluid system",
+    "slug": "the-fluid-system",
+    "url": "/pz/build-42/modding/fluids/the-fluid-system",
+    "version": "build-42",
+    "section": "modding",
+    "category": "fluids",
+    "tags": [
+      "fluids",
+      "fluidcontainer",
+      "liquids"
+    ],
+    "excerpt": "[CONFIRMED — NEW in B42, BREAKING vs B41.] B41 modeled liquids as many item variants (empty/half/full bottles, hairdye split items, etc.). B42 has one real fluid system.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-addendum-electricity-generator-power-model",
+    "title": "ADDENDUM: Electricity / generator power model",
+    "slug": "addendum-electricity-generator-power-model",
+    "url": "/pz/build-42/modding/foundations/addendum-electricity-generator-power-model",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "electricity",
+      "combat",
+      "animation",
+      "power",
+      "misc-systems"
+    ],
+    "excerpt": "Enriched from pzwiki cache (canonical). Sources: pzwiki.net/wiki/Generator (page-version 42.13.1, revid 1441065) and pzwiki.net/wiki/Electricity. Cached at...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-b41-b42-porting-what-breaks-a-concrete-checklist",
+    "title": "B41 -> B42 porting: what breaks + a concrete checklist",
+    "slug": "b41-b42-porting-what-breaks-a-concrete-checklist",
+    "url": "/pz/build-42/modding/foundations/b41-b42-porting-what-breaks-a-concrete-checklist",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "mod-info",
+      "registries-lua",
+      "project-structure",
+      "workshop-upload",
+      "debug-mode"
+    ],
+    "excerpt": "Decide scope: B42-only (recommended for crafting-heavy mods) or dual-build (keep flat media/ beside common/ + 42/). [CONFIRMED layout] Restructure folders: create common/ (mandatory, even if...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-b42-status-versioning-and-the-compatibility-model",
+    "title": "B42 status, versioning, and the compatibility model",
+    "slug": "b42-status-versioning-and-the-compatibility-model",
+    "url": "/pz/build-42/modding/foundations/b42-status-versioning-and-the-compatibility-model",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "mod-info",
+      "registries-lua",
+      "project-structure",
+      "workshop-upload",
+      "debug-mode"
+    ],
+    "excerpt": "42.20 is stable and public as of 2026-07-29. Multiplayer, the animal update, rebuilt/expanded maps, the new crafting system, lighting, and QoL are all now on the default branch. [CONFIRMED] Saves...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-combat-and-animation",
+    "title": "Combat and Animation",
+    "slug": "combat-and-animation",
+    "url": "/pz/build-42/modding/foundations/combat-and-animation",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "electricity",
+      "combat",
+      "animation",
+      "power",
+      "misc-systems"
+    ],
+    "excerpt": "CONFIRMED (42.20) -- Firearms were completely overhauled: new 3D models, new animations, muzzle effects, new/expanded ammunition types, and new SFX. New guns added to the library include the L92...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-electricity-and-power",
+    "title": "Electricity and Power",
+    "slug": "electricity-and-power",
+    "url": "/pz/build-42/modding/foundations/electricity-and-power",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "electricity",
+      "combat",
+      "animation",
+      "power",
+      "misc-systems"
+    ],
+    "excerpt": "There is no player-built wire-by-wire circuit network in vanilla. The core model is the generator power bubble, plus the pre-existing world grid that goes down after the in-game power shutoff.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-electricity-power-and-combat",
+    "title": "Electricity, power and combat",
+    "slug": "electricity-power-and-combat",
+    "url": "/pz/build-42/modding/foundations/electricity-power-and-combat",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "electricity",
+      "combat",
+      "animation",
+      "power",
+      "misc-systems"
+    ],
+    "excerpt": "Electricity, power and combat, in 6 parts: Orientation, Electricity and Power, Combat and Animation, Misc / Catch-all Systems, Practical B42 readiness checklist, ADDENDUM: Electricity / generator...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-foundations-and-toolchain",
+    "title": "Modding foundations and toolchain",
+    "slug": "foundations-and-toolchain",
+    "url": "/pz/build-42/modding/foundations/foundations-and-toolchain",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "mod-info",
+      "registries-lua",
+      "project-structure",
+      "workshop-upload",
+      "debug-mode"
+    ],
+    "excerpt": "Modding foundations and toolchain, in 12 parts: TL;DR: what a B41 modder must change first, B42 status, versioning, and the compatibility model, The B42 mod PROJECT STRUCTURE, The versioned...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-in-game-debug-mode-and-dev-tools",
+    "title": "In-game DEBUG mode and dev tools",
+    "slug": "in-game-debug-mode-and-dev-tools",
+    "url": "/pz/build-42/modding/foundations/in-game-debug-mode-and-dev-tools",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "mod-info",
+      "registries-lua",
+      "project-structure",
+      "workshop-upload",
+      "debug-mode"
+    ],
+    "excerpt": "[CONFIRMED] (pzwiki Debug mode rev 1442683, page version 42.18.0.) Debug mode is the primary modder dev toolkit -- \"a modified game state\" giving access to developer tools that spawn items, toggle...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-lua-folder-load-order",
+    "title": "Lua folder load order",
+    "slug": "lua-folder-load-order",
+    "url": "/pz/build-42/modding/foundations/lua-folder-load-order",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "mod-info",
+      "registries-lua",
+      "project-structure",
+      "workshop-upload",
+      "debug-mode"
+    ],
+    "excerpt": "Within media/lua/ the three subfolders load in a defined order. The three folders (shared, client, server) are confirmed present in the B42 structure by pzwiki Mod structure (rev 1443271); the...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-mapping-toolchain-status",
+    "title": "Mapping toolchain status",
+    "slug": "mapping-toolchain-status",
+    "url": "/pz/build-42/modding/foundations/mapping-toolchain-status",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "mod-info",
+      "registries-lua",
+      "project-structure",
+      "workshop-upload",
+      "debug-mode"
+    ],
+    "excerpt": "Status as of 2026-07-29: WIP for official release; compilable now. [CONFIRMED]",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-media-registries-lua-the-new-b42-identifier-file",
+    "title": "media/registries.lua: the new B42 identifier file",
+    "slug": "media-registries-lua-the-new-b42-identifier-file",
+    "url": "/pz/build-42/modding/foundations/media-registries-lua-the-new-b42-identifier-file",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "mod-info",
+      "registries-lua",
+      "project-structure",
+      "workshop-upload",
+      "debug-mode"
+    ],
+    "excerpt": "[CONFIRMED] (pzwiki Registries rev 1392729, page version 42.15.3.) Introduced in Build 42.13.0 as \"a new system to manage various script elements in a more structured way.\" This is the single...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-misc-catch-all-systems",
+    "title": "Misc / Catch-all Systems",
+    "slug": "misc-catch-all-systems",
+    "url": "/pz/build-42/modding/foundations/misc-catch-all-systems",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "electricity",
+      "combat",
+      "animation",
+      "power",
+      "misc-systems"
+    ],
+    "excerpt": "CONFIRMED -- Optimization was a headline theme: better/more efficient chunk caching for performance and visuals; extensive controller-support and new-map-area optimization; hundreds of bug fixes.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-mod-info-fields-and-the-versioning-compatibility-system",
+    "title": "mod.info fields and the versioning/compatibility system",
+    "slug": "mod-info-fields-and-the-versioning-compatibility-system",
+    "url": "/pz/build-42/modding/foundations/mod-info-fields-and-the-versioning-compatibility-system",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "mod-info",
+      "registries-lua",
+      "project-structure",
+      "workshop-upload",
+      "debug-mode"
+    ],
+    "excerpt": "mod.info is a plain-text key=value file with a .info extension. It is the root descriptor of your mod and can be edited in any text editor. It is best kept in the version folder(s) (it works in...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-multiplayer-status-in-42-20-stable",
+    "title": "Multiplayer status in 42.20 stable",
+    "slug": "multiplayer-status-in-42-20-stable",
+    "url": "/pz/build-42/modding/foundations/multiplayer-status-in-42-20-stable",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "mod-info",
+      "registries-lua",
+      "project-structure",
+      "workshop-upload",
+      "debug-mode"
+    ],
+    "excerpt": "[CONFIRMED] Multiplayer is on the stable branch as of 42.20 (2026-07-29). Players no longer need the unstable beta to play B42 MP. MP first landed on unstable in 42.13 (Dec 11, 2025) and was...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-orientation",
+    "title": "Orientation",
+    "slug": "orientation",
+    "url": "/pz/build-42/modding/foundations/orientation",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "electricity",
+      "combat",
+      "animation",
+      "power",
+      "misc-systems"
+    ],
+    "excerpt": "CONFIRMED -- Build 42 (v42.20) shipped to the public/stable Steam branch on Wednesday 2026-07-29. It is the largest content update in the game's history and it overhauled the modding framework...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-packaging-and-workshop-upload-for-b42",
+    "title": "Packaging and Workshop upload for B42",
+    "slug": "packaging-and-workshop-upload-for-b42",
+    "url": "/pz/build-42/modding/foundations/packaging-and-workshop-upload-for-b42",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "mod-info",
+      "registries-lua",
+      "project-structure",
+      "workshop-upload",
+      "debug-mode"
+    ],
+    "excerpt": "[CONFIRMED] Workflow (in-game uploader path), corroborated by pzwiki Mod structure, Uploading mods, and Workshop.txt:",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-practical-b42-readiness-checklist",
+    "title": "Practical B42 readiness checklist",
+    "slug": "practical-b42-readiness-checklist",
+    "url": "/pz/build-42/modding/foundations/practical-b42-readiness-checklist",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "electricity",
+      "combat",
+      "animation",
+      "power",
+      "misc-systems"
+    ],
+    "excerpt": "Restructure the mod into common/media, 42/media, (optional) 41/media with a 42/mod.info. Re-author all scripts against current vanilla B42 scripts -- especially crafting (recipe format is...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-the-b42-mod-project-structure",
+    "title": "The B42 mod PROJECT STRUCTURE",
+    "slug": "the-b42-mod-project-structure",
+    "url": "/pz/build-42/modding/foundations/the-b42-mod-project-structure",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "mod-info",
+      "registries-lua",
+      "project-structure",
+      "workshop-upload",
+      "debug-mode"
+    ],
+    "excerpt": "A modern B42 mod is a versioned project. Local mods are recognized in two cache-folder locations, each with its own rules [CONFIRMED] (pzwiki Mod structure rev 1443271): Zomboid/mods/ -- for...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-the-versioned-layout-common-build-folders",
+    "title": "The versioned layout: common + build folders",
+    "slug": "the-versioned-layout-common-build-folders",
+    "url": "/pz/build-42/modding/foundations/the-versioned-layout-common-build-folders",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "mod-info",
+      "registries-lua",
+      "project-structure",
+      "workshop-upload",
+      "debug-mode"
+    ],
+    "excerpt": "The point of the versioned layout is one upload, multiple game versions, plus keeping bulky assets out of every version copy. [CONFIRMED] (pzwiki Mod structure rev 1443271)",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-tl-dr-what-a-b41-modder-must-change-first",
+    "title": "TL;DR: what a B41 modder must change first",
+    "slug": "tl-dr-what-a-b41-modder-must-change-first",
+    "url": "/pz/build-42/modding/foundations/tl-dr-what-a-b41-modder-must-change-first",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "mod-info",
+      "registries-lua",
+      "project-structure",
+      "workshop-upload",
+      "debug-mode"
+    ],
+    "excerpt": "The five highest-impact things for a modder getting B42-stable ready:",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-start-here",
+    "title": "Start here: what changed in Build 42",
+    "slug": "start-here",
+    "url": "/pz/build-42/modding/getting-started/start-here",
+    "version": "build-42",
+    "section": "modding",
+    "category": "getting-started",
+    "tags": [
+      "getting-started",
+      "mod-compatibility",
+      "registries-lua",
+      "craftrecipe",
+      "build-42"
+    ],
+    "excerpt": "Build 42 is stable now. It is NOT save-compatible or mod-compatible with Build 41:",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-texture-optimization-study",
+    "title": "Every Texture Optimized -- what it actually does, measured",
+    "slug": "texture-optimization-study",
+    "url": "/pz/build-42/modding/gotchas/texture-optimization-study",
+    "version": "build-42",
+    "section": "modding",
+    "category": "gotchas",
+    "tags": [
+      "textures",
+      "mod-study",
+      "optimization"
+    ],
+    "excerpt": "Study of Workshop 3119788162 (ETO_B / ETO_P, author maceleet, modversion 1.2.1, versionMin 42.20.0) against a B42 install, 2026-08-10.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-verified-findings",
+    "title": "Verified engine findings",
+    "slug": "verified-findings",
+    "url": "/pz/build-42/modding/gotchas/verified-findings",
+    "version": "build-42",
+    "section": "modding",
+    "category": "gotchas",
+    "tags": [
+      "engine",
+      "decompile",
+      "findings",
+      "running-log"
+    ],
+    "excerpt": "Running log of verified findings. Each entry states its evidence and its confidence level. Preliminary findings are labelled as such -- do not cite them as settled.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-item-block-merge-behaviour",
+    "title": "B42 resource weight reduction -- candidate item audit",
+    "slug": "item-block-merge-behaviour",
+    "url": "/pz/build-42/modding/items-and-scripting/item-block-merge-behaviour",
+    "version": "build-42",
+    "section": "modding",
+    "category": "items-and-scripting",
+    "tags": [
+      "items",
+      "scripting",
+      "resource-weights",
+      "item-blocks"
+    ],
+    "excerpt": "Build: B42 stable, Steam buildid 24449119 Source of truth: R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\scripts\\generated\\items\\*.txt Scope agreed: all raw crafting materials (wood + metal...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-items-and-crafting-overview",
+    "title": "Items, tags and crafting overview",
+    "slug": "items-and-crafting-overview",
+    "url": "/pz/build-42/modding/items-and-scripting/items-and-crafting-overview",
+    "version": "build-42",
+    "section": "modding",
+    "category": "items-and-scripting",
+    "tags": [
+      "item-scripts",
+      "tags",
+      "workstation",
+      "tech-tiers",
+      "timedaction"
+    ],
+    "excerpt": "Items, tags and crafting overview, in 11 parts: The big picture, Script file anatomy, Items: the item block in B42, Tags, Skills, XP, and learning, The workstation / entity system, Tech tiers and...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-items-the-item-block-in-b42",
+    "title": "Items: the item block in B42",
+    "slug": "items-the-item-block-in-b42",
+    "url": "/pz/build-42/modding/items-and-scripting/items-the-item-block-in-b42",
+    "version": "build-42",
+    "section": "modding",
+    "category": "items-and-scripting",
+    "tags": [
+      "item-scripts",
+      "tags",
+      "workstation",
+      "tech-tiers",
+      "timedaction"
+    ],
+    "excerpt": "Real vanilla B42 item (from entities/blacksmith/items/items_blacksmith_i.txt) [CONFIRMED]:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-master-checklist",
+    "title": "Master checklist",
+    "slug": "master-checklist",
+    "url": "/pz/build-42/modding/items-and-scripting/master-checklist",
+    "version": "build-42",
+    "section": "modding",
+    "category": "items-and-scripting",
+    "tags": [
+      "item-scripts",
+      "tags",
+      "workstation",
+      "tech-tiers",
+      "timedaction"
+    ],
+    "excerpt": "For \"B42-stable ready\" crafting content:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-overriding-patching-vanilla",
+    "title": "Overriding / patching vanilla",
+    "slug": "overriding-patching-vanilla",
+    "url": "/pz/build-42/modding/items-and-scripting/overriding-patching-vanilla",
+    "version": "build-42",
+    "section": "modding",
+    "category": "items-and-scripting",
+    "tags": [
+      "item-scripts",
+      "tags",
+      "workstation",
+      "tech-tiers",
+      "timedaction"
+    ],
+    "excerpt": "[CONFIRMED / standard PZ mechanics]",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-script-file-anatomy",
+    "title": "Script file anatomy",
+    "slug": "script-file-anatomy",
+    "url": "/pz/build-42/modding/items-and-scripting/script-file-anatomy",
+    "version": "build-42",
+    "section": "modding",
+    "category": "items-and-scripting",
+    "tags": [
+      "item-scripts",
+      "tags",
+      "workstation",
+      "tech-tiers",
+      "timedaction"
+    ],
+    "excerpt": "[CONFIRMED] Scripts live in media/scripts/ (game) or /media/scripts/ (mod), and in B42 the vanilla tree is heavily reorganized into subfolders, notably media/scripts/entities// containing three...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-skills-xp-and-learning",
+    "title": "Skills, XP, and learning",
+    "slug": "skills-xp-and-learning",
+    "url": "/pz/build-42/modding/items-and-scripting/skills-xp-and-learning",
+    "version": "build-42",
+    "section": "modding",
+    "category": "items-and-scripting",
+    "tags": [
+      "item-scripts",
+      "tags",
+      "workstation",
+      "tech-tiers",
+      "timedaction"
+    ],
+    "excerpt": "All [CONFIRMED] from vanilla recipe files unless noted.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-tags",
+    "title": "Tags",
+    "slug": "tags",
+    "url": "/pz/build-42/modding/items-and-scripting/tags",
+    "version": "build-42",
+    "section": "modding",
+    "category": "items-and-scripting",
+    "tags": [
+      "item-scripts",
+      "tags",
+      "workstation",
+      "tech-tiers",
+      "timedaction"
+    ],
+    "excerpt": "[CONFIRMED] Tags are the join key of the whole B42 crafting system. Three places they appear:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-tech-tiers-and-production-chains",
+    "title": "Tech tiers and production chains",
+    "slug": "tech-tiers-and-production-chains",
+    "url": "/pz/build-42/modding/items-and-scripting/tech-tiers-and-production-chains",
+    "version": "build-42",
+    "section": "modding",
+    "category": "items-and-scripting",
+    "tags": [
+      "item-scripts",
+      "tags",
+      "workstation",
+      "tech-tiers",
+      "timedaction"
+    ],
+    "excerpt": "[CONFIRMED at a high level; exact taxonomy UNCERTAIN] B42 structures production as chains with tiered stations:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-testing-loop-and-common-load-errors",
+    "title": "Testing loop and common load errors",
+    "slug": "testing-loop-and-common-load-errors",
+    "url": "/pz/build-42/modding/items-and-scripting/testing-loop-and-common-load-errors",
+    "version": "build-42",
+    "section": "modding",
+    "category": "items-and-scripting",
+    "tags": [
+      "item-scripts",
+      "tags",
+      "workstation",
+      "tech-tiers",
+      "timedaction"
+    ],
+    "excerpt": "Testing loop [standard workflow]: Put scripts under /media/scripts/; ensure mod.info (and B42's /common/ or versioned folder layout) is correct. Enable the mod, start a new test save (B42 caches...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-the-big-picture",
+    "title": "The big picture",
+    "slug": "the-big-picture",
+    "url": "/pz/build-42/modding/items-and-scripting/the-big-picture",
+    "version": "build-42",
+    "section": "modding",
+    "category": "items-and-scripting",
+    "tags": [
+      "item-scripts",
+      "tags",
+      "workstation",
+      "tech-tiers",
+      "timedaction"
+    ],
+    "excerpt": "[CONFIRMED] B42 is a crafting/production overhaul first, everything-else second. The headline shift for a scripter:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-the-workstation-entity-system",
+    "title": "The workstation / entity system",
+    "slug": "the-workstation-entity-system",
+    "url": "/pz/build-42/modding/items-and-scripting/the-workstation-entity-system",
+    "version": "build-42",
+    "section": "modding",
+    "category": "items-and-scripting",
+    "tags": [
+      "item-scripts",
+      "tags",
+      "workstation",
+      "tech-tiers",
+      "timedaction"
+    ],
+    "excerpt": "[CONFIRMED] Workstations are entity blocks made of components. The crafting-relevant one is CraftBench, whose Recipes = ... value lists tags that recipes must carry to appear at this station.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-timedaction-blocks",
+    "title": "timedAction blocks",
+    "slug": "timedaction-blocks",
+    "url": "/pz/build-42/modding/items-and-scripting/timedaction-blocks",
+    "version": "build-42",
+    "section": "modding",
+    "category": "items-and-scripting",
+    "tags": [
+      "item-scripts",
+      "tags",
+      "workstation",
+      "tech-tiers",
+      "timedaction"
+    ],
+    "excerpt": "[CONFIRMED] timedAction is both a reference on a recipe (timedAction = MakingHammer_Surface) and its own script block type that defines the animation, hand props, sound, and player impact of an...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-b41-b42-breaking-changes",
+    "title": "B41 -> B42 BREAKING CHANGES",
+    "slug": "b41-b42-breaking-changes",
+    "url": "/pz/build-42/modding/lua-api/b41-b42-breaking-changes",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua-api",
+      "events",
+      "moddata",
+      "timed-actions",
+      "multiplayer"
+    ],
+    "excerpt": "This is the section to act on. Ordered by blast radius.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-b42-status-and-versioning",
+    "title": "B42 status and versioning",
+    "slug": "b42-status-and-versioning",
+    "url": "/pz/build-42/modding/lua-api/b42-status-and-versioning",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua-api",
+      "events",
+      "moddata",
+      "timed-actions",
+      "multiplayer"
+    ],
+    "excerpt": "Stable release: Build 42.20 hit the public branch 2026-07-29. [CONFIRMED] The 42.x unstable line ran for well over a year (42.0 late 2024 -> 42.19), with frequent modding-API churn. 42.20 was...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-debugging-lua-in-b42",
+    "title": "Debugging Lua in B42",
+    "slug": "debugging-lua-in-b42",
+    "url": "/pz/build-42/modding/lua-api/debugging-lua-in-b42",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua-api",
+      "events",
+      "moddata",
+      "timed-actions",
+      "multiplayer"
+    ],
+    "excerpt": "Enable debug mode: launch with the -debug flag (Steam launch options). Adds the debug menus, item spawner, and the Lua debugger. In debug mode you can also manually trigger a Lua reload from the...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-engine-internals-calling-exposed-java-from-lua",
+    "title": "Engine internals: calling exposed Java from Lua",
+    "slug": "engine-internals-calling-exposed-java-from-lua",
+    "url": "/pz/build-42/modding/lua-api/engine-internals-calling-exposed-java-from-lua",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua-api",
+      "events",
+      "moddata",
+      "timed-actions",
+      "multiplayer"
+    ],
+    "excerpt": "PZ's API is two layers: Lua objects — tables using ISBaseObject + derive (timed actions, UI, your own classes). [CONFIRMED — pzwiki Lua object, revid 1390443] Java objects — direct links to...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-hooks-for-new-b42-systems",
+    "title": "Hooks for new B42 systems",
+    "slug": "hooks-for-new-b42-systems",
+    "url": "/pz/build-42/modding/lua-api/hooks-for-new-b42-systems",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua-api",
+      "events",
+      "moddata",
+      "timed-actions",
+      "multiplayer"
+    ],
+    "excerpt": "New craftRecipe script block replaces B41 recipe. Supports item inputs, fluid inputs, alternative ingredients (/ OR-separator), keep for tools, OnTest/OnCreate Lua hooks, Category, and OnGiveXP...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-key-globals-and-classes",
+    "title": "Key globals and classes",
+    "slug": "key-globals-and-classes",
+    "url": "/pz/build-42/modding/lua-api/key-globals-and-classes",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua-api",
+      "events",
+      "moddata",
+      "timed-actions",
+      "multiplayer"
+    ],
+    "excerpt": "The global functions below are defined by LuaManager.GlobalObject and are exposed as bare Lua globals (not as SomeClass.method). The wiki confirms this special exposure and shows getPlayer() /...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-lua-api-and-engine-overview",
+    "title": "Lua API and engine reference",
+    "slug": "lua-api-and-engine-overview",
+    "url": "/pz/build-42/modding/lua-api/lua-api-and-engine-overview",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua-api",
+      "events",
+      "moddata",
+      "timed-actions",
+      "multiplayer"
+    ],
+    "excerpt": "Lua API and engine reference, in 16 parts: TL;DR: the 5 things that will break your B41 mod, B42 status and versioning, The B42 mod folder model, Lua load order and the three lua folders...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-lua-load-order-and-the-three-lua-folders",
+    "title": "Lua load order and the three lua folders",
+    "slug": "lua-load-order-and-the-three-lua-folders",
+    "url": "/pz/build-42/modding/lua-api/lua-load-order-and-the-three-lua-folders",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua-api",
+      "events",
+      "moddata",
+      "timed-actions",
+      "multiplayer"
+    ],
+    "excerpt": "Which folders load in which mode (canonical table from the wiki):",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-moddata",
+    "title": "ModData",
+    "slug": "moddata",
+    "url": "/pz/build-42/modding/lua-api/moddata",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua-api",
+      "events",
+      "moddata",
+      "timed-actions",
+      "multiplayer"
+    ],
+    "excerpt": "ModData tables are plain Lua tables the game persists for you across sessions — no manual save call needed. Only plain-old data persists: strings, booleans, numbers, and (nested) tables. Do not...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-multiplayer-command-patterns",
+    "title": "Multiplayer command patterns",
+    "slug": "multiplayer-command-patterns",
+    "url": "/pz/build-42/modding/lua-api/multiplayer-command-patterns",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua-api",
+      "events",
+      "moddata",
+      "timed-actions",
+      "multiplayer"
+    ],
+    "excerpt": "B42 keeps the command RPC model. Commands are identified by a module (use your mod name) and a command name, and carry an args table. The transmitted args can only hold plain-old data (strings...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-recommended-tooling",
+    "title": "Recommended tooling",
+    "slug": "recommended-tooling",
+    "url": "/pz/build-42/modding/lua-api/recommended-tooling",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua-api",
+      "events",
+      "moddata",
+      "timed-actions",
+      "multiplayer"
+    ],
+    "excerpt": "Typing / language server (B42 canonical setup). PZ Lua is Lua 5.1; type annotations use LuaCATS syntax (---@type, ---@param, ---@return, ---@class, ---@field, and EmmyLua-only ---@namespace). Two...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-registries-lua-the-new-b42-13-identifier-system",
+    "title": "registries.lua: the new B42.13 identifier system",
+    "slug": "registries-lua-the-new-b42-13-identifier-system",
+    "url": "/pz/build-42/modding/lua-api/registries-lua-the-new-b42-13-identifier-system",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua-api",
+      "events",
+      "moddata",
+      "timed-actions",
+      "multiplayer"
+    ],
+    "excerpt": "What changed: In 42.13.0, The Indie Stone introduced a formal identifier + registry system for script elements. This is significant enough that an official Modding Migration Guide (42.13) exists...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-the-b42-mod-folder-model",
+    "title": "The B42 mod folder model",
+    "slug": "the-b42-mod-folder-model",
+    "url": "/pz/build-42/modding/lua-api/the-b42-mod-folder-model",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua-api",
+      "events",
+      "moddata",
+      "timed-actions",
+      "multiplayer"
+    ],
+    "excerpt": "B42 supports one upload serving multiple game builds. The versioned layout:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-the-events-system",
+    "title": "The Events system",
+    "slug": "the-events-system",
+    "url": "/pz/build-42/modding/lua-api/the-events-system",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua-api",
+      "events",
+      "moddata",
+      "timed-actions",
+      "multiplayer"
+    ],
+    "excerpt": "The event model is unchanged in shape from B41: you attach a function reference (an observer) to a named event via the Events object.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-timed-actions",
+    "title": "Timed actions",
+    "slug": "timed-actions",
+    "url": "/pz/build-42/modding/lua-api/timed-actions",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua-api",
+      "events",
+      "moddata",
+      "timed-actions",
+      "multiplayer"
+    ],
+    "excerpt": "Timed actions drive \"hold to do X\" interactions. They use ISBaseTimedAction (a subclass of ISBaseObject) as a base and are derived to make your own. Once instanced with new, add them to...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-tl-dr-the-5-things-that-will-break-your-b41-mod",
+    "title": "TL;DR: the 5 things that will break your B41 mod",
+    "slug": "tl-dr-the-5-things-that-will-break-your-b41-mod",
+    "url": "/pz/build-42/modding/lua-api/tl-dr-the-5-things-that-will-break-your-b41-mod",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua-api",
+      "events",
+      "moddata",
+      "timed-actions",
+      "multiplayer"
+    ],
+    "excerpt": "These are the highest-impact B41 -> B42 breakages. Details in Section 13.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-ui",
+    "title": "UI",
+    "slug": "ui",
+    "url": "/pz/build-42/modding/lua-api/ui",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua-api",
+      "events",
+      "moddata",
+      "timed-actions",
+      "multiplayer"
+    ],
+    "excerpt": "B42 UI still builds on the ISUI hierarchy (ISUIElement -> ISPanel -> ISCollapsableWindow, etc.), and these are Lua objects created via derive + new (same mechanism as timed actions, see Section...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-outcast-logging-integration",
+    "title": "Outcast Lib -- logging integration",
+    "slug": "outcast-logging-integration",
+    "url": "/pz/build-42/modding/multiplayer/outcast-logging-integration",
+    "version": "build-42",
+    "section": "modding",
+    "category": "multiplayer",
+    "tags": [
+      "outcast-lib",
+      "logging",
+      "multiplayer"
+    ],
+    "excerpt": "A shared, timestamped, downloadable log for Project Zomboid Build 42 mods.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-b41-b42-skill-changes",
+    "title": "B41 -> B42 skill changes",
+    "slug": "b41-b42-skill-changes",
+    "url": "/pz/build-42/modding/skills-and-traits/b41-b42-skill-changes",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "skills",
+      "traits",
+      "professions",
+      "xp",
+      "craftrecipe-gating"
+    ],
+    "excerpt": "The crafting explosion (the big one). In B41 there was essentially one \"Metalworking\" plus Carpentry/Cooking/etc. B42 splits and adds a full trade tree [CONFIRMED via source + pzwiki Skill]:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-concrete-b42-examples",
+    "title": "Concrete B42 examples",
+    "slug": "concrete-b42-examples",
+    "url": "/pz/build-42/modding/skills-and-traits/concrete-b42-examples",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "skills",
+      "traits",
+      "professions",
+      "xp",
+      "craftrecipe-gating"
+    ],
+    "excerpt": "A) Gate + reward a recipe on a vanilla B42 skill:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-learning-paths",
+    "title": "Learning: learn-by-doing, skill books, recipe magazines and auto-learn",
+    "slug": "learning-paths",
+    "url": "/pz/build-42/modding/skills-and-traits/learning-paths",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "skills",
+      "traits",
+      "professions",
+      "xp",
+      "craftrecipe-gating"
+    ],
+    "excerpt": "Two orthogonal things are \"learned\": skill LEVEL (your perk number) and recipe KNOWLEDGE (whether you know how to make a thing). B42 gates them separately.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-modding-add-a-profession",
+    "title": "Modding: add a PROFESSION",
+    "slug": "modding-add-a-profession",
+    "url": "/pz/build-42/modding/skills-and-traits/modding-add-a-profession",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "skills",
+      "traits",
+      "professions",
+      "xp",
+      "craftrecipe-gating"
+    ],
+    "excerpt": "B42 caveat -- verify before relying on the B41 route. The pzwiki profession-modding page was NOT part of this enrichment cache. Given that traits moved from TraitFactory (Lua) to a script...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-modding-add-a-skill",
+    "title": "Modding: add a SKILL",
+    "slug": "modding-add-a-skill",
+    "url": "/pz/build-42/modding/skills-and-traits/modding-add-a-skill",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "skills",
+      "traits",
+      "professions",
+      "xp",
+      "craftrecipe-gating"
+    ],
+    "excerpt": "There are two layers: a script perk block (defines the perk + XP curve) and Lua/translation wiring so it shows up and can be trained.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-modding-add-a-trait",
+    "title": "Modding: add a TRAIT",
+    "slug": "modding-add-a-trait",
+    "url": "/pz/build-42/modding/skills-and-traits/modding-add-a-trait",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "skills",
+      "traits",
+      "professions",
+      "xp",
+      "craftrecipe-gating"
+    ],
+    "excerpt": "MAJOR B42 CHANGE -- the old TraitFactory Lua route is superseded. B42 uses a script-based character_trait_definition plus a trait registry. This is [CONFIRMED via pzwiki \"Creating a trait mod\"...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-professions-occupations",
+    "title": "Professions / occupations",
+    "slug": "professions-occupations",
+    "url": "/pz/build-42/modding/skills-and-traits/professions-occupations",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "skills",
+      "traits",
+      "professions",
+      "xp",
+      "craftrecipe-gating"
+    ],
+    "excerpt": "Design shift (official). Occupations were reworked to give higher starting skills and adjusted point costs, so you \"feel like a professional from day one instead of an apprentice.\" Combined with...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-recipe-gating-in-b42-scripts",
+    "title": "Recipe gating in B42 scripts",
+    "slug": "recipe-gating-in-b42-scripts",
+    "url": "/pz/build-42/modding/skills-and-traits/recipe-gating-in-b42-scripts",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "skills",
+      "traits",
+      "professions",
+      "xp",
+      "craftrecipe-gating"
+    ],
+    "excerpt": "B42 replaced the old recipe block with craftRecipe (the B41 recipe syntax is not used; you must rewrite for the new system). A craftRecipe can live in a module (item output) or inside an entity...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-sandbox-multiplayer-options",
+    "title": "Sandbox & multiplayer options",
+    "slug": "sandbox-multiplayer-options",
+    "url": "/pz/build-42/modding/skills-and-traits/sandbox-multiplayer-options",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "skills",
+      "traits",
+      "professions",
+      "xp",
+      "craftrecipe-gating"
+    ],
+    "excerpt": "XP multipliers: global XpMultiplier plus (in B42) per-skill sandbox multipliers let servers tune leveling rates. [LIKELY] Starting skill / occupation behavior: sandbox controls exist for how much...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-skill-ui",
+    "title": "Skill UI",
+    "slug": "skill-ui",
+    "url": "/pz/build-42/modding/skills-and-traits/skill-ui",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "skills",
+      "traits",
+      "professions",
+      "xp",
+      "craftrecipe-gating"
+    ],
+    "excerpt": "The Skills tab lives in the health panel (heart icon, top-left) or via the L key. It groups perks by category, showing level bars and XP tooltips. [CONFIRMED via pzwiki Skill] Skill-name color...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-skills-traits-and-progression-overview",
+    "title": "Skills, traits and progression",
+    "slug": "skills-traits-and-progression-overview",
+    "url": "/pz/build-42/modding/skills-and-traits/skills-traits-and-progression-overview",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "skills",
+      "traits",
+      "professions",
+      "xp",
+      "craftrecipe-gating"
+    ],
+    "excerpt": "Skills, traits and progression, in 16 parts: The mental model, The Build 42 skill list, B41 -> B42 skill changes, XP, level thresholds & multipliers, Learning: learn-by-doing, skill books, recipe...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-the-build-42-skill-list",
+    "title": "The Build 42 skill list",
+    "slug": "the-build-42-skill-list",
+    "url": "/pz/build-42/modding/skills-and-traits/the-build-42-skill-list",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "skills",
+      "traits",
+      "professions",
+      "xp",
+      "craftrecipe-gating"
+    ],
+    "excerpt": "Internal (script) names are what you use in scripts and Lua (Perks.Blacksmith, SkillTrained = Blacksmith, SkillRequired = Blacksmith:4). Display names are what the player sees.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-the-mental-model",
+    "title": "The mental model",
+    "slug": "the-mental-model",
+    "url": "/pz/build-42/modding/skills-and-traits/the-mental-model",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "skills",
+      "traits",
+      "professions",
+      "xp",
+      "craftrecipe-gating"
+    ],
+    "excerpt": "Project Zomboid calls skill lines perks internally, even though the character screen labels them \"Skills.\" Two distinct systems meet at character creation:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-the-xp-grant-skill-query-lua-api",
+    "title": "The XP-grant / skill-query Lua API",
+    "slug": "the-xp-grant-skill-query-lua-api",
+    "url": "/pz/build-42/modding/skills-and-traits/the-xp-grant-skill-query-lua-api",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "skills",
+      "traits",
+      "professions",
+      "xp",
+      "craftrecipe-gating"
+    ],
+    "excerpt": "Confirmed from the LuaDocs mirror + recipe-script docs. [CONFIRMED] unless noted.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-trait-api",
+    "title": "Trait API reference",
+    "slug": "trait-api",
+    "url": "/pz/build-42/modding/skills-and-traits/trait-api",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "trait-api",
+      "traitfactory",
+      "gettraits",
+      "engine-gotchas"
+    ],
+    "excerpt": "Everything here was verified against the installed builds, not recalled:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-trait-modding-correction",
+    "title": "Correction: trait modding, from a shipping 42.20 mod",
+    "slug": "trait-modding-correction",
+    "url": "/pz/build-42/modding/skills-and-traits/trait-modding-correction",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "skills",
+      "traits",
+      "professions",
+      "xp",
+      "craftrecipe-gating"
+    ],
+    "excerpt": "Verified against \"More Traits\" (ToadTraits), which defines ~90 B42 traits -- analysis in ../13_WORKSHOP_ANALYSIS/libraries/more_traits.md. Fixes to the trait-modding guidance above:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-trait-reference",
+    "title": "Vanilla trait reference",
+    "slug": "trait-reference",
+    "url": "/pz/build-42/modding/skills-and-traits/trait-reference",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "traits",
+      "character-trait-definition",
+      "vanilla-traits",
+      "b42-traits"
+    ],
+    "excerpt": "Machine-extracted from the installed game -- not from memory.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-traits",
+    "title": "Traits",
+    "slug": "traits",
+    "url": "/pz/build-42/modding/skills-and-traits/traits",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "skills",
+      "traits",
+      "professions",
+      "xp",
+      "craftrecipe-gating"
+    ],
+    "excerpt": "What a trait is: a character-creator modifier with a point cost (negative number = costs points to take; positive number = refunds points) and optional effects -- starting-skill XP boosts, free...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-xp-level-thresholds-multipliers",
+    "title": "XP, level thresholds & multipliers",
+    "slug": "xp-level-thresholds-multipliers",
+    "url": "/pz/build-42/modding/skills-and-traits/xp-level-thresholds-multipliers",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "skills",
+      "traits",
+      "professions",
+      "xp",
+      "craftrecipe-gating"
+    ],
+    "excerpt": "Thresholds. Each perk defines ten XP thresholds xp1..xp10. The exact vanilla curves are now [CONFIRMED via pzwiki Skill, revid 1436755] (the wiki attributes the specific figures to build 41.78.16...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-check-craft-recipes",
+    "title": "check-craft-recipes.py",
+    "slug": "check-craft-recipes",
+    "url": "/pz/build-42/modding/tooling/check-craft-recipes",
+    "version": "build-42",
+    "section": "modding",
+    "category": "tooling",
+    "tags": [
+      "tooling",
+      "craft-recipes",
+      "validation"
+    ],
+    "excerpt": "Validates Build 42 craftRecipe blocks against the grammar the engine actually enforces, measured from the shipped game rather than remembered. It exists because on 2026-09-09 a mod shipped 72...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-check-kahlua",
+    "title": "check-kahlua.py",
+    "slug": "check-kahlua",
+    "url": "/pz/build-42/modding/tooling/check-kahlua",
+    "version": "build-42",
+    "section": "modding",
+    "category": "tooling",
+    "tags": [
+      "tooling",
+      "kahlua",
+      "lua",
+      "outcast-lib"
+    ],
+    "excerpt": "Flags Lua that stock Lua accepts but PZ's Kahlua2 VM cannot run. Kahlua2 is a 5.1-era VM that is a smaller language than stock Lua: code that parses cleanly and passes an off-game test harness...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-check-pz-scripts",
+    "title": "check-pz-scripts.py",
+    "slug": "check-pz-scripts",
+    "url": "/pz/build-42/modding/tooling/check-pz-scripts",
+    "version": "build-42",
+    "section": "modding",
+    "category": "tooling",
+    "tags": [
+      "tooling",
+      "scripts",
+      "translations",
+      "outcast-lib"
+    ],
+    "excerpt": "A real parser for the Project Zomboid data files the engine reads and then fails silently on -- .txt scripts and, with --json, the Translate JSON files. It exists because a generator bug once...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-check-workshop-item",
+    "title": "check-workshop-item.py",
+    "slug": "check-workshop-item",
+    "url": "/pz/build-42/modding/tooling/check-workshop-item",
+    "version": "build-42",
+    "section": "modding",
+    "category": "tooling",
+    "tags": [
+      "tooling",
+      "workshop",
+      "steam-upload",
+      "outcast-lib"
+    ],
+    "excerpt": "Checks a mod's Workshop item against what Steam will actually accept, before anyone uploads it. It exists because on 2026-09-13 two Motors mods were found stuck on old Workshop builds for days...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-install-junctions",
+    "title": "install-junctions.ps1",
+    "slug": "install-junctions",
+    "url": "/pz/build-42/modding/tooling/install-junctions",
+    "version": "build-42",
+    "section": "modding",
+    "category": "tooling",
+    "tags": [
+      "tooling",
+      "junctions",
+      "dev-workflow",
+      "powershell"
+    ],
+    "excerpt": "Points Project Zomboid at a mod's working tree via directory junctions instead of a copy step, so there is no way to accidentally test a stale build. It creates two junctions...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-stage-workshop",
+    "title": "stage-workshop.ps1",
+    "slug": "stage-workshop",
+    "url": "/pz/build-42/modding/tooling/stage-workshop",
+    "version": "build-42",
+    "section": "modding",
+    "category": "tooling",
+    "tags": [
+      "tooling",
+      "workshop",
+      "staging",
+      "powershell"
+    ],
+    "excerpt": "Stages one Outcast mod as a real COPY under Zomboid\\Workshop\\, ready for the in-game Workshop uploader. It is mod-agnostic: one script serves the whole family, discovering the mod id from...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-unstage-all",
+    "title": "unstage-all.ps1",
+    "slug": "unstage-all",
+    "url": "/pz/build-42/modding/tooling/unstage-all",
+    "version": "build-42",
+    "section": "modding",
+    "category": "tooling",
+    "tags": [
+      "tooling",
+      "multiplayer",
+      "staging",
+      "powershell"
+    ],
+    "excerpt": "Removes every local Outcast mod source so the client runs the PUBLISHED Workshop builds instead. Run this before joining any multiplayer server: a mod id with two sources (a local dev link plus...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-validate-data",
+    "title": "validate-data.ps1",
+    "slug": "validate-data",
+    "url": "/pz/build-42/modding/tooling/validate-data",
+    "version": "build-42",
+    "section": "modding",
+    "category": "tooling",
+    "tags": [
+      "tooling",
+      "outcast-lib",
+      "validation",
+      "powershell"
+    ],
+    "excerpt": "Pre-upload checks for OutcastLib specifically. OutcastLib ships no scripts, recipes or translations, so this validator is deliberately smaller than the other mods' validators, and focuses on the...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-ui-engine-reference",
+    "title": "UI engine reference and gotchas",
+    "slug": "ui-engine-reference",
+    "url": "/pz/build-42/modding/ui/ui-engine-reference",
+    "version": "build-42",
+    "section": "modding",
+    "category": "ui",
+    "tags": [
+      "isui",
+      "anchors",
+      "iscollapsablewindow",
+      "engine-reference"
+    ],
+    "excerpt": "Machine-checked against the installed game, not recalled. Every line number below was read out of R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\lua\\client\\ on 2026-08-09.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-ui-overview",
+    "title": "UI research overview",
+    "slug": "ui-overview",
+    "url": "/pz/build-42/modding/ui/ui-overview",
+    "version": "build-42",
+    "section": "modding",
+    "category": "ui",
+    "tags": [
+      "ui-overview",
+      "isui",
+      "vehicle-mechanics-ui",
+      "engine-traps"
+    ],
+    "excerpt": "Everything learned about Project Zomboid's Build 42 UI layer while building Outcast Motors UI, the vehicle mechanics window replacement.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-basements-the-underground-system",
+    "title": "Basements + the underground system",
+    "slug": "basements-the-underground-system",
+    "url": "/pz/build-42/modding/world-and-tiles/basements-the-underground-system",
+    "version": "build-42",
+    "section": "modding",
+    "category": "world-and-tiles",
+    "tags": [
+      "tiles",
+      "multi-z",
+      "basements",
+      "map-modding",
+      "tiledefs"
+    ],
+    "excerpt": "This is the flagship new-world system in B42 and the one most relevant to environment modders.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-basics-what-changed-and-why-it-matters-to-modders",
+    "title": "Basics: what changed and why it matters to modders",
+    "slug": "basics-what-changed-and-why-it-matters-to-modders",
+    "url": "/pz/build-42/modding/world-and-tiles/basics-what-changed-and-why-it-matters-to-modders",
+    "version": "build-42",
+    "section": "modding",
+    "category": "world-and-tiles",
+    "tags": [
+      "tiles",
+      "multi-z",
+      "basements",
+      "map-modding",
+      "tiledefs"
+    ],
+    "excerpt": "If you made or ran maps in B41, these are the headline shifts that will break or change your workflow. Each is expanded later.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-how-to-make-a-b42-map-building-basement",
+    "title": "How to make a B42 map / building / basement",
+    "slug": "how-to-make-a-b42-map-building-basement",
+    "url": "/pz/build-42/modding/world-and-tiles/how-to-make-a-b42-map-building-basement",
+    "version": "build-42",
+    "section": "modding",
+    "category": "world-and-tiles",
+    "tags": [
+      "tiles",
+      "multi-z",
+      "basements",
+      "map-modding",
+      "tiledefs"
+    ],
+    "excerpt": "Install a community fork -- Crater's Community Edition (direct B42 fork) or Alree's tools. CONFIRMED these are the options. Extract packed tilesheets if your fork requires it so editors render...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-map-files-map-info-spawnpoints-lua-folder-structure",
+    "title": "Map files: map.info, spawnpoints.lua, folder structure",
+    "slug": "map-files-map-info-spawnpoints-lua-folder-structure",
+    "url": "/pz/build-42/modding/world-and-tiles/map-files-map-info-spawnpoints-lua-folder-structure",
+    "version": "build-42",
+    "section": "modding",
+    "category": "world-and-tiles",
+    "tags": [
+      "tiles",
+      "multi-z",
+      "basements",
+      "map-modding",
+      "tiledefs"
+    ],
+    "excerpt": "File roles (CONFIRMED where stated; some are wiki stubs): .lotheader -- defines the location/cell of your map. chunkdata_X_Y.bin -- chunk data (wiki stub). map.info -- map metadata (see 9.2)...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-map-modding-toolchain-for-b42",
+    "title": "Map-modding toolchain for B42",
+    "slug": "map-modding-toolchain-for-b42",
+    "url": "/pz/build-42/modding/world-and-tiles/map-modding-toolchain-for-b42",
+    "version": "build-42",
+    "section": "modding",
+    "category": "world-and-tiles",
+    "tags": [
+      "tiles",
+      "multi-z",
+      "basements",
+      "map-modding",
+      "tiledefs"
+    ],
+    "excerpt": "Bottom line (CONFIRMED -- pzwiki: Mapping, revid 1443363): usable via community forks; the wiki now calls them reliable.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-map-tile-modder-migration-checklist",
+    "title": "Map/tile modder migration checklist",
+    "slug": "map-tile-modder-migration-checklist",
+    "url": "/pz/build-42/modding/world-and-tiles/map-tile-modder-migration-checklist",
+    "version": "build-42",
+    "section": "modding",
+    "category": "world-and-tiles",
+    "tags": [
+      "tiles",
+      "multi-z",
+      "basements",
+      "map-modding",
+      "tiledefs"
+    ],
+    "excerpt": "[ ] Edit on the 300x300 grid; expect 256x256 exported cells with empty borders. Do not reuse B41 cell coords (re-index). [ ] Check adjacency against other map mods (shared 256 cells drop a map). [...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-multi-z-the-vertical-engine-change",
+    "title": "Multi-Z: the vertical engine change",
+    "slug": "multi-z-the-vertical-engine-change",
+    "url": "/pz/build-42/modding/world-and-tiles/multi-z-the-vertical-engine-change",
+    "version": "build-42",
+    "section": "modding",
+    "category": "world-and-tiles",
+    "tags": [
+      "tiles",
+      "multi-z",
+      "basements",
+      "map-modding",
+      "tiledefs"
+    ],
+    "excerpt": "CONFIRMED (dev blogs). B42 broke the engine's old height limit (~8 floors). Each chunk now extends to up to 32 Z-levels. This makes both very tall buildings and underground spaces possible for the...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-multiplayer-map-streaming-notes",
+    "title": "Multiplayer + map-streaming notes",
+    "slug": "multiplayer-map-streaming-notes",
+    "url": "/pz/build-42/modding/world-and-tiles/multiplayer-map-streaming-notes",
+    "version": "build-42",
+    "section": "modding",
+    "category": "world-and-tiles",
+    "tags": [
+      "tiles",
+      "multi-z",
+      "basements",
+      "map-modding",
+      "tiledefs"
+    ],
+    "excerpt": "CONFIRMED / LIKELY (hosting sources, not wiki): Ports: UDP 16261 (handshake); TCP 16262 (map-data streaming). Player-count sensitivity: above ~32 players -> poor streaming/desync. TIS B42 MP...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-the-map-expansion-knox-country-new-towns",
+    "title": "The map expansion (Knox Country) + new towns",
+    "slug": "the-map-expansion-knox-country-new-towns",
+    "url": "/pz/build-42/modding/world-and-tiles/the-map-expansion-knox-country-new-towns",
+    "version": "build-42",
+    "section": "modding",
+    "category": "world-and-tiles",
+    "tags": [
+      "tiles",
+      "multi-z",
+      "basements",
+      "map-modding",
+      "tiledefs"
+    ],
+    "excerpt": "CONFIRMED (dev blogs). B42 is a heavy evolution/overhaul of Knox Country (the Kentucky setting), aiming for areas that feel more lived-in and believable.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-the-new-lighting-rendering-engine",
+    "title": "The new lighting + rendering engine",
+    "slug": "the-new-lighting-rendering-engine",
+    "url": "/pz/build-42/modding/world-and-tiles/the-new-lighting-rendering-engine",
+    "version": "build-42",
+    "section": "modding",
+    "category": "world-and-tiles",
+    "tags": [
+      "tiles",
+      "multi-z",
+      "basements",
+      "map-modding",
+      "tiledefs"
+    ],
+    "excerpt": "CONFIRMED (dev blogs). B42's lighting/rendering overhaul is the biggest visual change and has direct modding implications. (The canonical PZwiki \"Rendering\" page is unrelated -- it covers Blender...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-tile-system",
+    "title": "The tile system: tilesheets, tiledefs, tile depth and the .pack pipeline",
+    "slug": "tile-system",
+    "url": "/pz/build-42/modding/world-and-tiles/tile-system",
+    "version": "build-42",
+    "section": "modding",
+    "category": "world-and-tiles",
+    "tags": [
+      "tiles",
+      "multi-z",
+      "basements",
+      "map-modding",
+      "tiledefs"
+    ],
+    "excerpt": "To get a custom tile into the game you still need all three (pzwiki: Adding new tiles, revid 1385091 -- note this page carries an {{Outdated}} banner and a 41.78.19 version tag, so treat...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-world-map-and-tiles-overview",
+    "title": "World, map and tiles",
+    "slug": "world-map-and-tiles-overview",
+    "url": "/pz/build-42/modding/world-and-tiles/world-map-and-tiles-overview",
+    "version": "build-42",
+    "section": "modding",
+    "category": "world-and-tiles",
+    "tags": [
+      "tiles",
+      "multi-z",
+      "basements",
+      "map-modding",
+      "tiledefs"
+    ],
+    "excerpt": "World, map and tiles, in 12 parts: Basics: what changed and why it matters to modders, The map expansion (Knox Country) + new towns, Multi-Z: the vertical engine change, Basements + the...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-zones-vehicle-parking-zones-foraging",
+    "title": "Zones: vehicle/parking zones + foraging",
+    "slug": "zones-vehicle-parking-zones-foraging",
+    "url": "/pz/build-42/modding/world-and-tiles/zones-vehicle-parking-zones-foraging",
+    "version": "build-42",
+    "section": "modding",
+    "category": "world-and-tiles",
+    "tags": [
+      "tiles",
+      "multi-z",
+      "basements",
+      "map-modding",
+      "tiledefs"
+    ],
+    "excerpt": "For vehicles to spawn, add object zones that are multiples of 4x3 (8x6, 4x6, 12x3, ...), of type ParkingStall, named one of:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-outcast-911",
+    "title": "Outcast 911",
+    "slug": "outcast-911",
+    "url": "/pz/build-42/outcast-mods/outcast-911/outcast-911",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-911",
+    "tags": [
+      "outcast-911",
+      "vehicles",
+      "overview"
+    ],
+    "excerpt": "A 992.2-generation 911 for Project Zomboid Build 42.20.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-outcast-hearing",
+    "title": "Outcast Hearing",
+    "slug": "outcast-hearing",
+    "url": "/pz/build-42/outcast-mods/outcast-hearing/outcast-hearing",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-hearing",
+    "tags": [
+      "outcast-hearing",
+      "hearing",
+      "overview"
+    ],
+    "excerpt": "Gunfire damages your hearing. Ear protection prevents it, quiet recovers it, and enough of it is permanent. Project Zomboid B42 only.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-outcast-husbandry",
+    "title": "Outcast Husbandry",
+    "slug": "outcast-husbandry",
+    "url": "/pz/build-42/outcast-mods/outcast-husbandry/outcast-husbandry",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-husbandry",
+    "tags": [
+      "outcast-husbandry",
+      "animals",
+      "overview"
+    ],
+    "excerpt": "Livestock in a designated animal zone get hungry and thirsty far more slowly, so a few days away does not come back to a dead herd.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-outcast-husbandry-multiplayer",
+    "title": "Outcast Husbandry -- multiplayer",
+    "slug": "outcast-husbandry-multiplayer",
+    "url": "/pz/build-42/outcast-mods/outcast-husbandry/outcast-husbandry-multiplayer",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-husbandry",
+    "tags": [
+      "outcast-husbandry",
+      "multiplayer",
+      "animals"
+    ],
+    "excerpt": "Engine citations refer to R:/ZOMBOID/PZ_Engine_Records/B42/src/, revision a2947723ca.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-art-notes-for-the-next-blender-pass",
+    "title": "Art notes for the next Blender pass",
+    "slug": "art-notes-for-the-next-blender-pass",
+    "url": "/pz/build-42/outcast-mods/outcast-ladders/art-notes-for-the-next-blender-pass",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-ladders",
+    "tags": [
+      "outcast-ladders",
+      "animation",
+      "clips"
+    ],
+    "excerpt": "Everything here is a .blend problem, not a code one. Recorded from playtesting so the next authoring session has a list rather than a memory. The source is PZ_3D_Assets\\anims_X\\Bob\\.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-changing-the-clip-needs-a-full-restart",
+    "title": "Changing the clip needs a FULL RESTART",
+    "slug": "changing-the-clip-needs-a-full-restart",
+    "url": "/pz/build-42/outcast-mods/outcast-ladders/changing-the-clip-needs-a-full-restart",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-ladders",
+    "tags": [
+      "outcast-ladders",
+      "animation",
+      "clips"
+    ],
+    "excerpt": "A Lua reload does nothing. Neither does refreshAnimSets.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-how-it-is-selected",
+    "title": "How it is selected",
+    "slug": "how-it-is-selected",
+    "url": "/pz/build-42/outcast-mods/outcast-ladders/how-it-is-selected",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-ladders",
+    "tags": [
+      "outcast-ladders",
+      "animation",
+      "clips"
+    ],
+    "excerpt": "Vanilla points both climbrope/climb.xml and climbdownrope/climb.xml at Bob_ClimbRope. We add a node to each folder rather than replacing them:",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-naming",
+    "title": "Naming",
+    "slug": "naming",
+    "url": "/pz/build-42/outcast-mods/outcast-ladders/naming",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-ladders",
+    "tags": [
+      "outcast-ladders",
+      "animation",
+      "clips"
+    ],
+    "excerpt": "The clip is called Bob_NF_LadderClimb, inside the asset as well as on disk.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-outcast-ladders",
+    "title": "Outcast Ladders",
+    "slug": "outcast-ladders",
+    "url": "/pz/build-42/outcast-mods/outcast-ladders/outcast-ladders",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-ladders",
+    "tags": [
+      "outcast-ladders",
+      "ladders",
+      "overview"
+    ],
+    "excerpt": "A Project Zomboid Build 42 mod that lets you climb the ladders already in the world.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-outcast-ladders-animation",
+    "title": "Outcast Ladders -- animation",
+    "slug": "outcast-ladders-animation",
+    "url": "/pz/build-42/outcast-mods/outcast-ladders/outcast-ladders-animation",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-ladders",
+    "tags": [
+      "outcast-ladders",
+      "animation",
+      "clips"
+    ],
+    "excerpt": "A purpose-built ladder climb, replacing the sheet-rope shimmy the engine would otherwise play.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-outcast-ladders-engine",
+    "title": "Outcast Ladders -- engine notes",
+    "slug": "outcast-ladders-engine",
+    "url": "/pz/build-42/outcast-mods/outcast-ladders/outcast-ladders-engine",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-ladders",
+    "tags": [
+      "outcast-ladders",
+      "engine",
+      "sheet-rope"
+    ],
+    "excerpt": "Every engine fact this mod depends on, with the citation that proves it.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-the-clip",
+    "title": "The clip",
+    "slug": "the-clip",
+    "url": "/pz/build-42/outcast-mods/outcast-ladders/the-clip",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-ladders",
+    "tags": [
+      "outcast-ladders",
+      "animation",
+      "clips"
+    ],
+    "excerpt": "In-place treadmill, 31 frames, looping.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-the-dismount-trigger-confirmed-clip-pending",
+    "title": "The dismount: trigger confirmed, clip pending",
+    "slug": "the-dismount-trigger-confirmed-clip-pending",
+    "url": "/pz/build-42/outcast-mods/outcast-ladders/the-dismount-trigger-confirmed-clip-pending",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-ladders",
+    "tags": [
+      "outcast-ladders",
+      "animation",
+      "clips"
+    ],
+    "excerpt": "Confirmed in play 2026-08-03: climbing works, and the dismount at the top plays vanilla's fence vault. That is not a bug to fix — it is the hook we want, already firing.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-the-export-was-the-format-and-only-the-format",
+    "title": "The export was the format, and only the format",
+    "slug": "the-export-was-the-format-and-only-the-format",
+    "url": "/pz/build-42/outcast-mods/outcast-ladders/the-export-was-the-format-and-only-the-format",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-ladders",
+    "tags": [
+      "outcast-ladders",
+      "animation",
+      "clips"
+    ],
+    "excerpt": "Symptom, now believed fixed but NOT yet retested in game: the character dropped to ground level and climbed from there. Selection was correct and limb motion was right; only placement was wrong.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-the-top-out-clip",
+    "title": "The top-out clip",
+    "slug": "the-top-out-clip",
+    "url": "/pz/build-42/outcast-mods/outcast-ladders/the-top-out-clip",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-ladders",
+    "tags": [
+      "outcast-ladders",
+      "animation",
+      "clips"
+    ],
+    "excerpt": "Bob_NF_LadderTopOut.X, 455,000 bytes, sha256 5303f3c2…, 65 frames, one-shot. Source: PZ_3D_Assets\\anims_X\\Bob\\ladder_topout\\. Same export recipe as the climb, frame range 0–64.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-untuned-and-how-to-tune-it",
+    "title": "Untuned, and how to tune it",
+    "slug": "untuned-and-how-to-tune-it",
+    "url": "/pz/build-42/outcast-mods/outcast-ladders/untuned-and-how-to-tune-it",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-ladders",
+    "tags": [
+      "outcast-ladders",
+      "animation",
+      "clips"
+    ],
+    "excerpt": "m_SpeedScale is 1.00 and unverified. The treadmill only reads correctly if the engine advances the character two rungs per 30 frames at that scale.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-engine-facts-that-bite-the-whole-family",
+    "title": "Engine facts that bite the whole family",
+    "slug": "engine-facts-that-bite-the-whole-family",
+    "url": "/pz/build-42/outcast-mods/outcast-lib/engine-facts-that-bite-the-whole-family",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-lib",
+    "tags": [
+      "outcast-lib",
+      "api",
+      "ol-init",
+      "containers"
+    ],
+    "excerpt": "Not API. Things the library has had to establish, recorded here because each one has already cost somebody a day and none of them are guessable.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-implementation-status",
+    "title": "Implementation status",
+    "slug": "implementation-status",
+    "url": "/pz/build-42/outcast-mods/outcast-lib/implementation-status",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-lib",
+    "tags": [
+      "outcast-lib",
+      "api",
+      "ol-init",
+      "containers"
+    ],
+    "excerpt": "Removed 2026-08-05: OL_Filter, OL_Index, OL_Classify, OL_Transfer. All four were written for OutcastStowAll and had zero callers once it was abandoned. They are parked complete and tested in...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-log-file-location",
+    "title": "Where the log file goes",
+    "slug": "log-file-location",
+    "url": "/pz/build-42/outcast-mods/outcast-lib/log-file-location",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-lib",
+    "tags": [
+      "outcast-lib",
+      "api",
+      "ol-init",
+      "containers"
+    ],
+    "excerpt": "Changed 2026-09-08 on the owner's instruction, and it supersedes the section below, which correctly diagnosed the problem and then only documented it.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-log-line-visibility",
+    "title": "Where a log line has to go to be readable",
+    "slug": "log-line-visibility",
+    "url": "/pz/build-42/outcast-mods/outcast-lib/log-line-visibility",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-lib",
+    "tags": [
+      "outcast-lib",
+      "api",
+      "ol-init",
+      "containers"
+    ],
+    "excerpt": "Established 2026-08-26 by the owner, and it corrects an assumption this module was built on.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-ol-compat",
+    "title": "OL_Compat",
+    "slug": "ol-compat",
+    "url": "/pz/build-42/outcast-mods/outcast-lib/ol-compat",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-lib",
+    "tags": [
+      "outcast-lib",
+      "api",
+      "ol-init",
+      "containers"
+    ],
+    "excerpt": "Cached wrapper over getActivatedMods():contains(modId). One lookup per id per session: a mod cannot be enabled mid-session, so rechecking is waste.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-ol-containers",
+    "title": "OL_Containers",
+    "slug": "ol-containers",
+    "url": "/pz/build-42/outcast-mods/outcast-lib/ol-containers",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-lib",
+    "tags": [
+      "outcast-lib",
+      "api",
+      "ol-init",
+      "containers"
+    ],
+    "excerpt": "True when the container is not a player-locked IsoThumpable.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-ol-debug",
+    "title": "OL_Debug",
+    "slug": "ol-debug",
+    "url": "/pz/build-42/outcast-mods/outcast-lib/ol-debug",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-lib",
+    "tags": [
+      "outcast-lib",
+      "api",
+      "ol-init",
+      "containers"
+    ],
+    "excerpt": "Returns a gated log(...) bound to prefix. No output unless that prefix is switched on. Arguments are tostring'd and space-joined, so callers never build strings themselves -- which matters...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-ol-init",
+    "title": "OL_Init",
+    "slug": "ol-init",
+    "url": "/pz/build-42/outcast-mods/outcast-lib/ol-init",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-lib",
+    "tags": [
+      "outcast-lib",
+      "api",
+      "ol-init",
+      "containers"
+    ],
+    "excerpt": "require asserts OutcastLib.VERSION >= minVersion and raises a named error naming consumerName if not. Call once at the top of each consumer's entry file.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-ol-options",
+    "title": "OL_Options",
+    "slug": "ol-options",
+    "url": "/pz/build-42/outcast-mods/outcast-lib/ol-options",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-lib",
+    "tags": [
+      "outcast-lib",
+      "api",
+      "ol-init",
+      "containers"
+    ],
+    "excerpt": "Returns a getter bound to one mod:",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-ol-reach",
+    "title": "OL_Reach",
+    "slug": "ol-reach",
+    "url": "/pz/build-42/outcast-mods/outcast-lib/ol-reach",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-lib",
+    "tags": [
+      "outcast-lib",
+      "api",
+      "ol-init",
+      "containers"
+    ],
+    "excerpt": "Squares within radius the player may legitimately reach into, nearest first. Returns { { square = sq, distance = squaredDist }, ... }; empty array if the player has no current square.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-ol-squares",
+    "title": "OL_Squares",
+    "slug": "ol-squares",
+    "url": "/pz/build-42/outcast-mods/outcast-lib/ol-squares",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-lib",
+    "tags": [
+      "outcast-lib",
+      "api",
+      "ol-init",
+      "containers"
+    ],
+    "excerpt": "The three-pass per-square container sweep, structurally identical across the three call sites today (ORA_Scan.addSquareContainers, OSA_Scan.squareContainers, OSA_Scan.squareContainersUnfiltered)...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-ol-vehicleparts",
+    "title": "OL_VehicleParts",
+    "slug": "ol-vehicleparts",
+    "url": "/pz/build-42/outcast-mods/outcast-lib/ol-vehicleparts",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-lib",
+    "tags": [
+      "outcast-lib",
+      "api",
+      "ol-init",
+      "containers"
+    ],
+    "excerpt": "A registry where a mod that owns vehicle parts meets a mod that draws them. Producers register; UI mods enumerate. The library holds it so that neither has to exist for the other to work.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-open-spikes-collected",
+    "title": "Open spikes, collected",
+    "slug": "open-spikes-collected",
+    "url": "/pz/build-42/outcast-mods/outcast-lib/open-spikes-collected",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-lib",
+    "tags": [
+      "outcast-lib",
+      "api",
+      "ol-init",
+      "containers"
+    ],
+    "excerpt": "S1 and S2 are resolved from the sealed decompile alone -- no running game was needed for either, and S1's recorded answer was wrong in the original spike. Neither OL_Containers nor anything...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-outcast-lib",
+    "title": "Outcast Lib",
+    "slug": "outcast-lib",
+    "url": "/pz/build-42/outcast-mods/outcast-lib/outcast-lib",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-lib",
+    "tags": [
+      "outcast-lib",
+      "shared-runtime",
+      "overview"
+    ],
+    "excerpt": "Shared runtime for the Outcast mod family. Project Zomboid B42 only.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-outcast-lib-api",
+    "title": "Outcast Lib -- API reference",
+    "slug": "outcast-lib-api",
+    "url": "/pz/build-42/outcast-mods/outcast-lib/outcast-lib-api",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-lib",
+    "tags": [
+      "outcast-lib",
+      "api",
+      "ol-init",
+      "containers"
+    ],
+    "excerpt": "Shipping OutcastLib.VERSION = 2. v2 was spent on the 2026-08-05 removals below; OL_VehicleParts and its completion signal are additive and did not bump it.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-outcast-light-load",
+    "title": "Outcast Light Load",
+    "slug": "outcast-light-load",
+    "url": "/pz/build-42/outcast-mods/outcast-light-load/outcast-light-load",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-light-load",
+    "tags": [
+      "outcast-light-load",
+      "resource-weights",
+      "overview"
+    ],
+    "excerpt": "Halves the weight of raw crafting resources in Project Zomboid B42, so hauling timber, ore and metal stock is not the whole afternoon.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-outcast-motors-animated",
+    "title": "Outcast Motors Animated",
+    "slug": "outcast-motors-animated",
+    "url": "/pz/build-42/outcast-mods/outcast-motors-animated/outcast-motors-animated",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-motors-animated",
+    "tags": [
+      "outcast-motors-animated",
+      "vehicles",
+      "animation",
+      "overview"
+    ],
+    "excerpt": "Build 42. Every panel a vanilla car has, opening.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-outcast-motors-ui",
+    "title": "Outcast Motors UI",
+    "slug": "outcast-motors-ui",
+    "url": "/pz/build-42/outcast-mods/outcast-motors-ui/outcast-motors-ui",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-motors-ui",
+    "tags": [
+      "outcast-motors-ui",
+      "vehicles",
+      "ui",
+      "overview"
+    ],
+    "excerpt": "A replacement for the vehicle mechanics window that shows you the whole car at once, on the car.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-outcast-motors",
+    "title": "Outcast Motors",
+    "slug": "outcast-motors",
+    "url": "/pz/build-42/outcast-mods/outcast-motors/outcast-motors",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-motors",
+    "tags": [
+      "outcast-motors",
+      "vehicles",
+      "engine-bay",
+      "overview"
+    ],
+    "excerpt": "Engines are built, not repaired.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-outcast-proximity",
+    "title": "Outcast Proximity",
+    "slug": "outcast-proximity",
+    "url": "/pz/build-42/outcast-mods/outcast-proximity/outcast-proximity",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-proximity",
+    "tags": [
+      "outcast-proximity",
+      "inventory",
+      "overview"
+    ],
+    "excerpt": "Every container you can already reach, as one searchable list.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-outcast-punch",
+    "title": "Outcast Punch",
+    "slug": "outcast-punch",
+    "url": "/pz/build-42/outcast-mods/outcast-punch/outcast-punch",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-punch",
+    "tags": [
+      "outcast-punch",
+      "combat",
+      "overview"
+    ],
+    "excerpt": "A Project Zomboid Build 42 mod that lets you punch zombies.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-outcast-punch-engine",
+    "title": "Outcast Punch -- engine notes",
+    "slug": "outcast-punch-engine",
+    "url": "/pz/build-42/outcast-mods/outcast-punch/outcast-punch-engine",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-punch",
+    "tags": [
+      "outcast-punch",
+      "engine",
+      "combat",
+      "animation"
+    ],
+    "excerpt": "Every engine fact this mod depends on, with the citation that proves it.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-outcast-punch-multiplayer",
+    "title": "Outcast Punch -- multiplayer",
+    "slug": "outcast-punch-multiplayer",
+    "url": "/pz/build-42/outcast-mods/outcast-punch/outcast-punch-multiplayer",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-punch",
+    "tags": [
+      "outcast-punch",
+      "multiplayer",
+      "combat"
+    ],
+    "excerpt": "What is proven, what is not, and what to do if the untested part fails.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-outcast-rip-all",
+    "title": "Outcast Rip All",
+    "slug": "outcast-rip-all",
+    "url": "/pz/build-42/outcast-mods/outcast-rip-all/outcast-rip-all",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-rip-all",
+    "tags": [
+      "outcast-rip-all",
+      "crafting",
+      "overview"
+    ],
+    "excerpt": "A single context-menu button that rips every rippable garment in your inventory and in the containers around you.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-outcast-rip-all-engine",
+    "title": "Outcast Rip All -- engine notes",
+    "slug": "outcast-rip-all-engine",
+    "url": "/pz/build-42/outcast-mods/outcast-rip-all/outcast-rip-all-engine",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-rip-all",
+    "tags": [
+      "outcast-rip-all",
+      "engine",
+      "context-menu"
+    ],
+    "excerpt": "Every claim here was read out of the B42 engine records at R:\\ZOMBOID\\PZ_Engine_Records\\B42 (revision a2947723ca, steam buildid 24449119). The api/ index layer of that base is not built yet, so...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-outcast-saw-all",
+    "title": "Outcast Saw All",
+    "slug": "outcast-saw-all",
+    "url": "/pz/build-42/outcast-mods/outcast-saw-all/outcast-saw-all",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-saw-all",
+    "tags": [
+      "outcast-saw-all",
+      "crafting",
+      "overview"
+    ],
+    "excerpt": "A Project Zomboid Build 42 mod. One context-menu button that saws every log you can get to -- in your inventory, in your bags, in crates and corpses around you, and lying on the ground.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-outcast-saw-all-engine",
+    "title": "Outcast Saw All -- engine notes",
+    "slug": "outcast-saw-all-engine",
+    "url": "/pz/build-42/outcast-mods/outcast-saw-all/outcast-saw-all-engine",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-saw-all",
+    "tags": [
+      "outcast-saw-all",
+      "engine",
+      "context-menu"
+    ],
+    "excerpt": "Every claim here was read out of the B42 engine records at R:\\ZOMBOID\\PZ_Engine_Records\\B42. Line numbers are precise -- the jar retains its LineNumberTable.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-outcast-stow-all",
+    "title": "Outcast Stow All",
+    "slug": "outcast-stow-all",
+    "url": "/pz/build-42/outcast-mods/outcast-stow-all/outcast-stow-all",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-stow-all",
+    "tags": [
+      "outcast-stow-all",
+      "inventory",
+      "overview"
+    ],
+    "excerpt": "One button files your mixed loot into the containers around you that already hold that item. Anything with no home stays on you.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-outcast-upright",
+    "title": "Outcast Upright",
+    "slug": "outcast-upright",
+    "url": "/pz/build-42/outcast-mods/outcast-upright/outcast-upright",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-upright",
+    "tags": [
+      "outcast-upright",
+      "vehicles",
+      "overview"
+    ],
+    "excerpt": "Build 42 only. Requires OutcastLib (require=OutcastLib), which supplies the gated logger and the shared Outcast.log sink.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-outcast-upright-engine",
+    "title": "Outcast Upright -- engine notes",
+    "slug": "outcast-upright-engine",
+    "url": "/pz/build-42/outcast-mods/outcast-upright/outcast-upright-engine",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "outcast-upright",
+    "tags": [
+      "outcast-upright",
+      "engine",
+      "vehicles"
+    ],
+    "excerpt": "Everything this mod depends on, with the line it was read from. Sources:",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-how-to-animate-a-vehicle-part",
+    "title": "How to animate a vehicle part",
+    "slug": "how-to-animate-a-vehicle-part",
+    "url": "/pz/build-42/vehicles/animation/how-to-animate-a-vehicle-part",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "animation",
+    "tags": [
+      "vehicle-animation",
+      "how-to",
+      "rig-recipe",
+      "animated-parts"
+    ],
+    "excerpt": "The recipe, derived from mods that demonstrably animate in a running B42 game: VanillaVehiclesAnimated and its B42 Orphanage (which animate the same vanilla cars this is usually wanted for), KI5's...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-prior-art-and-what-to-take",
+    "title": "Prior art, and what to take",
+    "slug": "prior-art-and-what-to-take",
+    "url": "/pz/build-42/vehicles/animation/prior-art-and-what-to-take",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "animation",
+    "tags": [
+      "vehicle-animation",
+      "rig",
+      "fbx",
+      "silent-failures"
+    ],
+    "excerpt": "VanillaVehiclesAnimated -- workshop 3281755175 is the Build 42 release (common/ + a B42-only 42/media/shaders, 15 families, 398 scripts, 130 meshes). Workshop 3774077235 is the older B41 layout.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-runtime-injection-how-to-do-this-to-a-vanilla-car",
+    "title": "Runtime injection -- how to do this to a vanilla car",
+    "slug": "runtime-injection-how-to-do-this-to-a-vanilla-car",
+    "url": "/pz/build-42/vehicles/animation/runtime-injection-how-to-do-this-to-a-vanilla-car",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "animation",
+    "tags": [
+      "vehicle-animation",
+      "rig",
+      "fbx",
+      "silent-failures"
+    ],
+    "excerpt": "template vehicle X is winner-take-all: overriding one replaces the entire part definition. To attach a model to a vanilla car from a script file you would have to redeclare the whole family template.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-still-unverified",
+    "title": "Still unverified",
+    "slug": "still-unverified",
+    "url": "/pz/build-42/vehicles/animation/still-unverified",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "animation",
+    "tags": [
+      "vehicle-animation",
+      "rig",
+      "fbx",
+      "silent-failures"
+    ],
+    "excerpt": "Marked honestly, because the previous version of this document was confidently wrong by omission.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-the-fbx-export-layer-where-two-of-the-four-failures-lived",
+    "title": "The FBX/export layer -- where two of the four failures lived",
+    "slug": "the-fbx-export-layer-where-two-of-the-four-failures-lived",
+    "url": "/pz/build-42/vehicles/animation/the-fbx-export-layer-where-two-of-the-four-failures-lived",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "animation",
+    "tags": [
+      "vehicle-animation",
+      "rig",
+      "fbx",
+      "silent-failures"
+    ],
+    "excerpt": "Not what the FBX spec implies. Proved by measurement, not assumption: SportsCarWithDoors has UnitScaleFactor = 100 and a raw body 6.633 long, declared at scale = 0.31. If the unit factor were...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-the-four-script-pieces",
+    "title": "The four script pieces",
+    "slug": "the-four-script-pieces",
+    "url": "/pz/build-42/vehicles/animation/the-four-script-pieces",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "animation",
+    "tags": [
+      "vehicle-animation",
+      "rig",
+      "fbx",
+      "silent-failures"
+    ],
+    "excerpt": "| is a sub-object selector, not a path separator. Everything left of it is the file under media/models_X/; everything right is a mesh name inside it. FileTask_LoadMesh.java:49,55. static = FALSE...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-the-headline-corrected",
+    "title": "The headline, corrected",
+    "slug": "the-headline-corrected",
+    "url": "/pz/build-42/vehicles/animation/the-headline-corrected",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "animation",
+    "tags": [
+      "vehicle-animation",
+      "rig",
+      "fbx",
+      "silent-failures"
+    ],
+    "excerpt": "B42 supports animated vehicle parts natively. That much was right.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-the-rig",
+    "title": "The rig",
+    "slug": "the-rig",
+    "url": "/pz/build-42/vehicles/animation/the-rig",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "animation",
+    "tags": [
+      "vehicle-animation",
+      "rig",
+      "fbx",
+      "silent-failures"
+    ],
+    "excerpt": "This section was rewritten four times in one day, each time asserting a new rig rule, and three of those rules were wrong. Rather than leave a fifth attempt here, the verified recipe now lives in...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-the-silent-failure-catalogue",
+    "title": "The silent-failure catalogue",
+    "slug": "the-silent-failure-catalogue",
+    "url": "/pz/build-42/vehicles/animation/the-silent-failure-catalogue",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "animation",
+    "tags": [
+      "vehicle-animation",
+      "rig",
+      "fbx",
+      "silent-failures"
+    ],
+    "excerpt": "This is the section worth reading twice. Every one of these renders as \"nothing happens\" with no error from the mod or the engine, and several are indistinguishable from each other.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-vehicle-animation-reference-index",
+    "title": "Vehicle part animation reference",
+    "slug": "vehicle-animation-reference-index",
+    "url": "/pz/build-42/vehicles/animation/vehicle-animation-reference-index",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "animation",
+    "tags": [
+      "vehicle-animation",
+      "rig",
+      "fbx",
+      "silent-failures"
+    ],
+    "excerpt": "Compiled 2026-08-09, from building OutcastMotorsAnimated and debugging it through four in-game sessions. Supersedes 15-animated-vehicle-parts.md, which was written from script-reading alone and is...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-what-the-engine-requires-to-actually-animate",
+    "title": "What the engine requires to actually animate",
+    "slug": "what-the-engine-requires-to-actually-animate",
+    "url": "/pz/build-42/vehicles/animation/what-the-engine-requires-to-actually-animate",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "animation",
+    "tags": [
+      "vehicle-animation",
+      "rig",
+      "fbx",
+      "silent-failures"
+    ],
+    "excerpt": "BaseVehicle.playPartAnim, BaseVehicle.java:2016. All of these must hold, and every one of them fails silently:",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-what-vanilla-ships",
+    "title": "What vanilla ships",
+    "slug": "what-vanilla-ships",
+    "url": "/pz/build-42/vehicles/animation/what-vanilla-ships",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "animation",
+    "tags": [
+      "vehicle-animation",
+      "rig",
+      "fbx",
+      "silent-failures"
+    ],
+    "excerpt": "No vanilla car animates its parts. zombie/vehicles/VehicleDoor.java carries open, locked, lockBroken and no angle. template_engine_door.txt gives anim Open/anim Close a sound and nothing else...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-animation-mod-synthesis",
+    "title": "B42 vehicle animation -- what every installed mod actually does",
+    "slug": "animation-mod-synthesis",
+    "url": "/pz/build-42/vehicles/mod-studies/animation-mod-synthesis",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "animation",
+      "community-mods",
+      "workshop-survey"
+    ],
+    "excerpt": "Compiled 2026-08-10 from the 1117 Workshop mods in R:\\Games\\Steam\\steamapps\\workshop\\content\\108600\\, read for technique only. Nothing here is copied. Supplements 17-vehicle-animation-reference.md...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-cabin-climate-windchill",
+    "title": "Cabin climate -- windchill",
+    "slug": "cabin-climate-windchill",
+    "url": "/pz/build-42/vehicles/mod-studies/cabin-climate-windchill",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "project-summer-car",
+      "simulation",
+      "thermal-model",
+      "fuel"
+    ],
+    "excerpt": "Vehicles.Update.PassengerCompartment (:857) counts every part with a window, counts how many are open or destroyed, then:",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-car-physics-mods",
+    "title": "The car physics mods -- Better Car Physics to Realistic Car Physics",
+    "slug": "car-physics-mods",
+    "url": "/pz/build-42/vehicles/mod-studies/car-physics-mods",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "better-car-physics",
+      "realistic-car-physics",
+      "mod-study"
+    ],
+    "excerpt": "Neither is installed locally, so this file separates verified evidence (from Project Summer Car's source, which talks to RCP directly) from claimed features (mod descriptions and the author's guide).",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-community-mod-survey",
+    "title": "Community B42 vehicle mods -- survey",
+    "slug": "community-mod-survey",
+    "url": "/pz/build-42/vehicles/mod-studies/community-mod-survey",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "community-mods",
+      "survey",
+      "workshop"
+    ],
+    "excerpt": "Fourteen Workshop mods read from the local install (R:\\Games\\Steam\\steamapps\\workshop\\content\\108600\\), for technique only. Nothing here is copied. Where a finding contradicts something we...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-electrical-model-an-actual-amp-budget",
+    "title": "Electrical model -- an actual amp budget",
+    "slug": "electrical-model-an-actual-amp-budget",
+    "url": "/pz/build-42/vehicles/mod-studies/electrical-model-an-actual-amp-budget",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "project-summer-car",
+      "simulation",
+      "thermal-model",
+      "fuel"
+    ],
+    "excerpt": "PSC replaces vanilla's abstract battery drain with amp-minute accounting.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-horsepower-and-fuel",
+    "title": "Horsepower and fuel",
+    "slug": "horsepower-and-fuel",
+    "url": "/pz/build-42/vehicles/mod-studies/horsepower-and-fuel",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "project-summer-car",
+      "simulation",
+      "thermal-model",
+      "fuel"
+    ],
+    "excerpt": "(:230-271)",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-install-uninstall",
+    "title": "Install / uninstall",
+    "slug": "install-uninstall",
+    "url": "/pz/build-42/vehicles/mod-studies/install-uninstall",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "project-summer-car",
+      "simulation",
+      "thermal-model",
+      "fuel"
+    ],
+    "excerpt": "shared/ISInstallEnginePart.lua:",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-oil-model",
+    "title": "Oil model",
+    "slug": "oil-model",
+    "url": "/pz/build-42/vehicles/mod-studies/oil-model",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "project-summer-car",
+      "simulation",
+      "thermal-model",
+      "fuel"
+    ],
+    "excerpt": "(:376-421)",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-outcast-motors-synthesis",
+    "title": "Outcast Motors -- where we actually are",
+    "slug": "outcast-motors-synthesis",
+    "url": "/pz/build-42/vehicles/mod-studies/outcast-motors-synthesis",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "outcast-motors",
+      "assessment",
+      "roadmap"
+    ],
+    "excerpt": "An honest assessment against the three sources we now have: Project Summer Car, fourteen community B42 vehicle mods, and the decompile. Written 2026-08-10, after the community survey (23-) turned...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-psc-anatomy",
+    "title": "Project Summer Car -- architecture",
+    "slug": "psc-anatomy",
+    "url": "/pz/build-42/vehicles/mod-studies/psc-anatomy",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "project-summer-car",
+      "mod-study",
+      "template-vehicle"
+    ],
+    "excerpt": "Source: R:\\Games\\Steam\\steamapps\\workshop\\content\\108600\\3564950449\\mods\\Project Summer Car\\42.15\\",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-psc-parts-and-items",
+    "title": "Project Summer Car -- items, fluids, recipes",
+    "slug": "psc-parts-and-items",
+    "url": "/pz/build-42/vehicles/mod-studies/psc-parts-and-items",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "project-summer-car",
+      "items",
+      "fluids",
+      "craft-recipes"
+    ],
+    "excerpt": "What the mod actually adds to the game as content.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-psc-simulation-model",
+    "title": "Project Summer Car -- the simulation model",
+    "slug": "psc-simulation-model",
+    "url": "/pz/build-42/vehicles/mod-studies/psc-simulation-model",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "project-summer-car",
+      "simulation",
+      "thermal-model",
+      "fuel"
+    ],
+    "excerpt": "All line refs: 42.15/media/lua/server/Project_Summer_Car_Server.lua unless noted. This is where \"immersive car building\" actually lives -- the parts only matter because these loops read them.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-psc-takeaways",
+    "title": "Takeaways -- what makes this immersive, and what transfers",
+    "slug": "psc-takeaways",
+    "url": "/pz/build-42/vehicles/mod-studies/psc-takeaways",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "project-summer-car",
+      "design-lessons",
+      "containers"
+    ],
+    "excerpt": "The single highest-leverage move in PSC. container { } on a vehicle part turns one opaque condition number into an inventory of real items with independent condition, mod data, fluids and world...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-reflection-and-java-modding",
+    "title": "Why reflection was disallowed -- the fun police story",
+    "slug": "reflection-and-java-modding",
+    "url": "/pz/build-42/vehicles/mod-studies/reflection-and-java-modding",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "reflection",
+      "java-modding",
+      "kahlua",
+      "engine-limits"
+    ],
+    "excerpt": "Follow-up investigation, 2026-08-05. Triggered by this comment in Project Summer Car's source (42.15/media/lua/server/Project_Summer_Car_Server.lua:12):",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-repair-system-procedural-failure-modes",
+    "title": "Repair system -- procedural failure modes",
+    "slug": "repair-system-procedural-failure-modes",
+    "url": "/pz/build-42/vehicles/mod-studies/repair-system-procedural-failure-modes",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "project-summer-car",
+      "simulation",
+      "thermal-model",
+      "fuel"
+    ],
+    "excerpt": "shared/Engine_Part_Repair.lua is the model for making repair feel like diagnosis rather than a progress bar.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-sandbox-surface",
+    "title": "Sandbox surface",
+    "slug": "sandbox-surface",
+    "url": "/pz/build-42/vehicles/mod-studies/sandbox-surface",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "project-summer-car",
+      "simulation",
+      "thermal-model",
+      "fuel"
+    ],
+    "excerpt": "56 options across 2 pages. The tuning knobs that matter:",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-strengths-what-we-genuinely-do-better",
+    "title": "· Strengths -- what we genuinely do better",
+    "slug": "strengths-what-we-genuinely-do-better",
+    "url": "/pz/build-42/vehicles/mod-studies/strengths-what-we-genuinely-do-better",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "outcast-motors",
+      "assessment",
+      "roadmap"
+    ],
+    "excerpt": "Not flattery; these are things no other mod in the survey has.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-the-inventory",
+    "title": "· The inventory",
+    "slug": "the-inventory",
+    "url": "/pz/build-42/vehicles/mod-studies/the-inventory",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "outcast-motors",
+      "assessment",
+      "roadmap"
+    ],
+    "excerpt": "Shipped and working, verified in game:",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-the-one-line-version",
+    "title": "The one-line version",
+    "slug": "the-one-line-version",
+    "url": "/pz/build-42/vehicles/mod-studies/the-one-line-version",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "outcast-motors",
+      "assessment",
+      "roadmap"
+    ],
+    "excerpt": "Our spine is better than anyone's and we have almost no product on top of it. The fastest route to a mod worth playing is to stop building spine, fix the two correctness defects the crash test...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-the-plan",
+    "title": "· The plan",
+    "slug": "the-plan",
+    "url": "/pz/build-42/vehicles/mod-studies/the-plan",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "outcast-motors",
+      "assessment",
+      "roadmap"
+    ],
+    "excerpt": "Ordered by what unblocks or invalidates the most downstream work.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-thermal-model",
+    "title": "Thermal model",
+    "slug": "thermal-model",
+    "url": "/pz/build-42/vehicles/mod-studies/thermal-model",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "project-summer-car",
+      "simulation",
+      "thermal-model",
+      "fuel"
+    ],
+    "excerpt": "PSC simulates two temperatures, not one: engine block and radiator coolant.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-vehicle-architecture-vanilla-vs-mods",
+    "title": "PZ B42 vehicle architecture -- vanilla vs KI5 and damnlib",
+    "slug": "vehicle-architecture-vanilla-vs-mods",
+    "url": "/pz/build-42/vehicles/mod-studies/vehicle-architecture-vanilla-vs-mods",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "architecture",
+      "ki5trailers",
+      "damnlib",
+      "model-organisation"
+    ],
+    "excerpt": "Everything here was read off real files on this machine, not from wikis or memory.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-vehicle-systems-masks-and-damage",
+    "title": "PZ B42 vehicle systems -- masks, part removal, damage, animation, armour",
+    "slug": "vehicle-systems-masks-and-damage",
+    "url": "/pz/build-42/vehicles/mod-studies/vehicle-systems-masks-and-damage",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "textures",
+      "damage",
+      "animation",
+      "masks"
+    ],
+    "excerpt": "Companion to PZ_VEHICLE_ARCHITECTURE.md (which covers file layout and the vanilla-vs-KI5 comparison). This one covers the runtime systems: how the engine decides what to draw, what to darken, and...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-vva-feasibility-and-plan",
+    "title": "Animated vanilla vehicles on B42 -- feasibility study and plan",
+    "slug": "vva-feasibility-and-plan",
+    "url": "/pz/build-42/vehicles/mod-studies/vva-feasibility-and-plan",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "animation",
+      "vva",
+      "feasibility-study"
+    ],
+    "excerpt": "STALE ON ONE CENTRAL POINT, 2026-08-10. This study concludes that VVA has no B42 branch, which was true of workshop 3774077235 when it was written. Workshop 3281755175 is their Build 42 release...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-weaknesses-what-is-genuinely-wrong",
+    "title": "· Weaknesses -- what is genuinely wrong",
+    "slug": "weaknesses-what-is-genuinely-wrong",
+    "url": "/pz/build-42/vehicles/mod-studies/weaknesses-what-is-genuinely-wrong",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "outcast-motors",
+      "assessment",
+      "roadmap"
+    ],
+    "excerpt": "We test single-player and ship multiplayer. Three MP-only failures surfaced this week from reading other people's code, not from our own testing: ISInstallVehiclePart:complete never fires on an MP...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-what-each-source-is-authoritative-for",
+    "title": "· What each source is authoritative for",
+    "slug": "what-each-source-is-authoritative-for",
+    "url": "/pz/build-42/vehicles/mod-studies/what-each-source-is-authoritative-for",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "outcast-motors",
+      "assessment",
+      "roadmap"
+    ],
+    "excerpt": "Worth stating explicitly, because we have been treating them as interchangeable and they are not.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-what-we-could-add-the-gap-revised",
+    "title": "· What we could add -- the gap, revised",
+    "slug": "what-we-could-add-the-gap-revised",
+    "url": "/pz/build-42/vehicles/mod-studies/what-we-could-add-the-gap-revised",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "outcast-motors",
+      "assessment",
+      "roadmap"
+    ],
+    "excerpt": "The takeaways doc named the gap as \"everything that isn't the engine\", and that still holds. What has changed is that three of those are now much cheaper than we thought, because vanilla models...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-what-we-missed-the-architectural-one",
+    "title": "· What we missed -- the architectural one",
+    "slug": "what-we-missed-the-architectural-one",
+    "url": "/pz/build-42/vehicles/mod-studies/what-we-missed-the-architectural-one",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "outcast-motors",
+      "assessment",
+      "roadmap"
+    ],
+    "excerpt": "BaseVehicle.updatePartStats() (:9065) is vanilla's own condition-to-physics pipeline, and we have been building a private reimplementation of it without noticing it exists.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-world-generation-the-part-economy",
+    "title": "World generation -- the part economy",
+    "slug": "world-generation-the-part-economy",
+    "url": "/pz/build-42/vehicles/mod-studies/world-generation-the-part-economy",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "mod-studies",
+    "tags": [
+      "vehicles",
+      "project-summer-car",
+      "simulation",
+      "thermal-model",
+      "fuel"
+    ],
+    "excerpt": "server/Project_Summer_Part_Spawning.lua decides what you actually find.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lessons-and-guards",
+    "title": "Lessons and guards",
+    "slug": "lessons-and-guards",
+    "url": "/pz/build-42/vehicles/reference/lessons-and-guards",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "reference",
+    "tags": [
+      "lessons-learned",
+      "validators",
+      "vehicle-mods",
+      "guards"
+    ],
+    "excerpt": "Every bug that cost real time on the vehicle mods, what CLASS it belonged to, and the mechanical guard that now catches it.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-vehicle-engine-reference",
+    "title": "Vehicle engine reference",
+    "slug": "vehicle-engine-reference",
+    "url": "/pz/build-42/vehicles/reference/vehicle-engine-reference",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "reference",
+    "tags": [
+      "vehicle-engine",
+      "update-hooks",
+      "vehicles-lua",
+      "engine-reference"
+    ],
+    "excerpt": "Read this before writing any Outcast vehicle mod. Every entry was read out of the shipped game or the Build 42 decompile and, where possible, confirmed in game. Citations are given so you can...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-vehicle-ui-reference",
+    "title": "Vehicle UI reference",
+    "slug": "vehicle-ui-reference",
+    "url": "/pz/build-42/vehicles/reference/vehicle-ui-reference",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "reference",
+    "tags": [
+      "vehicle-ui",
+      "mechanics-window",
+      "isui"
+    ],
+    "excerpt": "How vanilla presents vehicles, where to hook it, and the traps that only appear at some UI scales. Companion to 20-vehicle-engine-reference.md.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-vehicles",
+    "title": "Vehicles",
+    "slug": "vehicles",
+    "url": "/pz/build-42/vehicles/reference/vehicles",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "reference",
+    "tags": [
+      "vehicles",
+      "vehicle-api",
+      "b42-vehicles"
+    ],
+    "excerpt": "CONFIRMED -- Vehicles are still defined by a vehicle script block in scripts/, the same file family used for items, recipes, and sounds. The block declares the vehicle's parameters (models, parts...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-vehicles-and-power-misc-vehicle-systems",
+    "title": "Vehicle systems (from the readiness track)",
+    "slug": "vehicles-and-power-misc-vehicle-systems",
+    "url": "/pz/build-42/vehicles/reference/vehicles-and-power-misc-vehicle-systems",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "reference",
+    "tags": [
+      "vehicles",
+      "vehicle-api",
+      "b42-vehicles"
+    ],
+    "excerpt": "Vehicle systems (from the readiness track), in 1 parts: Vehicles.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-verified-api-reference",
+    "title": "Verified vehicle API reference",
+    "slug": "verified-api-reference",
+    "url": "/pz/build-42/vehicles/reference/verified-api-reference",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "reference",
+    "tags": [
+      "vehicle-api",
+      "vehicles-lua",
+      "decompile",
+      "verified"
+    ],
+    "excerpt": "Everything here was read out of the shipped game on 2026-08-05, not from docs.",
+    "difficulty": "intermediate"
   }
 ]

@@ -1,0 +1,132 @@
+{
+  "categories": [
+    {
+      "id": "about",
+      "name": "About",
+      "description": "The principles the whole Outcast mod family is built against.",
+      "icon": "book",
+      "articleCount": 0,
+      "displayOrder": 0
+    },
+    {
+      "id": "outcast-911",
+      "name": "Outcast 911",
+      "description": "A 992-generation 911 for Build 42.",
+      "icon": "car",
+      "articleCount": 1,
+      "displayOrder": 1
+    },
+    {
+      "id": "outcast-hearing",
+      "name": "Outcast Hearing",
+      "description": "Gunfire damages your hearing, ear protection reduces it, and quiet time brings it back.",
+      "icon": "gear",
+      "articleCount": 1,
+      "displayOrder": 3
+    },
+    {
+      "id": "outcast-husbandry",
+      "name": "Outcast Husbandry",
+      "description": "Your animals get hungry and thirsty far more slowly, so a few days away does not come back to a dead herd.",
+      "icon": "gear",
+      "articleCount": 2,
+      "displayOrder": 4
+    },
+    {
+      "id": "outcast-ladders",
+      "name": "Outcast Ladders",
+      "description": "Climb the ladders that are already in the world.",
+      "icon": "gear",
+      "articleCount": 12,
+      "displayOrder": 5
+    },
+    {
+      "id": "outcast-lib",
+      "name": "Outcast Lib",
+      "description": "Shared runtime for the Outcast mod family. This mod adds no gameplay of its own.",
+      "icon": "gear",
+      "articleCount": 15,
+      "displayOrder": 6
+    },
+    {
+      "id": "outcast-light-load",
+      "name": "Outcast Light Load",
+      "description": "Hauling raw materials stops being the whole afternoon.",
+      "icon": "gear",
+      "articleCount": 1,
+      "displayOrder": 7
+    },
+    {
+      "id": "outcast-motors",
+      "name": "Outcast Motors",
+      "description": "The engine bay has run on a dedicated server; the fluids have not, and finding out is what this build is for.",
+      "icon": "car",
+      "articleCount": 1,
+      "displayOrder": 8
+    },
+    {
+      "id": "outcast-motors-animated",
+      "name": "Outcast Motors Animated",
+      "description": "Animated car panels for the vanilla vehicles: bonnets, doors, windows, boots and tailgates that open, with an engine bay behind the bonnet.",
+      "icon": "car",
+      "articleCount": 1,
+      "displayOrder": 9
+    },
+    {
+      "id": "outcast-motors-ui",
+      "name": "Outcast Motors UI",
+      "description": "A vehicle mechanics window that shows you the whole car at once, on the car.",
+      "icon": "car",
+      "articleCount": 1,
+      "displayOrder": 10
+    },
+    {
+      "id": "outcast-proximity",
+      "name": "Outcast Proximity",
+      "description": "Every container you can already reach, as one list.",
+      "icon": "gear",
+      "articleCount": 1,
+      "displayOrder": 11
+    },
+    {
+      "id": "outcast-punch",
+      "name": "Outcast Punch",
+      "description": "Punch zombies with your bare hands. The vanilla shove is untouched.",
+      "icon": "gear",
+      "articleCount": 3,
+      "displayOrder": 12
+    },
+    {
+      "id": "outcast-rip-all",
+      "name": "Outcast Rip All",
+      "description": "One context-menu button that rips every rippable garment in your inventory and the containers around you.",
+      "icon": "gear",
+      "articleCount": 2,
+      "displayOrder": 13
+    },
+    {
+      "id": "outcast-saw-all",
+      "name": "Outcast Saw All",
+      "description": "One context-menu button that saws every log you can get to, in your bags and on the ground around you.",
+      "icon": "gear",
+      "articleCount": 2,
+      "displayOrder": 14
+    },
+    {
+      "id": "outcast-stow-all",
+      "name": "Outcast Stow All",
+      "description": "One button files your mixed loot into the containers around you that already hold that item.",
+      "icon": "gear",
+      "articleCount": 1,
+      "displayOrder": 15
+    },
+    {
+      "id": "outcast-upright",
+      "name": "Outcast Upright",
+      "description": "Right an overturned car, truck or trailer with a jack and some sweat.",
+      "icon": "car",
+      "articleCount": 2,
+      "displayOrder": 16
+    }
+  ]
+}
