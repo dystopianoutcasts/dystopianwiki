@@ -1,0 +1,116 @@
+{
+  "categories": [
+    {
+      "id": "getting-started",
+      "name": "Getting Started",
+      "description": "Start here for what changed in Build 42 and how the readiness tracks are organized.",
+      "icon": "book",
+      "articleCount": 1,
+      "displayOrder": 1
+    },
+    {
+      "id": "foundations",
+      "name": "Foundations",
+      "description": "The Build 42 mod project structure, mod.info, registries.lua, load order, debug mode, and packaging.",
+      "icon": "book",
+      "articleCount": 20,
+      "displayOrder": 2
+    },
+    {
+      "id": "items-and-scripting",
+      "name": "Items and Scripting",
+      "description": "Item scripts, tags, workstations, tech tiers, and the timedAction block.",
+      "icon": "book",
+      "articleCount": 13,
+      "displayOrder": 3
+    },
+    {
+      "id": "crafting",
+      "name": "Crafting",
+      "description": "The craftRecipe schema: inputs, outputs, itemMappers, and how it differs from the legacy recipe block.",
+      "icon": "wrench",
+      "articleCount": 6,
+      "displayOrder": 4
+    },
+    {
+      "id": "fluids",
+      "name": "Fluids",
+      "description": "The Build 42 fluid system and FluidContainer component.",
+      "icon": "book",
+      "articleCount": 3,
+      "displayOrder": 5
+    },
+    {
+      "id": "lua-api",
+      "name": "Lua API",
+      "description": "Events, ModData, multiplayer command patterns, timed actions, and calling Java from Lua.",
+      "icon": "book",
+      "articleCount": 17,
+      "displayOrder": 6
+    },
+    {
+      "id": "farming-and-animals",
+      "name": "Farming and Animals",
+      "description": "Crops, foraging, and the AnimalDefinitions-driven living-animal system, including ranch zones.",
+      "icon": "book",
+      "articleCount": 15,
+      "displayOrder": 7
+    },
+    {
+      "id": "skills-and-traits",
+      "name": "Skills and Traits",
+      "description": "The Build 42 skill list, XP, traits, professions, and their modding APIs.",
+      "icon": "book",
+      "articleCount": 19,
+      "displayOrder": 8
+    },
+    {
+      "id": "world-and-tiles",
+      "name": "World and Tiles",
+      "description": "Multi-Z, basements, the tile and tiledef system, and the map-modding toolchain.",
+      "icon": "map",
+      "articleCount": 13,
+      "displayOrder": 9
+    },
+    {
+      "id": "ui",
+      "name": "UI",
+      "description": "The ISUIElement engine layer and the traps that only show up in a running game.",
+      "icon": "book",
+      "articleCount": 2,
+      "displayOrder": 10
+    },
+    {
+      "id": "cookbook",
+      "name": "Cookbook",
+      "description": "Copy-ready skeletons for every common Build 42 mod type, from a new item to a new vehicle.",
+      "icon": "wrench",
+      "articleCount": 25,
+      "displayOrder": 11
+    },
+    {
+      "id": "gotchas",
+      "name": "Gotchas",
+      "description": "Silent-failure traps and verified engine findings that contradict the plausible guess.",
+      "icon": "wrench",
+      "articleCount": 2,
+      "displayOrder": 12
+    },
+    {
+      "id": "tooling",
+      "name": "Tooling",
+      "description": "The OutcastLib and PZ-scripting checkers that catch what the engine fails on silently.",
+      "icon": "wrench",
+      "articleCount": 8,
+      "displayOrder": 13
+    },
+    {
+      "id": "multiplayer",
+      "name": "Multiplayer",
+      "description": "Server-authoritative facts and the traps that only surface in a dedicated-server round.",
+      "icon": "plug",
+      "articleCount": 1,
+      "displayOrder": 14
+    }
+  ]
+}

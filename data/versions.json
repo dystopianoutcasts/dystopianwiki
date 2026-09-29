@@ -1,12 +1,501 @@
 {
-  "defaultVersion": "build-41",
+  "defaultVersion": "build-42",
   "versions": [
     {
       "id": "build-41",
       "name": "Build 41",
       "releaseDate": "2021-12-20",
+      "status": "legacy",
+      "description": "The previous stable build. Guides here are kept as written and are not updated for Build 42.",
+      "sections": [
+        {
+          "id": "modding",
+          "name": "Modding",
+          "description": "Learn to create mods for Project Zomboid",
+          "icon": "plug",
+          "displayOrder": 1,
+          "categories": [
+            {
+              "id": "fundamentals",
+              "name": "Fundamentals",
+              "description": "Essential concepts for understanding Project Zomboid modding: architecture, file structure, and syntax basics.",
+              "icon": "book",
+              "displayOrder": 1,
+              "articleCount": 4
+            },
+            {
+              "id": "setup",
+              "name": "Setup",
+              "description": "Set up your development environment for PZ modding: editors, folder structure, and debug tools.",
+              "icon": "settings",
+              "displayOrder": 2,
+              "articleCount": 4
+            },
+            {
+              "id": "ai-assisted",
+              "name": "AI-Assisted Modding",
+              "description": "Use AI tools to accelerate your modding workflow without deep coding knowledge.",
+              "icon": "sparkles",
+              "displayOrder": 3,
+              "articleCount": 5
+            },
+            {
+              "id": "lua-api",
+              "name": "Lua API",
+              "description": "Events, callbacks, and the core Lua scripting interface for Project Zomboid modding.",
+              "icon": "scroll",
+              "displayOrder": 4,
+              "articleCount": 9
+            },
+            {
+              "id": "ui-framework",
+              "name": "UI Framework",
+              "description": "Project Zomboid's ISUI component system for building custom interfaces.",
+              "icon": "layout",
+              "displayOrder": 5,
+              "articleCount": 5
+            },
+            {
+              "id": "reference",
+              "name": "API Reference",
+              "description": "Complete reference data for PZ's Lua API: events, globals, and script properties.",
+              "icon": "database",
+              "displayOrder": 6,
+              "articleCount": 6
+            },
+            {
+              "id": "recipes",
+              "name": "Recipes",
+              "description": "Create custom crafting recipes for items, weapons, and consumables.",
+              "icon": "wrench",
+              "displayOrder": 7,
+              "articleCount": 8
+            },
+            {
+              "id": "items",
+              "name": "Items",
+              "description": "Define new items with custom properties, textures, and behaviors.",
+              "icon": "box",
+              "displayOrder": 8,
+              "articleCount": 8
+            },
+            {
+              "id": "game-mechanics",
+              "name": "Game Mechanics",
+              "description": "Modify and extend core game systems like injuries, skills, and weather.",
+              "icon": "zap",
+              "displayOrder": 11,
+              "articleCount": 3
+            },
+            {
+              "id": "weapon-repair",
+              "name": "Weapon Repair",
+              "description": "Implement weapon maintenance and repair systems for custom weapons.",
+              "icon": "hammer",
+              "displayOrder": 12,
+              "articleCount": 7
+            },
+            {
+              "id": "foraging",
+              "name": "Foraging",
+              "description": "Add custom foraging definitions and loot tables.",
+              "icon": "leaf",
+              "displayOrder": 13,
+              "articleCount": 1
+            },
+            {
+              "id": "tools",
+              "name": "Tools",
+              "description": "Development tools, debugging techniques, and workflow tips.",
+              "icon": "tool",
+              "displayOrder": 14,
+              "articleCount": 4
+            },
+            {
+              "id": "vanilla-reference",
+              "name": "Vanilla Reference",
+              "description": "Comprehensive reference documentation for all vanilla Project Zomboid items, weapons, recipes, and game data.",
+              "icon": "database",
+              "displayOrder": 15,
+              "articleCount": 16
+            },
+            {
+              "id": "engine-analysis",
+              "name": "Engine Analysis",
+              "description": "How the Java engine behind the Lua API works: decompilation, zombie and vehicle internals, reflection, and performance.",
+              "icon": "gear",
+              "displayOrder": 16,
+              "articleCount": 18
+            }
+          ]
+        },
+        {
+          "id": "mapping",
+          "name": "Mapping",
+          "description": "Create custom maps with TileZed and WorldEd",
+          "icon": "map",
+          "displayOrder": 2,
+          "categories": [
+            {
+              "id": "video-tutorials",
+              "name": "Video Tutorials",
+              "description": "Complete 29-part video guide series for learning PZ map making from scratch",
+              "icon": "video",
+              "displayOrder": 1,
+              "articleCount": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "build-42",
+      "name": "Build 42",
+      "releaseDate": "2026-07-29",
       "status": "current",
-      "sections": ["modding", "mapping"]
+      "description": "The current stable build (42.20 and later). Modding, mapping, vehicles and the Outcast mods.",
+      "sections": [
+        {
+          "id": "modding",
+          "name": "Modding",
+          "description": "Scripts, Lua, crafting, items, traits, and the toolchain for building Build 42 mods from scratch.",
+          "icon": "plug",
+          "displayOrder": 1,
+          "categories": [
+            {
+              "id": "getting-started",
+              "name": "Getting Started",
+              "description": "Start here for what changed in Build 42 and how the readiness tracks are organized.",
+              "icon": "book",
+              "displayOrder": 1,
+              "articleCount": 1
+            },
+            {
+              "id": "foundations",
+              "name": "Foundations",
+              "description": "The Build 42 mod project structure, mod.info, registries.lua, load order, debug mode, and packaging.",
+              "icon": "book",
+              "displayOrder": 2,
+              "articleCount": 20
+            },
+            {
+              "id": "items-and-scripting",
+              "name": "Items and Scripting",
+              "description": "Item scripts, tags, workstations, tech tiers, and the timedAction block.",
+              "icon": "book",
+              "displayOrder": 3,
+              "articleCount": 13
+            },
+            {
+              "id": "crafting",
+              "name": "Crafting",
+              "description": "The craftRecipe schema: inputs, outputs, itemMappers, and how it differs from the legacy recipe block.",
+              "icon": "wrench",
+              "displayOrder": 4,
+              "articleCount": 6
+            },
+            {
+              "id": "fluids",
+              "name": "Fluids",
+              "description": "The Build 42 fluid system and FluidContainer component.",
+              "icon": "book",
+              "displayOrder": 5,
+              "articleCount": 3
+            },
+            {
+              "id": "lua-api",
+              "name": "Lua API",
+              "description": "Events, ModData, multiplayer command patterns, timed actions, and calling Java from Lua.",
+              "icon": "book",
+              "displayOrder": 6,
+              "articleCount": 17
+            },
+            {
+              "id": "farming-and-animals",
+              "name": "Farming and Animals",
+              "description": "Crops, foraging, and the AnimalDefinitions-driven living-animal system, including ranch zones.",
+              "icon": "book",
+              "displayOrder": 7,
+              "articleCount": 15
+            },
+            {
+              "id": "skills-and-traits",
+              "name": "Skills and Traits",
+              "description": "The Build 42 skill list, XP, traits, professions, and their modding APIs.",
+              "icon": "book",
+              "displayOrder": 8,
+              "articleCount": 19
+            },
+            {
+              "id": "world-and-tiles",
+              "name": "World and Tiles",
+              "description": "Multi-Z, basements, the tile and tiledef system, and the map-modding toolchain.",
+              "icon": "map",
+              "displayOrder": 9,
+              "articleCount": 13
+            },
+            {
+              "id": "ui",
+              "name": "UI",
+              "description": "The ISUIElement engine layer and the traps that only show up in a running game.",
+              "icon": "book",
+              "displayOrder": 10,
+              "articleCount": 2
+            },
+            {
+              "id": "cookbook",
+              "name": "Cookbook",
+              "description": "Copy-ready skeletons for every common Build 42 mod type, from a new item to a new vehicle.",
+              "icon": "wrench",
+              "displayOrder": 11,
+              "articleCount": 25
+            },
+            {
+              "id": "gotchas",
+              "name": "Gotchas",
+              "description": "Silent-failure traps and verified engine findings that contradict the plausible guess.",
+              "icon": "wrench",
+              "displayOrder": 12,
+              "articleCount": 2
+            },
+            {
+              "id": "tooling",
+              "name": "Tooling",
+              "description": "The OutcastLib and PZ-scripting checkers that catch what the engine fails on silently.",
+              "icon": "wrench",
+              "displayOrder": 13,
+              "articleCount": 8
+            },
+            {
+              "id": "multiplayer",
+              "name": "Multiplayer",
+              "description": "Server-authoritative facts and the traps that only surface in a dedicated-server round.",
+              "icon": "plug",
+              "displayOrder": 14,
+              "articleCount": 1
+            }
+          ]
+        },
+        {
+          "id": "mapping",
+          "name": "Mapping",
+          "description": "World, cell, building, tile, and zone authoring for Build 42 maps, from tool setup through packaging.",
+          "icon": "map",
+          "displayOrder": 2,
+          "categories": [
+            {
+              "id": "fundamentals",
+              "name": "Fundamentals",
+              "description": "Tool setup, cell geometry, world authoring from PNGs, and the Build 41 to Build 42 mapping delta.",
+              "icon": "map",
+              "displayOrder": 1,
+              "articleCount": 19
+            },
+            {
+              "id": "buildings-and-tiles",
+              "name": "Buildings and Tiles",
+              "description": "BuildingEd, room templates, tilesets, tiledefs, and tile slicing.",
+              "icon": "map",
+              "displayOrder": 2,
+              "articleCount": 2
+            },
+            {
+              "id": "zones-and-packaging",
+              "name": "Zones and Packaging",
+              "description": "objects.lua zones for vehicles, animals and loot, plus map mod folder structure and packaging.",
+              "icon": "map",
+              "displayOrder": 3,
+              "articleCount": 11
+            },
+            {
+              "id": "troubleshooting",
+              "name": "Troubleshooting",
+              "description": "Known mapping failure modes and their fixes, plus Lua load-order and distribution practices.",
+              "icon": "book",
+              "displayOrder": 4,
+              "articleCount": 2
+            },
+            {
+              "id": "sources",
+              "name": "Sources",
+              "description": "Link index and provenance for the Build 42 mapping reference.",
+              "icon": "book",
+              "displayOrder": 5,
+              "articleCount": 1
+            }
+          ]
+        },
+        {
+          "id": "vehicles",
+          "name": "Vehicles",
+          "description": "The verified Build 42 vehicle API, engine and UI reference, and how to animate a vehicle part.",
+          "icon": "car",
+          "displayOrder": 3,
+          "categories": [
+            {
+              "id": "reference",
+              "name": "Reference",
+              "description": "The verified Build 42 vehicle API, engine hooks, UI, and lessons learned building vehicle mods.",
+              "icon": "car",
+              "displayOrder": 1,
+              "articleCount": 6
+            },
+            {
+              "id": "animation",
+              "name": "Animation",
+              "description": "How to make a Build 42 vehicle part visibly animate, and the silent-failure catalogue behind it.",
+              "icon": "gear",
+              "displayOrder": 2,
+              "articleCount": 12
+            },
+            {
+              "id": "mod-studies",
+              "name": "Mod studies",
+              "description": "What Project Summer Car, the physics mods and the wider community vehicle mods actually do, read from their shipped files.",
+              "icon": "car",
+              "displayOrder": 3,
+              "articleCount": 29
+            }
+          ]
+        },
+        {
+          "id": "outcast-mods",
+          "name": "Outcast Mods",
+          "description": "Documentation for the Outcast mod family: overview, engine notes, API and multiplayer pages per mod.",
+          "icon": "gear",
+          "displayOrder": 4,
+          "categories": [
+            {
+              "id": "about",
+              "name": "About",
+              "description": "The principles the whole Outcast mod family is built against.",
+              "icon": "book",
+              "displayOrder": 0,
+              "articleCount": 1
+            },
+            {
+              "id": "outcast-911",
+              "name": "Outcast 911",
+              "description": "A 992-generation 911 for Build 42.",
+              "icon": "car",
+              "displayOrder": 1,
+              "articleCount": 1
+            },
+            {
+              "id": "outcast-hearing",
+              "name": "Outcast Hearing",
+              "description": "Gunfire damages your hearing, ear protection reduces it, and quiet time brings it back.",
+              "icon": "gear",
+              "displayOrder": 3,
+              "articleCount": 1
+            },
+            {
+              "id": "outcast-husbandry",
+              "name": "Outcast Husbandry",
+              "description": "Your animals get hungry and thirsty far more slowly, so a few days away does not come back to a dead herd.",
+              "icon": "gear",
+              "displayOrder": 4,
+              "articleCount": 2
+            },
+            {
+              "id": "outcast-ladders",
+              "name": "Outcast Ladders",
+              "description": "Climb the ladders that are already in the world.",
+              "icon": "gear",
+              "displayOrder": 5,
+              "articleCount": 12
+            },
+            {
+              "id": "outcast-lib",
+              "name": "Outcast Lib",
+              "description": "Shared runtime for the Outcast mod family. This mod adds no gameplay of its own.",
+              "icon": "gear",
+              "displayOrder": 6,
+              "articleCount": 15
+            },
+            {
+              "id": "outcast-light-load",
+              "name": "Outcast Light Load",
+              "description": "Hauling raw materials stops being the whole afternoon.",
+              "icon": "gear",
+              "displayOrder": 7,
+              "articleCount": 1
+            },
+            {
+              "id": "outcast-motors",
+              "name": "Outcast Motors",
+              "description": "The engine bay has run on a dedicated server; the fluids have not, and finding out is what this build is for.",
+              "icon": "car",
+              "displayOrder": 8,
+              "articleCount": 1
+            },
+            {
+              "id": "outcast-motors-animated",
+              "name": "Outcast Motors Animated",
+              "description": "Animated car panels for the vanilla vehicles: bonnets, doors, windows, boots and tailgates that open, with an engine bay behind the bonnet.",
+              "icon": "car",
+              "displayOrder": 9,
+              "articleCount": 1
+            },
+            {
+              "id": "outcast-motors-ui",
+              "name": "Outcast Motors UI",
+              "description": "A vehicle mechanics window that shows you the whole car at once, on the car.",
+              "icon": "car",
+              "displayOrder": 10,
+              "articleCount": 1
+            },
+            {
+              "id": "outcast-proximity",
+              "name": "Outcast Proximity",
+              "description": "Every container you can already reach, as one list.",
+              "icon": "gear",
+              "displayOrder": 11,
+              "articleCount": 1
+            },
+            {
+              "id": "outcast-punch",
+              "name": "Outcast Punch",
+              "description": "Punch zombies with your bare hands. The vanilla shove is untouched.",
+              "icon": "gear",
+              "displayOrder": 12,
+              "articleCount": 3
+            },
+            {
+              "id": "outcast-rip-all",
+              "name": "Outcast Rip All",
+              "description": "One context-menu button that rips every rippable garment in your inventory and the containers around you.",
+              "icon": "gear",
+              "displayOrder": 13,
+              "articleCount": 2
+            },
+            {
+              "id": "outcast-saw-all",
+              "name": "Outcast Saw All",
+              "description": "One context-menu button that saws every log you can get to, in your bags and on the ground around you.",
+              "icon": "gear",
+              "displayOrder": 14,
+              "articleCount": 2
+            },
+            {
+              "id": "outcast-stow-all",
+              "name": "Outcast Stow All",
+              "description": "One button files your mixed loot into the containers around you that already hold that item.",
+              "icon": "gear",
+              "displayOrder": 15,
+              "articleCount": 1
+            },
+            {
+              "id": "outcast-upright",
+              "name": "Outcast Upright",
+              "description": "Right an overturned car, truck or trailer with a jack and some sweat.",
+              "icon": "car",
+              "displayOrder": 16,
+              "articleCount": 2
+            }
+          ]
+        }
+      ]
     }
   ]
 }

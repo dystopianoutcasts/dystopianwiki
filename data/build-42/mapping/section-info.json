@@ -1,0 +1,7 @@
+{
+  "id": "mapping",
+  "name": "Mapping",
+  "description": "World, cell, building, tile, and zone authoring for Build 42 maps, from tool setup through packaging.",
+  "icon": "map",
+  "articleCount": 35
+}

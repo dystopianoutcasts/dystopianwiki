@@ -1,0 +1,107 @@
+{
+  "id": "ai-assisted-research-methodology",
+  "title": "AI Research Methodology",
+  "slug": "research-methodology",
+  "version": "build-41",
+  "section": "modding",
+  "category": "ai-assisted",
+  "tags": [
+    "intermediate",
+    "ai",
+    "research",
+    "workflow",
+    "methodology",
+    "documentation"
+  ],
+  "content": "# AI Research Methodology\n\n## Overview\n\nThe most effective way to use AI for modding isn't to point it at code and say \"copy this.\" AI models work best when they have **deep understanding** of the problem they're solving. This guide teaches a research-first methodology that dramatically improves AI output quality.\n\n## The Core Principle\n\nAI models have vast training data, but that knowledge isn't always \"active\" during your conversation. When you ask AI to research a topic and write documentation about it, two things happen:\n\n1. **The AI retrieves and synthesizes** relevant knowledge from its training\n2. **That understanding becomes part of the active context** - it's \"fresh\" in the AI's mind\n\nThis is fundamentally different from pasting raw code. Raw code gives the AI *syntax* to copy. Research documentation gives the AI *understanding* to apply.\n\n## The Research-First Workflow\n\n```\n┌─────────────────────────────────────────────────────────────┐\n│                    RESEARCH PHASE                           │\n├─────────────────────────────────────────────────────────────┤\n│  1. Identify → What vanilla/mod feature is closest?         │\n│  2. Research → Have AI study that functionality             │\n│  3. Document → AI writes explanation with examples          │\n└─────────────────────────────────────────────────────────────┘\n                            ↓\n┌─────────────────────────────────────────────────────────────┐\n│                  IMPLEMENTATION PHASE                       │\n├─────────────────────────────────────────────────────────────┤\n│  4. Reference → Point AI to the documentation it wrote      │\n│  5. Implement → AI creates your mod with full understanding │\n└─────────────────────────────────────────────────────────────┘\n```\n\n## Step 1: Identify the Closest Equivalent\n\nBefore asking AI to build anything, ask yourself:\n\n> \"What existing feature in vanilla PZ or another mod is closest to what I want?\"\n\nThis is critical. If you want to create:\n- A new weapon → Research how vanilla weapons work\n- A crafting system → Research vanilla recipes and crafting\n- A custom UI → Research existing UI implementations\n- A timed event → Research how vanilla handles scheduled events\n\n### Example: Custom Fishing Rod\n\nYou want to create a custom fishing rod with special properties.\n\n**Wrong approach:** \"Make me a fishing rod item\"\n\n**Right approach:** First identify that vanilla already has fishing rods. Your research target is the vanilla fishing system.\n\n## Step 2: Direct the AI to Research\n\nNow ask the AI to research that specific functionality. Be explicit about:\n- The game version (Build 41, Build 42, etc.)\n- What aspects to focus on\n- That you want a documentation-style output\n\n### Research Prompt Template\n\n```\nI'm modding Project Zomboid Build 41.\n\nI need you to research [SPECIFIC FEATURE] thoroughly. \n\nPlease write a markdown document that explains:\n1. How this feature works in vanilla\n2. The relevant file locations and structure\n3. Key properties/parameters and what they do\n4. Code examples with explanations\n5. Common patterns and conventions\n6. Any quirks or gotchas to be aware of\n\nSearch for Build 41 specific information. I want to understand \nthis deeply before implementing my own version.\n```\n\n### Example Research Request\n\n```\nI'm modding Project Zomboid Build 41.\n\nI need you to research the vanilla fishing system thoroughly.\n\nPlease write a markdown document that explains:\n1. How fishing works in vanilla (mechanics, items, skills)\n2. Where fishing-related files are located\n3. The FishingRod item properties and what each does\n4. How the fishing action/timed action works in Lua\n5. How fish are defined and caught\n6. Common patterns for fishing-related recipes\n\nSearch for Build 41 specific information. I want to understand\nthis deeply before implementing my custom fishing rod.\n```\n\n## Step 3: AI Produces Documentation\n\nThe AI will produce a comprehensive document. This document contains:\n\n- **Explanations** - Not just code, but *why* things work\n- **Examples** - Real syntax from vanilla or documented sources\n- **Context** - How pieces connect together\n- **Patterns** - Conventions that should be followed\n\n### What Good Research Output Looks Like\n\n```markdown\n# Project Zomboid Fishing System (Build 41)\n\n## Overview\nThe fishing system in PZ involves several interconnected components:\nthe fishing rod item, the fishing action (timed action), fish items,\nand the fishing skill...\n\n## File Locations\n- Items: `media/scripts/items_fishing.txt`\n- Lua Actions: `media/lua/client/TimedActions/ISFishingAction.lua`\n- Fish Definitions: `media/scripts/items_food.txt`\n\n## FishingRod Item Properties\n\n| Property | Type | Description |\n|----------|------|-------------|\n| `UseWhileEquipped` | boolean | Allows use from hotbar |\n| `UseDelta` | float | Condition loss per use |\n| `FishingLure` | boolean | Whether it has a lure attached |\n\n## Example: Vanilla Fishing Rod\n```lua\nitem FishingRod {\n    Weight = 1.5,\n    Type = Normal,\n    DisplayName = Fishing Rod,\n    Icon = FishingRod,\n    UseWhileEquipped = TRUE,\n    ...\n}\n```\n\n## How Fishing Actions Work\nThe `ISFishingAction` extends `ISBaseTimedAction` and...\n\n[continues with detailed explanations]\n```\n\n## Step 4: Reference the Documentation\n\nNow comes the key insight: **point the AI back to its own documentation**.\n\nThe documentation is now part of your conversation context. The AI has:\n- Retrieved the relevant knowledge\n- Organized it coherently\n- Made it \"active\" in the current session\n\n### Implementation Prompt Template\n\n```\nBased on the fishing system documentation above, I now want to \ncreate a custom fishing rod for my mod.\n\nRequirements:\n- [Your specific requirements]\n- [More requirements]\n\nUsing the patterns and syntax from the documentation, please create:\n1. The item definition\n2. Any necessary Lua modifications\n3. Related recipes if applicable\n\nFollow the conventions documented above.\n```\n\n## Step 5: Implement with Understanding\n\nThe AI now creates your mod content with:\n- **Correct syntax** - Because it just documented the exact format\n- **Proper conventions** - Because it analyzed vanilla patterns\n- **Appropriate structure** - Because it understands how pieces connect\n- **Fewer errors** - Because it's working from understanding, not guessing\n\n## Targeting Specific Builds\n\nPZ modding differs significantly between builds. Always specify your target:\n\n### Build 41 Research\n```\nResearch this for Project Zomboid Build 41 specifically.\nBuild 41 uses the older Lua API and ISUI system.\n```\n\n### Build 42 Research\n```\nResearch this for Project Zomboid Build 42 specifically.\nBuild 42 introduced significant changes including [relevant changes].\nLook for Build 42 documentation and changelogs.\n```\n\nThe AI can also search online for build-specific information, API changes, and community documentation.\n\n## Using Online Sources\n\nAsk the AI to incorporate online research:\n\n```\nResearch the PZ vehicle system for Build 41.\n\nPlease also search for:\n- PZ Wiki documentation on vehicles\n- Community modding guides for vehicle mods\n- The PZ Modding Discord resources\n- GitHub examples of vehicle mods\n\nCombine what you find with your existing knowledge to create\ncomprehensive documentation.\n```\n\n## Practical Example: Complete Workflow\n\n### Goal: Create a Custom Weapon with Special Effects\n\n**Session 1: Research**\n\n```\nUser: I want to create a weapon that sets zombies on fire when it hits them.\n      First, I need to understand how weapons work in PZ Build 41.\n      \n      Please research and document:\n      1. Weapon item definitions (melee focus)\n      2. How weapon damage/effects are processed in Lua\n      3. How vanilla handles special weapon effects\n      4. The OnWeaponHitCharacter event or similar\n      5. How fire/burning works on characters\n      \n      Write this as a reference document I can use.\n\nAI: [Produces comprehensive documentation on weapons and damage]\n```\n\n**Session 1: Implement**\n\n```\nUser: Based on your documentation above, create my fire weapon:\n      - A torch club that has a chance to ignite zombies\n      - Uses the OnWeaponHitCharacter hook you documented\n      - Moderate damage, slow swing\n      - Follows vanilla weapon conventions\n\nAI: [Creates weapon with correct syntax and working Lua code]\n```\n\n## Saving Research Documents\n\nDon't lose your research! Save valuable documentation:\n\n```\nMyMod/\n├── _ai_research/\n│   ├── fishing_system.md\n│   ├── weapon_effects.md\n│   ├── timed_actions.md\n│   └── vehicle_mechanics.md\n├── media/\n└── mod.info\n```\n\nBenefits:\n- Reference for future sessions\n- Share with other modders\n- Track what you've learned\n- Paste into new AI conversations\n\n## Why This Works Better Than Copy-Paste\n\n| Approach | What AI Has | Result |\n|----------|-------------|--------|\n| \"Copy this code\" | Raw syntax | May miss context, wrong assumptions |\n| \"Look at this file\" | Structure only | Doesn't understand purpose |\n| **Research methodology** | Deep understanding | Correct, contextual output |\n\nWhen AI researches and documents, it:\n- Activates relevant knowledge from training\n- Connects concepts together\n- Identifies patterns and conventions\n- Creates a mental model of the system\n\nThis mental model then informs every line of code it writes.\n\n## Common Mistakes to Avoid\n\n### Mistake 1: Skipping Research\n```\n❌ \"Make me a custom vehicle\"\n✓ \"First, research how vehicles work in PZ Build 41, then we'll create one\"\n```\n\n### Mistake 2: Too Broad\n```\n❌ \"Research everything about PZ modding\"\n✓ \"Research specifically how timed actions work in PZ Build 41\"\n```\n\n### Mistake 3: Not Specifying Build\n```\n❌ \"How do recipes work in PZ?\"\n✓ \"How do recipes work in PZ Build 41? Include evolved recipes.\"\n```\n\n### Mistake 4: Forgetting to Reference\n```\n❌ [Get documentation] → [Start new topic without referencing it]\n✓ [Get documentation] → \"Based on the documentation above, create...\"\n```\n\n## Key Takeaways\n\n1. **Research before implementation** - Understanding beats copying\n2. **AI documentation activates knowledge** - It becomes \"fresh\" context\n3. **Specify your build version** - 41 and 42 differ significantly  \n4. **Target specific systems** - Focused research produces better results\n5. **Reference the documentation** - Point AI back to what it wrote\n6. **Save your research** - Build a knowledge base over time\n\n## Next Steps\n\nCombine this methodology with:\n- **Context Library** - Store research documents for reuse\n- **Good Prompts** - Structure your research requests effectively\n- **Debugging with AI** - Use research docs when troubleshooting",
+  "excerpt": "Learn a research-first approach to AI-assisted modding where AI documents and understands game systems before implementing changes, resulting in dramatically better output quality.",
+  "lastUpdated": "2026-01-19",
+  "difficulty": "intermediate",
+  "tableOfContents": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "the-core-principle",
+      "text": "The Core Principle",
+      "level": 2
+    },
+    {
+      "id": "the-research-first-workflow",
+      "text": "The Research-First Workflow",
+      "level": 2
+    },
+    {
+      "id": "step-1-identify-the-closest-equivalent",
+      "text": "Step 1: Identify the Closest Equivalent",
+      "level": 2
+    },
+    {
+      "id": "step-2-direct-the-ai-to-research",
+      "text": "Step 2: Direct the AI to Research",
+      "level": 2
+    },
+    {
+      "id": "step-3-ai-produces-documentation",
+      "text": "Step 3: AI Produces Documentation",
+      "level": 2
+    },
+    {
+      "id": "step-4-reference-the-documentation",
+      "text": "Step 4: Reference the Documentation",
+      "level": 2
+    },
+    {
+      "id": "step-5-implement-with-understanding",
+      "text": "Step 5: Implement with Understanding",
+      "level": 2
+    },
+    {
+      "id": "targeting-specific-builds",
+      "text": "Targeting Specific Builds",
+      "level": 2
+    },
+    {
+      "id": "using-online-sources",
+      "text": "Using Online Sources",
+      "level": 2
+    },
+    {
+      "id": "practical-example-complete-workflow",
+      "text": "Practical Example: Complete Workflow",
+      "level": 2
+    },
+    {
+      "id": "saving-research-documents",
+      "text": "Saving Research Documents",
+      "level": 2
+    },
+    {
+      "id": "why-this-works-better-than-copy-paste",
+      "text": "Why This Works Better Than Copy-Paste",
+      "level": 2
+    },
+    {
+      "id": "common-mistakes-to-avoid",
+      "text": "Common Mistakes to Avoid",
+      "level": 2
+    },
+    {
+      "id": "key-takeaways",
+      "text": "Key Takeaways",
+      "level": 2
+    },
+    {
+      "id": "next-steps",
+      "text": "Next Steps",
+      "level": 2
+    }
+  ],
+  "nextSteps": [
+    {"title": "Building a Context Library", "url": "/build-41/modding/ai-assisted/context-library", "description": "Store and organize your research documents"},
+    {"title": "Writing Good Prompts", "url": "/build-41/modding/ai-assisted/writing-prompts", "description": "Structure your research requests effectively"},
+    {"title": "AI for Debugging", "url": "/build-41/modding/ai-assisted/ai-debugging", "description": "Use research docs when troubleshooting"}
+  ]
+}

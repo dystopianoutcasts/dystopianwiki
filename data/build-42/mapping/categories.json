@@ -1,0 +1,44 @@
+{
+  "categories": [
+    {
+      "id": "fundamentals",
+      "name": "Fundamentals",
+      "description": "Tool setup, cell geometry, world authoring from PNGs, and the Build 41 to Build 42 mapping delta.",
+      "icon": "map",
+      "articleCount": 19,
+      "displayOrder": 1
+    },
+    {
+      "id": "buildings-and-tiles",
+      "name": "Buildings and Tiles",
+      "description": "BuildingEd, room templates, tilesets, tiledefs, and tile slicing.",
+      "icon": "map",
+      "articleCount": 2,
+      "displayOrder": 2
+    },
+    {
+      "id": "zones-and-packaging",
+      "name": "Zones and Packaging",
+      "description": "objects.lua zones for vehicles, animals and loot, plus map mod folder structure and packaging.",
+      "icon": "map",
+      "articleCount": 11,
+      "displayOrder": 3
+    },
+    {
+      "id": "troubleshooting",
+      "name": "Troubleshooting",
+      "description": "Known mapping failure modes and their fixes, plus Lua load-order and distribution practices.",
+      "icon": "book",
+      "articleCount": 2,
+      "displayOrder": 4
+    },
+    {
+      "id": "sources",
+      "name": "Sources",
+      "description": "Link index and provenance for the Build 42 mapping reference.",
+      "icon": "book",
+      "articleCount": 1,
+      "displayOrder": 5
+    }
+  ]
+}
