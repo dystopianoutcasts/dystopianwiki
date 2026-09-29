@@ -1,7 +1,6 @@
-// Unused for now: the home page panel is a static map picture (2026-09-29); kept for a later live-status phase.
 /**
- * Cached Supabase client for the `aurora` schema, used only by the read-only
- * "server right now" panel on the home page (components/landing/ServerNow.tsx).
+ * Cached Supabase client for the `aurora` schema, used only by the home page
+ * map to read online player positions (hooks/useServerNow.ts).
  *
  * This is deliberately a second, separate client from lib/supabase.ts: that one
  * talks to the public wiki schema with VITE_SUPABASE_ANON_KEY, this one talks to

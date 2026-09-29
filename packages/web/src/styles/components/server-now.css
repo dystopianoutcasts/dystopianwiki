@@ -28,10 +28,10 @@
   letter-spacing: 0.02em;
 }
 
-/* The box is locked to the world's aspect ratio (set inline); the grid tracks
-   are proportional to the real tile sizes, so the partial edge tiles fit. */
-.server-now__map {
-  display: grid;
+/* The frame is locked to the world's aspect ratio (set inline) and holds two
+   layers of the same size: the stitched picture and the player dots. */
+.server-now__frame {
+  position: relative;
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
@@ -40,6 +40,34 @@
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-md);
+}
+
+/* The grid tracks are proportional to the real tile sizes, so the partial
+   edge tiles fit. */
+.server-now__map {
+  display: grid;
+  width: 100%;
+  height: 100%;
+}
+
+.server-now__dots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* One online player. The dark ring keeps the dot readable on light terrain
+   and the pale halo keeps it readable on dark terrain, so colour alone never
+   carries it. */
+.server-now__dot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background: var(--color-link);
+  border: 2px solid var(--color-background);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.55);
 }
 
 .server-now__map-tile {
