@@ -117,7 +117,7 @@ It was found by another modder reading a server log, not by us. The boot self
 test is the only reason it was visible at all, which is why this version still
 has one and why its lines now state only what was measured.
 
-[docs/DESIGN.md](/pz/build-42/outcast-mods/outcast-husbandry/outcast-husbandry-design) records the dead end in full, including the two
+docs/DESIGN.md (not yet published) records the dead end in full, including the two
 other levers that also fail, so nobody rebuilds on it.
 
 ## Development

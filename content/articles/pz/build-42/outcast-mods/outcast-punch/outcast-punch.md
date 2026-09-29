@@ -58,7 +58,7 @@ Full chain with citations: [docs/ENGINE.md](/pz/build-42/outcast-mods/outcast-pu
 
 | doc | what is in it |
 |-----|---------------|
-| [docs/DESIGN.md](/pz/build-42/outcast-mods/outcast-punch/outcast-punch-design) | the interaction, balance numbers, the Fist skill, cadence tuning history, planned work |
+| docs/DESIGN.md (not yet published) | the interaction, balance numbers, the Fist skill, cadence tuning history, planned work |
 | [docs/ENGINE.md](/pz/build-42/outcast-mods/outcast-punch/outcast-punch-engine) | every engine fact this mod depends on, with `file:line` citations |
 | docs/ARCHITECTURE.md (local reference: ARCHITECTURE.md) | module layout, logging, the boot contract, diagnostics, house rules, dev deploy |
 | [docs/MULTIPLAYER.md](/pz/build-42/outcast-mods/outcast-punch/outcast-punch-multiplayer) | what is proven in MP, why a dedicated server may differ, the test, and the fix |
@@ -170,11 +170,11 @@ punch, and the push key being swallowed while aiming. See
 - **A blocked hand costs about 5% of your punch rate and nothing else**, since
   the surviving hand is usually healthy. That follows from choosing "skip" over
   "fail" and may be fine — flagged in
-  [docs/DESIGN.md](/pz/build-42/outcast-mods/outcast-punch/outcast-punch-design#injured-hands-rules) rather than silently
+  docs/DESIGN.md (not yet published) rather than silently
   changed.
 
 Not yet done: skill books, traits, endurance and strain costs, sounds, sandbox
-options. See [docs/DESIGN.md](/pz/build-42/outcast-mods/outcast-punch/outcast-punch-design#planned).
+options. See docs/DESIGN.md (not yet published).
 
 Multi-hit is **not available** — the engine clamps a bare-handed shove to one
 target in two separate places. An earlier note here claiming otherwise was wrong.

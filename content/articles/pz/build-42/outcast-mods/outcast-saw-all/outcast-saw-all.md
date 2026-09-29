@@ -95,7 +95,7 @@ alongside this one for the tests to run.**
 
 ## Dependency
 
-**Requires [OutcastLib](../OutcastLib/)**, declared as `require=OutcastLib` in
+**Requires OutcastLib (local reference: ../OutcastLib/)**, declared as `require=OutcastLib` in
 `mod.info`. The game loads it first and marks this mod unavailable, with a logged
 warning, if it is not installed.
 

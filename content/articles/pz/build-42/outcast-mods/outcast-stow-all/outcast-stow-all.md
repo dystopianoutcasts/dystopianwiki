@@ -25,7 +25,7 @@ hold that item**. Anything with no home stays on you.
 
 Project Zomboid **B42 only** (`versionMin=42.20.0`).
 **Mod id:** `OutcastStowAll` | **Author:** Raxdeg / Dystopian Outcasts
-**Requires:** [`OutcastLib`](../OutcastLib) -- `require=OutcastLib` in `mod.info`.
+**Requires:** `OutcastLib` (local reference: ../OutcastLib) -- `require=OutcastLib` in `mod.info`.
 
 > # ABANDONED -- 2026-08-05
 >

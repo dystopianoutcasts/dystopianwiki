@@ -146,7 +146,7 @@ number 7.4 times larger, at the cost of either reaching `CombatManager` from Lua
 directly, so difficulty tuning affects us normally.
 
 **Corollary:** point 2 is why the Fist skill applies its own multipliers instead
-of expecting `getWeaponLevel` to notice it. See [DESIGN.md](/pz/build-42/outcast-mods/outcast-punch/outcast-punch-design#fist-skill).
+of expecting `getWeaponLevel` to notice it. See DESIGN.md (not yet published).
 
 ---
 
@@ -990,7 +990,7 @@ nothing. `OutcastPunch.dump()` reports it per clip.
 ### `isAiming`
 
 `IsoPlayer.java:3819`. This is the whole punch-vs-shove gate — see
-[DESIGN.md](/pz/build-42/outcast-mods/outcast-punch/outcast-punch-design#interaction).
+DESIGN.md (not yet published).
 
 ### Damage rolls
 

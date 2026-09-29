@@ -205,7 +205,7 @@ wall of the square to the east. `getWallHoppableTo` reflects this — for
 `climbSheetE` and `climbSheetS` are real and we set them, so E/S ladders climb.
 Their top object would have to sit on the neighbouring square carrying the
 opposite side's flags, which is not implemented. See
-[DESIGN.md](/pz/build-42/outcast-mods/outcast-ladders/outcast-ladders-design#directions).
+DESIGN.md (not yet published).
 
 ---
 
