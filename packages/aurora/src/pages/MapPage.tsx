@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import { getAurora } from '../lib/supabase'
 import { MapView, MIN_ZOOM } from '../map/MapView'
@@ -6,25 +6,8 @@ import type { TilesConfig } from '../map/tiles'
 import { parseView, writeView } from '../state/url'
 import type { MapView as View } from '../state/url'
 import { loadLayerPrefs, saveLayerPrefs } from '../state/layerPrefs'
-import type { LayerKey, LayerPrefs } from '../state/layerPrefs'
-import { useDataset } from '../data/useDataset'
-import {
-  fetchLatestHealth,
-  fetchHealthSince,
-  fetchMapObjects,
-  fetchMyLinkCodes,
-  fetchPlayerProfiles,
-  fetchPositions,
-  fetchSafehouses,
-  fetchVehicles,
-  fetchVisibility,
-  fetchZombieGrid,
-  fetchZones,
-} from '../data/queries'
-import { subscribeAurora } from '../data/realtime'
-import type { RealtimeState } from '../data/realtime'
-import { appendSample, newest } from '../data/health'
-import type { HealthSample } from '../data/types'
+import type { LayerKey } from '../state/layerPrefs'
+import { useAuroraData } from '../data/useAuroraData'
 import {
   heatPoints,
   objectFeatures,
@@ -38,7 +21,6 @@ import { RosterPanel } from '../panels/Roster'
 import { LayerToggles } from '../panels/LayerToggles'
 
 const DEFAULT_VIEW: View = { x: 10770, y: 10271, zoom: 9 }
-const HEALTH_WINDOW_MINUTES = 60
 
 function useTilesConfig(): { cfg: TilesConfig | null; error: string | null } {
   const [cfg, setCfg] = useState<TilesConfig | null>(null)
@@ -65,74 +47,25 @@ export function MapPage() {
   const { user } = useAuth()
   const { cfg, error: cfgError } = useTilesConfig()
 
-  const [prefs, setPrefs] = useState<LayerPrefs>(() => loadLayerPrefs())
+  const [prefs, setPrefs] = useState(() => loadLayerPrefs())
   const [sheetOpen, setSheetOpen] = useState(false)
-  const [rt, setRt] = useState<RealtimeState>('connecting')
-  const [now, setNow] = useState(() => Date.now())
 
-  const profiles = useDataset(true, () => fetchPlayerProfiles(client, serverId), 30_000)
-  const positions = useDataset(true, () => fetchPositions(client, serverId), 30_000)
-  const vehicles = useDataset(prefs.vehicles, () => fetchVehicles(client, serverId), 60_000)
-  const safehouses = useDataset(prefs.safehouses, () => fetchSafehouses(client, serverId), 60_000)
-  const zones = useDataset(prefs.zones, () => fetchZones(client, serverId), 300_000)
-  const grid = useDataset(prefs.zombieHeat, () => fetchZombieGrid(client, serverId), 60_000)
-  const objects = useDataset(prefs.mapObjects, () => fetchMapObjects(client, serverId), 300_000)
-  const visibility = useDataset(true, async () => {
-    const v = await fetchVisibility(client)
-    return v ? [v] : []
-  }, null)
-  const myCodes = useDataset(user !== null, () => fetchMyLinkCodes(client), 60_000)
-  const healthSince = useDataset(true, () => fetchHealthSince(client, serverId, HEALTH_WINDOW_MINUTES), 60_000)
-  const healthLatest = useDataset(true, async () => {
-    const l = await fetchLatestHealth(client, serverId)
-    return l ? [l] : []
-  }, 60_000)
-  const [live, setLive] = useState<HealthSample[]>([])
-
-  // What the caller may see depends on who they are, so reload when they sign in or out.
-  const uid = user?.id ?? null
-  useEffect(() => {
-    positions.refresh()
-    vehicles.refresh()
-    // refresh functions are stable; only the identity change should trigger this
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uid])
-
-  // Realtime: only says "something changed"; the database decides what this caller may see.
-  const vehiclesOnRef = useRef(prefs.vehicles)
-  vehiclesOnRef.current = prefs.vehicles
-  const refreshPositions = positions.refresh
-  const refreshVehicles = vehicles.refresh
-  useEffect(() => {
-    return subscribeAurora(client, serverId, {
-      onPositionsChanged: refreshPositions,
-      onVehiclesChanged: () => {
-        if (vehiclesOnRef.current) refreshVehicles()
-      },
-      onHealthSample: (row) => setLive((prev) => appendSample(prev, row, HEALTH_WINDOW_MINUTES)),
-      onState: setRt,
-    })
-  }, [client, serverId, refreshPositions, refreshVehicles])
-
-  // Tick once a minute so "reported N min ago" stays honest without a new sample.
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 60_000)
-    return () => clearInterval(id)
-  }, [])
-
-  const samples = useMemo(
-    () => live.reduce((acc, row) => appendSample(acc, row, HEALTH_WINDOW_MINUTES, now), healthSince.data),
-    [healthSince.data, live, now],
-  )
-  const latest = useMemo(
-    () => newest(healthLatest.data[0] ?? null, live.length ? live[live.length - 1] : null),
-    [healthLatest.data, live],
-  )
-
-  const own = useMemo(
-    () => new Set(myCodes.data.filter((c) => c.consumed_at && c.username).map((c) => c.username as string)),
-    [myCodes.data],
-  )
+  const {
+    profiles,
+    positions,
+    vehicles,
+    safehouses,
+    zones,
+    grid,
+    objects,
+    visibility,
+    healthError,
+    samples,
+    latest,
+    own,
+    now,
+    statusText,
+  } = useAuroraData(client, serverId, prefs, user)
 
   const players = useMemo(() => playerFeatures(positions.data, profiles.data), [positions.data, profiles.data])
   const vehicleList = useMemo(() => vehicleFeatures(vehicles.data), [vehicles.data])
@@ -183,8 +116,6 @@ export function MapPage() {
   if (cfgError) return <p className="page-note error" role="alert">Could not load the map settings. {cfgError}</p>
   if (!cfg || !initialView) return <p className="page-note" role="status">Loading map...</p>
 
-  const rtText = rt === 'live' ? 'Live updates on' : rt === 'connecting' ? 'Connecting to live updates' : 'Live updates paused; refreshing every 30 seconds'
-
   return (
     <div className="aurora-shell">
       <MapView
@@ -211,9 +142,9 @@ export function MapPage() {
         {sheetOpen ? 'Hide panels' : 'Show panels'}
       </button>
       <aside id="aurora-side" className={sheetOpen ? 'aurora-side open' : 'aurora-side'} aria-label="Server information">
-        <p className="rt-status" role="status">{rtText}</p>
+        <p className="rt-status" role="status">{statusText}</p>
         <RosterPanel profiles={profiles.data} error={profiles.error} />
-        <HealthPanel latest={latest} samples={samples} error={healthLatest.error ?? healthSince.error} now={now} />
+        <HealthPanel latest={latest} samples={samples} error={healthError} now={now} />
         <LayerToggles prefs={prefs} onChange={setLayer} notes={notes} />
       </aside>
     </div>

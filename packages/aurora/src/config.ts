@@ -7,6 +7,18 @@ export interface AuroraConfig {
 
 export const DEFAULT_SERVER_ID = 'outcasts-main'
 
+/**
+ * The ingest writes one batch a minute (aurora.enable_ingest_cron's pg_cron schedule,
+ * '* * * * *', supabase/migrations/012/015). Polling faster than this reads the same
+ * rows again for no benefit, so every dataset's interval is a multiple of this one
+ * constant: a later cron cadence change is then one edit here.
+ */
+export const INGEST_INTERVAL_MS = 60_000
+/** Safehouses change rarely; polled at 5x the ingest interval. */
+export const SLOW_POLL_MS = INGEST_INTERVAL_MS * 5
+/** Zones and map objects change rarer still; polled at 10x the ingest interval. */
+export const VERY_SLOW_POLL_MS = INGEST_INTERVAL_MS * 10
+
 /** Pure so it can be tested; main code passes import.meta.env. */
 export function readConfig(env: {
   VITE_SUPABASE_URL?: string

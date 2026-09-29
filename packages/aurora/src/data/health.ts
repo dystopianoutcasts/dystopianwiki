@@ -17,13 +17,6 @@ export function appendSample(
   return [...byT.values()].filter((s) => Date.parse(s.t) >= cutoff).sort((a, b) => Date.parse(a.t) - Date.parse(b.t))
 }
 
-/** Newest of two samples, treating null as older than anything. */
-export function newest(a: HealthSample | null, b: HealthSample | null): HealthSample | null {
-  if (!a) return b
-  if (!b) return a
-  return Date.parse(b.t) >= Date.parse(a.t) ? b : a
-}
-
 /** Memory used as a whole percentage, or null when either figure is missing or the maximum is zero. */
 export function memoryPercent(s: HealthSample): number | null {
   if (s.memory_used == null || s.memory_max == null || s.memory_max <= 0) return null

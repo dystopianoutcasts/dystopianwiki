@@ -1,0 +1,49 @@
+// Structural checks, not a runtime hook test: this vitest project's `test.environment`
+// is 'node' (no jsdom), and this monorepo has no working React test setup anywhere -
+// zero existing .test.tsx files. Rendering useAuroraData with @testing-library/react
+// hits a pre-existing, out-of-scope problem: the repo root's package.json pins
+// react@19.1.0 directly (nothing at the root actually renders React; this looks like
+// a leftover) while react-dom stays at 18.3.1, hoisted from packages/web/aurora's
+// ^18.3.1 range. react-dom's own internal require('react') resolves to the root's
+// mismatched 19.1.0 copy regardless of Vite alias/dedupe/deps.inline settings, so any
+// component or hook render throws "Cannot read properties of undefined (reading
+// 'ReactCurrentDispatcher')". Fixing that means editing the repo root's package.json,
+// which is outside this task's declared scope (Dystopian_Wiki, packages/aurora/ only).
+// These tests instead assert directly on the source text, which still catches the two
+// T19 mutations named in the task ("subscription left in", "health poll removed")
+// deterministically and without the environment problem.
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { describe, expect, it } from 'vitest'
+
+const useAuroraData = readFileSync(fileURLToPath(new URL('./useAuroraData.ts', import.meta.url)), 'utf8')
+const mapPage = readFileSync(fileURLToPath(new URL('../pages/MapPage.tsx', import.meta.url)), 'utf8')
+
+describe('T19: no realtime channel on the public map path', () => {
+  it('useAuroraData never calls .channel(...) or imports the deleted realtime module', () => {
+    expect(useAuroraData).not.toMatch(/\.channel\(/)
+    expect(useAuroraData).not.toMatch(/subscribeAurora|from '\.\/realtime'|from '\.\.\/data\/realtime'/)
+  })
+
+  it('MapPage no longer wires up a realtime subscription', () => {
+    expect(mapPage).not.toMatch(/\.channel\(/)
+    expect(mapPage).not.toMatch(/subscribeAurora|from '\.\.\/data\/realtime'/)
+  })
+})
+
+describe('T19: the health series is wired to a poll, not a push', () => {
+  it('useAuroraData calls fetchHealthSince and feeds its result into the returned series', () => {
+    expect(useAuroraData).toMatch(/fetchHealthSince/)
+    // The health series is derived by folding the polled dataset's own `.data`, not
+    // from a separately accumulated push-event array (the old `live`/`onHealthSample`
+    // state). Anchored on `.reduce(` specifically: a bare `healthSince.data` mention
+    // (e.g. in a `typeof` annotation) would still be true if the fold were deleted.
+    expect(useAuroraData).toMatch(/healthSince\.data\.reduce\(/)
+    expect(useAuroraData).not.toMatch(/onHealthSample|setLive\b/)
+  })
+
+  it('the health dataset polls at INGEST_INTERVAL_MS, not a push-driven interval of null', () => {
+    const call = useAuroraData.match(/fetchHealthSince\([^)]*\)[\s\S]{0,80}/)?.[0] ?? ''
+    expect(call).toMatch(/INGEST_INTERVAL_MS/)
+  })
+})

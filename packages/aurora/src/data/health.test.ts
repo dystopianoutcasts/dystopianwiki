@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { appendSample, describeTick, isStale, memoryPercent, newest } from './health'
+import { appendSample, describeTick, isStale, memoryPercent } from './health'
 import type { HealthSample } from './types'
 
 function sample(t: string, over: Partial<HealthSample> = {}): HealthSample {
@@ -30,18 +30,6 @@ describe('appendSample keeps a sliding window', () => {
   it('sorts an out-of-order arrival', () => {
     const out = appendSample([sample('2026-09-28T11:59:00Z')], sample('2026-09-28T11:57:00Z'), 60, now)
     expect(out.map((s) => s.t)).toEqual(['2026-09-28T11:57:00Z', '2026-09-28T11:59:00Z'])
-  })
-})
-
-describe('newest', () => {
-  it('picks the later sample and handles nulls', () => {
-    const a = sample('2026-09-28T11:00:00Z')
-    const b = sample('2026-09-28T11:30:00Z')
-    expect(newest(a, b)).toBe(b)
-    expect(newest(b, a)).toBe(b)
-    expect(newest(null, a)).toBe(a)
-    expect(newest(a, null)).toBe(a)
-    expect(newest(null, null)).toBeNull()
   })
 })
 

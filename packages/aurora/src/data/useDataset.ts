@@ -8,7 +8,7 @@ export interface Dataset<T> {
 }
 
 /**
- * Load a list, optionally on a timer, and expose a manual refresh for realtime events.
+ * Load a list, optionally on a timer, and expose a manual refresh (e.g. on sign-in/out).
  * `enabled = false` skips the request (used for layers that are switched off). A stale
  * response from an earlier request never overwrites a newer one.
  */
