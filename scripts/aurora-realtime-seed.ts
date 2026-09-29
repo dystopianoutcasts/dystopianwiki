@@ -16,9 +16,11 @@
  * it is signed in as an aurora admin. The brief allows "a signed-in admin
  * session or a temporary permissive policy". A temporary user is the smaller
  * footprint: no DDL on the live schema, and it is deleted at teardown. This
- * script creates that user (email/password, is_aurora_admin = true), prints the
- * credentials ONCE for the page, and removes the user, its profile row and every
- * seeded row when the run ends, on Ctrl+C, or with --teardown-only.
+ * script creates that user (email/password) and sets the admin fact through
+ * the admin API (auth.users.raw_app_meta_data.aurora_admin - migration 019;
+ * user_profiles.is_aurora_admin was dropped and is never written here), prints
+ * the credentials ONCE for the page, and removes the user, its profile row and
+ * every seeded row when the run ends, on Ctrl+C, or with --teardown-only.
  *
  * Gap detection. player_positions.seq is GENERATED ALWAYS AS IDENTITY: a client
  * cannot set it, and an upsert that updates a row leaves it unchanged, so it
@@ -156,14 +158,15 @@ async function createAdminUser(): Promise<{ id: string; password: string }> {
   if (error || !data.user) fail("auth.admin.createUser", error);
   const id = data.user.id;
 
-  const { data: flagged, error: fErr } = await pub
-    .from("user_profiles")
-    .update({ is_aurora_admin: true })
-    .eq("id", id)
-    .select("id");
-  if (fErr) fail("set is_aurora_admin", fErr);
-  if (!flagged || flagged.length !== 1) {
-    console.error("is_aurora_admin was not set: the profile row for the temp user was not found");
+  // Migration 019: the admin fact lives in auth.users.raw_app_meta_data, which
+  // only the admin API (service role) can write - never user_profiles, which
+  // no longer has an is_aurora_admin column at all.
+  const { data: updated, error: fErr } = await pub.auth.admin.updateUserById(id, {
+    app_metadata: { aurora_admin: true },
+  });
+  if (fErr) fail("set app_metadata.aurora_admin", fErr);
+  if (!updated.user || updated.user.app_metadata?.aurora_admin !== true) {
+    console.error("aurora_admin was not set in app_metadata for the temp user");
     await deleteAdminUser(id);
     process.exit(1);
   }

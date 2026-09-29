@@ -51,8 +51,12 @@ VALUES ('aaaaaaaa-0000-4000-8000-000000000001', 'aurora_test_user',  'Aurora Tes
        ('bbbbbbbb-0000-4000-8000-000000000002', 'aurora_test_admin', 'Aurora Test Admin')
 ON CONFLICT (id) DO NOTHING;
 
-UPDATE public.user_profiles
-   SET is_aurora_admin = TRUE
+-- Migration 019 moved the admin fact off user_profiles (a column
+-- `authenticated` could write on its own row) and onto auth.users, which only
+-- the service role/postgres may write. Section 11 below is the negative proof
+-- that a non-admin gains nothing by writing user_profiles.
+UPDATE auth.users
+   SET raw_app_meta_data = raw_app_meta_data || '{"aurora_admin": true}'::jsonb
  WHERE id = 'bbbbbbbb-0000-4000-8000-000000000002';
 
 -- Pin the visibility setting to the 008 default this file's assertions are written
@@ -344,7 +348,7 @@ BEGIN
   IF NOT aurora.is_aurora_admin() THEN
     RAISE EXCEPTION 'FAIL: the admin test user is not reported as an aurora admin';
   END IF;
-  RAISE NOTICE 'PASS admin flag is read from user_profiles.is_aurora_admin';
+  RAISE NOTICE 'PASS admin flag is read from auth.users.raw_app_meta_data';
 
   SELECT count(*) INTO v_count FROM aurora.player_positions WHERE server_id = 'test-aurora';
   IF v_count <> 3 THEN
@@ -803,12 +807,37 @@ BEGIN
     RAISE EXCEPTION 'FAIL: with delayMinutes=30/roundToCell=true frank should read delayed=TRUE rounded=TRUE, got delayed=% rounded=%', v_delayed, v_rounded;
   END IF;
   RAISE NOTICE 'PASS is_delayed/is_rounded read TRUE/TRUE under delayed, rounded settings';
+END;
+$$;
 
-  -- Flip to the setting the owner actually runs live: no delay, no rounding.
-  UPDATE aurora.settings
-     SET value = '{"anonPositions": true, "delayMinutes": 0, "roundToCell": false}'::jsonb
-   WHERE key = 'visibility';
+RESET ROLE;
 
+-- Flip to the setting the owner actually runs live: no delay, no rounding.
+-- Fixture setup, not part of what is being tested, so it runs as the migration
+-- owner: `authenticated` holds only SELECT on aurora.settings (009), and this
+-- UPDATE raised 42501 permission denied when first rehearsed against a local
+-- Postgres (PGlite, T26) inside the `authenticated` DO block above - this
+-- section had never actually been executed before that rehearsal. Splitting
+-- the privileged write out into its own statement, between two authenticated
+-- DO blocks, fixes it without changing any assertion.
+UPDATE aurora.settings
+   SET value = '{"anonPositions": true, "delayMinutes": 0, "roundToCell": false}'::jsonb
+ WHERE key = 'visibility';
+
+SET LOCAL ROLE authenticated;
+SELECT set_config(
+  'request.jwt.claims',
+  '{"sub":"aaaaaaaa-0000-4000-8000-000000000001","role":"authenticated"}',
+  TRUE
+);
+
+DO $$
+DECLARE
+  v_count   BIGINT;
+  v_delayed BOOLEAN;
+  v_rounded BOOLEAN;
+  v_x       REAL;
+BEGIN
   SELECT v.is_delayed, v.is_rounded, v.x INTO v_delayed, v_rounded, v_x
     FROM aurora.player_positions_visible v
    WHERE v.server_id = 'test-aurora' AND v.username = 'frank';
@@ -828,6 +857,90 @@ BEGIN
     RAISE EXCEPTION 'FAIL: linked user saw % rows for offline dave under delay=0, expected 0', v_count;
   END IF;
   RAISE NOTICE 'PASS the online filter holds with delayMinutes=0 too';
+END;
+$$;
+
+RESET ROLE;
+
+-- ============================================================================
+-- 11. ADMIN FLAG CANNOT BE SELF-GRANTED (migration 019)
+-- ============================================================================
+--
+-- Before 019, aurora.is_aurora_admin() read public.user_profiles.is_aurora_admin,
+-- a column the "Users can update own profile" policy (003) let any signed-in
+-- user overwrite on their own row (T16 P0-1). 019 moves the fact to
+-- auth.users.raw_app_meta_data (service-role-only) and drops the column
+-- outright. This proves a non-admin gains nothing by updating their own
+-- profile, that the column is truly gone rather than merely unread, and that
+-- the admin fixture (section 3) still reads TRUE from its new source.
+
+SET LOCAL ROLE authenticated;
+SELECT set_config(
+  'request.jwt.claims',
+  '{"sub":"aaaaaaaa-0000-4000-8000-000000000001","role":"authenticated"}',
+  TRUE
+);
+
+DO $$
+DECLARE
+  v_count  BIGINT;
+  v_caught BOOLEAN := FALSE;
+  v_rows   INT;
+BEGIN
+  -- The column is gone, not merely unread: naming it raises undefined_column.
+  BEGIN
+    UPDATE public.user_profiles SET is_aurora_admin = TRUE WHERE id = auth.uid();
+  EXCEPTION WHEN undefined_column THEN
+    v_caught := TRUE;
+  END;
+  IF NOT v_caught THEN
+    RAISE EXCEPTION 'FAIL: public.user_profiles.is_aurora_admin still exists and accepted a write';
+  END IF;
+  RAISE NOTICE 'PASS public.user_profiles.is_aurora_admin no longer exists';
+
+  -- A non-admin may still update their own profile through a column that DOES
+  -- exist - the policy itself is unchanged, only the admin fact moved off it.
+  UPDATE public.user_profiles SET display_name = 'Alice Hacker' WHERE id = auth.uid();
+  GET DIAGNOSTICS v_rows = ROW_COUNT;
+  IF v_rows <> 1 THEN
+    RAISE EXCEPTION 'FAIL: alice could not update her own display_name, got % rows', v_rows;
+  END IF;
+
+  IF aurora.is_aurora_admin() THEN
+    RAISE EXCEPTION 'FAIL: updating her own profile made alice an aurora admin';
+  END IF;
+  RAISE NOTICE 'PASS updating own profile does not touch aurora.is_aurora_admin()';
+
+  -- Non-admin numbers, unchanged by the attempt: own + safehouse-peer live
+  -- positions only (section 2), zero history rows.
+  SELECT count(*) INTO v_count FROM aurora.player_positions WHERE server_id = 'test-aurora';
+  IF v_count <> 2 THEN
+    RAISE EXCEPTION 'FAIL: expected 2 live positions for a non-admin, got %', v_count;
+  END IF;
+
+  SELECT count(*) INTO v_count FROM aurora.player_position_history;
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL: expected 0 history rows for a non-admin, got %', v_count;
+  END IF;
+  RAISE NOTICE 'PASS non-admin position/history counts are unchanged by the profile update attempt';
+END;
+$$;
+
+RESET ROLE;
+
+SET LOCAL ROLE authenticated;
+SELECT set_config(
+  'request.jwt.claims',
+  '{"sub":"bbbbbbbb-0000-4000-8000-000000000002","role":"authenticated"}',
+  TRUE
+);
+
+DO $$
+BEGIN
+  IF NOT aurora.is_aurora_admin() THEN
+    RAISE EXCEPTION 'FAIL: the admin fixture is not reported as an aurora admin under its new source';
+  END IF;
+  RAISE NOTICE 'PASS the admin fixture still reads TRUE, from auth.users.raw_app_meta_data';
 END;
 $$;
 
