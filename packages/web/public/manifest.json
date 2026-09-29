@@ -1,7 +1,7 @@
 {
-  "name": "PZ Modding Wiki",
-  "short_name": "PZ Wiki",
-  "description": "Project Zomboid Modding Wiki - Your guide to surviving the apocalypse... with code. Free tutorials for Lua scripting, custom items, recipes, and game mechanics.",
+  "name": "Dystopian Outcasts",
+  "short_name": "Outcasts",
+  "description": "Dystopian Outcasts is a Project Zomboid community: a multiplayer server with a live map, our own mods, and free modding guides for Lua scripting, items, recipes and game mechanics.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#060d18",

@@ -23,7 +23,7 @@ export function Footer() {
         {/* Links */}
         <div className="footer__links">
           <a
-            href="https://github.com"
+            href="https://github.com/dystopianoutcasts"
             target="_blank"
             rel="noopener noreferrer"
             className="footer__link"

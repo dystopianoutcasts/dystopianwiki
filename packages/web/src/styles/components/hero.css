@@ -151,6 +151,15 @@
   text-align: center;
 }
 
+/* Two buttons side by side (T43: "See the live map" / "Join the Discord") */
+.hero__actions--split {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-4);
+}
+
 .hero__learn-btn {
   display: inline-flex;
   align-items: center;
@@ -173,6 +182,30 @@
   box-shadow: var(--shadow-lg);
   text-decoration: none;
   color: white;
+}
+
+.hero__learn-btn:focus-visible {
+  outline: 3px solid var(--color-accent-300, var(--color-accent-400));
+  outline-offset: 2px;
+}
+
+/* Secondary variant - outlined, same text color as the page (Discord link) */
+.hero__learn-btn--secondary {
+  background: transparent;
+  color: var(--color-text-primary);
+  border: 2px solid var(--color-text-secondary);
+  box-shadow: none;
+}
+
+.hero__learn-btn--secondary:hover {
+  background: var(--color-accent-500);
+  border-color: var(--color-accent-500);
+  color: white;
+}
+
+.hero__learn-btn--secondary:focus-visible {
+  outline: 3px solid var(--color-text-primary);
+  outline-offset: 2px;
 }
 
 .hero__learn-icon {

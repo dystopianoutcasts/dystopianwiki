@@ -9,8 +9,8 @@ export function HomePage() {
   return (
     <Layout>
       <SEOHead
-        title="Dystopian Outcasts Wiki"
-        description="The Dystopian Outcasts wiki - modding guides, server documentation, and community resources for Project Zomboid."
+        title="Dystopian Outcasts"
+        description="Dystopian Outcasts is a Project Zomboid community: a multiplayer server with a live map, our own mods, and free modding guides for Lua scripting, items, recipes and game mechanics."
       />
       <main>
         <HeroSection />

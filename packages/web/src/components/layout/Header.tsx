@@ -76,7 +76,7 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
             alt="Benny - Dystopian Outcasts mascot"
             className="header__logo-image"
           />
-          <span className="header__logo-text">PZ Modding Wiki</span>
+          <span className="header__logo-text">Dystopian Outcasts</span>
         </Link>
 
         {/* Navigation - changes based on context */}

@@ -28,7 +28,7 @@ export function NotFoundPage() {
               Go Home
             </Link>
             <Link to="/search" className="not-found-page__button not-found-page__button--secondary">
-              Search Wiki
+              Search the site
             </Link>
           </div>
         </div>

@@ -20,7 +20,7 @@ export function TermsPage() {
             <p>For the purposes of these Terms and Conditions:</p>
             <ul>
               <li>
-                <strong>Application</strong> means the software program provided by the Company downloaded by You on any electronic device, named Dystopian Wiki
+                <strong>Application</strong> means the software program provided by the Company downloaded by You on any electronic device, named Dystopian Outcasts
               </li>
               <li>
                 <strong>Application Store</strong> means the digital distribution service operated and developed by Apple Inc. (Apple App Store) or Google Inc. (Google Play Store) in which the Application has been downloaded.
@@ -32,7 +32,7 @@ export function TermsPage() {
                 <strong>Country</strong> refers to: Florida, United States
               </li>
               <li>
-                <strong>Company</strong> (referred to as either "the Company", "We", "Us" or "Our" in this Agreement) refers to Dystopian Outcasts Wiki.
+                <strong>Company</strong> (referred to as either "the Company", "We", "Us" or "Our" in this Agreement) refers to Dystopian Outcasts.
               </li>
               <li>
                 <strong>Device</strong> means any device that can access the Service such as a computer, a cell phone or a digital tablet.
@@ -47,7 +47,7 @@ export function TermsPage() {
                 <strong>Third-party Social Media Service</strong> means any services or content (including data, information, products or services) provided by a third-party that may be displayed, included or made available by the Service.
               </li>
               <li>
-                <strong>Website</strong> refers to Dystopian Outcasts Wiki, accessible from <a href="https://dystopianoutcasts.online" rel="external nofollow noopener" target="_blank">dystopianoutcasts.online</a>
+                <strong>Website</strong> refers to Dystopian Outcasts, accessible from <a href="https://dystopianoutcasts.online" rel="external nofollow noopener" target="_blank">dystopianoutcasts.online</a>
               </li>
               <li>
                 <strong>You</strong> means the individual accessing or using the Service, or the company, or other legal entity on behalf of which such individual is accessing or using the Service, as applicable.

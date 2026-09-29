@@ -1,6 +1,6 @@
-# Dystopian Outcasts Wiki
+# Dystopian Outcasts
 
-A community-driven wiki for Project Zomboid modding, powered by Supabase and React.
+The Dystopian Outcasts website: Project Zomboid modding guides, mod documentation and the live server map. Powered by Supabase and React.
 
 ## Quick Start
 

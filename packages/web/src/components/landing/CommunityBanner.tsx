@@ -10,11 +10,11 @@ export function CommunityBanner() {
           </svg>
         </div>
         <div className="community-banner__text">
-          <h2 className="community-banner__title">Join the Outcasts Community</h2>
+          <h2 className="community-banner__title">Join the Outcasts</h2>
           <p className="community-banner__description">
-            Whether you're just starting out or you're a seasoned modder, our Discord is the place to be.
-            Learn new skills, get help with your projects, and showcase your completed mods to an appreciative community.
-            New and experienced modders alike are welcome!
+            Our Discord is where the server lives. Find a group to survive with, get help with
+            a mod you are writing, or show what you have built. Players and modders are both
+            welcome, new or experienced.
           </p>
         </div>
         <a

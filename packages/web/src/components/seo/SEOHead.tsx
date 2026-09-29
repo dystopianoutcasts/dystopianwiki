@@ -15,8 +15,13 @@ interface SEOHeadProps {
   noIndex?: boolean;
 }
 
+const SITE_NAME = 'Dystopian Outcasts';
 const SITE_URL = 'https://dystopianoutcasts.online';
-const DEFAULT_OG_IMAGE = '/assets/branding/og-image.png';
+// The existing home page banner, reused as the share image rather than
+// commissioning new art (T43). Measured 1024x436.
+const DEFAULT_OG_IMAGE = '/assets/banners/dystopian-outcasts-banner-1024.png';
+const DEFAULT_OG_IMAGE_WIDTH = 1024;
+const DEFAULT_OG_IMAGE_HEIGHT = 436;
 
 export function SEOHead({
   title,
@@ -27,9 +32,9 @@ export function SEOHead({
   article,
   noIndex = false,
 }: SEOHeadProps) {
-  const fullTitle = title.includes('PZ Modding Wiki')
+  const fullTitle = title.includes(SITE_NAME)
     ? title
-    : `${title} | PZ Modding Wiki`;
+    : `${title} | ${SITE_NAME}`;
 
   const canonical = canonicalUrl || (typeof window !== 'undefined' ? window.location.href : SITE_URL);
   const fullOgImage = ogImage.startsWith('http') ? ogImage : `${SITE_URL}${ogImage}`;
@@ -51,7 +56,13 @@ export function SEOHead({
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={fullOgImage} />
-      <meta property="og:site_name" content="PZ Modding Wiki" />
+      {ogImage === DEFAULT_OG_IMAGE && (
+        <>
+          <meta property="og:image:width" content={String(DEFAULT_OG_IMAGE_WIDTH)} />
+          <meta property="og:image:height" content={String(DEFAULT_OG_IMAGE_HEIGHT)} />
+        </>
+      )}
+      <meta property="og:site_name" content={SITE_NAME} />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />

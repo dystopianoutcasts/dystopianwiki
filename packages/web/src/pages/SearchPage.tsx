@@ -75,7 +75,7 @@ export function SearchPage() {
     <Layout>
       <SEOHead
         title={debouncedQuery ? `Search: ${debouncedQuery}` : 'Search'}
-        description="Search the Project Zomboid Modding Wiki for tutorials, guides, and documentation."
+        description="Search Dystopian Outcasts for Project Zomboid modding tutorials, guides and documentation."
         noIndex={true}
       />
       <WikiLayout>
