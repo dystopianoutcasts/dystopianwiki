@@ -55,6 +55,15 @@ UPDATE public.user_profiles
    SET is_aurora_admin = TRUE
  WHERE id = 'bbbbbbbb-0000-4000-8000-000000000002';
 
+-- Pin the visibility setting to the 008 default this file's assertions are written
+-- against. The live row is the owner's to change (T21 set anonPositions true, then
+-- delayMinutes 0 and roundToCell false), and on 2026-09-29 section 1 failed on the
+-- live value, not on a policy defect. Inside this transaction, so the ROLLBACK at the
+-- bottom restores whatever the owner has set.
+INSERT INTO aurora.settings (key, value)
+VALUES ('visibility', '{"anonPositions": false, "delayMinutes": 30, "roundToCell": true}'::jsonb)
+ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
+
 INSERT INTO aurora.servers (id, name, last_seen, game_version)
 VALUES ('test-aurora', 'Policy Test Server', NOW(), '42.15.0');
 
