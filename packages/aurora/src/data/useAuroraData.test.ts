@@ -48,7 +48,8 @@ describe('T19: the health series is wired to a poll, not a push', () => {
     const call = useAuroraData.match(/const healthSince = useLiveDataset\(\{[\s\S]*?\}\)/)?.[0] ?? ''
     expect(call).toMatch(/fetchFull: \(\) => fetchHealthSince\(/)
     expect(call).toMatch(/fetchSince: \(since\) => fetchHealthAfter\(/)
-    expect(call).toMatch(/\.\.\.live/)
+    // Append-only: deltas every LIVE_POLL_MS, and no periodic full refetch of the window.
+    expect(call).toMatch(/liveMs: LIVE_POLL_MS,\s*fullMs: null/)
   })
 })
 
@@ -67,6 +68,10 @@ describe('T23: live datasets poll at LIVE_POLL_MS with an INGEST_INTERVAL_MS sel
       expect(call, name).toMatch(new RegExp(`fetchSince: \\(since\\) => ${fn}\\(client, serverId, since\\)`))
       expect(call, name).toMatch(/\.\.\.live/)
     }
+  })
+
+  it('an anonymous viewer never asks for vehicles, which only a signed-in viewer may read', () => {
+    expect(useAuroraData).toMatch(/const vehicles = useLiveDataset\(\{\s*enabled: prefs\.vehicles && user !== null,/)
   })
 
   it('the zombie grid stays at the ingest interval', () => {

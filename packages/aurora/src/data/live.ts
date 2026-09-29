@@ -45,10 +45,13 @@ export function mergeByKey<T>(held: readonly T[], delta: readonly T[], keyOf: (r
 /**
  * Which request a tick makes. Tick 0 (load) and every `fullEvery`-th tick after it
  * are full fetches; so is any tick while nothing is held yet, because there is no
- * `t` to ask "newer than" about. Everything else is a delta.
+ * `t` to ask "newer than" about. Everything else is a delta. `fullEvery` null means
+ * no periodic self-heal at all: for an append-only dataset (health samples) nothing
+ * held can change or vanish, so a full refetch would only resend what is held.
  */
-export function tickKind(tick: number, fullEvery: number, since: string | null): 'full' | 'delta' {
-  if (since === null) return 'full'
+export function tickKind(tick: number, fullEvery: number | null, since: string | null): 'full' | 'delta' {
+  if (since === null || tick === 0) return 'full'
+  if (fullEvery === null) return 'delta'
   if (fullEvery <= 1 || tick % fullEvery === 0) return 'full'
   return 'delta'
 }

@@ -54,8 +54,11 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
     tOf: (p) => p.t,
     ...live,
   })
+  // Vehicles are readable only when signed in (RLS: authenticated); an anonymous
+  // request is refused, and the panel already says "Sign in to see vehicles.", so an
+  // anonymous viewer does not ask at all.
   const vehicles = useLiveDataset({
-    enabled: prefs.vehicles,
+    enabled: prefs.vehicles && user !== null,
     fetchFull: () => fetchVehicles(client, serverId),
     fetchSince: (since) => fetchVehicles(client, serverId, since),
     keyOf: (v) => String(v.vehicle_id),
@@ -84,7 +87,10 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
     fetchSince: (since) => fetchHealthAfter(client, serverId, since),
     keyOf: (s) => s.t,
     tOf: (s) => s.t,
-    ...live,
+    // Samples are only ever appended, so after the load there is nothing to self-heal;
+    // the window trim happens client-side in appendSample.
+    liveMs: LIVE_POLL_MS,
+    fullMs: null,
   })
   // Only for "last report N minutes ago" once the series is empty; the series' own
   // newest sample supersedes it whenever it is newer (below), so this stays at 60 s.

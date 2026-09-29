@@ -73,6 +73,13 @@ describe('tickKind', () => {
   it('is a full fetch whenever nothing is held yet', () => {
     expect(tickKind(3, fullEvery, null)).toBe('full')
   })
+
+  it('with no self-heal (append-only data), only the load is full', () => {
+    const kinds = Array.from({ length: 13 }, (_, i) => tickKind(i, null, '2026-09-29T05:00:00Z'))
+    expect(kinds[0]).toBe('full')
+    expect(kinds.slice(1).every((k) => k === 'delta')).toBe(true)
+    expect(tickKind(7, null, null)).toBe('full')
+  })
 })
 
 describe('a minute of polling against a moving player', () => {

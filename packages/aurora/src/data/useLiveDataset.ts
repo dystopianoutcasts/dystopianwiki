@@ -11,8 +11,8 @@ export interface LiveDatasetOptions<T> {
   tOf: (row: T) => string | null
   /** Delta poll interval (LIVE_POLL_MS). */
   liveMs: number
-  /** Full self-heal interval (INGEST_INTERVAL_MS); a whole multiple of liveMs. */
-  fullMs: number
+  /** Full self-heal interval (INGEST_INTERVAL_MS), a whole multiple of liveMs; null for append-only data. */
+  fullMs: number | null
 }
 
 /**
@@ -58,7 +58,7 @@ export function useLiveDataset<T>(opts: LiveDatasetOptions<T>): Dataset<T> {
   const { enabled, liveMs, fullMs } = opts
   useEffect(() => {
     if (!enabled) return
-    const fullEvery = Math.max(1, Math.round(fullMs / liveMs))
+    const fullEvery = fullMs === null ? null : Math.max(1, Math.round(fullMs / liveMs))
     tick.current = 0
     void load('full')
     const id = setInterval(() => {
@@ -68,6 +68,9 @@ export function useLiveDataset<T>(opts: LiveDatasetOptions<T>): Dataset<T> {
     return () => clearInterval(id)
   }, [enabled, liveMs, fullMs, load])
 
-  const refresh = useCallback(() => void load('full'), [load])
+  // A disabled dataset stays silent even when asked to refresh (sign-in or out).
+  const refresh = useCallback(() => {
+    if (optsRef.current.enabled) void load('full')
+  }, [load])
   return { data, error, loading, refresh }
 }
