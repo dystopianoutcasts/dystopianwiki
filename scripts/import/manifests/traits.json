@@ -14,6 +14,7 @@
       "category": "skills-and-traits",
       "slug": "trait-reference",
       "title": "Vanilla trait reference",
+      "strip_header_until": "^# ",
       "split": "none",
       "tags": ["traits", "character-trait-definition", "vanilla-traits", "b42-traits"]
     },
@@ -23,6 +24,7 @@
       "category": "skills-and-traits",
       "slug": "trait-api",
       "title": "Trait API reference",
+      "strip_header_until": "^# ",
       "split": "none",
       "tags": ["trait-api", "traitfactory", "gettraits", "engine-gotchas"]
     }

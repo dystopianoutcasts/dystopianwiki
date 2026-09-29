@@ -14,6 +14,7 @@
       "category": "animation",
       "slug": "pz-vehicle-pipeline",
       "title": "Project Zomboid vehicle pipeline -- verified against B41 and B42",
+      "strip_header_until": "^# ",
       "split": "none",
       "tags": ["vehicles", "pipeline", "b41-b42-diff", "porsche-911"]
     },
@@ -23,6 +24,7 @@
       "category": "animation",
       "slug": "panel-hinge-reference",
       "title": "911 panel hinges -- what is confirmed, what is not",
+      "strip_header_until": "^# ",
       "split": "none",
       "tags": ["vehicles", "hinges", "rigging", "porsche-911"]
     }

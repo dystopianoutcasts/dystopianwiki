@@ -14,6 +14,7 @@
       "category": "farming-and-animals",
       "slug": "animal-pipeline",
       "title": "How Build 42 loads and animates an animal",
+      "strip_header_until": "^# ",
       "split": "none",
       "tags": ["animals", "rigging", "animation", "animsets"],
       "difficulty": "advanced",

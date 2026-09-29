@@ -14,6 +14,7 @@
       "category": "fundamentals",
       "slug": "mapping-overview",
       "title": "Mapping overview",
+      "strip_header_until": "^# ",
       "split": "none",
       "difficulty": "beginner",
       "tags": ["mapping-overview", "worlded", "tilezed", "getting-started"]
@@ -24,6 +25,7 @@
       "category": "fundamentals",
       "slug": "tools-setup",
       "title": "Mapping tools setup",
+      "strip_header_until": "^# ",
       "split": "none",
       "difficulty": "beginner",
       "tags": ["mapping-tools", "worlded-setup", "tiles-folder", "pz-mapping-tools"]
@@ -34,6 +36,7 @@
       "category": "fundamentals",
       "slug": "b41-vs-b42-mapping-delta",
       "title": "Build 41 vs Build 42 mapping delta",
+      "strip_header_until": "^# ",
       "split": "none",
       "difficulty": "beginner",
       "tags": ["b41-vs-b42", "mapping-delta", "migration"]
@@ -44,6 +47,7 @@
       "category": "fundamentals",
       "slug": "world-and-cells-overview",
       "title": "World and cells",
+      "strip_header_until": "^# ",
       "split": "h2",
       "tags": ["cell-size", "worldmap", "biomemap", "lot-export"]
     },
@@ -53,6 +57,7 @@
       "category": "buildings-and-tiles",
       "slug": "buildings-and-buildinged",
       "title": "Buildings and BuildingEd",
+      "strip_header_until": "^# ",
       "split": "none",
       "tags": ["buildinged", "room-templates", "basements", "building-checklist"]
     },
@@ -62,6 +67,7 @@
       "category": "buildings-and-tiles",
       "slug": "tiles-and-tiledefs",
       "title": "Tiles and tiledefs",
+      "strip_header_until": "^# ",
       "split": "none",
       "tags": ["tilesets", "tiledefs", "depthmaps", "tile-slicing"]
     },
@@ -71,6 +77,7 @@
       "category": "zones-and-packaging",
       "slug": "zones-and-spawns-overview",
       "title": "Zones and spawns",
+      "strip_header_until": "^# ",
       "split": "h2",
       "tags": ["zones", "objects-lua", "spawn-points", "loot-distribution"]
     },
@@ -80,6 +87,7 @@
       "category": "zones-and-packaging",
       "slug": "mod-packaging-for-maps",
       "title": "Mod packaging for maps",
+      "strip_header_until": "^# ",
       "split": "none",
       "tags": ["map-info", "mod-packaging", "biomemap-placement"]
     },
@@ -89,6 +97,7 @@
       "category": "troubleshooting",
       "slug": "mapping-troubleshooting",
       "title": "Mapping troubleshooting",
+      "strip_header_until": "^# ",
       "split": "none",
       "tags": ["troubleshooting", "known-failures", "fixes"]
     },
@@ -98,6 +107,7 @@
       "category": "troubleshooting",
       "slug": "lua-and-modding-practices",
       "title": "Lua and modding practices for maps",
+      "strip_header_until": "^# ",
       "split": "none",
       "tags": ["lua-load-order", "zedscript", "distribution-practices"]
     },
@@ -107,6 +117,7 @@
       "category": "sources",
       "slug": "sources-and-provenance",
       "title": "Sources and provenance",
+      "strip_header_until": "^# ",
       "split": "none",
       "tags": ["sources", "provenance", "link-index"]
     }

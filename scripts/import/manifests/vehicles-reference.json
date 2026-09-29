@@ -14,6 +14,7 @@
       "category": "reference",
       "slug": "verified-api-reference",
       "title": "Verified vehicle API reference",
+      "strip_header_until": "^# ",
       "split": "none",
       "tags": ["vehicle-api", "vehicles-lua", "decompile", "verified"],
       "provenance": { "compiled": "2026-08-05", "game_version": "42.20" }
@@ -24,6 +25,7 @@
       "category": "reference",
       "slug": "vehicle-engine-reference",
       "title": "Vehicle engine reference",
+      "strip_header_until": "^# ",
       "split": "none",
       "difficulty": "advanced",
       "tags": ["vehicle-engine", "update-hooks", "vehicles-lua", "engine-reference"]
@@ -34,6 +36,7 @@
       "category": "reference",
       "slug": "vehicle-ui-reference",
       "title": "Vehicle UI reference",
+      "strip_header_until": "^# ",
       "split": "none",
       "tags": ["vehicle-ui", "mechanics-window", "isui"]
     },
@@ -52,6 +55,7 @@
       "category": "animation",
       "slug": "vehicle-animation-reference-index",
       "title": "Vehicle part animation reference",
+      "strip_header_until": "^# ",
       "split": "h2",
       "difficulty": "advanced",
       "tags": ["vehicle-animation", "rig", "fbx", "silent-failures"],
@@ -63,6 +67,7 @@
       "category": "animation",
       "slug": "how-to-animate-a-vehicle-part",
       "title": "How to animate a vehicle part",
+      "strip_header_until": "^# ",
       "split": "none",
       "difficulty": "advanced",
       "tags": ["vehicle-animation", "how-to", "rig-recipe", "animated-parts"],

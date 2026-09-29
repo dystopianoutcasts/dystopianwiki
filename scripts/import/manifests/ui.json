@@ -14,6 +14,7 @@
       "category": "ui",
       "slug": "ui-overview",
       "title": "UI research overview",
+      "strip_header_until": "^# ",
       "split": "none",
       "tags": ["ui-overview", "isui", "vehicle-mechanics-ui", "engine-traps"]
     },
@@ -23,6 +24,7 @@
       "category": "ui",
       "slug": "ui-engine-reference",
       "title": "UI engine reference and gotchas",
+      "strip_header_until": "^# ",
       "split": "none",
       "tags": ["isui", "anchors", "iscollapsablewindow", "engine-reference"]
     }

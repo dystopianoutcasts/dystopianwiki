@@ -5,8 +5,7 @@
     "version": "build-42",
     "difficulty": "intermediate",
     "target": "articles",
-    "provenance": { "compiled": "2026-07-29", "game_version": "42.20" },
-    "strip_header_until": "^---\\s*$"
+    "provenance": { "compiled": "2026-07-29", "game_version": "42.20" }
   },
   "entries": [
     {
@@ -15,6 +14,7 @@
       "category": "getting-started",
       "slug": "start-here",
       "title": "Start here: what changed in Build 42",
+      "strip_header_until": "^---\\s*$",
       "split": "none",
       "difficulty": "beginner",
       "tags": ["getting-started", "mod-compatibility", "registries-lua", "craftrecipe", "build-42"]
@@ -25,6 +25,7 @@
       "category": "foundations",
       "slug": "foundations-and-toolchain",
       "title": "Modding foundations and toolchain",
+      "strip_header_until": "^---\\s*$",
       "split": "h2",
       "difficulty": "beginner",
       "tags": ["mod-info", "registries-lua", "project-structure", "workshop-upload", "debug-mode"],
@@ -36,6 +37,7 @@
       "category": "items-and-scripting",
       "slug": "items-and-crafting-overview",
       "title": "Items, tags and crafting overview",
+      "strip_header_until": "^---\\s*$",
       "split": "h2",
       "tags": ["item-scripts", "tags", "workstation", "tech-tiers", "timedaction"],
       "skip_headings": [
@@ -56,6 +58,7 @@
       "category": "crafting",
       "slug": "craftrecipe-reference",
       "title": "craftRecipe reference",
+      "strip_header_until": "^---\\s*$",
       "split": "h2",
       "tags": ["craftrecipe", "crafting", "itemmapper", "recipe-tags"],
       "only_headings": [
@@ -72,6 +75,7 @@
       "category": "fluids",
       "slug": "fluid-system-reference",
       "title": "The fluid system",
+      "strip_header_until": "^---\\s*$",
       "split": "h2",
       "tags": ["fluids", "fluidcontainer", "liquids"],
       "only_headings": [
@@ -84,6 +88,7 @@
       "category": "lua-api",
       "slug": "lua-api-and-engine-overview",
       "title": "Lua API and engine reference",
+      "strip_header_until": "^---\\s*$",
       "split": "h2",
       "tags": ["lua-api", "events", "moddata", "timed-actions", "multiplayer"],
       "skip_headings": ["Table of Contents", "Gaps to revisit", "Sources"]
@@ -94,6 +99,7 @@
       "category": "farming-and-animals",
       "slug": "farming-and-animals-overview",
       "title": "Farming, foraging and animals",
+      "strip_header_until": "^---\\s*$",
       "split": "h2",
       "tags": ["animaldefinitions", "farming", "ranch-zones", "foraging", "husbandry"],
       "skip_headings": ["Table of Contents", "Gaps to revisit", "Sources"]
@@ -104,9 +110,14 @@
       "category": "skills-and-traits",
       "slug": "skills-traits-and-progression-overview",
       "title": "Skills, traits and progression",
+      "strip_header_until": "^---\\s*$",
       "split": "h2",
       "tags": ["skills", "traits", "professions", "xp", "craftrecipe-gating"],
-      "skip_headings": ["Table of Contents", "Gaps to revisit", "Sources"]
+      "skip_headings": ["Table of Contents", "Gaps to revisit", "Sources"],
+      "parts": {
+        "5. Learning: learn-by-doing vs. skill books vs. recipe magazines vs. auto-learn": { "slug": "learning-paths", "title": "Learning: learn-by-doing, skill books, recipe magazines and auto-learn" },
+        "CORRECTION (Workshop-verified, 2026-07-29): trait modding, from a shipping 42.20 mod": { "slug": "trait-modding-correction", "title": "Correction: trait modding, from a shipping 42.20 mod" }
+      }
     },
     {
       "source": "06_WORLD_MAP_BASEMENTS_TILES.md",
@@ -114,9 +125,13 @@
       "category": "world-and-tiles",
       "slug": "world-map-and-tiles-overview",
       "title": "World, map and tiles",
+      "strip_header_until": "^---\\s*$",
       "split": "h2",
       "tags": ["tiles", "multi-z", "basements", "map-modding", "tiledefs"],
-      "skip_headings": ["Table of Contents", "Gaps to revisit", "Sources"]
+      "skip_headings": ["Table of Contents", "Gaps to revisit", "Sources"],
+      "parts": {
+        "5. The tile system: tilesheets, tiledefs, tile depth, and the .pack pipeline": { "slug": "tile-system", "title": "The tile system: tilesheets, tiledefs, tile depth and the .pack pipeline" }
+      }
     },
     {
       "source": "07_VEHICLES_POWER_COMBAT_MISC.md",
@@ -124,6 +139,7 @@
       "category": "foundations",
       "slug": "electricity-power-and-combat",
       "title": "Electricity, power and combat",
+      "strip_header_until": "^---\\s*$",
       "split": "h2",
       "tags": ["electricity", "combat", "animation", "power", "misc-systems"],
       "skip_headings": [
@@ -139,6 +155,7 @@
       "category": "reference",
       "slug": "vehicles-and-power-misc-vehicle-systems",
       "title": "Vehicle systems (from the readiness track)",
+      "strip_header_until": "^---\\s*$",
       "split": "h2",
       "tags": ["vehicles", "vehicle-api", "b42-vehicles"],
       "only_headings": [
@@ -151,6 +168,7 @@
       "category": "cookbook",
       "slug": "cookbook-index",
       "title": "Mod creation cookbook",
+      "strip_header_until": "^---\\s*$",
       "split": "h2",
       "difficulty": "beginner",
       "tags": ["cookbook", "mod-recipes", "from-scratch", "skeletons"],

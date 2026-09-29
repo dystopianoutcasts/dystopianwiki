@@ -1,5 +1,5 @@
 {
-  "sources_root": "scripts/import/tooling-src",
+  "sources_root": "../tooling-src",
   "defaults": {
     "game": "pz",
     "version": "build-42",
