@@ -1,8 +1,14 @@
 import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { FuzzySearchBar } from '../search/FuzzySearchBar';
 import { AuthButton } from '../auth/AuthButton';
-import { VERSIONS, DEFAULT_VERSION } from '../../config/versions.generated';
+import { VERSIONS, DEFAULT_VERSION, getVersion } from '../../config/versions.generated';
 import '../../styles/components/header.css';
+
+// The auth UI stays off unless a build opts in. The January 2026 production
+// deploy (7119e96) shipped with it disabled by commenting out <AuthButton />
+// (77b1ec4); this flag makes that the default without editing code per deploy.
+// Set VITE_ENABLE_AUTH to "true" at build time to show the Log In button.
+const AUTH_UI_ENABLED = import.meta.env.VITE_ENABLE_AUTH === 'true';
 
 // Icons
 const MenuIcon = () => (
@@ -34,6 +40,14 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
                         location.pathname.startsWith('/learning-path');
 
   const currentVersion = version || DEFAULT_VERSION;
+
+  // Section links follow the current version's sections from the generated
+  // navigation module, in displayOrder, skipping sections with no articles.
+  // The learning path is Build 41 content, so its link shows only there.
+  const navSections = [...(getVersion(currentVersion)?.sections ?? [])]
+    .filter((s) => s.categories.some((c) => c.articleCount > 0))
+    .sort((a, b) => a.displayOrder - b.displayOrder);
+  const showLearningPath = currentVersion === 'build-41';
 
   // Version switcher: preserve as much of the current location as the plan
   // allows. Only /pz/{version}/... URLs get their section/category/slug
@@ -78,30 +92,27 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
           ) : isInPZContext ? (
             // PZ context: Show section links
             <>
-              <NavLink
-                to="/learning-path"
-                className={({ isActive }) =>
-                  `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
-                }
-              >
-                Learning Path
-              </NavLink>
-              <NavLink
-                to={`/${DEFAULT_VERSION}/modding`}
-                className={({ isActive }) =>
-                  `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
-                }
-              >
-                Modding
-              </NavLink>
-              <NavLink
-                to={`/${DEFAULT_VERSION}/mapping`}
-                className={({ isActive }) =>
-                  `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
-                }
-              >
-                Mapping
-              </NavLink>
+              {showLearningPath && (
+                <NavLink
+                  to="/learning-path"
+                  className={({ isActive }) =>
+                    `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
+                  }
+                >
+                  Learning Path
+                </NavLink>
+              )}
+              {navSections.map((s) => (
+                <NavLink
+                  key={s.id}
+                  to={`/pz/${currentVersion}/${s.id}`}
+                  className={({ isActive }) =>
+                    `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
+                  }
+                >
+                  {s.name}
+                </NavLink>
+              ))}
             </>
           ) : (
             // Other contexts: placeholder
@@ -131,7 +142,7 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
 
         {/* Actions */}
         <div className="header__actions">
-          <AuthButton />
+          {AUTH_UI_ENABLED && <AuthButton />}
 
           {/* Version Selector */}
           <select
