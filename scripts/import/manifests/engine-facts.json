@@ -1,0 +1,24 @@
+{
+  "sources_root": "R:/ZOMBOID/PZ_Engine_Records/B42/analysis",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "advanced",
+    "target": "articles",
+    "provenance": { "compiled": "2026-07-31", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "FINDINGS.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "verified-findings",
+      "title": "Verified engine findings",
+      "split": "none",
+      "strip_header_until": "^# B42 Engine Findings\\s*$",
+      "tags": ["engine", "decompile", "findings", "running-log"],
+      "difficulty": "advanced",
+      "provenance": { "compiled": "2026-07-31", "game_version": "42.20" }
+    }
+  ]
+}
