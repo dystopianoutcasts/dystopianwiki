@@ -1,0 +1,64 @@
+{
+  "description": "Deliberately invalid manifest; run.ts expects exit 1 and a list of every error.",
+  "sources_root": "./sources",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "intermediate",
+    "provenance": { "compiled": "2026-08-02", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "plain.md",
+      "section": "mapping",
+      "category": "fixtures",
+      "slug": "Bad_Slug",
+      "title": "Bad slug",
+      "split": "none"
+    },
+    {
+      "source": "split.md",
+      "section": "mapping",
+      "category": "fixtures",
+      "slug": "both-filters",
+      "title": "Both filters",
+      "split": "h2",
+      "skip_headings": ["Table of Contents"],
+      "only_headings": ["Special Topic"]
+    },
+    {
+      "source": "links.md",
+      "section": "mapping",
+      "category": "fixtures",
+      "slug": "same-path",
+      "title": "Same path A",
+      "split": "sideways"
+    },
+    {
+      "source": "missing-source.md",
+      "section": "mapping",
+      "category": "fixtures",
+      "slug": "same-path",
+      "title": "Missing source",
+      "split": "none",
+      "skip_heading": ["typo key"]
+    },
+    {
+      "source": "links.md",
+      "section": "mapping",
+      "category": "fixtures",
+      "slug": "links-one",
+      "title": "Links one",
+      "split": "none"
+    },
+    {
+      "source": "links.md",
+      "section": "mapping",
+      "category": "fixtures",
+      "slug": "links-one",
+      "title": "Links one again",
+      "split": "none",
+      "only_headings": ["No such heading"]
+    }
+  ]
+}

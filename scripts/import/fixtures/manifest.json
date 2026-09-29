@@ -1,0 +1,58 @@
+{
+  "description": "Fixture manifest for scripts/import/fixtures/run.ts. Not in manifests/, so a default run never loads it.",
+  "sources_root": "./sources",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "intermediate",
+    "target": "articles",
+    "provenance": { "compiled": "2026-08-02", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "plain.md",
+      "section": "mapping",
+      "category": "fixtures",
+      "slug": "plain-article",
+      "title": "Plain fixture",
+      "split": "none",
+      "tags": ["fixture", "plain"],
+      "difficulty": "beginner",
+      "strip_header_until": "^Compiled:"
+    },
+    {
+      "source": "split.md",
+      "section": "mapping",
+      "category": "fixtures",
+      "slug": "split-guide",
+      "title": "Split guide",
+      "split": "h2",
+      "tags": ["fixture", "split"],
+      "skip_headings": ["table of contents", "Special Topic"],
+      "parts": {
+        "2. Second part": { "slug": "second", "title": "The second part" }
+      }
+    },
+    {
+      "source": "split.md",
+      "section": "modding",
+      "category": "fixture-extras",
+      "slug": "special-topic",
+      "title": "Special topic",
+      "split": "none",
+      "tags": ["fixture"],
+      "only_headings": ["special topic"],
+      "target": "drafts",
+      "provenance": { "compiled": "2026-08-03" }
+    },
+    {
+      "source": "links.md",
+      "section": "mapping",
+      "category": "fixtures",
+      "slug": "links-article",
+      "title": "Links fixture",
+      "split": "none",
+      "tags": ["fixture", "links"]
+    }
+  ]
+}
