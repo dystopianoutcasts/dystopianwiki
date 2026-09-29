@@ -24,6 +24,10 @@ param(
   [string]$ModRoot = '',
   [string]$RepoPath = 'R:\tmp\pzmap2dzi\repo',
   [string]$Python = 'R:\tmp\pzmap2dzi\venv\Scripts\python.exe',
+  # pzmap2dzi's own layer registry (render.py RENDER_CMD): base_top is the ground-floor
+  # tile pyramid T04 already renders; zombie_top is the static spawn-density layer (T22
+  # Part C). Both use the same TopDZI geometry, so nothing else here needs to change.
+  [string]$Layer = 'base_top',
   # Drop this many of the deepest pyramid levels (each halves resolution, ~4x fewer bytes).
   [int]$OmitLevels = 0,
   [double]$BudgetGB = 9.5,
@@ -61,7 +65,7 @@ if (-not (Test-Path -LiteralPath $renderRoot)) { New-Item -ItemType Directory -P
 [System.IO.File]::WriteAllText((Join-Path $renderRoot 'render-start.txt'), [DateTimeOffset]::UtcNow.ToUnixTimeSeconds())
 Push-Location $RepoPath
 try {
-  foreach ($step in @(@('deploy'), @('unpack'), @('render', 'base_top'))) {
+  foreach ($step in @(@('deploy'), @('unpack'), @('render', $Layer))) {
     Write-Host "== pzmap2dzi $($step -join ' ')"
     & $Python main.py -c 'conf/aurora-render.yaml' @step
     if ($LASTEXITCODE -ne 0) { throw "pzmap2dzi $($step -join ' ') failed with exit code $LASTEXITCODE" }
@@ -70,7 +74,7 @@ try {
 [System.IO.File]::WriteAllText((Join-Path $renderRoot 'render-end.txt'), [DateTimeOffset]::UtcNow.ToUnixTimeSeconds())
 Write-Host ("render finished in {0:N0} s" -f $clock.Elapsed.TotalSeconds)
 
-$layer0 = Join-Path $Out 'html\map_data\base_top\layer0_files'
+$layer0 = Join-Path $Out "html\map_data\$Layer\layer0_files"
 if (-not (Test-Path -LiteralPath $layer0)) { throw "expected pyramid missing: $layer0" }
 $totalBytes = 0L
 Write-Host 'layer 0: level, tiles, MB'
@@ -82,7 +86,7 @@ foreach ($lv in (Get-ChildItem -LiteralPath $layer0 -Directory | Sort-Object { [
 }
 Write-Host ('layer 0 total: {0:N1} MB' -f ($totalBytes / 1MB))
 
-$all = (Get-ChildItem -LiteralPath (Join-Path $Out 'html\map_data\base_top') -Recurse -File | Measure-Object Length -Sum).Sum
+$all = (Get-ChildItem -LiteralPath (Join-Path $Out "html\map_data\$Layer") -Recurse -File | Measure-Object Length -Sum).Sum
 if ($all / 1GB -gt $BudgetGB) {
   Write-Host ('pyramid is {0:N2} GB, over the {1} GB budget. Re-run with a higher -OmitLevels.' -f ($all / 1GB), $BudgetGB) -ForegroundColor Red
   exit 2

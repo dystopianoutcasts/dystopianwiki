@@ -37,14 +37,18 @@ function flag(name: string): boolean {
 const from = arg('--from');
 const to = arg('--to');
 if (!from || !to) {
-  console.error('usage: publish-tiles.ts --from <base_top dir> --to <dir, tiles land at <dir>/base_top>|r2:<bucket> [--budgetGB n] [--dry-run]');
+  console.error('usage: publish-tiles.ts --from <rendered layer dir> --to <dir, tiles land at <dir>/<layer>>|r2:<bucket> [--layer <name>] [--budgetGB n] [--dry-run]');
   process.exit(1);
 }
+// T22 Part C: zombie_top publishes beside base_top using the same copy/hash-skip logic,
+// under its own top-level folder. base_top stays the default so every pre-existing call
+// (and the tiles.json regen below, which only base_top owns) is unaffected.
+const layer = arg('--layer') ?? 'base_top';
 const budgetGB = Number(arg('--budgetGB') ?? (to.startsWith('r2:') ? '9.5' : '0.9'));
 const dryRun = flag('--dry-run');
 const baseUrl = arg('--baseUrl') ?? DEFAULT_BASE_URL;
 
-if (!existsSync(join(from, 'layer0.dzi'))) throw new Error(`not a rendered base_top dir (no layer0.dzi): ${from}`);
+if (!existsSync(join(from, 'layer0.dzi'))) throw new Error(`not a rendered ${layer} dir (no layer0.dzi): ${from}`);
 
 // --- collect source files: layer0.dzi + everything under layer0_files -----
 function listFiles(dir: string, base = dir): string[] {
@@ -71,7 +75,7 @@ function sha256(path: string): string {
 if (to.startsWith('r2:')) {
   const bucket = to.slice('r2:'.length);
   const args = [
-    'sync', from, `:s3:${bucket}/tiles/base_top`,
+    'sync', from, `:s3:${bucket}/tiles/${layer}`,
     '--header-upload', 'Cache-Control: public, max-age=31536000, immutable',
     '--stats-one-line', '--stats=0',
   ];
@@ -79,7 +83,7 @@ if (to.startsWith('r2:')) {
   console.log(`rclone ${args.join(' ')}`);
   execFileSync('rclone', args, { stdio: 'inherit', shell: true });
 } else {
-  const destRoot = join(to, 'base_top');
+  const destRoot = join(to, layer);
   let added = 0, changed = 0, skipped = 0;
   for (const rel of files) {
     const src = join(from, rel);
@@ -109,7 +113,14 @@ if (to.startsWith('r2:')) {
   }
 }
 
-if (!dryRun) {
+// tiles.json describes base_top's own pyramid (dimensions, format, tileUrlTemplate) and
+// only base_top owns it. zombie_top is the same tile geometry (T22 Part C Facts) reached
+// through zombieTileUrl(), which is built directly from tiles.json's existing fields
+// rather than a template naming the layer - so a second layer publish must not overwrite
+// the primary config with a different render's map_info.json/sources.json.
+if (layer !== 'base_top') {
+  console.log(`layer '${layer}' does not own tiles.json; skipped (only base_top regenerates it)`);
+} else if (!dryRun) {
   const genArgs = ['tsx', 'scripts/tiles/make-tiles-json.ts', from, '--baseUrl', baseUrl];
   console.log(`npx ${genArgs.join(' ')}`);
   execFileSync('npx', genArgs, { stdio: 'inherit', shell: true });

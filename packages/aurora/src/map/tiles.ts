@@ -29,3 +29,22 @@ export function tileUrl(
     .replace('{x}', String(x))
     .replace('{y}', String(y))
 }
+
+/**
+ * zombie_top's own pyramid (T22 Part C): same tile geometry as base_top - same tileSize,
+ * maxLevel, format and cellSize - published under a different top-level folder. `tileUrl`
+ * above goes through `tileUrlTemplate`, which names `base_top` literally (T11's generator),
+ * so this is built directly from the fields that actually vary rather than string-patching
+ * that template.
+ */
+export function zombieTileUrl(
+  cfg: TilesConfig,
+  layer: number,
+  z: number,
+  x: number,
+  y: number,
+  baseOverride?: string,
+): string {
+  const base = (baseOverride ?? cfg.baseUrl).replace(/\/+$/, '')
+  return `${base}/zombie_top/layer${layer}_files/${z}/${x}_${y}.${cfg.format}`
+}

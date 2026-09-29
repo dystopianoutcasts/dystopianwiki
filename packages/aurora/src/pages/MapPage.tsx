@@ -133,7 +133,7 @@ export function MapPage() {
   const safehouseList = useMemo(() => safehouseFeatures(safehouses.data), [safehouses.data])
   const zoneList = useMemo(() => zoneFeatures(zones.data), [zones.data])
   const objectList = useMemo(() => objectFeatures(objects.data), [objects.data])
-  const heat = useMemo(() => (cfg ? heatPoints(grid.data, cfg) : []), [grid.data, cfg])
+  const heat = useMemo(() => (cfg ? heatPoints(grid.data, cfg, now) : []), [grid.data, cfg, now])
 
   const setLayer = useCallback((key: LayerKey, on: boolean) => {
     setPrefs((p) => {

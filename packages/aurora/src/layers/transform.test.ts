@@ -102,6 +102,25 @@ describe('zombie heat', () => {
   it('is empty when nothing is counted', () => {
     expect(heatPoints([], cfg)).toEqual([])
   })
+
+  it('ignores a row older than 3 minutes but keeps one with no timestamp (T22 addendum)', () => {
+    const now = Date.parse('2026-09-29T00:10:00Z')
+    const fresh = new Date(now - 179_000).toISOString()
+    const stale = new Date(now - 181_000).toISOString()
+    const pts = heatPoints(
+      [
+        { server_id: 's', cell_x: 42, cell_y: 40, count: 10, t: fresh },
+        { server_id: 's', cell_x: 43, cell_y: 40, count: 10, t: stale },
+        { server_id: 's', cell_x: 44, cell_y: 40, count: 10, t: null },
+      ],
+      cfg,
+      now,
+    )
+    expect(pts).toEqual([
+      [40 * 256 + 128, 42 * 256 + 128, 1],
+      [40 * 256 + 128, 44 * 256 + 128, 1],
+    ])
+  })
 })
 
 describe('sparkline', () => {

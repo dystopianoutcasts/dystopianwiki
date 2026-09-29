@@ -4,6 +4,9 @@ import L from 'leaflet'
 import 'leaflet.markercluster'
 import 'leaflet.heat'
 import type { ObjectFeature, PlayerFeature, RectFeature, StreetFeature, VehicleFeature, WorldMapFeatures, ZoneFeature } from './transform'
+import type { TilesConfig } from '../map/tiles'
+import { zombieTileUrl } from '../map/tiles'
+import { worldBounds } from '../map/coords'
 
 function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -69,6 +72,30 @@ export function buildZones(features: ZoneFeature[]): L.Layer {
 
 export function buildHeat(points: [number, number, number][]): L.Layer {
   return L.heatLayer(points, { radius: 45, blur: 35, max: 1, minOpacity: 0.25 })
+}
+
+/**
+ * The static spawn-density pyramid (T22 Part C): a second tile layer, not a vector
+ * feature builder like the rest of this file, so it takes `cfg`/`tilesBase` instead of
+ * a `Feature[]`. Same pyramid geometry as the base tile layer (MapView's own `Layer`
+ * extend), drawn semi-transparent above it when the toggle is on.
+ */
+export function buildZombieDensityLayer(cfg: TilesConfig, tilesBase?: string): L.Layer {
+  const Layer = L.TileLayer.extend({
+    getTileUrl(coords: L.Coords) {
+      return zombieTileUrl(cfg, cfg.layers.ground, coords.z, coords.x, coords.y, tilesBase)
+    },
+  })
+  // The pyramid is sparse (only populated cells have tiles), so a 404 is normal, not an error.
+  return new (Layer as unknown as new (u: string, o: L.TileLayerOptions) => L.TileLayer)('', {
+    tileSize: cfg.tileSize,
+    minNativeZoom: 0,
+    maxNativeZoom: cfg.maxLevel,
+    bounds: worldBounds(cfg),
+    noWrap: true,
+    opacity: 0.6,
+    errorTileUrl: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
+  })
 }
 
 const STREET_STYLE = { color: '#9aa0a8', weight: 1, opacity: 0.55 }

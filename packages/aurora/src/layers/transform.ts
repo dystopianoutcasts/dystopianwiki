@@ -89,9 +89,18 @@ export function zoneFeatures(list: Zone[]): ZoneFeature[] {
   })
 }
 
+/**
+ * T22 addendum (2026-09-29): the live zombie grid can go stale (a teleport, a latched
+ * write) while the upsert-only row stays in place, so this layer ignores anything older
+ * than 3 minutes itself rather than trusting T25's ingest-side fix to have landed yet.
+ * A row with no timestamp (older data, or a test fixture) is kept: absence of `t` is not
+ * evidence of staleness.
+ */
+const ZOMBIE_STALE_MS = 3 * 60_000
+
 /** [lat, lng, intensity] at each cell centre, intensity scaled to 0..1 by the busiest cell. */
-export function heatPoints(cells: ZombieCell[], cfg: TilesConfig): [number, number, number][] {
-  const counted = cells.filter((c) => (c.count ?? 0) > 0)
+export function heatPoints(cells: ZombieCell[], cfg: TilesConfig, now: number = Date.now()): [number, number, number][] {
+  const counted = cells.filter((c) => (c.count ?? 0) > 0 && (c.t == null || now - Date.parse(c.t) <= ZOMBIE_STALE_MS))
   if (counted.length === 0) return []
   const max = Math.max(...counted.map((c) => c.count as number))
   return counted.map((c) => {

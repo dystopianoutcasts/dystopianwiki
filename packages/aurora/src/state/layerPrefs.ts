@@ -1,7 +1,7 @@
 // Which map layers are switched on, remembered in localStorage. Storage can be blocked or
 // full, so every access is guarded and the app works with none.
 
-export const LAYER_KEYS = ['streets', 'worldMap', 'players', 'vehicles', 'safehouses', 'zones', 'zombieHeat', 'mapObjects'] as const
+export const LAYER_KEYS = ['streets', 'worldMap', 'players', 'vehicles', 'safehouses', 'zones', 'zombieHeat', 'zombieDensity', 'mapObjects'] as const
 export type LayerKey = (typeof LAYER_KEYS)[number]
 export type LayerPrefs = Record<LayerKey, boolean>
 
@@ -13,6 +13,7 @@ export const DEFAULT_LAYERS: LayerPrefs = {
   safehouses: true,
   zones: false,
   zombieHeat: false,
+  zombieDensity: false,
   mapObjects: false,
 }
 

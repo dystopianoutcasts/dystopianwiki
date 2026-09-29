@@ -17,6 +17,7 @@ import {
   buildStreets,
   buildVehicles,
   buildWorldMap,
+  buildZombieDensityLayer,
   buildZones,
 } from '../layers/build'
 import type {
@@ -80,6 +81,7 @@ export function MapView(props: Props) {
   const safehousesLayer = useRef<L.Layer | null>(null)
   const zonesLayer = useRef<L.Layer | null>(null)
   const heatLayer = useRef<L.Layer | null>(null)
+  const zombieDensityLayer = useRef<L.Layer | null>(null)
   const objectsLayer = useRef<L.Layer | null>(null)
 
   // Create the map once. Tiles, view and the URL callback are set here and never rebuilt.
@@ -154,6 +156,12 @@ export function MapView(props: Props) {
   useEffect(() => {
     swap(mapRef.current, heatLayer, prefs.zombieHeat ? buildHeat(props.heat) : null)
   }, [prefs.zombieHeat, props.heat])
+
+  // A second, independent tile layer (static spawn density) - toggled and swapped the
+  // same way as the live zombieHeat layer above, but it never depends on `props.heat`.
+  useEffect(() => {
+    swap(mapRef.current, zombieDensityLayer, prefs.zombieDensity ? buildZombieDensityLayer(cfg, tilesBase) : null)
+  }, [prefs.zombieDensity, cfg, tilesBase])
 
   useEffect(() => {
     swap(mapRef.current, objectsLayer, prefs.mapObjects ? buildObjects(props.objects) : null)
