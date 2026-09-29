@@ -3,6 +3,15 @@
 import type { TilesConfig } from '../map/tiles'
 import { cellCentre } from '../map/coords'
 import type { HealthSample, MapObject, PlayerPublic, Safehouse, Vehicle, VisiblePosition, Zone, ZombieCell } from '../data/types'
+import type { NameMode } from '../state/nameMode'
+
+/** T44: usernames are intentionally public (owner decision, reversing T27); every
+ * visitor may switch what is shown. `account` always shows the username; `character`
+ * shows the display name and falls back to the username only when there is none - the
+ * one fallback is not a third mode, it applies inside `character` regardless of storage. */
+function pickName(mode: NameMode, displayName: string | null | undefined, username: string): string {
+  return mode === 'account' ? username : displayName || username
+}
 
 export interface PlayerFeature {
   key: string
@@ -17,13 +26,13 @@ export interface PlayerFeature {
 }
 
 /** Positions joined to profiles. Dead characters are not drawn; unknown profiles fall back to the username. */
-export function playerFeatures(positions: VisiblePosition[], profiles: PlayerPublic[]): PlayerFeature[] {
+export function playerFeatures(positions: VisiblePosition[], profiles: PlayerPublic[], mode: NameMode): PlayerFeature[] {
   const byName = new Map(profiles.map((p) => [p.username, p]))
   const out: PlayerFeature[] = []
   for (const pos of positions) {
     const profile = byName.get(pos.username)
     if (profile?.is_dead) continue
-    const name = profile?.display_name || pos.username
+    const name = pickName(mode, profile?.display_name, pos.username)
     const parts = [name]
     if (profile?.hours_survived != null) parts.push(`${Math.floor(profile.hours_survived)} h survived`)
     if (pos.is_delayed) parts.push('approximate position, delayed')
@@ -40,8 +49,8 @@ export function playerFeatures(positions: VisiblePosition[], profiles: PlayerPub
 }
 
 export interface FindablePlayer {
-  /** Opaque identifier for the control's own bookkeeping - never rendered. Today the
-   * username; T27 replaces it with a public id in this one place. */
+  /** Opaque identifier for the control's own bookkeeping - never rendered. The username
+   * (stable, unique per (server_id, username), unaffected by `mode`). */
   key: string
   name: string
   x: number
@@ -56,9 +65,11 @@ export interface FindablePlayer {
  * and is not offered here, same as `playerFeatures` never draws one. Two characters can
  * share a display name, so a duplicate gets " (2)", " (3)" appended - assigned in a
  * stable order by `key` (not raw input order, which is not guaranteed stable) so the
- * numbering does not flap between refreshes while both stay online.
+ * numbering does not flap between refreshes while both stay online. Usernames are unique
+ * per profile, so in `account` mode (T44) this grouping never finds a collision and no
+ * ordinal ever appears - the same code path handles both, nothing is special-cased.
  */
-export function findablePlayers(positions: VisiblePosition[], profiles: PlayerPublic[]): FindablePlayer[] {
+export function findablePlayers(positions: VisiblePosition[], profiles: PlayerPublic[], mode: NameMode): FindablePlayer[] {
   const posByUsername = new Map(positions.map((p) => [p.username, p]))
   type Candidate = { key: string; baseName: string; x: number; y: number }
   const candidates: Candidate[] = []
@@ -66,7 +77,7 @@ export function findablePlayers(positions: VisiblePosition[], profiles: PlayerPu
     if (!profile.online || profile.is_dead) continue
     const pos = posByUsername.get(profile.username)
     if (!pos) continue
-    candidates.push({ key: profile.username, baseName: profile.display_name || profile.username, x: pos.x, y: pos.y })
+    candidates.push({ key: profile.username, baseName: pickName(mode, profile.display_name, profile.username), x: pos.x, y: pos.y })
   }
 
   const byName = new Map<string, Candidate[]>()
@@ -93,12 +104,19 @@ export interface VehicleFeature {
   latlng: [number, number]
 }
 
-export function vehicleFeatures(vehicles: Vehicle[]): VehicleFeature[] {
-  return vehicles.map((v) => ({
-    key: `${v.server_id}/${v.vehicle_id}`,
-    label: [v.script_name ?? 'Vehicle', v.driver_username ? `driver ${v.driver_username}` : null].filter(Boolean).join(' - '),
-    latlng: [v.y, v.x],
-  }))
+/** `driver_username` is already `null` for a public (signed-out) caller
+ * (`data/queries.ts` `fetchVehiclesPublic`) - that admin-only gate is unrelated to T44
+ * and unchanged here; `mode` only changes how an already-visible driver name reads. */
+export function vehicleFeatures(vehicles: Vehicle[], profiles: PlayerPublic[], mode: NameMode): VehicleFeature[] {
+  const byUsername = new Map(profiles.map((p) => [p.username, p]))
+  return vehicles.map((v) => {
+    const driver = v.driver_username ? pickName(mode, byUsername.get(v.driver_username)?.display_name, v.driver_username) : null
+    return {
+      key: `${v.server_id}/${v.vehicle_id}`,
+      label: [v.script_name ?? 'Vehicle', driver ? `driver ${driver}` : null].filter(Boolean).join(' - '),
+      latlng: [v.y, v.x],
+    }
+  })
 }
 
 export interface RectFeature {
@@ -108,15 +126,23 @@ export interface RectFeature {
   bounds: [[number, number], [number, number]]
 }
 
-export function safehouseFeatures(list: Safehouse[]): RectFeature[] {
-  return list.map((s) => ({
-    key: `${s.server_id}/${s.id}`,
-    label: [s.title || 'Safehouse', s.owner ? `owner ${s.owner}` : null].filter(Boolean).join(' - '),
-    bounds: [
-      [s.y, s.x],
-      [s.y + s.h, s.x + s.w],
-    ],
-  }))
+/** `owner` is a login username (the ingest fills it directly); `mode` picks how it reads,
+ * same choice as a player's own name. No matching profile falls back to the raw username
+ * in either mode - that is what "no display name" already means inside `pickName`, not a
+ * third mode. */
+export function safehouseFeatures(list: Safehouse[], profiles: PlayerPublic[], mode: NameMode): RectFeature[] {
+  const byUsername = new Map(profiles.map((p) => [p.username, p]))
+  return list.map((s) => {
+    const owner = s.owner ? pickName(mode, byUsername.get(s.owner)?.display_name, s.owner) : null
+    return {
+      key: `${s.server_id}/${s.id}`,
+      label: [s.title || 'Safehouse', owner ? `owner ${owner}` : null].filter(Boolean).join(' - '),
+      bounds: [
+        [s.y, s.x],
+        [s.y + s.h, s.x + s.w],
+      ],
+    }
+  })
 }
 
 export interface ZoneFeature extends RectFeature {

@@ -8,6 +8,8 @@ import { parseView, writeView } from '../state/url'
 import type { MapView as View } from '../state/url'
 import { loadLayerPrefs, saveLayerPrefs } from '../state/layerPrefs'
 import type { LayerKey } from '../state/layerPrefs'
+import { loadNameMode, saveNameMode } from '../state/nameMode'
+import type { NameMode } from '../state/nameMode'
 import { useAuroraData } from '../data/useAuroraData'
 import {
   areaFeatures,
@@ -24,6 +26,7 @@ import {
 import type { AreaRaw, StreetRaw, WorldMapRaw } from '../layers/transform'
 import { HealthPanel } from '../panels/Health'
 import { RosterPanel } from '../panels/Roster'
+import { NameModeToggle } from '../panels/NameModeToggle'
 import { LayerToggles } from '../panels/LayerToggles'
 import { StreetSearch } from '../panels/StreetSearch'
 import { FindPlayer } from '../panels/FindPlayer'
@@ -134,6 +137,7 @@ export function MapPage() {
   const { areas: rawAreas, error: areasError } = useAreas()
 
   const [prefs, setPrefs] = useState(() => loadLayerPrefs())
+  const [nameMode, setNameMode] = useState<NameMode>(() => loadNameMode())
   const { worldMap: rawWorldMap, error: worldMapError } = useWorldMap(prefs.worldMap)
   const [sheetOpen, setSheetOpen] = useState(false)
   const [flyTo, setFlyTo] = useState<{ x: number; y: number; zoom: number } | null>(null)
@@ -158,10 +162,10 @@ export function MapPage() {
   const streets = useMemo(() => streetFeatures(rawStreets), [rawStreets])
   const worldMap = useMemo(() => worldMapFeatures(rawWorldMap), [rawWorldMap])
   const areas = useMemo(() => areaFeatures(rawAreas), [rawAreas])
-  const players = useMemo(() => playerFeatures(positions.data, profiles.data), [positions.data, profiles.data])
-  const findable = useMemo(() => findablePlayers(positions.data, profiles.data), [positions.data, profiles.data])
-  const vehicleList = useMemo(() => vehicleFeatures(vehicles.data), [vehicles.data])
-  const safehouseList = useMemo(() => safehouseFeatures(safehouses.data), [safehouses.data])
+  const players = useMemo(() => playerFeatures(positions.data, profiles.data, nameMode), [positions.data, profiles.data, nameMode])
+  const findable = useMemo(() => findablePlayers(positions.data, profiles.data, nameMode), [positions.data, profiles.data, nameMode])
+  const vehicleList = useMemo(() => vehicleFeatures(vehicles.data, profiles.data, nameMode), [vehicles.data, profiles.data, nameMode])
+  const safehouseList = useMemo(() => safehouseFeatures(safehouses.data, profiles.data, nameMode), [safehouses.data, profiles.data, nameMode])
   const zoneList = useMemo(() => zoneFeatures(zones.data), [zones.data])
   const objectList = useMemo(() => objectFeatures(objects.data), [objects.data])
   const heat = useMemo(() => (cfg ? heatPoints(grid.data, cfg, now) : []), [grid.data, cfg, now])
@@ -172,6 +176,11 @@ export function MapPage() {
       saveLayerPrefs(next)
       return next
     })
+  }, [])
+
+  const onNameModeChange = useCallback((mode: NameMode) => {
+    saveNameMode(mode)
+    setNameMode(mode)
   }, [])
 
   const initialView = useMemo<View | null>(() => {
@@ -251,9 +260,10 @@ export function MapPage() {
           <span className="brand">Live Map</span>
         </div>
         <p className="rt-status" role="status">{statusText}</p>
+        <NameModeToggle mode={nameMode} onChange={onNameModeChange} />
         <StreetSearch streets={streets} onSelect={onSelectStreet} />
         <FindPlayer players={findable} onSelect={(pos) => setFlyTo({ x: pos.x, y: pos.y, zoom: SEARCH_PLAYER_ZOOM })} />
-        <RosterPanel profiles={profiles.data} error={profiles.error} />
+        <RosterPanel profiles={profiles.data} error={profiles.error} mode={nameMode} />
         {isAdmin ? <HealthPanel latest={latest} samples={samples} error={healthError} now={now} /> : null}
         <LayerToggles prefs={prefs} onChange={setLayer} notes={notes} />
       </aside>

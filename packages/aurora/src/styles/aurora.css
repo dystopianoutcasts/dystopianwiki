@@ -292,6 +292,9 @@ fieldset.panel legend { padding: 0 4px; font-weight: 600; }
 .layer-row label { display: flex; align-items: center; gap: 10px; min-height: 44px; }
 .layer-row input { width: 22px; height: 22px; }
 
+.name-mode label { display: flex; align-items: center; gap: 10px; min-height: 44px; }
+.name-mode input { width: 22px; height: 22px; }
+
 .street-search label { display: block; font-weight: 600; margin-bottom: 6px; }
 .street-search input {
   width: 100%; min-height: 44px; padding: 0 10px; box-sizing: border-box;

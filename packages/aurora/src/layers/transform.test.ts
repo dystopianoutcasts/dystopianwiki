@@ -36,14 +36,14 @@ function prof(over: Partial<PlayerPublic> = {}): PlayerPublic {
 
 describe('player features', () => {
   it('puts y first in latlng and labels with display name and whole hours survived', () => {
-    const [f] = playerFeatures([pos()], [prof()])
+    const [f] = playerFeatures([pos()], [prof()], 'character')
     expect(f.latlng).toEqual([200, 100])
     expect(f.label).toBe('Alice W - 12 h survived')
     expect(f.delayed).toBe(false)
   })
 
   it('T41: name is the name alone, with no hours-survived or delayed note even when label has both', () => {
-    const [f] = playerFeatures([pos({ is_delayed: true })], [prof()])
+    const [f] = playerFeatures([pos({ is_delayed: true })], [prof()], 'character')
     expect(f.name).toBe('Alice W')
     expect(f.label).toContain('h survived')
     expect(f.label).toContain('delayed')
@@ -52,42 +52,48 @@ describe('player features', () => {
   })
 
   it('marks delayed positions and says so in words, not only in style', () => {
-    const [f] = playerFeatures([pos({ is_delayed: true, is_rounded: true })], [prof()])
+    const [f] = playerFeatures([pos({ is_delayed: true, is_rounded: true })], [prof()], 'character')
     expect(f.delayed).toBe(true)
     expect(f.label).toContain('approximate position, delayed')
   })
 
   it('does not draw dead characters and falls back to the username without a profile', () => {
-    expect(playerFeatures([pos()], [prof({ is_dead: true })])).toEqual([])
-    const [f] = playerFeatures([pos({ username: 'bob' })], [])
+    expect(playerFeatures([pos()], [prof({ is_dead: true })], 'character')).toEqual([])
+    const [f] = playerFeatures([pos({ username: 'bob' })], [], 'character')
     expect(f.label).toBe('bob')
   })
 
   it('an anonymous caller who is shown no rows gets no markers', () => {
-    expect(playerFeatures([], [prof()])).toEqual([])
+    expect(playerFeatures([], [prof()], 'character')).toEqual([])
+  })
+
+  it('T44: account mode always shows the username, even with a display name set', () => {
+    const [f] = playerFeatures([pos()], [prof()], 'account')
+    expect(f.name).toBe('alice')
+    expect(f.label).toBe('alice - 12 h survived')
   })
 })
 
 describe('findablePlayers (T38)', () => {
   it('excludes an offline player even with a position row', () => {
-    const out = findablePlayers([pos()], [prof({ online: false })])
+    const out = findablePlayers([pos()], [prof({ online: false })], 'character')
     expect(out).toEqual([])
   })
 
   it('excludes a dead player', () => {
-    const out = findablePlayers([pos()], [prof({ is_dead: true })])
+    const out = findablePlayers([pos()], [prof({ is_dead: true })], 'character')
     expect(out).toEqual([])
   })
 
   it('excludes an online player with no position row', () => {
-    const out = findablePlayers([], [prof()])
+    const out = findablePlayers([], [prof()], 'character')
     expect(out).toEqual([])
   })
 
   it('uses display_name, falling back to username only when there is none', () => {
-    const [withName] = findablePlayers([pos()], [prof()])
+    const [withName] = findablePlayers([pos()], [prof()], 'character')
     expect(withName.name).toBe('Alice W')
-    const [withoutName] = findablePlayers([pos({ username: 'bob' })], [prof({ username: 'bob', display_name: null })])
+    const [withoutName] = findablePlayers([pos({ username: 'bob' })], [prof({ username: 'bob', display_name: null })], 'character')
     expect(withoutName.name).toBe('bob')
   })
 
@@ -95,6 +101,7 @@ describe('findablePlayers (T38)', () => {
     const out = findablePlayers(
       [pos({ username: 'bob' }), pos({ username: 'alice' })],
       [prof({ username: 'bob', display_name: 'zed' }), prof({ username: 'alice', display_name: 'Amy' })],
+      'character',
     )
     expect(out.map((p) => p.name)).toEqual(['Amy', 'zed'])
   })
@@ -103,6 +110,7 @@ describe('findablePlayers (T38)', () => {
     const out = findablePlayers(
       [pos({ username: 'zed' }), pos({ username: 'amy' })],
       [prof({ username: 'zed', display_name: 'Same Name' }), prof({ username: 'amy', display_name: 'Same Name' })],
+      'character',
     )
     // 'amy' sorts before 'zed' by key, so amy keeps the bare name and zed gets " (2)",
     // regardless of the order the two rows were passed in.
@@ -111,37 +119,75 @@ describe('findablePlayers (T38)', () => {
   })
 
   it('key never equals the displayed name unless there is no display name', () => {
-    const [f] = findablePlayers([pos()], [prof()])
+    const [f] = findablePlayers([pos()], [prof()], 'character')
     expect(f.key).toBe('alice')
     expect(f.key).not.toBe(f.name)
-    const [g] = findablePlayers([pos({ username: 'bob' })], [prof({ username: 'bob', display_name: null })])
+    const [g] = findablePlayers([pos({ username: 'bob' })], [prof({ username: 'bob', display_name: null })], 'character')
     expect(g.key).toBe(g.name)
+  })
+
+  it('T44: account mode shows the username and never adds an ordinal, even with a shared display name', () => {
+    const out = findablePlayers(
+      [pos({ username: 'zed' }), pos({ username: 'amy' })],
+      [prof({ username: 'zed', display_name: 'Same Name' }), prof({ username: 'amy', display_name: 'Same Name' })],
+      'account',
+    )
+    expect(out.find((p) => p.key === 'amy')?.name).toBe('amy')
+    expect(out.find((p) => p.key === 'zed')?.name).toBe('zed')
   })
 })
 
 describe('vehicles, safehouses, zones', () => {
   it('vehicle label includes the driver when there is one', () => {
-    const [a, b] = vehicleFeatures([
-      { server_id: 's', vehicle_id: 1, script_name: 'Base.CarTaxi', x: 5, y: 6, z: 0, t: null, driver_username: 'alice' },
-      { server_id: 's', vehicle_id: 2, script_name: null, x: 7, y: 8, z: 0, t: null, driver_username: null },
-    ])
+    const [a, b] = vehicleFeatures(
+      [
+        { server_id: 's', vehicle_id: 1, script_name: 'Base.CarTaxi', x: 5, y: 6, z: 0, t: null, driver_username: 'alice' },
+        { server_id: 's', vehicle_id: 2, script_name: null, x: 7, y: 8, z: 0, t: null, driver_username: null },
+      ],
+      [],
+      'character',
+    )
     expect(a.label).toBe('Base.CarTaxi - driver alice')
     expect(a.latlng).toEqual([6, 5])
     expect(b.label).toBe('Vehicle')
   })
 
   it('T34: the public surface has driver_username null and never prints a driver', () => {
-    const [v] = vehicleFeatures([
-      { server_id: 's', vehicle_id: 3, script_name: 'Base.PickUpVan', x: 1, y: 2, z: 0, t: null, driver_username: null },
-    ])
+    const [v] = vehicleFeatures(
+      [{ server_id: 's', vehicle_id: 3, script_name: 'Base.PickUpVan', x: 1, y: 2, z: 0, t: null, driver_username: null }],
+      [],
+      'character',
+    )
     expect(v.label).toBe('Base.PickUpVan')
     expect(v.label).not.toContain('driver')
   })
 
+  it('T44: the driver line resolves through profiles the same way a player name does', () => {
+    const vehicles = [{ server_id: 's', vehicle_id: 1, script_name: 'Base.CarTaxi', x: 5, y: 6, z: 0, t: null, driver_username: 'alice' }]
+    const [character] = vehicleFeatures(vehicles, [prof()], 'character')
+    expect(character.label).toBe('Base.CarTaxi - driver Alice W')
+    const [account] = vehicleFeatures(vehicles, [prof()], 'account')
+    expect(account.label).toBe('Base.CarTaxi - driver alice')
+    // No matching profile: falls back to the raw username in either mode.
+    const [noProfile] = vehicleFeatures(vehicles, [], 'character')
+    expect(noProfile.label).toBe('Base.CarTaxi - driver alice')
+  })
+
   it('safehouse rectangle runs from (x,y) to (x+w,y+h) as [y,x] pairs', () => {
-    const [s] = safehouseFeatures([{ server_id: 's', id: 'a', x: 10, y: 20, w: 5, h: 7, owner: 'bob', title: null }])
+    const [s] = safehouseFeatures([{ server_id: 's', id: 'a', x: 10, y: 20, w: 5, h: 7, owner: 'bob', title: null }], [], 'character')
     expect(s.bounds).toEqual([[20, 10], [27, 15]])
     expect(s.label).toBe('Safehouse - owner bob')
+  })
+
+  it('T44: the safehouse owner line resolves through profiles the same way a player name does', () => {
+    const houses = [{ server_id: 's', id: 'a', x: 10, y: 20, w: 5, h: 7, owner: 'alice', title: null }]
+    const [character] = safehouseFeatures(houses, [prof()], 'character')
+    expect(character.label).toBe('Safehouse - owner Alice W')
+    const [account] = safehouseFeatures(houses, [prof()], 'account')
+    expect(account.label).toBe('Safehouse - owner alice')
+    // No matching profile: falls back to the raw username in either mode.
+    const [noProfile] = safehouseFeatures(houses, [], 'account')
+    expect(noProfile.label).toBe('Safehouse - owner alice')
   })
 
   it('zone corners are ordered, and a zone without a second corner is a point', () => {

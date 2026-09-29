@@ -14,6 +14,8 @@ const signInDialogSrc = readFileSync(fileURLToPath(new URL('../auth/SignInDialog
 // header comment) - its exported numeric constants are asserted on as source text too.
 const mapViewSrc = readFileSync(fileURLToPath(new URL('../map/MapView.tsx', import.meta.url)), 'utf8')
 const findPlayerSrc = readFileSync(fileURLToPath(new URL('../panels/FindPlayer.tsx', import.meta.url)), 'utf8')
+const nameModeToggleSrc = readFileSync(fileURLToPath(new URL('../panels/NameModeToggle.tsx', import.meta.url)), 'utf8')
+const rosterSrc = readFileSync(fileURLToPath(new URL('../panels/Roster.tsx', import.meta.url)), 'utf8')
 
 describe('T34: the top bar is gone', () => {
   it('App.tsx has no aurora-header and does not import SignInButtons', () => {
@@ -159,5 +161,40 @@ describe('T41: players and their names draw above everything else', () => {
 
   it('MapView.tsx imports the pane constants from the pure ./panes module, not by redefining them', () => {
     expect(mapViewSrc).toMatch(/from '\.\/panes'/)
+  })
+})
+
+describe('T44: name mode toggle (usernames are intentionally public, owner decision)', () => {
+  it('NameModeToggle.tsx offers exactly the two modes, as radio inputs sharing one group', () => {
+    expect(nameModeToggleSrc).toMatch(/<legend>Show names as<\/legend>/)
+    expect(nameModeToggleSrc).toMatch(/type="radio"/)
+    expect(nameModeToggleSrc).toMatch(/name="name-mode"/)
+    expect(nameModeToggleSrc).toMatch(/value="character"/)
+    expect(nameModeToggleSrc).toMatch(/value="account"/)
+    expect(nameModeToggleSrc).toMatch(/Character names/)
+    expect(nameModeToggleSrc).toMatch(/Account usernames/)
+  })
+
+  it('MapPage.tsx renders the toggle before StreetSearch and wires it to nameMode state', () => {
+    const toggleAt = mapPageSrc.indexOf('<NameModeToggle')
+    const searchAt = mapPageSrc.indexOf('<StreetSearch')
+    expect(toggleAt).toBeGreaterThan(-1)
+    expect(searchAt).toBeGreaterThan(-1)
+    expect(toggleAt).toBeLessThan(searchAt)
+    expect(mapPageSrc).toMatch(/loadNameMode/)
+    expect(mapPageSrc).toMatch(/saveNameMode/)
+  })
+
+  it('MapPage.tsx threads nameMode into every feature builder that can show a name', () => {
+    expect(mapPageSrc).toMatch(/playerFeatures\(positions\.data, profiles\.data, nameMode\)/)
+    expect(mapPageSrc).toMatch(/findablePlayers\(positions\.data, profiles\.data, nameMode\)/)
+    expect(mapPageSrc).toMatch(/vehicleFeatures\(vehicles\.data, profiles\.data, nameMode\)/)
+    expect(mapPageSrc).toMatch(/safehouseFeatures\(safehouses\.data, profiles\.data, nameMode\)/)
+    expect(mapPageSrc).toMatch(/<RosterPanel profiles=\{profiles\.data\} error=\{profiles\.error\} mode=\{nameMode\}/)
+  })
+
+  it('Roster.tsx takes a mode prop rather than always reading display_name', () => {
+    expect(rosterSrc).toMatch(/mode: NameMode/)
+    expect(rosterSrc).toMatch(/pickName\(mode, p\.display_name, p\.username\)/)
   })
 })
