@@ -1,0 +1,21 @@
+{
+  "_comment": "Hand-maintained source for scripts/build-nav.ts. Sections and categories are discovered from content/articles; only the version list and the default live here.",
+  "game": "pz",
+  "defaultVersion": "build-41",
+  "versions": [
+    {
+      "id": "build-41",
+      "name": "Build 41",
+      "releaseDate": "2021-12-20",
+      "status": "legacy",
+      "description": "The previous stable build. Guides here are kept as written and are not updated for Build 42."
+    },
+    {
+      "id": "build-42",
+      "name": "Build 42",
+      "releaseDate": "2026-07-29",
+      "status": "current",
+      "description": "The current stable build (42.20 and later). Modding, mapping, vehicles and the Outcast mods."
+    }
+  ]
+}
