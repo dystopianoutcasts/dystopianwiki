@@ -1,0 +1,92 @@
+{
+  "sources_root": "scripts/import/tooling-src",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "intermediate",
+    "target": "articles",
+    "provenance": { "compiled": "2026-09-29", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "check-kahlua.md",
+      "section": "modding",
+      "category": "tooling",
+      "slug": "check-kahlua",
+      "title": "check-kahlua.py",
+      "split": "none",
+      "tags": ["tooling", "kahlua", "lua", "outcast-lib"],
+      "difficulty": "intermediate"
+    },
+    {
+      "source": "check-pz-scripts.md",
+      "section": "modding",
+      "category": "tooling",
+      "slug": "check-pz-scripts",
+      "title": "check-pz-scripts.py",
+      "split": "none",
+      "tags": ["tooling", "scripts", "translations", "outcast-lib"],
+      "difficulty": "intermediate"
+    },
+    {
+      "source": "check-workshop-item.md",
+      "section": "modding",
+      "category": "tooling",
+      "slug": "check-workshop-item",
+      "title": "check-workshop-item.py",
+      "split": "none",
+      "tags": ["tooling", "workshop", "steam-upload", "outcast-lib"],
+      "difficulty": "intermediate"
+    },
+    {
+      "source": "stage-workshop.md",
+      "section": "modding",
+      "category": "tooling",
+      "slug": "stage-workshop",
+      "title": "stage-workshop.ps1",
+      "split": "none",
+      "tags": ["tooling", "workshop", "staging", "powershell"],
+      "difficulty": "intermediate"
+    },
+    {
+      "source": "unstage-all.md",
+      "section": "modding",
+      "category": "tooling",
+      "slug": "unstage-all",
+      "title": "unstage-all.ps1",
+      "split": "none",
+      "tags": ["tooling", "multiplayer", "staging", "powershell"],
+      "difficulty": "intermediate"
+    },
+    {
+      "source": "validate-data.md",
+      "section": "modding",
+      "category": "tooling",
+      "slug": "validate-data",
+      "title": "validate-data.ps1",
+      "split": "none",
+      "tags": ["tooling", "outcast-lib", "validation", "powershell"],
+      "difficulty": "intermediate"
+    },
+    {
+      "source": "install-junctions.md",
+      "section": "modding",
+      "category": "tooling",
+      "slug": "install-junctions",
+      "title": "install-junctions.ps1",
+      "split": "none",
+      "tags": ["tooling", "junctions", "dev-workflow", "powershell"],
+      "difficulty": "intermediate"
+    },
+    {
+      "source": "check-craft-recipes.md",
+      "section": "modding",
+      "category": "tooling",
+      "slug": "check-craft-recipes",
+      "title": "check-craft-recipes.py",
+      "split": "none",
+      "tags": ["tooling", "craft-recipes", "validation"],
+      "difficulty": "intermediate"
+    }
+  ]
+}

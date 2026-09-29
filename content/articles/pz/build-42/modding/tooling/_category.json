@@ -1,0 +1,6 @@
+{
+  "name": "Tooling",
+  "description": "The OutcastLib and PZ-scripting checkers that catch what the engine fails on silently.",
+  "icon": "wrench",
+  "displayOrder": 13
+}
