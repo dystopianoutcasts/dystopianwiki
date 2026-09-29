@@ -1,0 +1,23 @@
+{
+  "sources_root": "R:/ZOMBOID/_dev/B42_ResourceWeights",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "intermediate",
+    "target": "articles",
+    "provenance": { "compiled": "2026-08-03", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "CANDIDATE_ITEMS.md",
+      "section": "modding",
+      "category": "items-and-scripting",
+      "slug": "item-block-merge-behaviour",
+      "title": "B42 resource weight reduction -- candidate item audit",
+      "split": "none",
+      "tags": ["items", "scripting", "resource-weights", "item-blocks"],
+      "difficulty": "intermediate",
+      "provenance": { "compiled": "2026-08-03", "game_version": "42.20" }
+    }
+  ]
+}

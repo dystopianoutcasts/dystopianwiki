@@ -1,0 +1,23 @@
+{
+  "sources_root": "R:/ZOMBOID/_dev/OutcastMotors",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "advanced",
+    "target": "articles",
+    "provenance": { "compiled": "2026-08-22", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "17-fluid-systems-research.md",
+      "section": "modding",
+      "category": "fluids",
+      "slug": "fluid-system-research",
+      "title": "Outcast Motors -- fluid systems research",
+      "split": "none",
+      "tags": ["fluids", "vehicles", "outcast-motors", "containers"],
+      "difficulty": "advanced",
+      "provenance": { "compiled": "2026-08-22", "game_version": "42.20" }
+    }
+  ]
+}

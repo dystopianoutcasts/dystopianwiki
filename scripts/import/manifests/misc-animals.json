@@ -1,0 +1,23 @@
+{
+  "sources_root": "R:/ZOMBOID/_dev/B42_Cat/research",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "advanced",
+    "target": "articles",
+    "provenance": { "compiled": "2026-09-11", "game_version": "42.19" }
+  },
+  "entries": [
+    {
+      "source": "09-pz-b42-animal-pipeline.md",
+      "section": "modding",
+      "category": "farming-and-animals",
+      "slug": "animal-pipeline",
+      "title": "How Build 42 loads and animates an animal",
+      "split": "none",
+      "tags": ["animals", "rigging", "animation", "animsets"],
+      "difficulty": "advanced",
+      "provenance": { "compiled": "2026-09-11", "game_version": "42.19" }
+    }
+  ]
+}

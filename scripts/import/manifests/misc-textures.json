@@ -1,0 +1,23 @@
+{
+  "sources_root": "R:/ZOMBOID/_dev/B42_Textures",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "intermediate",
+    "target": "articles",
+    "provenance": { "compiled": "2026-08-10", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "ETO_texture_optimization_study.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "texture-optimization-study",
+      "title": "Every Texture Optimized -- what it actually does, measured",
+      "split": "none",
+      "tags": ["textures", "mod-study", "optimization"],
+      "difficulty": "intermediate",
+      "provenance": { "compiled": "2026-08-10", "game_version": "42.20" }
+    }
+  ]
+}
