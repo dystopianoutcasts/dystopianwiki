@@ -12,6 +12,10 @@
  * The join to online, living players mirrors playerFeatures in
  * packages/aurora/src/layers/transform.ts. It is copied rather than imported:
  * aurora is not a dependency of the web package.
+ *
+ * `name` is `display_name`, falling back to `username` only when there is no
+ * display name. T27 removes that fallback everywhere at once; this is the one
+ * place in packages/web that decides it, per VISIBILITY.md note 3.
  */
 import { useQuery } from '@tanstack/react-query'
 import { auroraClient, AURORA_SERVER_ID } from '../lib/aurora'
@@ -19,6 +23,8 @@ import { auroraClient, AURORA_SERVER_ID } from '../lib/aurora'
 export interface MapDot {
   /** Stable key for React. Never rendered. */
   id: string
+  /** Shown next to the dot. */
+  name: string
   /** World squares. */
   x: number
   y: number
@@ -26,6 +32,7 @@ export interface MapDot {
 
 interface PlayerRow {
   username: string
+  display_name: string | null
   online: boolean
   is_dead: boolean | null
 }
@@ -43,7 +50,7 @@ async function fetchDots(): Promise<MapDot[]> {
     const [playersRes, positionsRes] = await Promise.all([
       auroraClient
         .from('players_public')
-        .select('username,online,is_dead')
+        .select('username,display_name,online,is_dead')
         .eq('server_id', AURORA_SERVER_ID)
         .eq('online', true),
       auroraClient.from('player_positions_visible').select('username,x,y').eq('server_id', AURORA_SERVER_ID),
@@ -56,11 +63,13 @@ async function fetchDots(): Promise<MapDot[]> {
 
     // Only players who are online now and alive. The positions view does not
     // filter on online by itself, so a logged-off player can still have a row.
-    const drawable = new Set(players.filter((p) => !p.is_dead).map((p) => p.username))
+    const drawable = new Map(
+      players.filter((p) => !p.is_dead).map((p) => [p.username, p.display_name || p.username]),
+    )
 
     return positions
       .filter((pos) => drawable.has(pos.username) && Number.isFinite(pos.x) && Number.isFinite(pos.y))
-      .map((pos) => ({ id: pos.username, x: pos.x, y: pos.y }))
+      .map((pos) => ({ id: pos.username, name: drawable.get(pos.username) as string, x: pos.x, y: pos.y }))
   } catch {
     return []
   }

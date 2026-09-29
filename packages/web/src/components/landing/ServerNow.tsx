@@ -1,22 +1,26 @@
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { useServerNow } from '../../hooks/useServerNow';
+import { centerOf, imageSize, scrollFor, squaresPerPixel, truncateName, type WorldPoint } from '../../utils/mapView';
 import '../../styles/components/server-now.css';
 
-// Home page map centerpiece: one large picture of the server map, a dot for
-// each player who is online, and a link to the live map. Not interactive: no
-// pan, no zoom, no names, no roster, no server status.
+// Home page map centerpiece: a scrollable window onto the zoom-12 picture of
+// the whole server map, a dot and name for each player who is online, and a
+// link to the live map centred on the same place. No zoom control, no
+// roster, no server status, no Leaflet.
 //
-// The picture is zoom level 11 of the Deep Zoom pyramid the /map/ app serves
-// (map/tiles/base_top/layer0.dzi: 256 px tiles, no overlap). Level 15 is one
-// pixel per square, so level 11 is the world at 1/16 scale.
-const WORLD_W = 19968; // squares, from map/tiles.json world.squares
-const WORLD_H = 16128;
+// The picture is zoom level 12 of the Deep Zoom pyramid the /map/ app serves
+// (map/tiles/base_top/layer0.dzi: 256 px tiles, no overlap; 70 of 80 tiles
+// exist, the rest are empty world and left blank). Level 15 is one pixel per
+// square, so level 12 is the world at 1/8 scale.
 const TILE = 256;
-const ZOOM = 11;
-const SCALE = 2 ** (ZOOM - 15);
-const IMAGE_W = Math.ceil(WORLD_W * SCALE); // 1248
-const IMAGE_H = Math.ceil(WORLD_H * SCALE); // 1008
-const COLS = Math.ceil(IMAGE_W / TILE); // 5, last column 224 px
-const ROWS = Math.ceil(IMAGE_H / TILE); // 4, last row 240 px
+const ZOOM = 12;
+const SCALE = squaresPerPixel(ZOOM) ** -1; // pixels per square: 1/8
+const { width: IMAGE_W, height: IMAGE_H } = imageSize(ZOOM); // 2496 x 2016
+const COLS = Math.ceil(IMAGE_W / TILE); // 10, last column 192 px
+const ROWS = Math.ceil(IMAGE_H / TILE); // 8, last row 224 px
+
+// Rosewood (map/areas.json): the opening position, owner's decision.
+const ROSEWOOD: WorldPoint = { x: 8350, y: 11750 };
 
 // Grid tracks sized in proportion to each tile's real width or height, so the
 // partial edge tiles keep their shape.
@@ -24,13 +28,11 @@ function tracks(count: number, total: number): string {
   return Array.from({ length: count }, (_, i) => `minmax(0, ${Math.min(TILE, total - i * TILE)}fr)`).join(' ');
 }
 
-const TILES = Array.from({ length: ROWS * COLS }, (_, i) => ({ x: i % COLS, y: Math.floor(i / COLS) }));
-
-// World squares to a percentage of the picture. The world origin is the
-// picture's top left and y grows downward, so there is no flip.
-function percent(value: number, extent: number): string {
-  return `${Math.min(100, Math.max(0, (value / extent) * 100))}%`;
+function tileExtent(total: number, index: number): number {
+  return Math.min(TILE, total - index * TILE);
 }
+
+const TILES = Array.from({ length: ROWS * COLS }, (_, i) => ({ x: i % COLS, y: Math.floor(i / COLS) }));
 
 function describe(count: number): string {
   if (count === 0) return 'Server map of the whole Build 42 world';
@@ -40,6 +42,64 @@ function describe(count: number): string {
 
 export function ServerNow() {
   const dots = useServerNow();
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const dragRef = useRef<{ x: number; y: number; scrollLeft: number; scrollTop: number } | null>(null);
+  const scrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [center, setCenter] = useState<WorldPoint>(ROSEWOOD);
+
+  // Opening position: land on Rosewood before the visitor ever sees the
+  // top-left corner. A layout effect runs before paint.
+  useLayoutEffect(() => {
+    const el = viewportRef.current;
+    if (!el) return;
+    const scroll = scrollFor(ROSEWOOD, { width: el.clientWidth, height: el.clientHeight }, ZOOM);
+    el.scrollLeft = scroll.x;
+    el.scrollTop = scroll.y;
+  }, []);
+
+  const updateCenterFromScroll = useCallback(() => {
+    const el = viewportRef.current;
+    if (!el) return;
+    setCenter(centerOf({ x: el.scrollLeft, y: el.scrollTop }, { width: el.clientWidth, height: el.clientHeight }, ZOOM));
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    if (scrollTimer.current) clearTimeout(scrollTimer.current);
+    scrollTimer.current = setTimeout(updateCenterFromScroll, 150);
+  }, [updateCenterFromScroll]);
+
+  // Dragging: an alternative to the scrollbar and touch scroll, never the
+  // only way to move the map (WCAG 2.5.7). Touch already scrolls the region
+  // natively via touch-action, so this only runs for mouse/pen pointers.
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'touch' || e.button !== 0) return;
+    const el = viewportRef.current;
+    if (!el) return;
+    dragRef.current = { x: e.clientX, y: e.clientY, scrollLeft: el.scrollLeft, scrollTop: el.scrollTop };
+    el.classList.add('server-now__viewport--grabbing');
+
+    const onMove = (ev: PointerEvent) => {
+      const drag = dragRef.current;
+      const target = viewportRef.current;
+      if (!drag || !target) return;
+      target.scrollLeft = drag.scrollLeft - (ev.clientX - drag.x);
+      target.scrollTop = drag.scrollTop - (ev.clientY - drag.y);
+    };
+    const endDrag = () => {
+      dragRef.current = null;
+      viewportRef.current?.classList.remove('server-now__viewport--grabbing');
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', endDrag);
+      window.removeEventListener('pointercancel', endDrag);
+      document.removeEventListener('pointerleave', endDrag);
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', endDrag);
+    window.addEventListener('pointercancel', endDrag);
+    document.addEventListener('pointerleave', endDrag);
+  }, []);
+
+  const liveMapHref = `/map/?x=${Math.round(center.x)}&y=${Math.round(center.y)}&zoom=15`;
 
   return (
     <section className="server-now" aria-labelledby="server-now-title">
@@ -48,44 +108,63 @@ export function ServerNow() {
           The server map
         </h2>
 
-        <div className="server-now__frame" style={{ aspectRatio: `${WORLD_W} / ${WORLD_H}` }}>
-          <div
-            className="server-now__map"
-            role="img"
-            aria-label={describe(dots.length)}
-            style={{
-              gridTemplateColumns: tracks(COLS, IMAGE_W),
-              gridTemplateRows: tracks(ROWS, IMAGE_H),
-            }}
-          >
-            {TILES.map((tile) => (
-              <img
-                key={`${tile.x}_${tile.y}`}
-                className="server-now__map-tile"
-                src={`/map/tiles/base_top/layer0_files/${ZOOM}/${tile.x}_${tile.y}.webp`}
-                alt=""
-                decoding="async"
-                onError={(e) => {
-                  // The pyramid is sparse: tiles with no populated cells do not exist.
-                  e.currentTarget.style.visibility = 'hidden';
-                }}
-              />
-            ))}
-          </div>
+        <div
+          ref={viewportRef}
+          className="server-now__viewport"
+          tabIndex={0}
+          role="region"
+          aria-label="Server map, centred on Rosewood. Scroll or drag to move."
+          onScroll={handleScroll}
+          onPointerDown={handlePointerDown}
+        >
+          <div className="server-now__inner" style={{ width: IMAGE_W, height: IMAGE_H }}>
+            <div
+              className="server-now__map"
+              role="img"
+              aria-label={describe(dots.length)}
+              style={{
+                gridTemplateColumns: tracks(COLS, IMAGE_W),
+                gridTemplateRows: tracks(ROWS, IMAGE_H),
+              }}
+            >
+              {TILES.map((tile) => (
+                <img
+                  key={`${tile.x}_${tile.y}`}
+                  className="server-now__map-tile"
+                  src={`/map/tiles/base_top/layer0_files/${ZOOM}/${tile.x}_${tile.y}.webp`}
+                  alt=""
+                  width={tileExtent(IMAGE_W, tile.x)}
+                  height={tileExtent(IMAGE_H, tile.y)}
+                  loading="lazy"
+                  decoding="async"
+                  onError={(e) => {
+                    // The pyramid is sparse: tiles with no populated cells do not exist.
+                    e.currentTarget.style.visibility = 'hidden';
+                  }}
+                />
+              ))}
+            </div>
 
-          <div className="server-now__dots" aria-hidden="true">
-            {dots.map((dot) => (
-              <span
-                key={dot.id}
-                className="server-now__dot"
-                style={{ left: percent(dot.x, WORLD_W), top: percent(dot.y, WORLD_H) }}
-              />
-            ))}
+            {/* Last child, above the tile grid: players are always the top layer. */}
+            <ul className="server-now__players" aria-label="Players online">
+              {dots.map((dot) => (
+                <li
+                  key={dot.id}
+                  className="server-now__player"
+                  style={{ left: dot.x * SCALE, top: dot.y * SCALE }}
+                >
+                  <span className="server-now__dot" />
+                  <span className="server-now__name">{truncateName(dot.name)}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
+        <p className="server-now__help">Drag or scroll to look around.</p>
+
         <p className="server-now__link-row">
-          <a className="server-now__link" href="/map/">
+          <a className="server-now__link" href={liveMapHref}>
             Open the live map
           </a>
         </p>

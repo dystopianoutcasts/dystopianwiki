@@ -1,7 +1,8 @@
 /**
  * Server Map Styles
- * Home page map centerpiece (ServerNow.tsx): a heading, one large map picture
- * stitched from zoom-11 tiles, and a link to the live map. Uses only tokens
+ * Home page map centerpiece (ServerNow.tsx): a heading, a pannable window
+ * onto one large map picture stitched from zoom-12 tiles, player dots and
+ * names above everything, and a link to the live map. Uses only tokens
  * already in styles/variables.css.
  */
 
@@ -28,46 +29,49 @@
   letter-spacing: 0.02em;
 }
 
-/* The frame is locked to the world's aspect ratio (set inline) and holds two
-   layers of the same size: the stitched picture and the player dots. */
-.server-now__frame {
+/* The scrollable window onto the map picture. A focusable, scrollable region
+   (role="region", tabIndex) so it moves with the arrow keys and the
+   scrollbars, not only by dragging (WCAG 2.5.7, 2.1.1). overflow stays
+   "auto" (never "hidden") and overscroll-behavior stays at its default so
+   the page keeps scrolling with the wheel once the map hits an edge. */
+.server-now__viewport {
   position: relative;
   width: 100%;
   max-width: 1100px;
+  height: 560px;
   margin: 0 auto;
-  overflow: hidden;
+  overflow: auto;
   background: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-md);
+  cursor: grab;
+  touch-action: pan-x pan-y;
+}
+
+.server-now__viewport:active,
+.server-now__viewport--grabbing {
+  cursor: grabbing;
+}
+
+.server-now__viewport:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Fixed to the picture's real size (set inline: 2,496 x 2,016 px at zoom 12).
+   Larger than the viewport, which is what makes the viewport scrollable. */
+.server-now__inner {
+  position: relative;
 }
 
 /* The grid tracks are proportional to the real tile sizes, so the partial
    edge tiles fit. */
 .server-now__map {
-  display: grid;
-  width: 100%;
-  height: 100%;
-}
-
-.server-now__dots {
   position: absolute;
   inset: 0;
-  pointer-events: none;
-}
-
-/* One online player. The dark ring keeps the dot readable on light terrain
-   and the pale halo keeps it readable on dark terrain, so colour alone never
-   carries it. */
-.server-now__dot {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  margin: -6px 0 0 -6px;
-  border-radius: 50%;
-  background: var(--color-link);
-  border: 2px solid var(--color-background);
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.55);
+  display: grid;
+  z-index: 1;
 }
 
 .server-now__map-tile {
@@ -77,6 +81,63 @@
   min-width: 0;
   min-height: 0;
   object-fit: fill;
+}
+
+/* Always the last child of the inner picture and above the tile grid: the
+   players layer is the top layer of the map. pointer-events: none so a name
+   or dot never blocks dragging or a click-through to the map beneath it. */
+.server-now__players {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+}
+
+/* One online player: a dot centred exactly on the world position, and the
+   name to its right. The transform shifts the dot's top-left corner up and
+   left by half its size, so its centre (not its corner) lands on the world
+   position; the name rides along in the same row. */
+.server-now__player {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transform: translate(-6px, -6px);
+  white-space: nowrap;
+}
+
+/* The dark ring keeps the dot readable on light terrain and the pale halo
+   keeps it readable on dark terrain, so colour alone never carries it. */
+.server-now__dot {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-link);
+  border: 2px solid var(--color-background);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.55);
+}
+
+/* Real text, not an image: a light label on a near-opaque dark pill keeps
+   contrast at least 4.5:1 regardless of the terrain colour underneath.
+   Long names are already cut to 24 characters plus an ellipsis in
+   utils/mapView.ts (truncateName), so this stays one line without wrapping. */
+.server-now__name {
+  font-size: 12px;
+  line-height: 1.4;
+  color: #ffffff;
+  background: rgba(8, 10, 18, 0.92);
+  padding: 1px 6px;
+  border-radius: var(--border-radius-full);
+}
+
+.server-now__help {
+  margin: var(--spacing-2) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
 }
 
 .server-now__link-row {
@@ -104,5 +165,9 @@
 @media (max-width: 640px) {
   .server-now {
     padding: var(--spacing-8) var(--spacing-4);
+  }
+
+  .server-now__viewport {
+    height: 420px;
   }
 }
