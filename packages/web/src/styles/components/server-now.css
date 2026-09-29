@@ -1,0 +1,168 @@
+/**
+ * Server Now Styles
+ * Read-only "Server right now" panel on the landing page, replacing GameCards.
+ * Matches the visual weight of about-section.css: same padding scale, border
+ * treatment and title styling, using only tokens already in styles/variables.css.
+ */
+
+.server-now {
+  padding: var(--spacing-12) var(--spacing-4);
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.server-now__content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.server-now__title {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-4);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.server-now__status {
+  text-align: center;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-6);
+}
+
+.server-now__status--ok {
+  color: var(--color-badge-beginner);
+}
+
+.server-now__status--stale {
+  color: var(--color-accent-400);
+}
+
+.server-now__status--nodata,
+.server-now__status--error,
+.server-now__status--loading {
+  color: var(--color-text-muted);
+}
+
+.server-now__body {
+  display: flex;
+  gap: var(--spacing-8);
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.server-now__roster {
+  flex: 1 1 240px;
+  min-width: 200px;
+}
+
+.server-now__players {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.server-now__player {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  padding: var(--spacing-1) var(--spacing-3);
+  background: var(--color-surface-elevated);
+  border-radius: var(--border-radius-sm);
+}
+
+.server-now__more {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  margin: var(--spacing-2) 0 0;
+}
+
+.server-now__empty {
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.server-now__note {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  margin: var(--spacing-2) 0 0;
+}
+
+.server-now__map-wrap {
+  flex: 1 1 280px;
+  max-width: 360px;
+  width: 100%;
+}
+
+.server-now__map {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background: var(--color-primary-900, #0a1628);
+}
+
+.server-now__map-tiles {
+  position: absolute;
+  inset: 0;
+  display: grid;
+}
+
+.server-now__map-tile {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.server-now__dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  margin-top: -4px;
+  border-radius: var(--border-radius-full);
+  background: var(--color-accent-400);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+.server-now__link {
+  display: inline-block;
+  margin-top: var(--spacing-6);
+  color: var(--color-link);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+}
+
+.server-now__link:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.server-now__link:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .server-now {
+    padding: var(--spacing-8) var(--spacing-4);
+  }
+
+  .server-now__body {
+    flex-direction: column;
+  }
+
+  .server-now__map-wrap {
+    max-width: 100%;
+  }
+}
