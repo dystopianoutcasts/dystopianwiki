@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { isValidElement, useMemo, type ReactNode } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
@@ -8,6 +8,17 @@ import '../../styles/components/markdown.css';
 
 // Import highlight.js styles (we'll use a dark theme that works in both modes)
 import 'highlight.js/styles/atom-one-dark.css';
+
+// Plain text of a React subtree. rehype-highlight turns a recognized code block's
+// children (lua, ini, json...) into an array of <span> elements, so
+// String(children) printed "[object Object]" in place of every highlighted token.
+function nodeText(node: ReactNode): string {
+  if (node === null || node === undefined || typeof node === 'boolean') return '';
+  if (typeof node === 'string' || typeof node === 'number') return String(node);
+  if (Array.isArray(node)) return node.map(nodeText).join('');
+  if (isValidElement<{ children?: ReactNode }>(node)) return nodeText(node.props.children);
+  return '';
+}
 
 interface MarkdownRendererProps {
   content: string;
@@ -27,7 +38,7 @@ export function MarkdownRenderer({ content, className = '' }: MarkdownRendererPr
         const className = codeElement.className || '';
         const match = /language-(\w+)/.exec(className);
         const language = match ? match[1] : 'text';
-        const codeString = String(codeElement.children).replace(/\n$/, '');
+        const codeString = nodeText(codeElement.children).replace(/\n$/, '');
 
         return (
           <CodeBlock
