@@ -1,0 +1,38 @@
+{
+  "description": "Example manifest (contract C4). The underscore prefix keeps it out of a default run; copy its shape.",
+  "sources_root": "R:/ZOMBOID/_dev/B42_Mapping",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "intermediate",
+    "target": "articles",
+    "provenance": { "compiled": "2026-08-02", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "README.md",
+      "section": "mapping",
+      "category": "fundamentals",
+      "slug": "mapping-overview",
+      "title": "Build 42 mapping overview",
+      "split": "none",
+      "tags": ["mapping", "overview", "markers"],
+      "difficulty": "beginner",
+      "strip_header_until": "^Scope:"
+    },
+    {
+      "source": "02-world-and-cells.md",
+      "section": "mapping",
+      "category": "fundamentals",
+      "slug": "world-and-cells",
+      "title": "World and cells",
+      "split": "none",
+      "tags": ["mapping", "cells", "coordinates"],
+      "difficulty": "beginner",
+      "strip_header_until": "^# "
+    }
+  ],
+  "link_overrides": {
+    "09-sources.md": "/pz/build-42/mapping/sources/sources"
+  }
+}
