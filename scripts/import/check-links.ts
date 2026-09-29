@@ -12,8 +12,9 @@
  *
  * --root defaults to the repo's content/ folder; --version defaults to build-42 and
  * selects which articles tree is walked (drafts are always walked). Exit code 1 when any
- * dead link or duplicate slug is found; links that resolve only to a draft are listed
- * separately as "draft target" and do not fail the run.
+ * dead link or duplicate slug is found, and when a published article links to a target that
+ * exists only in drafts (dead on the site). Draft-to-draft links are listed separately as
+ * "draft target" and do not fail the run.
  */
 
 import fs from 'fs'
@@ -189,6 +190,7 @@ async function main(): Promise<void> {
 
   const dead: string[] = []
   const draftTargets: string[] = []
+  const publishedToDraft: string[] = []
   let linkCount = 0
   const walked = [...articleFiles.sort(), ...draftFiles.sort()]
   const parsedFiles: Parsed[] = []
@@ -200,7 +202,11 @@ async function main(): Promise<void> {
       linkCount++
       const verdict = checkTarget(root, link.target)
       if (verdict === 'dead') dead.push(`${link.file}:${link.line} -> ${link.target}`)
-      else if (verdict === 'draft') draftTargets.push(`${link.file}:${link.line} -> ${link.target}`)
+      else if (verdict === 'draft') {
+        const line = `${link.file}:${link.line} -> ${link.target}`
+        if (link.file.startsWith('articles/')) publishedToDraft.push(line)
+        else draftTargets.push(line)
+      }
     }
   }
 
@@ -252,12 +258,16 @@ async function main(): Promise<void> {
     console.error(`\n[ERROR] Dead links (${dead.length}):`)
     for (const d of dead) console.error(`  ${d}`)
   }
+  if (publishedToDraft.length > 0) {
+    console.error(`\n[ERROR] Published articles linking to drafts (${publishedToDraft.length}): dead on the site until the draft is published`)
+    for (const d of publishedToDraft) console.error(`  ${d}`)
+  }
   if (duplicates.length > 0) {
     console.error(`\n[ERROR] Duplicate slugs (${duplicates.length}):`)
     for (const d of duplicates) console.error(`  ${d}`)
   }
-  if (dead.length > 0 || duplicates.length > 0 || problems.length > 0) process.exit(1)
-  console.log('\n[COMPLETE] No dead links and no duplicate slugs.')
+  if (dead.length > 0 || publishedToDraft.length > 0 || duplicates.length > 0 || problems.length > 0) process.exit(1)
+  console.log('\n[COMPLETE] No dead links, no published links to drafts and no duplicate slugs.')
 }
 
 main().catch((err) => {

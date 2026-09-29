@@ -15,6 +15,7 @@ A page that links to the other two fixtures.
 - [mail](mailto:someone@example.com)
 - ![an image](pic.png)
 - [a script](tool.lua)
+- [a folder](../sources/)
 - `[code span](plain.md)` stays as written
 
 ```

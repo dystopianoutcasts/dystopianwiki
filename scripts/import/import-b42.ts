@@ -784,6 +784,8 @@ function planEntry(entry: Entry, errors: string[], warnings: string[]): void {
 interface LinkContext {
   bySource: Map<string, Entry[]>
   overrides: Map<string, string>
+  /** Site paths of every article whose entry targets drafts: dead on the site until published. */
+  draftPaths: Set<string>
 }
 
 interface Resolved {
@@ -824,7 +826,19 @@ type LinkOutcome =
   | { kind: 'untouched' }
   | { kind: 'rewritten'; href: string }
   | { kind: 'downgraded'; filename: string }
-  | { kind: 'other-relative' }
+  | { kind: 'unpublished'; href: string }
+  | { kind: 'other-relative'; path: string }
+
+/**
+ * A rewritten link from a published article to an article that only exists in drafts
+ * would be dead on the site, so it becomes plain text instead. Drafts may link to
+ * drafts: they are published together.
+ */
+function rewrittenOrUnpublished(href: string, from: Article, ctx: LinkContext): LinkOutcome {
+  const bare = href.replace(/#.*$/, '')
+  if (from.entry.target === 'articles' && ctx.draftPaths.has(bare)) return { kind: 'unpublished', href }
+  return { kind: 'rewritten', href }
+}
 
 function classifyLink(rawTarget: string, from: Article, ctx: LinkContext): LinkOutcome {
   const target = rawTarget.startsWith('<') && rawTarget.endsWith('>') ? rawTarget.slice(1, -1) : rawTarget
@@ -843,7 +857,7 @@ function classifyLink(rawTarget: string, from: Article, ctx: LinkContext): LinkO
     const res = resolveInto(entries, anchor)
     if (res.article === from) return { kind: 'untouched' }
     if (entries.length === 1 && from.entry.split === 'none') return { kind: 'untouched' }
-    return { kind: 'rewritten', href: res.href }
+    return rewrittenOrUnpublished(res.href, from, ctx)
   }
 
   let decoded = pathPart
@@ -852,14 +866,15 @@ function classifyLink(rawTarget: string, from: Article, ctx: LinkContext): LinkO
   } catch {
     // keep as written
   }
-  if (!decoded.toLowerCase().endsWith('.md')) return { kind: 'other-relative' }
+  // A directory or a non-markdown file: nothing on the site serves it.
+  if (!decoded.toLowerCase().endsWith('.md')) return { kind: 'other-relative', path: decoded }
 
   const abs = path.isAbsolute(decoded) ? decoded : path.resolve(path.dirname(from.entry.sourceAbs), decoded)
   const key = pathKey(abs)
   const override = ctx.overrides.get(key)
-  if (override) return { kind: 'rewritten', href: anchor ? `${override}#${anchor}` : override }
+  if (override) return rewrittenOrUnpublished(anchor ? `${override}#${anchor}` : override, from, ctx)
   const entries = ctx.bySource.get(key)
-  if (entries && entries.length > 0) return { kind: 'rewritten', href: resolveInto(entries, anchor).href }
+  if (entries && entries.length > 0) return rewrittenOrUnpublished(resolveInto(entries, anchor).href, from, ctx)
   return { kind: 'downgraded', filename: path.basename(decoded) }
 }
 
@@ -905,7 +920,7 @@ const REF_DEF_RE = /^( {0,3}\[[^\]]+\]:[ \t]*)(<[^>]*>|\S+)(.*)$/
 interface RewriteStats {
   rewritten: number
   downgraded: number
-  otherRelative: number
+  unpublished: number
   refUnresolved: number
 }
 
@@ -935,9 +950,14 @@ function rewriteSegment(text: string, startLine: number, from: Article, ctx: Lin
       replacement = `${linkText} (local reference: ${outcome.filename})`
       stats.downgraded++
       log.push({ line, from: rawTarget, to: `plain text (local reference: ${outcome.filename})`, kind: 'downgraded' })
+    } else if (outcome.kind === 'unpublished') {
+      replacement = `${linkText} (not yet published)`
+      stats.unpublished++
+      log.push({ line, from: rawTarget, to: `plain text (not yet published: ${outcome.href})`, kind: 'downgraded' })
     } else if (outcome.kind === 'other-relative') {
-      stats.otherRelative++
-      log.push({ line, from: rawTarget, to: '(relative non-markdown link, left as written)', kind: 'kept' })
+      replacement = `${linkText} (local reference: ${outcome.path})`
+      stats.downgraded++
+      log.push({ line, from: rawTarget, to: `plain text (local reference: ${outcome.path})`, kind: 'downgraded' })
     }
     if (replacement !== null) {
       out += text.slice(last, idx) + replacement
@@ -959,9 +979,9 @@ function rewriteSegment(text: string, startLine: number, from: Article, ctx: Lin
         log.push({ line, from: d[2], to: outcome.href, kind: 'rewritten' })
         return `${d[1]}${outcome.href}${d[3]}`
       }
-      if (outcome.kind === 'downgraded') {
+      if (outcome.kind === 'downgraded' || outcome.kind === 'other-relative' || outcome.kind === 'unpublished') {
         stats.refUnresolved++
-        log.push({ line, from: d[2], to: '(reference definition to an unmapped file, left as written)', kind: 'kept' })
+        log.push({ line, from: d[2], to: '(reference definition to an unmapped file, a local path or a draft, left as written)', kind: 'kept' })
       }
       return lineText
     })
@@ -1155,9 +1175,10 @@ function main(): void {
   // 5. Render everything (all manifests are known, so cross-manifest links resolve).
   const overrides = new Map<string, string>()
   for (const m of manifests) for (const [k, v] of m.overrides) overrides.set(k, v)
-  const ctx: LinkContext = { bySource, overrides }
+  const draftPaths = new Set(entries.filter((e) => e.target === 'drafts').flatMap((e) => e.articles.map((a) => a.sitePath)))
+  const ctx: LinkContext = { bySource, overrides, draftPaths }
   const today = todayLocal()
-  const stats: RewriteStats = { rewritten: 0, downgraded: 0, otherRelative: 0, refUnresolved: 0 }
+  const stats: RewriteStats = { rewritten: 0, downgraded: 0, unpublished: 0, refUnresolved: 0 }
   const rendered = entries.flatMap((e) => e.articles.map((a) => renderArticle(a, ctx, today, stats)))
 
   // 6. Write, or print the plan.
@@ -1178,17 +1199,15 @@ function main(): void {
   }
 
   for (const w of warnings) console.warn(`[WARN] ${w}`)
-  if (stats.otherRelative > 0) {
-    console.warn(`[WARN] ${stats.otherRelative} relative link(s) to non-markdown files were left as written (run with --verbose to list them)`)
-  }
   if (stats.refUnresolved > 0) {
-    console.warn(`[WARN] ${stats.refUnresolved} reference definition(s) point at unmapped .md files and were left as written`)
+    console.warn(`[WARN] ${stats.refUnresolved} reference definition(s) point at unmapped .md files, local paths or drafts and were left as written`)
   }
 
   const verb = opts.dryRun ? 'planned (dry run, nothing written)' : 'written'
   console.log(
     `[COMPLETE] ${manifests.length} manifests, ${entries.length} entries, ${rendered.length} articles ${verb}, ` +
-      `${stats.rewritten} links rewritten, ${stats.downgraded} links downgraded to local references. ` +
+      `${stats.rewritten} links rewritten, ${stats.downgraded} links downgraded to local references, ` +
+      `${stats.unpublished} links to unpublished drafts made plain text. ` +
       `Content root: ${opts.out}`,
   )
 }

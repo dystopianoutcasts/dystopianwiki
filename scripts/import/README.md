@@ -27,7 +27,7 @@ npx tsx scripts/import/import-b42.ts [--manifest <file>]... [--out <dir>] [--dry
 Every manifest is loaded and validated, and every source parsed, before anything is
 written. Any validation error prints the full list of errors and exits 1 with nothing
 written. A successful run ends with a summary:
-`N manifests, N entries, N articles written, N links rewritten, N links downgraded to local references`
+`N manifests, N entries, N articles written, N links rewritten, N links downgraded to local references, N links to unpublished drafts made plain text`
 (split parts and index articles are counted as articles).
 
 ```
@@ -42,11 +42,12 @@ Walks `content/articles/pz/<version>/**/*.md` (version defaults to `build-42`) a
 | `/pz/{version}/{section}/{category}/{slug}` | `content/articles/pz/{version}/{section}/{category}/{slug}.md` |
 | `/pz/{version}`, `/pz/{version}/{section}`, `/pz/{version}/{section}/{category}` | the matching folder under `content/articles/pz/` |
 
-A target found only under `content/drafts/pz/...` is listed as a "draft target" and does
-not fail the run. Dead links print as `file:line -> target`. Two article files under the
+A target found only under `content/drafts/pz/...` is an error when the link is in a
+published article (it is dead on the site) and is listed as a "draft target" without
+failing the run when the link is in a draft. Dead links print as `file:line -> target`. Two article files under the
 same version with the same slug (frontmatter `slug`, or the file name) are an error in every
 version under `content/articles/pz/`; a draft whose slug is already taken is a warning.
-Exit code 1 on any dead link or duplicate slug.
+Exit code 1 on any dead link, published link to a draft, or duplicate slug.
 
 Fixture test (imports into a temporary folder, runs both scripts, removes the folder):
 
@@ -168,14 +169,16 @@ reference definitions `[label]: target`, outside fenced code and inline code spa
 | Relative link to a `.md` file in no manifest | Plain text: `text (local reference: filename)`. |
 | Same-file `#anchor` in a split or twice-mapped source | Resolved like a link into that source; left as written when it points into the same article. |
 | Same-file `#anchor` in an unsplit source | Untouched. |
-| Relative link to a non-`.md` file | Left as written; counted in a warning. |
+| ... from a published article (`target: "articles"`) to an entry whose `target` is `"drafts"` | Plain text: `text (not yet published)`. Drafts may link to drafts. |
+| Relative link to a directory or a non-`.md` file | Plain text: `text (local reference: path)`, the path as written. |
 
 Links are resolved relative to the source file's folder, so `../B42_UI/01-ui.md` in one
 manifest finds an entry in another. Anchors are compared against the heading ids the site's
 renderer produces (rehype-slug) and against the slugified heading with and without numbering.
-Link targets always use the article path even when the entry's target is `drafts`; such
-links are dead on the site until the draft is published, and `check-links.ts` lists them as
-"draft target".
+Links between drafts use the article path the draft will have once published;
+`check-links.ts` lists them as "draft target". A published article never links to a draft:
+the link becomes plain text marked "(not yet published)", and re-running the import after
+the draft is published restores it.
 
 ## Known imperfections
 
@@ -184,10 +187,8 @@ links are dead on the site until the draft is published, and `check-links.ts` li
 - Split parts and the index lose trailing horizontal rules (`---`) and blank lines at the
   end of each section, since they only separated sections in the source.
 - Line endings are normalized to LF and a leading byte-order mark is removed.
-- A reference definition that points at an unmapped `.md` file is left as written (a
-  definition cannot become plain text); the run warns about it.
-- Relative links to non-markdown files (scripts, images in other folders) are left as
-  written and will be dead on the site.
+- A reference definition that points at an unmapped `.md` file, a local path or a draft
+  is left as written (a definition cannot become plain text); the run warns about it.
 - Sources are always read as markdown; a non-markdown source (for example `workshop.txt`)
   is copied through as text.
 - Removing an entry never removes its previously written file.

@@ -89,7 +89,7 @@ try {
   check('import exits 0', first.code === 0, `exit ${first.code}`)
   check(
     'summary line counts manifests, entries, articles and links',
-    /1 manifests, 4 entries, 7 articles written, 10 links rewritten, 1 links downgraded/.test(first.out),
+    /1 manifests, 4 entries, 7 articles written, 8 links rewritten, 3 links downgraded to local references, 2 links to unpublished drafts made plain text/.test(first.out),
   )
 
   const files = listFiles(out)
@@ -128,7 +128,7 @@ try {
   const special = read(out, 'drafts/pz/build-42/modding/fixture-extras/special-topic.md')
   check('only_headings entry emits only its section', special.content.includes('Special topic text') && !special.content.includes('First part text'))
   check('only_headings entry uses its own provenance override', special.content.includes('(compiled 2026-08-03, verified against Project Zomboid 42.20)'))
-  check('a heading anchor resolves to the entry that emits it', firstPart.content.includes('[the special topic](/pz/build-42/modding/fixture-extras/special-topic)'))
+  check('a published link to a drafts-only entry becomes plain text marked not yet published', firstPart.content.includes('the special topic (not yet published)') && !firstPart.content.includes('/fixture-extras/special-topic'))
 
   // 5. Cross links, downgrade, untouched links.
   const links = read(out, `${P}/links-article.md`).content
@@ -138,10 +138,13 @@ try {
   check('anchor matching a part heading points at the part', links.includes('[split second part](/pz/build-42/mapping/fixtures/second)'))
   check('anchor matching a sub-heading points into its part', links.includes('[split deep anchor](/pz/build-42/mapping/fixtures/first-part#deep-sub)'))
   check('unknown .md link is downgraded to a local reference', links.includes('- unknown doc (local reference: missing-doc.md)'))
+  check('a heading anchor into a drafts-only entry is plain text in a published article', links.includes('- special topic (not yet published)'))
+  check('a relative link to a non-markdown file becomes a local reference', links.includes('- a script (local reference: tool.lua)'))
+  check('a relative link to a directory becomes a local reference', links.includes('- a folder (local reference: ../sources/)'))
   check('line-wrapped link with a title is rewritten', links.includes('[a line-wrapped\n  link](/pz/build-42/mapping/fixtures/plain-article "with a title")'))
   check(
-    'external, mailto, image and non-markdown links are untouched',
-    links.includes('[external](https://example.com/page.md)') && links.includes('[mail](mailto:someone@example.com)') && links.includes('![an image](pic.png)') && links.includes('[a script](tool.lua)'),
+    'external, mailto and image links are untouched',
+    links.includes('[external](https://example.com/page.md)') && links.includes('[mail](mailto:someone@example.com)') && links.includes('![an image](pic.png)'),
   )
   check('links in code spans and fences are untouched', links.includes('`[code span](plain.md)`') && links.includes('```\n[fenced](plain.md)\n```'))
 
@@ -155,17 +158,18 @@ try {
   const cl = run(CHECKER, ['--root', out])
   console.log(cl.out.trim().split('\n').map((l) => `  | ${l}`).join('\n'))
   check('check-links exits 0 on the fixture output', cl.code === 0, `exit ${cl.code}`)
-  check('check-links reports the draft targets separately', /Draft target \(2\)/.test(cl.out))
+  check('check-links finds no published link to a draft in the fixture output', !/Published articles linking to drafts/.test(cl.out))
 
   // 8. The link checker fails on a dead link and a duplicate slug.
   fs.writeFileSync(
     path.join(out, P, 'broken.md'),
-    '---\nslug: second\ntitle: Broken\n---\n# Broken\n\nSee [nowhere](/pz/build-42/mapping/fixtures/nowhere).\n',
+    '---\nslug: second\ntitle: Broken\n---\n# Broken\n\nSee [nowhere](/pz/build-42/mapping/fixtures/nowhere).\n\nSee [a draft](/pz/build-42/modding/fixture-extras/special-topic).\n',
   )
   const bad = run(CHECKER, ['--root', out])
   check('check-links exits 1 on a dead link', bad.code === 1, `exit ${bad.code}`)
   check('dead link is reported as file:line -> target', bad.out.includes('articles/pz/build-42/mapping/fixtures/broken.md:7 -> /pz/build-42/mapping/fixtures/nowhere'))
   check('duplicate slug is reported', /slug "second" is used by/.test(bad.out))
+  check('a published link to a draft is reported as an error', bad.out.includes('Published articles linking to drafts (1)') && bad.out.includes('broken.md:9 -> /pz/build-42/modding/fixture-extras/special-topic'))
 
   // 9. --dry-run writes nothing.
   const dry = tempDir('dry')
