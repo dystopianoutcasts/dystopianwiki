@@ -58,11 +58,15 @@ function argNumber(name: string, fallback: number): number {
 }
 
 const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-const key = process.env.SUPABASE_SECRET_KEY || process.env.AURORA_SERVICE_KEY;
+// Three accepted names for the same secret key: SUPABASE_SECRET_KEY is this
+// script's own name, AURORA_SERVICE_KEY is what the ingest function secret is
+// called (T08), and SUPABASE_SERVICE_KEY is what the owner's root env file
+// actually uses (found the hard way in T15's cron-bearer investigation).
+const key = process.env.SUPABASE_SECRET_KEY || process.env.AURORA_SERVICE_KEY || process.env.SUPABASE_SERVICE_KEY;
 
 if (!url || !key) {
   console.error(
-    "SUPABASE_URL and SUPABASE_SECRET_KEY are required (shell env or the monorepo-root env file).\n" +
+    "SUPABASE_URL and SUPABASE_SECRET_KEY (or AURORA_SERVICE_KEY / SUPABASE_SERVICE_KEY) are required (shell env or the monorepo-root env file).\n" +
       "The secret key is the sb_secret_... value from Settings -> API Keys; legacy keys are disabled on this project."
   );
   process.exit(1);
