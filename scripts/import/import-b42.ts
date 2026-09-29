@@ -149,6 +149,23 @@ export function stripNumbering(text: string): string {
   return text.replace(/^\s*\d+(?:\.\d+)*[.)]\s+/, '').trim()
 }
 
+/**
+ * Text a split part derives its default slug and title from: numbering stripped (also a bare
+ * leading number followed by a space, as in "1 The inventory"), and any trailing bracketed
+ * groups removed ("Events [CONFIRMED - pzwiki, revid 1]" -> "Events"). The article body keeps
+ * the full heading.
+ */
+export function partHeadingText(text: string): string {
+  let t = stripNumbering(text)
+  t = t.replace(/^\d+\s+(?=\S)/, '')
+  let prev = ''
+  while (prev !== t) {
+    prev = t
+    t = t.replace(/\s*(?:\[[^\[\]]*\]|\([^()]*\))\s*$/, '').trim()
+  }
+  return t === '' ? stripNumbering(text) : t
+}
+
 /** Lowercase, non-alphanumerics to hyphens, collapsed, trimmed. */
 export function slugify(text: string): string {
   return text
@@ -742,14 +759,15 @@ function planEntry(entry: Entry, errors: string[], warnings: string[]): void {
   }
   for (const s of keptSections) {
     const override = entry.parts.get(s.norm) ?? {}
-    const headingText = stripNumbering(s.heading)
-    const slug = override.slug ?? slugify(inlineToPlain(headingText))
+    const headingText = stripNumbering(s.heading).replace(/^\d+\s+(?=\S)/, '')
+    const derived = partHeadingText(s.heading)
+    const slug = override.slug ?? slugify(inlineToPlain(derived))
     if (!slug) {
       errors.push(`${entry.label}: heading "${s.heading}" slugifies to nothing; set a slug in "parts"`)
       continue
     }
     const h1 = override.title ?? headingText
-    const title = override.title ?? inlineToPlain(headingText)
+    const title = override.title ?? inlineToPlain(derived)
     const body = trimBlock(s.bodyLines, s.bodyStartLine)
     const part = makeArticle(entry, 'part', slug, title, h1, body.text ? [body] : [])
     part.partHeading = s

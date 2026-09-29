@@ -32,6 +32,10 @@ Second part text [CONFIRMED].
 |---|---|
 | 1 | 2 |
 
+## 3 Bracketed part [CONFIRMED — pzwiki Lua (API), revid 1390433] (see note)
+
+Bracketed part text.
+
 ## Special Topic
 
 Special topic text that another entry publishes on its own.

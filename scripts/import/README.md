@@ -123,9 +123,12 @@ a bare link (no anchor) goes to the entry without `only_headings`.
   `only_headings` only the listed sections are kept; when exactly one section is kept its
   H2 line is dropped because the article H1 replaces it.
 - `split: "h2"` writes one article per kept H2 plus an index article at the entry `slug`.
-  - Part slug: the heading with leading `N.` / `N)` numbering stripped, then slugified
-    (lowercase, runs of non-alphanumerics become one hyphen, trimmed). `parts` overrides it.
-  - Part title: the heading with the numbering stripped. `parts` overrides it.
+  - Part slug: the heading with leading `N.` / `N)` numbering or a bare leading number
+    (`1 The inventory`) stripped, and any trailing bracketed groups (`[CONFIRMED ...]`,
+    `(see note)`) removed, then slugified (lowercase, runs of non-alphanumerics become one
+    hyphen, trimmed). `parts` overrides it.
+  - Part title: the same text as the slug is derived from. `parts` overrides it. The
+    article's H1 keeps the bracketed text (only the numbering is stripped).
   - The part's H2 becomes the article's H1. Nothing is demoted: H3s inside the part stay
     H3, so a part goes H1 then H3 with no H2. This is a known imperfection the styling
     phase can revisit.

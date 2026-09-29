@@ -72,6 +72,7 @@ function tempDir(label: string): string {
 
 const P = 'articles/pz/build-42/mapping/fixtures'
 const EXPECTED = [
+  `${P}/bracketed-part.md`,
   `${P}/first-part.md`,
   `${P}/links-article.md`,
   `${P}/plain-article.md`,
@@ -88,7 +89,7 @@ try {
   check('import exits 0', first.code === 0, `exit ${first.code}`)
   check(
     'summary line counts manifests, entries, articles and links',
-    /1 manifests, 4 entries, 6 articles written, 10 links rewritten, 1 links downgraded/.test(first.out),
+    /1 manifests, 4 entries, 7 articles written, 10 links rewritten, 1 links downgraded/.test(first.out),
   )
 
   const files = listFiles(out)
@@ -112,9 +113,13 @@ try {
   check('H3 inside a part stays H3', firstPart.content.includes('\n### Deep sub\n'))
   const second = read(out, `${P}/second.md`)
   check('parts override sets slug and title', second.data.slug === 'second' && second.data.title === 'The second part' && second.content.startsWith('# The second part\n'))
+  const bracketed = read(out, `${P}/bracketed-part.md`)
+  check('trailing bracketed groups are dropped from a default part slug and title', bracketed.data.slug === 'bracketed-part' && bracketed.data.title === 'Bracketed part')
+  check('a bare leading number is dropped from a default part slug and title', !String(bracketed.data.slug).startsWith('3') && !String(bracketed.data.title).startsWith('3'))
+  check('the article body keeps the full heading text', bracketed.content.startsWith('# Bracketed part [CONFIRMED — pzwiki Lua (API), revid 1390433] (see note)\n'))
   check('tables survive byte-for-byte', second.content.includes('| a | b |\n|---|---|\n| 1 | 2 |'))
   check('frontmatter id is build-42-{slug}', firstPart.data.id === 'build-42-first-part')
-  check('related_articles lists sibling parts', JSON.stringify(firstPart.data.related_articles) === '["second"]' && JSON.stringify(index.data.related_articles) === '["first-part","second"]')
+  check('related_articles lists sibling parts', JSON.stringify(firstPart.data.related_articles) === '["second","bracketed-part"]' && JSON.stringify(index.data.related_articles) === '["first-part","second","bracketed-part"]')
   check('excerpt is the first paragraph without markdown', read(out, `${P}/plain-article.md`).data.excerpt === 'This is the plain fixture. It has bold, inline code and a link to the split guide in its first paragraph, which becomes the excerpt.')
   check('same-file anchor to another part is rewritten', firstPart.content.includes('[the second part](/pz/build-42/mapping/fixtures/second)'))
   check('same-file anchor inside the same part is kept', firstPart.content.includes('[a deep anchor](#deep-sub)'))
