@@ -406,7 +406,7 @@ export const VERSIONS: VersionInfo[] = [
             description: 'The principles the whole Outcast mod family is built against.',
             icon: 'book',
             displayOrder: 0,
-            articleCount: 0,
+            articleCount: 1,
           },
           {
             id: 'outcast-911',

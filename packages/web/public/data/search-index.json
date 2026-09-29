@@ -5022,6 +5022,22 @@
     "difficulty": "intermediate"
   },
   {
+    "id": "build-42-about-principles",
+    "title": "Outcast mod family -- principles",
+    "slug": "about-principles",
+    "url": "/pz/build-42/outcast-mods/about/about-principles",
+    "version": "build-42",
+    "section": "outcast-mods",
+    "category": "about",
+    "tags": [
+      "outcast-mods",
+      "principles",
+      "family"
+    ],
+    "excerpt": "Read this before making a design trade-off, and paste it into any brief that goes to a developer or an artist.",
+    "difficulty": "beginner"
+  },
+  {
     "id": "build-42-outcast-911",
     "title": "Outcast 911",
     "slug": "outcast-911",
