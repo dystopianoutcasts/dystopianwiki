@@ -1,9 +1,931 @@
 [
   {
+    "id": "map-making-quick-guide",
+    "title": "Map Making Quick Guide (Video Series)",
+    "slug": "map-making-quick-guide",
+    "url": "/pz/build-41/mapping/video-tutorials/map-making-quick-guide",
+    "version": "build-41",
+    "section": "mapping",
+    "category": "video-tutorials",
+    "tags": [
+      "video",
+      "tutorial",
+      "tilezed",
+      "worlded",
+      "mapping",
+      "workshop",
+      "beginner"
+    ],
+    "excerpt": "Complete 29-part video tutorial series covering everything from setting up tools to publishing your map on Steam Workshop.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "ai-assisted-ai-debugging",
+    "title": "AI for Debugging",
+    "slug": "ai-debugging",
+    "url": "/pz/build-41/modding/ai-assisted/ai-debugging",
+    "version": "build-41",
+    "section": "modding",
+    "category": "ai-assisted",
+    "tags": [
+      "beginner",
+      "ai",
+      "debugging",
+      "errors",
+      "troubleshooting",
+      "console"
+    ],
+    "excerpt": "Learn how to use AI assistants to debug Project Zomboid mod errors effectively - from reading error messages to iterating on fixes.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "ai-assisted-ai-for-modding",
+    "title": "AI Tools for Modding",
+    "slug": "ai-for-modding",
+    "url": "/pz/build-41/modding/ai-assisted/ai-for-modding",
+    "version": "build-41",
+    "section": "modding",
+    "category": "ai-assisted",
+    "tags": [
+      "beginner",
+      "ai",
+      "tools",
+      "chatgpt",
+      "claude",
+      "copilot",
+      "productivity"
+    ],
+    "excerpt": "Learn how AI tools like ChatGPT and Claude can accelerate your Project Zomboid modding workflow - from generating code to explaining errors.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "ai-assisted-context-library",
+    "title": "Building a Context Library",
+    "slug": "context-library",
+    "url": "/pz/build-41/modding/ai-assisted/context-library",
+    "version": "build-41",
+    "section": "modding",
+    "category": "ai-assisted",
+    "tags": [
+      "intermediate",
+      "ai",
+      "context",
+      "reference",
+      "workflow",
+      "organization"
+    ],
+    "excerpt": "Build a collection of reference files and vanilla examples that help AI tools generate more accurate, PZ-specific code for your mods.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "research-methodology",
+    "title": "AI Research Methodology",
+    "slug": "research-methodology",
+    "url": "/pz/build-41/modding/ai-assisted/research-methodology",
+    "version": "build-41",
+    "section": "modding",
+    "category": "ai-assisted",
+    "tags": [
+      "ai",
+      "research",
+      "workflow",
+      "methodology",
+      "documentation"
+    ],
+    "excerpt": "Learn a research-first approach to AI-assisted modding where AI documents and understands game systems before implementing, resulting in dramatically better output.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "ai-assisted-writing-prompts",
+    "title": "Writing Good Prompts",
+    "slug": "writing-prompts",
+    "url": "/pz/build-41/modding/ai-assisted/writing-prompts",
+    "version": "build-41",
+    "section": "modding",
+    "category": "ai-assisted",
+    "tags": [
+      "beginner",
+      "ai",
+      "prompts",
+      "tips",
+      "workflow",
+      "productivity"
+    ],
+    "excerpt": "Learn the CERC framework for writing AI prompts that produce useful, accurate code for Project Zomboid modding.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "engine-analysis-ai-state-machine",
+    "title": "AI State Machine Reference",
+    "slug": "ai-state-machine",
+    "url": "/pz/build-41/modding/engine-analysis/ai-state-machine",
+    "version": "build-41",
+    "section": "modding",
+    "category": "engine-analysis",
+    "tags": [
+      "advanced",
+      "ai",
+      "state-machine",
+      "pathfinding",
+      "zombie",
+      "npc",
+      "behavior"
+    ],
+    "excerpt": "Reference for Project Zomboid's state machine AI system. Documents 50+ AI states for zombies and players, A* pathfinding, map knowledge, and performance optimization patterns.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "changing-vehicle-properties",
+    "title": "Changing Vehicle Properties",
+    "slug": "changing-vehicle-properties",
+    "url": "/pz/build-41/modding/engine-analysis/changing-vehicle-properties",
+    "version": "build-41",
+    "section": "modding",
+    "category": "engine-analysis",
+    "tags": [
+      "vehicle",
+      "intermediate",
+      "tutorial",
+      "setters",
+      "modification"
+    ],
+    "excerpt": "Learn to modify vehicles - repair parts, add fuel, change engine quality. Discover what you can and can't change easily.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "engine-analysis-core-systems-architecture",
+    "title": "Core Systems Architecture",
+    "slug": "core-systems-architecture",
+    "url": "/pz/build-41/modding/engine-analysis/core-systems-architecture",
+    "version": "build-41",
+    "section": "modding",
+    "category": "engine-analysis",
+    "tags": [
+      "advanced",
+      "architecture",
+      "engine",
+      "systems",
+      "overview",
+      "decompilation"
+    ],
+    "excerpt": "Comprehensive overview of Project Zomboid's Java engine architecture based on decompilation analysis. Covers game core, Lua integration, character system, AI, world rendering, networking, and modding systems.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "engine-analysis-decompilation-setup",
+    "title": "Decompilation Setup Guide",
+    "slug": "decompilation-setup",
+    "url": "/pz/build-41/modding/engine-analysis/decompilation-setup",
+    "version": "build-41",
+    "section": "modding",
+    "category": "engine-analysis",
+    "tags": [
+      "intermediate",
+      "decompilation",
+      "java",
+      "engine",
+      "vineflower",
+      "cfr",
+      "analysis",
+      "advanced"
+    ],
+    "excerpt": "Learn to decompile Project Zomboid's Java engine to discover undocumented APIs and optimization opportunities. This guide covers Vineflower, CFR, and Procyon setup with step-by-step instructions.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "engine-analysis-deterministic-randomization",
+    "title": "Deterministic Randomization Pattern",
+    "slug": "deterministic-randomization",
+    "url": "/pz/build-41/modding/engine-analysis/deterministic-randomization",
+    "version": "build-41",
+    "section": "modding",
+    "category": "engine-analysis",
+    "tags": [
+      "intermediate",
+      "pattern",
+      "multiplayer",
+      "randomization",
+      "hash",
+      "zones"
+    ],
+    "excerpt": "Create multiplayer-safe 'random' results using deterministic hashing. The Fibonacci hash pattern ensures the same input always produces the same output, making it perfect for zone-based difficulty, loot distribution, and procedural content.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "engine-analysis-inventory-system-optimization",
+    "title": "Inventory System Optimization",
+    "slug": "inventory-system-optimization",
+    "url": "/pz/build-41/modding/engine-analysis/inventory-system-optimization",
+    "version": "build-41",
+    "section": "modding",
+    "category": "engine-analysis",
+    "tags": [
+      "intermediate",
+      "optimization",
+      "performance",
+      "inventory",
+      "itemcontainer",
+      "inventoryitem"
+    ],
+    "excerpt": "Optimize inventory operations for 2-5x performance improvement. Covers ItemContainer iteration, caching patterns, factory usage, and common pitfalls to avoid in inventory-heavy mods.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "engine-analysis-isozombie-reference",
+    "title": "IsoZombie Class Reference",
+    "slug": "isozombie-reference",
+    "url": "/pz/build-41/modding/engine-analysis/isozombie-reference",
+    "version": "build-41",
+    "section": "modding",
+    "category": "engine-analysis",
+    "tags": [
+      "intermediate",
+      "zombie",
+      "isozombie",
+      "api",
+      "reference",
+      "fields",
+      "decompilation"
+    ],
+    "excerpt": "Complete reference for the IsoZombie class discovered through decompilation. Documents 9 public fields for direct Lua access, achieving 10x faster zombie attribute modification than traditional methods.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "java-reflection-guide",
+    "title": "Java Reflection Deep Dive",
+    "slug": "java-reflection-guide",
+    "url": "/pz/build-41/modding/engine-analysis/java-reflection-guide",
+    "version": "build-41",
+    "section": "modding",
+    "category": "engine-analysis",
+    "tags": [
+      "java",
+      "reflection",
+      "lua",
+      "kahlua",
+      "advanced",
+      "performance",
+      "fields"
+    ],
+    "excerpt": "How to access Java fields directly from Lua when no getter/setter exists, using Java reflection through Kahlua.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "engine-analysis-lua-modding-api",
+    "title": "Lua Modding API Deep Dive",
+    "slug": "lua-modding-api",
+    "url": "/pz/build-41/modding/engine-analysis/lua-modding-api",
+    "version": "build-41",
+    "section": "modding",
+    "category": "engine-analysis",
+    "tags": [
+      "advanced",
+      "lua",
+      "api",
+      "luamanager",
+      "kahlua",
+      "modding",
+      "decompilation"
+    ],
+    "excerpt": "Deep analysis of LuaManager.java (~8,893 lines), the heart of PZ modding. Covers Kahlua VM integration, @LuaMethod exposure, event system, hot reloading, and performance optimization patterns.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "engine-analysis-performance-benchmarking",
+    "title": "Performance Benchmarking Guide",
+    "slug": "performance-benchmarking",
+    "url": "/pz/build-41/modding/engine-analysis/performance-benchmarking",
+    "version": "build-41",
+    "section": "modding",
+    "category": "engine-analysis",
+    "tags": [
+      "beginner",
+      "performance",
+      "benchmarking",
+      "optimization",
+      "testing",
+      "profiling"
+    ],
+    "excerpt": "Learn to measure and compare Lua code performance in Project Zomboid. Covers benchmark templates, getTimestampMs() usage, statistical analysis, and common measurement mistakes to avoid.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "reading-vehicle-stats",
+    "title": "Reading Vehicle Stats",
+    "slug": "reading-vehicle-stats",
+    "url": "/pz/build-41/modding/engine-analysis/reading-vehicle-stats",
+    "version": "build-41",
+    "section": "modding",
+    "category": "engine-analysis",
+    "tags": [
+      "vehicle",
+      "beginner",
+      "tutorial",
+      "stats",
+      "fuel",
+      "speed"
+    ],
+    "excerpt": "Learn to read vehicle information - speed, fuel level, engine state, and more. Build a simple dashboard mod.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "engine-analysis-vehicle-architecture",
+    "title": "Vehicle Architecture Reference",
+    "slug": "vehicle-architecture",
+    "url": "/pz/build-41/modding/engine-analysis/vehicle-architecture",
+    "version": "build-41",
+    "section": "modding",
+    "category": "engine-analysis",
+    "tags": [
+      "advanced",
+      "vehicle",
+      "basevehicle",
+      "architecture",
+      "decompilation",
+      "physics"
+    ],
+    "excerpt": "Deep analysis of Project Zomboid's vehicle system architecture from BaseVehicle.java decompilation. Covers physics integration, parts system, engine states, multiplayer sync, and modding access points.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "vehicle-engine",
+    "title": "Vehicle Engine Reference",
+    "slug": "vehicle-engine",
+    "url": "/pz/build-41/modding/engine-analysis/vehicle-engine",
+    "version": "build-41",
+    "section": "modding",
+    "category": "engine-analysis",
+    "tags": [
+      "vehicle",
+      "engine",
+      "transmission",
+      "lua",
+      "advanced"
+    ],
+    "excerpt": "Deep dive into vehicle engine mechanics - engine states, RPM, speed, fuel consumption, hotwiring, and how to manipulate them via Lua.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "vehicle-parts",
+    "title": "Vehicle Parts Reference",
+    "slug": "vehicle-parts",
+    "url": "/pz/build-41/modding/engine-analysis/vehicle-parts",
+    "version": "build-41",
+    "section": "modding",
+    "category": "engine-analysis",
+    "tags": [
+      "vehicle",
+      "parts",
+      "lua",
+      "modding",
+      "intermediate"
+    ],
+    "excerpt": "Practical guide to working with vehicle parts in Lua - getting parts, checking conditions, installing/removing items, and modifying part behavior.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "vehicle-parts-basics",
+    "title": "Working with Vehicle Parts",
+    "slug": "vehicle-parts-basics",
+    "url": "/pz/build-41/modding/engine-analysis/vehicle-parts-basics",
+    "version": "build-41",
+    "section": "modding",
+    "category": "engine-analysis",
+    "tags": [
+      "vehicle",
+      "parts",
+      "beginner",
+      "tutorial",
+      "condition"
+    ],
+    "excerpt": "Learn to access vehicle parts - check tire condition, see if doors are open, find damaged components. Build a vehicle health checker.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "when-setters-dont-exist",
+    "title": "When PZ Won't Let You Change Something",
+    "slug": "when-setters-dont-exist",
+    "url": "/pz/build-41/modding/engine-analysis/when-setters-dont-exist",
+    "version": "build-41",
+    "section": "modding",
+    "category": "engine-analysis",
+    "tags": [
+      "vehicle",
+      "intermediate",
+      "reflection",
+      "advanced-concept",
+      "setters"
+    ],
+    "excerpt": "What to do when there's no setter method - understand the problem and learn about Java reflection as a solution.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "your-first-vehicle-mod",
+    "title": "Your First Vehicle Mod",
+    "slug": "your-first-vehicle-mod",
+    "url": "/pz/build-41/modding/engine-analysis/your-first-vehicle-mod",
+    "version": "build-41",
+    "section": "modding",
+    "category": "engine-analysis",
+    "tags": [
+      "vehicle",
+      "beginner",
+      "tutorial",
+      "lua",
+      "first-mod"
+    ],
+    "excerpt": "Create your first vehicle mod - display the car name when you get in. No prior Lua experience needed.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "engine-analysis-zombie-attribute-optimization",
+    "title": "Zombie Attribute Optimization",
+    "slug": "zombie-attribute-optimization",
+    "url": "/pz/build-41/modding/engine-analysis/zombie-attribute-optimization",
+    "version": "build-41",
+    "section": "modding",
+    "category": "engine-analysis",
+    "tags": [
+      "intermediate",
+      "optimization",
+      "performance",
+      "zombie",
+      "attributes",
+      "decompilation"
+    ],
+    "excerpt": "Achieve 10x faster zombie attribute modification by using direct field access instead of the makeInactive() hack. Discovered through engine decompilation, this technique enables clean, efficient zombie customization.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "foraging-vanilla-foraging",
+    "title": "VANILLA FORAGING SYSTEM - RESEARCH NOTES",
+    "slug": "vanilla-foraging",
+    "url": "/pz/build-41/modding/foraging/vanilla-foraging",
+    "version": "build-41",
+    "section": "modding",
+    "category": "foraging",
+    "tags": [
+      "lua",
+      "item",
+      "foraging",
+      "vanilla",
+      "notes"
+    ],
+    "excerpt": "Date: 2025-12-22 Researched For: Iron Pyrite Foraging Implementation\n---\n\n\n\n-  - Contains all foraging item definitions - Uses global  table\n-  - Core foraging logic/system\n...",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "fundamentals-file-types-explained",
+    "title": "File Types Explained",
+    "slug": "file-types-explained",
+    "url": "/pz/build-41/modding/fundamentals/file-types-explained",
+    "version": "build-41",
+    "section": "modding",
+    "category": "fundamentals",
+    "tags": [
+      "beginner",
+      "syntax",
+      "txt",
+      "lua",
+      "items",
+      "recipes",
+      "scripts",
+      "format"
+    ],
+    "excerpt": "Project Zomboid modding uses .txt script files for items and recipes, and .lua files for game logic. Learn the syntax rules, required properties, and common patterns for each file type.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "fundamentals-media-folder",
+    "title": "The Media Folder",
+    "slug": "media-folder",
+    "url": "/pz/build-41/modding/fundamentals/media-folder",
+    "version": "build-41",
+    "section": "modding",
+    "category": "fundamentals",
+    "tags": [
+      "beginner",
+      "media",
+      "folder",
+      "structure",
+      "organization",
+      "files",
+      "scripts",
+      "lua",
+      "textures"
+    ],
+    "excerpt": "The media folder is the heart of Project Zomboid modding. Learn how vanilla and mod files are organized, what each subfolder contains, and where to put your own files.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "fundamentals-pz-three-layers",
+    "title": "PZ's Three Layers",
+    "slug": "pz-three-layers",
+    "url": "/pz/build-41/modding/fundamentals/pz-three-layers",
+    "version": "build-41",
+    "section": "modding",
+    "category": "fundamentals",
+    "tags": [
+      "beginner",
+      "architecture",
+      "java",
+      "lua",
+      "scripts",
+      "data",
+      "layers",
+      "engine"
+    ],
+    "excerpt": "Project Zomboid's architecture consists of three distinct layers: Java (engine), Lua (behavior), and Data (content). Understanding this separation is crucial for knowing what you can modify and how.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "fundamentals-what-is-a-mod",
+    "title": "What Is a Mod?",
+    "slug": "what-is-a-mod",
+    "url": "/pz/build-41/modding/fundamentals/what-is-a-mod",
+    "version": "build-41",
+    "section": "modding",
+    "category": "fundamentals",
+    "tags": [
+      "beginner",
+      "introduction",
+      "mod",
+      "modding",
+      "basics",
+      "getting-started",
+      "overview"
+    ],
+    "excerpt": "A mod is simply a collection of files that add new content to Project Zomboid. No coding required - just text files with simple patterns. Learn by creating a custom weapon in this hands-on guide.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "game-mechanics-animation-reference",
+    "title": "Animation Reference",
+    "slug": "animation-reference",
+    "url": "/pz/build-41/modding/game-mechanics/animation-reference",
+    "version": "build-41",
+    "section": "modding",
+    "category": "game-mechanics",
+    "tags": [
+      "recipe",
+      "item",
+      "weapon",
+      "foraging",
+      "animation",
+      "sound",
+      "modding",
+      "api"
+    ],
+    "excerpt": "Complete reference of all vanilla animations available in Project Zomboid for use in mod recipes. Learn which animations to use for crafting, medical, combat, and resource gathering.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "game-mechanics-injury-system",
+    "title": "Injury System Reference",
+    "slug": "injury-system",
+    "url": "/pz/build-41/modding/game-mechanics/injury-system",
+    "version": "build-41",
+    "section": "modding",
+    "category": "game-mechanics",
+    "tags": [
+      "lua",
+      "item",
+      "weapon",
+      "modding",
+      "api",
+      "injury",
+      "system",
+      "reference"
+    ],
+    "excerpt": "Complete reference for modding injuries, wounds, and health in Project Zomboid. Learn how to apply scratches, cuts, deep wounds, and more through Lua code.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "game-mechanics-sound-reference",
+    "title": "Sound Reference",
+    "slug": "sound-reference",
+    "url": "/pz/build-41/modding/game-mechanics/sound-reference",
+    "version": "build-41",
+    "section": "modding",
+    "category": "game-mechanics",
+    "tags": [
+      "recipe",
+      "item",
+      "sound",
+      "modding",
+      "api"
+    ],
+    "excerpt": "Complete reference guide for adding sounds to your Project Zomboid recipes. Learn which sounds to use for crafting, cooking, woodworking, and more.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "items-ammunition-items",
+    "title": "Vanilla Ammunition Items - Complete Reference",
+    "slug": "ammunition-items",
+    "url": "/pz/build-41/modding/items/ammunition-items",
+    "version": "build-41",
+    "section": "modding",
+    "category": "items",
+    "tags": [
+      "recipe",
+      "item",
+      "weapon",
+      "sound",
+      "crafting",
+      "vanilla",
+      "ammunition",
+      "items"
+    ],
+    "excerpt": "Complete reference guide for all vanilla Project Zomboid ammunition items, including rounds, boxes, magazines, molds, and crafting materials. Learn how to create ammunition crafting recipes for your mods.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "items-first-item-file",
+    "title": "Your First Custom Item",
+    "slug": "first-item-file",
+    "url": "/pz/build-41/modding/items/first-item-file",
+    "version": "build-41",
+    "section": "modding",
+    "category": "items",
+    "tags": [
+      "beginner",
+      "item",
+      "tutorial",
+      "hands-on",
+      "learning-path",
+      "food"
+    ],
+    "excerpt": "Step-by-step tutorial to create your first custom food item in Project Zomboid, from script file to in-game testing.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "items-item-anatomy",
+    "title": "Anatomy of an Item",
+    "slug": "item-anatomy",
+    "url": "/pz/build-41/modding/items/item-anatomy",
+    "version": "build-41",
+    "section": "modding",
+    "category": "items",
+    "tags": [
+      "beginner",
+      "item",
+      "anatomy",
+      "syntax",
+      "learning-path",
+      "fundamentals"
+    ],
+    "excerpt": "Understand the structure and syntax of Project Zomboid item definitions by breaking down item scripts line by line.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "items-item-creation",
+    "title": "Item Creation Guide - Project Zomboid",
+    "slug": "item-creation",
+    "url": "/pz/build-41/modding/items/item-creation",
+    "version": "build-41",
+    "section": "modding",
+    "category": "items",
+    "tags": [
+      "recipe",
+      "item",
+      "weapon",
+      "crafting",
+      "creation",
+      "guide"
+    ],
+    "excerpt": "Ever looted a house and thought 'I wish there was a custom toolbox'? Every item in Project Zomboid was defined in a simple text file. Learn to create items that appear in-game with full functionality, from drainable containers to stackable ammunition.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "items-item-icons",
+    "title": "Creating Item Icons",
+    "slug": "item-icons",
+    "url": "/pz/build-41/modding/items/item-icons",
+    "version": "build-41",
+    "section": "modding",
+    "category": "items",
+    "tags": [
+      "beginner",
+      "item",
+      "icons",
+      "textures",
+      "learning-path",
+      "graphics"
+    ],
+    "excerpt": "Learn how to create and implement custom item icons for Project Zomboid mods, including technical requirements and best practices.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "items-item-recipe-connection",
+    "title": "Connecting Items and Recipes",
+    "slug": "item-recipe-connection",
+    "url": "/pz/build-41/modding/items/item-recipe-connection",
+    "version": "build-41",
+    "section": "modding",
+    "category": "items",
+    "tags": [
+      "beginner",
+      "item",
+      "recipe",
+      "integration",
+      "learning-path",
+      "workflow"
+    ],
+    "excerpt": "Learn how to create recipes that produce your custom items and use custom items as ingredients in Project Zomboid mods.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "test-sync-article",
+    "title": "Test Sync Article - Example",
+    "slug": "test-sync-article",
+    "url": "/pz/build-41/modding/items/test-sync-article",
+    "version": "build-41",
+    "section": "modding",
+    "category": "items",
+    "tags": [
+      "test",
+      "example",
+      "sync"
+    ],
+    "excerpt": "This is a test article to verify the markdown-to-Supabase sync script works correctly.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "items-vanilla-item-anatomy",
+    "title": "Vanilla Item Anatomy - Complete Property Reference",
+    "slug": "vanilla-item-anatomy",
+    "url": "/pz/build-41/modding/items/vanilla-item-anatomy",
+    "version": "build-41",
+    "section": "modding",
+    "category": "items",
+    "tags": [
+      "recipe",
+      "item",
+      "weapon",
+      "animation",
+      "crafting",
+      "vanilla",
+      "anatomy"
+    ],
+    "excerpt": "This document provides a comprehensive reference of all properties available for Project Zomboid items, based on vanilla game items.\n\n\n\n\n\n\n\nPurpose: Determines fundamental item behavior (...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "context-menus",
+    "title": "Adding Right-Click Menu Options",
+    "slug": "context-menus",
+    "url": "/pz/build-41/modding/lua-api/context-menus",
+    "version": "build-41",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "context-menu",
+      "right-click",
+      "ui",
+      "iscontextmenu",
+      "intermediate"
+    ],
+    "excerpt": "Learn how to add custom options to the right-click menus in Project Zomboid - the menus that appear when clicking items or world objects.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "events-lifecycle",
+    "title": "Lifecycle Events",
+    "slug": "events-lifecycle",
+    "url": "/pz/build-41/modding/lua-api/events-lifecycle",
+    "version": "build-41",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "events",
+      "lifecycle",
+      "initialization",
+      "save",
+      "load",
+      "time",
+      "intermediate"
+    ],
+    "excerpt": "Complete reference for game lifecycle events: boot, start, save, load, and time-based events.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "events-overview",
+    "title": "Understanding Events",
+    "slug": "events-overview",
+    "url": "/pz/build-41/modding/lua-api/events-overview",
+    "version": "build-41",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "events",
+      "callbacks",
+      "basics",
+      "lua",
+      "api",
+      "beginner"
+    ],
+    "excerpt": "Learn how to make your mod respond to things happening in Project Zomboid - when players do things, when time passes, when the world changes.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "events-player",
+    "title": "Player Events",
+    "slug": "events-player",
+    "url": "/pz/build-41/modding/lua-api/events-player",
+    "version": "build-41",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "events",
+      "player",
+      "movement",
+      "death",
+      "xp",
+      "skills",
+      "intermediate"
+    ],
+    "excerpt": "Complete reference for player events: movement, death, XP gain, skill leveling, and character updates.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "lua-api-isbaseobject",
+    "title": "ISBaseObject Inheritance System",
+    "slug": "isbaseobject",
+    "url": "/pz/build-41/modding/lua-api/isbaseobject",
+    "version": "build-41",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "intermediate",
+      "lua",
+      "oop",
+      "inheritance",
+      "classes"
+    ],
+    "excerpt": "Understanding Project Zomboid's ISBaseObject inheritance system for creating custom classes, UI components, and timed actions.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "lua-source-learning-path",
+    "title": "Lua Source Learning Path",
+    "slug": "lua-source-learning-path",
+    "url": "/pz/build-41/modding/lua-api/lua-source-learning-path",
+    "version": "build-41",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "guide",
+      "learning",
+      "roadmap",
+      "lua"
+    ],
+    "excerpt": "A guided path through PZ's 888 Lua files. Learn the optimal order to study the codebase - ISBaseObject to Timed Actions to Context Menus to Game Systems.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "lua-api-official-examples",
+    "title": "Official Lua Examples",
+    "slug": "official-examples",
+    "url": "/pz/build-41/modding/lua-api/official-examples",
+    "version": "build-41",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "beginner",
+      "lua",
+      "examples",
+      "official",
+      "timed-actions",
+      "ui",
+      "recipes"
+    ],
+    "excerpt": "Official PZ Lua examples from media/luaexamples/ demonstrating timers, timed actions, UI creation, and recipe callbacks.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "lua-api-timed-actions",
+    "title": "Creating Progress Bar Actions",
+    "slug": "timed-actions",
+    "url": "/pz/build-41/modding/lua-api/timed-actions",
+    "version": "build-41",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "timed-actions",
+      "progress-bar",
+      "gameplay",
+      "lua",
+      "api",
+      "intermediate"
+    ],
+    "excerpt": "Learn how to create custom progress bar actions in Project Zomboid - the system behind bandaging, crafting, eating, and every action that takes time.",
+    "difficulty": "intermediate"
+  },
+  {
     "id": "lua-api-weapon-model-swapping",
     "title": "Weapon 3D Model Swapping - Complete Guide",
     "slug": "weapon-model-swapping",
-    "url": "/build-41/modding/lua-api/weapon-model-swapping",
+    "url": "/pz/build-41/modding/lua-api/weapon-model-swapping",
     "version": "build-41",
     "section": "modding",
     "category": "lua-api",
@@ -16,14 +938,14 @@
       "model",
       "swapping"
     ],
-    "excerpt": "Based on VFE (Vanilla Firearm Expansion) mod analysis, Project Zomboid fully supports runtime weapon model changes.\r\n\r\n---\r\n\r\n\r\n\r\n| Component | What It Is | How to Change |\r\n|-----------|----------...",
+    "excerpt": "Based on VFE (Vanilla Firearm Expansion) mod analysis, Project Zomboid fully supports runtime weapon model changes.\n---\n\n\n| Component | What It Is | How to Change | |-----------|----------...",
     "difficulty": "advanced"
   },
   {
-    "id": "recipes-recipe-basics",
-    "title": "Recipe Creation Basics - Project Zomboid",
-    "slug": "recipe-basics",
-    "url": "/build-41/modding/recipes/recipe-basics",
+    "id": "recipes-consumable-recipes",
+    "title": "Consumable vs Reusable Items in Recipes",
+    "slug": "consumable-recipes",
+    "url": "/pz/build-41/modding/recipes/consumable-recipes",
     "version": "build-41",
     "section": "modding",
     "category": "recipes",
@@ -33,17 +955,17 @@
       "weapon",
       "sound",
       "crafting",
-      "creation",
-      "basics"
+      "consumable",
+      "items"
     ],
-    "excerpt": "Recipes in Project Zomboid define how players can craft items by combining inputs to produce outputs. This guide covers the fundamental structure and syntax for creating recipes.\r\n\r\n\r\nRecipes must ...",
+    "excerpt": "In Project Zomboid recipes, input items can either be consumed (destroyed) or kept (reusable). Understanding this distinction is critical for creating balanced and functional recipes.\n\n\n\nBy d...",
     "difficulty": "beginner"
   },
   {
     "id": "recipes-crafting-tables",
     "title": "Recipes with Crafting Tables - Enhanced Crafting Core",
     "slug": "crafting-tables",
-    "url": "/build-41/modding/recipes/crafting-tables",
+    "url": "/pz/build-41/modding/recipes/crafting-tables",
     "version": "build-41",
     "section": "modding",
     "category": "recipes",
@@ -61,10 +983,48 @@
     "difficulty": "intermediate"
   },
   {
-    "id": "recipes-consumable-recipes",
-    "title": "Consumable vs Reusable Items in Recipes",
-    "slug": "consumable-recipes",
-    "url": "/build-41/modding/recipes/consumable-recipes",
+    "id": "recipes-first-recipe-file",
+    "title": "Your First Recipe File",
+    "slug": "first-recipe-file",
+    "url": "/pz/build-41/modding/recipes/first-recipe-file",
+    "version": "build-41",
+    "section": "modding",
+    "category": "recipes",
+    "tags": [
+      "beginner",
+      "recipe",
+      "tutorial",
+      "hands-on",
+      "learning-path",
+      "getting-started"
+    ],
+    "excerpt": "Step-by-step tutorial to create your first working recipe mod for Project Zomboid, from folder setup to in-game testing.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "recipes-recipe-anatomy",
+    "title": "Anatomy of a Recipe",
+    "slug": "recipe-anatomy",
+    "url": "/pz/build-41/modding/recipes/recipe-anatomy",
+    "version": "build-41",
+    "section": "modding",
+    "category": "recipes",
+    "tags": [
+      "beginner",
+      "recipe",
+      "anatomy",
+      "syntax",
+      "learning-path",
+      "fundamentals"
+    ],
+    "excerpt": "Learn the structure and syntax of Project Zomboid recipes by breaking down a vanilla recipe line by line.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "recipes-recipe-basics",
+    "title": "Recipe Creation Basics",
+    "slug": "recipe-basics",
+    "url": "/pz/build-41/modding/recipes/recipe-basics",
     "version": "build-41",
     "section": "modding",
     "category": "recipes",
@@ -74,17 +1034,55 @@
       "weapon",
       "sound",
       "crafting",
-      "consumable",
-      "items"
+      "creation",
+      "basics"
     ],
-    "excerpt": "In Project Zomboid recipes, input items can either be consumed (destroyed) or kept (reusable). Understanding this distinction is critical for creating balanced and functional recipes.\r\n\r\n\r\n\r\n\r\nBy d...",
+    "excerpt": "Recipes in Project Zomboid define how players can craft items by combining inputs to produce outputs. This guide covers the fundamental structure and syntax for creating recipes.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "recipes-recipe-ingredients",
+    "title": "Recipe Ingredients Deep Dive",
+    "slug": "recipe-ingredients",
+    "url": "/pz/build-41/modding/recipes/recipe-ingredients",
+    "version": "build-41",
+    "section": "modding",
+    "category": "recipes",
+    "tags": [
+      "intermediate",
+      "recipe",
+      "ingredients",
+      "tools",
+      "learning-path",
+      "advanced"
+    ],
+    "excerpt": "Master advanced recipe ingredient patterns: alternatives, type functions, quantities, tool behavior, and balancing techniques.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "recipes-testing-recipes",
+    "title": "Testing Your Recipe",
+    "slug": "testing-recipes",
+    "url": "/pz/build-41/modding/recipes/testing-recipes",
+    "version": "build-41",
+    "section": "modding",
+    "category": "recipes",
+    "tags": [
+      "beginner",
+      "recipe",
+      "testing",
+      "debug",
+      "learning-path",
+      "troubleshooting"
+    ],
+    "excerpt": "Learn how to test and debug your Project Zomboid recipes using debug mode, console commands, and troubleshooting techniques.",
     "difficulty": "beginner"
   },
   {
     "id": "recipes-vanilla-recipe-anatomy",
-    "title": "Vanilla Recipe Anatomy - Complete Parameter Reference",
+    "title": "Complete Recipe Parameter Reference",
     "slug": "vanilla-recipe-anatomy",
-    "url": "/build-41/modding/recipes/vanilla-recipe-anatomy",
+    "url": "/pz/build-41/modding/recipes/vanilla-recipe-anatomy",
     "version": "build-41",
     "section": "modding",
     "category": "recipes",
@@ -96,295 +1094,245 @@
       "event",
       "animation",
       "sound",
-      "crafting"
-    ],
-    "excerpt": "This document provides a complete breakdown of all parameters available in Project Zomboid recipes, based on vanilla game recipes.\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nCommon Item Types:\r\n- \r\n- \r\n-...",
-    "difficulty": "intermediate"
-  },
-  {
-    "id": "items-item-creation",
-    "title": "Item Creation Guide - Project Zomboid",
-    "slug": "item-creation",
-    "url": "/build-41/modding/items/item-creation",
-    "version": "build-41",
-    "section": "modding",
-    "category": "items",
-    "tags": [
-      "recipe",
-      "item",
-      "weapon",
       "crafting",
-      "creation",
-      "guide"
-    ],
-    "excerpt": "Items in Project Zomboid are defined in script files within your mod's directory. This guide covers the fundamentals of creating new items.\r\n\r\n\r\nItems must be defined in  files within your mod's  d...",
-    "difficulty": "beginner"
-  },
-  {
-    "id": "items-vanilla-item-anatomy",
-    "title": "Vanilla Item Anatomy - Complete Property Reference",
-    "slug": "vanilla-item-anatomy",
-    "url": "/build-41/modding/items/vanilla-item-anatomy",
-    "version": "build-41",
-    "section": "modding",
-    "category": "items",
-    "tags": [
-      "recipe",
-      "item",
-      "weapon",
-      "animation",
-      "crafting",
-      "vanilla",
-      "anatomy"
-    ],
-    "excerpt": "This document provides a comprehensive reference of all properties available for Project Zomboid items, based on vanilla game items.\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nPurpose: Determines fundamental item behavior (...",
-    "difficulty": "intermediate"
-  },
-  {
-    "id": "items-ammunition-items",
-    "title": "Vanilla Ammunition Items - Complete Reference",
-    "slug": "ammunition-items",
-    "url": "/build-41/modding/items/ammunition-items",
-    "version": "build-41",
-    "section": "modding",
-    "category": "items",
-    "tags": [
-      "recipe",
-      "item",
-      "weapon",
-      "sound",
-      "crafting",
-      "vanilla",
-      "ammunition",
-      "items"
-    ],
-    "excerpt": "This document catalogs all vanilla Project Zomboid ammunition-related items, including rounds, boxes, magazines, molds, and crafting materials.\r\n\r\n\r\n\r\n\r\n| Name              | Item ID              |...",
-    "difficulty": "intermediate"
-  },
-  {
-    "id": "game-mechanics-injury-system",
-    "title": "Project Zomboid Injury System Reference",
-    "slug": "injury-system",
-    "url": "/build-41/modding/game-mechanics/injury-system",
-    "version": "build-41",
-    "section": "modding",
-    "category": "game-mechanics",
-    "tags": [
-      "lua",
-      "item",
-      "weapon",
-      "modding",
-      "api",
-      "injury",
-      "system",
       "reference"
     ],
-    "excerpt": "Documentation for modding injuries, wounds, and health in Project Zomboid.\r\n\r\n---\r\n\r\n\r\n1. Health System Overview\r\n2. Body Parts\r\n3. Injury Types\r\n4. Applying Injuries\r\n5. Checking Injuries\r\n6. Heal...",
+    "excerpt": "Complete reference of all parameters available in Project Zomboid recipes, with examples from vanilla and popular mods.",
     "difficulty": "intermediate"
   },
   {
-    "id": "game-mechanics-animation-reference",
-    "title": "Project Zomboid Vanilla Animation Reference",
-    "slug": "animation-reference",
-    "url": "/build-41/modding/game-mechanics/animation-reference",
+    "id": "reference-events",
+    "title": "Complete Events Reference",
+    "slug": "events",
+    "url": "/pz/build-41/modding/reference/events",
     "version": "build-41",
     "section": "modding",
-    "category": "game-mechanics",
+    "category": "reference",
     "tags": [
-      "recipe",
-      "item",
-      "weapon",
-      "foraging",
-      "animation",
-      "sound",
-      "modding",
-      "api"
-    ],
-    "excerpt": "This document provides a comprehensive reference of all vanilla animations available in Project Zomboid for use in mod recipes and scripts.",
-    "difficulty": "advanced"
-  },
-  {
-    "id": "game-mechanics-sound-reference",
-    "title": "Project Zomboid Vanilla Sound Reference",
-    "slug": "sound-reference",
-    "url": "/build-41/modding/game-mechanics/sound-reference",
-    "version": "build-41",
-    "section": "modding",
-    "category": "game-mechanics",
-    "tags": [
-      "recipe",
-      "item",
-      "repair",
-      "weapon",
-      "event",
-      "sound",
-      "modding",
-      "api"
-    ],
-    "excerpt": "This document provides a comprehensive reference of all vanilla sounds available in Project Zomboid for use in mod recipes and scripts.",
-    "difficulty": "intermediate"
-  },
-  {
-    "id": "weapon-repair-repair-system-overview",
-    "title": "Project Zomboid Repair System Overview",
-    "slug": "repair-system-overview",
-    "url": "/build-41/modding/weapon-repair/repair-system-overview",
-    "version": "build-41",
-    "section": "modding",
-    "category": "weapon-repair",
-    "tags": [
+      "intermediate",
       "lua",
-      "item",
-      "repair",
-      "weapon",
-      "event",
-      "system",
-      "overview"
+      "events",
+      "api",
+      "reference",
+      "callbacks"
     ],
-    "excerpt": "The repair system in Project Zomboid consists of three main layers:\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nItems become repairable by having an entry in :\r\n\r\n\r\n\r\nKey Components:\r\n-  - The item type that can be repaired\r\n-...",
+    "excerpt": "Complete reference of all 144 events in Project Zomboid Build 41, with parameters, examples, and use cases.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "reference-farming",
+    "title": "Farming Script Reference",
+    "slug": "farming",
+    "url": "/pz/build-41/modding/reference/farming",
+    "version": "build-41",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "beginner",
+      "farming",
+      "gardening",
+      "scripts",
+      "reference",
+      "food"
+    ],
+    "excerpt": "Reference for Project Zomboid farming scripts including crops, seeds, gardening tools, and farming recipes.",
     "difficulty": "beginner"
   },
   {
-    "id": "weapon-repair-fixing-txt-anatomy",
-    "title": "Fixing.txt Anatomy - Repair Definition Structure",
-    "slug": "fixing-txt-anatomy",
-    "url": "/build-41/modding/weapon-repair/fixing-txt-anatomy",
+    "id": "reference-fixing",
+    "title": "Fixing Script Reference",
+    "slug": "fixing",
+    "url": "/pz/build-41/modding/reference/fixing",
     "version": "build-41",
     "section": "modding",
-    "category": "weapon-repair",
+    "category": "reference",
     "tags": [
-      "item",
-      "repair",
-      "weapon",
+      "beginner",
       "fixing",
-      "txt",
-      "anatomy"
-    ],
-    "excerpt": "Specifies the item type that this fixing definition applies to.\r\n\r\n\r\n\r\n\r\n\r\nDefines an item that can perform the repair.\r\n\r\nSimple Fixer (no skill):\r\n\r\n\r\nFixer with Skill Requirement:\r\n\r\n\r\nMultiple ...",
-    "difficulty": "intermediate"
-  },
-  {
-    "id": "weapon-repair-repair-items-reference",
-    "title": "Repair Items Reference (Fixers)",
-    "slug": "repair-items-reference",
-    "url": "/build-41/modding/weapon-repair/repair-items-reference",
-    "version": "build-41",
-    "section": "modding",
-    "category": "weapon-repair",
-    "tags": [
-      "lua",
-      "recipe",
-      "item",
       "repair",
-      "weapon",
-      "items",
+      "scripts",
       "reference"
     ],
-    "excerpt": "Fixer items are consumable materials used to repair damaged equipment. Each fixer has specific properties that determine its effectiveness and requirements.\r\n\r\n\r\n\r\n\r\n\r\nProperties:\r\n- Requires: Wood...",
-    "difficulty": "intermediate"
-  },
-  {
-    "id": "weapon-repair-repairable-weapons",
-    "title": "Repairable Weapons List (Vanilla)",
-    "slug": "repairable-weapons",
-    "url": "/build-41/modding/weapon-repair/repairable-weapons",
-    "version": "build-41",
-    "section": "modding",
-    "category": "weapon-repair",
-    "tags": [
-      "item",
-      "repair",
-      "weapon",
-      "repairable",
-      "weapons"
-    ],
-    "excerpt": "This document lists all weapons that have repair definitions in vanilla Project Zomboid's .\r\n\r\n\r\n\r\n| Weapon | Fixers | Skill Required |\r\n|--------|--------|----------------|\r\n| Axe | Woodglue, Duct...",
+    "excerpt": "Reference for Project Zomboid fixing scripts that define item repair recipes with materials and skill requirements.",
     "difficulty": "beginner"
   },
   {
-    "id": "weapon-repair-lua-repair-mechanics",
-    "title": "Lua Repair Mechanics",
-    "slug": "lua-repair-mechanics",
-    "url": "/build-41/modding/weapon-repair/lua-repair-mechanics",
+    "id": "reference-globals",
+    "title": "Global Functions Reference",
+    "slug": "globals",
+    "url": "/pz/build-41/modding/reference/globals",
     "version": "build-41",
     "section": "modding",
-    "category": "weapon-repair",
+    "category": "reference",
     "tags": [
+      "intermediate",
       "lua",
-      "recipe",
-      "item",
-      "repair",
-      "weapon",
-      "event",
+      "globals",
       "api",
+      "reference",
+      "functions"
+    ],
+    "excerpt": "Complete reference of global functions available in Project Zomboid Lua scripting, including player, world, time, and utility functions.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "reference-script-properties",
+    "title": "Script Properties Reference",
+    "slug": "script-properties",
+    "url": "/pz/build-41/modding/reference/script-properties",
+    "version": "build-41",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "intermediate",
+      "items",
+      "recipes",
+      "scripts",
+      "reference",
+      "properties"
+    ],
+    "excerpt": "Complete reference of all script properties for items, recipes, weapons, and food in Project Zomboid Build 41.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "reference-vehicles",
+    "title": "Vehicle Script Reference",
+    "slug": "vehicles",
+    "url": "/pz/build-41/modding/reference/vehicles",
+    "version": "build-41",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "intermediate",
+      "vehicles",
+      "scripts",
+      "reference",
       "mechanics"
     ],
-    "excerpt": "The FixingManager is a Java class accessed from Lua:",
-    "difficulty": "advanced"
-  },
-  {
-    "id": "weapon-repair-repair-formulas",
-    "title": "Repair Formulas and Calculations",
-    "slug": "repair-formulas",
-    "url": "/build-41/modding/weapon-repair/repair-formulas",
-    "version": "build-41",
-    "section": "modding",
-    "category": "weapon-repair",
-    "tags": [
-      "lua",
-      "item",
-      "repair",
-      "weapon",
-      "formulas",
-      "and",
-      "calculations"
-    ],
-    "excerpt": "When using a weapon, condition loss is calculated per action:\r\n\r\n\r\n\r\nVariables:\r\n-  = Item's  property\r\n-  = Player's Maintenance skill modifier\r\n\r\nExample:\r\n- Axe has \r\n- Player has Maintenance le...",
+    "excerpt": "Complete reference for Project Zomboid vehicle script definitions including physics, parts, passengers, and templates.",
     "difficulty": "intermediate"
   },
   {
-    "id": "weapon-repair-repair-cheat-sheet",
-    "title": "Weapon Repair Quick Reference Cheat Sheet",
-    "slug": "repair-cheat-sheet",
-    "url": "/build-41/modding/weapon-repair/repair-cheat-sheet",
+    "id": "setup-debug-mode",
+    "title": "Debug Mode",
+    "slug": "debug-mode",
+    "url": "/pz/build-41/modding/setup/debug-mode",
     "version": "build-41",
     "section": "modding",
-    "category": "weapon-repair",
+    "category": "setup",
     "tags": [
-      "lua",
-      "item",
-      "repair",
-      "weapon",
-      "api",
-      "cheat",
-      "sheet"
+      "beginner",
+      "setup",
+      "debug",
+      "testing",
+      "console",
+      "developer"
     ],
-    "excerpt": "| Fixer | Uses | Skill | Best For |\r\n|-------|------|-------|----------|\r\n| Woodglue | 2 | Woodwork 2 | Wooden weapons |\r\n| DuctTape | 2 | None | Everything |\r\n| Glue | 2 | None | Everything |\r\n| S...",
+    "excerpt": "Enable Project Zomboid's debug mode to access powerful testing tools: spawn items, hot reload Lua, read error messages, and test your mods efficiently.",
     "difficulty": "beginner"
   },
   {
-    "id": "foraging-vanilla-foraging",
-    "title": "VANILLA FORAGING SYSTEM - RESEARCH NOTES",
-    "slug": "vanilla-foraging",
-    "url": "/build-41/modding/foraging/vanilla-foraging",
+    "id": "setup-mod-folder-structure",
+    "title": "Mod Folder Structure",
+    "slug": "mod-folder-structure",
+    "url": "/pz/build-41/modding/setup/mod-folder-structure",
     "version": "build-41",
     "section": "modding",
-    "category": "foraging",
+    "category": "setup",
+    "tags": [
+      "beginner",
+      "setup",
+      "folder-structure",
+      "mod-folder",
+      "media",
+      "getting-started"
+    ],
+    "excerpt": "Learn the correct folder structure for Project Zomboid mods, including where to place scripts, Lua files, textures, and other content.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "setup-mod-info-file",
+    "title": "The mod.info File",
+    "slug": "mod-info-file",
+    "url": "/pz/build-41/modding/setup/mod-info-file",
+    "version": "build-41",
+    "section": "modding",
+    "category": "setup",
+    "tags": [
+      "beginner",
+      "setup",
+      "mod-info",
+      "metadata",
+      "configuration",
+      "getting-started"
+    ],
+    "excerpt": "Learn how to create and configure the mod.info file that tells Project Zomboid about your mod's name, ID, dependencies, and metadata.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "setup-vscode-setup",
+    "title": "Installing VS Code",
+    "slug": "vscode-setup",
+    "url": "/pz/build-41/modding/setup/vscode-setup",
+    "version": "build-41",
+    "section": "modding",
+    "category": "setup",
+    "tags": [
+      "beginner",
+      "setup",
+      "vscode",
+      "editor",
+      "tools",
+      "getting-started"
+    ],
+    "excerpt": "Set up Visual Studio Code for Project Zomboid modding with essential extensions, keyboard shortcuts, and configuration tips.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "tools-mod-quickstart",
+    "title": "Project Zomboid Mod Development Quick Start Guide",
+    "slug": "mod-quickstart",
+    "url": "/pz/build-41/modding/tools/mod-quickstart",
+    "version": "build-41",
+    "section": "modding",
+    "category": "tools",
     "tags": [
       "lua",
+      "recipe",
       "item",
-      "foraging",
-      "vanilla",
-      "notes"
+      "repair",
+      "weapon",
+      "modding",
+      "crafting",
+      "quick"
     ],
-    "excerpt": "Date: 2025-12-22\r\nResearched For: Iron Pyrite Foraging Implementation\r\n\r\n---\r\n\r\n\r\n\r\n\r\n- \r\n  - Contains all foraging item definitions\r\n  - Uses global  table\r\n\r\n- \r\n  - Core foraging logic/system\r\n\r...",
+    "excerpt": "---",
     "difficulty": "beginner"
+  },
+  {
+    "id": "tools-tilezed",
+    "title": "TileZed Reference",
+    "slug": "tilezed",
+    "url": "/pz/build-41/modding/tools/tilezed",
+    "version": "build-41",
+    "section": "modding",
+    "category": "tools",
+    "tags": [
+      "intermediate",
+      "tilezed",
+      "mapping",
+      "tiles",
+      "buildings",
+      "external"
+    ],
+    "excerpt": "Reference guide for TileZed, the tile and building editor for Project Zomboid, with links to official resources and documentation.",
+    "difficulty": "intermediate"
   },
   {
     "id": "tools-tilezed-setup",
     "title": "TileZed Setup Guide - Outcast Antique Oven",
     "slug": "tilezed-setup",
-    "url": "/build-41/modding/tools/tilezed-setup",
+    "url": "/pz/build-41/modding/tools/tilezed-setup",
     "version": "build-41",
     "section": "modding",
     "category": "tools",
@@ -401,24 +1349,532 @@
     "difficulty": "beginner"
   },
   {
-    "id": "tools-mod-quickstart",
-    "title": "Project Zomboid Mod Development Quick Start Guide",
-    "slug": "mod-quickstart",
-    "url": "/build-41/modding/tools/mod-quickstart",
+    "id": "tools-worlded",
+    "title": "WorldEd Reference",
+    "slug": "worlded",
+    "url": "/pz/build-41/modding/tools/worlded",
     "version": "build-41",
     "section": "modding",
     "category": "tools",
+    "tags": [
+      "intermediate",
+      "worlded",
+      "mapping",
+      "world",
+      "cells",
+      "external"
+    ],
+    "excerpt": "Reference guide for WorldEd, the world map editor for Project Zomboid, with links to official resources and documentation.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "ui-framework-isui-buttons",
+    "title": "Buttons and Input Components",
+    "slug": "isui-buttons",
+    "url": "/pz/build-41/modding/ui-framework/isui-buttons",
+    "version": "build-41",
+    "section": "modding",
+    "category": "ui-framework",
+    "tags": [
+      "intermediate",
+      "lua",
+      "ui",
+      "isui",
+      "isbutton",
+      "istextentrybox",
+      "input"
+    ],
+    "excerpt": "ISButton and ISTextEntryBox components for clickable buttons and text input fields in custom UIs.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "ui-framework-isui-lifecycle",
+    "title": "Understanding the UI Lifecycle",
+    "slug": "isui-lifecycle",
+    "url": "/pz/build-41/modding/ui-framework/isui-lifecycle",
+    "version": "build-41",
+    "section": "modding",
+    "category": "ui-framework",
+    "tags": [
+      "intermediate",
+      "lua",
+      "ui",
+      "isui",
+      "lifecycle",
+      "createchildren",
+      "initialise"
+    ],
+    "excerpt": "Learn how UI elements are born, live, and die in Project Zomboid. Understanding the lifecycle prevents most \"my UI doesn't work\" problems.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "ui-framework-isui-overview",
+    "title": "ISUI Framework Overview",
+    "slug": "isui-overview",
+    "url": "/pz/build-41/modding/ui-framework/isui-overview",
+    "version": "build-41",
+    "section": "modding",
+    "category": "ui-framework",
+    "tags": [
+      "intermediate",
+      "lua",
+      "ui",
+      "isui",
+      "isuielement",
+      "api"
+    ],
+    "excerpt": "Introduction to Project Zomboid's ISUI UI framework: ISUIElement hierarchy, element lifecycle, core properties, and component overview.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "ui-framework-isui-panels",
+    "title": "Panels and Containers",
+    "slug": "isui-panels",
+    "url": "/pz/build-41/modding/ui-framework/isui-panels",
+    "version": "build-41",
+    "section": "modding",
+    "category": "ui-framework",
+    "tags": [
+      "intermediate",
+      "lua",
+      "ui",
+      "isui",
+      "ispanel",
+      "containers"
+    ],
+    "excerpt": "ISPanel container component with background rendering, borders, and drag-to-move functionality for organizing UI elements.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "ui-framework-isui-text-input",
+    "title": "Text Input Fields with ISTextEntryBox",
+    "slug": "isui-text-input",
+    "url": "/pz/build-41/modding/ui-framework/isui-text-input",
+    "version": "build-41",
+    "section": "modding",
+    "category": "ui-framework",
+    "tags": [
+      "beginner",
+      "lua",
+      "ui",
+      "isui",
+      "istextentrybox",
+      "input",
+      "forms"
+    ],
+    "excerpt": "Learn how to create text input fields that let players type in your mod's UI. Covers basic inputs, validation, passwords, and number-only fields.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "repair-system-guide",
+    "title": "Understanding Repair Systems in Project Zomboid",
+    "slug": "repair-system-guide",
+    "url": "/pz/build-41/modding/vanilla-reference/repair-system-guide",
+    "version": "build-41",
+    "section": "modding",
+    "category": "vanilla-reference",
+    "tags": [
+      "repair",
+      "fixing",
+      "weapons",
+      "vehicles",
+      "maintenance",
+      "guide"
+    ],
+    "excerpt": "Comprehensive guide to both repair systems in PZ: item fixing for weapons/tools, and vehicle parts for cars. Learn how to make custom weapons repairable.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "vanilla-clothing-reference",
+    "title": "Vanilla Clothing Reference",
+    "slug": "vanilla-clothing-reference",
+    "url": "/pz/build-41/modding/vanilla-reference/vanilla-clothing-reference",
+    "version": "build-41",
+    "section": "modding",
+    "category": "vanilla-reference",
+    "tags": [
+      "reference",
+      "clothing",
+      "vanilla",
+      "items",
+      "protection"
+    ],
+    "excerpt": "Complete reference for all 776 vanilla clothing items with protection values and body locations.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "vanilla-evolved-recipes-reference",
+    "title": "Vanilla Evolved Recipes Reference",
+    "slug": "vanilla-evolved-recipes-reference",
+    "url": "/pz/build-41/modding/vanilla-reference/vanilla-evolved-recipes-reference",
+    "version": "build-41",
+    "section": "modding",
+    "category": "vanilla-reference",
+    "tags": [
+      "reference",
+      "recipes",
+      "evolved",
+      "vanilla",
+      "cooking"
+    ],
+    "excerpt": "Complete reference for all 38 evolved recipes - dynamic crafting for soups, stews, sandwiches, and more.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "vanilla-farming",
+    "title": "Vanilla Items: farming.txt",
+    "slug": "vanilla-farming",
+    "url": "/pz/build-41/modding/vanilla-reference/vanilla-farming",
+    "version": "build-41",
+    "section": "modding",
+    "category": "vanilla-reference",
+    "tags": [
+      "reference",
+      "vanilla",
+      "items"
+    ],
+    "excerpt": "Reference for 39 items from farming.txt.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "vanilla-fixing-reference",
+    "title": "Vanilla Fixing (Repair) System Reference",
+    "slug": "vanilla-fixing-reference",
+    "url": "/pz/build-41/modding/vanilla-reference/vanilla-fixing-reference",
+    "version": "build-41",
+    "section": "modding",
+    "category": "vanilla-reference",
+    "tags": [
+      "reference",
+      "fixing",
+      "repair",
+      "vanilla",
+      "maintenance"
+    ],
+    "excerpt": "Complete reference for the fixing (repair) system with all 76 vanilla repair entries.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "vanilla-food-reference",
+    "title": "Vanilla Food Reference",
+    "slug": "vanilla-food-reference",
+    "url": "/pz/build-41/modding/vanilla-reference/vanilla-food-reference",
+    "version": "build-41",
+    "section": "modding",
+    "category": "vanilla-reference",
+    "tags": [
+      "reference",
+      "food",
+      "vanilla",
+      "items"
+    ],
+    "excerpt": "Complete reference for all 464 vanilla food items with nutritional values.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "vanilla-items",
+    "title": "Vanilla Items: items.txt",
+    "slug": "vanilla-items",
+    "url": "/pz/build-41/modding/vanilla-reference/vanilla-items",
+    "version": "build-41",
+    "section": "modding",
+    "category": "vanilla-reference",
+    "tags": [
+      "reference",
+      "vanilla",
+      "items"
+    ],
+    "excerpt": "Reference for 92 items from items.txt.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "vanilla-items-literature",
+    "title": "Vanilla Items: items_literature.txt",
+    "slug": "vanilla-items-literature",
+    "url": "/pz/build-41/modding/vanilla-reference/vanilla-items-literature",
+    "version": "build-41",
+    "section": "modding",
+    "category": "vanilla-reference",
+    "tags": [
+      "reference",
+      "vanilla",
+      "items"
+    ],
+    "excerpt": "Reference for 103 items from items_literature.txt.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "vanilla-items-radio",
+    "title": "Vanilla Items: items_radio.txt",
+    "slug": "vanilla-items-radio",
+    "url": "/pz/build-41/modding/vanilla-reference/vanilla-items-radio",
+    "version": "build-41",
+    "section": "modding",
+    "category": "vanilla-reference",
+    "tags": [
+      "reference",
+      "vanilla",
+      "items"
+    ],
+    "excerpt": "Reference for 23 items from items_radio.txt.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "vanilla-newBags",
+    "title": "Vanilla Items: newBags.txt",
+    "slug": "vanilla-newBags",
+    "url": "/pz/build-41/modding/vanilla-reference/vanilla-newBags",
+    "version": "build-41",
+    "section": "modding",
+    "category": "vanilla-reference",
+    "tags": [
+      "reference",
+      "vanilla",
+      "items"
+    ],
+    "excerpt": "Reference for 21 items from newBags.txt.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "vanilla-newitems",
+    "title": "Vanilla Items: newitems.txt",
+    "slug": "vanilla-newitems",
+    "url": "/pz/build-41/modding/vanilla-reference/vanilla-newitems",
+    "version": "build-41",
+    "section": "modding",
+    "category": "vanilla-reference",
+    "tags": [
+      "reference",
+      "vanilla",
+      "items"
+    ],
+    "excerpt": "Reference for 374 items from newitems.txt.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "vanilla-recipes-reference",
+    "title": "Vanilla Recipes Reference",
+    "slug": "vanilla-recipes-reference",
+    "url": "/pz/build-41/modding/vanilla-reference/vanilla-recipes-reference",
+    "version": "build-41",
+    "section": "modding",
+    "category": "vanilla-reference",
+    "tags": [
+      "reference",
+      "recipes",
+      "vanilla",
+      "crafting"
+    ],
+    "excerpt": "Complete reference for all 292 vanilla crafting recipes, organized by category.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "vanilla-sounds-reference",
+    "title": "Vanilla Sound Reference",
+    "slug": "vanilla-sounds-reference",
+    "url": "/pz/build-41/modding/vanilla-reference/vanilla-sounds-reference",
+    "version": "build-41",
+    "section": "modding",
+    "category": "vanilla-reference",
+    "tags": [
+      "reference",
+      "sounds",
+      "audio",
+      "vanilla",
+      "fmod"
+    ],
+    "excerpt": "Complete reference for all 390 sound definitions with FMOD event paths.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "vanilla-vehicle-items-reference",
+    "title": "Vanilla Vehicle Items Reference",
+    "slug": "vanilla-vehicle-items-reference",
+    "url": "/pz/build-41/modding/vanilla-reference/vanilla-vehicle-items-reference",
+    "version": "build-41",
+    "section": "modding",
+    "category": "vanilla-reference",
+    "tags": [
+      "reference",
+      "vehicles",
+      "vanilla",
+      "items",
+      "mechanics"
+    ],
+    "excerpt": "Complete reference for all 97 vehicle parts and maintenance items.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "vanilla-weapons-reference",
+    "title": "Vanilla Weapons Reference",
+    "slug": "vanilla-weapons-reference",
+    "url": "/pz/build-41/modding/vanilla-reference/vanilla-weapons-reference",
+    "version": "build-41",
+    "section": "modding",
+    "category": "vanilla-reference",
+    "tags": [
+      "reference",
+      "weapons",
+      "vanilla",
+      "items"
+    ],
+    "excerpt": "Complete reference for all 152 vanilla weapons, organized by category with full stats.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "weapon-properties-guide",
+    "title": "Understanding Weapon Properties",
+    "slug": "weapon-properties-guide",
+    "url": "/pz/build-41/modding/vanilla-reference/weapon-properties-guide",
+    "version": "build-41",
+    "section": "modding",
+    "category": "vanilla-reference",
+    "tags": [
+      "weapons",
+      "properties",
+      "guide",
+      "combat",
+      "skills"
+    ],
+    "excerpt": "Deep dive into what each weapon property actually does in gameplay - from how Categories connect to skills, to how ConditionLowerChanceOneIn really works.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "weapon-repair-fixing-txt-anatomy",
+    "title": "Fixing.txt Anatomy - Repair Definition Structure",
+    "slug": "fixing-txt-anatomy",
+    "url": "/pz/build-41/modding/weapon-repair/fixing-txt-anatomy",
+    "version": "build-41",
+    "section": "modding",
+    "category": "weapon-repair",
+    "tags": [
+      "item",
+      "repair",
+      "weapon",
+      "fixing",
+      "txt",
+      "anatomy"
+    ],
+    "excerpt": "Complete guide to fixing.txt syntax - learn how Require, Fixer, GlobalItem, and ConditionModifier work to create repair definitions for weapons, tools, and vehicle parts.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "weapon-repair-lua-repair-mechanics",
+    "title": "Lua Repair Mechanics",
+    "slug": "lua-repair-mechanics",
+    "url": "/pz/build-41/modding/weapon-repair/lua-repair-mechanics",
+    "version": "build-41",
+    "section": "modding",
+    "category": "weapon-repair",
     "tags": [
       "lua",
       "recipe",
       "item",
       "repair",
       "weapon",
-      "modding",
-      "crafting",
-      "quick"
+      "event",
+      "api",
+      "mechanics"
     ],
-    "excerpt": "---",
+    "excerpt": "Deep dive into how Project Zomboid's repair system works in Lua - ISFixAction workflow, FixingManager API, repair calculations, and custom repair logic.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "weapon-repair-repair-cheat-sheet",
+    "title": "Weapon Repair Quick Reference Cheat Sheet",
+    "slug": "repair-cheat-sheet",
+    "url": "/pz/build-41/modding/weapon-repair/repair-cheat-sheet",
+    "version": "build-41",
+    "section": "modding",
+    "category": "weapon-repair",
+    "tags": [
+      "lua",
+      "item",
+      "repair",
+      "weapon",
+      "api",
+      "cheat",
+      "sheet"
+    ],
+    "excerpt": "Quick reference cheat sheet for weapon repair system - common fixers, skill requirements, Lua API, fixing.txt syntax, and practical examples.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "weapon-repair-repair-formulas",
+    "title": "Repair Formulas and Calculations",
+    "slug": "repair-formulas",
+    "url": "/pz/build-41/modding/weapon-repair/repair-formulas",
+    "version": "build-41",
+    "section": "modding",
+    "category": "weapon-repair",
+    "tags": [
+      "lua",
+      "item",
+      "repair",
+      "weapon",
+      "formulas",
+      "and",
+      "calculations"
+    ],
+    "excerpt": "Mathematical breakdown of repair system - degradation formulas, success calculations, XP gains, and practical examples with worked calculations.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "weapon-repair-repair-items-reference",
+    "title": "Repair Items Reference (Fixers)",
+    "slug": "repair-items-reference",
+    "url": "/pz/build-41/modding/weapon-repair/repair-items-reference",
+    "version": "build-41",
+    "section": "modding",
+    "category": "weapon-repair",
+    "tags": [
+      "lua",
+      "recipe",
+      "item",
+      "repair",
+      "weapon",
+      "items",
+      "reference"
+    ],
+    "excerpt": "Complete reference for repair items (fixers) in Project Zomboid - organized by category with usage patterns, skill requirements, and modding examples for creating custom repair materials.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "weapon-repair-repair-system-overview",
+    "title": "Project Zomboid Repair System Overview",
+    "slug": "repair-system-overview",
+    "url": "/pz/build-41/modding/weapon-repair/repair-system-overview",
+    "version": "build-41",
+    "section": "modding",
+    "category": "weapon-repair",
+    "tags": [
+      "lua",
+      "item",
+      "repair",
+      "weapon",
+      "event",
+      "system",
+      "overview"
+    ],
+    "excerpt": "Complete overview of Project Zomboid's repair system - how fixing.txt, FixingManager, and ISFixAction work together to enable item repairs with skills, materials, and success calculations.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "weapon-repair-repairable-weapons",
+    "title": "Repairable Weapons List (Vanilla)",
+    "slug": "repairable-weapons",
+    "url": "/pz/build-41/modding/weapon-repair/repairable-weapons",
+    "version": "build-41",
+    "section": "modding",
+    "category": "weapon-repair",
+    "tags": [
+      "item",
+      "repair",
+      "weapon",
+      "repairable",
+      "weapons"
+    ],
+    "excerpt": "Complete reference of 73 repairable weapons in Project Zomboid - organized by category with fixer items, skill requirements, and patterns for creating repairable custom weapons.",
     "difficulty": "beginner"
   }
 ]
