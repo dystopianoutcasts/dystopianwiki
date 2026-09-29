@@ -378,22 +378,28 @@ function stripPools(table: Record<string, number> | undefined): Record<string, n
   return out;
 }
 
-/** One health_samples row from one heartbeat. Exported for the tests; buildPlan calls it. */
+/**
+ * One health_samples row from one heartbeat. Exported for the tests; buildPlan calls it.
+ *
+ * EVERY row carries EVERY column, null where the heartbeat had no value. PostgREST
+ * rejects a bulk insert whose objects do not all have the same keys (PGRST102 "All
+ * object keys must match"), and one batch routinely mixes heartbeats with and without
+ * a given table. That rejection threw the whole tail and stalled the ingest from
+ * 05:13 UTC on 2026-09-29 (the first v0.2.1 log) until this fix.
+ */
 export function buildHealthRow(hb: HbRecord, serverId: string): Row {
   const st = hb.st ?? {};
   const row: Row = {
     server_id: serverId,
     t: toIso(hb.t),
+    players: onlineCount(hb) ?? null,
   };
-  const players = onlineCount(hb);
-  if (players !== undefined) row.players = players;
 
   for (const tableName of ['game', 'perf', 'net'] as const) {
     const table = st[tableName];
-    if (!table) continue;
     for (const [statKey, column] of Object.entries(HEALTH_COLUMNS[tableName])) {
-      const value = table[statKey];
-      if (typeof value === 'number' && Number.isFinite(value)) row[column] = value;
+      const value = table?.[statKey];
+      row[column] = typeof value === 'number' && Number.isFinite(value) ? value : null;
     }
   }
 

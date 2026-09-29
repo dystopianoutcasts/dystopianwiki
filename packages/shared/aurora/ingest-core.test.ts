@@ -250,13 +250,25 @@ Deno.test('a v0.0 heartbeat with no src and no st still yields a players-only sa
   assertEquals(isHealthHeartbeat(hb), true, 'pre-revision-2 logs on the host must still count');
   const row = buildHealthRow(hb, SERVER);
   assertEquals(row.players, 0);
-  assertEquals('tick_ms' in row, false, 'no table, no tick figure - never zero');
+  assertEquals(row.tick_ms, null, 'no table, no tick figure - null, never zero');
   assertEquals(row.raw, {}, 'nothing to keep');
 });
 
-Deno.test('a malformed table value leaves its column unset rather than NaN', () => {
+Deno.test('a malformed table value leaves its column null rather than NaN', () => {
   const row = buildHealthRow(tickHb({ st: { perf: { fps: Number.NaN } } }), SERVER);
-  assertEquals('tick_ms' in row, false);
+  assertEquals(row.tick_ms, null);
+});
+
+Deno.test('every health row in a batch has the same keys (PostgREST PGRST102, the 2026-09-29 05:13 stall)', () => {
+  const rows = buildHealthRows([
+    tickHb(),
+    tickHb({ t: 1790629902835, st: { perf: { fps: 101 } } }), // no game or net table
+    { k: 'hb', t: 1790629912835, src: 'tick' }, // no st, no players at all
+  ], SERVER);
+  assertEquals(rows.length, 3);
+  const keys = rows.map((r) => Object.keys(r).sort().join(','));
+  assertEquals(new Set(keys).size, 1, `mixed key sets: ${keys.join(' | ')}`);
+  assertEquals(rows[2].players, null);
 });
 
 Deno.test('health rows are deduped on t, the primary key', () => {
