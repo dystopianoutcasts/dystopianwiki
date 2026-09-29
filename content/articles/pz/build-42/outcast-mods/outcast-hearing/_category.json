@@ -1,0 +1,6 @@
+{
+  "name": "Outcast Hearing",
+  "description": "Gunfire damages your hearing, ear protection reduces it, and quiet time brings it back.",
+  "icon": "gear",
+  "displayOrder": 3
+}

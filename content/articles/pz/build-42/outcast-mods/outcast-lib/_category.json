@@ -1,0 +1,6 @@
+{
+  "name": "Outcast Lib",
+  "description": "Shared runtime for the Outcast mod family. This mod adds no gameplay of its own.",
+  "icon": "gear",
+  "displayOrder": 6
+}

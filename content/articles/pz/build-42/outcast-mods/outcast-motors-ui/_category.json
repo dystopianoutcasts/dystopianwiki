@@ -1,0 +1,6 @@
+{
+  "name": "Outcast Motors UI",
+  "description": "A vehicle mechanics window that shows you the whole car at once, on the car.",
+  "icon": "car",
+  "displayOrder": 10
+}

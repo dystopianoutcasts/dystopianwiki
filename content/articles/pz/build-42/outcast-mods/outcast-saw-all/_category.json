@@ -1,0 +1,6 @@
+{
+  "name": "Outcast Saw All",
+  "description": "One context-menu button that saws every log you can get to, in your bags and on the ground around you.",
+  "icon": "gear",
+  "displayOrder": 14
+}

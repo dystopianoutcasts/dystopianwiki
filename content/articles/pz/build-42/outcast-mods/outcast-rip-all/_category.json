@@ -1,0 +1,6 @@
+{
+  "name": "Outcast Rip All",
+  "description": "One context-menu button that rips every rippable garment in your inventory and the containers around you.",
+  "icon": "gear",
+  "displayOrder": 13
+}
