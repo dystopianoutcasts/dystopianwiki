@@ -97,7 +97,7 @@ This guide provides step-by-step instructions for creating the Outcast Antique O
 ### Step 1: Open TileZed
 1. Launch TileZed
 2. Click **File → Open Project**
-3. Navigate to: `C:\Users\ediaz\Zomboid\Workshop\OutcastAdvancedCrafts\Contents\mods\OutcastAdvCrft`
+3. Navigate to: `C:\Users\YourName\Zomboid\Workshop\OutcastAdvancedCrafts\Contents\mods\OutcastAdvCrft`
 4. Select `RaxTiles.tiles`
 
 ### Step 2: Create Unlit Oven Tile (RaxTiles_01_42)
