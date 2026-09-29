@@ -178,7 +178,7 @@ export class SearchService {
   ): Promise<SearchResult[]> {
     const {
       game = 'pz',
-      version = 'build-41',
+      version,
       category,
       difficulty,
       limit = 20,

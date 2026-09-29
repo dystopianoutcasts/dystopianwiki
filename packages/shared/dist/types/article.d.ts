@@ -1,0 +1,58 @@
+/**
+ * Article type matching Supabase database schema
+ */
+export interface Article {
+    id: string;
+    slug: string;
+    title: string;
+    content: string;
+    excerpt: string | null;
+    game: string;
+    version: string;
+    section: string;
+    category: string;
+    subcategory: string | null;
+    difficulty: 'beginner' | 'intermediate' | 'advanced' | null;
+    tags: string[];
+    related_articles: string[];
+    table_of_contents: TOCItem[];
+    next_steps: NextStep[];
+    last_updated: string;
+    created_at: string;
+    etag: string;
+}
+export interface TOCItem {
+    id: string;
+    text: string;
+    level: number;
+}
+export interface NextStep {
+    title: string;
+    url: string;
+    description?: string;
+}
+export interface Category {
+    id: string;
+    game: string;
+    section: string;
+    name: string;
+    description: string | null;
+    icon: string | null;
+    display_order: number;
+    article_count: number;
+    created_at: string;
+}
+export interface SearchResult {
+    id: string;
+    slug: string;
+    title: string;
+    excerpt: string | null;
+    game: string;
+    version: string;
+    section: string;
+    category: string;
+    tags: string[];
+    difficulty: 'beginner' | 'intermediate' | 'advanced' | null;
+    rank: number;
+}
+//# sourceMappingURL=article.d.ts.map

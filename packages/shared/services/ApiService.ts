@@ -45,14 +45,22 @@ export class ApiService {
   // ============================================================================
 
   /**
-   * Get a single article by slug
+   * Get a single article by slug.
+   * When `version` is given the lookup is scoped to that version (required now that
+   * slugs are only unique per (game, version, slug), not globally). Omitting it keeps
+   * the one-argument form working for callers that have not been made version-aware yet.
    */
-  async getArticle(slug: string): Promise<Article | null> {
-    const { data, error } = await this.supabase
+  async getArticle(slug: string, version?: string): Promise<Article | null> {
+    let query = this.supabase
       .from('articles')
       .select('*')
       .eq('slug', slug)
-      .single()
+
+    if (version) {
+      query = query.eq('version', version)
+    }
+
+    const { data, error } = await query.single()
 
     if (error) {
       console.error('Error fetching article:', error)
@@ -68,15 +76,19 @@ export class ApiService {
   async getArticlesByCategory(
     category: string,
     game: string = 'pz',
-    version: string = 'build-41'
+    version?: string
   ): Promise<Article[]> {
-    const { data, error } = await this.supabase
+    let query = this.supabase
       .from('articles')
       .select('*')
       .eq('game', game)
-      .eq('version', version)
       .eq('category', category)
-      .order('title')
+
+    if (version) {
+      query = query.eq('version', version)
+    }
+
+    const { data, error } = await query.order('title')
 
     if (error) {
       console.error('Error fetching articles:', error)
@@ -89,14 +101,17 @@ export class ApiService {
   /**
    * Get all articles for a game/version
    */
-  async getAllArticles(game: string = 'pz', version: string = 'build-41'): Promise<Article[]> {
-    const { data, error } = await this.supabase
+  async getAllArticles(game: string = 'pz', version?: string): Promise<Article[]> {
+    let query = this.supabase
       .from('articles')
       .select('*')
       .eq('game', game)
-      .eq('version', version)
-      .order('category')
-      .order('title')
+
+    if (version) {
+      query = query.eq('version', version)
+    }
+
+    const { data, error } = await query.order('category').order('title')
 
     if (error) {
       console.error('Error fetching articles:', error)

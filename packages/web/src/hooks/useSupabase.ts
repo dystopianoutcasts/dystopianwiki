@@ -5,18 +5,20 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../lib/supabase'
 // @ts-ignore - Types are used in return types
 import type { Article, Category } from '@dystopianwiki/shared'
+import { DEFAULT_VERSION } from '../config/versions.generated'
 
 // ============================================================================
 // ARTICLES
 // ============================================================================
 
 /**
- * Fetch a single article by slug
+ * Fetch a single article by slug, scoped to a version (slugs are only unique
+ * per (game, version, slug)).
  */
-export function useArticle(slug: string) {
+export function useArticle(slug: string, version?: string) {
   return useQuery({
-    queryKey: ['article', slug],
-    queryFn: () => api.getArticle(slug),
+    queryKey: ['article', slug, version],
+    queryFn: () => api.getArticle(slug, version),
     staleTime: 5 * 60 * 1000, // 5 minutes
     enabled: !!slug
   })
@@ -28,7 +30,7 @@ export function useArticle(slug: string) {
 export function useArticlesByCategory(
   category: string,
   game: string = 'pz',
-  version: string = 'build-41'
+  version: string = DEFAULT_VERSION
 ) {
   return useQuery({
     queryKey: ['articles', 'category', game, version, category],
@@ -40,7 +42,7 @@ export function useArticlesByCategory(
 /**
  * Fetch all articles for a game/version
  */
-export function useAllArticles(game: string = 'pz', version: string = 'build-41') {
+export function useAllArticles(game: string = 'pz', version: string = DEFAULT_VERSION) {
   return useQuery({
     queryKey: ['articles', 'all', game, version],
     queryFn: () => api.getAllArticles(game, version),

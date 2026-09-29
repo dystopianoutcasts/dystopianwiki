@@ -1,0 +1,346 @@
+import { createClient } from '@supabase/supabase-js';
+/**
+ * ApiService - Facade pattern for Supabase operations
+ * Provides a simple, consistent interface for all data operations
+ */
+export class ApiService {
+    constructor(supabaseUrl, supabaseKey) {
+        this.supabase = createClient(supabaseUrl, supabaseKey);
+    }
+    /**
+     * Initialize the API service (call once at app startup)
+     */
+    static initialize(supabaseUrl, supabaseKey) {
+        if (!ApiService.instance) {
+            ApiService.instance = new ApiService(supabaseUrl, supabaseKey);
+        }
+        return ApiService.instance;
+    }
+    /**
+     * Get the singleton instance
+     */
+    static getInstance() {
+        if (!ApiService.instance) {
+            throw new Error('ApiService not initialized. Call initialize() first.');
+        }
+        return ApiService.instance;
+    }
+    /**
+     * Get the Supabase client (for advanced use cases)
+     */
+    getClient() {
+        return this.supabase;
+    }
+    // ============================================================================
+    // ARTICLES
+    // ============================================================================
+    /**
+     * Get a single article by slug.
+     * When `version` is given the lookup is scoped to that version (required now that
+     * slugs are only unique per (game, version, slug), not globally). Omitting it keeps
+     * the one-argument form working for callers that have not been made version-aware yet.
+     */
+    async getArticle(slug, version) {
+        let query = this.supabase
+            .from('articles')
+            .select('*')
+            .eq('slug', slug);
+        if (version) {
+            query = query.eq('version', version);
+        }
+        const { data, error } = await query.single();
+        if (error) {
+            console.error('Error fetching article:', error);
+            return null;
+        }
+        return data;
+    }
+    /**
+     * Get articles by category
+     */
+    async getArticlesByCategory(category, game = 'pz', version) {
+        let query = this.supabase
+            .from('articles')
+            .select('*')
+            .eq('game', game)
+            .eq('category', category);
+        if (version) {
+            query = query.eq('version', version);
+        }
+        const { data, error } = await query.order('title');
+        if (error) {
+            console.error('Error fetching articles:', error);
+            return [];
+        }
+        return data;
+    }
+    /**
+     * Get all articles for a game/version
+     */
+    async getAllArticles(game = 'pz', version) {
+        let query = this.supabase
+            .from('articles')
+            .select('*')
+            .eq('game', game);
+        if (version) {
+            query = query.eq('version', version);
+        }
+        const { data, error } = await query.order('category').order('title');
+        if (error) {
+            console.error('Error fetching articles:', error);
+            return [];
+        }
+        return data;
+    }
+    /**
+     * Search articles using full-text search
+     */
+    async searchArticles(query, game, version, limit = 20) {
+        // Use the PostgreSQL function we created
+        const { data, error } = await this.supabase.rpc('search_articles', {
+            p_query: query,
+            p_game: game || null,
+            p_version: version || null,
+            p_limit: limit
+        });
+        if (error) {
+            console.error('Error searching articles:', error);
+            return [];
+        }
+        return data;
+    }
+    /**
+     * Get related articles
+     */
+    async getRelatedArticles(articleId, limit = 5) {
+        const { data, error } = await this.supabase.rpc('get_related_articles', {
+            p_article_id: articleId,
+            p_limit: limit
+        });
+        if (error) {
+            console.error('Error fetching related articles:', error);
+            return [];
+        }
+        return data;
+    }
+    // ============================================================================
+    // CATEGORIES
+    // ============================================================================
+    /**
+     * Get all categories for a game/section
+     */
+    async getCategories(game = 'pz', section = 'modding') {
+        const { data, error } = await this.supabase
+            .from('categories')
+            .select('*')
+            .eq('game', game)
+            .eq('section', section)
+            .order('display_order');
+        if (error) {
+            console.error('Error fetching categories:', error);
+            return [];
+        }
+        return data;
+    }
+    // ============================================================================
+    // AUTHENTICATION
+    // ============================================================================
+    /**
+     * Get current user session
+     */
+    async getSession() {
+        return await this.supabase.auth.getSession();
+    }
+    /**
+     * Subscribe to auth state changes
+     */
+    onAuthStateChange(callback) {
+        return this.supabase.auth.onAuthStateChange(callback);
+    }
+    /**
+     * Sign in with email/password
+     */
+    async signIn(email, password) {
+        return await this.supabase.auth.signInWithPassword({ email, password });
+    }
+    /**
+     * Sign up with email/password
+     */
+    async signUp(email, password, metadata, emailRedirectUrl) {
+        return await this.supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: metadata, // Passed to handle_new_user() trigger
+                emailRedirectTo: emailRedirectUrl
+            }
+        });
+    }
+    /**
+     * Sign out
+     */
+    async signOut() {
+        return await this.supabase.auth.signOut();
+    }
+    /**
+     * Send password reset email
+     */
+    async sendPasswordResetEmail(email, redirectUrl) {
+        return await this.supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: redirectUrl
+        });
+    }
+    /**
+     * Resend verification email
+     */
+    async resendVerificationEmail(email, redirectUrl) {
+        return await this.supabase.auth.resend({
+            type: 'signup',
+            email,
+            options: {
+                emailRedirectTo: redirectUrl
+            }
+        });
+    }
+    /**
+     * Update password (called from reset page with valid token)
+     */
+    async updatePassword(newPassword) {
+        return await this.supabase.auth.updateUser({
+            password: newPassword
+        });
+    }
+    /**
+     * Sign in with OAuth (Discord, Google)
+     */
+    async signInWithOAuth(provider, redirectTo) {
+        return await this.supabase.auth.signInWithOAuth({
+            provider,
+            options: { redirectTo }
+        });
+    }
+    // ============================================================================
+    // USER PROFILE
+    // ============================================================================
+    /**
+     * Get user profile
+     */
+    async getUserProfile(userId) {
+        const { data, error } = await this.supabase
+            .from('user_profiles')
+            .select('*')
+            .eq('id', userId)
+            .single();
+        if (error) {
+            console.error('Error fetching user profile:', error);
+            return null;
+        }
+        return data;
+    }
+    /**
+     * Update user profile
+     */
+    async updateUserProfile(userId, updates) {
+        return await this.supabase
+            .from('user_profiles')
+            .update(updates)
+            .eq('id', userId);
+    }
+    // ============================================================================
+    // BOOKMARKS
+    // ============================================================================
+    /**
+     * Get user's bookmarks with article details
+     */
+    async getBookmarks(userId) {
+        const { data, error } = await this.supabase
+            .from('bookmarks')
+            .select(`
+        *,
+        article:articles(*)
+      `)
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false });
+        if (error) {
+            console.error('Error fetching bookmarks:', error);
+            return [];
+        }
+        return data;
+    }
+    /**
+     * Add bookmark
+     */
+    async addBookmark(articleId) {
+        const { data: { session } } = await this.supabase.auth.getSession();
+        if (!session)
+            throw new Error('Not authenticated');
+        return await this.supabase
+            .from('bookmarks')
+            .insert({ article_id: articleId, user_id: session.user.id });
+    }
+    /**
+     * Remove bookmark
+     */
+    async removeBookmark(articleId) {
+        const { data: { session } } = await this.supabase.auth.getSession();
+        if (!session)
+            throw new Error('Not authenticated');
+        return await this.supabase
+            .from('bookmarks')
+            .delete()
+            .eq('article_id', articleId)
+            .eq('user_id', session.user.id);
+    }
+    /**
+     * Check if article is bookmarked
+     */
+    async isBookmarked(articleId) {
+        const { data: { session } } = await this.supabase.auth.getSession();
+        if (!session)
+            return false;
+        const { data } = await this.supabase
+            .from('bookmarks')
+            .select('id')
+            .eq('article_id', articleId)
+            .eq('user_id', session.user.id)
+            .single();
+        return !!data;
+    }
+    // ============================================================================
+    // READING PROGRESS
+    // ============================================================================
+    /**
+     * Get reading progress for article
+     */
+    async getReadingProgress(articleId) {
+        const { data: { session } } = await this.supabase.auth.getSession();
+        if (!session)
+            return null;
+        const { data, error } = await this.supabase
+            .from('reading_progress')
+            .select('*')
+            .eq('article_id', articleId)
+            .eq('user_id', session.user.id)
+            .single();
+        if (error)
+            return null;
+        return data;
+    }
+    /**
+     * Update reading progress
+     */
+    async updateReadingProgress(articleId, scrollPosition, completed = false) {
+        const { data: { session } } = await this.supabase.auth.getSession();
+        if (!session)
+            throw new Error('Not authenticated');
+        return await this.supabase
+            .from('reading_progress')
+            .upsert({
+            article_id: articleId,
+            user_id: session.user.id,
+            scroll_position: scrollPosition,
+            completed,
+            last_read: new Date().toISOString()
+        });
+    }
+}
