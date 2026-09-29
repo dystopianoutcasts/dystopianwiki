@@ -946,6 +946,183 @@ $$;
 
 RESET ROLE;
 
+-- ============================================================================
+-- 12. ADMIN-ONLY DATA, PUBLIC VEHICLES WITHOUT THE DRIVER (migration 022)
+-- ============================================================================
+--
+-- health_samples, servers and item_catalog move from "public, USING (TRUE)" to
+-- admin-only (VISIBILITY.md, the owner's rule of 2026-09-29). vehicles gains a
+-- public surface (type and position, never the driver) alongside the
+-- untouched admin/safehouse-peer policies and grant on the table itself.
+
+INSERT INTO aurora.health_samples (server_id, t, players, zombies_total)
+VALUES
+  ('test-aurora', NOW() - INTERVAL '2 minutes', 3, 100),
+  ('test-aurora', NOW() - INTERVAL '1 minutes', 3, 105);
+
+INSERT INTO aurora.item_catalog (server_id, full_type, display_name, category)
+VALUES ('test-aurora', 'Base.Axe', 'Axe', 'Weapon');
+
+INSERT INTO aurora.vehicles (server_id, vehicle_id, script_name, x, y, z, t, driver_username)
+VALUES
+  ('test-aurora', 1, 'Base.PickUpTruck', 100.0, 100.0, 0, NOW(), 'alice'),
+  ('test-aurora', 2, 'Base.Van',         300.0, 300.0, 0, NOW(), NULL);
+
+SET LOCAL ROLE anon;
+SELECT set_config('request.jwt.claims', '', TRUE);
+
+DO $$
+DECLARE
+  v_count BIGINT;
+  v_cols  BIGINT;
+BEGIN
+  SELECT count(*) INTO v_count FROM aurora.health_samples WHERE server_id = 'test-aurora';
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL: anon read % rows from aurora.health_samples, expected 0', v_count;
+  END IF;
+  RAISE NOTICE 'PASS anon reads zero rows from aurora.health_samples';
+
+  SELECT count(*) INTO v_count FROM aurora.servers;
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL: anon read % rows from aurora.servers, expected 0', v_count;
+  END IF;
+  RAISE NOTICE 'PASS anon reads zero rows from aurora.servers';
+
+  SELECT count(*) INTO v_count FROM aurora.item_catalog;
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL: anon read % rows from aurora.item_catalog, expected 0', v_count;
+  END IF;
+  RAISE NOTICE 'PASS anon reads zero rows from aurora.item_catalog';
+
+  SELECT count(*) INTO v_count FROM aurora.vehicles_visible WHERE server_id = 'test-aurora';
+  IF v_count <> 2 THEN
+    RAISE EXCEPTION 'FAIL: anon read % rows from aurora.vehicles_visible, expected 2', v_count;
+  END IF;
+  RAISE NOTICE 'PASS anon reads exactly 2 rows from aurora.vehicles_visible';
+
+  SELECT count(*) INTO v_cols
+    FROM information_schema.columns
+   WHERE table_schema = 'aurora' AND table_name = 'vehicles_visible'
+     AND column_name = 'driver_username';
+  IF v_cols <> 0 THEN
+    RAISE EXCEPTION 'FAIL: aurora.vehicles_visible has a driver_username column';
+  END IF;
+  RAISE NOTICE 'PASS aurora.vehicles_visible has no driver_username column';
+
+  -- anon still has no grant on aurora.vehicles itself (009): direct access is
+  -- refused outright, exactly as before 022.
+  BEGIN
+    PERFORM count(*) FROM aurora.vehicles;
+    RAISE EXCEPTION 'FAIL: anon was able to select from aurora.vehicles directly';
+  EXCEPTION WHEN insufficient_privilege THEN
+    RAISE NOTICE 'PASS anon is denied aurora.vehicles directly, same as before 022';
+  END;
+END;
+$$;
+
+RESET ROLE;
+
+SET LOCAL ROLE authenticated;
+SELECT set_config(
+  'request.jwt.claims',
+  '{"sub":"aaaaaaaa-0000-4000-8000-000000000001","role":"authenticated"}',
+  TRUE
+);
+
+DO $$
+DECLARE
+  v_count BIGINT;
+BEGIN
+  SELECT count(*) INTO v_count FROM aurora.health_samples WHERE server_id = 'test-aurora';
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL: non-admin read % rows from aurora.health_samples, expected 0', v_count;
+  END IF;
+  RAISE NOTICE 'PASS non-admin reads zero rows from aurora.health_samples';
+
+  SELECT count(*) INTO v_count FROM aurora.servers;
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL: non-admin read % rows from aurora.servers, expected 0', v_count;
+  END IF;
+  RAISE NOTICE 'PASS non-admin reads zero rows from aurora.servers';
+
+  SELECT count(*) INTO v_count FROM aurora.item_catalog;
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL: non-admin read % rows from aurora.item_catalog, expected 0', v_count;
+  END IF;
+  RAISE NOTICE 'PASS non-admin reads zero rows from aurora.item_catalog';
+
+  SELECT count(*) INTO v_count FROM aurora.vehicles_visible WHERE server_id = 'test-aurora';
+  IF v_count <> 2 THEN
+    RAISE EXCEPTION 'FAIL: non-admin read % rows from aurora.vehicles_visible, expected 2', v_count;
+  END IF;
+  RAISE NOTICE 'PASS non-admin reads exactly 2 rows from aurora.vehicles_visible';
+END;
+$$;
+
+RESET ROLE;
+
+SET LOCAL ROLE authenticated;
+SELECT set_config(
+  'request.jwt.claims',
+  '{"sub":"bbbbbbbb-0000-4000-8000-000000000002","role":"authenticated"}',
+  TRUE
+);
+
+DO $$
+DECLARE
+  v_count  BIGINT;
+  v_driver TEXT;
+BEGIN
+  SELECT count(*) INTO v_count FROM aurora.health_samples WHERE server_id = 'test-aurora';
+  IF v_count <> 2 THEN
+    RAISE EXCEPTION 'FAIL: admin read % rows from aurora.health_samples, expected 2', v_count;
+  END IF;
+  RAISE NOTICE 'PASS admin reads the seeded aurora.health_samples rows';
+
+  SELECT count(*) INTO v_count FROM aurora.servers;
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'FAIL: admin read % rows from aurora.servers, expected 1', v_count;
+  END IF;
+  RAISE NOTICE 'PASS admin reads the seeded aurora.servers row';
+
+  SELECT count(*) INTO v_count FROM aurora.item_catalog;
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'FAIL: admin read % rows from aurora.item_catalog, expected 1', v_count;
+  END IF;
+  RAISE NOTICE 'PASS admin reads the seeded aurora.item_catalog row';
+
+  SELECT count(*) INTO v_count FROM aurora.vehicles WHERE server_id = 'test-aurora';
+  IF v_count <> 2 THEN
+    RAISE EXCEPTION 'FAIL: admin read % rows from aurora.vehicles, expected 2', v_count;
+  END IF;
+
+  SELECT driver_username INTO v_driver
+    FROM aurora.vehicles WHERE server_id = 'test-aurora' AND vehicle_id = 1;
+  IF v_driver IS DISTINCT FROM 'alice' THEN
+    RAISE EXCEPTION 'FAIL: admin should read driver_username alice on vehicle 1, got %', v_driver;
+  END IF;
+  RAISE NOTICE 'PASS admin reads aurora.vehicles directly, driver_username included';
+END;
+$$;
+
+RESET ROLE;
+
+SET LOCAL ROLE service_role;
+
+DO $$
+DECLARE
+  v_count BIGINT;
+BEGIN
+  SELECT count(*) INTO v_count FROM aurora.health_samples WHERE server_id = 'test-aurora';
+  IF v_count <> 2 THEN
+    RAISE EXCEPTION 'FAIL: service_role read % rows from aurora.health_samples, expected 2', v_count;
+  END IF;
+  RAISE NOTICE 'PASS service_role reads the seeded aurora.health_samples rows (bypasses RLS)';
+END;
+$$;
+
+RESET ROLE;
+
 DO $$ BEGIN RAISE NOTICE 'ALL AURORA POLICY TESTS PASSED'; END; $$;
 
 ROLLBACK;
