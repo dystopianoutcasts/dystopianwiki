@@ -23,8 +23,11 @@ export function memoryPercent(s: HealthSample): number | null {
   return Math.round((s.memory_used / s.memory_max) * 100)
 }
 
-/** A server that has not posted a sample for this long is treated as offline in the panel. */
-export const STALE_AFTER_MS = 5 * 60_000
+/**
+ * A server that has not posted a sample for this long is treated as idle/offline in the
+ * panel (T22 Part D item 3: "when the last report is older than 3 minutes").
+ */
+export const STALE_AFTER_MS = 3 * 60_000
 
 export function isStale(s: HealthSample, now: number = Date.now()): boolean {
   return now - Date.parse(s.t) > STALE_AFTER_MS

@@ -40,9 +40,9 @@ describe('memoryPercent and staleness', () => {
     expect(memoryPercent(sample('2026-09-28T11:00:00Z'))).toBeNull()
   })
 
-  it('a sample older than five minutes is stale', () => {
-    expect(isStale(sample('2026-09-28T11:56:00Z'), now)).toBe(false)
-    expect(isStale(sample('2026-09-28T11:54:00Z'), now)).toBe(true)
+  it('a sample older than three minutes is stale (T22 Part D item 3)', () => {
+    expect(isStale(sample('2026-09-28T11:58:00Z'), now)).toBe(false)
+    expect(isStale(sample('2026-09-28T11:56:00Z'), now)).toBe(true)
   })
 })
 

@@ -3,7 +3,8 @@
 import L from 'leaflet'
 import 'leaflet.markercluster'
 import 'leaflet.heat'
-import type { ObjectFeature, PlayerFeature, RectFeature, StreetFeature, VehicleFeature, WorldMapFeatures, ZoneFeature } from './transform'
+import type { AreaFeature, ObjectFeature, PlayerFeature, RectFeature, StreetFeature, VehicleFeature, WorldMapFeatures, ZoneFeature } from './transform'
+import { streetWeight } from './transform'
 import type { TilesConfig } from '../map/tiles'
 import { zombieTileUrl } from '../map/tiles'
 import { worldBounds } from '../map/coords'
@@ -98,21 +99,36 @@ export function buildZombieDensityLayer(cfg: TilesConfig, tilesBase?: string): L
   })
 }
 
-const STREET_STYLE = { color: '#9aa0a8', weight: 1, opacity: 0.55 }
-const STREET_HOVER_STYLE = { color: '#ffffff', weight: 3, opacity: 1 }
+const STREET_COLOR = '#9aa0a8'
+const STREET_OPACITY = 0.55
+const STREET_HOVER_COLOR = '#ffffff'
+const STREET_HOVER_BOOST = 3
+/** The invisible line's own weight: how wide a pointer target every street gets, whatever
+ * its visible line looks like at the current zoom (T22 Part D item 6, owner request: the
+ * visible line alone was too thin to hover reliably). */
+const STREET_HIT_WEIGHT = 16
 
-/** Thin, low-contrast lines that brighten and go to front on hover; the tooltip carries the name. */
-export function buildStreets(features: StreetFeature[]): L.Layer {
+/**
+ * Two lines per street (T22 Part D item 6): a visible one whose weight follows the zoom
+ * (streetWeight above) and, drawn above it, an invisible one at a constant, generous
+ * weight that owns hover, the tooltip and click - so the pointer target is always 16 px
+ * wide, whatever the visible line looks like at the current zoom. Rebuilt on every zoom
+ * change (MapView's own effect dependency), so the visible weight is never stale.
+ */
+export function buildStreets(features: StreetFeature[], zoom: number, minZoom: number, maxZoom: number): L.Layer {
   const group = L.layerGroup()
   for (const f of features) {
-    const line = L.polyline(f.latlngs, STREET_STYLE)
-    line.bindTooltip(escapeHtml(f.name), { sticky: true })
-    line.on('mouseover', () => {
-      line.setStyle(STREET_HOVER_STYLE)
-      line.bringToFront()
+    const weight = streetWeight(zoom, minZoom, maxZoom, f.width)
+    const visible = L.polyline(f.latlngs, { color: STREET_COLOR, weight, opacity: STREET_OPACITY, interactive: false })
+    const hit = L.polyline(f.latlngs, { color: '#000000', weight: STREET_HIT_WEIGHT, opacity: 0 })
+    hit.bindTooltip(escapeHtml(f.name), { sticky: true })
+    hit.on('mouseover', () => {
+      visible.setStyle({ color: STREET_HOVER_COLOR, weight: weight + STREET_HOVER_BOOST, opacity: 1 })
+      visible.bringToFront()
     })
-    line.on('mouseout', () => line.setStyle(STREET_STYLE))
-    group.addLayer(line)
+    hit.on('mouseout', () => visible.setStyle({ color: STREET_COLOR, weight, opacity: STREET_OPACITY }))
+    group.addLayer(visible)
+    group.addLayer(hit)
   }
   return group
 }
@@ -159,6 +175,32 @@ export function buildObjects(features: ObjectFeature[]): L.Layer {
     L.circleMarker(f.latlng, { radius: 4, color: '#b070e0', weight: 2, fillOpacity: 0.6 })
       .bindTooltip(escapeHtml(`${f.label} (${f.kind})`), { sticky: true })
       .addTo(group)
+  }
+  return group
+}
+
+/**
+ * Named areas (T22 Part D item 2): a permanent text label at each area's centroid, no
+ * icon, no hover needed - "labelled" means the name is just sitting on the map. Towns
+ * are always shown (readable even zoomed out, styled bigger and bolder); landmarks are
+ * held back below `landmarkMinZoom` so 17 small labels clustered around Muldraugh don't
+ * crowd a low zoom the way the town names are meant to own.
+ */
+export function buildAreas(features: AreaFeature[], zoom: number, landmarkMinZoom: number): L.Layer {
+  const group = L.layerGroup()
+  for (const f of features) {
+    if (f.kind === 'landmark' && zoom < landmarkMinZoom) continue
+    const marker = L.marker(f.latlng, {
+      icon: L.divIcon({
+        className: f.kind === 'town' ? 'aurora-area-label is-town' : 'aurora-area-label is-landmark',
+        html: escapeHtml(f.name),
+        iconSize: [0, 0],
+        iconAnchor: [0, 0],
+      }),
+      interactive: false,
+      keyboard: false,
+    })
+    group.addLayer(marker)
   }
   return group
 }

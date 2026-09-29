@@ -123,6 +123,27 @@ export interface StreetFeature {
   latlngs: [number, number][]
 }
 
+/**
+ * The visible street line's weight at a given zoom (T22 Part D item 6, owner request:
+ * the single thin line was too hard to hover): 2 px at `minZoom` ramping up to 5 px by
+ * `maxZoom - 1`, then flat through `maxZoom` - the "deepest two levels" both read the
+ * max weight - scaled a little by the street's own width from streets.json where one is
+ * present (a highway reads a bit heavier than an alley at the same zoom; 6 squares is
+ * the real file's median width, and the scale is bounded so a very wide or narrow
+ * street never swings outside a legible range). Pure so it can be tested directly;
+ * build.ts draws a second, invisible, constant-weight line on top of it for hovering
+ * and never varies that one by zoom - only what the visitor SEES should change.
+ */
+export function streetWeight(zoom: number, minZoom: number, maxZoom: number, width?: number): number {
+  const plateauZoom = Math.max(minZoom, maxZoom - 1)
+  const span = Math.max(1, plateauZoom - minZoom)
+  const t = Math.max(0, Math.min(1, (zoom - minZoom) / span))
+  const base = 2 + t * 3
+  if (!width || width <= 0) return base
+  const scale = Math.max(0.85, Math.min(1.3, width / 6))
+  return Math.max(1.5, base * scale)
+}
+
 /** Index into the array: streets.xml has many duplicate names (a highway in several segments). */
 export function streetFeatures(streets: StreetRaw[]): StreetFeature[] {
   return streets.map((s, i) => ({
@@ -173,6 +194,32 @@ export function objectFeatures(list: MapObject[]): ObjectFeature[] {
     label: o.label || o.kind || 'Map object',
     kind: o.kind ?? 'object',
     latlng: [o.y, o.x],
+  }))
+}
+
+/** Shape of one entry in map/data/areas.json (scripts/tiles/extract-objects.ts). */
+export interface AreaRaw {
+  name: string
+  kind: 'town' | 'landmark'
+  x: number
+  y: number
+  areaSquares: number
+  count: number
+}
+
+export interface AreaFeature {
+  key: string
+  name: string
+  kind: 'town' | 'landmark'
+  latlng: [number, number]
+}
+
+export function areaFeatures(list: AreaRaw[]): AreaFeature[] {
+  return list.map((a) => ({
+    key: `${a.kind}/${a.name}`,
+    name: a.name,
+    kind: a.kind,
+    latlng: [a.y, a.x],
   }))
 }
 
@@ -229,4 +276,18 @@ export function describeAge(iso: string, now: number = Date.now()): string {
   const h = Math.floor(min / 60)
   if (h < 48) return `${h} h ago`
   return `${Math.floor(h / 24)} d ago`
+}
+
+/**
+ * A bare duration with no "ago" suffix, for sentences that already say what it is a
+ * duration of ("No report for 5 min."): "under a minute", "5 min", "3 h", "2 d".
+ */
+export function describeDuration(iso: string, now: number = Date.now()): string {
+  const diff = Math.max(0, now - Date.parse(iso))
+  const min = Math.floor(diff / 60_000)
+  if (min < 1) return 'under a minute'
+  if (min < 60) return `${min} min`
+  const h = Math.floor(min / 60)
+  if (h < 48) return `${h} h`
+  return `${Math.floor(h / 24)} d`
 }

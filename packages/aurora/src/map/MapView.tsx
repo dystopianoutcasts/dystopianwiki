@@ -10,6 +10,7 @@ import { makeCrs } from './crs'
 import type { MapView as View } from '../state/url'
 import type { LayerPrefs } from '../state/layerPrefs'
 import {
+  buildAreas,
   buildHeat,
   buildObjects,
   buildPlayers,
@@ -21,6 +22,7 @@ import {
   buildZones,
 } from '../layers/build'
 import type {
+  AreaFeature,
   ObjectFeature,
   PlayerFeature,
   RectFeature,
@@ -48,6 +50,7 @@ interface Props {
   ownUsernames: ReadonlySet<string>
   streets: StreetFeature[]
   worldMap: WorldMapFeatures
+  areas: AreaFeature[]
   players: PlayerFeature[]
   vehicles: VehicleFeature[]
   safehouses: RectFeature[]
@@ -76,6 +79,7 @@ export function MapView(props: Props) {
 
   const streetsLayer = useRef<L.Layer | null>(null)
   const worldMapLayer = useRef<L.Layer | null>(null)
+  const areasLayer = useRef<L.Layer | null>(null)
   const playersLayer = useRef<L.Layer | null>(null)
   const vehiclesLayer = useRef<L.Layer | null>(null)
   const safehousesLayer = useRef<L.Layer | null>(null)
@@ -134,8 +138,15 @@ export function MapView(props: Props) {
 
   useEffect(() => {
     const show = prefs.streets && zoom >= STREETS_MIN_ZOOM
-    swap(mapRef.current, streetsLayer, show ? buildStreets(props.streets) : null)
-  }, [prefs.streets, props.streets, zoom])
+    swap(mapRef.current, streetsLayer, show ? buildStreets(props.streets, zoom, STREETS_MIN_ZOOM, cfg.maxLevel + 2) : null)
+  }, [prefs.streets, props.streets, zoom, cfg.maxLevel])
+
+  // Town labels are always shown while the layer is on (readable even zoomed out, per
+  // the task); landmark labels are held back below STREETS_MIN_ZOOM the same way
+  // streets themselves are, so a low zoom isn't crowded by 17 small POI names.
+  useEffect(() => {
+    swap(mapRef.current, areasLayer, prefs.areas ? buildAreas(props.areas, zoom, STREETS_MIN_ZOOM) : null)
+  }, [prefs.areas, props.areas, zoom])
 
   useEffect(() => {
     swap(mapRef.current, playersLayer, prefs.players ? buildPlayers(props.players, ownUsernames) : null)

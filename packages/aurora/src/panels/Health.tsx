@@ -1,22 +1,33 @@
-import { buildSparkline, describeAge, toSparkPoints } from '../layers/transform'
+import { useState } from 'react'
+import { buildSparkline, describeAge, describeDuration, toSparkPoints } from '../layers/transform'
 import { describeTick, isStale, memoryPercent } from '../data/health'
 import type { HealthSample } from '../data/types'
+import { HEALTH_WINDOW_OPTIONS, loadHealthWindow, saveHealthWindow } from '../state/healthWindow'
+import type { HealthWindowMinutes } from '../state/healthWindow'
 
-const WINDOW_MINUTES = 60
 const W = 220
 const H = 36
 
-function Spark({ label, unit, samples, pick, now }: {
+/** "10 min", "1 h", "6 h" - short enough for a toggle button. */
+function windowLabel(minutes: number): string {
+  if (minutes < 60) return `${minutes} min`
+  const h = minutes / 60
+  return h === 1 ? '1 h' : `${h} h`
+}
+
+function Spark({ label, unit, samples, pick, now, windowMinutes }: {
   label: string
   unit: string
   samples: HealthSample[]
   pick: (s: HealthSample) => number | null
   now: number
+  windowMinutes: number
 }) {
-  const s = buildSparkline(toSparkPoints(samples, pick), W, H, now - WINDOW_MINUTES * 60_000, now)
+  const s = buildSparkline(toSparkPoints(samples, pick), W, H, now - windowMinutes * 60_000, now)
+  const windowText = windowLabel(windowMinutes)
   const summary = s.count === 0
-    ? `${label}: no data in the last hour`
-    : `${label} over the last hour: low ${round(s.min)}${unit}, high ${round(s.max)}${unit}, ${s.count} samples`
+    ? `${label}: no data in the last ${windowText}`
+    : `${label} over the last ${windowText}: low ${round(s.min)}${unit}, high ${round(s.max)}${unit}, ${s.count} samples`
   return (
     <figure className="spark">
       <figcaption>{label}</figcaption>
@@ -32,12 +43,42 @@ function round(n: number): string {
   return Number.isInteger(n) ? String(n) : n.toFixed(1)
 }
 
+/**
+ * The window selector (T22 Part D item 5): a fixed 60-minute sparkline made a fresh
+ * server look frozen (barely any data drawn in most of the chart). The choice is
+ * remembered per viewer in localStorage (state/healthWindow.ts, guarded the same way
+ * layerPrefs.ts is - storage can be blocked or full and the page must still work).
+ */
+function WindowPicker({ value, onChange }: { value: HealthWindowMinutes; onChange: (m: HealthWindowMinutes) => void }) {
+  return (
+    <div className="health-window" role="group" aria-label="Sparkline time window">
+      {HEALTH_WINDOW_OPTIONS.map((m) => (
+        <button
+          key={m}
+          type="button"
+          aria-pressed={value === m}
+          className={value === m ? 'window-btn is-active' : 'window-btn'}
+          onClick={() => onChange(m)}
+        >
+          {windowLabel(m)}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export function HealthPanel({ latest, samples, error, now }: {
   latest: HealthSample | null
   samples: HealthSample[]
   error: string | null
   now: number
 }) {
+  const [windowMinutes, setWindowMinutes] = useState<HealthWindowMinutes>(() => loadHealthWindow())
+  const chooseWindow = (m: HealthWindowMinutes) => {
+    setWindowMinutes(m)
+    saveHealthWindow(m)
+  }
+
   if (error) return <section className="panel" aria-labelledby="health-h"><h2 id="health-h">Server health</h2><p className="note error">{error}</p></section>
   if (!latest) {
     return (
@@ -53,7 +94,9 @@ export function HealthPanel({ latest, samples, error, now }: {
     <section className="panel" aria-labelledby="health-h">
       <h2 id="health-h">Server health</h2>
       <p className={stale ? 'note warn' : 'note'} role="status">
-        {stale ? `Server may be offline. Last report ${describeAge(latest.t, now)}.` : `Reported ${describeAge(latest.t, now)}.`}
+        {stale
+          ? `No report for ${describeDuration(latest.t, now)}. The server is idle (nobody online) or offline.`
+          : `Reported ${describeAge(latest.t, now)}.`}
       </p>
       <dl className="stats">
         <div><dt>Players</dt><dd>{latest.players ?? '-'}</dd></div>
@@ -62,9 +105,10 @@ export function HealthPanel({ latest, samples, error, now }: {
         <div><dt>Loaded</dt><dd>{latest.zombies_loaded ?? '-'}</dd></div>
         <div><dt>Memory</dt><dd>{mem != null ? `${mem}%` : '-'}</dd></div>
       </dl>
-      <Spark label="Tick time (ms)" unit=" ms" samples={samples} pick={(s) => s.tick_ms} now={now} />
-      <Spark label="Longest tick in window (ms)" unit=" ms" samples={samples} pick={(s) => s.tick_max_ms} now={now} />
-      <Spark label="Players" unit="" samples={samples} pick={(s) => s.players} now={now} />
+      <WindowPicker value={windowMinutes} onChange={chooseWindow} />
+      <Spark label="Tick time (ms)" unit=" ms" samples={samples} pick={(s) => s.tick_ms} now={now} windowMinutes={windowMinutes} />
+      <Spark label="Longest tick in window (ms)" unit=" ms" samples={samples} pick={(s) => s.tick_max_ms} now={now} windowMinutes={windowMinutes} />
+      <Spark label="Players" unit="" samples={samples} pick={(s) => s.players} now={now} windowMinutes={windowMinutes} />
     </section>
   )
 }

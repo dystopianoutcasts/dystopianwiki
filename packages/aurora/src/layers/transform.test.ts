@@ -3,11 +3,14 @@ import tilesJson from '../../public/tiles.json'
 import type { TilesConfig } from '../map/tiles'
 import type { PlayerPublic, VisiblePosition } from '../data/types'
 import {
+  areaFeatures,
   buildSparkline,
   describeAge,
+  describeDuration,
   heatPoints,
   playerFeatures,
   safehouseFeatures,
+  streetWeight,
   toSparkPoints,
   vehicleFeatures,
   zoneFeatures,
@@ -174,5 +177,78 @@ describe('describeAge', () => {
     expect(describeAge('2026-09-28T09:00:00Z', now)).toBe('3 h ago')
     expect(describeAge('2026-09-25T12:00:00Z', now)).toBe('3 d ago')
     expect(describeAge('2026-09-28T12:05:00Z', now)).toBe('just now')
+  })
+})
+
+describe('describeDuration (T22 Part D item 3: "No report for N.")', () => {
+  const now = Date.parse('2026-09-28T12:00:00Z')
+  it('reads as a bare duration, no "ago"', () => {
+    expect(describeDuration('2026-09-28T11:59:40Z', now)).toBe('under a minute')
+    expect(describeDuration('2026-09-28T11:55:00Z', now)).toBe('5 min')
+    expect(describeDuration('2026-09-28T09:00:00Z', now)).toBe('3 h')
+    expect(describeDuration('2026-09-25T12:00:00Z', now)).toBe('3 d')
+  })
+
+  it('stays in hours up to 47 h, not switching to days until 48 h', () => {
+    expect(describeDuration('2026-09-27T06:00:00Z', now)).toBe('30 h')
+  })
+
+  it('a future timestamp reads as under a minute, never negative', () => {
+    expect(describeDuration('2026-09-28T12:05:00Z', now)).toBe('under a minute')
+  })
+})
+
+describe('areaFeatures (T22 Part D item 2)', () => {
+  it('puts y first in latlng, same as every other feature', () => {
+    const [f] = areaFeatures([{ name: 'Muldraugh', kind: 'town', x: 10500, y: 10250, areaSquares: 21_000_000, count: 31 }])
+    expect(f.latlng).toEqual([10250, 10500])
+    expect(f.name).toBe('Muldraugh')
+    expect(f.kind).toBe('town')
+  })
+
+  it('keys towns and landmarks separately so a same-named pair never collides', () => {
+    const list = areaFeatures([
+      { name: 'X', kind: 'town', x: 0, y: 0, areaSquares: 1, count: 1 },
+      { name: 'X', kind: 'landmark', x: 0, y: 0, areaSquares: 1, count: 1 },
+    ])
+    expect(new Set(list.map((f) => f.key)).size).toBe(2)
+  })
+})
+
+describe('streetWeight (T22 Part D item 6: weight follows zoom)', () => {
+  it('is 2 px at the minimum zoom and 5 px at the deepest level', () => {
+    expect(streetWeight(5, 5, 15, undefined)).toBe(2)
+    expect(streetWeight(15, 5, 15, undefined)).toBe(5)
+  })
+
+  it('the deepest two levels both plateau at 5 px', () => {
+    expect(streetWeight(14, 5, 15, undefined)).toBe(5)
+  })
+
+  it('ramps linearly between the min and the plateau', () => {
+    // minZoom 5, plateau at maxZoom-1=14: span 9, so zoom 9.5 is halfway -> base 3.5
+    expect(streetWeight(9.5, 5, 15, undefined)).toBeCloseTo(3.5, 5)
+  })
+
+  it('clamps outside the zoom range rather than going negative or past the plateau', () => {
+    expect(streetWeight(0, 5, 15, undefined)).toBe(2)
+    expect(streetWeight(30, 5, 15, undefined)).toBe(5)
+  })
+
+  it('scales up for a wider street at the same zoom', () => {
+    const narrow = streetWeight(10, 5, 15, 3)
+    const median = streetWeight(10, 5, 15, 6)
+    const wide = streetWeight(10, 5, 15, 17)
+    expect(wide).toBeGreaterThan(median)
+    expect(median).toBeGreaterThan(narrow)
+  })
+
+  it('treats a missing or zero width the same as no width at all', () => {
+    const base = streetWeight(10, 5, 15, undefined)
+    expect(streetWeight(10, 5, 15, 0)).toBe(base)
+  })
+
+  it('never drops below 1.5 px even for a very narrow street at the lowest zoom', () => {
+    expect(streetWeight(5, 5, 15, 1)).toBeGreaterThanOrEqual(1.5)
   })
 })

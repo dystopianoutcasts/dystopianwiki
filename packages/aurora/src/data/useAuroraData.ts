@@ -27,7 +27,13 @@ import {
 import { appendSample } from './health'
 import type { LayerPrefs } from '../state/layerPrefs'
 
-const HEALTH_WINDOW_MINUTES = 60
+// T22 Part D item 5: the panel now lets the visitor pick a 10 min / 1 h / 6 h display
+// window (Health.tsx), so the data actually held has to cover the widest of the three -
+// the full fetch pulls 6 h and appendSample's own trim uses the same figure; picking a
+// narrower window is then just Health.tsx plotting a subset of what is already held,
+// with no extra fetch. HealthWindowMinutes is a subset of numbers a plain `number`
+// widens to fine here - the constant only ever needs to be the single largest option.
+const HEALTH_WINDOW_MINUTES = 360
 
 function formatClock(ms: number): string {
   return new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })

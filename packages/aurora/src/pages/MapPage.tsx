@@ -9,6 +9,7 @@ import { loadLayerPrefs, saveLayerPrefs } from '../state/layerPrefs'
 import type { LayerKey } from '../state/layerPrefs'
 import { useAuroraData } from '../data/useAuroraData'
 import {
+  areaFeatures,
   heatPoints,
   objectFeatures,
   playerFeatures,
@@ -18,7 +19,7 @@ import {
   worldMapFeatures,
   zoneFeatures,
 } from '../layers/transform'
-import type { StreetRaw, WorldMapRaw } from '../layers/transform'
+import type { AreaRaw, StreetRaw, WorldMapRaw } from '../layers/transform'
 import { HealthPanel } from '../panels/Health'
 import { RosterPanel } from '../panels/Roster'
 import { LayerToggles } from '../panels/LayerToggles'
@@ -46,6 +47,27 @@ function useStreets(): { streets: StreetRaw[]; error: string | null } {
     }
   }, [])
   return { streets, error }
+}
+
+/** Small and always useful (2.3 KB, 26 rows), so it is fetched unconditionally on load -
+ * the same choice as streets.json, not the lazy-on-toggle one worldmap.json needs at 3.7 MB. */
+function useAreas(): { areas: AreaRaw[]; error: string | null } {
+  const [areas, setAreas] = useState<AreaRaw[]>([])
+  const [error, setError] = useState<string | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    fetch(`${import.meta.env.BASE_URL}data/areas.json`)
+      .then((r) => {
+        if (!r.ok) throw new Error(`areas.json: HTTP ${r.status}`)
+        return r.json() as Promise<AreaRaw[]>
+      })
+      .then((j) => !cancelled && setAreas(j))
+      .catch((e: unknown) => !cancelled && setError(e instanceof Error ? e.message : String(e)))
+    return () => {
+      cancelled = true
+    }
+  }, [])
+  return { areas, error }
 }
 
 const EMPTY_WORLD_MAP: WorldMapRaw = { roads: [], buildings: [], water: [], forest: [] }
@@ -103,6 +125,7 @@ export function MapPage() {
   const { user } = useAuth()
   const { cfg, error: cfgError } = useTilesConfig()
   const { streets: rawStreets, error: streetsError } = useStreets()
+  const { areas: rawAreas, error: areasError } = useAreas()
 
   const [prefs, setPrefs] = useState(() => loadLayerPrefs())
   const { worldMap: rawWorldMap, error: worldMapError } = useWorldMap(prefs.worldMap)
@@ -128,6 +151,7 @@ export function MapPage() {
 
   const streets = useMemo(() => streetFeatures(rawStreets), [rawStreets])
   const worldMap = useMemo(() => worldMapFeatures(rawWorldMap), [rawWorldMap])
+  const areas = useMemo(() => areaFeatures(rawAreas), [rawAreas])
   const players = useMemo(() => playerFeatures(positions.data, profiles.data), [positions.data, profiles.data])
   const vehicleList = useMemo(() => vehicleFeatures(vehicles.data), [vehicles.data])
   const safehouseList = useMemo(() => safehouseFeatures(safehouses.data), [safehouses.data])
@@ -171,6 +195,7 @@ export function MapPage() {
   const notes: Partial<Record<LayerKey, string>> = {
     streets: streetsError ?? undefined,
     worldMap: worldMapError ?? undefined,
+    areas: areasError ?? (areas.length === 0 ? 'No named areas loaded.' : undefined),
     players: playersNote({ signedIn: !!user, positionCount: positions.data.length, vis, linkEnabled: LINK_FEATURE_ENABLED }),
     vehicles: !user ? 'Sign in to see vehicles.' : vehicles.error ? vehicles.error : vehicles.data.length === 0 ? 'None visible to you right now.' : undefined,
     safehouses: safehouses.error ?? undefined,
@@ -193,6 +218,7 @@ export function MapPage() {
         ownUsernames={own}
         streets={streets}
         worldMap={worldMap}
+        areas={areas}
         players={players}
         vehicles={vehicleList}
         safehouses={safehouseList}

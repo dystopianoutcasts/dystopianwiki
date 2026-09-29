@@ -4,6 +4,7 @@ import type { LayerKey, LayerPrefs } from '../state/layerPrefs'
 const LABELS: Record<LayerKey, string> = {
   streets: 'Streets',
   worldMap: 'World map',
+  areas: 'Areas',
   players: 'Players',
   vehicles: 'Vehicles',
   safehouses: 'Safehouses',
