@@ -49,6 +49,8 @@ docs/dev-prompts/
 docs/archive/
 docs/HANDOFF.md
 _archive-v1/
+# Content drafts stay local until edited and moved into content/articles.
+content/drafts/
 
 # Supabase CLI link state (contains project connection details)
 supabase/.temp/
