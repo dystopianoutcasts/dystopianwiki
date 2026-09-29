@@ -29,7 +29,11 @@
  *
  * Usage:
  *   npx tsx scripts/build-nav.ts        # write files only, no network
- *   npx tsx scripts/build-nav.ts --db   # also upsert public.categories
+ *   npx tsx scripts/build-nav.ts --db   # also upsert public.categories, then delete
+ *                                       # rows for the generated versions that the
+ *                                       # output no longer has (each one printed)
+ *   npx tsx scripts/build-nav.ts --db --prune-dry-run
+ *                                       # upsert, but only print the rows it would delete
  *
  * Run from the repository root.
  */
@@ -107,6 +111,7 @@ const DATA_DIR = path.join(ROOT, 'packages', 'web', 'public', 'data')
 const GENERATED_TS = path.join(ROOT, 'packages', 'web', 'src', 'config', 'versions.generated.ts')
 
 const WITH_DB = process.argv.includes('--db')
+const PRUNE_DRY_RUN = process.argv.includes('--prune-dry-run')
 
 // Same exclusions as scripts/sync-articles.ts, so counts match what gets synced.
 const IGNORED_MD = new Set(['README.md', 'index.md'])
@@ -533,6 +538,50 @@ async function upsertCategories(config: VersionsConfig, versions: VersionInfo[])
     fail(`--db: categories upsert failed: ${error.message} (has migration 017 been applied?)`)
   }
   console.log(`[OK] --db: upserted ${rows.length} categories`)
+
+  await pruneCategories(supabase, config, versions)
+}
+
+/**
+ * Deletes public.categories rows for the (game, version) pairs this run generated
+ * whose (section, id) is not in the output: phantom rows such as build-41
+ * "Game Systems" with 0 articles. Rows for versions not in versions.config.json
+ * are never read or touched. Every deleted row is printed; with --prune-dry-run
+ * the rows are printed and nothing is deleted.
+ */
+async function pruneCategories(
+  supabase: import('@supabase/supabase-js').SupabaseClient,
+  config: VersionsConfig,
+  versions: VersionInfo[],
+): Promise<void> {
+  const verb = PRUNE_DRY_RUN ? 'would delete' : 'deleted'
+  let total = 0
+  for (const v of versions) {
+    const keep = new Set(v.sections.flatMap(s => s.categories.map(c => `${s.id}/${c.id}`)))
+    const { data, error } = await supabase
+      .from('categories')
+      .select('id, section, name')
+      .eq('game', config.game)
+      .eq('version', v.id)
+    if (error) fail(`--db: reading ${v.id} categories failed: ${error.message}`)
+
+    const stale = (data ?? []).filter(row => !keep.has(`${row.section}/${row.id}`))
+    for (const row of stale) {
+      if (!PRUNE_DRY_RUN) {
+        const { error: delError } = await supabase
+          .from('categories')
+          .delete()
+          .eq('game', config.game)
+          .eq('version', v.id)
+          .eq('section', row.section)
+          .eq('id', row.id)
+        if (delError) fail(`--db: deleting ${v.id}/${row.section}/${row.id} failed: ${delError.message}`)
+      }
+      console.log(`[PRUNE] ${verb} ${config.game}/${v.id}/${row.section}/${row.id} ("${row.name}")`)
+      total++
+    }
+  }
+  console.log(`[OK] --db: ${total} stale categor${total === 1 ? 'y' : 'ies'} ${verb}`)
 }
 
 // ---------------------------------------------------------------------------
