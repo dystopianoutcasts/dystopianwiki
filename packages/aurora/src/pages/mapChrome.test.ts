@@ -42,6 +42,23 @@ describe('T39: the site header replaces the account control in the side panel', 
   })
 })
 
+describe('T43 Part MAP: visitors see one name, Dystopian Outcasts, never Aurora', () => {
+  const indexHtml = readFileSync(fileURLToPath(new URL('../../index.html', import.meta.url)), 'utf8')
+
+  it('the browser tab reads "Live Map - Dystopian Outcasts"', () => {
+    expect(indexHtml).toMatch(/<title>Live Map - Dystopian Outcasts<\/title>/)
+  })
+
+  it('the side panel title reads "Live Map"', () => {
+    expect(mapPageSrc).toMatch(/<span className="brand">Live Map<\/span>/)
+  })
+
+  it('neither shows the internal project name', () => {
+    expect(indexHtml).not.toMatch(/<title>[^<]*Aurora/)
+    expect(mapPageSrc).not.toMatch(/className="brand">[^<]*Aurora/)
+  })
+})
+
 describe('T39: the map opens on Rosewood at zoom 15', () => {
   const m = mapPageSrc.match(/const DEFAULT_VIEW: View = \{ x: (\d+), y: (\d+), zoom: (\d+) \}/)
 

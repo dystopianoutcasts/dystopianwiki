@@ -248,7 +248,7 @@ export function MapPage() {
       </button>
       <aside id="aurora-side" className={sheetOpen ? 'aurora-side open' : 'aurora-side'} aria-label="Server information">
         <div className="side-head">
-          <span className="brand">Aurora</span>
+          <span className="brand">Live Map</span>
         </div>
         <p className="rt-status" role="status">{statusText}</p>
         <StreetSearch streets={streets} onSelect={onSelectStreet} />
