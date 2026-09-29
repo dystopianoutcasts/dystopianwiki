@@ -1,0 +1,122 @@
+{
+  "sources_root": "R:/ZOMBOID/_dev/B42_Vehicles",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "intermediate",
+    "target": "articles",
+    "provenance": { "compiled": "2026-08-05", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "01-project-summer-car-anatomy.md",
+      "section": "vehicles",
+      "category": "mod-studies",
+      "slug": "psc-anatomy",
+      "title": "Project Summer Car -- architecture",
+      "split": "none",
+      "tags": ["vehicles", "project-summer-car", "mod-study", "template-vehicle"],
+      "difficulty": "intermediate",
+      "provenance": { "compiled": "2026-08-05", "game_version": "42.20" }
+    },
+    {
+      "source": "02-simulation-model.md",
+      "section": "vehicles",
+      "category": "mod-studies",
+      "slug": "psc-simulation-model",
+      "title": "Project Summer Car -- the simulation model",
+      "split": "h2",
+      "tags": ["vehicles", "project-summer-car", "simulation", "thermal-model", "fuel"],
+      "difficulty": "advanced",
+      "provenance": { "compiled": "2026-08-05", "game_version": "42.20" }
+    },
+    {
+      "source": "03-parts-and-items-catalogue.md",
+      "section": "vehicles",
+      "category": "mod-studies",
+      "slug": "psc-parts-and-items",
+      "title": "Project Summer Car -- items, fluids, recipes",
+      "split": "none",
+      "tags": ["vehicles", "project-summer-car", "items", "fluids", "craft-recipes"],
+      "difficulty": "intermediate",
+      "provenance": { "compiled": "2026-08-05", "game_version": "42.20" }
+    },
+    {
+      "source": "04-car-physics-mods.md",
+      "section": "vehicles",
+      "category": "mod-studies",
+      "slug": "car-physics-mods",
+      "title": "The car physics mods -- Better Car Physics to Realistic Car Physics",
+      "split": "none",
+      "tags": ["vehicles", "better-car-physics", "realistic-car-physics", "mod-study"],
+      "difficulty": "intermediate",
+      "provenance": { "compiled": "2026-08-05", "game_version": "42.20" }
+    },
+    {
+      "source": "05-takeaways.md",
+      "section": "vehicles",
+      "category": "mod-studies",
+      "slug": "psc-takeaways",
+      "title": "Takeaways -- what makes this immersive, and what transfers",
+      "split": "none",
+      "tags": ["vehicles", "project-summer-car", "design-lessons", "containers"],
+      "difficulty": "intermediate",
+      "provenance": { "compiled": "2026-08-06", "game_version": "42.20" }
+    },
+    {
+      "source": "06-reflection-and-java-modding.md",
+      "section": "vehicles",
+      "category": "mod-studies",
+      "slug": "reflection-and-java-modding",
+      "title": "Why reflection was disallowed -- the fun police story",
+      "split": "none",
+      "tags": ["vehicles", "reflection", "java-modding", "kahlua", "engine-limits"],
+      "difficulty": "advanced",
+      "provenance": { "compiled": "2026-08-05", "game_version": "42.20" }
+    },
+    {
+      "source": "23-community-mod-survey.md",
+      "section": "vehicles",
+      "category": "mod-studies",
+      "slug": "community-mod-survey",
+      "title": "Community B42 vehicle mods -- survey",
+      "split": "none",
+      "tags": ["vehicles", "community-mods", "survey", "workshop"],
+      "difficulty": "intermediate",
+      "provenance": { "compiled": "2026-08-10", "game_version": "42.20" }
+    },
+    {
+      "source": "24-synthesis-and-assessment.md",
+      "section": "vehicles",
+      "category": "mod-studies",
+      "slug": "outcast-motors-synthesis",
+      "title": "Outcast Motors -- where we actually are",
+      "split": "h2",
+      "tags": ["vehicles", "outcast-motors", "assessment", "roadmap"],
+      "difficulty": "advanced",
+      "provenance": { "compiled": "2026-08-10", "game_version": "42.20" }
+    },
+    {
+      "source": "25-animation-mod-synthesis.md",
+      "section": "vehicles",
+      "category": "mod-studies",
+      "slug": "animation-mod-synthesis",
+      "title": "B42 vehicle animation -- what every installed mod actually does",
+      "split": "none",
+      "tags": ["vehicles", "animation", "community-mods", "workshop-survey"],
+      "difficulty": "intermediate",
+      "provenance": { "compiled": "2026-08-10", "game_version": "42.20" }
+    },
+    {
+      "source": "VVA_B42_Animated_Vehicles_Plan.md",
+      "section": "vehicles",
+      "category": "mod-studies",
+      "slug": "vva-feasibility-and-plan",
+      "title": "Animated vanilla vehicles on B42 -- feasibility study and plan",
+      "split": "none",
+      "tags": ["vehicles", "animation", "vva", "feasibility-study"],
+      "difficulty": "intermediate",
+      "provenance": { "compiled": "2026-08-10", "game_version": "42.20" }
+    }
+  ]
+}

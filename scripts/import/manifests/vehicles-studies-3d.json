@@ -1,0 +1,34 @@
+{
+  "sources_root": "R:/ZOMBOID/PZ_3D_Assets/_study/vehicle_architecture",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "intermediate",
+    "target": "articles",
+    "provenance": { "compiled": "2026-08-05", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "PZ_VEHICLE_ARCHITECTURE.md",
+      "section": "vehicles",
+      "category": "mod-studies",
+      "slug": "vehicle-architecture-vanilla-vs-mods",
+      "title": "PZ B42 vehicle architecture -- vanilla vs KI5 and damnlib",
+      "split": "none",
+      "tags": ["vehicles", "architecture", "ki5trailers", "damnlib", "model-organisation"],
+      "difficulty": "advanced",
+      "provenance": { "compiled": "2026-08-05", "game_version": "42.20" }
+    },
+    {
+      "source": "PZ_VEHICLE_SYSTEMS.md",
+      "section": "vehicles",
+      "category": "mod-studies",
+      "slug": "vehicle-systems-masks-and-damage",
+      "title": "PZ B42 vehicle systems -- masks, part removal, damage, animation, armour",
+      "split": "none",
+      "tags": ["vehicles", "textures", "damage", "animation", "masks"],
+      "difficulty": "advanced",
+      "provenance": { "compiled": "2026-08-05", "game_version": "42.20" }
+    }
+  ]
+}
