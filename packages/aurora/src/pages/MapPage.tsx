@@ -28,7 +28,7 @@ import { LayerToggles } from '../panels/LayerToggles'
 import { StreetSearch } from '../panels/StreetSearch'
 import { LINK_FEATURE_ENABLED } from '../config'
 import { playersNote } from './playersNote'
-import { STREETS_MIN_ZOOM } from '../map/MapView'
+import { SEARCH_STREET_ZOOM } from '../map/MapView'
 
 const DEFAULT_VIEW: View = { x: 10770, y: 10271, zoom: 9 }
 
@@ -187,11 +187,14 @@ export function MapPage() {
     window.history.replaceState(null, '', `${window.location.pathname}?${search}`)
   }, [])
 
-  // A fixed, comfortable zoom rather than the current one: a search result should always
-  // land close enough to read the street, whether the visitor started zoomed out or in.
-  const onSelectStreet = useCallback((s: { latlngs: [number, number][] }) => {
-    const [y, x] = s.latlngs[0]
-    setFlyTo({ x, y, zoom: STREETS_MIN_ZOOM + 3 })
+  // `center` (extract-streets.ts, T42) is a point ON the road near its middle, not an
+  // end of it - unlike the old `latlngs[0]`, which was always the first vertex of the
+  // first piece. SEARCH_STREET_ZOOM is a fixed, comfortable zoom rather than the
+  // current one: a search result should always land close enough to read the street,
+  // whether the visitor started zoomed out or in.
+  const onSelectStreet = useCallback((s: { center: [number, number] }) => {
+    const [x, y] = s.center
+    setFlyTo({ x, y, zoom: SEARCH_STREET_ZOOM })
   }, [])
 
   const vis = visibility.data[0]

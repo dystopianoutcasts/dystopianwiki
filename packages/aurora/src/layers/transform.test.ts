@@ -10,11 +10,13 @@ import {
   heatPoints,
   playerFeatures,
   safehouseFeatures,
+  streetFeatures,
   streetWeight,
   toSparkPoints,
   vehicleFeatures,
   zoneFeatures,
 } from './transform'
+import type { StreetRaw } from './transform'
 
 const cfg = tilesJson as unknown as TilesConfig
 
@@ -258,5 +260,31 @@ describe('streetWeight (T22 Part D item 6: weight follows zoom)', () => {
 
   it('never drops below 1.5 px even for a very narrow street at the lowest zoom', () => {
     expect(streetWeight(5, 5, 15, 1)).toBeGreaterThanOrEqual(1.5)
+  })
+})
+
+describe('streetFeatures (T42: one road, possibly several pieces, already merged and labelled)', () => {
+  function raw(over: Partial<StreetRaw> = {}): StreetRaw {
+    return {
+      id: 'tioga-road', name: 'Tioga Road', label: 'Tioga Road', area: null, width: 8,
+      lines: [[[100, 200], [110, 210]]], center: [105, 205], ...over,
+    }
+  }
+
+  it('carries the id straight through as the feature key (already unique by construction)', () => {
+    const [f] = streetFeatures([raw({ id: 'main-st-rosewood' })])
+    expect(f.key).toBe('main-st-rosewood')
+  })
+
+  it('carries label, width and center through unchanged', () => {
+    const [f] = streetFeatures([raw({ label: 'Main St, Rosewood', width: 12, center: [8350, 11750] })])
+    expect(f.label).toBe('Main St, Rosewood')
+    expect(f.width).toBe(12)
+    expect(f.center).toEqual([8350, 11750])
+  })
+
+  it('converts every piece from x,y to latlng (y,x), keeping one array per piece', () => {
+    const [f] = streetFeatures([raw({ lines: [[[100, 200], [110, 210]], [[300, 400]]] })])
+    expect(f.latlngs).toEqual([[[200, 100], [210, 110]], [[400, 300]]])
   })
 })

@@ -114,6 +114,11 @@ const STREET_HIT_WEIGHT = 16
  * weight that owns hover, the tooltip and click - so the pointer target is always 16 px
  * wide, whatever the visible line looks like at the current zoom. Rebuilt on every zoom
  * change (MapView's own effect dependency), so the visible weight is never stale.
+ *
+ * T42: `f.latlngs` is one array per source piece rather than one flat array - Leaflet's
+ * `L.polyline` draws an array of arrays as a single multi-polyline object, so a road
+ * that extract-streets.ts merged from several touching pieces still hovers, highlights
+ * and shows its tooltip as the one road it is, whichever piece the pointer is over.
  */
 export function buildStreets(features: StreetFeature[], zoom: number, minZoom: number, maxZoom: number): L.Layer {
   const group = L.layerGroup()
@@ -121,7 +126,7 @@ export function buildStreets(features: StreetFeature[], zoom: number, minZoom: n
     const weight = streetWeight(zoom, minZoom, maxZoom, f.width)
     const visible = L.polyline(f.latlngs, { color: STREET_COLOR, weight, opacity: STREET_OPACITY, interactive: false })
     const hit = L.polyline(f.latlngs, { color: '#000000', weight: STREET_HIT_WEIGHT, opacity: 0 })
-    hit.bindTooltip(escapeHtml(f.name), { sticky: true })
+    hit.bindTooltip(escapeHtml(f.label), { sticky: true })
     hit.on('mouseover', () => {
       visible.setStyle({ color: STREET_HOVER_COLOR, weight: weight + STREET_HOVER_BOOST, opacity: 1 })
       visible.bringToFront()

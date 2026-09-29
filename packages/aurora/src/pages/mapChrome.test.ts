@@ -9,6 +9,10 @@ const appSrc = readFileSync(fileURLToPath(new URL('../App.tsx', import.meta.url)
 const mapPageSrc = readFileSync(fileURLToPath(new URL('./MapPage.tsx', import.meta.url)), 'utf8')
 const useAuroraDataSrc = readFileSync(fileURLToPath(new URL('../data/useAuroraData.ts', import.meta.url)), 'utf8')
 const signInDialogSrc = readFileSync(fileURLToPath(new URL('../auth/SignInDialog.tsx', import.meta.url)), 'utf8')
+// MapView.tsx imports leaflet, which touches `window` at module load time and cannot
+// be imported under this suite's node environment (see data/useAuroraData.test.ts's
+// header comment) - its exported numeric constants are asserted on as source text too.
+const mapViewSrc = readFileSync(fileURLToPath(new URL('../map/MapView.tsx', import.meta.url)), 'utf8')
 
 describe('T34: the top bar is gone', () => {
   it('App.tsx has no aurora-header and does not import SignInButtons', () => {
@@ -51,5 +55,18 @@ describe('T34: the admin sign-in dialog', () => {
   it('is labelled by its own heading', () => {
     expect(signInDialogSrc).toMatch(/aria-labelledby="signin-h"/)
     expect(signInDialogSrc).toMatch(/id="signin-h"/)
+  })
+})
+
+describe('T42: a street search result uses the fixed search zoom, not the old broken formula', () => {
+  it('MapPage.tsx uses SEARCH_STREET_ZOOM and not the old STREETS_MIN_ZOOM + 3', () => {
+    expect(mapPageSrc).toMatch(/SEARCH_STREET_ZOOM/)
+    expect(mapPageSrc).not.toMatch(/STREETS_MIN_ZOOM \+ 3/)
+  })
+
+  it('MapView.tsx defines SEARCH_STREET_ZOOM as 15, the owner\'s number, not the old formula\'s 8', () => {
+    const m = mapViewSrc.match(/export const SEARCH_STREET_ZOOM = (\d+)/)
+    expect(m).not.toBeNull()
+    expect(Number(m?.[1])).toBe(15)
   })
 })

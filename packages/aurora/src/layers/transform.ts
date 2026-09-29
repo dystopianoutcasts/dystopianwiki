@@ -109,18 +109,30 @@ export function heatPoints(cells: ZombieCell[], cfg: TilesConfig, now: number = 
   })
 }
 
-/** Shape of one entry in map/data/streets.json (scripts/tiles/extract-streets.ts). */
+/** Shape of one entry in map/data/streets.json (scripts/tiles/extract-streets.ts, T42):
+ * one road, already merged from any touching same-named pieces and disambiguated from
+ * any other road that happens to share its name. */
 export interface StreetRaw {
+  id: string
   name: string
+  label: string
+  area: string | null
   width: number
-  points: [number, number][]
+  lines: [number, number][][]
+  center: [number, number]
 }
 
 export interface StreetFeature {
   key: string
   name: string
+  /** What search and the hover tooltip show - unique across the file. */
+  label: string
   width: number
-  latlngs: [number, number][]
+  /** A point on the road, in [x, y] world squares - what a search result flies to. */
+  center: [number, number]
+  /** One Leaflet polyline per source piece, so a road built from several touching
+   * segments still draws (and hovers) as a single connected shape. */
+  latlngs: [number, number][][]
 }
 
 /**
@@ -144,13 +156,15 @@ export function streetWeight(zoom: number, minZoom: number, maxZoom: number, wid
   return Math.max(1.5, base * scale)
 }
 
-/** Index into the array: streets.xml has many duplicate names (a highway in several segments). */
+/** `id` from extract-streets.ts is already a stable, unique key (a slug of `label`). */
 export function streetFeatures(streets: StreetRaw[]): StreetFeature[] {
-  return streets.map((s, i) => ({
-    key: `${i}/${s.name}`,
+  return streets.map((s) => ({
+    key: s.id,
     name: s.name,
+    label: s.label,
     width: s.width,
-    latlngs: s.points.map(([x, y]) => [y, x] as [number, number]),
+    center: s.center,
+    latlngs: s.lines.map((line) => line.map(([x, y]) => [y, x] as [number, number])),
   }))
 }
 

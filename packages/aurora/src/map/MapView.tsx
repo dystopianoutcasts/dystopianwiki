@@ -41,6 +41,15 @@ export const MIN_ZOOM = 3
  */
 export const STREETS_MIN_ZOOM = MIN_ZOOM + 2
 
+/**
+ * T42 (2026-09-29): a street search result flies here - a fixed, comfortable zoom
+ * rather than the current one or a number derived from STREETS_MIN_ZOOM, so a result
+ * always lands close enough to read the street whatever zoom the visitor started at.
+ * Owner's own number. The pyramid's native levels stop at 15 (one pixel per square);
+ * 16 and 17 stretch the zoom-15 tiles rather than showing sharper ones.
+ */
+export const SEARCH_STREET_ZOOM = 15
+
 interface Props {
   cfg: TilesConfig
   tilesBase?: string
