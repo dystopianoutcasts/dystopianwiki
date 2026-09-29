@@ -1,32 +1,8 @@
 import { HashRouter, Link, Route, Routes } from 'react-router-dom'
-import { AuthProvider, useAuth } from './auth/AuthContext'
-import { SignInButtons } from './auth/SignInButtons'
+import { AuthProvider } from './auth/AuthContext'
 import { MapPage } from './pages/MapPage'
 import { LinkPage } from './link/LinkPage'
 import { LINK_FEATURE_ENABLED } from './config'
-
-function Header() {
-  const { user, loading, signOut } = useAuth()
-  return (
-    <header className="aurora-header">
-      <Link to="/" className="brand">Aurora</Link>
-      <nav aria-label="Main">
-        <Link to="/">Map</Link>
-        {LINK_FEATURE_ENABLED ? <Link to="/link">Link character</Link> : null}
-      </nav>
-      <div className="account">
-        {loading ? null : user ? (
-          <>
-            <span className="who">{user.email ?? 'Signed in'}</span>
-            <button type="button" onClick={() => void signOut()}>Sign out</button>
-          </>
-        ) : (
-          <SignInButtons />
-        )}
-      </div>
-    </header>
-  )
-}
 
 export default function App() {
   // HashRouter, not BrowserRouter (T20, 2026-09-29): the map now lives at /map/
@@ -41,7 +17,6 @@ export default function App() {
     <HashRouter>
       <AuthProvider>
         <a href="#main" className="skip-link">Skip to content</a>
-        <Header />
         <main id="main">
           <Routes>
             <Route path="/" element={<MapPage />} />

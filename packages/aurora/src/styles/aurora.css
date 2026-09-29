@@ -14,7 +14,6 @@
   --warn: #f0b050;
   --danger: #ff8a80;
   --focus: #ffd866;
-  --header-h: 52px;
 }
 
 @media (prefers-color-scheme: light) {
@@ -37,7 +36,15 @@
 
 * { box-sizing: border-box; }
 
-html, body, #root { height: 100%; margin: 0; }
+/* No top bar (T34): the map and the side panel use the full height of the window on
+   their own, not "100% of whatever else is on the page" - 100vh first for browsers
+   without dynamic viewport units, then 100dvh so mobile browser chrome (the address bar
+   showing/hiding) doesn't leave a sliver of unpainted page underneath. */
+html, body, #root {
+  height: 100vh;
+  height: 100dvh;
+  margin: 0;
+}
 
 body {
   background: var(--bg);
@@ -69,18 +76,24 @@ button:hover:not(:disabled) { border-color: var(--accent); }
 button:disabled { opacity: 0.6; cursor: default; }
 button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
 
-/* ---- header ---------------------------------------------------------------------- */
-.aurora-header {
-  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
-  min-height: var(--header-h); padding: 4px 16px;
-  background: var(--surface); border-bottom: 1px solid var(--border);
+/* ---- side panel head (T34: replaces the removed top bar) -------------------------- */
+.side-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
 }
-.aurora-header .brand { font-weight: 700; font-size: 1.1rem; text-decoration: none; color: var(--text); }
-.aurora-header nav { display: flex; gap: 12px; }
-.aurora-header nav a { padding: 10px 4px; }
-.aurora-header .account { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.aurora-header .who { color: var(--text-muted); font-size: 0.9rem; }
+.side-head .brand { font-weight: 700; font-size: 1.1rem; color: var(--text); }
+.account { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.account .who { color: var(--text-muted); font-size: 0.9rem; }
 .signin { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+/* ---- admin sign-in dialog ---------------------------------------------------------- */
+.signin-dialog {
+  max-width: 360px; width: calc(100% - 32px); margin: auto;
+  background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 8px;
+  padding: 16px;
+}
+.signin-dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+.signin-dialog h2 { margin: 0 0 8px; }
+.signin-cancel { margin-top: 12px; }
 
 /* ---- map shell ------------------------------------------------------------------- */
 .aurora-shell { position: absolute; inset: 0; display: flex; }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { fetchHealthAfter, fetchPlayerProfiles, fetchPositions, fetchVehicles } from './queries'
+import { fetchHealthAfter, fetchPlayerProfiles, fetchPositions, fetchSafehouses, fetchVehicles, fetchVehiclesPublic } from './queries'
 
 /** Records every builder call; resolves to an empty result like PostgREST would. */
 function fakeDb() {
@@ -56,5 +56,44 @@ describe('T23 delta queries ask only for rows strictly newer than since', () => 
       await f(db, 's')
       expect(calls.some((c) => c.startsWith('gt(') || c.startsWith('gte('))).toBe(false)
     }
+  })
+})
+
+describe('T34: the map asks only for the columns it draws', () => {
+  it('fetchSafehouses no longer selects the member list', () => {
+    const { db, calls } = fakeDb()
+    void fetchSafehouses(db, 's')
+    const select = calls.find((c) => c.startsWith('select('))
+    expect(select).toBeDefined()
+    expect(select).not.toMatch(/players/)
+  })
+
+  it('fetchPlayerProfiles no longer selects access_level', () => {
+    const { db, calls } = fakeDb()
+    void fetchPlayerProfiles(db, 's')
+    const select = calls.find((c) => c.startsWith('select('))
+    expect(select).toBeDefined()
+    expect(select).not.toMatch(/access_level/)
+  })
+
+  it('fetchVehiclesPublic reads vehicles_visible and selects no driver column', async () => {
+    const { db, calls } = fakeDb()
+    await fetchVehiclesPublic(db, 's')
+    expect(calls).toContain('from("vehicles_visible")')
+    const select = calls.find((c) => c.startsWith('select('))
+    expect(select).toBeDefined()
+    expect(select).not.toMatch(/driver_username/)
+  })
+
+  it('fetchVehiclesPublic fills driver_username with null so the row shape matches fetchVehicles', async () => {
+    const builder: Record<string, unknown> = {}
+    for (const m of ['select', 'eq', 'gt']) {
+      builder[m] = () => builder
+    }
+    builder.then = (resolve: (v: unknown) => void) =>
+      resolve({ data: [{ server_id: 's', vehicle_id: 1, script_name: 'Base.CarTaxi', x: 1, y: 2, z: 0, t: null }], error: null })
+    const db = { from: () => builder } as unknown as SupabaseClient
+    const [v] = await fetchVehiclesPublic(db, 's')
+    expect(v.driver_username).toBeNull()
   })
 })

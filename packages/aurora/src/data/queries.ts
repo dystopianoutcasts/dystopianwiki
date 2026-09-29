@@ -42,7 +42,7 @@ export async function fetchVisibility(db: SupabaseClient): Promise<{ delayMinute
 export function fetchPlayerProfiles(db: SupabaseClient, serverId: string, since?: string): Promise<PlayerPublic[]> {
   const q = db
     .from('players_public')
-    .select('server_id,username,display_name,last_seen,online,hours_survived,access_level,is_dead')
+    .select('server_id,username,display_name,last_seen,online,hours_survived,is_dead')
     .eq('server_id', serverId)
   return rows<PlayerPublic>(since ? q.gt('last_seen', since) : q, 'players')
 }
@@ -63,9 +63,25 @@ export function fetchVehicles(db: SupabaseClient, serverId: string, since?: stri
   return rows<Vehicle>(since ? q.gt('t', since) : q, 'vehicles')
 }
 
+/**
+ * The public vehicle surface (VISIBILITY.md, T35/022): type and position for everyone,
+ * never the driver. Reads `aurora.vehicles_visible`, which carries no driver column at
+ * all, so `driver_username: null` here is not a redaction - it is filled in only so the
+ * row has the same shape `vehicleFeatures` already expects from the admin query.
+ */
+export function fetchVehiclesPublic(db: SupabaseClient, serverId: string, since?: string): Promise<Vehicle[]> {
+  const q = db
+    .from('vehicles_visible')
+    .select('server_id,vehicle_id,script_name,x,y,z,t')
+    .eq('server_id', serverId)
+  return rows<Omit<Vehicle, 'driver_username'>>(since ? q.gt('t', since) : q, 'vehicles').then((list) =>
+    list.map((v) => ({ ...v, driver_username: null })),
+  )
+}
+
 export function fetchSafehouses(db: SupabaseClient, serverId: string): Promise<Safehouse[]> {
   return rows<Safehouse>(
-    db.from('safehouses').select('server_id,id,x,y,w,h,owner,title,players').eq('server_id', serverId),
+    db.from('safehouses').select('server_id,id,x,y,w,h,owner,title').eq('server_id', serverId),
     'safehouses',
   )
 }

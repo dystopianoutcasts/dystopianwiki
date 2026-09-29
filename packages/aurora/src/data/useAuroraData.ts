@@ -20,6 +20,7 @@ import {
   fetchPositions,
   fetchSafehouses,
   fetchVehicles,
+  fetchVehiclesPublic,
   fetchVisibility,
   fetchZombieGrid,
   fetchZones,
@@ -39,7 +40,7 @@ function formatClock(ms: number): string {
   return new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
 }
 
-export function useAuroraData(client: SupabaseClient, serverId: string, prefs: LayerPrefs, user: User | null) {
+export function useAuroraData(client: SupabaseClient, serverId: string, prefs: LayerPrefs, user: User | null, isAdmin: boolean) {
   const [now, setNow] = useState(() => Date.now())
   const [lastUpdated, setLastUpdated] = useState<number | null>(null)
 
@@ -60,13 +61,13 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
     tOf: (p) => p.t,
     ...live,
   })
-  // Vehicles are readable only when signed in (RLS: authenticated); an anonymous
-  // request is refused, and the panel already says "Sign in to see vehicles.", so an
-  // anonymous viewer does not ask at all.
+  // Vehicles are public (VISIBILITY.md/T35): everyone gets type and position, never the
+  // driver; only an admin's request additionally carries it. The fetch function is
+  // chosen by role so the two row shapes never mix in what's held.
   const vehicles = useLiveDataset({
-    enabled: prefs.vehicles && user !== null,
-    fetchFull: () => fetchVehicles(client, serverId),
-    fetchSince: (since) => fetchVehicles(client, serverId, since),
+    enabled: prefs.vehicles,
+    fetchFull: () => (isAdmin ? fetchVehicles(client, serverId) : fetchVehiclesPublic(client, serverId)),
+    fetchSince: (since) => (isAdmin ? fetchVehicles(client, serverId, since) : fetchVehiclesPublic(client, serverId, since)),
     keyOf: (v) => String(v.vehicle_id),
     tOf: (v) => v.t,
     ...live,
@@ -88,7 +89,7 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
   // viewer polling link_codes every minute would only ever read nothing.
   const myCodes = useDataset(LINK_FEATURE_ENABLED && user !== null, () => fetchMyLinkCodes(client), INGEST_INTERVAL_MS)
   const healthSince = useLiveDataset({
-    enabled: true,
+    enabled: isAdmin,
     fetchFull: () => fetchHealthSince(client, serverId, HEALTH_WINDOW_MINUTES),
     fetchSince: (since) => fetchHealthAfter(client, serverId, since),
     keyOf: (s) => s.t,
@@ -101,7 +102,7 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
   // Only for "last report N minutes ago" once the series is empty; the series' own
   // newest sample supersedes it whenever it is newer (below), so this stays at 60 s.
   const healthLatest = useDataset(
-    true,
+    isAdmin,
     async () => {
       const l = await fetchLatestHealth(client, serverId)
       return l ? [l] : []
@@ -117,6 +118,15 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
     // refresh functions are stable; only the identity change should trigger this
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uid])
+
+  // Vehicles switch between the admin shape (with driver) and the public one the moment
+  // isAdmin itself changes - `enabled` does not change with it, so useLiveDataset's own
+  // effect would not otherwise refetch. Refresh in full so the held rows are never a
+  // stale mix of the two shapes.
+  useEffect(() => {
+    vehicles.refresh()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmin])
 
   // Health series: filled entirely by polling health_samples (no push events). The
   // full fetch returns the whole window and each delta appends to it, so the held rows

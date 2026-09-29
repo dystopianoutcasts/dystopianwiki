@@ -53,16 +53,26 @@ describe('T19: the health series is wired to a poll, not a push', () => {
   })
 })
 
+describe('T34: health is for admins only (VISIBILITY.md)', () => {
+  it('healthSince is enabled only for an admin', () => {
+    const call = useAuroraData.match(/const healthSince = useLiveDataset\(\{[\s\S]*?\}\)/)?.[0] ?? ''
+    expect(call).toMatch(/enabled: isAdmin,/)
+  })
+
+  it('healthLatest takes isAdmin as its enabled (first) argument', () => {
+    expect(useAuroraData).toMatch(/const healthLatest = useDataset\(\s*isAdmin,/)
+  })
+})
+
 describe('T23: live datasets poll at LIVE_POLL_MS with an INGEST_INTERVAL_MS self-heal', () => {
   it('the shared intervals are the two config constants', () => {
     expect(useAuroraData).toMatch(/const live = \{ liveMs: LIVE_POLL_MS, fullMs: INGEST_INTERVAL_MS \}/)
   })
 
-  it('positions, roster, vehicles and health are live datasets with a since-filtered delta', () => {
+  it('positions and roster are live datasets with a since-filtered delta', () => {
     for (const [name, fn] of [
       ['positions', 'fetchPositions'],
       ['profiles', 'fetchPlayerProfiles'],
-      ['vehicles', 'fetchVehicles'],
     ]) {
       const call = useAuroraData.match(new RegExp(`const ${name} = useLiveDataset\\(\\{[\\s\\S]*?\\}\\)`))?.[0] ?? ''
       expect(call, name).toMatch(new RegExp(`fetchSince: \\(since\\) => ${fn}\\(client, serverId, since\\)`))
@@ -70,11 +80,27 @@ describe('T23: live datasets poll at LIVE_POLL_MS with an INGEST_INTERVAL_MS sel
     }
   })
 
-  it('an anonymous viewer never asks for vehicles, which only a signed-in viewer may read', () => {
-    expect(useAuroraData).toMatch(/const vehicles = useLiveDataset\(\{\s*enabled: prefs\.vehicles && user !== null,/)
-  })
-
   it('the zombie grid stays at the ingest interval', () => {
     expect(useAuroraData).toMatch(/const grid = useDataset\([^\n]*INGEST_INTERVAL_MS\)/)
+  })
+})
+
+describe('T34: vehicles are public (type and position); only an admin also gets the driver', () => {
+  it('vehicles are enabled by the layer toggle alone, with no sign-in gate', () => {
+    const call = useAuroraData.match(/const vehicles = useLiveDataset\(\{[\s\S]*?\}\)/)?.[0] ?? ''
+    expect(call).toMatch(/enabled: prefs\.vehicles,/)
+    expect(call).not.toMatch(/user/)
+  })
+
+  it('the fetch is chosen by role: fetchVehicles for an admin, fetchVehiclesPublic otherwise', () => {
+    const call = useAuroraData.match(/const vehicles = useLiveDataset\(\{[\s\S]*?\}\)/)?.[0] ?? ''
+    expect(call).toMatch(/isAdmin \? fetchVehicles\(client, serverId\) : fetchVehiclesPublic\(client, serverId\)/)
+    expect(call).toMatch(/isAdmin \? fetchVehicles\(client, serverId, since\) : fetchVehiclesPublic\(client, serverId, since\)/)
+  })
+
+  it('vehicles refetch in full when the admin flag itself changes', () => {
+    expect(useAuroraData).toMatch(/vehicles\.refresh\(\)/)
+    const effect = useAuroraData.match(/useEffect\(\(\) => \{\s*vehicles\.refresh\(\)[\s\S]*?\}, \[isAdmin\]\)/)?.[0] ?? ''
+    expect(effect).not.toBe('')
   })
 })

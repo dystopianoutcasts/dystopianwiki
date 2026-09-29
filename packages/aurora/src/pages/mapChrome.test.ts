@@ -1,0 +1,55 @@
+// T34 structural checks: no working React render setup in this repo (see
+// data/useAuroraData.test.ts's header comment for why), so components are asserted on
+// as source text, the same approach that file already uses for T19/T23.
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { describe, expect, it } from 'vitest'
+
+const appSrc = readFileSync(fileURLToPath(new URL('../App.tsx', import.meta.url)), 'utf8')
+const mapPageSrc = readFileSync(fileURLToPath(new URL('./MapPage.tsx', import.meta.url)), 'utf8')
+const useAuroraDataSrc = readFileSync(fileURLToPath(new URL('../data/useAuroraData.ts', import.meta.url)), 'utf8')
+const signInDialogSrc = readFileSync(fileURLToPath(new URL('../auth/SignInDialog.tsx', import.meta.url)), 'utf8')
+
+describe('T34: the top bar is gone', () => {
+  it('App.tsx has no aurora-header and does not import SignInButtons', () => {
+    expect(appSrc).not.toMatch(/aurora-header/)
+    expect(appSrc).not.toMatch(/SignInButtons/)
+  })
+
+  it('the brand and account control now live in the side panel head instead', () => {
+    expect(mapPageSrc).toMatch(/side-head/)
+    expect(mapPageSrc).toMatch(/<AccountControl/)
+  })
+})
+
+describe('T34: server health is for admins only', () => {
+  it('MapPage renders HealthPanel only inside the isAdmin conditional, with no fallback', () => {
+    expect(mapPageSrc).toMatch(/\{isAdmin \? <HealthPanel[\s\S]*?: null\}/)
+  })
+
+  it('MapPage no longer tells a signed-out visitor to sign in to see vehicles', () => {
+    expect(mapPageSrc).not.toMatch(/Sign in to see vehicles/)
+  })
+
+  it('useAuroraData gates both health datasets on isAdmin, not on being merely signed in', () => {
+    expect(useAuroraDataSrc).toMatch(/enabled: isAdmin/)
+    expect(useAuroraDataSrc).toMatch(/const healthLatest = useDataset\(\s*isAdmin,/)
+  })
+
+  it('useAuroraData keeps vehicles available to everyone, only gated on the layer toggle', () => {
+    expect(useAuroraDataSrc).toMatch(/enabled: prefs\.vehicles,/)
+    expect(useAuroraDataSrc).not.toMatch(/enabled: prefs\.vehicles && user/)
+  })
+})
+
+describe('T34: the admin sign-in dialog', () => {
+  it('is a native <dialog> opened with showModal()', () => {
+    expect(signInDialogSrc).toMatch(/<dialog/)
+    expect(signInDialogSrc).toMatch(/showModal\(\)/)
+  })
+
+  it('is labelled by its own heading', () => {
+    expect(signInDialogSrc).toMatch(/aria-labelledby="signin-h"/)
+    expect(signInDialogSrc).toMatch(/id="signin-h"/)
+  })
+})

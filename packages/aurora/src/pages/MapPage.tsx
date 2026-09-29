@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
+import { useIsAdmin } from '../auth/useIsAdmin'
+import { AccountControl } from '../auth/AccountControl'
 import { getAurora } from '../lib/supabase'
 import { MapView, MIN_ZOOM } from '../map/MapView'
 import type { TilesConfig } from '../map/tiles'
@@ -123,6 +125,7 @@ export function MapPage() {
   const { client, config } = getAurora()
   const serverId = config.serverId
   const { user } = useAuth()
+  const isAdmin = useIsAdmin(client, user)
   const { cfg, error: cfgError } = useTilesConfig()
   const { streets: rawStreets, error: streetsError } = useStreets()
   const { areas: rawAreas, error: areasError } = useAreas()
@@ -147,7 +150,7 @@ export function MapPage() {
     own,
     now,
     statusText,
-  } = useAuroraData(client, serverId, prefs, user)
+  } = useAuroraData(client, serverId, prefs, user, isAdmin)
 
   const streets = useMemo(() => streetFeatures(rawStreets), [rawStreets])
   const worldMap = useMemo(() => worldMapFeatures(rawWorldMap), [rawWorldMap])
@@ -197,7 +200,7 @@ export function MapPage() {
     worldMap: worldMapError ?? undefined,
     areas: areasError ?? (areas.length === 0 ? 'No named areas loaded.' : undefined),
     players: playersNote({ signedIn: !!user, positionCount: positions.data.length, vis, linkEnabled: LINK_FEATURE_ENABLED }),
-    vehicles: !user ? 'Sign in to see vehicles.' : vehicles.error ? vehicles.error : vehicles.data.length === 0 ? 'None visible to you right now.' : undefined,
+    vehicles: vehicles.error ? vehicles.error : vehicles.data.length === 0 ? 'None visible to you right now.' : undefined,
     safehouses: safehouses.error ?? undefined,
     zones: zones.error ?? undefined,
     zombieHeat: grid.error ?? (grid.data.length === 0 ? 'No zombie counts reported yet.' : undefined),
@@ -237,10 +240,14 @@ export function MapPage() {
         {sheetOpen ? 'Hide panels' : 'Show panels'}
       </button>
       <aside id="aurora-side" className={sheetOpen ? 'aurora-side open' : 'aurora-side'} aria-label="Server information">
+        <div className="side-head">
+          <span className="brand">Aurora</span>
+          <AccountControl />
+        </div>
         <p className="rt-status" role="status">{statusText}</p>
         <StreetSearch streets={streets} onSelect={onSelectStreet} />
         <RosterPanel profiles={profiles.data} error={profiles.error} />
-        <HealthPanel latest={latest} samples={samples} error={healthError} now={now} />
+        {isAdmin ? <HealthPanel latest={latest} samples={samples} error={healthError} now={now} /> : null}
         <LayerToggles prefs={prefs} onChange={setLayer} notes={notes} />
       </aside>
     </div>

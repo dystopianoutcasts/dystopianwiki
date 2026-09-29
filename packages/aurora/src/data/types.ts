@@ -8,7 +8,6 @@ export interface PlayerPublic {
   last_seen: string | null
   online: boolean
   hours_survived: number | null
-  access_level: string | null
   is_dead: boolean | null
 }
 
@@ -45,7 +44,6 @@ export interface Safehouse {
   h: number
   owner: string | null
   title: string | null
-  players: string[] | null
 }
 
 export interface Zone {

@@ -27,7 +27,7 @@ function pos(over: Partial<VisiblePosition> = {}): VisiblePosition {
 function prof(over: Partial<PlayerPublic> = {}): PlayerPublic {
   return {
     server_id: 's', username: 'alice', display_name: 'Alice W', last_seen: null, online: true,
-    hours_survived: 12.9, access_level: null, is_dead: false, ...over,
+    hours_survived: 12.9, is_dead: false, ...over,
   }
 }
 
@@ -67,8 +67,16 @@ describe('vehicles, safehouses, zones', () => {
     expect(b.label).toBe('Vehicle')
   })
 
+  it('T34: the public surface has driver_username null and never prints a driver', () => {
+    const [v] = vehicleFeatures([
+      { server_id: 's', vehicle_id: 3, script_name: 'Base.PickUpVan', x: 1, y: 2, z: 0, t: null, driver_username: null },
+    ])
+    expect(v.label).toBe('Base.PickUpVan')
+    expect(v.label).not.toContain('driver')
+  })
+
   it('safehouse rectangle runs from (x,y) to (x+w,y+h) as [y,x] pairs', () => {
-    const [s] = safehouseFeatures([{ server_id: 's', id: 'a', x: 10, y: 20, w: 5, h: 7, owner: 'bob', title: null, players: [] }])
+    const [s] = safehouseFeatures([{ server_id: 's', id: 'a', x: 10, y: 20, w: 5, h: 7, owner: 'bob', title: null }])
     expect(s.bounds).toEqual([[20, 10], [27, 15]])
     expect(s.label).toBe('Safehouse - owner bob')
   })
