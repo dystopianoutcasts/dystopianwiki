@@ -116,7 +116,7 @@ try {
   const bracketed = read(out, `${P}/bracketed-part.md`)
   check('trailing bracketed groups are dropped from a default part slug and title', bracketed.data.slug === 'bracketed-part' && bracketed.data.title === 'Bracketed part')
   check('a bare leading number is dropped from a default part slug and title', !String(bracketed.data.slug).startsWith('3') && !String(bracketed.data.title).startsWith('3'))
-  check('the article body keeps the full heading text', bracketed.content.startsWith('# Bracketed part [CONFIRMED — pzwiki Lua (API), revid 1390433] (see note)\n'))
+  check('the article body keeps the full heading text', bracketed.content.startsWith('# Bracketed part [CONFIRMED — pzwiki Lua (API), revid 1390433] (see note) `[COMMUNITY -- tagged]`\n'))
   check('tables survive byte-for-byte', second.content.includes('| a | b |\n|---|---|\n| 1 | 2 |'))
   check('frontmatter id is build-42-{slug}', firstPart.data.id === 'build-42-first-part')
   check('related_articles lists sibling parts', JSON.stringify(firstPart.data.related_articles) === '["second","bracketed-part"]' && JSON.stringify(index.data.related_articles) === '["first-part","second","bracketed-part"]')

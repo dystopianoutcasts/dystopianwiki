@@ -32,7 +32,7 @@ Second part text [CONFIRMED].
 |---|---|
 | 1 | 2 |
 
-## 3 Bracketed part [CONFIRMED — pzwiki Lua (API), revid 1390433] (see note)
+## 3 Bracketed part [CONFIRMED — pzwiki Lua (API), revid 1390433] (see note) `[COMMUNITY -- tagged]`
 
 Bracketed part text.
 

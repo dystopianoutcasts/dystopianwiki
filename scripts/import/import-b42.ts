@@ -152,7 +152,8 @@ export function stripNumbering(text: string): string {
 /**
  * Text a split part derives its default slug and title from: numbering stripped (also a bare
  * leading number followed by a space, as in "1 The inventory"), and any trailing bracketed
- * groups removed ("Events [CONFIRMED - pzwiki, revid 1]" -> "Events"). The article body keeps
+ * groups removed, also when wrapped in backticks
+ * ("Events [CONFIRMED - pzwiki, revid 1]" -> "Events"). The article body keeps
  * the full heading.
  */
 export function partHeadingText(text: string): string {
@@ -161,7 +162,7 @@ export function partHeadingText(text: string): string {
   let prev = ''
   while (prev !== t) {
     prev = t
-    t = t.replace(/\s*(?:\[[^\[\]]*\]|\([^()]*\))\s*$/, '').trim()
+    t = t.replace(/\s*(`?)(?:\[[^\[\]]*\]|\([^()]*\))\1\s*$/, '').trim()
   }
   return t === '' ? stripNumbering(text) : t
 }
