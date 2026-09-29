@@ -181,6 +181,7 @@ function fakeDb(): TailDb & { tables: Record<string, Row[]> } {
       return Promise.resolve();
     },
     patch: () => Promise.resolve(),
+    delete: () => Promise.resolve(),
     rpc: () => Promise.resolve(null),
   };
 }
@@ -285,6 +286,27 @@ Deno.test('the cursor is written only after the batch rows', async () => {
   await tailStep(session, db, CFG, target, emptyTotals());
   assertEquals(order.at(-1), 'ingest_cursor');
   assert(order.indexOf('player_position_history') < order.indexOf('ingest_cursor'), 'history before cursor');
+});
+
+Deno.test('a zero-zombie tick heartbeat batch calls db.delete on zombie_grid and totals it (T25)', async () => {
+  const file = new FakeFile();
+  const t = 1790636586629;
+  file.append(
+    `[29-09-26 05:00:00.000] A1 {"k":"hb","t":${t},"src":"tick","st":{"game":{"zombies-loaded":0}}}.\n`,
+  );
+  const session = fakeSession(file);
+  const db = fakeDb();
+  const deletes: string[] = [];
+  const del = db.delete;
+  db.delete = (path: string) => {
+    deletes.push(path);
+    return del(path);
+  };
+  const target = (await findTarget(session, db, CFG))!;
+  const totals = emptyTotals();
+  await tailStep(session, db, CFG, target, totals);
+  assertEquals(deletes, ['zombie_grid?server_id=eq.test-aurora']);
+  assertEquals(totals.deletes, 1);
 });
 
 Deno.test('each batch records its log-to-row lag against the newest record in it', async () => {

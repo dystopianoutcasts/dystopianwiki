@@ -52,11 +52,21 @@ export interface TablePatch {
   why: string;
 }
 
+/** A DELETE against `table?filter`, run after every upsert and patch in the plan. */
+export interface TableDelete {
+  table: string;
+  /** PostgREST filter query string, already encoded. */
+  filter: string;
+  why: string;
+}
+
 export interface IngestPlan {
   /** Dependency-ordered. Execute sequentially. */
   upserts: TableUpsert[];
   /** Run after the upserts, in order. */
   patches: TablePatch[];
+  /** Run after the upserts and patches, in order. */
+  deletes: TableDelete[];
   /** Consumed via the consume_link_code RPC, not an upsert. */
   links: LinkRecord[];
   counts: Record<string, number>;
@@ -127,6 +137,7 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
 
   const upserts: TableUpsert[] = [];
   const patches: TablePatch[] = [];
+  const deletes: TableDelete[] = [];
 
   // --- servers -------------------------------------------------------------
   // Always present so the foreign keys below resolve on a cold database. The
@@ -289,6 +300,40 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
     });
   }
 
+  // --- zombie_grid staleness -------------------------------------------------
+  // zombie_grid is upsert-only on (server_id, cell_x, cell_y): the exporter emits
+  // one zgrid line per NON-EMPTY cell each minute, so a cell that unloads, or a
+  // server with zero loaded zombies, writes nothing and its old row lives
+  // forever (5 rows aged 02:23-12:33 UTC seen at 13:28 while health read 0
+  // zombies). Two rules retire stale rows; at most one fires per batch:
+  //
+  //   1. A batch WITH zgrid records deletes every row for this server older
+  //      than the newest zgrid `t` in that same batch - cells reported now win,
+  //      cells absent from this pass are stale.
+  //   2. A batch with NO zgrid record fresher than (newest tick heartbeat's `t`
+  //      minus 90 s), where that heartbeat's st.game loaded-zombie count reads
+  //      0, means every zombie has despawned: clear the whole grid for this
+  //      server. This subsumes rule 1 (it deletes a superset of what rule 1
+  //      would), so it takes priority when both conditions hold.
+  const newestZgridT = zgrid.length > 0 ? Math.max(...zgrid.map((g) => g.t)) : undefined;
+  const newestTickHb = newestOf(heartbeats.filter(isHealthHeartbeat));
+  const zeroZombieHb =
+    newestTickHb !== undefined && newestTickHb.st?.game?.['zombies-loaded'] === 0 ? newestTickHb : undefined;
+
+  if (zeroZombieHb !== undefined && (newestZgridT === undefined || newestZgridT < zeroZombieHb.t - 90_000)) {
+    deletes.push({
+      table: 'zombie_grid',
+      filter: `server_id=eq.${encodeURIComponent(serverId)}`,
+      why: `tick heartbeat at ${toIso(zeroZombieHb.t)} reports 0 loaded zombies and no zgrid record within 90 s of it`,
+    });
+  } else if (newestZgridT !== undefined) {
+    deletes.push({
+      table: 'zombie_grid',
+      filter: `server_id=eq.${encodeURIComponent(serverId)}&t=lt.${encodeURIComponent(toIso(newestZgridT))}`,
+      why: `zombie_grid rows older than the newest zgrid record in this batch (${toIso(newestZgridT)})`,
+    });
+  }
+
   // --- item_catalog --------------------------------------------------------
   const catalogRows = dedupe(catalog, (c: CatalogRecord) => c.ft, (c) => c.t).map((c): Row => ({
     server_id: serverId,
@@ -306,7 +351,7 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
     });
   }
 
-  return { upserts, patches, links, counts };
+  return { upserts, patches, deletes, links, counts };
 }
 
 // ---------------------------------------------------------------------------

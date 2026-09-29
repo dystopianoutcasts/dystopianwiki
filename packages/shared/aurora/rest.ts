@@ -85,6 +85,14 @@ export class AuroraRest {
     await this.check(res, `patch ${path}`);
   }
 
+  async delete(path: string): Promise<void> {
+    const res = await this.doFetch(`${this.base}/${path}`, {
+      method: 'DELETE',
+      headers: this.headers({ 'Content-Profile': this.schema, Prefer: 'return=minimal' }),
+    });
+    await this.check(res, `delete ${path}`);
+  }
+
   /** Returns the function's JSON result (a scalar function answers a bare `true`), or null for an empty body. */
   async rpc(fn: string, args: Row): Promise<unknown> {
     const res = await this.doFetch(`${this.base}/rpc/${fn}`, {

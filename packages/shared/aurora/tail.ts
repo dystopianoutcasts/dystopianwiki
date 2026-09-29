@@ -127,6 +127,7 @@ export interface TailDb {
   select<T = unknown>(path: string): Promise<T[]>;
   upsert(table: string, rows: Row[], onConflict: string): Promise<void>;
   patch(path: string, body: Row): Promise<void>;
+  delete(path: string): Promise<void>;
   rpc(fn: string, args: Row): Promise<unknown>;
 }
 
@@ -177,6 +178,7 @@ export interface TailTotals {
   /** Rows sent per table. */
   rows: Record<string, number>;
   patches: number;
+  deletes: number;
   stats: SplitStats;
   linksOk: number;
   linksFailed: number;
@@ -195,7 +197,7 @@ export interface TailTotals {
 
 export function emptyTotals(): TailTotals {
   return {
-    bytes: 0, records: 0, kinds: {}, rows: {}, patches: 0, stats: emptyStats(),
+    bytes: 0, records: 0, kinds: {}, rows: {}, patches: 0, deletes: 0, stats: emptyStats(),
     linksOk: 0, linksFailed: 0, rotated: false, batches: 0,
     lagMinMs: null, lagMaxMs: null, lagSumMs: 0,
   };
@@ -250,6 +252,10 @@ export async function tailStep(
     await db.patch(`${patch.table}?${patch.filter}`, patch.body);
     console.log(JSON.stringify({ at: 'patch', table: patch.table, why: patch.why }));
   }
+  for (const del of plan.deletes) {
+    await db.delete(`${del.table}?${del.filter}`);
+    console.log(JSON.stringify({ at: 'delete', table: del.table, why: del.why }));
+  }
   for (const link of plan.links) {
     try {
       await db.rpc('consume_link_code', { p_code: link.c, p_username: link.u, p_server_id: cfg.serverId });
@@ -281,6 +287,7 @@ export async function tailStep(
   totals.bytes += consumed;
   totals.records += parsed.records.length;
   totals.patches += plan.patches.length;
+  totals.deletes += plan.deletes.length;
   totals.batches++;
   addCounts(totals.kinds, plan.counts);
 }

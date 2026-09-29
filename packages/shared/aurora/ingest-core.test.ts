@@ -10,6 +10,7 @@ import {
   planRead,
   type TableUpsert,
 } from './ingest-core.ts';
+import { parseLineDetailed } from './parser.ts';
 import type { AuroraRecord, HbRecord } from './parser.ts';
 
 function assertEquals<T>(actual: T, expected: T, msg = ''): void {
@@ -127,6 +128,74 @@ Deno.test('on_conflict targets match the schema primary keys', () => {
   assertEquals(table(plan.upserts, 'item_catalog')?.onConflict, 'server_id,full_type');
 });
 
+// --- zombie_grid staleness --------------------------------------------------
+
+function zeroZombieHb(t: number): AuroraRecord {
+  return { k: 'hb', t, src: 'tick', st: { game: { 'zombies-loaded': 0 } } } as AuroraRecord;
+}
+
+Deno.test('a batch with zgrid records deletes zombie_grid rows older than the newest zgrid t', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'zgrid', t: 5000, cx: 1, cy: 1, c: 3 },
+    { k: 'zgrid', t: 7000, cx: 2, cy: 2, c: 4 },
+  ];
+  const plan = buildPlan(recs, SERVER);
+  assertEquals(plan.deletes.length, 1);
+  assertEquals(plan.deletes[0].table, 'zombie_grid');
+  assertEquals(plan.deletes[0].filter, `server_id=eq.${SERVER}&t=lt.${encodeURIComponent(toIsoOf(7000))}`);
+});
+
+Deno.test('a batch with no zgrid and zombies present deletes nothing', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'hb', t: 1000, src: 'tick', st: { game: { 'zombies-loaded': 12 } } } as AuroraRecord,
+  ];
+  assertEquals(buildPlan(recs, SERVER).deletes, []);
+  // No heartbeat at all either: still nothing to delete.
+  assertEquals(buildPlan([], SERVER).deletes, []);
+});
+
+Deno.test('a zero-zombie tick heartbeat with no fresher zgrid clears the whole zombie_grid', () => {
+  const recs: AuroraRecord[] = [zeroZombieHb(100_000)];
+  const plan = buildPlan(recs, SERVER);
+  assertEquals(plan.deletes.length, 1);
+  assertEquals(plan.deletes[0].filter, `server_id=eq.${SERVER}`, 'no t filter: every row for this server goes');
+});
+
+Deno.test('a zero-zombie heartbeat still clears everything when the only zgrid in the batch is stale (over 90s old)', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'zgrid', t: 0, cx: 1, cy: 1, c: 5 }, // 100_000 ms before the heartbeat, over the 90s window
+    zeroZombieHb(100_000),
+  ];
+  const plan = buildPlan(recs, SERVER);
+  assertEquals(plan.deletes.length, 1);
+  assertEquals(plan.deletes[0].filter, `server_id=eq.${SERVER}`, 'the stale zgrid record does not save any row');
+});
+
+Deno.test('a zero-zombie heartbeat backs off when a zgrid record inside the 90s window contradicts it', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'zgrid', t: 20_000, cx: 1, cy: 1, c: 5 }, // 80_000 ms before the heartbeat, inside the 90s window
+    zeroZombieHb(100_000),
+  ];
+  const plan = buildPlan(recs, SERVER);
+  assertEquals(plan.deletes.length, 1);
+  assertEquals(
+    plan.deletes[0].filter,
+    `server_id=eq.${SERVER}&t=lt.${encodeURIComponent(toIsoOf(20_000))}`,
+    'falls back to the ordinary newest-zgrid-t rule instead of clearing everything',
+  );
+});
+
+Deno.test('a gametime heartbeat reporting 0 zombies is ignored: only a tick heartbeat can clear the grid', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'hb', t: 100_000, src: 'gametime', st: { game: { 'zombies-loaded': 0 } } } as AuroraRecord,
+  ];
+  assertEquals(buildPlan(recs, SERVER).deletes, []);
+});
+
+function toIsoOf(t: number): string {
+  return new Date(t).toISOString();
+}
+
 Deno.test('server_id comes from the caller, never from the log', () => {
   const plan = buildPlan([{ k: 'pos', t: 1, u: 'a', x: 1, y: 2 }] as AuroraRecord[], 'other');
   for (const upsert of plan.upserts) {
@@ -213,6 +282,47 @@ Deno.test('a tick heartbeat maps every named column from the three tables', () =
   assertEquals(row.loaded_cells, 36);
   assertEquals(row.sent_bps, 4096);
   assertEquals(row.received_bps, 2048);
+});
+
+// T25 Do step 4 (laundry A5): the live health rows read zombies_total/loaded/
+// simulated 0 at 13:28 UTC with a player online, while the 2026-09-28 round
+// logged zombies-loaded 106 at some point. This asks whether HEALTH_COLUMNS
+// reads the keys the exporter actually emits, using a REAL tick heartbeat line
+// from the host log fixture rather than the synthetic one above.
+Deno.test('buildHealthRow maps the zombie keys a real tick heartbeat line actually carries (T25 Do step 4)', () => {
+  const text = Deno.readTextFileSync(
+    new URL('./fixtures/2026-09-28_23-00_Aurora.txt', import.meta.url),
+  );
+  // The first tick heartbeat in the fixture with a nonzero zombie population
+  // (23:02:51.529, one player online, 11 loaded cells) - the earlier tick
+  // heartbeats are all from an empty server (0 everywhere), which would not
+  // distinguish "the mapping is broken" from "the server really was empty".
+  const line = text
+    .split('\n')
+    .find((l) => l.includes('"zombies-loaded":79'));
+  if (line === undefined) {
+    throw new Error('fixture no longer contains the expected zombies-loaded:79 tick heartbeat line');
+  }
+  const parsed = parseLineDetailed(line);
+  if (!parsed.ok || parsed.record.k !== 'hb') {
+    throw new Error(`fixture line did not parse as a heartbeat: ${JSON.stringify(parsed)}`);
+  }
+  assertEquals(isHealthHeartbeat(parsed.record), true, 'src=tick must be treated as a health heartbeat');
+
+  const row = buildHealthRow(parsed.record, SERVER);
+  // Read straight off the raw JSON line so this assertion cannot be fooled by
+  // a copy-paste of the wrong number into the test.
+  assertEquals(row.zombies_total, 79, 'st.game.zombies-total -> zombies_total');
+  assertEquals(row.zombies_loaded, 79, 'st.game.zombies-loaded -> zombies_loaded');
+  assertEquals(row.zombies_simulated, 0, 'st.game.zombies-simulated -> zombies_simulated');
+  assertEquals(row.zombies_culled, 0, 'st.game.zombies-culled -> zombies_culled');
+  assertEquals(row.loaded_cells, 11, 'st.game.loaded-cells -> loaded_cells');
+  assertEquals(row.players, 1);
+  // Answer to the T25 zombie-counter question: HEALTH_COLUMNS reads the exact
+  // keys a real heartbeat carries (zombies-total/loaded/simulated/culled,
+  // loaded-cells, all present under st.game with no naming drift), so a health
+  // row reading 0 zombies elsewhere reflects the game's own state, not a
+  // broken mapping. No change made to HEALTH_COLUMNS.
 });
 
 Deno.test('avg-update-period is never promoted to a column, only kept in raw', () => {
