@@ -488,6 +488,92 @@ $$;
 
 RESET ROLE;
 
+-- ============================================================================
+-- 8. INGEST BEARER (migration 015)
+-- ============================================================================
+--
+-- On 2026-09-28 the cron ran green while every HTTP call 401'd, because the
+-- Vault secret held an empty string and 'Bearer ' || '' produced a header with
+-- no token. 015 wraps the secret read in aurora.ingest_bearer(), which RAISEs
+-- on a missing, NULL, empty, or wrong-shaped value.
+--
+-- VARIANT USED: "rename the real secret inside a transaction that is rolled
+-- back", per T18's fallback - this file cannot assume it may create Vault
+-- secrets, and the whole file is already one BEGIN ... ROLLBACK, so the
+-- negative proof below never needs its own transaction: the outer ROLLBACK at
+-- the bottom of this file is what makes it safe. The rename is restored
+-- before the block ends anyway, so a reader stepping through with
+-- client_min_messages = NOTICE never sees the secret missing for longer than
+-- this one DO block, and a failure partway through still leaves the outer
+-- ROLLBACK as the backstop.
+--
+-- This section runs as the role that started the transaction (postgres, per
+-- the file header), which is also aurora.ingest_bearer()'s and
+-- aurora.enable_ingest_cron()'s owner - the same role pg_cron would execute
+-- the scheduled command as, since cron.schedule() was called from inside that
+-- SECURITY DEFINER function.
+
+DO $$
+DECLARE
+  v_bearer     TEXT;
+  v_secret_id  UUID;
+  v_raised     BOOLEAN;
+BEGIN
+  -- The positive case first: with the real secret in place, the function
+  -- returns a plausible value rather than raising.
+  BEGIN
+    v_bearer := aurora.ingest_bearer();
+  EXCEPTION WHEN OTHERS THEN
+    RAISE EXCEPTION 'FAIL: aurora.ingest_bearer() raised with the real secret in place: %', SQLERRM;
+  END;
+  IF v_bearer IS NULL OR length(v_bearer) < 20 OR left(v_bearer, 10) <> 'sb_secret_' THEN
+    RAISE EXCEPTION 'FAIL: aurora.ingest_bearer() returned an unexpected value shape';
+  END IF;
+  RAISE NOTICE 'PASS aurora.ingest_bearer() resolves the live secret';
+
+  SELECT id INTO v_secret_id FROM vault.secrets WHERE name = 'aurora_service_role_key';
+  IF v_secret_id IS NULL THEN
+    RAISE EXCEPTION 'FAIL: vault secret aurora_service_role_key does not exist - the negative proof needs it present';
+  END IF;
+
+  -- Rename it out from under the resolver's WHERE clause. new_secret is left
+  -- NULL (the function's default), which vault.update_secret treats as "keep
+  -- the existing value" - the secret itself is never touched, only its name.
+  PERFORM vault.update_secret(v_secret_id, new_name := 'aurora_service_role_key_t18_negative_proof');
+
+  BEGIN
+    PERFORM aurora.ingest_bearer();
+    -- Reached only if ingest_bearer() did NOT raise. Force our own exception
+    -- with a sentinel message so the handler below can tell the two cases
+    -- apart: our sentinel means the function under test stayed silent, any
+    -- other message means it raised on its own, which is the pass condition.
+    RAISE EXCEPTION 'T18_SENTINEL_DID_NOT_RAISE';
+  EXCEPTION
+    WHEN OTHERS THEN
+      v_raised := (SQLERRM <> 'T18_SENTINEL_DID_NOT_RAISE');
+  END;
+
+  -- Restore the name before any assertion below can stop the block early -
+  -- the outer ROLLBACK is the real safety net, but a reader should never see
+  -- the rename outlive this DO block even if something above misbehaves.
+  PERFORM vault.update_secret(v_secret_id, new_name := 'aurora_service_role_key');
+
+  IF NOT v_raised THEN
+    RAISE EXCEPTION 'FAIL: aurora.ingest_bearer() did NOT raise with the secret renamed out from under it';
+  END IF;
+  RAISE NOTICE 'PASS aurora.ingest_bearer() raises when the secret cannot be found (negative proof, rolled back)';
+
+  -- Confirm the restore worked and a normal call succeeds again - proves the
+  -- rename-then-restore round trip did not leave anything broken for the
+  -- cron's next real run.
+  v_bearer := aurora.ingest_bearer();
+  IF v_bearer IS NULL THEN
+    RAISE EXCEPTION 'FAIL: aurora.ingest_bearer() did not recover after the secret name was restored';
+  END IF;
+  RAISE NOTICE 'PASS aurora.ingest_bearer() recovers once the secret name is restored';
+END;
+$$;
+
 DO $$ BEGIN RAISE NOTICE 'ALL AURORA POLICY TESTS PASSED'; END; $$;
 
 ROLLBACK;
