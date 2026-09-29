@@ -5,7 +5,7 @@
 // would have, at REST's per-byte cost instead of realtime's per-row-times-viewer cost.
 import { useEffect, useMemo, useState } from 'react'
 import type { SupabaseClient, User } from '@supabase/supabase-js'
-import { INGEST_INTERVAL_MS, SLOW_POLL_MS, VERY_SLOW_POLL_MS } from '../config'
+import { INGEST_INTERVAL_MS, SLOW_POLL_MS, VERY_SLOW_POLL_MS, LINK_FEATURE_ENABLED } from '../config'
 import { useDataset } from './useDataset'
 import {
   fetchHealthSince,
@@ -48,7 +48,9 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
     },
     null,
   )
-  const myCodes = useDataset(user !== null, () => fetchMyLinkCodes(client), INGEST_INTERVAL_MS)
+  // Dormant with the link feature (T21): no linked characters can exist, so a signed-in
+  // viewer polling link_codes every minute would only ever read nothing.
+  const myCodes = useDataset(LINK_FEATURE_ENABLED && user !== null, () => fetchMyLinkCodes(client), INGEST_INTERVAL_MS)
   const healthSince = useDataset(true, () => fetchHealthSince(client, serverId, HEALTH_WINDOW_MINUTES), INGEST_INTERVAL_MS)
   const healthLatest = useDataset(
     true,
