@@ -40,7 +40,7 @@ export function HeroSection() {
 
         {/* Subtitle */}
         <p className="hero__subtitle">
-          Modding guides, server docs, and community resources for <em>survival games</em>
+          Modding guides, server docs, and community resources for <em>Project Zomboid</em>
         </p>
 
         {/* Search Bar */}
