@@ -62,6 +62,7 @@ supabase db push
 | `018_aurora_positions_online.sql` | OutcastAurora: `positions_delayed()`/`player_positions_visible` stop returning offline characters and stop hard-coding `is_delayed`/`is_rounded` to `TRUE` (T16 P0-2, P2-1) |
 | `019_aurora_admin_flag.sql` | OutcastAurora: `aurora.is_aurora_admin()` reads `auth.users.raw_app_meta_data` instead of the client-writable `public.user_profiles.is_aurora_admin`, which is dropped (T16 P0-1) |
 | `022_aurora_visibility.sql` | OutcastAurora: `health_samples`/`servers`/`item_catalog` go admin-only; `aurora.vehicles_public()`/`vehicles_visible` add a public vehicle surface (type and position, never the driver) - see `docs/planning/OutcastAurora/VISIBILITY.md` |
+| `023_aurora_undrawn_columns.sql` | OutcastAurora: narrows the public column grant on `safehouses` (drops `players`/`last_visited`/`created_at`) and `map_objects` (drops `meta`); adds `aurora.safehouses_admin()`/`aurora.map_objects_admin()` so admins still reach the full row - see `docs/planning/OutcastAurora/VISIBILITY.md` |
 
 Apply 008 through 012 strictly in that order: 009 calls helper functions defined at
 the bottom of 008, and 010 depends on the grants in 009. 022 may be applied at any
@@ -69,6 +70,16 @@ time, before or after the map is rebuilt to use it (VISIBILITY.md, "order that
 cannot be changed"): it only swaps policies and adds a new function/view, so an
 older map build simply reads zero rows or does not ask for `vehicles_visible` yet.
 020 and 021 are reserved (T27, T28) but not yet written as of 022.
+
+**023 must NOT be applied until the T34 map build is what `/map/` serves.**
+Unlike 022, it REVOKEs column privileges rather than swapping a policy: a
+client that still names a revoked column (`players`, `meta`) fails outright
+with Postgres error `42501` on every request naming it, not just on that
+column - PostgREST returns this as HTTP 403,
+`{"code":"42501","message":"permission denied for table safehouses"}`. The
+live build on 2026-09-29 selected `players` from `safehouses`; the T34 build
+does not. Confirm the live JS bundle no longer asks for `players` before
+running this file (see the migration's own header comment for how).
 
 ### 014 must not be applied on its own
 

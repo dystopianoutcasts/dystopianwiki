@@ -1123,6 +1123,179 @@ $$;
 
 RESET ROLE;
 
+-- ============================================================================
+-- 13. COLUMNS THE MAP NEVER DRAWS STOP BEING PUBLIC (migration 023)
+-- ============================================================================
+--
+-- aurora.safehouses.players/last_visited/created_at and
+-- aurora.map_objects.meta are fetched by nobody (packages/aurora/src/data/
+-- queries.ts's fetchSafehouses and fetchMapObjects, at the T34 commit) but
+-- were still column-granted to anon/authenticated. 023 narrows the grant to
+-- exactly the columns the map draws and adds aurora.safehouses_admin()/
+-- aurora.map_objects_admin() so an admin still reaches the full row.
+--
+-- The safehouse fixture (SH1, above) already carries players = {alice,bob}.
+-- This section only adds the map_objects fixture with a populated `meta`.
+
+INSERT INTO aurora.map_objects (server_id, kind, x, y, label, meta)
+VALUES ('test-aurora', 'radio_tower', 500, 500, 'Radio Tower',
+        '{"note": "not drawn, never fetched"}'::jsonb);
+
+SET LOCAL ROLE anon;
+SELECT set_config('request.jwt.claims', '', TRUE);
+
+DO $$
+DECLARE
+  v_count   BIGINT;
+  v_blocked BOOLEAN;
+BEGIN
+  SELECT count(*) INTO v_count
+    FROM aurora.safehouses
+   WHERE server_id = 'test-aurora';
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'FAIL: anon read % rows of the drawn safehouse columns, expected 1', v_count;
+  END IF;
+  RAISE NOTICE 'PASS anon reads the drawn safehouse columns (server_id,id,x,y,w,h,owner,title)';
+
+  v_blocked := FALSE;
+  BEGIN
+    PERFORM players FROM aurora.safehouses WHERE server_id = 'test-aurora' LIMIT 1;
+  EXCEPTION WHEN insufficient_privilege THEN
+    v_blocked := TRUE;
+  END;
+  IF NOT v_blocked THEN
+    RAISE EXCEPTION 'FAIL: anon was allowed to select aurora.safehouses.players';
+  END IF;
+  RAISE NOTICE 'PASS anon is refused aurora.safehouses.players (insufficient_privilege)';
+
+  SELECT count(*) INTO v_count
+    FROM aurora.map_objects
+   WHERE server_id = 'test-aurora';
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'FAIL: anon read % rows of the drawn map_objects columns, expected 1', v_count;
+  END IF;
+  RAISE NOTICE 'PASS anon reads the drawn map_objects columns (id,server_id,kind,x,y,label)';
+
+  v_blocked := FALSE;
+  BEGIN
+    PERFORM meta FROM aurora.map_objects WHERE server_id = 'test-aurora' LIMIT 1;
+  EXCEPTION WHEN insufficient_privilege THEN
+    v_blocked := TRUE;
+  END;
+  IF NOT v_blocked THEN
+    RAISE EXCEPTION 'FAIL: anon was allowed to select aurora.map_objects.meta';
+  END IF;
+  RAISE NOTICE 'PASS anon is refused aurora.map_objects.meta (insufficient_privilege)';
+END;
+$$;
+
+RESET ROLE;
+
+SET LOCAL ROLE authenticated;
+SELECT set_config(
+  'request.jwt.claims',
+  '{"sub":"aaaaaaaa-0000-4000-8000-000000000001","role":"authenticated"}',
+  TRUE
+);
+
+DO $$
+DECLARE
+  v_count   BIGINT;
+  v_blocked BOOLEAN;
+BEGIN
+  SELECT count(*) INTO v_count
+    FROM aurora.safehouses
+   WHERE server_id = 'test-aurora';
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'FAIL: non-admin read % rows of the drawn safehouse columns, expected 1', v_count;
+  END IF;
+  RAISE NOTICE 'PASS non-admin reads the drawn safehouse columns';
+
+  v_blocked := FALSE;
+  BEGIN
+    PERFORM players FROM aurora.safehouses WHERE server_id = 'test-aurora' LIMIT 1;
+  EXCEPTION WHEN insufficient_privilege THEN
+    v_blocked := TRUE;
+  END;
+  IF NOT v_blocked THEN
+    RAISE EXCEPTION 'FAIL: non-admin was allowed to select aurora.safehouses.players';
+  END IF;
+  RAISE NOTICE 'PASS non-admin is refused aurora.safehouses.players (insufficient_privilege)';
+
+  v_blocked := FALSE;
+  BEGIN
+    PERFORM meta FROM aurora.map_objects WHERE server_id = 'test-aurora' LIMIT 1;
+  EXCEPTION WHEN insufficient_privilege THEN
+    v_blocked := TRUE;
+  END;
+  IF NOT v_blocked THEN
+    RAISE EXCEPTION 'FAIL: non-admin was allowed to select aurora.map_objects.meta';
+  END IF;
+  RAISE NOTICE 'PASS non-admin is refused aurora.map_objects.meta (insufficient_privilege)';
+
+  SELECT count(*) INTO v_count FROM aurora.safehouses_admin();
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL: non-admin read % rows from aurora.safehouses_admin(), expected 0', v_count;
+  END IF;
+  RAISE NOTICE 'PASS non-admin reads zero rows from aurora.safehouses_admin()';
+
+  SELECT count(*) INTO v_count FROM aurora.map_objects_admin();
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL: non-admin read % rows from aurora.map_objects_admin(), expected 0', v_count;
+  END IF;
+  RAISE NOTICE 'PASS non-admin reads zero rows from aurora.map_objects_admin()';
+END;
+$$;
+
+RESET ROLE;
+
+SET LOCAL ROLE authenticated;
+SELECT set_config(
+  'request.jwt.claims',
+  '{"sub":"bbbbbbbb-0000-4000-8000-000000000002","role":"authenticated"}',
+  TRUE
+);
+
+DO $$
+DECLARE
+  v_count   BIGINT;
+  v_players TEXT[];
+  v_meta    JSONB;
+BEGIN
+  SELECT count(*) INTO v_count
+    FROM aurora.safehouses_admin()
+   WHERE server_id = 'test-aurora' AND id = 'SH1';
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'FAIL: admin read % rows from aurora.safehouses_admin() for SH1, expected 1', v_count;
+  END IF;
+
+  SELECT players INTO v_players
+    FROM aurora.safehouses_admin()
+   WHERE server_id = 'test-aurora' AND id = 'SH1';
+  IF v_players IS NULL OR NOT ('alice' = ANY(v_players) AND 'bob' = ANY(v_players)) THEN
+    RAISE EXCEPTION 'FAIL: admin safehouses_admin() did not carry players, got %', v_players;
+  END IF;
+  RAISE NOTICE 'PASS admin reads aurora.safehouses_admin() with players present (alice, bob)';
+
+  SELECT count(*) INTO v_count
+    FROM aurora.map_objects_admin()
+   WHERE server_id = 'test-aurora' AND kind = 'radio_tower';
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'FAIL: admin read % rows from aurora.map_objects_admin() for radio_tower, expected 1', v_count;
+  END IF;
+
+  SELECT meta INTO v_meta
+    FROM aurora.map_objects_admin()
+   WHERE server_id = 'test-aurora' AND kind = 'radio_tower';
+  IF v_meta IS NULL THEN
+    RAISE EXCEPTION 'FAIL: admin map_objects_admin() did not carry meta';
+  END IF;
+  RAISE NOTICE 'PASS admin reads aurora.map_objects_admin() with meta present';
+END;
+$$;
+
+RESET ROLE;
+
 DO $$ BEGIN RAISE NOTICE 'ALL AURORA POLICY TESTS PASSED'; END; $$;
 
 ROLLBACK;
