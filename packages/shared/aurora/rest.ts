@@ -85,13 +85,16 @@ export class AuroraRest {
     await this.check(res, `patch ${path}`);
   }
 
-  async rpc(fn: string, args: Row): Promise<void> {
+  /** Returns the function's JSON result (a scalar function answers a bare `true`), or null for an empty body. */
+  async rpc(fn: string, args: Row): Promise<unknown> {
     const res = await this.doFetch(`${this.base}/rpc/${fn}`, {
       method: 'POST',
       headers: this.headers({ 'Content-Profile': this.schema }),
       body: JSON.stringify(args),
     });
     await this.check(res, `rpc ${fn}`);
+    const text = await res.text();
+    return text === '' ? null : JSON.parse(text);
   }
 }
 

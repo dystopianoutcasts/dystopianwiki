@@ -8,6 +8,15 @@
 // Budget: the platform allows 150 s wall and 2 s CPU. One SSH handshake costs
 // ~2 s (T02), so the log tail and the players.db download share ONE session.
 //
+// Near-live (T23): that one session is held open for most of the minute. After
+// the first read and players.db, the log is re-read every 5 s and each batch is
+// written as it arrives (packages/shared/aurora/tail.ts), until a DEADLINE of
+// AURORA_RUN_BUDGET_MS (default 55 s) measured from this function's first
+// instruction. The cron's pg_net timeout is 58 s (migration 016), so pg_net
+// waits for the whole run. A run first takes aurora.ingest_lock (016); a run
+// that cannot get it exits 200 {skipped:"locked"} without connecting, because
+// two runs reading the same bytes would duplicate the append-only history.
+//
 // ---------------------------------------------------------------------------
 // Three things about this project that are easy to trip over
 // ---------------------------------------------------------------------------
@@ -34,20 +43,21 @@
 
 import { connect as sftpConnect, type SftpSession } from '../../../packages/shared/aurora/sftp.ts';
 import { parsePins } from '../../../packages/shared/aurora/hostkey.ts';
-import {
-  emptyStats,
-  launchStampFromFileName,
-  splitChunkBytes,
-  type SplitStats,
-} from '../../../packages/shared/aurora/parser.ts';
-import {
-  buildPlan,
-  buildSavedPlayerRows,
-  chunk,
-  planRead,
-} from '../../../packages/shared/aurora/ingest-core.ts';
+import { buildSavedPlayerRows, chunk } from '../../../packages/shared/aurora/ingest-core.ts';
 import { parsePlayersDb, type SqlJsStatic } from '../../../packages/shared/aurora/playersdb.ts';
 import { AuroraRest } from '../../../packages/shared/aurora/rest.ts';
+import {
+  emptyTotals,
+  findTarget,
+  LOCK_TTL_S,
+  type LoopResult,
+  resolveRunBudget,
+  runTailLoop,
+  type TailConfig,
+  type TailTarget,
+  type TailTotals,
+  tailStep,
+} from '../../../packages/shared/aurora/tail.ts';
 
 const BATCH_ROWS = 500;
 const DEFAULT_MAX_READ = 262_144; // 256 KiB: CPU, not bandwidth, is the limit
@@ -64,6 +74,8 @@ interface Config {
   /** Explicit save folder name; discovered by listing savesDir when unset. */
   saveName: string | null;
   maxReadBytes: number;
+  /** Deadline for the whole run, from the first instruction (T23). */
+  runBudgetMs: number;
 }
 
 function required(name: string): string {
@@ -100,6 +112,7 @@ function readConfig(): Config {
     savesDir: Deno.env.get('AURORA_SAVES_DIR') ?? 'server-data/Saves/Multiplayer',
     saveName: Deno.env.get('AURORA_SAVE_NAME') ?? null,
     maxReadBytes: Number(Deno.env.get('AURORA_MAX_READ_BYTES') ?? String(DEFAULT_MAX_READ)),
+    runBudgetMs: resolveRunBudget(Deno.env.get('AURORA_RUN_BUDGET_MS')),
   };
 }
 
@@ -111,124 +124,6 @@ function secretEquals(a: string, b: string): boolean {
   const n = Math.max(ab.length, bb.length);
   for (let i = 0; i < n; i++) diff |= (ab[i] ?? 0) ^ (bb[i] ?? 0);
   return diff === 0;
-}
-
-// ---------------------------------------------------------------------------
-// SFTP tail
-// ---------------------------------------------------------------------------
-
-interface TailResult {
-  file: string | null;
-  launchStamp: string | null;
-  bytes: number;
-  records: number;
-  /** Records by kind, as parsed. */
-  kinds: Record<string, number>;
-  /** Rows sent per table. */
-  rows: Record<string, number>;
-  patches: number;
-  stats: SplitStats;
-  linksOk: number;
-  linksFailed: number;
-  rotated: boolean;
-  ms: number;
-}
-
-async function tailLog(session: SftpSession, db: AuroraRest, cfg: Config): Promise<TailResult> {
-  const started = Date.now();
-  const empty: TailResult = {
-    file: null,
-    launchStamp: null,
-    bytes: 0,
-    records: 0,
-    kinds: {},
-    rows: {},
-    patches: 0,
-    stats: emptyStats(),
-    linksOk: 0,
-    linksFailed: 0,
-    rotated: false,
-    ms: 0,
-  };
-
-  const entries = await session.list(cfg.logDir);
-  // Names are <yyyy-MM-dd_HH-mm>_Aurora.txt, so lexical order is chronological.
-  const candidates = entries
-    .filter((e) => !e.isDir && e.name.endsWith('_Aurora.txt'))
-    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
-  const newest = candidates.at(-1);
-  if (!newest) return { ...empty, ms: Date.now() - started };
-
-  const cursorRows = (await db.select(
-    `ingest_cursor?select=file_name,byte_offset&server_id=eq.${encodeURIComponent(cfg.serverId)}`,
-  )) as { file_name: string | null; byte_offset: number | null }[];
-
-  const path = `${cfg.logDir}/${newest.name}`;
-  const { size } = await session.stat(path);
-  const window = planRead(cursorRows[0] ?? null, newest.name, size, cfg.maxReadBytes);
-  const launchStamp = launchStampFromFileName(newest.name);
-
-  if (window.length === 0) {
-    return { ...empty, file: newest.name, launchStamp, rotated: window.reset, ms: Date.now() - started };
-  }
-
-  const bytes = await session.readRange(path, window.offset, window.length);
-  const parsed = splitChunkBytes(bytes);
-  // Only complete lines count; the trailing fragment is re-read next minute.
-  const consumed = bytes.length - parsed.carry.length;
-
-  const plan = buildPlan(parsed.records, cfg.serverId, { launchStamp });
-  const rows: Record<string, number> = {};
-  for (const upsert of plan.upserts) {
-    for (const batch of chunk(upsert.rows, BATCH_ROWS)) {
-      await db.upsert(upsert.table, batch, upsert.onConflict);
-      rows[upsert.table] = (rows[upsert.table] ?? 0) + batch.length;
-    }
-  }
-  for (const patch of plan.patches) {
-    await db.patch(`${patch.table}?${patch.filter}`, patch.body);
-    console.log(JSON.stringify({ at: 'patch', table: patch.table, why: patch.why }));
-  }
-
-  let linksOk = 0;
-  let linksFailed = 0;
-  for (const link of plan.links) {
-    try {
-      await db.rpc('consume_link_code', {
-        p_code: link.c,
-        p_username: link.u,
-        p_server_id: cfg.serverId,
-      });
-      linksOk++;
-    } catch (err) {
-      // An expired, unknown or already-used code is normal, not a run failure.
-      linksFailed++;
-      console.warn(JSON.stringify({ at: 'link', code: link.c, error: String(err).slice(0, 200) }));
-    }
-  }
-
-  await db.upsert('ingest_cursor', [{
-    server_id: cfg.serverId,
-    file_name: newest.name,
-    byte_offset: window.offset + consumed,
-    file_size: size,
-    updated_at: new Date().toISOString(),
-  }], 'server_id');
-
-  return {
-    file: newest.name,
-    launchStamp,
-    bytes: consumed,
-    records: parsed.records.length,
-    kinds: plan.counts,
-    rows,
-    patches: plan.patches.length,
-    stats: parsed.stats,
-    linksOk,
-    linksFailed,
-    rotated: window.reset,
-    ms: Date.now() - started,
-  };
 }
 
 // ---------------------------------------------------------------------------
@@ -325,46 +220,120 @@ Deno.serve(async (req: Request) => {
     });
   }
 
+  const deadline = started + cfg.runBudgetMs;
+  const runId = crypto.randomUUID();
+  const db = new AuroraRest({ url: cfg.supabaseUrl, serviceKey: cfg.serviceKey });
+  const json = (body: unknown, status: number) =>
+    new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+
+  // The lock comes before the SSH connect, so a refused run costs the host
+  // nothing. It fails CLOSED: without 016 applied, or with the database
+  // unreachable, no run may proceed, because an unguarded overlap duplicates
+  // player_position_history rows.
+  let locked = false;
+  try {
+    locked = (await db.rpc('ingest_lock', { p_run_id: runId, p_ttl_s: LOCK_TTL_S })) === true;
+  } catch (err) {
+    console.error(JSON.stringify({ at: 'lock', run: runId, error: String(err) }));
+    return json({ error: `lock: ${String(err).slice(0, 300)}` }, 503);
+  }
+  if (!locked) {
+    console.log(JSON.stringify({ at: 'skipped', run: runId, reason: 'locked', ms: Date.now() - started }));
+    return json({ skipped: 'locked', run: runId }, 200);
+  }
+
+  const tailCfg: TailConfig = {
+    serverId: cfg.serverId,
+    logDir: cfg.logDir,
+    maxReadBytes: cfg.maxReadBytes,
+    batchRows: BATCH_ROWS,
+  };
   const summary = {
     server: cfg.serverId,
-    tail: null as TailResult | null,
+    run: runId,
+    budgetMs: cfg.runBudgetMs,
+    connects: 0,
+    tail: null as (TailTotals & { file: string | null; launchStamp: string | null }) | null,
+    loop: null as LoopResult | null,
     playersDb: null as PlayersDbResult | null,
     errors: [] as string[],
     ms: 0,
   };
 
-  const db = new AuroraRest({ url: cfg.supabaseUrl, serviceKey: cfg.serviceKey });
-  let session: SftpSession | null = null;
   try {
-    session = await sftpConnect(cfg.sftp);
-  } catch (err) {
-    summary.errors.push(`sftp: ${String(err).slice(0, 300)}`);
-    console.error(JSON.stringify({ at: 'sftp', error: String(err) }));
-  }
-
-  if (session) {
+    let session: SftpSession | null = null;
     try {
-      summary.tail = await tailLog(session, db, cfg);
-      console.log(JSON.stringify({ at: 'tail', ...summary.tail }));
+      session = await sftpConnect(cfg.sftp);
+      summary.connects++;
+      console.log(JSON.stringify({ at: 'connect', run: runId, ms: Date.now() - started }));
     } catch (err) {
-      summary.errors.push(`tail: ${String(err).slice(0, 300)}`);
-      console.error(JSON.stringify({ at: 'tail', error: String(err) }));
+      summary.errors.push(`sftp: ${String(err).slice(0, 300)}`);
+      console.error(JSON.stringify({ at: 'sftp', error: String(err) }));
     }
+
+    if (session) {
+      try {
+        // First read-parse-write: as before T23, one read from the cursor.
+        let target: TailTarget | null = null;
+        const totals = emptyTotals();
+        const firstStepAt = Date.now();
+        try {
+          target = await findTarget(session, db, tailCfg);
+          if (target) await tailStep(session, db, tailCfg, target, totals);
+          summary.tail = { file: target?.file ?? null, launchStamp: target?.launchStamp ?? null, ...totals };
+        } catch (err) {
+          target = null; // no loop after a failed first read
+          summary.errors.push(`tail: ${String(err).slice(0, 300)}`);
+          console.error(JSON.stringify({ at: 'tail', error: String(err) }));
+        }
+
+        // players.db once per run, never per loop.
+        try {
+          summary.playersDb = await readPlayersDb(session, db, cfg);
+          console.log(JSON.stringify({ at: 'playersdb', ...summary.playersDb }));
+        } catch (err) {
+          summary.errors.push(`playersdb: ${String(err).slice(0, 300)}`);
+          console.error(JSON.stringify({ at: 'playersdb', error: String(err) }));
+        }
+
+        if (target) {
+          const t = target;
+          summary.loop = await runTailLoop({
+            deadline,
+            lastStepAt: firstStepAt,
+            step: () => tailStep(session!, db, tailCfg, t, totals),
+          });
+          summary.tail = { file: t.file, launchStamp: t.launchStamp, ...totals };
+          if (summary.loop.error) {
+            summary.errors.push(`loop: ${summary.loop.error}`);
+            console.error(JSON.stringify({ at: 'loop', error: summary.loop.error }));
+          }
+        }
+        console.log(JSON.stringify({ at: 'tail', loops: summary.loop?.loops ?? 0, ...summary.tail }));
+      } finally {
+        session.close();
+      }
+    }
+  } finally {
     try {
-      summary.playersDb = await readPlayersDb(session, db, cfg);
-      console.log(JSON.stringify({ at: 'playersdb', ...summary.playersDb }));
+      await db.rpc('ingest_unlock', { p_run_id: runId });
     } catch (err) {
-      summary.errors.push(`playersdb: ${String(err).slice(0, 300)}`);
-      console.error(JSON.stringify({ at: 'playersdb', error: String(err) }));
-    } finally {
-      session.close();
+      // The 90 s TTL releases it anyway; the next minute's run may be skipped once.
+      summary.errors.push(`unlock: ${String(err).slice(0, 300)}`);
+      console.error(JSON.stringify({ at: 'unlock', run: runId, error: String(err) }));
     }
   }
 
   summary.ms = Date.now() - started;
-  console.log(JSON.stringify({ at: 'done', server: summary.server, errors: summary.errors, ms: summary.ms }));
-  return new Response(JSON.stringify(summary), {
-    status: summary.errors.length > 0 ? 207 : 200,
-    headers: { 'Content-Type': 'application/json' },
-  });
+  console.log(JSON.stringify({
+    at: 'done',
+    server: summary.server,
+    run: runId,
+    connects: summary.connects,
+    loops: summary.loop?.loops ?? 0,
+    bytes: summary.tail?.bytes ?? 0,
+    errors: summary.errors,
+    ms: summary.ms,
+  }));
+  return json(summary, summary.errors.length > 0 ? 207 : 200);
 });
