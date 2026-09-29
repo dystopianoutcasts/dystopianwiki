@@ -108,6 +108,30 @@
   gap: var(--spacing-4);
 }
 
+.version-page__empty {
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding: var(--spacing-8) var(--spacing-4);
+}
+
+.version-page__section-categories {
+  list-style: none;
+  padding: 0;
+  margin: var(--spacing-2) 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2) var(--spacing-4);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+}
+
+.version-page__section-count {
+  display: inline-block;
+  margin-top: var(--spacing-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
 .version-page__section-card {
   display: flex;
   align-items: center;

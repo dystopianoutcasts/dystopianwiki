@@ -4,6 +4,7 @@ import { WikiLayout } from '../components/layout/WikiLayout';
 import { SEOHead } from '../components/seo/SEOHead';
 import { useCategories, useArticlesByCategory } from '../hooks/useSupabase';
 import { useGameContext } from '../hooks/useGameContext';
+import { DEFAULT_VERSION } from '../config/versions.generated';
 import type { Difficulty } from '../types/wiki';
 import '../styles/pages/category-page.css';
 
@@ -28,7 +29,7 @@ const difficultyLabels: Record<Difficulty, string> = {
 };
 
 export function CategoryPage() {
-  const { version = 'build-41', section = '', category = '', game } = useParams<{
+  const { version = DEFAULT_VERSION, section = '', category = '', game } = useParams<{
     version: string;
     section: string;
     category: string;

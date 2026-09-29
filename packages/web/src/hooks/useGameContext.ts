@@ -5,7 +5,7 @@
 
 import { useLocation } from 'react-router-dom';
 
-export type GameId = 'pz' | 'vs' | null;
+export type GameId = 'pz' | null;
 
 interface GameContext {
   gameId: GameId;
@@ -16,7 +16,6 @@ interface GameContext {
 
 const GAME_NAMES: Record<string, string> = {
   pz: 'Project Zomboid',
-  vs: 'Vintage Story',
 };
 
 /**
@@ -31,7 +30,7 @@ export function useGameContext(): GameContext {
 
   let gameId: GameId = null;
 
-  if (firstPart === 'pz' || firstPart === 'vs') {
+  if (firstPart === 'pz') {
     gameId = firstPart as GameId;
   }
 
@@ -72,7 +71,7 @@ export function getGameIdFromPath(path: string): GameId {
   const pathParts = path.split('/').filter(Boolean);
   const firstPart = pathParts[0];
 
-  if (firstPart === 'pz' || firstPart === 'vs') {
+  if (firstPart === 'pz') {
     return firstPart as GameId;
   }
 

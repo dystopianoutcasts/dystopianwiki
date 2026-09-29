@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useArticleTOC } from '../../context/ArticleContext';
+import { DEFAULT_VERSION } from '../../config/versions.generated';
 import '../../styles/components/mobile-menu.css';
 
 interface MobileMenuProps {
@@ -9,7 +10,7 @@ interface MobileMenuProps {
   version?: string;
 }
 
-export function MobileMenu({ isOpen, onClose, version = 'build-41' }: MobileMenuProps) {
+export function MobileMenu({ isOpen, onClose, version = DEFAULT_VERSION }: MobileMenuProps) {
   const tocItems = useArticleTOC();
 
   const handleTocClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, id: string) => {

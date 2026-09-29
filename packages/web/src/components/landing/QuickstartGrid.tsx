@@ -1,52 +1,59 @@
 import { Link } from 'react-router-dom';
 import type { QuickstartCard } from '../../types/wiki';
+import { getSection, DEFAULT_VERSION } from '../../config/versions.generated';
 import '../../styles/components/quickstart.css';
 
-const defaultCards: QuickstartCard[] = [
-  {
-    id: 'lua-api',
-    icon: '📜',
-    title: 'Lua API',
-    description: 'Events, callbacks, and core API reference',
-    url: '/build-41/modding/lua-api',
-    section: 'modding',
-  },
-  {
-    id: 'recipes',
-    icon: '🔧',
-    title: 'Recipes',
-    description: 'Create custom crafting recipes',
-    url: '/build-41/modding/recipes',
-    section: 'modding',
-  },
-  {
-    id: 'items',
-    icon: '🎮',
-    title: 'Items',
-    description: 'Define new items and equipment',
-    url: '/build-41/modding/items',
-    section: 'modding',
-  },
-  {
-    id: 'tools',
-    icon: '🛠️',
-    title: 'Tools',
-    description: 'Debugging and dev utilities',
-    url: '/build-41/modding/tools',
-    section: 'modding',
-  },
-];
+// Hand-picked category ids for the quickstart row (not every modding
+// category, just the ones a brand-new modder is most likely to want first).
+const QUICKSTART_CATEGORY_IDS = ['lua-api', 'recipes', 'items', 'tools'];
+
+const QUICKSTART_ICONS: Record<string, string> = {
+  'lua-api': '📜',
+  recipes: '🔧',
+  items: '🎮',
+  tools: '🛠️',
+};
+
+const QUICKSTART_DESCRIPTIONS: Record<string, string> = {
+  'lua-api': 'Events, callbacks, and core API reference',
+  recipes: 'Create custom crafting recipes',
+  items: 'Define new items and equipment',
+  tools: 'Debugging and dev utilities',
+};
+
+function buildDefaultCards(version: string): QuickstartCard[] {
+  const modding = getSection(version, 'modding');
+  if (!modding) return [];
+
+  return QUICKSTART_CATEGORY_IDS.map((id) => modding.categories.find((category) => category.id === id))
+    .filter((category): category is NonNullable<typeof category> => !!category && category.articleCount > 0)
+    .map((category) => ({
+      id: category.id,
+      icon: QUICKSTART_ICONS[category.id] || '📁',
+      title: category.name,
+      description: QUICKSTART_DESCRIPTIONS[category.id] || category.description,
+      url: `/${version}/modding/${category.id}`,
+      section: 'modding' as const,
+    }));
+}
 
 interface QuickstartGridProps {
   cards?: QuickstartCard[];
+  version?: string;
 }
 
-export function QuickstartGrid({ cards = defaultCards }: QuickstartGridProps) {
+export function QuickstartGrid({ cards, version = DEFAULT_VERSION }: QuickstartGridProps) {
+  const resolvedCards = cards ?? buildDefaultCards(version);
+
+  if (resolvedCards.length === 0) {
+    return null;
+  }
+
   return (
     <section className="quickstart">
       <h2 className="quickstart__title">Quickstart Guides</h2>
       <div className="quickstart__grid">
-        {cards.map((card) => (
+        {resolvedCards.map((card) => (
           <Link
             key={card.id}
             to={card.url}

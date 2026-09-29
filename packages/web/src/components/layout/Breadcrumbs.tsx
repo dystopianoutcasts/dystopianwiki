@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import { VERSIONS } from '../../config/versions.generated';
 import '../../styles/components/breadcrumbs.css';
 
 // Home icon
@@ -9,12 +10,11 @@ const HomeIcon = () => (
   </svg>
 );
 
-// Map of slugs to display names
+// Map of slugs to display names. Version labels are no longer listed here;
+// they come from the generated VERSIONS module (contract C1) so a version's
+// name only has to be maintained in one place.
 const displayNames: Record<string, string> = {
   pz: 'Project Zomboid',
-  vs: 'Vintage Story',
-  'build-41': 'Build 41',
-  'build-42': 'Build 42',
   modding: 'Modding',
   mapping: 'Mapping',
   'lua-api': 'Lua API',
@@ -36,6 +36,10 @@ interface BreadcrumbItem {
   isCurrent: boolean;
 }
 
+function versionLabel(segment: string): string | undefined {
+  return VERSIONS.find((v) => v.id === segment)?.name;
+}
+
 function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
   const segments = pathname.split('/').filter(Boolean);
   const breadcrumbs: BreadcrumbItem[] = [];
@@ -54,7 +58,10 @@ function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
     const isLast = index === segments.length - 1;
 
     breadcrumbs.push({
-      label: displayNames[segment] || segment.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+      label:
+        versionLabel(segment) ||
+        displayNames[segment] ||
+        segment.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
       href: currentPath,
       isCurrent: isLast,
     });

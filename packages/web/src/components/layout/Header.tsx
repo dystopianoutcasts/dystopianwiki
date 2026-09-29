@@ -1,6 +1,7 @@
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { FuzzySearchBar } from '../search/FuzzySearchBar';
 import { AuthButton } from '../auth/AuthButton';
+import { VERSIONS, DEFAULT_VERSION } from '../../config/versions.generated';
 import '../../styles/components/header.css';
 
 // Icons
@@ -18,12 +19,38 @@ interface HeaderProps {
 
 export function Header({ onMobileMenuToggle }: HeaderProps) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { version, section, category, slug } = useParams<{
+    version?: string;
+    section?: string;
+    category?: string;
+    slug?: string;
+  }>();
 
   // Check if we're on homepage or game-specific pages
   const isHomePage = location.pathname === '/';
   const isInPZContext = location.pathname.startsWith('/pz') ||
-                        location.pathname.startsWith('/build-41') ||
+                        location.pathname.startsWith(`/${DEFAULT_VERSION}`) ||
                         location.pathname.startsWith('/learning-path');
+
+  const currentVersion = version || DEFAULT_VERSION;
+
+  // Version switcher: preserve as much of the current location as the plan
+  // allows. Only /pz/{version}/... URLs get their section/category/slug
+  // carried over; every other location just lands on the version page.
+  const handleVersionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newVersion = event.target.value;
+    const pathParts = location.pathname.split('/').filter(Boolean);
+    const isPzPrefixed = pathParts[0] === 'pz';
+
+    if (isPzPrefixed && section && category && slug) {
+      navigate(`/pz/${newVersion}/${section}/${category}/${slug}`);
+    } else if (isPzPrefixed && section) {
+      navigate(`/pz/${newVersion}/${section}${category ? `/${category}` : ''}`);
+    } else {
+      navigate(`/pz/${newVersion}`);
+    }
+  };
 
   return (
     <header className="header">
@@ -42,22 +69,12 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
         <nav className="header__nav">
           {isHomePage ? (
             // Homepage: Show game options
-            <>
-              <NavLink
-                to="/pz/build-41/modding"
-                className="header__nav-link"
-              >
-                Project Zomboid
-              </NavLink>
-              <NavLink
-                to="/vs"
-                className="header__nav-link header__nav-link--disabled"
-                onClick={(e) => e.preventDefault()}
-              >
-                Vintage Story
-                <span className="header__nav-badge">Soon</span>
-              </NavLink>
-            </>
+            <NavLink
+              to={`/pz/${DEFAULT_VERSION}/modding`}
+              className="header__nav-link"
+            >
+              Project Zomboid
+            </NavLink>
           ) : isInPZContext ? (
             // PZ context: Show section links
             <>
@@ -70,7 +87,7 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
                 Learning Path
               </NavLink>
               <NavLink
-                to="/build-41/modding"
+                to={`/${DEFAULT_VERSION}/modding`}
                 className={({ isActive }) =>
                   `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
                 }
@@ -78,7 +95,7 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
                 Modding
               </NavLink>
               <NavLink
-                to="/build-41/mapping"
+                to={`/${DEFAULT_VERSION}/mapping`}
                 className={({ isActive }) =>
                   `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
                 }
@@ -87,7 +104,7 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
               </NavLink>
             </>
           ) : (
-            // Other contexts (like VS when it's ready): placeholder
+            // Other contexts: placeholder
             <NavLink
                 to="/"
                 className="header__nav-link"
@@ -117,8 +134,18 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
           <AuthButton />
 
           {/* Version Selector */}
-          <select className="header__version-select" defaultValue="build-41">
-            <option value="build-41">Build 41</option>
+          <select
+            className="header__version-select"
+            value={currentVersion}
+            onChange={handleVersionChange}
+            aria-label="Select documentation version"
+          >
+            {VERSIONS.map((v) => (
+              <option key={v.id} value={v.id}>
+                {v.name}
+                {v.status === 'legacy' ? ' (legacy)' : ''}
+              </option>
+            ))}
           </select>
 
           {/* Mobile Menu Button */}

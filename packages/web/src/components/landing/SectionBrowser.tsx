@@ -1,22 +1,18 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { getVersion, DEFAULT_VERSION } from '../../config/versions.generated';
 import '../../styles/components/cards.css';
 
-interface Category {
-  id: string;
-  name: string;
-  description: string;
-  articleCount: number;
-}
+// Section icon words (contract C2) mapped to the emoji this page renders.
+const sectionIconMap: Record<string, string> = {
+  plug: '🔌',
+  map: '🗺️',
+  car: '🚗',
+  gear: '⚙️',
+  book: '📖',
+};
 
-interface SectionData {
-  id: string;
-  icon: string;
-  title: string;
-  description: string;
-  categories: Category[];
-  color: 'primary' | 'accent';
-  totalArticles: number;
+function resolveSectionIcon(icon: string): string {
+  return sectionIconMap[icon] || sectionIconMap.book;
 }
 
 // Static section metadata (colors, extended descriptions)
@@ -35,71 +31,26 @@ interface SectionBrowserProps {
   version?: string;
 }
 
-export function SectionBrowser({ version = 'build-41' }: SectionBrowserProps) {
-  const [sections, setSections] = useState<SectionData[]>([]);
-  const [loading, setLoading] = useState(true);
+export function SectionBrowser({ version = DEFAULT_VERSION }: SectionBrowserProps) {
+  const versionInfo = getVersion(version);
 
-  useEffect(() => {
-    async function loadSections() {
-      try {
-        // Fetch sections list
-        const sectionsRes = await fetch('/data/sections.json');
-        const sectionsData = await sectionsRes.json();
+  const sections = (versionInfo?.sections ?? [])
+    .map((section) => {
+      const categories = section.categories.filter((category) => category.articleCount > 0);
+      const totalArticles = categories.reduce((sum, category) => sum + category.articleCount, 0);
 
-        // For each section, fetch categories to get article counts
-        const sectionsWithCategories: SectionData[] = await Promise.all(
-          sectionsData.sections.map(async (section: { id: string; name: string; description: string; icon: string }) => {
-            try {
-              const categoriesRes = await fetch(`/data/${version}/${section.id}/categories.json`);
-              const categoriesData = await categoriesRes.json();
-              const categories = categoriesData.categories || [];
-              const totalArticles = categories.reduce((sum: number, cat: Category) => sum + (cat.articleCount || 0), 0);
-
-              return {
-                id: section.id,
-                icon: section.icon,
-                title: section.name,
-                description: sectionMeta[section.id]?.description || section.description,
-                categories,
-                color: sectionMeta[section.id]?.color || 'primary',
-                totalArticles,
-              };
-            } catch {
-              return {
-                id: section.id,
-                icon: section.icon,
-                title: section.name,
-                description: sectionMeta[section.id]?.description || section.description,
-                categories: [],
-                color: sectionMeta[section.id]?.color || 'primary',
-                totalArticles: 0,
-              };
-            }
-          })
-        );
-
-        // Filter out sections with zero articles
-        const visibleSections = sectionsWithCategories.filter(s => s.totalArticles > 0);
-        setSections(visibleSections);
-      } catch (error) {
-        console.error('Failed to load sections:', error);
-        setSections([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadSections();
-  }, [version]);
-
-  if (loading) {
-    return (
-      <section className="section-browser">
-        <h2 className="section-browser__title">Browse by Section</h2>
-        <div className="section-browser__loading">Loading sections...</div>
-      </section>
-    );
-  }
+      return {
+        id: section.id,
+        icon: resolveSectionIcon(section.icon),
+        title: section.name,
+        description: sectionMeta[section.id]?.description || section.description,
+        categories,
+        color: sectionMeta[section.id]?.color || ('primary' as const),
+        totalArticles,
+      };
+    })
+    // Filter out sections with zero articles
+    .filter((section) => section.totalArticles > 0);
 
   if (sections.length === 0) {
     return null;
@@ -122,11 +73,9 @@ export function SectionBrowser({ version = 'build-41' }: SectionBrowserProps) {
             </div>
             <p className="section-card__description">{section.description}</p>
             <ul className="section-card__categories">
-              {section.categories
-                .filter(cat => cat.articleCount > 0)
-                .map((cat) => (
-                  <li key={cat.id}>{cat.name}</li>
-                ))}
+              {section.categories.map((category) => (
+                <li key={category.id}>{category.name}</li>
+              ))}
             </ul>
             <Link to={`/${version}/${section.id}`} className="section-card__link">
               Browse {section.title}

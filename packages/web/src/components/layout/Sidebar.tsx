@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { NavLink, useParams, useLocation } from 'react-router-dom';
+import { getVersion, DEFAULT_VERSION } from '../../config/versions.generated';
 import '../../styles/components/sidebar.css';
 
 // Chevron icon
@@ -9,47 +10,39 @@ const ChevronIcon = () => (
   </svg>
 );
 
-interface Category {
-  id: string;
-  name: string;
-  icon: string;
-  description?: string;
-  articleCount: number;
-}
-
-interface CategoriesData {
-  categories: Category[];
-}
-
-interface SectionData {
-  id: string;
-  name: string;
-  icon: string;
-  categories: Category[];
-}
-
-// Icon mapping from categories.json icon names to emojis
+// Icon mapping from the short icon words written into _section.json /
+// _category.json (contract C2) to the emoji the sidebar renders. Keeps every
+// word that has ever appeared in build-41 or build-42 content-tree metadata
+// so neither version regresses to showing a raw word.
 const iconMap: Record<string, string> = {
-  scroll: '📜',
-  wrench: '🔧',
+  book: '📖',
   box: '🎮',
   cog: '🩹',
+  database: '🗄️',
+  'file-text': '📄',
   hammer: '⚔️',
+  layout: '🖥️',
   leaf: '🌿',
+  scroll: '📜',
+  settings: '⚙️',
+  sparkles: '✨',
   tool: '🛠️',
+  video: '🎬',
+  wrench: '🔧',
+  zap: '⚡',
+  plug: '🔌',
+  car: '🚗',
+  gear: '⚙️',
+  map: '🗺️',
   grid: '🏗️',
   globe: '🌍',
   building: '🏠',
   mountain: '⛰️',
-  video: '🎬',
-  map: '🗺️',
 };
 
-// Section definitions (static, but categories loaded dynamically)
-const sectionDefinitions = [
-  { id: 'modding', name: 'Modding', icon: '🔌' },
-  { id: 'mapping', name: 'Mapping', icon: '🗺️' },
-];
+function resolveIcon(icon: string): string {
+  return iconMap[icon] || iconMap.book;
+}
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -58,56 +51,26 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isOpen = false, onClose, collapsed = false }: SidebarProps) {
-  const { version = 'build-41', section: currentSection, category: currentCategory } = useParams();
+  const { version = DEFAULT_VERSION, section: currentSection, category: currentCategory } = useParams();
   const location = useLocation();
   const [expandedSections, setExpandedSections] = useState<string[]>(['modding']);
-  const [sections, setSections] = useState<SectionData[]>([]);
-  const [loading, setLoading] = useState(true);
 
   // Determine game prefix from URL
   const pathParts = location.pathname.split('/').filter(Boolean);
-  const gamePrefix = (pathParts[0] === 'pz' || pathParts[0] === 'vs') ? `/${pathParts[0]}` : '';
+  const gamePrefix = pathParts[0] === 'pz' ? `/${pathParts[0]}` : '';
 
-  useEffect(() => {
-    async function loadCategories() {
-      try {
-        const loadedSections: SectionData[] = [];
+  // Sections and categories come from the generated module (contract C1),
+  // written by scripts/build-nav.ts. No network fetch needed.
+  const sections = useMemo(() => {
+    const versionInfo = getVersion(version);
+    if (!versionInfo) return [];
 
-        for (const sectionDef of sectionDefinitions) {
-          try {
-            const response = await fetch(`/data/${version}/${sectionDef.id}/categories.json`);
-            if (response.ok) {
-              const data: CategoriesData = await response.json();
-
-              // Filter out categories with 0 articles and map icons
-              const categoriesWithArticles = data.categories
-                .filter(cat => cat.articleCount > 0)
-                .map(cat => ({
-                  ...cat,
-                  icon: iconMap[cat.icon] || cat.icon,
-                }));
-
-              if (categoriesWithArticles.length > 0) {
-                loadedSections.push({
-                  ...sectionDef,
-                  categories: categoriesWithArticles,
-                });
-              }
-            }
-          } catch (err) {
-            console.warn(`Failed to load categories for ${sectionDef.id}`);
-          }
-        }
-
-        setSections(loadedSections);
-      } catch (error) {
-        console.error('Error loading sidebar data:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadCategories();
+    return versionInfo.sections
+      .map((section) => ({
+        ...section,
+        categories: section.categories.filter((category) => category.articleCount > 0),
+      }))
+      .filter((section) => section.categories.length > 0);
   }, [version]);
 
   const toggleSection = (sectionId: string) => {
@@ -117,14 +80,6 @@ export function Sidebar({ isOpen = false, onClose, collapsed = false }: SidebarP
         : [...prev, sectionId]
     );
   };
-
-  if (loading) {
-    return (
-      <aside className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''}`}>
-        <div className="sidebar__loading">Loading...</div>
-      </aside>
-    );
-  }
 
   return (
     <>
@@ -177,7 +132,7 @@ export function Sidebar({ isOpen = false, onClose, collapsed = false }: SidebarP
               >
                 <span className="sidebar__section-title">
                   <span className="sidebar__section-icon" role="img" aria-hidden="true">
-                    {section.icon}
+                    {resolveIcon(section.icon)}
                   </span>
                   <span>{section.name}</span>
                 </span>
@@ -199,7 +154,7 @@ export function Sidebar({ isOpen = false, onClose, collapsed = false }: SidebarP
                         onClick={onClose}
                       >
                         <span className="sidebar__category-icon" role="img" aria-hidden="true">
-                          {category.icon}
+                          {resolveIcon(category.icon)}
                         </span>
                         <span>{category.name}</span>
                         <span className="sidebar__category-count">{category.articleCount}</span>

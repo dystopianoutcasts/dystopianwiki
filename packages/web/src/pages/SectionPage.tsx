@@ -4,6 +4,7 @@ import { WikiLayout } from '../components/layout/WikiLayout';
 import { SEOHead } from '../components/seo/SEOHead';
 import { useCategories } from '../hooks/useSupabase';
 import { useGameContext } from '../hooks/useGameContext';
+import { DEFAULT_VERSION } from '../config/versions.generated';
 import '../styles/pages/section-page.css';
 
 const categoryIcons: Record<string, string> = {
@@ -21,7 +22,7 @@ const categoryIcons: Record<string, string> = {
 };
 
 export function SectionPage() {
-  const { version = 'build-41', section = '', game } = useParams<{ version: string; section: string; game?: string }>();
+  const { version = DEFAULT_VERSION, section = '', game } = useParams<{ version: string; section: string; game?: string }>();
   const { buildPath, gameName } = useGameContext();
 
   // For section info, we'll use hardcoded data since it's static
