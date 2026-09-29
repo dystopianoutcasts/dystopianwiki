@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import { getAurora } from '../lib/supabase'
 import { MapView, MIN_ZOOM } from '../map/MapView'
@@ -15,9 +15,10 @@ import {
   safehouseFeatures,
   streetFeatures,
   vehicleFeatures,
+  worldMapFeatures,
   zoneFeatures,
 } from '../layers/transform'
-import type { StreetRaw } from '../layers/transform'
+import type { StreetRaw, WorldMapRaw } from '../layers/transform'
 import { HealthPanel } from '../panels/Health'
 import { RosterPanel } from '../panels/Roster'
 import { LayerToggles } from '../panels/LayerToggles'
@@ -47,6 +48,36 @@ function useStreets(): { streets: StreetRaw[]; error: string | null } {
   return { streets, error }
 }
 
+const EMPTY_WORLD_MAP: WorldMapRaw = { roads: [], buildings: [], water: [], forest: [] }
+
+/**
+ * Fetched only once the layer is switched on: it is off by default and, at about 3.7 MB,
+ * downloading it for every visitor regardless would work against the very reason the
+ * public map polls instead of subscribing (T19) - cost should scale with who actually
+ * wants it, not with every page load.
+ */
+function useWorldMap(enabled: boolean): { worldMap: WorldMapRaw; error: string | null } {
+  const [worldMap, setWorldMap] = useState<WorldMapRaw>(EMPTY_WORLD_MAP)
+  const [error, setError] = useState<string | null>(null)
+  const fetchedRef = useRef(false)
+  useEffect(() => {
+    if (!enabled || fetchedRef.current) return
+    fetchedRef.current = true
+    let cancelled = false
+    fetch(`${import.meta.env.BASE_URL}data/worldmap.json`)
+      .then((r) => {
+        if (!r.ok) throw new Error(`worldmap.json: HTTP ${r.status}`)
+        return r.json() as Promise<WorldMapRaw>
+      })
+      .then((j) => !cancelled && setWorldMap(j))
+      .catch((e: unknown) => !cancelled && setError(e instanceof Error ? e.message : String(e)))
+    return () => {
+      cancelled = true
+    }
+  }, [enabled])
+  return { worldMap, error }
+}
+
 function useTilesConfig(): { cfg: TilesConfig | null; error: string | null } {
   const [cfg, setCfg] = useState<TilesConfig | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -74,6 +105,7 @@ export function MapPage() {
   const { streets: rawStreets, error: streetsError } = useStreets()
 
   const [prefs, setPrefs] = useState(() => loadLayerPrefs())
+  const { worldMap: rawWorldMap, error: worldMapError } = useWorldMap(prefs.worldMap)
   const [sheetOpen, setSheetOpen] = useState(false)
   const [flyTo, setFlyTo] = useState<{ x: number; y: number; zoom: number } | null>(null)
 
@@ -95,6 +127,7 @@ export function MapPage() {
   } = useAuroraData(client, serverId, prefs, user)
 
   const streets = useMemo(() => streetFeatures(rawStreets), [rawStreets])
+  const worldMap = useMemo(() => worldMapFeatures(rawWorldMap), [rawWorldMap])
   const players = useMemo(() => playerFeatures(positions.data, profiles.data), [positions.data, profiles.data])
   const vehicleList = useMemo(() => vehicleFeatures(vehicles.data), [vehicles.data])
   const safehouseList = useMemo(() => safehouseFeatures(safehouses.data), [safehouses.data])
@@ -137,6 +170,7 @@ export function MapPage() {
   const vis = visibility.data[0]
   const notes: Partial<Record<LayerKey, string>> = {
     streets: streetsError ?? undefined,
+    worldMap: worldMapError ?? undefined,
     players: playersNote({ signedIn: !!user, positionCount: positions.data.length, vis, linkEnabled: LINK_FEATURE_ENABLED }),
     vehicles: !user ? 'Sign in to see vehicles.' : vehicles.error ? vehicles.error : vehicles.data.length === 0 ? 'None visible to you right now.' : undefined,
     safehouses: safehouses.error ?? undefined,
@@ -158,6 +192,7 @@ export function MapPage() {
         prefs={prefs}
         ownUsernames={own}
         streets={streets}
+        worldMap={worldMap}
         players={players}
         vehicles={vehicleList}
         safehouses={safehouseList}

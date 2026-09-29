@@ -16,9 +16,18 @@ import {
   buildSafehouses,
   buildStreets,
   buildVehicles,
+  buildWorldMap,
   buildZones,
 } from '../layers/build'
-import type { ObjectFeature, PlayerFeature, RectFeature, StreetFeature, VehicleFeature, ZoneFeature } from '../layers/transform'
+import type {
+  ObjectFeature,
+  PlayerFeature,
+  RectFeature,
+  StreetFeature,
+  VehicleFeature,
+  WorldMapFeatures,
+  ZoneFeature,
+} from '../layers/transform'
 
 /** Zoom below this shows the whole 19968-square world smaller than a phone screen. */
 export const MIN_ZOOM = 3
@@ -37,6 +46,7 @@ interface Props {
   prefs: LayerPrefs
   ownUsernames: ReadonlySet<string>
   streets: StreetFeature[]
+  worldMap: WorldMapFeatures
   players: PlayerFeature[]
   vehicles: VehicleFeature[]
   safehouses: RectFeature[]
@@ -64,6 +74,7 @@ export function MapView(props: Props) {
   const [zoom, setZoom] = useState(initialView.zoom)
 
   const streetsLayer = useRef<L.Layer | null>(null)
+  const worldMapLayer = useRef<L.Layer | null>(null)
   const playersLayer = useRef<L.Layer | null>(null)
   const vehiclesLayer = useRef<L.Layer | null>(null)
   const safehousesLayer = useRef<L.Layer | null>(null)
@@ -112,6 +123,12 @@ export function MapView(props: Props) {
     // The map is created exactly once for the lifetime of the component.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Added before every other overlay (first swap effect to run) so it sits beneath
+  // markers and the streets layer, the way the in-game map sits beneath both too.
+  useEffect(() => {
+    swap(mapRef.current, worldMapLayer, prefs.worldMap ? buildWorldMap(props.worldMap) : null)
+  }, [prefs.worldMap, props.worldMap])
 
   useEffect(() => {
     const show = prefs.streets && zoom >= STREETS_MIN_ZOOM

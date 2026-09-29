@@ -3,7 +3,7 @@
 import L from 'leaflet'
 import 'leaflet.markercluster'
 import 'leaflet.heat'
-import type { ObjectFeature, PlayerFeature, RectFeature, StreetFeature, VehicleFeature, ZoneFeature } from './transform'
+import type { ObjectFeature, PlayerFeature, RectFeature, StreetFeature, VehicleFeature, WorldMapFeatures, ZoneFeature } from './transform'
 
 function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -86,6 +86,42 @@ export function buildStreets(features: StreetFeature[]): L.Layer {
     })
     line.on('mouseout', () => line.setStyle(STREET_STYLE))
     group.addLayer(line)
+  }
+  return group
+}
+
+const ROAD_STYLE: Record<string, L.PathOptions> = {
+  primary: { color: '#e8a33d', weight: 3 },
+  secondary: { color: '#d9c98a', weight: 2 },
+  tertiary: { color: '#c9c9c9', weight: 1.5 },
+  trail: { color: '#8b6b4a', weight: 1, dashArray: '3 3' },
+  railway: { color: '#333333', weight: 1.5, dashArray: '1 4' },
+}
+
+/**
+ * The in-game map's own look, at 11,000+ buildings and tens of thousands of forest and
+ * road shapes: everything shares ONE canvas renderer so the browser paints one <canvas>
+ * element rather than a DOM node per feature, and every shape is `interactive: false` -
+ * this layer is a static backdrop, not something to hover or click.
+ */
+export function buildWorldMap(features: WorldMapFeatures): L.Layer {
+  const renderer = L.canvas({ padding: 0.5 })
+  const group = L.layerGroup()
+  for (const f of features.forest) {
+    L.polygon(f.latlngs, { renderer, interactive: false, stroke: false, fillColor: '#2f4a2f', fillOpacity: 0.55 }).addTo(group)
+  }
+  for (const f of features.water) {
+    L.polygon(f.latlngs, { renderer, interactive: false, stroke: false, fillColor: '#2f5d7c', fillOpacity: 0.6 }).addTo(group)
+  }
+  for (const f of features.buildings) {
+    L.polygon(f.latlngs, { renderer, interactive: false, stroke: false, fillColor: '#4a4640', fillOpacity: 0.7 }).addTo(group)
+  }
+  for (const f of features.roads) {
+    const style = ROAD_STYLE[f.type] ?? ROAD_STYLE.tertiary
+    const shape = f.closed
+      ? L.polygon(f.latlngs, { renderer, interactive: false, fill: false, ...style })
+      : L.polyline(f.latlngs, { renderer, interactive: false, ...style })
+    shape.addTo(group)
   }
   return group
 }

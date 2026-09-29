@@ -124,6 +124,33 @@ export function streetFeatures(streets: StreetRaw[]): StreetFeature[] {
   }))
 }
 
+/** Shape of map/data/worldmap.json (scripts/tiles/extract-worldmap.ts). */
+export interface WorldMapRaw {
+  roads: { type: string; closed: boolean; points: [number, number][] }[]
+  buildings: { type: string; points: [number, number][] }[]
+  water: { points: [number, number][] }[]
+  forest: { points: [number, number][] }[]
+}
+
+export interface WorldMapFeatures {
+  roads: { type: string; closed: boolean; latlngs: [number, number][] }[]
+  buildings: { latlngs: [number, number][] }[]
+  water: { latlngs: [number, number][] }[]
+  forest: { latlngs: [number, number][] }[]
+}
+
+/** x,y to latlng (y,x) across every feature. Nothing else changes: no per-feature `key` is
+ * needed, since this layer is built imperatively (build.ts), never mapped over in JSX. */
+export function worldMapFeatures(raw: WorldMapRaw): WorldMapFeatures {
+  const toLatLngs = (points: [number, number][]): [number, number][] => points.map(([x, y]) => [y, x])
+  return {
+    roads: raw.roads.map((r) => ({ type: r.type, closed: r.closed, latlngs: toLatLngs(r.points) })),
+    buildings: raw.buildings.map((b) => ({ latlngs: toLatLngs(b.points) })),
+    water: raw.water.map((w) => ({ latlngs: toLatLngs(w.points) })),
+    forest: raw.forest.map((f) => ({ latlngs: toLatLngs(f.points) })),
+  }
+}
+
 export interface ObjectFeature {
   key: string
   label: string
