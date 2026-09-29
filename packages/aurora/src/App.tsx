@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './auth/AuthContext'
 import { SignInButtons } from './auth/SignInButtons'
 import { MapPage } from './pages/MapPage'
 import { LinkPage } from './link/LinkPage'
+import { LINK_FEATURE_ENABLED } from './config'
 
 function Header() {
   const { user, loading, signOut } = useAuth()
@@ -11,7 +12,7 @@ function Header() {
       <Link to="/" className="brand">Aurora</Link>
       <nav aria-label="Main">
         <Link to="/">Map</Link>
-        <Link to="/link">Link character</Link>
+        {LINK_FEATURE_ENABLED ? <Link to="/link">Link character</Link> : null}
       </nav>
       <div className="account">
         {loading ? null : user ? (
@@ -44,7 +45,7 @@ export default function App() {
         <main id="main">
           <Routes>
             <Route path="/" element={<MapPage />} />
-            <Route path="/link" element={<LinkPage />} />
+            {LINK_FEATURE_ENABLED ? <Route path="/link" element={<LinkPage />} /> : null}
             <Route path="*" element={<p className="page-note">Page not found. <Link to="/">Back to the map</Link></p>} />
           </Routes>
         </main>

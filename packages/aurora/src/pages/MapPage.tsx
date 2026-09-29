@@ -19,6 +19,8 @@ import {
 import { HealthPanel } from '../panels/Health'
 import { RosterPanel } from '../panels/Roster'
 import { LayerToggles } from '../panels/LayerToggles'
+import { LINK_FEATURE_ENABLED } from '../config'
+import { playersNote } from './playersNote'
 
 const DEFAULT_VIEW: View = { x: 10770, y: 10271, zoom: 9 }
 
@@ -101,11 +103,7 @@ export function MapPage() {
 
   const vis = visibility.data[0]
   const notes: Partial<Record<LayerKey, string>> = {
-    players: !user && positions.data.length === 0
-      ? 'Sign in to see approximate player positions.'
-      : vis
-        ? `Other players are shown about ${vis.delayMinutes} minutes late${vis.roundToCell ? ' and rounded to a map cell' : ''}. Your own and safehouse members show live.`
-        : undefined,
+    players: playersNote({ signedIn: !!user, positionCount: positions.data.length, vis, linkEnabled: LINK_FEATURE_ENABLED }),
     vehicles: !user ? 'Sign in to see vehicles.' : vehicles.error ? vehicles.error : vehicles.data.length === 0 ? 'None visible to you right now.' : undefined,
     safehouses: safehouses.error ?? undefined,
     zones: zones.error ?? undefined,

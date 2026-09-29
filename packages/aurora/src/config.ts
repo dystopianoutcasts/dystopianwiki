@@ -7,6 +7,9 @@ export interface AuroraConfig {
 
 export const DEFAULT_SERVER_ID = 'outcasts-main'
 
+/** Owner decision 2026-09-29 (T21): the link-character feature is dormant; nothing about it renders. */
+export const LINK_FEATURE_ENABLED = false
+
 /**
  * T20 (2026-09-29): the map is served from /map/ on the wiki's own domain, and
  * the tile pyramid is committed alongside it at map/tiles. A relative default -
