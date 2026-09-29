@@ -35,6 +35,9 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
-    include: ['src/**/*.test.ts'],
+    // scripts/tiles/*.test.ts is included too: those scripts are Node build
+    // tooling, not app code, but this is the only vitest project in the repo
+    // and a second one would be pure duplication for a handful of files.
+    include: ['src/**/*.test.ts', '../../scripts/tiles/**/*.test.ts'],
   },
 })

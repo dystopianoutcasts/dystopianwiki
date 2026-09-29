@@ -100,6 +100,30 @@ export function heatPoints(cells: ZombieCell[], cfg: TilesConfig): [number, numb
   })
 }
 
+/** Shape of one entry in map/data/streets.json (scripts/tiles/extract-streets.ts). */
+export interface StreetRaw {
+  name: string
+  width: number
+  points: [number, number][]
+}
+
+export interface StreetFeature {
+  key: string
+  name: string
+  width: number
+  latlngs: [number, number][]
+}
+
+/** Index into the array: streets.xml has many duplicate names (a highway in several segments). */
+export function streetFeatures(streets: StreetRaw[]): StreetFeature[] {
+  return streets.map((s, i) => ({
+    key: `${i}/${s.name}`,
+    name: s.name,
+    width: s.width,
+    latlngs: s.points.map(([x, y]) => [y, x] as [number, number]),
+  }))
+}
+
 export interface ObjectFeature {
   key: string
   label: string

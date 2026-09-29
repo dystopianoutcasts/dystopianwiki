@@ -13,16 +13,39 @@ import {
   objectFeatures,
   playerFeatures,
   safehouseFeatures,
+  streetFeatures,
   vehicleFeatures,
   zoneFeatures,
 } from '../layers/transform'
+import type { StreetRaw } from '../layers/transform'
 import { HealthPanel } from '../panels/Health'
 import { RosterPanel } from '../panels/Roster'
 import { LayerToggles } from '../panels/LayerToggles'
+import { StreetSearch } from '../panels/StreetSearch'
 import { LINK_FEATURE_ENABLED } from '../config'
 import { playersNote } from './playersNote'
+import { STREETS_MIN_ZOOM } from '../map/MapView'
 
 const DEFAULT_VIEW: View = { x: 10770, y: 10271, zoom: 9 }
+
+function useStreets(): { streets: StreetRaw[]; error: string | null } {
+  const [streets, setStreets] = useState<StreetRaw[]>([])
+  const [error, setError] = useState<string | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    fetch(`${import.meta.env.BASE_URL}data/streets.json`)
+      .then((r) => {
+        if (!r.ok) throw new Error(`streets.json: HTTP ${r.status}`)
+        return r.json() as Promise<StreetRaw[]>
+      })
+      .then((j) => !cancelled && setStreets(j))
+      .catch((e: unknown) => !cancelled && setError(e instanceof Error ? e.message : String(e)))
+    return () => {
+      cancelled = true
+    }
+  }, [])
+  return { streets, error }
+}
 
 function useTilesConfig(): { cfg: TilesConfig | null; error: string | null } {
   const [cfg, setCfg] = useState<TilesConfig | null>(null)
@@ -48,9 +71,11 @@ export function MapPage() {
   const serverId = config.serverId
   const { user } = useAuth()
   const { cfg, error: cfgError } = useTilesConfig()
+  const { streets: rawStreets, error: streetsError } = useStreets()
 
   const [prefs, setPrefs] = useState(() => loadLayerPrefs())
   const [sheetOpen, setSheetOpen] = useState(false)
+  const [flyTo, setFlyTo] = useState<{ x: number; y: number; zoom: number } | null>(null)
 
   const {
     profiles,
@@ -69,6 +94,7 @@ export function MapPage() {
     statusText,
   } = useAuroraData(client, serverId, prefs, user)
 
+  const streets = useMemo(() => streetFeatures(rawStreets), [rawStreets])
   const players = useMemo(() => playerFeatures(positions.data, profiles.data), [positions.data, profiles.data])
   const vehicleList = useMemo(() => vehicleFeatures(vehicles.data), [vehicles.data])
   const safehouseList = useMemo(() => safehouseFeatures(safehouses.data), [safehouses.data])
@@ -101,8 +127,16 @@ export function MapPage() {
     window.history.replaceState(null, '', `${window.location.pathname}?${search}`)
   }, [])
 
+  // A fixed, comfortable zoom rather than the current one: a search result should always
+  // land close enough to read the street, whether the visitor started zoomed out or in.
+  const onSelectStreet = useCallback((s: { latlngs: [number, number][] }) => {
+    const [y, x] = s.latlngs[0]
+    setFlyTo({ x, y, zoom: STREETS_MIN_ZOOM + 3 })
+  }, [])
+
   const vis = visibility.data[0]
   const notes: Partial<Record<LayerKey, string>> = {
+    streets: streetsError ?? undefined,
     players: playersNote({ signedIn: !!user, positionCount: positions.data.length, vis, linkEnabled: LINK_FEATURE_ENABLED }),
     vehicles: !user ? 'Sign in to see vehicles.' : vehicles.error ? vehicles.error : vehicles.data.length === 0 ? 'None visible to you right now.' : undefined,
     safehouses: safehouses.error ?? undefined,
@@ -123,12 +157,14 @@ export function MapPage() {
         onViewChange={onViewChange}
         prefs={prefs}
         ownUsernames={own}
+        streets={streets}
         players={players}
         vehicles={vehicleList}
         safehouses={safehouseList}
         zones={zoneList}
         heat={heat}
         objects={objectList}
+        flyTo={flyTo}
       />
       <button
         type="button"
@@ -141,6 +177,7 @@ export function MapPage() {
       </button>
       <aside id="aurora-side" className={sheetOpen ? 'aurora-side open' : 'aurora-side'} aria-label="Server information">
         <p className="rt-status" role="status">{statusText}</p>
+        <StreetSearch streets={streets} onSelect={onSelectStreet} />
         <RosterPanel profiles={profiles.data} error={profiles.error} />
         <HealthPanel latest={latest} samples={samples} error={healthError} now={now} />
         <LayerToggles prefs={prefs} onChange={setLayer} notes={notes} />

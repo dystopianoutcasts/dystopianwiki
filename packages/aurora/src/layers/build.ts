@@ -3,7 +3,7 @@
 import L from 'leaflet'
 import 'leaflet.markercluster'
 import 'leaflet.heat'
-import type { ObjectFeature, PlayerFeature, RectFeature, VehicleFeature, ZoneFeature } from './transform'
+import type { ObjectFeature, PlayerFeature, RectFeature, StreetFeature, VehicleFeature, ZoneFeature } from './transform'
 
 function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -69,6 +69,25 @@ export function buildZones(features: ZoneFeature[]): L.Layer {
 
 export function buildHeat(points: [number, number, number][]): L.Layer {
   return L.heatLayer(points, { radius: 45, blur: 35, max: 1, minOpacity: 0.25 })
+}
+
+const STREET_STYLE = { color: '#9aa0a8', weight: 1, opacity: 0.55 }
+const STREET_HOVER_STYLE = { color: '#ffffff', weight: 3, opacity: 1 }
+
+/** Thin, low-contrast lines that brighten and go to front on hover; the tooltip carries the name. */
+export function buildStreets(features: StreetFeature[]): L.Layer {
+  const group = L.layerGroup()
+  for (const f of features) {
+    const line = L.polyline(f.latlngs, STREET_STYLE)
+    line.bindTooltip(escapeHtml(f.name), { sticky: true })
+    line.on('mouseover', () => {
+      line.setStyle(STREET_HOVER_STYLE)
+      line.bringToFront()
+    })
+    line.on('mouseout', () => line.setStyle(STREET_STYLE))
+    group.addLayer(line)
+  }
+  return group
 }
 
 export function buildObjects(features: ObjectFeature[]): L.Layer {

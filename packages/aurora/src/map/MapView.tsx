@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
@@ -9,11 +9,25 @@ import { latLngToSquare, squareToLatLng, worldBounds } from './coords'
 import { makeCrs } from './crs'
 import type { MapView as View } from '../state/url'
 import type { LayerPrefs } from '../state/layerPrefs'
-import { buildHeat, buildObjects, buildPlayers, buildSafehouses, buildVehicles, buildZones } from '../layers/build'
-import type { ObjectFeature, PlayerFeature, RectFeature, VehicleFeature, ZoneFeature } from '../layers/transform'
+import {
+  buildHeat,
+  buildObjects,
+  buildPlayers,
+  buildSafehouses,
+  buildStreets,
+  buildVehicles,
+  buildZones,
+} from '../layers/build'
+import type { ObjectFeature, PlayerFeature, RectFeature, StreetFeature, VehicleFeature, ZoneFeature } from '../layers/transform'
 
 /** Zoom below this shows the whole 19968-square world smaller than a phone screen. */
 export const MIN_ZOOM = 3
+
+/**
+ * Below this, 1,098 street lines are mostly noise and cost more to draw than the tiles
+ * underneath them. Two levels above MIN_ZOOM: roughly "a town is legible" (T22 Part A).
+ */
+export const STREETS_MIN_ZOOM = MIN_ZOOM + 2
 
 interface Props {
   cfg: TilesConfig
@@ -22,12 +36,15 @@ interface Props {
   onViewChange: (v: View) => void
   prefs: LayerPrefs
   ownUsernames: ReadonlySet<string>
+  streets: StreetFeature[]
   players: PlayerFeature[]
   vehicles: VehicleFeature[]
   safehouses: RectFeature[]
   zones: ZoneFeature[]
   heat: [number, number, number][]
   objects: ObjectFeature[]
+  /** Set by the street search box to recentre the map; consumed once, then left alone. */
+  flyTo: { x: number; y: number; zoom: number } | null
 }
 
 /** Replace the layer held in `ref`: remove the old one, add the new one if the toggle is on. */
@@ -39,12 +56,14 @@ function swap(map: L.Map | null, ref: { current: L.Layer | null }, next: L.Layer
 }
 
 export function MapView(props: Props) {
-  const { cfg, tilesBase, initialView, onViewChange, prefs, ownUsernames } = props
+  const { cfg, tilesBase, initialView, onViewChange, prefs, ownUsernames, flyTo } = props
   const container = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
   const onViewChangeRef = useRef(onViewChange)
   onViewChangeRef.current = onViewChange
+  const [zoom, setZoom] = useState(initialView.zoom)
 
+  const streetsLayer = useRef<L.Layer | null>(null)
   const playersLayer = useRef<L.Layer | null>(null)
   const vehiclesLayer = useRef<L.Layer | null>(null)
   const safehousesLayer = useRef<L.Layer | null>(null)
@@ -84,6 +103,7 @@ export function MapView(props: Props) {
       const c = latLngToSquare(map.getCenter())
       onViewChangeRef.current({ x: c.x, y: c.y, zoom: map.getZoom() })
     })
+    map.on('zoomend', () => setZoom(map.getZoom()))
     mapRef.current = map
     return () => {
       map.remove()
@@ -92,6 +112,11 @@ export function MapView(props: Props) {
     // The map is created exactly once for the lifetime of the component.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    const show = prefs.streets && zoom >= STREETS_MIN_ZOOM
+    swap(mapRef.current, streetsLayer, show ? buildStreets(props.streets) : null)
+  }, [prefs.streets, props.streets, zoom])
 
   useEffect(() => {
     swap(mapRef.current, playersLayer, prefs.players ? buildPlayers(props.players, ownUsernames) : null)
@@ -116,6 +141,13 @@ export function MapView(props: Props) {
   useEffect(() => {
     swap(mapRef.current, objectsLayer, prefs.mapObjects ? buildObjects(props.objects) : null)
   }, [prefs.mapObjects, props.objects])
+
+  // The search box passes a new object on every selection (even re-picking the same
+  // street), so React's own dependency check is exactly the "did this change" test needed.
+  useEffect(() => {
+    if (!mapRef.current || !flyTo) return
+    mapRef.current.setView(squareToLatLng({ x: flyTo.x, y: flyTo.y }), flyTo.zoom)
+  }, [flyTo])
 
   return (
     <div

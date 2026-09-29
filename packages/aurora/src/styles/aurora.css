@@ -121,6 +121,19 @@ fieldset.panel legend { padding: 0 4px; font-weight: 600; }
 .layer-row label { display: flex; align-items: center; gap: 10px; min-height: 44px; }
 .layer-row input { width: 22px; height: 22px; }
 
+.street-search label { display: block; font-weight: 600; margin-bottom: 6px; }
+.street-search input {
+  width: 100%; min-height: 44px; padding: 0 10px; box-sizing: border-box;
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; color: inherit;
+}
+.street-results { list-style: none; margin: 8px 0 0; padding: 0; max-height: 200px; overflow-y: auto; }
+.street-results li + li { margin-top: 4px; }
+.street-results button {
+  display: block; width: 100%; min-height: 44px; padding: 0 10px; text-align: left;
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; color: inherit; cursor: pointer;
+}
+.street-results button:hover, .street-results button:focus-visible { background: var(--accent); color: #fff; }
+
 .roster { list-style: none; margin: 8px 0 0; padding: 0; max-height: 200px; overflow-y: auto; }
 .roster li { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); }
 .roster .meta { color: var(--text-muted); font-size: 0.85rem; }

@@ -2,6 +2,7 @@ import { LAYER_KEYS } from '../state/layerPrefs'
 import type { LayerKey, LayerPrefs } from '../state/layerPrefs'
 
 const LABELS: Record<LayerKey, string> = {
+  streets: 'Streets',
   players: 'Players',
   vehicles: 'Vehicles',
   safehouses: 'Safehouses',
