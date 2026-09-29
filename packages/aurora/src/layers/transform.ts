@@ -7,6 +7,9 @@ import type { HealthSample, MapObject, PlayerPublic, Safehouse, Vehicle, Visible
 export interface PlayerFeature {
   key: string
   username: string
+  /** Name only, no hours-survived or delayed note - T41's permanent on-map label. */
+  name: string
+  /** Name plus hours survived plus the delayed note, joined by " - " - today's hover text. */
   label: string
   latlng: [number, number]
   /** True for a delayed, cell-rounded position: drawn hollow with a dashed outline and labelled. */
@@ -27,6 +30,7 @@ export function playerFeatures(positions: VisiblePosition[], profiles: PlayerPub
     out.push({
       key: `${pos.server_id}/${pos.username}`,
       username: pos.username,
+      name,
       label: parts.join(' - '),
       latlng: [pos.y, pos.x],
       delayed: pos.is_delayed,

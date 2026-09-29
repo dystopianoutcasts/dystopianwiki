@@ -8,6 +8,9 @@ import { streetWeight } from './transform'
 import type { TilesConfig } from '../map/tiles'
 import { zombieTileUrl } from '../map/tiles'
 import { worldBounds } from '../map/coords'
+// T41: imported from ./panes directly (not from map/MapView.tsx, which imports this
+// very file) to avoid a circular import - see panes.ts's own header comment.
+import { PLAYERS_PANE, PLAYER_NAMES_PANE } from '../map/panes'
 
 function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -15,12 +18,20 @@ function escapeHtml(s: string): string {
 
 /**
  * Players, clustered. A live position is a filled dot; a delayed, cell-rounded one is a
- * hollow dot with a dashed outline. The tooltip and the marker's accessible name also say
+ * hollow dot with a dashed outline. The marker's accessible name (`title`/`alt`) says
  * "approximate position, delayed", so the state never rests on colour or shape alone.
  * Characters linked to the signed-in account get a ring.
+ *
+ * T41 (owner): player markers, and the names beside them, must draw above every other
+ * layer - both get a pane of their own (PLAYERS_PANE, PLAYER_NAMES_PANE; see
+ * map/panes.ts), the only builder in this file that uses either. Leaflet only supports
+ * one bound tooltip per marker, so the permanent name label (`f.name`, always visible)
+ * takes that slot; the full label (name + hours survived + the delayed note) that used
+ * to be the hover tooltip is still available as the marker's own `title`/`alt`, which
+ * already carried it.
  */
 export function buildPlayers(features: PlayerFeature[], own: ReadonlySet<string>): L.Layer {
-  const group = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 40 })
+  const group = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 40, clusterPane: PLAYERS_PANE })
   for (const f of features) {
     const cls = ['aurora-dot', f.delayed ? 'is-delayed' : 'is-live', own.has(f.username) ? 'is-own' : ''].join(' ').trim()
     const marker = L.marker(f.latlng, {
@@ -28,8 +39,15 @@ export function buildPlayers(features: PlayerFeature[], own: ReadonlySet<string>
       title: f.label,
       alt: f.label,
       keyboard: true,
+      pane: PLAYERS_PANE,
     })
-    marker.bindTooltip(escapeHtml(f.label), { direction: 'top', offset: [0, -8] })
+    marker.bindTooltip(escapeHtml(f.name), {
+      permanent: true,
+      direction: 'right',
+      offset: [10, 0],
+      className: 'player-name',
+      pane: PLAYER_NAMES_PANE,
+    })
     group.addLayer(marker)
   }
   return group

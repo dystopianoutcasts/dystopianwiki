@@ -1,0 +1,19 @@
+// T41 (owner, 2026-09-29): "player icons have the highest z-value so that they're on
+// top of anything that appears, like cars and such things." Leaflet's own default panes
+// are, in ascending z-index: tile 200, overlay (vector shapes, e.g. streets/safehouses)
+// 400, shadow 500, marker 600, tooltip 650, popup 700. Within one pane, draw order
+// follows latitude, so "on top of everything" cannot be guaranteed by z-index alone
+// inside the shared marker pane - it needs a pane of its own.
+//
+// A pure module with no Leaflet import (unlike map/MapView.tsx, which touches `window`
+// at load time and cannot be imported under this repo's node test environment - see
+// data/useAuroraData.test.ts's own header note) - so its numeric constants can be
+// asserted on directly rather than only as source text. map/MapView.tsx imports these
+// to create the panes and re-exports them; layers/build.ts imports them directly to
+// avoid a circular import between the two.
+export const PLAYERS_PANE = 'aurora-players'
+/** Above the tooltip pane (650), below popups (700): a player is never hidden by
+ * another layer's hover text, and a popup still covers everything. */
+export const PLAYERS_PANE_Z_INDEX = 660
+export const PLAYER_NAMES_PANE = 'aurora-player-names'
+export const PLAYER_NAMES_PANE_Z_INDEX = 670

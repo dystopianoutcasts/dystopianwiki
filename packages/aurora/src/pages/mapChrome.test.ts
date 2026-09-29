@@ -97,3 +97,14 @@ describe('T38: find a player', () => {
     expect(Number(m?.[1])).toBe(17)
   })
 })
+
+describe('T41: players and their names draw above everything else', () => {
+  it('MapView.tsx creates both player panes when the map is created', () => {
+    expect(mapViewSrc).toMatch(/map\.createPane\(PLAYERS_PANE\)/)
+    expect(mapViewSrc).toMatch(/map\.createPane\(PLAYER_NAMES_PANE\)/)
+  })
+
+  it('MapView.tsx imports the pane constants from the pure ./panes module, not by redefining them', () => {
+    expect(mapViewSrc).toMatch(/from '\.\/panes'/)
+  })
+})

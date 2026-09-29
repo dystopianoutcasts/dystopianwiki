@@ -31,6 +31,12 @@ import type {
   WorldMapFeatures,
   ZoneFeature,
 } from '../layers/transform'
+import { PLAYERS_PANE, PLAYERS_PANE_Z_INDEX, PLAYER_NAMES_PANE, PLAYER_NAMES_PANE_Z_INDEX } from './panes'
+
+// T41: re-exported so a consumer of this module sees them here, next to the map that
+// creates them; layers/build.ts imports the same constants from ./panes directly
+// instead, to avoid a circular import between this file and layers/build.ts.
+export { PLAYERS_PANE, PLAYERS_PANE_Z_INDEX, PLAYER_NAMES_PANE, PLAYER_NAMES_PANE_Z_INDEX }
 
 /** Zoom below this shows the whole 19968-square world smaller than a phone screen. */
 export const MIN_ZOOM = 3
@@ -117,6 +123,10 @@ export function MapView(props: Props) {
       maxBoundsViscosity: 0.8,
       attributionControl: false,
     })
+    // T41: player markers and their permanent name labels get panes of their own, above
+    // every other overlay and its hover text, below only a popup. See ./panes.ts.
+    map.createPane(PLAYERS_PANE).style.zIndex = String(PLAYERS_PANE_Z_INDEX)
+    map.createPane(PLAYER_NAMES_PANE).style.zIndex = String(PLAYER_NAMES_PANE_Z_INDEX)
     const Layer = L.TileLayer.extend({
       getTileUrl(coords: L.Coords) {
         return tileUrl(cfg, cfg.layers.ground, coords.z, coords.x, coords.y, tilesBase)

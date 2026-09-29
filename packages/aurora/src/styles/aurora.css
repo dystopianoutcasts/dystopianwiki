@@ -181,6 +181,32 @@ fieldset.panel legend { padding: 0 4px; font-weight: 600; }
 .aurora-dot.is-own { box-shadow: 0 0 0 3px #ff5fa2; }
 .aurora-vehicle { display: block; width: 12px; height: 12px; margin: 1px; background: #f0b050; border: 2px solid #1b1300; }
 
+/* Permanent player-name label (T41, owner: "name labels on both server maps for player
+   icons"; drawn in its own pane above every other layer, see map/panes.ts). Light text
+   on a near-opaque dark pill regardless of the light/dark scheme above and regardless of
+   whatever terrain sits under it, so contrast never depends on the map's own colours:
+   #f2f6fb on rgba(8,11,16,0.9) is about 17.6:1, far past the 4.5:1 minimum. No pointer
+   events, so a name never blocks a click on the map or the marker beside it. One line,
+   no wrapping; max-width is tuned to roughly 24 characters at this font size (an
+   approximation - proportional fonts have no exact character-to-pixel mapping in CSS
+   alone), past which the browser's own ellipsis takes over. */
+.player-name.leaflet-tooltip {
+  background: rgba(8, 11, 16, 0.9);
+  color: #f2f6fb;
+  border: none;
+  box-shadow: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 170px;
+}
+.player-name.leaflet-tooltip::before { display: none; }
+
 /* Named areas (T22 Part D item 2): plain text, no marker box, centred on its point via
    the transform below rather than Leaflet's iconAnchor, so it stays centred whatever
    the name's rendered width is. Towns read bigger and bolder so they own a low zoom;

@@ -42,6 +42,15 @@ describe('player features', () => {
     expect(f.delayed).toBe(false)
   })
 
+  it('T41: name is the name alone, with no hours-survived or delayed note even when label has both', () => {
+    const [f] = playerFeatures([pos({ is_delayed: true })], [prof()])
+    expect(f.name).toBe('Alice W')
+    expect(f.label).toContain('h survived')
+    expect(f.label).toContain('delayed')
+    expect(f.name).not.toContain('h survived')
+    expect(f.name).not.toContain('delayed')
+  })
+
   it('marks delayed positions and says so in words, not only in style', () => {
     const [f] = playerFeatures([pos({ is_delayed: true, is_rounded: true })], [prof()])
     expect(f.delayed).toBe(true)
