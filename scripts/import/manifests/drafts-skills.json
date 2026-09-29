@@ -1,0 +1,66 @@
+{
+  "sources_root": "C:/Users/ediaz/.claude/skills",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "advanced",
+    "target": "drafts",
+    "provenance": { "compiled": "2026-09-29", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "pz-vehicles/SKILL.md",
+      "section": "vehicles",
+      "category": "reference",
+      "slug": "pz-vehicles-skill",
+      "title": "Build 42 vehicle modding skill",
+      "split": "none",
+      "tags": ["vehicles", "skill", "engine-hooks", "mechanics-ui"]
+    },
+    {
+      "source": "pz-vehicle-ui/SKILL.md",
+      "section": "vehicles",
+      "category": "reference",
+      "slug": "pz-vehicle-ui-skill",
+      "title": "Build 42 vehicle mechanics UI skill",
+      "split": "none",
+      "tags": ["vehicles", "ui", "skill", "mechanics-window"]
+    },
+    {
+      "source": "pz-vehicle-animation/SKILL.md",
+      "section": "vehicles",
+      "category": "animation",
+      "slug": "pz-vehicle-animation-skill-guide",
+      "title": "Vehicle part animation skill",
+      "split": "none",
+      "tags": ["vehicles", "animation", "skill", "rigging"]
+    },
+    {
+      "source": "pz-animation/SKILL.md",
+      "section": "vehicles",
+      "category": "animation",
+      "slug": "pz-animation-skill",
+      "title": "PZ character animation skill (Bob rig)",
+      "split": "none",
+      "tags": ["animation", "skill", "blender", "character-rig"]
+    },
+    {
+      "source": "pz-mod-format/SKILL.md",
+      "section": "modding",
+      "category": "foundations",
+      "slug": "pz-mod-format-skill",
+      "title": "PZ mod data file format skill",
+      "split": "none",
+      "tags": ["skill", "mod-format", "translations", "mod-info"]
+    },
+    {
+      "source": "pz-craft-recipes/SKILL.md",
+      "section": "modding",
+      "category": "crafting",
+      "slug": "pz-craft-recipes-skill",
+      "title": "Build 42 craftRecipe authoring skill",
+      "split": "none",
+      "tags": ["skill", "craft-recipes", "crafting"]
+    }
+  ]
+}

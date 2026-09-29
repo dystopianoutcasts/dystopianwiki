@@ -1,0 +1,21 @@
+{
+  "sources_root": "R:/ZOMBOID/_dev/OutcastMotorsUI",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "advanced",
+    "target": "drafts",
+    "provenance": { "compiled": "2026-08-09", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "01-vanilla-analysis.md",
+      "section": "vehicles",
+      "category": "animation",
+      "slug": "outcast-motors-ui-vanilla-analysis",
+      "title": "How vanilla presents vehicle mechanics, and where it stops",
+      "split": "none",
+      "tags": ["vehicles", "ui", "outcast-motors-ui", "mechanics-window"]
+    }
+  ]
+}

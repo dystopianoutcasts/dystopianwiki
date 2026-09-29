@@ -1,0 +1,21 @@
+{
+  "sources_root": "C:/Users/ediaz/.claude/references",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "intermediate",
+    "target": "drafts",
+    "provenance": { "compiled": "2026-08-09", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "pz-ui-design-lens.md",
+      "section": "modding",
+      "category": "ui",
+      "slug": "pz-ui-design-lens",
+      "title": "Project Zomboid UI design lens",
+      "split": "none",
+      "tags": ["ui", "design-lens", "outcast-mods"]
+    }
+  ]
+}

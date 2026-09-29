@@ -1,0 +1,309 @@
+{
+  "sources_root": "C:/Users/ediaz/.claude/projects/r--ZOMBOID/memory",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "advanced",
+    "target": "drafts",
+    "provenance": { "compiled": "2026-09-29", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "b42-community-vehicle-mods.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "b42-community-vehicle-mods",
+      "title": "14 B42 vehicle mods are installed locally and readable",
+      "split": "none",
+      "tags": ["vehicles", "community-mods", "outcast-motors-ui"]
+    },
+    {
+      "source": "b42-engine-verified-facts.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "b42-engine-verified-facts",
+      "title": "B42 engine facts read from the sealed decompile that contradict plausible guesses",
+      "split": "none",
+      "tags": ["engine", "decompile", "containers", "vehicles"]
+    },
+    {
+      "source": "b42-fluid-system-reference.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "b42-fluid-system-reference",
+      "title": "B42 ships a complete fluid system that supersedes Project Summer Car's hand-rolled one",
+      "split": "none",
+      "tags": ["fluids", "vehicles", "multiplayer"]
+    },
+    {
+      "source": "b42-mapping-reference.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "b42-mapping-reference",
+      "title": "Compiled B42 map-modding reference lives at B42_Mapping",
+      "split": "none",
+      "tags": ["mapping", "tools", "geometry"]
+    },
+    {
+      "source": "b42-reflection-ban.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "b42-reflection-ban",
+      "title": "Lua reflection is gated behind -debug since B42.15 after the March 2026 security incident",
+      "split": "none",
+      "tags": ["reflection", "security", "lua"]
+    },
+    {
+      "source": "b42-traits-reference.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "b42-traits-reference",
+      "title": "Compiled trait research at B42_Traits",
+      "split": "none",
+      "tags": ["traits", "skills", "trait-factory"]
+    },
+    {
+      "source": "b42-ui-reference.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "b42-ui-reference",
+      "title": "Compiled B42 UI engine guide at B42_UI",
+      "split": "none",
+      "tags": ["ui", "anchors", "engine"]
+    },
+    {
+      "source": "b42-vehicle-animation-reference.md",
+      "section": "vehicles",
+      "category": "animation",
+      "slug": "b42-vehicle-animation-reference",
+      "title": "How to animate a B42 vehicle part",
+      "split": "none",
+      "tags": ["vehicles", "animation", "reference"]
+    },
+    {
+      "source": "b42-vehicle-mods-reference.md",
+      "section": "vehicles",
+      "category": "animation",
+      "slug": "b42-vehicle-mods-reference",
+      "title": "Compiled deep-dive on Project Summer Car and the car physics mods",
+      "split": "none",
+      "tags": ["vehicles", "project-summer-car", "mod-study"]
+    },
+    {
+      "source": "pz-authored-value-range.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "pz-authored-value-range",
+      "title": "PZ vehicle shaders multiply only, so a texture too dark is unfixable by lighting",
+      "split": "none",
+      "tags": ["vehicles", "shaders", "textures"]
+    },
+    {
+      "source": "pz-b42-modding-gotchas.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "pz-b42-modding-gotchas",
+      "title": "B42 mod data-file traps that fail silently",
+      "split": "none",
+      "tags": ["translations", "perks", "xp", "sandbox"]
+    },
+    {
+      "source": "pz-fbx-node-scale-trap.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "pz-fbx-node-scale-trap",
+      "title": "FBX asset traps that fail SILENTLY in PZ vehicles",
+      "split": "none",
+      "tags": ["fbx", "blender", "vehicles", "scale"]
+    },
+    {
+      "source": "pz-integer-condition-damage-trap.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "pz-integer-condition-damage-trap",
+      "title": "PZ part and item condition is an INTEGER, so sub-0.5 per-tick damage never applies",
+      "split": "none",
+      "tags": ["condition", "damage", "integer-rounding"]
+    },
+    {
+      "source": "pz-junction-animsets-mp-trap.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "pz-junction-animsets-mp-trap",
+      "title": "A locally-linked mod that is also subscribed on Steam breaks the MP join two different ways",
+      "split": "none",
+      "tags": ["multiplayer", "junctions", "animsets"]
+    },
+    {
+      "source": "pz-layout-ini-per-resolution.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "pz-layout-ini-per-resolution",
+      "title": "PZ UI window positions live in layout.ini keyed per-resolution",
+      "split": "none",
+      "tags": ["ui", "layout", "resolution"]
+    },
+    {
+      "source": "pz-lua-alphabetical-load-order.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "pz-lua-alphabetical-load-order",
+      "title": "PZ runs a mod's Lua files alphabetically per folder",
+      "split": "none",
+      "tags": ["lua", "load-order", "modding"]
+    },
+    {
+      "source": "pz-lua-exposes-methods-not-fields.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "pz-lua-exposes-methods-not-fields",
+      "title": "PZ Lua binds Java methods only, not fields",
+      "split": "none",
+      "tags": ["lua", "exposer", "java-binding"]
+    },
+    {
+      "source": "pz-lua-file-output.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "pz-lua-file-output",
+      "title": "PZ Lua file writing",
+      "split": "none",
+      "tags": ["lua", "logging", "file-io"]
+    },
+    {
+      "source": "pz-vehicle-animation-skill.md",
+      "section": "vehicles",
+      "category": "animation",
+      "slug": "pz-vehicle-animation-skill",
+      "title": "Use the pz-vehicle-animation skill before authoring a rig or writing a vehicle model script",
+      "split": "none",
+      "tags": ["vehicles", "animation", "skill"]
+    },
+    {
+      "source": "pz-vehicle-model-texture-key.md",
+      "section": "vehicles",
+      "category": "animation",
+      "slug": "pz-vehicle-model-texture-key",
+      "title": "A vehicle model's texture key is ignored under multiuv shaders",
+      "split": "none",
+      "tags": ["vehicles", "textures", "shaders"]
+    },
+    {
+      "source": "pz-vehicle-part-wildcard-merge.md",
+      "section": "vehicles",
+      "category": "animation",
+      "slug": "pz-vehicle-part-wildcard-merge",
+      "title": "B42 vehicle parts merge from wildcard blocks and templates",
+      "split": "none",
+      "tags": ["vehicles", "parts", "wildcard-merge"]
+    },
+    {
+      "source": "pz-vehicle-xp-only-on-failure.md",
+      "section": "vehicles",
+      "category": "animation",
+      "slug": "pz-vehicle-xp-only-on-failure",
+      "title": "B42 vehicle install and uninstall pays Mechanics XP only on the failure branch",
+      "split": "none",
+      "tags": ["vehicles", "xp", "mechanics"]
+    },
+    {
+      "source": "pz-vehicles-use-patch-trap.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "pz-vehicles-use-patch-trap",
+      "title": "Vehicles.Use.* is server Lua resolved by name and cached on first use",
+      "split": "none",
+      "tags": ["vehicles", "lua", "patching"]
+    },
+    {
+      "source": "pz-workshop-description-limit.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "pz-workshop-description-limit",
+      "title": "Steam refusals make the PZ uploader send no files",
+      "split": "none",
+      "tags": ["workshop", "steam", "upload"]
+    },
+    {
+      "source": "kahlua-stdlib-is-smaller.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "kahlua-stdlib-is-smaller",
+      "title": "Kahlua has no next, io, table.pack, unpack, move, loadstring or dofile",
+      "split": "none",
+      "tags": ["kahlua", "lua", "stdlib"]
+    },
+    {
+      "source": "lua-split-drops-file-locals.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "lua-split-drops-file-locals",
+      "title": "Splitting a PZ Lua file silently drops its file-local constants",
+      "split": "none",
+      "tags": ["lua", "refactoring", "file-locals"]
+    },
+    {
+      "source": "mp-xp-server-authoritative.md",
+      "section": "modding",
+      "category": "multiplayer",
+      "slug": "mp-xp-server-authoritative",
+      "title": "In MP, XP must be awarded from server-side Lua",
+      "split": "none",
+      "tags": ["multiplayer", "xp", "server-authority"]
+    },
+    {
+      "source": "mp-evidence-is-server-logs-only.md",
+      "section": "modding",
+      "category": "multiplayer",
+      "slug": "mp-evidence-is-server-logs-only",
+      "title": "From multiplayer rounds we get the server logs and nothing else",
+      "split": "none",
+      "tags": ["multiplayer", "logs", "diagnostics"]
+    },
+    {
+      "source": "van-is-seven-families.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "van-is-seven-families",
+      "title": "Van names seven different PZ vehicle families on two code paths",
+      "split": "none",
+      "tags": ["vehicles", "naming", "families"]
+    },
+    {
+      "source": "vva-not-vanilla-for-car-animations.md",
+      "section": "vehicles",
+      "category": "animation",
+      "slug": "vva-not-vanilla-for-car-animations",
+      "title": "Vanilla and TIS have zero working car animations",
+      "split": "none",
+      "tags": ["vehicles", "animation", "vva"]
+    },
+    {
+      "source": "outcast-family-architecture.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "outcast-family-architecture",
+      "title": "The Outcast mods are built as one family",
+      "split": "none",
+      "tags": ["outcast-mods", "architecture", "family"]
+    },
+    {
+      "source": "outcast-family-logging.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "outcast-family-logging",
+      "title": "Every Outcast mod logs to the shared Outcast.log via OutcastLib.Debug",
+      "split": "none",
+      "tags": ["outcast-mods", "logging", "multiplayer"]
+    },
+    {
+      "source": "outcast-shared-tooling.md",
+      "section": "modding",
+      "category": "gotchas",
+      "slug": "outcast-shared-tooling",
+      "title": "Where Outcast dev scripts live, and the Workshop-vs-mods name-space split",
+      "split": "none",
+      "tags": ["outcast-mods", "tooling", "workshop"]
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "sources_root": "R:/ZOMBOID/Mods/OutcastMods",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "advanced",
+    "target": "drafts",
+    "provenance": { "compiled": "2026-08-10", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "OutcastHusbandry/docs/DESIGN.md",
+      "section": "outcast-mods",
+      "category": "outcast-husbandry",
+      "slug": "design",
+      "title": "Outcast Husbandry -- design",
+      "split": "none",
+      "tags": ["outcast-husbandry", "design", "animals"],
+      "provenance": { "compiled": "2026-09-24", "game_version": "42.20" }
+    },
+    {
+      "source": "OutcastLadders/docs/DESIGN.md",
+      "section": "outcast-mods",
+      "category": "outcast-ladders",
+      "slug": "design",
+      "title": "Outcast Ladders -- design",
+      "split": "none",
+      "tags": ["outcast-ladders", "design", "climbing"],
+      "provenance": { "compiled": "2026-08-10", "game_version": "42.20" }
+    },
+    {
+      "source": "OutcastProximity/docs/DESIGN.md",
+      "section": "outcast-mods",
+      "category": "outcast-proximity",
+      "slug": "design",
+      "title": "Outcast Proximity -- design",
+      "split": "none",
+      "tags": ["outcast-proximity", "design", "inventory"],
+      "provenance": { "compiled": "2026-08-04", "game_version": "42.20" }
+    },
+    {
+      "source": "OutcastProximity/docs/ROADMAP.md",
+      "section": "outcast-mods",
+      "category": "outcast-proximity",
+      "slug": "roadmap",
+      "title": "Outcast Proximity -- roadmap",
+      "split": "none",
+      "tags": ["outcast-proximity", "roadmap", "inventory"],
+      "provenance": { "compiled": "2026-09-08", "game_version": "42.20" }
+    },
+    {
+      "source": "OutcastPunch/docs/DESIGN.md",
+      "section": "outcast-mods",
+      "category": "outcast-punch",
+      "slug": "design",
+      "title": "Outcast Punch -- design",
+      "split": "none",
+      "tags": ["outcast-punch", "design", "combat"],
+      "provenance": { "compiled": "2026-09-08", "game_version": "42.20" }
+    },
+    {
+      "source": "OutcastPunch/docs/ROADMAP.md",
+      "section": "outcast-mods",
+      "category": "outcast-punch",
+      "slug": "roadmap",
+      "title": "Outcast Punch -- roadmap",
+      "split": "none",
+      "tags": ["outcast-punch", "roadmap", "combat"],
+      "provenance": { "compiled": "2026-09-08", "game_version": "42.20" }
+    },
+    {
+      "source": "OutcastRipAll/docs/DESIGN.md",
+      "section": "outcast-mods",
+      "category": "outcast-rip-all",
+      "slug": "design",
+      "title": "Outcast Rip All -- design",
+      "split": "none",
+      "tags": ["outcast-rip-all", "design", "crafting"],
+      "provenance": { "compiled": "2026-08-07", "game_version": "42.20" }
+    },
+    {
+      "source": "OutcastSawAll/docs/DESIGN.md",
+      "section": "outcast-mods",
+      "category": "outcast-saw-all",
+      "slug": "design",
+      "title": "Outcast Saw All -- design",
+      "split": "none",
+      "tags": ["outcast-saw-all", "design", "crafting"],
+      "provenance": { "compiled": "2026-08-04", "game_version": "42.20" }
+    },
+    {
+      "source": "OutcastUpright/docs/DESIGN.md",
+      "section": "outcast-mods",
+      "category": "outcast-upright",
+      "slug": "design",
+      "title": "Outcast Upright -- design",
+      "split": "none",
+      "tags": ["outcast-upright", "design", "vehicles"],
+      "provenance": { "compiled": "2026-08-06", "game_version": "42.20" }
+    }
+  ]
+}

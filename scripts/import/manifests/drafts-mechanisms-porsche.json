@@ -1,0 +1,30 @@
+{
+  "sources_root": "R:/ZOMBOID/_dev/Porsche911_992_2_Ref",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "advanced",
+    "target": "drafts",
+    "provenance": { "compiled": "2026-08-05", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "PZ_VEHICLE_PIPELINE.md",
+      "section": "vehicles",
+      "category": "animation",
+      "slug": "pz-vehicle-pipeline",
+      "title": "Project Zomboid vehicle pipeline -- verified against B41 and B42",
+      "split": "none",
+      "tags": ["vehicles", "pipeline", "b41-b42-diff", "porsche-911"]
+    },
+    {
+      "source": "HINGE_REFERENCE.md",
+      "section": "vehicles",
+      "category": "animation",
+      "slug": "panel-hinge-reference",
+      "title": "911 panel hinges -- what is confirmed, what is not",
+      "split": "none",
+      "tags": ["vehicles", "hinges", "rigging", "porsche-911"]
+    }
+  ]
+}

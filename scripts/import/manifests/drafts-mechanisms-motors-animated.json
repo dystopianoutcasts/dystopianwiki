@@ -1,0 +1,21 @@
+{
+  "sources_root": "R:/ZOMBOID/_dev/OutcastMotorsAnimated",
+  "defaults": {
+    "game": "pz",
+    "version": "build-42",
+    "difficulty": "advanced",
+    "target": "drafts",
+    "provenance": { "compiled": "2026-08-10", "game_version": "42.20" }
+  },
+  "entries": [
+    {
+      "source": "01-mechanism.md",
+      "section": "vehicles",
+      "category": "animation",
+      "slug": "outcast-motors-animated-mechanism",
+      "title": "How animated vehicle parts work in Build 42",
+      "split": "none",
+      "tags": ["vehicles", "animation", "outcast-motors-animated", "mechanism"]
+    }
+  ]
+}
