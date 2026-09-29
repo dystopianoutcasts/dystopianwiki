@@ -15,7 +15,7 @@ interface SEOHeadProps {
   noIndex?: boolean;
 }
 
-const SITE_URL = 'https://dystopianoutcasts.wiki';
+const SITE_URL = 'https://dystopianoutcasts.online';
 const DEFAULT_OG_IMAGE = '/assets/branding/og-image.png';
 
 export function SEOHead({

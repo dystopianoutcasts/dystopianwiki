@@ -47,7 +47,7 @@ export function TermsPage() {
                 <strong>Third-party Social Media Service</strong> means any services or content (including data, information, products or services) provided by a third-party that may be displayed, included or made available by the Service.
               </li>
               <li>
-                <strong>Website</strong> refers to Dystopian Outcasts Wiki, accessible from <a href="https://dystopianoutcasts.wiki" rel="external nofollow noopener" target="_blank">dystopianoutcasts.wiki</a>
+                <strong>Website</strong> refers to Dystopian Outcasts Wiki, accessible from <a href="https://dystopianoutcasts.online" rel="external nofollow noopener" target="_blank">dystopianoutcasts.online</a>
               </li>
               <li>
                 <strong>You</strong> means the individual accessing or using the Service, or the company, or other legal entity on behalf of which such individual is accessing or using the Service, as applicable.

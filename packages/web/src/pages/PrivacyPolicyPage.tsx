@@ -149,7 +149,7 @@ export function PrivacyPolicyPage() {
           <p>If you have questions about this privacy policy, please contact us:</p>
           <ul>
             <li>Email: <a href="mailto:dystopianoutcasts@gmail.com">dystopianoutcasts@gmail.com</a></li>
-            <li>Website: <a href="https://dystopianoutcasts.wiki">dystopianoutcasts.wiki</a></li>
+            <li>Website: <a href="https://dystopianoutcasts.online">dystopianoutcasts.online</a></li>
           </ul>
         </section>
 

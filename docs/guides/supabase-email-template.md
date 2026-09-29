@@ -22,7 +22,7 @@ http://localhost:5173/reset-password
 
 **For Production:**
 ```
-https://dystopianoutcasts.wiki/reset-password
+https://dystopianoutcasts.online/reset-password
 ```
 
 ### 2. Custom Email Template (HTML)
@@ -169,7 +169,7 @@ Replace the default template with this branded version:
   <div class="container">
     <!-- Header -->
     <div class="header">
-      <img src="https://dystopianoutcasts.wiki/assets/branding/benny/benny-512.png" alt="Dystopian Outcasts" class="logo">
+      <img src="https://dystopianoutcasts.online/assets/branding/benny/benny-512.png" alt="Dystopian Outcasts" class="logo">
       <h1 class="title">Dystopian Outcasts Wiki</h1>
       <p class="subtitle">Project Zomboid Modding Community</p>
     </div>
@@ -209,7 +209,7 @@ Replace the default template with this branded version:
         <a href="mailto:dystopianoutcasts@gmail.com">dystopianoutcasts@gmail.com</a>
       </p>
       <p style="margin-top: 10px;">
-        <a href="https://dystopianoutcasts.wiki">dystopianoutcasts.wiki</a>
+        <a href="https://dystopianoutcasts.online">dystopianoutcasts.online</a>
       </p>
       <p style="margin-top: 20px; font-size: 12px;">
         © 2026 Dystopian Outcasts. All rights reserved.
@@ -242,7 +242,7 @@ If you didn't ask to reset your password, you can safely ignore this email. Your
 ---
 
 Need help? Contact us at dystopianoutcasts@gmail.com
-Visit us: https://dystopianoutcasts.wiki
+Visit us: https://dystopianoutcasts.online
 
 © 2026 Dystopian Outcasts. All rights reserved.
 ```
@@ -273,7 +273,7 @@ After configuring:
 
 Before deploying to production:
 
-- [ ] Update redirect URL to `https://dystopianoutcasts.wiki/reset-password`
+- [ ] Update redirect URL to `https://dystopianoutcasts.online/reset-password`
 - [ ] Replace logo URL if hosting locally
 - [ ] Test with real email account
 - [ ] Verify all links work correctly
@@ -300,7 +300,7 @@ Before deploying to production:
 
 **Logo:**
 - Current: `/assets/branding/benny/benny-512.png`
-- Hosted at: `https://dystopianoutcasts.wiki/assets/branding/benny/benny-512.png`
+- Hosted at: `https://dystopianoutcasts.online/assets/branding/benny/benny-512.png`
 
 **Colors:**
 - Primary Orange: `#d4782c`

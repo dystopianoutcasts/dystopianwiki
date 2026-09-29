@@ -1,11 +1,11 @@
 # Robots.txt for PZ Modding Wiki
-# https://dystopianoutcasts.wiki
+# https://dystopianoutcasts.online
 
 User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://dystopianoutcasts.wiki/sitemap.xml
+Sitemap: https://dystopianoutcasts.online/sitemap.xml
 
 # Disallow search results pages (duplicate content)
 Disallow: /search?*
