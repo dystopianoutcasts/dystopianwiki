@@ -1079,13 +1079,13 @@ BEGIN
   END IF;
   RAISE NOTICE 'PASS admin reads the seeded aurora.health_samples rows';
 
-  SELECT count(*) INTO v_count FROM aurora.servers;
+  SELECT count(*) INTO v_count FROM aurora.servers WHERE id = 'test-aurora';
   IF v_count <> 1 THEN
     RAISE EXCEPTION 'FAIL: admin read % rows from aurora.servers, expected 1', v_count;
   END IF;
   RAISE NOTICE 'PASS admin reads the seeded aurora.servers row';
 
-  SELECT count(*) INTO v_count FROM aurora.item_catalog;
+  SELECT count(*) INTO v_count FROM aurora.item_catalog WHERE server_id = 'test-aurora';
   IF v_count <> 1 THEN
     RAISE EXCEPTION 'FAIL: admin read % rows from aurora.item_catalog, expected 1', v_count;
   END IF;
