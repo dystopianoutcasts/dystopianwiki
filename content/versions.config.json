@@ -1,7 +1,7 @@
 {
   "_comment": "Hand-maintained source for scripts/build-nav.ts. Sections and categories are discovered from content/articles; only the version list and the default live here.",
   "game": "pz",
-  "defaultVersion": "build-41",
+  "defaultVersion": "build-42",
   "versions": [
     {
       "id": "build-41",

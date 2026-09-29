@@ -33,7 +33,7 @@ export interface VersionInfo {
 
 export const GAME = 'pz'
 
-export const DEFAULT_VERSION = 'build-41'
+export const DEFAULT_VERSION = 'build-42'
 
 export const VERSIONS: VersionInfo[] = [
   {
