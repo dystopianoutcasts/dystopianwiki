@@ -1,0 +1,6 @@
+{
+  "name": "Fundamentals",
+  "description": "Essential concepts for understanding Project Zomboid modding: architecture, file structure, and syntax basics.",
+  "icon": "book",
+  "displayOrder": 1
+}

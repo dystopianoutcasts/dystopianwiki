@@ -1,0 +1,6 @@
+{
+  "name": "Setup",
+  "description": "Set up your development environment for PZ modding: editors, folder structure, and debug tools.",
+  "icon": "settings",
+  "displayOrder": 2
+}

@@ -1,0 +1,6 @@
+{
+  "name": "UI Framework",
+  "description": "Project Zomboid's ISUI component system for building custom interfaces.",
+  "icon": "layout",
+  "displayOrder": 5
+}

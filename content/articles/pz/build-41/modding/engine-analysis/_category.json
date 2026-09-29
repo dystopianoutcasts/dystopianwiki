@@ -1,0 +1,6 @@
+{
+  "name": "Engine Analysis",
+  "description": "How the Java engine behind the Lua API works: decompilation, zombie and vehicle internals, reflection, and performance.",
+  "icon": "gear",
+  "displayOrder": 16
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Recipes",
+  "description": "Create custom crafting recipes for items, weapons, and consumables.",
+  "icon": "wrench",
+  "displayOrder": 7
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Weapon Repair",
+  "description": "Implement weapon maintenance and repair systems for custom weapons.",
+  "icon": "hammer",
+  "displayOrder": 12
+}

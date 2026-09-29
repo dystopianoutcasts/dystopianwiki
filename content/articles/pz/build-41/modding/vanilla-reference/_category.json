@@ -1,0 +1,6 @@
+{
+  "name": "Vanilla Reference",
+  "description": "Comprehensive reference documentation for all vanilla Project Zomboid items, weapons, recipes, and game data.",
+  "icon": "database",
+  "displayOrder": 15
+}

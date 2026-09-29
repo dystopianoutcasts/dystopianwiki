@@ -1,0 +1,6 @@
+{
+  "name": "API Reference",
+  "description": "Complete reference data for PZ's Lua API: events, globals, and script properties.",
+  "icon": "database",
+  "displayOrder": 6
+}

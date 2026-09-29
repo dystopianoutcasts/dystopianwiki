@@ -1,0 +1,6 @@
+{
+  "name": "Mapping",
+  "description": "Create custom maps with TileZed and WorldEd",
+  "icon": "map",
+  "displayOrder": 2
+}

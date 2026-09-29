@@ -1,0 +1,6 @@
+{
+  "name": "Game Mechanics",
+  "description": "Modify and extend core game systems like injuries, skills, and weather.",
+  "icon": "zap",
+  "displayOrder": 11
+}

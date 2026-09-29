@@ -1,0 +1,6 @@
+{
+  "name": "Items",
+  "description": "Define new items with custom properties, textures, and behaviors.",
+  "icon": "box",
+  "displayOrder": 8
+}
