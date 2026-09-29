@@ -251,14 +251,15 @@ BEGIN
   RAISE NOTICE 'PASS a position newer than delayMinutes is withheld';
 
   -- Exactly one row per character, no duplicate between the two halves.
-  SELECT count(*) INTO v_count FROM aurora.player_positions_visible;
+  -- Scoped to the fixture server: the live database has real rows on other servers.
+  SELECT count(*) INTO v_count FROM aurora.player_positions_visible WHERE server_id = 'test-aurora';
   IF v_count <> 3 THEN
     RAISE EXCEPTION 'FAIL: expected 3 rows in the view for the linked user, got %', v_count;
   END IF;
   RAISE NOTICE 'PASS the view returns one row per character (3)';
 
   -- The live table itself leaks nothing beyond alice and bob.
-  SELECT count(*) INTO v_count FROM aurora.player_positions;
+  SELECT count(*) INTO v_count FROM aurora.player_positions WHERE server_id = 'test-aurora';
   IF v_count <> 2 THEN
     RAISE EXCEPTION 'FAIL: linked user read % rows from aurora.player_positions, expected 2', v_count;
   END IF;
@@ -345,7 +346,7 @@ BEGIN
   END IF;
   RAISE NOTICE 'PASS admin flag is read from user_profiles.is_aurora_admin';
 
-  SELECT count(*) INTO v_count FROM aurora.player_positions;
+  SELECT count(*) INTO v_count FROM aurora.player_positions WHERE server_id = 'test-aurora';
   IF v_count <> 3 THEN
     RAISE EXCEPTION 'FAIL: admin read % rows from aurora.player_positions, expected 3', v_count;
   END IF;
@@ -354,7 +355,7 @@ BEGIN
   -- Every row live and exact, including carol.
   SELECT count(*) INTO v_count
     FROM aurora.player_positions_visible v
-   WHERE v.is_delayed;
+   WHERE v.is_delayed AND v.server_id = 'test-aurora';
   IF v_count <> 0 THEN
     RAISE EXCEPTION 'FAIL: admin got % delayed rows, expected 0', v_count;
   END IF;
@@ -367,7 +368,7 @@ BEGIN
   END IF;
   RAISE NOTICE 'PASS admin sees every character live, exact and un-rounded';
 
-  SELECT count(*) INTO v_count FROM aurora.player_position_history;
+  SELECT count(*) INTO v_count FROM aurora.player_position_history WHERE server_id = 'test-aurora';
   IF v_count <> 4 THEN
     RAISE EXCEPTION 'FAIL: admin read % history rows, expected 4', v_count;
   END IF;
