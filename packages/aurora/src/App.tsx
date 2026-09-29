@@ -1,4 +1,4 @@
-import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
+import { HashRouter, Link, Route, Routes } from 'react-router-dom'
 import { AuthProvider, useAuth } from './auth/AuthContext'
 import { SignInButtons } from './auth/SignInButtons'
 import { MapPage } from './pages/MapPage'
@@ -28,8 +28,16 @@ function Header() {
 }
 
 export default function App() {
+  // HashRouter, not BrowserRouter (T20, 2026-09-29): the map now lives at /map/
+  // on the wiki's own domain, and the wiki's 404.html is the spa-github-pages
+  // redirect trick built for the WIKI's own SPA - it rewrites an unknown path
+  // into a query string for the wiki's index.html, not the map's. A path-based
+  // deep link under /map/ would 404 for real. A hash fragment is never sent to
+  // the server at all, so /map/#/link always resolves to the same static
+  // map/index.html regardless of what follows the #, and it survives a future
+  // domain change with no server-side configuration whatsoever.
   return (
-    <BrowserRouter>
+    <HashRouter>
       <AuthProvider>
         <a href="#main" className="skip-link">Skip to content</a>
         <Header />
@@ -41,6 +49,6 @@ export default function App() {
           </Routes>
         </main>
       </AuthProvider>
-    </BrowserRouter>
+    </HashRouter>
   )
 }

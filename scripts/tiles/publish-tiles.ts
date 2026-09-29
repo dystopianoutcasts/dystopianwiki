@@ -1,18 +1,30 @@
 // Publish a rendered tile pyramid and regenerate tiles.json from it.
 //
 //   npx tsx scripts/tiles/publish-tiles.ts --from <out>/html/map_data/base_top \
-//     --to <clone of aurora-site, checked out on gh-pages> [--budgetGB 0.9] [--dry-run]
+//     --to map/tiles [--budgetGB 0.9] [--dry-run]
 //
-// Also accepts --to r2:<bucket> for the Cloudflare alternative (rclone sync).
+// T20 (2026-09-29, one website): --to is a plain directory inside THIS wiki
+// checkout - the wiki's own map/tiles, beside the app map/ itself builds into
+// - not a second repo. This script only copies files; it never runs git
+// itself. Commit map/ yourself afterward, by name, alongside the rest of that
+// deploy's changes (deploy.md's Do step 6).
+//
+// Also accepts --to r2:<bucket> for the Cloudflare alternative (rclone sync);
+// unaffected by the one-website decision, since R2 would still be a separate
+// storage backend for tiles even if the app itself has one home.
 // Files are skipped by content hash, so a re-render that changed nothing
-// publishes nothing and commits nothing.
+// publishes nothing.
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { mkdirSync, copyFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { execFileSync } from 'node:child_process';
 
-const DEFAULT_BASE_URL = 'https://map.dystopianoutcasts.wiki/tiles';
+// Empty, not an absolute host: the app's own default (config.ts,
+// DEFAULT_TILES_BASE_URL) is what actually resolves tile URLs at runtime, so
+// tiles.json's own baseUrl only matters as a fallback and stays relative here
+// too - a domain change must never require re-running this script.
+const DEFAULT_BASE_URL = '';
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(name);
@@ -25,7 +37,7 @@ function flag(name: string): boolean {
 const from = arg('--from');
 const to = arg('--to');
 if (!from || !to) {
-  console.error('usage: publish-tiles.ts --from <base_top dir> --to <aurora-site clone path>|r2:<bucket> [--budgetGB n] [--dry-run]');
+  console.error('usage: publish-tiles.ts --from <base_top dir> --to <dir, tiles land at <dir>/base_top>|r2:<bucket> [--budgetGB n] [--dry-run]');
   process.exit(1);
 }
 const budgetGB = Number(arg('--budgetGB') ?? (to.startsWith('r2:') ? '9.5' : '0.9'));
@@ -67,7 +79,7 @@ if (to.startsWith('r2:')) {
   console.log(`rclone ${args.join(' ')}`);
   execFileSync('rclone', args, { stdio: 'inherit', shell: true });
 } else {
-  const destRoot = join(to, 'tiles', 'base_top');
+  const destRoot = join(to, 'base_top');
   let added = 0, changed = 0, skipped = 0;
   for (const rel of files) {
     const src = join(from, rel);
@@ -86,17 +98,14 @@ if (to.startsWith('r2:')) {
   console.log(`to   ${destRoot}`);
   console.log(`files: added ${added}, changed ${changed}, skipped ${skipped} (${files.length} total, ${(totalBytes / 1024 ** 2).toFixed(1)} MiB)`);
 
-  if (!dryRun && added + changed > 0) {
-    const status = execFileSync('git', ['-C', to, 'status', '--porcelain', 'tiles']).toString();
-    if (status.trim()) {
-      execFileSync('git', ['-C', to, 'add', 'tiles']);
-      execFileSync('git', ['-C', to, 'commit', '-m', `tiles: publish ${added} added, ${changed} changed (${(totalBytes / 1024 ** 2).toFixed(1)} MiB)`]);
-      console.log('committed to gh-pages');
-    }
-  } else if (dryRun) {
-    console.log('dry run: no files copied, no commit made');
+  // No git action here (T20): `to` lives inside this same wiki checkout now,
+  // and the task executor commits map/ deliberately, by name, as its own step.
+  if (dryRun) {
+    console.log('dry run: no files copied');
+  } else if (added + changed > 0) {
+    console.log(`copied ${added + changed} file(s); nothing committed - commit map/ yourself`);
   } else {
-    console.log('nothing changed: no commit made');
+    console.log('nothing changed');
   }
 }
 

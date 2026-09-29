@@ -2,10 +2,19 @@ export interface AuroraConfig {
   supabaseUrl: string
   supabaseKey: string
   serverId: string
-  tilesBaseUrl?: string
+  tilesBaseUrl: string
 }
 
 export const DEFAULT_SERVER_ID = 'outcasts-main'
+
+/**
+ * T20 (2026-09-29): the map is served from /map/ on the wiki's own domain, and
+ * the tile pyramid is committed alongside it at map/tiles. A relative default -
+ * no scheme, no host - means the map keeps finding its tiles after a future
+ * domain change with zero code or config edits; VITE_AURORA_TILES_BASE_URL still
+ * overrides this for a one-off local render pointed elsewhere.
+ */
+export const DEFAULT_TILES_BASE_URL = '/map/tiles'
 
 /**
  * The ingest writes one batch a minute (aurora.enable_ingest_cron's pg_cron schedule,
@@ -38,6 +47,6 @@ export function readConfig(env: {
     supabaseUrl,
     supabaseKey,
     serverId: env.VITE_AURORA_SERVER_ID?.trim() || DEFAULT_SERVER_ID,
-    tilesBaseUrl: env.VITE_AURORA_TILES_BASE_URL?.trim() || undefined,
+    tilesBaseUrl: env.VITE_AURORA_TILES_BASE_URL?.trim() || DEFAULT_TILES_BASE_URL,
   }
 }

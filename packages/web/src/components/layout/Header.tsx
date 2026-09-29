@@ -95,6 +95,16 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
                 All Games
               </NavLink>
           )}
+          {/*
+            Plain <a>, not react-router's Link/NavLink (T20, 2026-09-29):
+            /map/ is a separately built static app committed at map/, not a
+            route inside this SPA. A client-side Link would hijack the click
+            and try to virtually route somewhere this app has no match for,
+            instead of letting the browser actually request map/index.html.
+            Always rendered, unlike the branches above, so it survives
+            whichever context the visitor is in.
+          */}
+          <a href="/map/" className="header__nav-link">Map</a>
         </nav>
 
         {/* Search Bar */}

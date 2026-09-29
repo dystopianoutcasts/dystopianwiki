@@ -88,6 +88,11 @@ export function MobileMenu({ isOpen, onClose, version = 'build-41' }: MobileMenu
               <span className="mobile-menu__nav-icon">🗺️</span>
               Mapping
             </NavLink>
+            {/* Plain <a>, not NavLink (T20): /map/ is a separately built
+                static app at map/, not a route inside this SPA. */}
+            <a href="/map/" className="mobile-menu__nav-link" onClick={onClose}>
+              Map
+            </a>
           </div>
 
           {/* Article TOC (only shown when viewing an article) */}
