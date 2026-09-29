@@ -183,12 +183,21 @@ export interface TailTotals {
   rotated: boolean;
   /** Steps that read at least one complete line. */
   batches: number;
+  /**
+   * Log-to-row latency, per batch: the moment the batch's cursor write returned
+   * minus the newest record's `t` (the exporter's wall clock). The tables carry no
+   * insert time, so this is where T23's "in the database within 15 s" is measured.
+   */
+  lagMinMs: number | null;
+  lagMaxMs: number | null;
+  lagSumMs: number;
 }
 
 export function emptyTotals(): TailTotals {
   return {
     bytes: 0, records: 0, kinds: {}, rows: {}, patches: 0, stats: emptyStats(),
     linksOk: 0, linksFailed: 0, rotated: false, batches: 0,
+    lagMinMs: null, lagMaxMs: null, lagSumMs: 0,
   };
 }
 
@@ -217,6 +226,7 @@ export async function tailStep(
   cfg: TailConfig,
   target: TailTarget,
   totals: TailTotals,
+  now: () => number = Date.now,
 ): Promise<void> {
   const { size } = await session.stat(target.path);
   const window = planRead(target.cursor, target.file, size, cfg.maxReadBytes);
@@ -260,6 +270,13 @@ export async function tailStep(
     updated_at: new Date().toISOString(),
   }], 'server_id');
   target.cursor = { file_name: target.file, byte_offset: byteOffset };
+
+  if (parsed.records.length > 0) {
+    const lag = now() - Math.max(...parsed.records.map((r) => r.t));
+    totals.lagMinMs = totals.lagMinMs === null ? lag : Math.min(totals.lagMinMs, lag);
+    totals.lagMaxMs = totals.lagMaxMs === null ? lag : Math.max(totals.lagMaxMs, lag);
+    totals.lagSumMs += lag;
+  }
 
   totals.bytes += consumed;
   totals.records += parsed.records.length;

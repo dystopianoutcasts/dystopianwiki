@@ -286,3 +286,20 @@ Deno.test('the cursor is written only after the batch rows', async () => {
   assertEquals(order.at(-1), 'ingest_cursor');
   assert(order.indexOf('player_position_history') < order.indexOf('ingest_cursor'), 'history before cursor');
 });
+
+Deno.test('each batch records its log-to-row lag against the newest record in it', async () => {
+  const file = new FakeFile();
+  file.append(posLine(0) + posLine(1)); // t of line 1 = base + 5 s
+  const session = fakeSession(file);
+  const db = fakeDb();
+  const target = (await findTarget(session, db, CFG))!;
+  const totals = emptyTotals();
+  const base = 1790636586629;
+  await tailStep(session, db, CFG, target, totals, () => base + 5_000 + 3_200);
+  assertEquals([totals.lagMinMs, totals.lagMaxMs, totals.lagSumMs], [3_200, 3_200, 3_200]);
+  file.append(posLine(2)); // t = base + 10 s
+  await tailStep(session, db, CFG, target, totals, () => base + 10_000 + 7_000);
+  assertEquals([totals.lagMinMs, totals.lagMaxMs, totals.lagSumMs], [3_200, 7_000, 10_200]);
+  await tailStep(session, db, CFG, target, totals, () => base + 99_000); // nothing new: no lag sample
+  assertEquals(totals.lagSumMs, 10_200);
+});

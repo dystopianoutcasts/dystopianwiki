@@ -332,6 +332,7 @@ Deno.serve(async (req: Request) => {
     connects: summary.connects,
     loops: summary.loop?.loops ?? 0,
     bytes: summary.tail?.bytes ?? 0,
+    lagMaxMs: summary.tail?.lagMaxMs ?? null,
     errors: summary.errors,
     ms: summary.ms,
   }));
