@@ -705,6 +705,134 @@ BEGIN
 END;
 $$;
 
+-- ============================================================================
+-- 10. POSITIONS ONLINE-ONLY, HONEST FLAGS (migration 018)
+-- ============================================================================
+--
+-- dave is offline with a 90-minute-old history row; positions_delayed() must
+-- never return him no matter who is asking (T16 P0-2). frank is online with a
+-- single history row and no live aurora.player_positions row of his own, so he
+-- arrives ONLY through the delayed half - the row whose is_delayed/is_rounded
+-- must follow settings.visibility, not the two constants 010 hard-coded
+-- (T16 P2-1). Both are added here rather than to the shared fixture block
+-- above so sections 1-9 (already asserted against that fixture set) are
+-- untouched.
+
+INSERT INTO aurora.players
+  (server_id, username, display_name, last_seen, online, access_level, is_dead)
+VALUES
+  ('test-aurora', 'dave',  'Dave',  NOW(), FALSE, 'none', FALSE),
+  ('test-aurora', 'frank', 'Frank', NOW(), TRUE,  'none', FALSE);
+
+INSERT INTO aurora.player_position_history (server_id, username, x, y, z, t)
+VALUES
+  ('test-aurora', 'dave',  300.0, 300.0, 0, NOW() - INTERVAL '90 minutes'),
+  ('test-aurora', 'frank', 400.0, 400.0, 0, NOW() - INTERVAL '90 minutes');
+
+-- Make anon eligible for the delayed feed too, so the "offline character never
+-- appears" assertion below actually exercises the online filter for anon
+-- rather than trivially passing behind anonPositions=false.
+UPDATE aurora.settings
+   SET value = '{"anonPositions": true, "delayMinutes": 30, "roundToCell": true}'::jsonb
+ WHERE key = 'visibility';
+
+SET LOCAL ROLE anon;
+SELECT set_config('request.jwt.claims', '', TRUE);
+
+DO $$
+DECLARE
+  v_count BIGINT;
+BEGIN
+  SELECT count(*) INTO v_count
+    FROM aurora.player_positions_visible
+   WHERE server_id = 'test-aurora' AND username = 'dave';
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL: anon saw % rows for offline dave, expected 0', v_count;
+  END IF;
+  RAISE NOTICE 'PASS anon never sees an offline character (dave)';
+
+  SELECT count(*) INTO v_count
+    FROM aurora.player_positions_visible
+   WHERE server_id = 'test-aurora' AND username = 'frank';
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'FAIL: anon saw % rows for online frank, expected 1', v_count;
+  END IF;
+  RAISE NOTICE 'PASS anon sees exactly one row for an online character (frank)';
+END;
+$$;
+
+RESET ROLE;
+
+SET LOCAL ROLE authenticated;
+SELECT set_config(
+  'request.jwt.claims',
+  '{"sub":"aaaaaaaa-0000-4000-8000-000000000001","role":"authenticated"}',
+  TRUE
+);
+
+DO $$
+DECLARE
+  v_count   BIGINT;
+  v_delayed BOOLEAN;
+  v_rounded BOOLEAN;
+  v_x       REAL;
+BEGIN
+  -- (a) an offline character with history returns no row, to the linked user either.
+  SELECT count(*) INTO v_count
+    FROM aurora.player_positions_visible
+   WHERE server_id = 'test-aurora' AND username = 'dave';
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL: linked user saw % rows for offline dave, expected 0', v_count;
+  END IF;
+  RAISE NOTICE 'PASS the linked user never sees an offline character (dave)';
+
+  -- (b) an online character (frank, a stranger to this user) returns one row.
+  SELECT count(*) INTO v_count
+    FROM aurora.player_positions_visible
+   WHERE server_id = 'test-aurora' AND username = 'frank';
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'FAIL: linked user saw % rows for online frank, expected 1', v_count;
+  END IF;
+  RAISE NOTICE 'PASS the linked user sees exactly one row for an online character (frank)';
+
+  -- (c) flags follow the pinned settings: delay 30 / rounding on -> TRUE/TRUE.
+  SELECT v.is_delayed, v.is_rounded, v.x INTO v_delayed, v_rounded, v_x
+    FROM aurora.player_positions_visible v
+   WHERE v.server_id = 'test-aurora' AND v.username = 'frank';
+  IF v_delayed IS NOT TRUE OR v_rounded IS NOT TRUE THEN
+    RAISE EXCEPTION 'FAIL: with delayMinutes=30/roundToCell=true frank should read delayed=TRUE rounded=TRUE, got delayed=% rounded=%', v_delayed, v_rounded;
+  END IF;
+  RAISE NOTICE 'PASS is_delayed/is_rounded read TRUE/TRUE under delayed, rounded settings';
+
+  -- Flip to the setting the owner actually runs live: no delay, no rounding.
+  UPDATE aurora.settings
+     SET value = '{"anonPositions": true, "delayMinutes": 0, "roundToCell": false}'::jsonb
+   WHERE key = 'visibility';
+
+  SELECT v.is_delayed, v.is_rounded, v.x INTO v_delayed, v_rounded, v_x
+    FROM aurora.player_positions_visible v
+   WHERE v.server_id = 'test-aurora' AND v.username = 'frank';
+  IF v_delayed IS NOT FALSE OR v_rounded IS NOT FALSE THEN
+    RAISE EXCEPTION 'FAIL: with delayMinutes=0/roundToCell=false frank should read delayed=FALSE rounded=FALSE, got delayed=% rounded=%', v_delayed, v_rounded;
+  END IF;
+  IF v_x IS DISTINCT FROM 400.0::REAL THEN
+    RAISE EXCEPTION 'FAIL: with roundToCell=false frank''s x should be the exact history value 400, got %', v_x;
+  END IF;
+  RAISE NOTICE 'PASS is_delayed/is_rounded read FALSE/FALSE and x is exact under the live settings';
+
+  -- The online filter still holds under the new settings too.
+  SELECT count(*) INTO v_count
+    FROM aurora.player_positions_visible
+   WHERE server_id = 'test-aurora' AND username = 'dave';
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL: linked user saw % rows for offline dave under delay=0, expected 0', v_count;
+  END IF;
+  RAISE NOTICE 'PASS the online filter holds with delayMinutes=0 too';
+END;
+$$;
+
+RESET ROLE;
+
 DO $$ BEGIN RAISE NOTICE 'ALL AURORA POLICY TESTS PASSED'; END; $$;
 
 ROLLBACK;
