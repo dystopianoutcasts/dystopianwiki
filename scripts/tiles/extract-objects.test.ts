@@ -121,7 +121,7 @@ describe('T45: mod towns from the committed towns file', () => {
     const towns = parseModTowns(JSON.stringify({ towns: [{ name: 'Raven Creek', x: 5376, y: 16128, areaSquares: 7602176 }] }))
     const out = addModTowns(areas, towns)
     expect(out.map((a) => a.name)).toEqual(['Muldraugh', 'Raven Creek', 'Gas Station'])
-    expect(out[1]).toEqual({ name: 'Raven Creek', kind: 'town', x: 5376, y: 16128, areaSquares: 7602176, count: 0 })
+    expect(out[1]).toEqual({ name: 'Raven Creek', kind: 'town', x: 5376, y: 16128, areaSquares: 7602176, count: 0, mod: true })
   })
 
   it('keeps the regions.lua area when a town has the same name', () => {

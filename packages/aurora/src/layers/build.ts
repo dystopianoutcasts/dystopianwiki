@@ -9,6 +9,7 @@ import type { TilesConfig } from '../map/tiles'
 import { zombieTileUrl } from '../map/tiles'
 import { worldBounds } from '../map/coords'
 import { sizedTileLayer } from '../map/sizedTileLayer'
+import { placeLabels } from './labelPlacement'
 // T41: imported from ./panes directly (not from map/MapView.tsx, which imports this
 // very file) to avoid a circular import - see panes.ts's own header comment.
 import { PLAYERS_PANE, PLAYER_NAMES_PANE } from '../map/panes'
@@ -204,14 +205,57 @@ export function buildObjects(features: ObjectFeature[]): L.Layer {
  * held back below `landmarkMinZoom` so 17 small labels clustered around Muldraugh don't
  * crowd a low zoom the way the town names are meant to own.
  */
-export function buildAreas(features: AreaFeature[], zoom: number, landmarkMinZoom: number): L.Layer {
+let measureContext: CanvasRenderingContext2D | null | undefined
+
+/** Width and height of an area label as the stylesheet draws it (aurora.css
+ *  .aurora-area-label: towns 700 0.95rem with 0.02em letter spacing, landmarks 400
+ *  0.7rem), measured with a canvas in the page's own font. */
+export function measureAreaLabel(text: string, kind: 'town' | 'landmark'): { w: number; h: number } {
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
+  const size = (kind === 'town' ? 0.95 : 0.7) * rem
+  if (measureContext === undefined) measureContext = document.createElement('canvas').getContext('2d')
+  let w = text.length * size * 0.6
+  if (measureContext) {
+    measureContext.font = `${kind === 'town' ? 700 : 400} ${size}px ${getComputedStyle(document.body).fontFamily || 'sans-serif'}`
+    w = measureContext.measureText(text).width
+  }
+  if (kind === 'town') w += text.length * 0.02 * size
+  return { w: Math.ceil(w), h: Math.ceil(size * 1.3) }
+}
+
+/**
+ * Area labels, each centred on its point. Vanilla names are placed first and never move;
+ * a map-mod town name that would cover one steps aside, left first (see
+ * labelPlacement.ts). `project` turns a latlng into map pixels at `zoom`, `measure` gives a
+ * label's size; both come from the live map, so this stays testable as source text.
+ */
+export function buildAreas(
+  features: AreaFeature[],
+  zoom: number,
+  landmarkMinZoom: number,
+  project: (latlng: [number, number]) => { x: number; y: number },
+  measure: (text: string, kind: 'town' | 'landmark') => { w: number; h: number },
+): L.Layer {
   const group = L.layerGroup()
-  for (const f of features) {
-    if (f.kind === 'landmark' && zoom < landmarkMinZoom) continue
+  const shown = features.filter((f) => !(f.kind === 'landmark' && zoom < landmarkMinZoom))
+  const placements = placeLabels(
+    shown.map((f) => {
+      const p = project(f.latlng)
+      const size = measure(f.name, f.kind)
+      return { key: f.key, x: p.x, y: p.y, w: size.w, h: size.h, mod: f.mod, areaSquares: f.areaSquares }
+    }),
+  )
+  for (const f of shown) {
+    const placement = placements.get(f.key)
+    if (!placement) continue
+    // The marker itself is a zero-size box at the point (Leaflet positions it with its
+    // own inline transform, which is why a transform on the marker never centred the
+    // text). The inner span centres the text on the point, plus the placement offset.
+    const style = `transform: translate(calc(-50% + ${placement.dx}px), calc(-50% + ${placement.dy}px))`
     const marker = L.marker(f.latlng, {
       icon: L.divIcon({
         className: f.kind === 'town' ? 'aurora-area-label is-town' : 'aurora-area-label is-landmark',
-        html: escapeHtml(f.name),
+        html: `<span class="aurora-area-text" style="${style}">${escapeHtml(f.name)}</span>`,
         iconSize: [0, 0],
         iconAnchor: [0, 0],
       }),

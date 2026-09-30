@@ -12,6 +12,7 @@ import type { MapView as View } from '../state/url'
 import type { LayerPrefs } from '../state/layerPrefs'
 import {
   buildAreas,
+  measureAreaLabel,
   buildHeat,
   buildObjects,
   buildPlayers,
@@ -191,7 +192,16 @@ export function MapView(props: Props) {
   // the task); landmark labels are held back below STREETS_MIN_ZOOM the same way
   // streets themselves are, so a low zoom isn't crowded by 17 small POI names.
   useEffect(() => {
-    swap(mapRef.current, areasLayer, prefs.areas ? buildAreas(props.areas, zoom, STREETS_MIN_ZOOM) : null)
+    // Rebuilt on every zoom: label placement (vanilla first, mod names step aside) is
+    // worked out in screen pixels, which change with the zoom.
+    const map = mapRef.current
+    swap(
+      map,
+      areasLayer,
+      prefs.areas && map
+        ? buildAreas(props.areas, zoom, STREETS_MIN_ZOOM, (latlng) => map.project(latlng, zoom), measureAreaLabel)
+        : null,
+    )
   }, [prefs.areas, props.areas, zoom])
 
   useEffect(() => {

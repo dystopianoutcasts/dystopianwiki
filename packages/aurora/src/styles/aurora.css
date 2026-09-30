@@ -372,11 +372,15 @@ fieldset.panel legend { padding: 0 4px; font-weight: 600; }
    the transform below rather than Leaflet's iconAnchor, so it stays centred whatever
    the name's rendered width is. Towns read bigger and bolder so they own a low zoom;
    landmarks are smaller and only ever drawn once the map is already zoomed in (build.ts). */
+/* The marker is a zero-size box at the point, placed by Leaflet's own inline transform (a
+   transform here was always overridden, so labels hung to the right of their point until
+   T45). The inner .aurora-area-text is centred on the point by its inline transform, which
+   also carries the placement offset (layers/labelPlacement.ts). */
 .aurora-area-label {
-  position: relative; left: 0; top: 0; transform: translate(-50%, -50%);
   white-space: nowrap; pointer-events: none;
   color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 2px rgba(0, 0, 0, 0.9);
 }
+.aurora-area-text { display: inline-block; white-space: nowrap; }
 .aurora-area-label.is-town { font-weight: 700; font-size: 0.95rem; letter-spacing: 0.02em; }
 .aurora-area-label.is-landmark { font-weight: 400; font-size: 0.7rem; opacity: 0.85; }
 

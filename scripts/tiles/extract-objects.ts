@@ -62,6 +62,9 @@ export interface Area {
   areaSquares: number
   /** How many regions.lua rows share this name. */
   count: number
+  /** True for a map-mod town from the towns file (T45): the map draws vanilla names
+   *  first and moves a mod name aside when the two would overlap. */
+  mod?: boolean
 }
 
 const ROW_RE =
@@ -182,7 +185,7 @@ export function addModTowns(areas: Area[], towns: ModTown[]): Area[] {
   const have = new Set(areas.map((a) => a.name))
   const added: Area[] = towns
     .filter((t) => !have.has(t.name))
-    .map((t) => ({ name: t.name, kind: 'town' as const, x: t.x, y: t.y, areaSquares: t.areaSquares, count: 0 }))
+    .map((t) => ({ name: t.name, kind: 'town' as const, x: t.x, y: t.y, areaSquares: t.areaSquares, count: 0, mod: true }))
   return [...areas, ...added].sort((a, b) => b.areaSquares - a.areaSquares)
 }
 

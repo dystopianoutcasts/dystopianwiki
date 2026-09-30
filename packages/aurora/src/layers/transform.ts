@@ -297,6 +297,8 @@ export interface AreaRaw {
   y: number
   areaSquares: number
   count: number
+  /** A map-mod town (T45); absent for every vanilla area. */
+  mod?: boolean
 }
 
 export interface AreaFeature {
@@ -304,6 +306,9 @@ export interface AreaFeature {
   name: string
   kind: 'town' | 'landmark'
   latlng: [number, number]
+  /** Vanilla labels are drawn first and never move; a mod label steps aside (T45). */
+  mod: boolean
+  areaSquares: number
 }
 
 export function areaFeatures(list: AreaRaw[]): AreaFeature[] {
@@ -312,6 +317,8 @@ export function areaFeatures(list: AreaRaw[]): AreaFeature[] {
     name: a.name,
     kind: a.kind,
     latlng: [a.y, a.x],
+    mod: a.mod === true,
+    areaSquares: a.areaSquares,
   }))
 }
 
