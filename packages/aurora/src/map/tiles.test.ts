@@ -8,7 +8,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import type { TileOverlay, TilesConfig } from './tiles'
-import { overlayTileUrl } from './tiles'
+import { overlayTileUrl, tileCssSize } from './tiles'
 
 const mapViewSrc = readFileSync(fileURLToPath(new URL('./MapView.tsx', import.meta.url)), 'utf8')
 
@@ -91,5 +91,20 @@ describe('MapView.tsx: mod-map overlays (source text - see header note)', () => 
 
   it('each overlay layer resolves its tile URL through overlayTileUrl, not tileUrl', () => {
     expect(overlayBlock![0]).toMatch(/overlayTileUrl\(overlay, cfg,/)
+  })
+})
+
+describe('tileCssSize (T45 edge tiles)', () => {
+  it('draws a full tile at the tile size inside the native zoom range', () => {
+    expect(tileCssSize(256, 256, 256, 256)).toEqual({ w: 256, h: 256 })
+  })
+
+  it('draws a cut edge tile at its own size, not stretched to a full tile', () => {
+    expect(tileCssSize(256, 192, 256, 256)).toEqual({ w: 256, h: 192 })
+    expect(tileCssSize(128, 256, 256, 256)).toEqual({ w: 128, h: 256 })
+  })
+
+  it('scales with Leaflet past the native range (zoom 17 over level 15 tiles)', () => {
+    expect(tileCssSize(256, 192, 1024, 256)).toEqual({ w: 1024, h: 768 })
   })
 })

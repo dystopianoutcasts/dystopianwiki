@@ -5,6 +5,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import type { TilesConfig } from './tiles'
 import { overlayTileUrl, tileUrl } from './tiles'
+import { sizedTileLayer } from './sizedTileLayer'
 import { latLngToSquare, squareToLatLng, worldBounds } from './coords'
 import { makeCrs } from './crs'
 import type { MapView as View } from '../state/url'
@@ -127,19 +128,14 @@ export function MapView(props: Props) {
     // every other overlay and its hover text, below only a popup. See ./panes.ts.
     map.createPane(PLAYERS_PANE).style.zIndex = String(PLAYERS_PANE_Z_INDEX)
     map.createPane(PLAYER_NAMES_PANE).style.zIndex = String(PLAYER_NAMES_PANE_Z_INDEX)
-    const Layer = L.TileLayer.extend({
-      getTileUrl(coords: L.Coords) {
-        return tileUrl(cfg, cfg.layers.ground, coords.z, coords.x, coords.y, tilesBase)
-      },
-    })
-    // The pyramid is sparse (only populated cells have tiles), so a 404 is normal, not an error.
-    new (Layer as unknown as new (u: string, o: L.TileLayerOptions) => L.TileLayer)('', {
+    // sizedTileLayer (./sizedTileLayer.ts): every tile drawn at its own size, so the
+    // pyramid's cut edge tiles are not stretched. The pyramid is sparse, so a 404 is normal.
+    sizedTileLayer((coords) => tileUrl(cfg, cfg.layers.ground, coords.z, coords.x, coords.y, tilesBase), {
       tileSize: cfg.tileSize,
       minNativeZoom: 0,
       maxNativeZoom: cfg.maxLevel,
       bounds: worldBounds(cfg),
       noWrap: true,
-      errorTileUrl: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
     }).addTo(map)
 
     // T45 Part PUBLISH: mod-map overlays share the base pyramid's exact geometry (Part
@@ -154,20 +150,14 @@ export function MapView(props: Props) {
     const overlays = cfg.overlays ?? []
     for (let i = overlays.length - 1; i >= 0; i--) {
       const overlay = overlays[i]
-      const OverlayLayer = L.TileLayer.extend({
-        getTileUrl(coords: L.Coords) {
-          return overlayTileUrl(overlay, cfg, cfg.layers.ground, coords.z, coords.x, coords.y, tilesBase)
-        },
-      })
       // Sparse the same way the base layer is: a mod pyramid has tiles only where that
       // mod has cells, so a 404 elsewhere is normal, not an error.
-      new (OverlayLayer as unknown as new (u: string, o: L.TileLayerOptions) => L.TileLayer)('', {
+      sizedTileLayer((coords) => overlayTileUrl(overlay, cfg, cfg.layers.ground, coords.z, coords.x, coords.y, tilesBase), {
         tileSize: cfg.tileSize,
         minNativeZoom: 0,
         maxNativeZoom: cfg.maxLevel,
         bounds: worldBounds(cfg),
         noWrap: true,
-        errorTileUrl: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
       }).addTo(map)
     }
 

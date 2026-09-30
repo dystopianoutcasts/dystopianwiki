@@ -8,6 +8,7 @@ import { streetWeight } from './transform'
 import type { TilesConfig } from '../map/tiles'
 import { zombieTileUrl } from '../map/tiles'
 import { worldBounds } from '../map/coords'
+import { sizedTileLayer } from '../map/sizedTileLayer'
 // T41: imported from ./panes directly (not from map/MapView.tsx, which imports this
 // very file) to avoid a circular import - see panes.ts's own header comment.
 import { PLAYERS_PANE, PLAYER_NAMES_PANE } from '../map/panes'
@@ -100,20 +101,14 @@ export function buildHeat(points: [number, number, number][]): L.Layer {
  * extend), drawn semi-transparent above it when the toggle is on.
  */
 export function buildZombieDensityLayer(cfg: TilesConfig, tilesBase?: string): L.Layer {
-  const Layer = L.TileLayer.extend({
-    getTileUrl(coords: L.Coords) {
-      return zombieTileUrl(cfg, cfg.layers.ground, coords.z, coords.x, coords.y, tilesBase)
-    },
-  })
-  // The pyramid is sparse (only populated cells have tiles), so a 404 is normal, not an error.
-  return new (Layer as unknown as new (u: string, o: L.TileLayerOptions) => L.TileLayer)('', {
+  // sizedTileLayer: edge tiles at their own size (T45). Sparse, so a 404 is normal.
+  return sizedTileLayer((coords) => zombieTileUrl(cfg, cfg.layers.ground, coords.z, coords.x, coords.y, tilesBase), {
     tileSize: cfg.tileSize,
     minNativeZoom: 0,
     maxNativeZoom: cfg.maxLevel,
     bounds: worldBounds(cfg),
     noWrap: true,
     opacity: 0.6,
-    errorTileUrl: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
   })
 }
 

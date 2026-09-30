@@ -96,3 +96,15 @@ export function zombieTileUrl(
   const base = (baseOverride ?? cfg.baseUrl).replace(/\/+$/, '')
   return `${base}/zombie_top/layer${layer}_files/${z}/${x}_${y}.${cfg.format}`
 }
+
+/**
+ * CSS size for one tile image, from its own pixels. A Deep Zoom pyramid cuts each level's
+ * last row and column to the world's edge, so those tiles are smaller than `tileSize`;
+ * drawing them at the full tile size stretches them (T45). `displayedTileSize` is what
+ * Leaflet's getTileSize() gives for the current zoom: `tileSize` inside the native range,
+ * larger past it, and the image scales by the same factor.
+ */
+export function tileCssSize(naturalW: number, naturalH: number, displayedTileSize: number, tileSize: number): { w: number; h: number } {
+  const scale = displayedTileSize / tileSize
+  return { w: naturalW * scale, h: naturalH * scale }
+}

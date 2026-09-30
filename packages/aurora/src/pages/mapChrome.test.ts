@@ -198,3 +198,20 @@ describe('T44: name mode toggle (usernames are intentionally public, owner decis
     expect(rosterSrc).toMatch(/pickName\(mode, p\.display_name, p\.username\)/)
   })
 })
+
+describe('T45: every tile layer draws cut edge tiles at their own size', () => {
+  const sizedSrc = readFileSync(fileURLToPath(new URL('../map/sizedTileLayer.ts', import.meta.url)), 'utf8')
+  const buildSrc = readFileSync(fileURLToPath(new URL('../layers/build.ts', import.meta.url)), 'utf8')
+
+  it('the shared layer resizes each loaded tile from its natural size', () => {
+    expect(sizedSrc).toMatch(/createTile\(/)
+    expect(sizedSrc).toMatch(/tileCssSize\(tile\.naturalWidth, tile\.naturalHeight/)
+  })
+
+  it('no other file builds a tile layer of its own', () => {
+    for (const src of [mapViewSrc, buildSrc]) {
+      expect(src).not.toMatch(/L\.TileLayer\.extend/)
+      expect(src).toMatch(/sizedTileLayer\(/)
+    }
+  })
+})
