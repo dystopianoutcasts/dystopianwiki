@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import type { TilesConfig } from './tiles'
-import { tileUrl } from './tiles'
+import { overlayTileUrl, tileUrl } from './tiles'
 import { latLngToSquare, squareToLatLng, worldBounds } from './coords'
 import { makeCrs } from './crs'
 import type { MapView as View } from '../state/url'
@@ -141,6 +141,35 @@ export function MapView(props: Props) {
       noWrap: true,
       errorTileUrl: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
     }).addTo(map)
+
+    // T45 Part PUBLISH: mod-map overlays share the base pyramid's exact geometry (Part
+    // RENDER's all_mod_maps rule), so each is just another TileLayer in the SAME default
+    // tile pane as the base layer above (no `pane:` override here) - never the vector
+    // overlayPane that streets/areas/safehouses use, nor the players panes: an overlay
+    // must sit above the base and below every data layer, never cover a street, an area
+    // label or a marker. cfg.overlays is in Map= order, first entry on top; within one
+    // pane a later-added DOM node paints over an earlier one, so overlays are added in
+    // REVERSE list order - the last entry first, the first entry last - so the first
+    // entry (the Map= winner) ends up painted on top of the rest.
+    const overlays = cfg.overlays ?? []
+    for (let i = overlays.length - 1; i >= 0; i--) {
+      const overlay = overlays[i]
+      const OverlayLayer = L.TileLayer.extend({
+        getTileUrl(coords: L.Coords) {
+          return overlayTileUrl(overlay, cfg, cfg.layers.ground, coords.z, coords.x, coords.y, tilesBase)
+        },
+      })
+      // Sparse the same way the base layer is: a mod pyramid has tiles only where that
+      // mod has cells, so a 404 elsewhere is normal, not an error.
+      new (OverlayLayer as unknown as new (u: string, o: L.TileLayerOptions) => L.TileLayer)('', {
+        tileSize: cfg.tileSize,
+        minNativeZoom: 0,
+        maxNativeZoom: cfg.maxLevel,
+        bounds: worldBounds(cfg),
+        noWrap: true,
+        errorTileUrl: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
+      }).addTo(map)
+    }
 
     map.setView(squareToLatLng({ x: initialView.x, y: initialView.y }), initialView.zoom)
     map.on('moveend', () => {
