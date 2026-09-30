@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { buildOverlay, checkOverlayGeometry, generateTilesJson, type MapInfo } from './make-tiles-json'
+import { buildOverlay, checkOverlayGeometry, generateTilesJson, rectsFromCells, type MapInfo } from './make-tiles-json'
 
 // T45 Part PUBLISH: these tests build a small fixture render folder on disk (the shape
 // make-tiles-json.ts actually reads: layer0.dzi, map_info.json, sources.json, and
@@ -166,6 +166,32 @@ describe('checkOverlayGeometry (unit)', () => {
     expect(() => checkOverlayGeometry('sd_cc', BASE_MAP_INFO, overlay)).toThrowError(
       /size 768x512 != base 512x512.*levels -5\.\.1 != base -1\.\.1/s,
     )
+  })
+})
+
+describe('rectsFromCells (T45)', () => {
+  it('rebuilds the three vanilla rectangles from their 4,065 cells', () => {
+    const rects: [number, number, number, number][] = [[0, 18, 45, 45], [45, 3, 13, 60], [58, 0, 20, 63]]
+    const cells: [number, number][] = []
+    for (const [x0, y0, w, h] of rects) for (let x = x0; x < x0 + w; x++) for (let y = y0; y < y0 + h; y++) cells.push([x, y])
+    expect(cells).toHaveLength(4065)
+    expect(rectsFromCells(cells)).toEqual(rects)
+  })
+
+  it('covers an irregular shape exactly, cell for cell', () => {
+    const cells: [number, number][] = [[5, 5], [5, 6], [6, 5], [7, 5], [7, 6], [7, 7], [9, 1]]
+    const rects = rectsFromCells(cells)
+    const covered = new Set<string>()
+    for (const [x0, y0, w, h] of rects) for (let x = x0; x < x0 + w; x++) for (let y = y0; y < y0 + h; y++) covered.add(`${x},${y}`)
+    expect([...covered].sort()).toEqual(cells.map(([x, y]) => `${x},${y}`).sort())
+  })
+
+  it('an overlay with a sources.json uses its own populated cells, not map_info cell_rects', () => {
+    const root = makeRoot()
+    const modMaps = join(root, 'mod_maps')
+    writeOverlay(modMaps, 'shared', { ...BASE_MAP_INFO, cell_rects: [[0, 0, 2, 2]] })
+    writeFileSync(join(modMaps, 'shared', 'base_top', 'sources.json'), JSON.stringify([[[1, 0], [1, []]], [[1, 1], [1, []]], ['__metadata__', {}]]))
+    expect(buildOverlay('shared', modMaps, BASE_MAP_INFO).cellRects).toEqual([[1, 0, 1, 2]])
   })
 })
 

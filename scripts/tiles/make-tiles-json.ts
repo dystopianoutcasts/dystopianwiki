@@ -97,6 +97,60 @@ export function checkOverlayGeometry(id: string, base: MapInfo, overlay: MapInfo
 }
 
 /**
+ * Rectangles [x, y, w, h] in cells that cover exactly the given cells: each column's
+ * maximal runs of cells, joined across neighbouring columns that have the same run.
+ * Deterministic, sorted by x then y. T45: with dzi_cell_range all_mod_maps, a pyramid's
+ * map_info.json cell_rects is the SHARED grid (every map's cells together), no longer the
+ * map's own, so the populated cells listed in its sources.json are the only honest source.
+ * For vanilla alone this gives the same three rectangles map_info.json always had.
+ */
+export function rectsFromCells(cells: [number, number][]): [number, number, number, number][] {
+  const byX = new Map<number, number[]>()
+  for (const [x, y] of cells) {
+    const col = byX.get(x)
+    if (col) col.push(y)
+    else byX.set(x, [y])
+  }
+  const done: [number, number, number, number][] = []
+  const open = new Map<string, [number, number, number, number]>()
+  let prevX: number | null = null
+  for (const x of [...byX.keys()].sort((a, b) => a - b)) {
+    const ys = [...new Set(byX.get(x) ?? [])].sort((a, b) => a - b)
+    const runs: [number, number][] = []
+    for (const y of ys) {
+      const last = runs[runs.length - 1]
+      if (last && last[0] + last[1] === y) last[1]++
+      else runs.push([y, 1])
+    }
+    const keys = new Set(runs.map(([y, h]) => `${y}:${h}`))
+    for (const [k, r] of [...open]) {
+      if (!(keys.has(k) && prevX === x - 1)) {
+        done.push(r)
+        open.delete(k)
+      }
+    }
+    for (const [y, h] of runs) {
+      const k = `${y}:${h}`
+      const r = open.get(k)
+      if (r) r[2]++
+      else open.set(k, [x, y, 1, h])
+    }
+    prevX = x
+  }
+  done.push(...open.values())
+  return done.sort((a, b) => a[0] - b[0] || a[1] - b[1])
+}
+
+/** The populated cells a pyramid's sources.json lists (every entry but the trailing
+ *  __metadata__ one), or null when the file is absent. */
+export function populatedCellsOf(pyramidDir: string): [number, number][] | null {
+  const path = join(pyramidDir, 'sources.json')
+  if (!existsSync(path)) return null
+  const raw: [unknown, unknown][] = JSON.parse(readFileSync(path, 'utf8'))
+  return raw.filter((e) => e[0] !== '__metadata__').map((e) => e[0] as [number, number])
+}
+
+/**
  * Build one tiles.json overlay entry from a mod map's own `mod_maps/<id>/base_top/
  * map_info.json`. `id` is the mod map's folder name under `mod_maps/` - both the overlay's
  * stable id and, absent any richer source of a display name at this stage of the pipeline,
@@ -110,11 +164,12 @@ export function buildOverlay(id: string, modMapsDir: string, base: MapInfo): Til
   }
   const overlayInfo: MapInfo = JSON.parse(readFileSync(infoPath, 'utf8'))
   checkOverlayGeometry(id, base, overlayInfo)
+  const cells = populatedCellsOf(join(modMapsDir, id, 'base_top'))
   return {
     id,
     title: id,
     tileUrlTemplate: `{baseUrl}/mod_maps/${id}/base_top/layer{layer}_files/{z}/{x}_{y}.webp`,
-    cellRects: overlayInfo.cell_rects,
+    cellRects: cells ? rectsFromCells(cells) : overlayInfo.cell_rects,
   }
 }
 
@@ -217,7 +272,7 @@ export function generateTilesJson(dir: string, opts: { baseUrl?: string; order?:
       cells: { w: cellsWide, h: cellsHigh },
       squares: { w: mapInfo.w / mapInfo.sqr, h: mapInfo.h / mapInfo.sqr },
     },
-    cellRects: mapInfo.cell_rects,
+    cellRects: rectsFromCells(cellEntries.map((e) => e[0])),
     layers: { min: mapInfo.minlayer, max: mapInfo.maxlayer, ground: 0, populated: populatedLayers },
     baseUrl: opts.baseUrl ?? '',
     tileUrlTemplate: '{baseUrl}/base_top/layer{layer}_files/{z}/{x}_{y}.webp',

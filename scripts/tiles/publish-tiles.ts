@@ -214,7 +214,11 @@ function main() {
   if (layer !== 'base_top') {
     console.log(`layer '${layer}' does not own tiles.json; skipped (only base_top regenerates it)`)
   } else if (!dryRun) {
-    const genArgs = ['tsx', 'scripts/tiles/make-tiles-json.ts', from, '--baseUrl', baseUrl]
+    // An empty --baseUrl value vanishes on the way through the shell, and the next flag
+    // then became the value ("baseUrl": "--order", T45). make-tiles-json's own default is
+    // already empty, so the flag is passed only when it carries something.
+    const genArgs = ['tsx', 'scripts/tiles/make-tiles-json.ts', from]
+    if (baseUrl) genArgs.push('--baseUrl', baseUrl)
     if (overlays.length > 0) genArgs.push('--order', overlays.map((o) => o.id).join(','))
     console.log(`npx ${genArgs.join(' ')}`)
     execFileSync('npx', genArgs, { stdio: 'inherit', shell: true })
