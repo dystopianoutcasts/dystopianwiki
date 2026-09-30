@@ -24,38 +24,27 @@ output_route: map_data/
 # for b41, use default_b41.txt
 map_conf_default: default_b42.txt
 # maps and textures description files
-# (relative from this config file location)
+# (relative from this config file location, or an absolute path)
 map_conf:
     - vanilla.txt
     - mod/
+    - {{MOD_MAPS_CONF}}
 
 # When use_depend_texture_only is set to true, only textures that are declared as
 # dependencies in the map's description will be used. This may cause the render
 # failure for maps with incomplete dependency descriptions.
 # The default setting is false, which means it will try to use all the textures
 # available in all declared mods.
-use_depend_texture_only: false
+use_depend_texture_only: true  # T45: each map uses vanilla plus its own packs only (no server map mod requires another mod for tiles), so unrelated installed mods can neither override vanilla tiles nor slow the unpack
 
 # Specify maps to be rendered.
 # See vanilla.txt for map names.
 # default = Muldraugh, KY
 base_map: default
 
-# Additional overlay maps
-# See mod/ folder for map names.
-mod_maps:
-#    - Ashenwood
-#    - BedfordFalls
-#    - Blueberry
-#    - Chinatown
-#    - Chinatown expansion
-#    - FORTREDSTONE
-#    - Grapeseed
-#    - Greenleaf
-#    - lakeivytownship
-#    - Petroville
-#    - RavenCreek
-#    - Trelai_4x4_Steam
+# Additional overlay maps, in Map= order (vanilla excluded). render.ps1's -ModMaps
+# writes this list; each name must have its own entry in map_conf (see mod-maps/).
+mod_maps: {{MOD_MAPS}}
 
 # list of save game folders, the path is relative from save_game_root
 # e.g.
@@ -136,8 +125,10 @@ render_conf:
     #         - [0, 18, 45, 45]
     #         - [45, 3, 13, 60]
     #         - [58, 0, 20, 63]
-    dzi_cell_range[default]: all_mod_maps
-    dzi_cell_range: auto
+    # Applies to every map (base and every mod overlay), not just [default]: with
+    # mod_maps configured, every pyramid must share the same cell range so a mod
+    # pyramid lines up with the base grid as just another tile layer (T45).
+    dzi_cell_range: all_mod_maps
 
     # A list of cell ranges to render
     # Use similar format as dzi_cell_range, but it only affects the final render output, not the DZI pyramid building.
