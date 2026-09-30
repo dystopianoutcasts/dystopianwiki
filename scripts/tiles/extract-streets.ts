@@ -18,8 +18,8 @@
 // pieces), and tells apart the ones that are not (the same name reused in a different
 // town) by the nearest named area. See `clusterStreets` below for the measured facts
 // this is built on.
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs'
+import { dirname, join, resolve } from 'node:path'
 
 const DEFAULT_STREETS_XML =
   'R:/Games/Steam/steamapps/common/ProjectZomboid/media/maps/Muldraugh, KY/streets.xml'
@@ -28,6 +28,16 @@ const DEFAULT_AREAS_JSON = 'packages/aurora/public/data/areas.json'
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(name)
   return i >= 0 ? process.argv[i + 1] : undefined
+}
+
+/** Every value passed after a repeatable flag, e.g. several `--map <folder>` pairs, in
+ *  the order they appear on the command line. */
+function args(name: string): string[] {
+  const out: string[] = []
+  for (let i = 0; i < process.argv.length - 1; i++) {
+    if (process.argv[i] === name) out.push(process.argv[i + 1])
+  }
+  return out
 }
 
 /** One `<street>` tag as parsed from the source XML - the source cuts a real road into
@@ -393,14 +403,124 @@ export function clusterStreets(pieces: StreetPiece[], areas: AreaRaw[], joinDist
   return out
 }
 
+// --- T45 Part EXTRACT: merging several map folders, Map= order (first listed wins a
+// cell) -----------------------------------------------------------------------------
+// A B42 map folder's own cells are named by its `<x>_<y>.lotheader` files (256-square
+// cells - a different space from streets.xml/worldmap.xml/regions.lua coordinates,
+// which are already plain world squares; see extract-worldmap.ts's own 300-square
+// per-cell addressing for the file format this is NOT). A feature (street piece, area
+// rectangle, world-map shape) is kept only from the map that owns the cell at least one
+// of its points falls in - the game's own rule is that the FIRST map listed for a cell
+// wins, so a later map's same-named piece inside a cell an earlier map already claims
+// never gets a chance to claim it too, and a vanilla piece entirely inside a cell a mod
+// replaced is dropped. extract-worldmap.ts and extract-objects.ts import these exports
+// rather than duplicating them.
+
+export const B42_CELL_SQUARES = 256
+
+/** Which B42 cell (256 world squares) a point falls in. */
+export function cellOf(point: [number, number], cellSquares: number = B42_CELL_SQUARES): [number, number] {
+  return [Math.floor(point[0] / cellSquares), Math.floor(point[1] / cellSquares)]
+}
+
+const LOTHEADER_RE = /^(-?\d+)_(-?\d+)\.lotheader$/
+
+/** Every B42 cell a map folder owns, read from its own `<x>_<y>.lotheader` file names
+ *  (parsed from the name, not the file's contents). A folder that cannot be listed
+ *  (missing, not a directory) owns no cells rather than failing the whole run - the
+ *  caller decides whether that is fatal. */
+export function readOwnedCells(mapFolder: string): Set<string> {
+  const owned = new Set<string>()
+  let entries: string[]
+  try {
+    entries = readdirSync(mapFolder)
+  } catch (e) {
+    console.warn(`could not list ${mapFolder} for .lotheader cell files (${e instanceof Error ? e.message : String(e)}); treating it as owning no cells`)
+    return owned
+  }
+  for (const entry of entries) {
+    const m = LOTHEADER_RE.exec(entry)
+    if (m) owned.add(`${m[1]},${m[2]}`)
+  }
+  return owned
+}
+
+/** Cell ownership across several maps' cell sets, in Map= order: a cell goes to the
+ *  first set (map) that claims it, exactly like the game's own Map= precedence. */
+export function buildCellOwnership(cellSetsInOrder: Set<string>[]): Map<string, number> {
+  const owner = new Map<string, number>()
+  cellSetsInOrder.forEach((cells, index) => {
+    for (const cell of cells) {
+      if (!owner.has(cell)) owner.set(cell, index)
+    }
+  })
+  return owner
+}
+
+/** True when at least one of `points` lies in a cell `ownership` assigns to `mapIndex` -
+ *  the merge rule for a feature that may cross a cell boundary: kept if any of its
+ *  points is in a cell its own map owns, dropped only when every point's cell belongs
+ *  to some other (earlier-listed) map. */
+export function ownsAnyPoint(points: [number, number][], mapIndex: number, ownership: Map<string, number>): boolean {
+  for (const p of points) {
+    const [cx, cy] = cellOf(p)
+    if (ownership.get(`${cx},${cy}`) === mapIndex) return true
+  }
+  return false
+}
+
+/** Merge one parsed list per map (already in Map= order) into a single list, keeping an
+ *  item only when `pointsOf` finds it a point in a cell its own map owns. Shared by all
+ *  three extractors: `pointsOf` is the only per-shape difference (a street piece or
+ *  world-map shape already has `.points`; an area rectangle does not, so
+ *  extract-objects.ts passes its four corners instead). */
+export function mergeByOwnership<T>(
+  perMapItems: T[][],
+  cellSetsInOrder: Set<string>[],
+  pointsOf: (item: T) => [number, number][],
+): T[] {
+  const ownership = buildCellOwnership(cellSetsInOrder)
+  const merged: T[] = []
+  perMapItems.forEach((items, index) => {
+    for (const item of items) {
+      if (ownsAnyPoint(pointsOf(item), index, ownership)) merged.push(item)
+    }
+  })
+  return merged
+}
+
+/** Read one map folder's streets.xml, or no streets at all when it does not ship one
+ *  (a mod map need not add streets). */
+export function readMapFolderStreets(mapFolder: string): StreetPiece[] {
+  try {
+    return parseStreets(readFileSync(join(mapFolder, 'streets.xml'), 'utf8'))
+  } catch (e) {
+    console.warn(`no streets.xml in ${mapFolder} (${e instanceof Error ? e.message : String(e)}); it contributes no streets`)
+    return []
+  }
+}
+
+/** Merge street pieces from several map folders, in Map= order. */
+export function mergeStreetPieces(mapFolders: string[]): StreetPiece[] {
+  const cellSets = mapFolders.map(readOwnedCells)
+  const perMap = mapFolders.map(readMapFolderStreets)
+  return mergeByOwnership(perMap, cellSets, (p) => p.points)
+}
+
 function main() {
+  const mapFolders = args('--map')
   const input = process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : DEFAULT_STREETS_XML
   const out = resolve(arg('--out') ?? 'packages/aurora/public/data/streets.json')
   const areasPath = resolve(arg('--areas') ?? DEFAULT_AREAS_JSON)
   const tolerance = Number(arg('--tolerance') ?? '0')
 
-  const xml = readFileSync(input, 'utf8')
-  let pieces = parseStreets(xml)
+  let pieces: StreetPiece[]
+  if (mapFolders.length > 0) {
+    pieces = mergeStreetPieces(mapFolders)
+    console.log(`merged streets from ${mapFolders.length} map folder(s) (Map= order): ${mapFolders.join(', ')}`)
+  } else {
+    pieces = parseStreets(readFileSync(input, 'utf8'))
+  }
   if (tolerance > 0) {
     pieces = pieces.map((s) => ({ ...s, points: simplify(s.points, tolerance) }))
   }
@@ -432,8 +552,18 @@ function main() {
   console.log(`names disambiguated (same name, different roads): ${namesDisambiguated.length} - ${namesDisambiguated.join(', ')}`)
   console.log(`labels needing a compass side: ${compassLabels.length}${compassLabels.length ? ' - ' + compassLabels.join(', ') : ''}`)
 
-  if (streets.length < 950 || streets.length > 1050) {
-    console.error(`entries after (${streets.length}) is outside the expected 950-1050 range; stopping without writing ${out}`)
+  // A parser break shows up as a count far from the known one, so the run refuses to
+  // write outside the expected range. 950-1050 is vanilla's (T42 measured 1,005). A
+  // merge with mod maps adds their streets, so that run names its own range with
+  // --expect-range <min>,<max> (T45).
+  const [expectMin, expectMax] = (arg('--expect-range') ?? '950,1050').split(',').map(Number)
+  if (!Number.isFinite(expectMin) || !Number.isFinite(expectMax) || expectMin > expectMax) {
+    console.error(`--expect-range must be <min>,<max>; got '${arg('--expect-range')}'`)
+    process.exitCode = 1
+    return
+  }
+  if (streets.length < expectMin || streets.length > expectMax) {
+    console.error(`entries after (${streets.length}) is outside the expected ${expectMin}-${expectMax} range; stopping without writing ${out}`)
     process.exitCode = 1
     return
   }

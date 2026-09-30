@@ -1,5 +1,16 @@
+import { mkdtempSync, writeFileSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { classifyForest, classifyMain, parseWorldmap, simplifyRing } from './extract-worldmap'
+import {
+  classifyForest,
+  classifyMain,
+  parseWorldmap,
+  simplifyRing,
+  mergeWorldmapRaw,
+  readMapFolderWorldmapMain,
+  readMapFolderForest,
+} from './extract-worldmap'
 
 const MAIN_FIXTURE = `<?xml version="1.0" encoding="UTF-8"?>
 <world version="1.0">
@@ -195,5 +206,81 @@ describe('simplifyRing', () => {
   it('fewer than 3 points pass through unchanged either way', () => {
     const two: [number, number][] = [[0, 0], [5, 5]]
     expect(simplifyRing(two, true, 100)).toEqual(two)
+  })
+})
+
+describe('mergeWorldmapRaw (T45 Part EXTRACT: real map folders on disk, first in Map= order wins a cell)', () => {
+  // worldmap.xml addresses points as <cell x y> + a point LOCAL to that cell (0..300);
+  // B42 cell ownership is a different, 256-square grid (extract-streets.ts). Cell (0,0)
+  // covers global squares 0-255, cell (1,0) covers 256-511 - picking worldmap cell index
+  // and local coordinates that land comfortably inside one or the other keeps the two
+  // grids from being confused with each other in this fixture.
+  function roadXml(cellX: number, cellY: number, x1: number, y1: number, x2: number, y2: number): string {
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<world version="1.0">
+ <cell x="${cellX}" y="${cellY}">
+  <feature>
+   <geometry type="LineString">
+    <coordinates>
+     <point x="${x1}" y="${y1}"/>
+     <point x="${x2}" y="${y2}"/>
+    </coordinates>
+   </geometry>
+   <properties>
+    <property name="highway" value="secondary"/>
+   </properties>
+  </feature>
+ </cell>
+</world>`
+  }
+
+  function makeMapFolder(cells: string[], files: Record<string, string>): string {
+    const dir = mkdtempSync(join(tmpdir(), 'aurora-t45-worldmap-'))
+    for (const cell of cells) writeFileSync(join(dir, `${cell}.lotheader`), '')
+    for (const [name, content] of Object.entries(files)) writeFileSync(join(dir, name), content)
+    return dir
+  }
+
+  it('drops the vanilla road in a cell a mod replaced, keeps the mod road there, keeps a vanilla road outside it', () => {
+    const modDir = makeMapFolder(['0_0'], {
+      'worldmap.xml': roadXml(0, 0, 20, 20, 60, 20), // global (20,20)-(60,20): B42 cell 0,0
+    })
+    const vanillaDir = makeMapFolder(['0_0', '1_0'], {
+      'worldmap.xml':
+        roadXml(0, 0, 10, 10, 50, 10) // global (10,10)-(50,10): B42 cell 0,0 (mod replaces this cell)
+          .replace('</world>', '') +
+        `<cell x="1" y="0"><feature><geometry type="LineString"><coordinates>` +
+        `<point x="10" y="10"/><point x="60" y="10"/>` + // global (310,10)-(360,10): B42 cell 1,0
+        `</coordinates></geometry><properties><property name="highway" value="secondary"/></properties></feature></cell></world>`,
+    })
+    try {
+      const merged = mergeWorldmapRaw([modDir, vanillaDir])
+      const firstPoints = merged.main.map((f) => f.points[0])
+      expect(firstPoints).toContainEqual([20, 20]) // mod's road: kept
+      expect(firstPoints).toContainEqual([310, 10]) // vanilla road outside the replaced cell: kept
+      expect(firstPoints).not.toContainEqual([10, 10]) // vanilla road inside the replaced cell: dropped
+      expect(merged.main).toHaveLength(2)
+    } finally {
+      rmSync(modDir, { recursive: true, force: true })
+      rmSync(vanillaDir, { recursive: true, force: true })
+    }
+  })
+
+  it('contributes no roads, buildings or water from a map folder with no worldmap.xml (a mod map with only a forest file)', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'aurora-t45-worldmap-'))
+    try {
+      expect(readMapFolderWorldmapMain(dir)).toEqual([])
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('contributes no forest from a map folder with no worldmap-forest.xml', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'aurora-t45-worldmap-'))
+    try {
+      expect(readMapFolderForest(dir)).toEqual([])
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
   })
 })

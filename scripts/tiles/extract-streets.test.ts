@@ -1,7 +1,19 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { parseStreets, simplify, clusterStreets, JOIN_DISTANCE } from './extract-streets'
+import {
+  parseStreets,
+  simplify,
+  clusterStreets,
+  JOIN_DISTANCE,
+  cellOf,
+  buildCellOwnership,
+  ownsAnyPoint,
+  mergeByOwnership,
+  mergeStreetPieces,
+} from './extract-streets'
 import type { StreetPiece, AreaRaw } from './extract-streets'
 
 const FIXTURE = `<streets version="1">
@@ -182,6 +194,92 @@ describe('clusterStreets', () => {
     const out = clusterStreets([a, b], NO_AREAS)
     expect(out.every((s) => s.area === null)).toBe(true)
     expect(new Set(out.map((s) => s.label)).size).toBe(out.length)
+  })
+})
+
+describe('cellOf (T45 Part EXTRACT: B42 256-square cell ownership)', () => {
+  it('maps a world-square point to its 256-square cell', () => {
+    expect(cellOf([0, 0])).toEqual([0, 0])
+    expect(cellOf([255, 255])).toEqual([0, 0])
+    expect(cellOf([256, 511])).toEqual([1, 1])
+    expect(cellOf([300, 10])).toEqual([1, 0])
+  })
+})
+
+describe('buildCellOwnership', () => {
+  it('gives a cell to the first set in the list that claims it (Map= order)', () => {
+    const owner = buildCellOwnership([new Set(['0,0']), new Set(['0,0', '1,0'])])
+    expect(owner.get('0,0')).toBe(0)
+    expect(owner.get('1,0')).toBe(1)
+  })
+
+  it('leaves a cell no map claims out of the ownership map entirely', () => {
+    const owner = buildCellOwnership([new Set(['0,0'])])
+    expect(owner.has('9,9')).toBe(false)
+  })
+})
+
+describe('ownsAnyPoint', () => {
+  const ownership = buildCellOwnership([new Set(['0,0']), new Set(['0,0', '1,0'])])
+
+  it('is true when at least one point falls in a cell owned by that map index', () => {
+    expect(ownsAnyPoint([[1000, 1000], [10, 10]], 0, ownership)).toBe(true)
+  })
+
+  it('is false when every point falls in a cell some other map owns', () => {
+    expect(ownsAnyPoint([[10, 10]], 1, ownership)).toBe(false) // cell 0,0 belongs to map 0, not map 1
+  })
+})
+
+describe('mergeByOwnership (generic merge, shared by all three T45 extractors)', () => {
+  it('keeps an item only from the map that owns a cell one of its points falls in - a mod street replaces a vanilla one in a shared cell, a vanilla street outside it survives', () => {
+    const modPiece = piece({ name: 'New Elm St', points: [[20, 20], [60, 20]] }) // B42 cell 0,0
+    const vanillaSameCell = piece({ name: 'Old Elm St', points: [[10, 10], [50, 10]] }) // B42 cell 0,0
+    const vanillaOtherCell = piece({ name: 'Far Oak Ave', points: [[300, 10], [350, 10]] }) // B42 cell 1,0
+    // Map= order: mod first, vanilla second - mod's lone cell (0,0) beats vanilla's claim on it.
+    const cellSets = [new Set(['0,0']), new Set(['0,0', '1,0'])]
+    const merged = mergeByOwnership([[modPiece], [vanillaSameCell, vanillaOtherCell]], cellSets, (p) => p.points)
+    expect(merged.map((p) => p.name).sort()).toEqual(['Far Oak Ave', 'New Elm St'])
+  })
+})
+
+describe('mergeStreetPieces (T45 Part EXTRACT: real map folders on disk, first in Map= order wins a cell)', () => {
+  function makeMapFolder(cells: string[], streetsXml: string): string {
+    const dir = mkdtempSync(join(tmpdir(), 'aurora-t45-streets-'))
+    for (const cell of cells) writeFileSync(join(dir, `${cell}.lotheader`), '')
+    writeFileSync(join(dir, 'streets.xml'), streetsXml)
+    return dir
+  }
+
+  it('drops the vanilla street in a cell a mod replaced, keeps the mod street there, keeps a vanilla street outside it', () => {
+    const modDir = makeMapFolder(
+      ['0_0'],
+      '<streets version="1"><street name="New Elm St" width="8"><points><point x="20.0" y="20.0"/><point x="60.0" y="20.0"/></points></street></streets>',
+    )
+    const vanillaDir = makeMapFolder(
+      ['0_0', '1_0'],
+      '<streets version="1">' +
+        '<street name="Old Elm St" width="8"><points><point x="10.0" y="10.0"/><point x="50.0" y="10.0"/></points></street>' +
+        '<street name="Far Oak Ave" width="8"><points><point x="300.0" y="10.0"/><point x="350.0" y="10.0"/></points></street>' +
+        '</streets>',
+    )
+    try {
+      const merged = mergeStreetPieces([modDir, vanillaDir])
+      expect(merged.map((p) => p.name).sort()).toEqual(['Far Oak Ave', 'New Elm St'])
+    } finally {
+      rmSync(modDir, { recursive: true, force: true })
+      rmSync(vanillaDir, { recursive: true, force: true })
+    }
+  })
+
+  it('contributes no streets from a map folder that has no streets.xml', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'aurora-t45-streets-'))
+    writeFileSync(join(dir, '0_0.lotheader'), '')
+    try {
+      expect(mergeStreetPieces([dir])).toEqual([])
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
   })
 })
 

@@ -16,7 +16,7 @@
 // B41 and B42 (300 squares to 256), not the square unit itself.
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
-import { simplify } from './extract-streets'
+import { simplify, readOwnedCells, mergeByOwnership } from './extract-streets'
 
 const CELL_SQUARES = 300
 
@@ -26,6 +26,16 @@ const DEFAULT_WORLDMAP_XML =
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(name)
   return i >= 0 ? process.argv[i + 1] : undefined
+}
+
+/** Every value passed after a repeatable flag, e.g. several `--map <folder>` pairs, in
+ *  the order they appear on the command line. */
+function args(name: string): string[] {
+  const out: string[] = []
+  for (let i = 0; i < process.argv.length - 1; i++) {
+    if (process.argv[i] === name) out.push(process.argv[i + 1])
+  }
+  return out
 }
 
 export type RoadType = 'primary' | 'secondary' | 'tertiary' | 'trail' | 'railway'
@@ -47,7 +57,7 @@ const GEOMETRY_RE = /<geometry type="(Polygon|LineString|Point)">([\s\S]*?)<\/ge
 const POINT_RE = /<point x="(-?[\d.]+)" y="(-?[\d.]+)"\/>/g
 const PROPERTY_RE = /<property name="([^"]*)" value="([^"]*)"\/>/g
 
-interface RawFeature {
+export interface RawFeature {
   geometryType: 'Polygon' | 'LineString' | 'Point'
   points: [number, number][]
   properties: Record<string, string>
@@ -135,7 +145,44 @@ export function simplifyRing(points: [number, number][], closed: boolean, tolera
   return ring.slice(0, -1)
 }
 
+// --- T45 Part EXTRACT: merging several map folders, Map= order (see extract-streets.ts
+// for the shared cell-ownership rule this reuses rather than duplicates) ------------
+// worldmap.xml and worldmap-forest.xml are each optional per map folder (a mod map need
+// not ship either - the sd_cc trial map has forest but no worldmap.xml at all).
+
+/** Read one map folder's worldmap.xml raw features, or none when it does not ship one. */
+export function readMapFolderWorldmapMain(mapFolder: string): RawFeature[] {
+  try {
+    return parseWorldmap(readFileSync(join(mapFolder, 'worldmap.xml'), 'utf8'))
+  } catch (e) {
+    console.warn(`no worldmap.xml in ${mapFolder} (${e instanceof Error ? e.message : String(e)}); it contributes no roads, buildings or water`)
+    return []
+  }
+}
+
+/** Read one map folder's worldmap-forest.xml raw features, or none when it does not
+ *  ship one. */
+export function readMapFolderForest(mapFolder: string): RawFeature[] {
+  try {
+    return parseWorldmap(readFileSync(join(mapFolder, 'worldmap-forest.xml'), 'utf8'))
+  } catch (e) {
+    console.warn(`no worldmap-forest.xml in ${mapFolder} (${e instanceof Error ? e.message : String(e)}); it contributes no forest`)
+    return []
+  }
+}
+
+/** Merge worldmap.xml and worldmap-forest.xml raw features from several map folders, in
+ *  Map= order. Classification (classifyMain/classifyForest) runs once on the merged
+ *  lists afterward, same as the single-map path. */
+export function mergeWorldmapRaw(mapFolders: string[]): { main: RawFeature[]; forest: RawFeature[] } {
+  const cellSets = mapFolders.map(readOwnedCells)
+  const main = mergeByOwnership(mapFolders.map(readMapFolderWorldmapMain), cellSets, (f) => f.points)
+  const forest = mergeByOwnership(mapFolders.map(readMapFolderForest), cellSets, (f) => f.points)
+  return { main, forest }
+}
+
 function main() {
+  const mapFolders = args('--map')
   const input = process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : DEFAULT_WORLDMAP_XML
   const forestInput = arg('--forest') ?? join(dirname(input), 'worldmap-forest.xml')
   const out = resolve(arg('--out') ?? 'packages/aurora/public/data/worldmap.json')
@@ -143,9 +190,19 @@ function main() {
   const forestTolerance = Number(arg('--forest-tolerance') ?? '0')
   const forestMinArea = Number(arg('--forest-min-area') ?? '0')
 
-  const mainRaw = parseWorldmap(readFileSync(input, 'utf8'))
+  let mainRaw: RawFeature[]
+  let forestRawAll: RawFeature[]
+  if (mapFolders.length > 0) {
+    const merged = mergeWorldmapRaw(mapFolders)
+    mainRaw = merged.main
+    forestRawAll = merged.forest
+    console.log(`merged worldmap from ${mapFolders.length} map folder(s) (Map= order): ${mapFolders.join(', ')}`)
+  } else {
+    mainRaw = parseWorldmap(readFileSync(input, 'utf8'))
+    forestRawAll = parseWorldmap(readFileSync(forestInput, 'utf8'))
+  }
   const { roads, buildings, water } = classifyMain(mainRaw)
-  const forestRaw = classifyForest(parseWorldmap(readFileSync(forestInput, 'utf8')), forestMinArea)
+  const forestRaw = classifyForest(forestRawAll, forestMinArea)
 
   const simplified: WorldMap = {
     roads: roads.map((r) => ({ ...r, points: simplifyRing(r.points, r.closed, tolerance) })),

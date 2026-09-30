@@ -1,0 +1,47 @@
+{
+  "_comment": "One town label per server map mod (T45). None of these mods ships named regions, so regions.lua gives them no name. Names are editable; x, y are the centre of the cells the map owns, areaSquares is those cells times 256 squared. Used by extract-objects.ts --towns.",
+  "towns": [
+    {
+      "map": "raven-creek-b42",
+      "name": "Raven Creek",
+      "x": 5376,
+      "y": 16128,
+      "areaSquares": 7602176
+    },
+    {
+      "map": "raccooncity",
+      "name": "Raccoon City",
+      "x": 10112,
+      "y": 10240,
+      "areaSquares": 786432
+    },
+    {
+      "map": "constown-ky",
+      "name": "Constown",
+      "x": 5632,
+      "y": 11136,
+      "areaSquares": 1179648
+    },
+    {
+      "map": "havenfall",
+      "name": "HavenFall",
+      "x": 4608,
+      "y": 8960,
+      "areaSquares": 1048576
+    },
+    {
+      "map": "anruisitown",
+      "name": "Anruisi Town",
+      "x": 12416,
+      "y": 11520,
+      "areaSquares": 1245184
+    },
+    {
+      "map": "new-hartburg-ky",
+      "name": "New Hartburg",
+      "x": 6784,
+      "y": 11264,
+      "areaSquares": 1114112
+    }
+  ]
+}

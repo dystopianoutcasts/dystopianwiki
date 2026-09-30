@@ -20,7 +20,8 @@
 // (10500, 10250) lands almost exactly on the map's own default view (10770, 10271) -
 // which would not hold if this file used a different coordinate space.
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
+import { readOwnedCells, mergeByOwnership } from './extract-streets'
 
 const DEFAULT_REGIONS_LUA =
   'R:/Games/Steam/steamapps/common/ProjectZomboid/media/maps/Muldraugh, KY/regions.lua'
@@ -28,6 +29,16 @@ const DEFAULT_REGIONS_LUA =
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(name)
   return i >= 0 ? process.argv[i + 1] : undefined
+}
+
+/** Every value passed after a repeatable flag, e.g. several `--map <folder>` pairs, in
+ *  the order they appear on the command line. */
+function args(name: string): string[] {
+  const out: string[] = []
+  for (let i = 0; i < process.argv.length - 1; i++) {
+    if (process.argv[i] === name) out.push(process.argv[i + 1])
+  }
+  return out
 }
 
 export interface RegionRow {
@@ -108,12 +119,88 @@ export function groupAreas(rows: RegionRow[]): Area[] {
   return out.sort((a, b) => b.areaSquares - a.areaSquares)
 }
 
+// --- T45 Part EXTRACT: merging several map folders, Map= order (see extract-streets.ts
+// for the shared cell-ownership rule this reuses rather than duplicates) ------------
+
+/** The four corners of a regions.lua rectangle - the "points" the merge rule checks for
+ *  cell ownership, since a region row carries no vertex list of its own. */
+function rectCorners(r: RegionRow): [number, number][] {
+  return [
+    [r.x, r.y],
+    [r.x + r.width, r.y],
+    [r.x, r.y + r.height],
+    [r.x + r.width, r.y + r.height],
+  ]
+}
+
+/** Read one map folder's regions.lua rows, or none when it does not ship one. */
+export function readMapFolderRegions(mapFolder: string): RegionRow[] {
+  try {
+    return parseRegions(readFileSync(join(mapFolder, 'regions.lua'), 'utf8'))
+  } catch (e) {
+    console.warn(`no regions.lua in ${mapFolder} (${e instanceof Error ? e.message : String(e)}); it contributes no areas`)
+    return []
+  }
+}
+
+/** Merge regions.lua rows from several map folders, in Map= order. */
+export function mergeRegionRows(mapFolders: string[]): RegionRow[] {
+  const cellSets = mapFolders.map(readOwnedCells)
+  const perMap = mapFolders.map(readMapFolderRegions)
+  return mergeByOwnership(perMap, cellSets, rectCorners)
+}
+
+/** One town label for a map mod that ships no named regions (T45): the committed
+ *  scripts/tiles/mod-maps/server-towns.json, whose names the owner may edit. */
+export interface ModTown {
+  name: string
+  x: number
+  y: number
+  areaSquares: number
+}
+
+/** Read and check a towns file: `{ towns: [{ name, x, y, areaSquares }] }`. Throws on a
+ *  malformed entry, so a typo in a hand-edited name file stops the run. */
+export function parseModTowns(json: string): ModTown[] {
+  const data: unknown = JSON.parse(json)
+  const list = (data as { towns?: unknown }).towns
+  if (!Array.isArray(list)) throw new Error('towns file: expected { "towns": [...] }')
+  return list.map((t, i) => {
+    const o = t as Record<string, unknown>
+    if (typeof o.name !== 'string' || o.name.trim() === '') throw new Error(`towns file: entry ${i} has no name`)
+    for (const k of ['x', 'y', 'areaSquares'] as const) {
+      if (typeof o[k] !== 'number' || !Number.isFinite(o[k])) throw new Error(`towns file: entry ${i} (${o.name}) has no numeric ${k}`)
+    }
+    return { name: o.name.trim(), x: o.x as number, y: o.y as number, areaSquares: o.areaSquares as number }
+  })
+}
+
+/** Add the mod towns to the areas as towns (count 0: no regions.lua row names them).
+ *  A town whose name is already an area keeps the regions.lua one. The result keeps
+ *  groupAreas's order, biggest first. */
+export function addModTowns(areas: Area[], towns: ModTown[]): Area[] {
+  const have = new Set(areas.map((a) => a.name))
+  const added: Area[] = towns
+    .filter((t) => !have.has(t.name))
+    .map((t) => ({ name: t.name, kind: 'town' as const, x: t.x, y: t.y, areaSquares: t.areaSquares, count: 0 }))
+  return [...areas, ...added].sort((a, b) => b.areaSquares - a.areaSquares)
+}
+
 function main() {
+  const mapFolders = args('--map')
   const input = process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : DEFAULT_REGIONS_LUA
   const out = resolve(arg('--out') ?? 'packages/aurora/public/data/areas.json')
 
-  const lua = readFileSync(input, 'utf8')
-  const areas = groupAreas(parseRegions(lua))
+  let rows: RegionRow[]
+  if (mapFolders.length > 0) {
+    rows = mergeRegionRows(mapFolders)
+    console.log(`merged areas from ${mapFolders.length} map folder(s) (Map= order): ${mapFolders.join(', ')}`)
+  } else {
+    rows = parseRegions(readFileSync(input, 'utf8'))
+  }
+  const townsFile = arg('--towns')
+  const areas = townsFile ? addModTowns(groupAreas(rows), parseModTowns(readFileSync(townsFile, 'utf8'))) : groupAreas(rows)
+  if (townsFile) console.log(`added mod towns from ${townsFile}`)
 
   const json = JSON.stringify(areas)
   mkdirSync(dirname(out), { recursive: true })
