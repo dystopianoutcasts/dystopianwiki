@@ -1,0 +1,347 @@
+/**
+ * Admin dashboard (/admin). Builds on the vote page's panels, buttons and tables
+ * (mascot-vote.css); this file adds the dashboard's own pieces and the results chart.
+ */
+
+.admin {
+  max-width: 1120px;
+}
+
+.admin__subtitle {
+  margin: var(--spacing-6) 0 var(--spacing-3);
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+}
+
+.admin__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+  margin: var(--spacing-4) 0;
+}
+
+.admin__filter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  max-width: 360px;
+  margin: var(--spacing-4) 0 var(--spacing-2);
+}
+
+.admin__filter label,
+.admin__closing > label {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.admin__filter input,
+.admin__filter select,
+.admin__closing input {
+  min-height: 48px;
+  padding: 0 var(--spacing-3);
+  font: inherit;
+  color: var(--color-text-primary);
+  background: var(--color-background);
+  border: 1px solid var(--color-primary-400);
+  border-radius: var(--border-radius-md);
+  color-scheme: dark;
+}
+
+.admin__filter input:focus-visible,
+.admin__filter select:focus-visible,
+.admin__closing input:focus-visible,
+.admin__check input:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.admin__closing {
+  margin-top: var(--spacing-6);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.admin__closing-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+  align-items: center;
+}
+
+.admin__closing-row input {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.admin__leader {
+  margin: var(--spacing-3) 0;
+}
+
+.admin__table td,
+.admin__table th {
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.admin__row-btn {
+  min-height: 44px;
+  padding: 0 var(--spacing-3);
+  font-size: var(--font-size-sm);
+}
+
+.admin__row--excluded th,
+.admin__row--excluded td {
+  color: var(--color-text-secondary);
+}
+
+.admin__none {
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.admin__ranking {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-1) var(--spacing-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin__rank {
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A 48 px target around the native checkbox. */
+.admin__check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  min-height: 48px;
+  cursor: pointer;
+}
+
+.admin__check input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--color-accent-400);
+  cursor: inherit;
+}
+
+/* ---- Results chart ----
+   One series: one colour (accent-400, well over 3:1 against the panel), no legend.
+   Thin bars with a 4 px rounded data end on the baseline; recessive gridlines. */
+
+.admin-chart {
+  margin: var(--spacing-4) 0 0;
+}
+
+.admin-chart__title {
+  margin-bottom: var(--spacing-4);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.admin-chart__sub {
+  display: block;
+  margin-top: var(--spacing-1);
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.admin-chart__plot {
+  --chart-height: 240px;
+  display: grid;
+  grid-template-columns: 20px 36px minmax(0, 1fr);
+  height: var(--chart-height);
+  /* Room above the tallest bar for its value. */
+  padding-top: var(--spacing-6);
+}
+
+.admin-chart__axis-label {
+  align-self: center;
+  justify-self: center;
+  transform: rotate(-90deg);
+  white-space: nowrap;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.admin-chart__ticks,
+.admin-chart__area {
+  position: relative;
+  height: 100%;
+}
+
+.admin-chart__tick {
+  position: absolute;
+  right: var(--spacing-2);
+  transform: translateY(50%);
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-chart__grid {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.admin-chart__bars,
+.admin-chart__labels {
+  display: grid;
+  /* Column count is set inline from the number of entries. */
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-chart__bars {
+  position: absolute;
+  inset: 0;
+  border-bottom: 2px solid var(--color-text-secondary);
+}
+
+.admin-chart__col {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.admin-chart__bar {
+  width: min(48px, 64%);
+  min-height: 2px;
+  background: var(--color-accent-400);
+  border-radius: 4px 4px 0 0;
+}
+
+.admin-chart__value {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin-bottom: var(--spacing-1);
+  text-align: center;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-chart__col--out .admin-chart__value {
+  color: var(--color-text-secondary);
+}
+
+.admin-chart__tip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  z-index: 2;
+  transform: translateX(-50%);
+  padding: var(--spacing-1) var(--spacing-2);
+  white-space: nowrap;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-primary-400);
+  border-radius: var(--border-radius-sm);
+  pointer-events: none;
+  /* Out of the layout until hovered: a faded-out tip near the right edge would still
+     widen the page on a phone. */
+  display: none;
+}
+
+.admin-chart__col:hover .admin-chart__tip {
+  display: block;
+}
+
+/* The outer bars' tips open inward. */
+.admin-chart__col:first-child .admin-chart__tip {
+  left: 0;
+  transform: none;
+}
+
+.admin-chart__col:last-child .admin-chart__tip {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+.admin-chart__col:hover .admin-chart__bar {
+  background: var(--color-accent-300);
+}
+
+.admin-chart__labels {
+  margin-left: 56px;
+  margin-top: var(--spacing-2);
+}
+
+.admin-chart__label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-1);
+  min-width: 0;
+  text-align: center;
+  font-size: var(--font-size-sm);
+}
+
+.admin-chart__thumb {
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  background: var(--color-neutral-50);
+  border-radius: var(--border-radius-sm);
+}
+
+.admin-chart__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.admin-chart__id {
+  font-family: var(--font-family-mono);
+  color: var(--color-text-primary);
+  overflow-wrap: anywhere;
+}
+
+.admin-chart__out {
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+@media (max-width: 640px) {
+  .admin-chart__plot {
+    --chart-height: 200px;
+    grid-template-columns: 16px 30px minmax(0, 1fr);
+  }
+
+  .admin-chart__labels {
+    margin-left: 46px;
+  }
+
+  .admin-chart__thumb {
+    width: 32px;
+    height: 32px;
+  }
+
+  .admin-chart__label {
+    font-size: var(--font-size-xs, 0.75rem);
+  }
+
+  /* Six columns of about 44 px: art_00N has to fit on one line. */
+  .admin-chart__id {
+    font-size: 10px;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
+}

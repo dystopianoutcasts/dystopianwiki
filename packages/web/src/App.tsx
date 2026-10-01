@@ -13,6 +13,7 @@ import { TermsPage } from './pages/TermsPage';
 import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { LoginPage } from './pages/LoginPage';
 import { MascotVotePage } from './pages/MascotVotePage';
+import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { ArticleProvider } from './context/ArticleContext';
@@ -70,6 +71,7 @@ function App() {
 
         {/* Mascot vote. Above the /:version routes. */}
         <Route path="/vote" element={<MascotVotePage />} />
+        <Route path="/admin" element={<AdminDashboardPage />} />
 
         {/* User Pages (wrapped in Layout so the header and its Log in button show) */}
         <Route path="/bookmarks" element={<Layout><BookmarksPage /></Layout>} />
