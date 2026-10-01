@@ -1,0 +1,128 @@
+/**
+ * Login / register page
+ */
+
+.login-page {
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-12) var(--spacing-4);
+  min-height: calc(100vh - var(--header-height) - 140px);
+}
+
+.login-page__card {
+  width: 100%;
+  max-width: 440px;
+  align-self: flex-start;
+  padding: var(--spacing-8);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+}
+
+.login-page__title {
+  margin: 0 0 var(--spacing-6);
+  font-size: var(--font-size-3xl);
+  color: var(--color-text-primary);
+}
+
+.login-page__title:focus {
+  outline: none;
+}
+
+.login-page__title:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 4px;
+}
+
+.login-page__about {
+  margin-bottom: var(--spacing-6);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+
+.login-page__about p {
+  margin: 0 0 var(--spacing-3);
+}
+
+.login-page__status {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.login-page__error {
+  margin: 0 0 var(--spacing-4);
+  padding: var(--spacing-3);
+  border: 1px solid var(--color-alert-warning-border);
+  border-radius: var(--border-radius-md);
+  background: var(--color-alert-warning-bg);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.login-page__buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.login-page__provider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 var(--spacing-4);
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-md);
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.login-page__provider:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.login-page__provider--discord {
+  background: #5865f2;
+  color: #ffffff;
+}
+
+.login-page__provider--discord:hover:not(:disabled) {
+  background: #4752c4;
+}
+
+.login-page__provider--google {
+  background: #ffffff;
+  color: #1f1f1f;
+  border-color: var(--color-neutral-300);
+}
+
+.login-page__provider--google:hover:not(:disabled) {
+  background: var(--color-neutral-100);
+}
+
+.login-page__switch {
+  margin: var(--spacing-6) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.login-page__switch-link {
+  display: inline-block;
+  padding: var(--spacing-3) var(--spacing-1);
+  font-weight: var(--font-weight-bold);
+}
+
+/* @breakpoint-sm: 640px - Mobile */
+@media (max-width: 640px) {
+  .login-page {
+    padding: var(--spacing-6) var(--spacing-4);
+  }
+
+  .login-page__card {
+    padding: var(--spacing-6) var(--spacing-4);
+  }
+}

@@ -182,7 +182,7 @@ main[tabindex="-1"]:focus { outline: none; }
 .site-header__search-input::placeholder { color: var(--color-neutral-400); }
 
 .site-header__actions { flex: none; display: flex; align-items: center; gap: var(--spacing-2); }
-/* "Admin sign in" / "Sign out" (T34's AccountControl), dressed like the wiki's header controls. */
+/* "Log in" / "Sign out" (AccountControl), dressed like the wiki's header controls. */
 .site-header .account button {
   font-size: var(--font-size-sm); padding: var(--spacing-2) var(--spacing-3); min-height: 44px; white-space: nowrap;
   background-color: var(--color-surface); color: var(--color-text-primary);
@@ -190,6 +190,23 @@ main[tabindex="-1"]:focus { outline: none; }
 }
 .site-header .account button:hover { border-color: var(--color-primary-500); }
 .site-header .account .who { color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+.site-header .account__avatar {
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  width: 32px; height: 32px; border-radius: 50%; object-fit: cover; overflow: hidden;
+  background-color: var(--color-surface-elevated); color: var(--color-text-secondary);
+}
+.site-header .account__avatar--generic svg { width: 24px; height: 24px; margin-top: 4px; }
+.site-header .account__avatar--initial {
+  background-color: var(--color-accent-600); color: var(--color-primary-950);
+  font-weight: var(--font-weight-bold); font-size: var(--font-size-sm);
+}
+.site-header .account__login {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 48px;
+  padding: 0 var(--spacing-4); border-radius: var(--border-radius-md); white-space: nowrap;
+  background-color: var(--color-accent-600); color: var(--color-primary-950);
+  font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); text-decoration: none;
+}
+.site-header .account__login:hover { background-color: var(--color-accent-500); text-decoration: none; }
 
 /* Phone menu: a native <details>, so it opens and closes by keyboard and announces its
    state with no script. Only shown at the wiki's own tablet breakpoint and below. */

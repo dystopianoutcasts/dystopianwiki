@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { HomePage } from './pages/HomePage';
 import { VersionPage } from './pages/VersionPage';
 import { SectionPage } from './pages/SectionPage';
@@ -11,17 +11,38 @@ import { BookmarksPage } from './pages/BookmarksPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { TermsPage } from './pages/TermsPage';
 import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
+import { LoginPage } from './pages/LoginPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { ArticleProvider } from './context/ArticleContext';
 import { LearningPathProvider } from './context/LearningPathContext';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { Layout } from './components/layout/Layout';
+import { goTo, takeRememberedNext } from './utils/loginNext';
 import { checkForContentUpdates } from './utils/manifestChecker';
 
 // Import global styles
 import './styles/variables.css';
 import './styles/base.css';
 import './styles/animations.css';
+
+// Backup for the OAuth round trip: if the provider returns the member somewhere other
+// than /login, forward them to the destination remembered when they pressed the button.
+function PendingNextRedirect() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    if (!user || pathname === '/login' || pathname === '/register') return;
+    const next = takeRememberedNext();
+    if (next) goTo(next, navigate);
+    // Runs when the session appears, not on every navigation.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  return null;
+}
 
 function App() {
   // Check for content updates on app load
@@ -32,6 +53,7 @@ function App() {
   return (
     <BrowserRouter basename="/">
       <AuthProvider>
+      <PendingNextRedirect />
       <LearningPathProvider>
       <ArticleProvider>
       <Routes>
@@ -41,11 +63,15 @@ function App() {
         {/* Search Page */}
         <Route path="/search" element={<SearchPage />} />
 
-        {/* User Pages */}
-        <Route path="/bookmarks" element={<BookmarksPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/terms" element={<TermsPage />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        {/* Login and register: one page, two modes. Above the /:version routes. */}
+        <Route path="/login" element={<LoginPage mode="login" />} />
+        <Route path="/register" element={<LoginPage mode="register" />} />
+
+        {/* User Pages (wrapped in Layout so the header and its Log in button show) */}
+        <Route path="/bookmarks" element={<Layout><BookmarksPage /></Layout>} />
+        <Route path="/settings" element={<Layout><SettingsPage /></Layout>} />
+        <Route path="/terms" element={<Layout><TermsPage /></Layout>} />
+        <Route path="/privacy-policy" element={<Layout><PrivacyPolicyPage /></Layout>} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         {/* Learning Path - PZ specific for now */}

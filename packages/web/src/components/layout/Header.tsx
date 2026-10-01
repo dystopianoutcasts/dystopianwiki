@@ -4,12 +4,6 @@ import { AuthButton } from '../auth/AuthButton';
 import { VERSIONS, DEFAULT_VERSION, getVersion } from '../../config/versions.generated';
 import '../../styles/components/header.css';
 
-// The auth UI stays off unless a build opts in. The January 2026 production
-// deploy (7119e96) shipped with it disabled by commenting out <AuthButton />
-// (77b1ec4); this flag makes that the default without editing code per deploy.
-// Set VITE_ENABLE_AUTH to "true" at build time to show the Log In button.
-const AUTH_UI_ENABLED = import.meta.env.VITE_ENABLE_AUTH === 'true';
-
 // Icons
 const MenuIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -142,7 +136,7 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
 
         {/* Actions */}
         <div className="header__actions">
-          {AUTH_UI_ENABLED && <AuthButton />}
+          <AuthButton />
 
           {/* Version Selector */}
           <select

@@ -3,6 +3,7 @@
  */
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { ConnectDiscord } from '../components/auth/ConnectDiscord'
 import '../styles/pages/settings-page.css'
 
 export function SettingsPage() {
@@ -102,6 +103,12 @@ export function SettingsPage() {
               {saving ? 'Saving...' : 'Save Changes'}
             </button>
           </form>
+        </section>
+
+        {/* Connected accounts */}
+        <section className="settings-section">
+          <h2 className="settings-section__title">Connected accounts</h2>
+          <ConnectDiscord />
         </section>
 
         {/* Account Actions */}

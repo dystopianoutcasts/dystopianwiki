@@ -12,7 +12,8 @@
 //   wiki's live-suggestion search, which needs the wiki's search index and code.
 // - No version selector: the map is Build 42's server, and the menu follows the
 //   wiki's default version.
-// - At the right, the map's own "Admin sign in" (T34) instead of the wiki's Log In.
+// - At the right, the same "Log in" button and avatar as the wiki (the login session is
+//   shared, sign-in happens on the wiki's /login page), plus "Sign out" when signed in.
 // - On a phone the section links fold into a native <details> menu.
 import { AccountControl } from '../auth/AccountControl'
 import { useSiteNav } from './useSiteNav'

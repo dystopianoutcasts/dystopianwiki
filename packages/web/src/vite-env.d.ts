@@ -7,8 +7,6 @@ interface ImportMetaEnv {
   readonly VITE_SUPABASE_PUBLISHABLE_KEY?: string
   /** Aurora server id; defaults to 'outcasts-main' when unset (lib/aurora.ts). */
   readonly VITE_AURORA_SERVER_ID?: string
-  /** "true" shows the header's Log In / user menu. Unset (the default) hides it, as the January 2026 deploy did. */
-  readonly VITE_ENABLE_AUTH?: string
 }
 
 interface ImportMeta {
