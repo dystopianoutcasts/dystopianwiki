@@ -63,6 +63,7 @@ supabase db push
 | `019_aurora_admin_flag.sql` | OutcastAurora: `aurora.is_aurora_admin()` reads `auth.users.raw_app_meta_data` instead of the client-writable `public.user_profiles.is_aurora_admin`, which is dropped (T16 P0-1) |
 | `022_aurora_visibility.sql` | OutcastAurora: `health_samples`/`servers`/`item_catalog` go admin-only; `aurora.vehicles_public()`/`vehicles_visible` add a public vehicle surface (type and position, never the driver) - see `docs/planning/OutcastAurora/VISIBILITY.md` |
 | `023_aurora_undrawn_columns.sql` | OutcastAurora: narrows the public column grant on `safehouses` (drops `players`/`last_visited`/`created_at`) and `map_objects` (drops `meta`); adds `aurora.safehouses_admin()`/`aurora.map_objects_admin()` so admins still reach the full row - see `docs/planning/OutcastAurora/VISIBILITY.md` |
+| `024_site_roles.sql` | Website roles: `site_is_admin()` / `site_is_superadmin()` (admin = the existing `aurora_admin` flag, superadmin = a new `superadmin` flag, both in `auth.users.raw_app_meta_data`), the superadmin's member list and make/remove admin, and `site_grant_superadmin()` (postgres only) for the owner's account. Tests: `tests/site_roles.sql` |
 
 Apply 008 through 012 strictly in that order: 009 calls helper functions defined at
 the bottom of 008, and 010 depends on the grants in 009. 022 may be applied at any

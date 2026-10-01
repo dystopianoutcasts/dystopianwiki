@@ -58,9 +58,21 @@ export function hasDiscordIdentity(user: User | null): boolean {
   return discordIdentity(user) !== undefined;
 }
 
+/**
+ * The Discord username (not the display name) from a Discord identity's data, the same
+ * field the database copies onto a ballot (migration 024, public.site_discord_identity):
+ * Supabase stores the username as `full_name`, the username with its discriminator as
+ * `name` ("user#0"), and the display name as `custom_claims.global_name`.
+ */
+export function discordUsernameFrom(identityData: unknown): string | null {
+  const data = record(identityData);
+  const legacy = str(data.name);
+  return firstString(data.full_name, legacy ? legacy.replace(/#0$/, '') : null, data.user_name, data.preferred_username);
+}
+
 /** The linked Discord username, or null when there is no Discord identity. */
 export function getDiscordUsername(user: User | null): string | null {
   const identity = discordIdentity(user);
   if (!identity) return null;
-  return nameFrom(record(identity.identity_data));
+  return discordUsernameFrom(identity.identity_data);
 }
