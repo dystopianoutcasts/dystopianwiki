@@ -66,8 +66,8 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
         {/* Logo */}
         <Link to="/" className="header__logo">
           <img
-            src="/assets/branding/benny/benny-512.png"
-            alt="Benny - Dystopian Outcasts mascot"
+            src="/assets/branding/mascot-placeholder/placeholder-512.png"
+            alt="Mascot placeholder"
             className="header__logo-image"
           />
           <span className="header__logo-text">Dystopian Outcasts</span>

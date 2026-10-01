@@ -169,7 +169,7 @@ Replace the default template with this branded version:
   <div class="container">
     <!-- Header -->
     <div class="header">
-      <img src="https://dystopianoutcasts.online/assets/branding/benny/benny-512.png" alt="Dystopian Outcasts" class="logo">
+      <img src="https://dystopianoutcasts.online/assets/branding/mascot-placeholder/placeholder-512.png" alt="Dystopian Outcasts" class="logo">
       <h1 class="title">Dystopian Outcasts Wiki</h1>
       <p class="subtitle">Project Zomboid Modding Community</p>
     </div>
@@ -299,8 +299,8 @@ Before deploying to production:
 ## Branding Assets
 
 **Logo:**
-- Current: `/assets/branding/benny/benny-512.png`
-- Hosted at: `https://dystopianoutcasts.online/assets/branding/benny/benny-512.png`
+- Current: `/assets/branding/mascot-placeholder/placeholder-512.png`
+- Hosted at: `https://dystopianoutcasts.online/assets/branding/mascot-placeholder/placeholder-512.png`
 
 **Colors:**
 - Primary Orange: `#d4782c`

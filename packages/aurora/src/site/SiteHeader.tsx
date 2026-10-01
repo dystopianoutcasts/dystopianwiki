@@ -63,7 +63,7 @@ export function SiteHeader() {
       <div className="site-header__container">
         <a href="/" className="site-header__logo" aria-label={`${SITE_NAME}, home`}>
           <img
-            src="/assets/branding/benny/benny-512.png"
+            src="/assets/branding/mascot-placeholder/placeholder-512.png"
             alt=""
             width={40}
             height={40}

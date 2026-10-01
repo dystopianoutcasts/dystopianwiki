@@ -46,8 +46,8 @@ export function Footer() {
         <div className="footer__info">
           <div className="footer__branding">
             <img
-              src="/assets/branding/benny/benny-32.png"
-              alt="Benny mascot"
+              src="/assets/branding/mascot-placeholder/placeholder-32.png"
+              alt="Mascot placeholder"
               className="footer__branding-logo"
             />
             <span>Dystopian Outcasts</span>

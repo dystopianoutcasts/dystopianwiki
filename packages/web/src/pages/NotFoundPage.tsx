@@ -14,8 +14,8 @@ export function NotFoundPage() {
       <div className="not-found-page">
         <div className="not-found-page__content">
           <img
-            src="/assets/banners/benny404_4K.png"
-            alt="Benny the wombat looking lost"
+            src="/assets/branding/mascot-placeholder/placeholder-512.png"
+            alt="Mascot placeholder"
             className="not-found-page__image"
           />
           <h1 className="not-found-page__title">404</h1>
