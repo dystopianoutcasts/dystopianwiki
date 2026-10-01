@@ -12,6 +12,7 @@ import { SettingsPage } from './pages/SettingsPage';
 import { TermsPage } from './pages/TermsPage';
 import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { LoginPage } from './pages/LoginPage';
+import { MascotVotePage } from './pages/MascotVotePage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { ArticleProvider } from './context/ArticleContext';
@@ -66,6 +67,9 @@ function App() {
         {/* Login and register: one page, two modes. Above the /:version routes. */}
         <Route path="/login" element={<LoginPage mode="login" />} />
         <Route path="/register" element={<LoginPage mode="register" />} />
+
+        {/* Mascot vote. Above the /:version routes. */}
+        <Route path="/vote" element={<MascotVotePage />} />
 
         {/* User Pages (wrapped in Layout so the header and its Log in button show) */}
         <Route path="/bookmarks" element={<Layout><BookmarksPage /></Layout>} />

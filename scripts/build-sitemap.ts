@@ -14,7 +14,7 @@
  *   packages/web/public/sitemap.xml  (the web build copies it into dist/, and the
  *                                     deploy copy puts it at the repo root)
  *
- * Listed: the home page, /map/, each version page, each section page, each
+ * Listed: the home page, /map/, /vote, each version page, each section page, each
  * category page with at least one article, and every article.
  *
  * Usage:
@@ -79,6 +79,7 @@ function main(): void {
   const urls: UrlEntry[] = [
     { loc: '/', changefreq: 'weekly', priority: '1.0' },
     { loc: '/map/', changefreq: 'weekly', priority: '0.8' },
+    { loc: '/vote', changefreq: 'weekly', priority: '0.6' },
   ]
   const known = new Set(versionsFile.versions.map(v => v.id))
 

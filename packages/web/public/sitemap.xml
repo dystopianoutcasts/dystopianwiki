@@ -11,6 +11,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://dystopianoutcasts.online/vote</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://dystopianoutcasts.online/pz/build-41</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
