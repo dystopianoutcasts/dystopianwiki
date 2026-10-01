@@ -3,6 +3,8 @@ export interface MascotEntry {
   label: string
   image: string
   alt: string
+  /** Tiny pixel art: scale it up without smoothing (image-rendering: pixelated). */
+  pixelArt?: boolean
 }
 
 export const MASCOT_ENTRIES: readonly MascotEntry[] = [
@@ -23,12 +25,14 @@ export const MASCOT_ENTRIES: readonly MascotEntry[] = [
     label: 'Entry 3',
     image: '/assets/mascot-vote/art_003.png',
     alt: 'Small orange pixel-art slime cat with a striped tail',
+    pixelArt: true,
   },
   {
     id: 'art_004',
     label: 'Entry 4',
     image: '/assets/mascot-vote/art_004.png',
     alt: 'Pixel-art orange fox head in a leather aviator cap with cracked goggles',
+    pixelArt: true,
   },
   {
     id: 'art_005',

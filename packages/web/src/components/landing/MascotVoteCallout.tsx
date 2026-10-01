@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { MASCOT_ENTRIES } from '../../data/mascotEntries';
 import '../../styles/components/mascot-vote-callout.css';
 
-const PIXEL_ART_IDS = new Set(['art_003', 'art_004']);
 const THUMBNAIL_IDS = ['art_001', 'art_003', 'art_005', 'art_006'];
 
 const thumbnails = MASCOT_ENTRIES.filter((entry) => THUMBNAIL_IDS.includes(entry.id));
@@ -29,7 +28,7 @@ export function MascotVoteCallout() {
               src={entry.image}
               alt=""
               className={
-                PIXEL_ART_IDS.has(entry.id)
+                entry.pixelArt
                   ? 'mascot-callout__thumb mascot-callout__thumb--pixel'
                   : 'mascot-callout__thumb'
               }

@@ -12,8 +12,10 @@ import { Layout } from '../components/layout/Layout'
 import { SEOHead } from '../components/seo/SEOHead'
 import { ConnectDiscord } from '../components/auth/ConnectDiscord'
 import { MascotDialog } from '../components/mascot/MascotDialog'
+import { ArtImage } from '../components/mascot/ArtImage'
+import { RoundTable } from '../components/mascot/RoundTable'
 import { useAuth } from '../context/AuthContext'
-import { MASCOT_ENTRIES, getMascotEntry, type MascotEntry } from '../data/mascotEntries'
+import { MASCOT_ENTRIES, getMascotEntry } from '../data/mascotEntries'
 import { hasDiscordIdentity } from '../utils/memberProfile'
 import { loginUrlFor } from '../utils/loginNext'
 import { liveVoteApi, type VoteApi, type VoteSource, type Viewer } from '../lib/mascotVote'
@@ -31,7 +33,6 @@ import {
   moveUp,
   ordinal,
   removeEntry,
-  roundNote,
   shortBallotWarning,
   toggleEntry,
   type CastOutcome,
@@ -42,8 +43,6 @@ import {
 import { ballotsToCsv, countRankedChoice, winnerSentence } from '../lib/rankedChoice'
 import '../styles/pages/mascot-vote.css'
 
-/** The two entries that are tiny pixel art; scaled up without smoothing. */
-const PIXEL_ART = new Set(['art_003', 'art_004'])
 const ENTRY_IDS = MASCOT_ENTRIES.map((e) => e.id)
 
 function nameOf(id: string): string {
@@ -282,7 +281,7 @@ function VoteContent({ source, viewer: viewerIn }: { source: VoteSource; viewer:
               {zoomEntry.label}
             </h2>
             <img
-              className={`mascot-dialog__img${PIXEL_ART.has(zoomEntry.id) ? ' mascot-vote__pixel' : ''}`}
+              className={`mascot-dialog__img${zoomEntry.pixelArt ? ' mascot-vote__pixel' : ''}`}
               src={zoomEntry.image}
               alt={zoomEntry.alt}
             />
@@ -365,10 +364,6 @@ function Gallery({ onZoom, ranking, onToggle }: GalleryProps) {
   )
 }
 
-function ArtImage({ entry, alt, className }: { entry: MascotEntry; alt: string; className?: string }) {
-  const cls = [className, PIXEL_ART.has(entry.id) ? 'mascot-vote__pixel' : ''].filter(Boolean).join(' ')
-  return <img className={cls || undefined} src={entry.image} alt={alt} draggable={false} />
-}
 
 // ---------------------------------------------------------------------------
 // Shared explanation
@@ -960,64 +955,7 @@ function Results({ election, api }: { election: Election; api: VoteApi }) {
         <h2 id="mv-rounds" className="mascot-vote__panel-title">
           Round by round
         </h2>
-        <div className="mascot-vote__table-wrap" role="region" aria-labelledby="mv-rounds" tabIndex={0}>
-          <table className="mascot-vote__table">
-            <caption className="mascot-vote__caption">
-              Ballots counted for each entry in each round. A dash means the entry had already been eliminated.
-              Exhausted ballots have no choice left in the race.
-            </caption>
-            <thead>
-              <tr>
-                <th scope="col">Entry</th>
-                {result.rounds.map((r) => (
-                  <th scope="col" key={r.round}>
-                    Round {r.round}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {MASCOT_ENTRIES.map((entry) => (
-                <tr key={entry.id} className={result.winner?.id === entry.id ? 'mascot-vote__row--winner' : undefined}>
-                  <th scope="row">
-                    {entry.label}
-                    {result.winner?.id === entry.id && <span className="mascot-vote__tag">Winner</span>}
-                  </th>
-                  {result.rounds.map((r) => {
-                    const votes = r.votes[entry.id]
-                    return votes === undefined ? (
-                      <td key={r.round} className="mascot-vote__cell--out">
-                        <span aria-hidden="true">-</span>
-                        <span className="sr-only">eliminated</span>
-                      </td>
-                    ) : (
-                      <td key={r.round}>{votes}</td>
-                    )
-                  })}
-                </tr>
-              ))}
-              <tr className="mascot-vote__row--sum">
-                <th scope="row">Exhausted</th>
-                {result.rounds.map((r) => (
-                  <td key={r.round}>{r.exhausted}</td>
-                ))}
-              </tr>
-              <tr className="mascot-vote__row--sum">
-                <th scope="row">Total</th>
-                {result.rounds.map((r) => (
-                  <td key={r.round}>{result.totalBallots}</td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <ol className="mascot-vote__notes">
-          {result.rounds.map((r) => (
-            <li key={r.round}>
-              <strong>Round {r.round}.</strong> {roundNote(r, nameOf, result.winner)}
-            </li>
-          ))}
-        </ol>
+        <RoundTable result={result} labelledBy="mv-rounds" nameOf={nameOf} />
       </section>
 
       <section className="mascot-vote__panel" aria-labelledby="mv-ballots">
