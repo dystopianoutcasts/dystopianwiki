@@ -367,6 +367,9 @@
 }
 
 .mascot-vote__table-wrap {
+  /* Contains absolutely positioned descendants (screen-reader-only text in a cell), which
+     would otherwise escape the scroll box and widen the page on a phone. */
+  position: relative;
   overflow-x: auto;
   margin-bottom: var(--spacing-4);
   border: 1px solid var(--color-border);
