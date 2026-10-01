@@ -1,0 +1,106 @@
+/**
+ * Mascot Vote Callout
+ * Slim band directly under the hero linking to /vote
+ */
+
+.mascot-callout {
+  padding: var(--spacing-8) var(--spacing-4);
+}
+
+.mascot-callout__inner {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+  padding: var(--spacing-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-xl);
+}
+
+.mascot-callout__title {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-2);
+}
+
+.mascot-callout__description {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+  margin: 0 0 var(--spacing-4);
+}
+
+.mascot-callout__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: var(--spacing-3) var(--spacing-6);
+  /* Dark text on the lighter accent: 4.5:1 or better (the vote page's primary button uses the same pair). */
+  background: var(--color-accent-400);
+  color: var(--color-primary-950);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.mascot-callout__button:hover {
+  background: var(--color-accent-300);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  text-decoration: none;
+  color: var(--color-primary-950);
+}
+
+.mascot-callout__button:focus-visible {
+  outline: 3px solid var(--color-accent-300, var(--color-accent-400));
+  outline-offset: 2px;
+}
+
+.mascot-callout__thumbs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-2);
+}
+
+.mascot-callout__thumb {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--border-radius-lg);
+  background: var(--color-surface-elevated);
+}
+
+.mascot-callout__thumb--pixel {
+  image-rendering: pixelated;
+}
+
+.mascot-callout__button {
+  width: 100%;
+}
+
+/* @breakpoint-md: 768px - Tablet and up: text beside thumbnails */
+@media (min-width: 769px) {
+  .mascot-callout__inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .mascot-callout__button {
+    width: auto;
+  }
+
+  .mascot-callout__thumbs {
+    flex-shrink: 0;
+    width: 360px;
+  }
+}
