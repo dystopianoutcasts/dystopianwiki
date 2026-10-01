@@ -24,6 +24,7 @@
 /* Logo */
 .header__logo {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   gap: var(--spacing-3);
   text-decoration: none;
@@ -37,6 +38,8 @@
 .header__logo-image {
   width: 40px;
   height: 40px;
+  /* Never squeezed by the search box and account control on a phone. */
+  flex-shrink: 0;
   border-radius: var(--border-radius-md);
 }
 
@@ -97,6 +100,8 @@
 /* Search Bar in Header */
 .header__search {
   flex: 1;
+  /* Lets the search box give way on a phone instead of pushing the actions off screen. */
+  min-width: 0;
   max-width: 320px;
   margin: 0 var(--spacing-4);
 }
@@ -136,6 +141,7 @@
 /* Actions */
 .header__actions {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   gap: var(--spacing-2);
 }
