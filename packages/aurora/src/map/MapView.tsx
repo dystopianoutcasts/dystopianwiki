@@ -6,7 +6,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import type { TilesConfig } from './tiles'
 import { overlayTileUrl, tileUrl } from './tiles'
 import { sizedTileLayer } from './sizedTileLayer'
-import { latLngToSquare, squareToLatLng, worldBounds } from './coords'
+import { latLngToSquare, overlayBounds, squareToLatLng, worldBounds } from './coords'
 import { makeCrs } from './crs'
 import type { MapView as View } from '../state/url'
 import type { LayerPrefs } from '../state/layerPrefs'
@@ -151,13 +151,17 @@ export function MapView(props: Props) {
     const overlays = cfg.overlays ?? []
     for (let i = overlays.length - 1; i >= 0; i--) {
       const overlay = overlays[i]
-      // Sparse the same way the base layer is: a mod pyramid has tiles only where that
-      // mod has cells, so a 404 elsewhere is normal, not an error.
+      // A mod pyramid has tiles only where that mod has cells, so the layer is bounded to
+      // the box around them (coords.ts overlayBounds): a whole-world bound made every
+      // overlay ask for every tile on screen, nearly all 404s. A 404 inside the box (a
+      // corner its cells do not fill) is still normal, not an error.
+      const bounds = overlayBounds(cfg, overlay)
+      if (!bounds) continue
       sizedTileLayer((coords) => overlayTileUrl(overlay, cfg, cfg.layers.ground, coords.z, coords.x, coords.y, tilesBase), {
         tileSize: cfg.tileSize,
         minNativeZoom: 0,
         maxNativeZoom: cfg.maxLevel,
-        bounds: worldBounds(cfg),
+        bounds,
         noWrap: true,
       }).addTo(map)
     }

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import tilesJson from '../../public/tiles.json'
 import type { TilesConfig } from './tiles'
 import { tileUrl } from './tiles'
-import { cellCentre, cellOf, latLngToSquare, pixelToSquare, squareToLatLng, squareToPixel, tileOf } from './coords'
+import { cellCentre, cellOf, latLngToSquare, overlayBounds, pixelToSquare, squareToLatLng, squareToPixel, tileOf, worldBounds } from './coords'
 
 const cfg = tilesJson as unknown as TilesConfig
 
@@ -83,5 +83,40 @@ describe('tiles.json is the shape the app assumes', () => {
     expect(cfg.squaresPerPixelAtMax).toBe(1)
     expect(cfg.originSquare).toEqual({ x: 0, y: 0 })
     expect(cfg.maxLevel).toBe(15)
+  })
+})
+
+describe('overlayBounds (2026-09-30: an overlay asks only for its own tiles)', () => {
+  const overlay = (cellRects: [number, number, number, number][]) => ({ id: 'm', title: 'm', tileUrlTemplate: '', cellRects })
+
+  it('one rectangle: its own cells in squares, [top-left, bottom-right] as latlng', () => {
+    expect(overlayBounds(cfg, overlay([[38, 38, 3, 4]]))).toEqual([
+      [38 * 256, 38 * 256],
+      [42 * 256, 41 * 256],
+    ])
+  })
+
+  it('two rectangles: the box around both', () => {
+    expect(overlayBounds(cfg, overlay([[16, 59, 8, 11], [24, 56, 2, 14]]))).toEqual([
+      [56 * 256, 16 * 256],
+      [70 * 256, 26 * 256],
+    ])
+  })
+
+  it('no cells: null, so no layer is added', () => {
+    expect(overlayBounds(cfg, overlay([]))).toBeNull()
+  })
+
+  it('every live overlay is bounded inside the world, and none of them covers Rosewood, the opening view', () => {
+    const [[wy0, wx0], [wy1, wx1]] = worldBounds(cfg)
+    const overlays = cfg.overlays ?? []
+    expect(overlays.length).toBeGreaterThan(0)
+    for (const o of overlays) {
+      const b = overlayBounds(cfg, o)
+      expect(b).not.toBeNull()
+      const [[y0, x0], [y1, x1]] = b!
+      expect(x0 >= wx0 && y0 >= wy0 && x1 <= wx1 && y1 <= wy1).toBe(true)
+      expect(8350 >= x0 && 8350 <= x1 && 11750 >= y0 && 11750 <= y1).toBe(false)
+    }
   })
 })

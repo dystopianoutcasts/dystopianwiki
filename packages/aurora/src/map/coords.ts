@@ -5,7 +5,7 @@
 // The pyramid is one pixel per square at the maximum level with the origin at square
 // (0, 0), so at level z a square sits at pixel (square - origin) * 2^(z - maxLevel)
 // / squaresPerPixelAtMax. The map CRS (crs.ts) uses squares themselves as its units.
-import type { TilesConfig } from './tiles'
+import type { TileOverlay, TilesConfig } from './tiles'
 
 export interface Square {
   x: number
@@ -58,5 +58,31 @@ export function worldBounds(cfg: TilesConfig): [[number, number], [number, numbe
   return [
     [cfg.originSquare.y, cfg.originSquare.x],
     [cfg.originSquare.y + cfg.world.squares.h, cfg.originSquare.x + cfg.world.squares.w],
+  ]
+}
+
+/**
+ * The box around a mod-map overlay's own cells (its cellRects, [x, y, w, h] in cells), as
+ * [top-left, bottom-right] in latlng: the overlay layer's Leaflet `bounds`, so it asks only
+ * for tiles its map can have. With the whole world as its bounds, each of the six overlays
+ * asked for every tile on screen: the opening view made 245 tile requests for 35 tiles,
+ * 210 of them 404s (measured 2026-09-30, the day a visitor hit GitHub Pages' rate limit).
+ * Null when the overlay has no cells, so it has no tiles to ask for.
+ */
+export function overlayBounds(cfg: TilesConfig, overlay: TileOverlay): [[number, number], [number, number]] | null {
+  if (overlay.cellRects.length === 0) return null
+  let x0 = Infinity
+  let y0 = Infinity
+  let x1 = -Infinity
+  let y1 = -Infinity
+  for (const [x, y, w, h] of overlay.cellRects) {
+    x0 = Math.min(x0, x)
+    y0 = Math.min(y0, y)
+    x1 = Math.max(x1, x + w)
+    y1 = Math.max(y1, y + h)
+  }
+  return [
+    [y0 * cfg.cellSize, x0 * cfg.cellSize],
+    [y1 * cfg.cellSize, x1 * cfg.cellSize],
   ]
 }

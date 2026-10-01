@@ -92,6 +92,12 @@ describe('MapView.tsx: mod-map overlays (source text - see header note)', () => 
   it('each overlay layer resolves its tile URL through overlayTileUrl, not tileUrl', () => {
     expect(overlayBlock![0]).toMatch(/overlayTileUrl\(overlay, cfg,/)
   })
+
+  it('MUTATION - overlay asks for the whole world: each overlay layer is bounded by overlayBounds, never worldBounds (2026-09-30)', () => {
+    expect(overlayBlock![0]).toMatch(/const bounds = overlayBounds\(cfg, overlay\)/)
+    expect(overlayBlock![0]).toMatch(/^\s*bounds,$/m)
+    expect(overlayBlock![0]).not.toMatch(/worldBounds/)
+  })
 })
 
 describe('tileCssSize (T45 edge tiles)', () => {
