@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { PLAYERS_PANE, PLAYERS_PANE_Z_INDEX, PLAYER_NAMES_PANE, PLAYER_NAMES_PANE_Z_INDEX } from './panes'
+import { NPC_PANE, NPC_PANE_Z_INDEX, PLAYERS_PANE, PLAYERS_PANE_Z_INDEX, PLAYER_NAMES_PANE, PLAYER_NAMES_PANE_Z_INDEX } from './panes'
 
 // T41 (owner): player markers and their names must draw above every other layer. This
 // is the pure module map/MapView.tsx imports its pane names and z-indices from and
@@ -22,5 +22,18 @@ describe('panes (T41): player panes sit above every other layer, below only a po
     expect(PLAYERS_PANE).not.toBe(PLAYER_NAMES_PANE)
     expect(PLAYERS_PANE.length).toBeGreaterThan(0)
     expect(PLAYER_NAMES_PANE.length).toBeGreaterThan(0)
+  })
+})
+
+describe('panes: A-Life NPC markers sit above vehicles and below players', () => {
+  it('NPC_PANE_Z_INDEX is above the marker pane (600) and below every player pane', () => {
+    expect(NPC_PANE_Z_INDEX).toBeGreaterThan(600)
+    expect(NPC_PANE_Z_INDEX).toBeLessThan(PLAYERS_PANE_Z_INDEX)
+    expect(NPC_PANE_Z_INDEX).toBeLessThan(PLAYER_NAMES_PANE_Z_INDEX)
+  })
+
+  it('NPC_PANE is its own pane', () => {
+    expect(NPC_PANE).not.toBe(PLAYERS_PANE)
+    expect(NPC_PANE).not.toBe(PLAYER_NAMES_PANE)
   })
 })

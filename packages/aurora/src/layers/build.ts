@@ -3,7 +3,7 @@
 import L from 'leaflet'
 import 'leaflet.markercluster'
 import 'leaflet.heat'
-import type { AreaFeature, ObjectFeature, PlayerFeature, RectFeature, StreetFeature, VehicleFeature, WorldMapFeatures, ZoneFeature } from './transform'
+import type { AreaFeature, NpcGroupFeature, NpcOutpostFeature, ObjectFeature, PlayerFeature, RectFeature, StreetFeature, VehicleFeature, WorldMapFeatures, ZoneFeature } from './transform'
 import { streetWeight } from './transform'
 import type { TilesConfig } from '../map/tiles'
 import { zombieTileUrl } from '../map/tiles'
@@ -12,7 +12,7 @@ import { sizedTileLayer } from '../map/sizedTileLayer'
 import { placeLabels } from './labelPlacement'
 // T41: imported from ./panes directly (not from map/MapView.tsx, which imports this
 // very file) to avoid a circular import - see panes.ts's own header comment.
-import { PLAYERS_PANE, PLAYER_NAMES_PANE } from '../map/panes'
+import { NPC_PANE, PLAYERS_PANE, PLAYER_NAMES_PANE } from '../map/panes'
 
 function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -85,6 +85,51 @@ export function buildSafehouses(features: RectFeature[]): L.Layer {
   const group = L.layerGroup()
   for (const f of features) {
     L.rectangle(f.bounds, { color: '#e0a030', weight: 2, fillOpacity: 0.15, dashArray: '4 3' })
+      .bindTooltip(escapeHtml(f.label), { sticky: true })
+      .addTo(group)
+  }
+  return group
+}
+
+/** The group marker: a diamond (players are dots, vehicles squares) with the size inside.
+ * Two stacked outlines, a dark halo under a light line, keep the edge readable on any
+ * terrain. Decorative (`aria-hidden`); the marker's own `title`/`alt` carries the label. */
+function npcGroupSvg(f: NpcGroupFeature): string {
+  const text = f.size > 99 ? '99+' : String(f.size)
+  return (
+    '<svg viewBox="0 0 30 30" width="30" height="30" aria-hidden="true" focusable="false">' +
+    '<polygon class="npc-halo" points="15,2 28,15 15,28 2,15"/>' +
+    '<polygon class="npc-edge" points="15,2 28,15 15,28 2,15"/>' +
+    `<text class="npc-size" x="15" y="19" text-anchor="middle">${escapeHtml(text)}</text></svg>`
+  )
+}
+
+/** A-Life NPC groups, one marker per group, in their own pane above vehicles and below
+ * players. Hostile: a heavier outline and a "!" badge. Dormant: muted and dashed. Neither
+ * rests on colour; the tooltip states the stance and dormancy in words. */
+export function buildNpcGroups(features: NpcGroupFeature[]): L.Layer {
+  const group = L.layerGroup()
+  for (const f of features) {
+    const cls = ['aurora-npc', f.stance ? `is-${f.stance}` : '', f.active ? '' : 'is-dormant', f.adminOnly ? 'is-admin-only' : ''].filter(Boolean).join(' ')
+    const bang = f.stance === 'hostile' ? '<span class="npc-bang" aria-hidden="true">!</span>' : ''
+    const marker = L.marker(f.latlng, {
+      icon: L.divIcon({ className: 'aurora-marker', html: `<span class="${cls}">${npcGroupSvg(f)}${bang}</span>`, iconSize: [30, 30] }),
+      title: f.label,
+      alt: f.label,
+      keyboard: true,
+      pane: NPC_PANE,
+    })
+    marker.bindTooltip(escapeHtml(f.label), { direction: 'top', offset: [0, -12] })
+    group.addLayer(marker)
+  }
+  return group
+}
+
+/** Outposts are areas like safehouses: dashed and outlined, heavier when hostile. */
+export function buildNpcOutposts(features: NpcOutpostFeature[]): L.Layer {
+  const group = L.layerGroup()
+  for (const f of features) {
+    L.rectangle(f.bounds, { color: '#d94fb0', weight: f.hostile ? 4 : 2, fillOpacity: 0.1, dashArray: f.hostile ? '10 5' : '4 6' })
       .bindTooltip(escapeHtml(f.label), { sticky: true })
       .addTo(group)
   }

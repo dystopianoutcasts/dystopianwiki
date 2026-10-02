@@ -17,3 +17,8 @@ export const PLAYERS_PANE = 'aurora-players'
 export const PLAYERS_PANE_Z_INDEX = 660
 export const PLAYER_NAMES_PANE = 'aurora-player-names'
 export const PLAYER_NAMES_PANE_Z_INDEX = 670
+
+/** A-Life NPC group markers: above vehicles and every other marker (Leaflet's marker pane is
+ * 600), below the tooltip pane (650) and so below the player panes (660, 670). */
+export const NPC_PANE = 'aurora-npcs'
+export const NPC_PANE_Z_INDEX = 620

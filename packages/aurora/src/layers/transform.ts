@@ -2,7 +2,7 @@
 // are tested directly. Everything is in world squares; latlng is [y, x] (see map/coords.ts).
 import type { TilesConfig } from '../map/tiles'
 import { cellCentre } from '../map/coords'
-import type { HealthSample, MapObject, PlayerPublic, Safehouse, Vehicle, VisiblePosition, Zone, ZombieCell } from '../data/types'
+import type { HealthSample, MapObject, NpcGroup, NpcOutpost, PlayerPublic, Safehouse, Vehicle, VisiblePosition, Zone, ZombieCell } from '../data/types'
 import { vehicleKey } from '../data/live'
 import type { NameMode } from '../state/nameMode'
 
@@ -420,4 +420,82 @@ export function describeDuration(iso: string, now: number = Date.now()): string 
   const h = Math.floor(min / 60)
   if (h < 48) return `${h} h`
   return `${Math.floor(h / 24)} d`
+}
+
+export type NpcStance = 'hostile' | 'careful' | 'neutral' | 'friendly' | 'allied'
+const NPC_STANCES: readonly string[] = ['hostile', 'careful', 'neutral', 'friendly', 'allied']
+
+/** A stance the database sent that this build does not know reads as no stance, not as a guess. */
+function npcStance(raw: string | null | undefined): NpcStance | null {
+  return raw && NPC_STANCES.includes(raw) ? (raw as NpcStance) : null
+}
+
+export interface NpcGroupFeature {
+  key: string
+  /** "<faction> - <n> members - <stance>", plus the dormant and admin notes; the one text the tooltip and the marker's name use. */
+  label: string
+  latlng: [number, number]
+  size: number
+  stance: NpcStance | null
+  /** False: not near any player; drawn dimmed and dashed, and the label says so. */
+  active: boolean
+  /** Admin RPC row the public view would not show: the label says "admin only". */
+  adminOnly: boolean
+}
+
+/** The database already filters spoilers and stale groups, so every row given is drawn.
+ * `encounter` and `source` exist only on an admin row (the RPC), so they show only there. */
+export function npcGroupFeatures(list: NpcGroup[]): NpcGroupFeature[] {
+  return list.map((g) => {
+    const stance = npcStance(g.stance)
+    const active = g.active !== false
+    const adminOnly = g.sensitive === true
+    return {
+      key: `npc/${g.server_id}/${g.group_id}`,
+      label: [
+        g.faction_name || 'Unknown faction',
+        `${g.size} ${g.size === 1 ? 'member' : 'members'}`,
+        stance ?? 'stance unknown',
+        active ? null : 'not near any player',
+        g.encounter ? `encounter ${g.encounter}` : null,
+        g.source ? `source ${g.source}` : null,
+        adminOnly ? 'admin only - hidden from the public map' : null,
+      ]
+        .filter(Boolean)
+        .join(' - '),
+      latlng: [g.y, g.x],
+      size: g.size,
+      stance,
+      active,
+      adminOnly,
+    }
+  })
+}
+
+export interface NpcOutpostFeature extends RectFeature {
+  hostile: boolean
+}
+
+/** Corners are INCLUSIVE world squares in either order (the director's inside test is x <= x2), so the rectangle
+ * runs from the min corner to the max corner plus one square, the way a safehouse is x + w. */
+export function npcOutpostFeatures(list: NpcOutpost[]): NpcOutpostFeature[] {
+  return list.map((o) => {
+    const hostile = o.hostile === true
+    return {
+      key: `npco/${o.server_id}/${o.outpost_id}`,
+      label: [
+        `${o.faction_name || 'Unknown faction'} outpost`,
+        hostile ? 'hostile to players' : null,
+        o.state ? `state ${o.state}` : null,
+        o.hidden ? 'admin only - hidden from the public map' : null,
+      ]
+        .filter(Boolean)
+        .join(' - '),
+      hostile,
+      bounds: [
+        [Math.min(o.y1, o.y2), Math.min(o.x1, o.x2)],
+        [Math.max(o.y1, o.y2) + 1, Math.max(o.x1, o.x2) + 1],
+      ],
+    }
+  })
 }

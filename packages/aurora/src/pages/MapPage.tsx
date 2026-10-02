@@ -17,6 +17,8 @@ import {
   heatPoints,
   objectFeatures,
   playerFeatures,
+  npcGroupFeatures,
+  npcOutpostFeatures,
   safehouseFeatures,
   streetFeatures,
   vehicleFeatures,
@@ -147,6 +149,8 @@ export function MapPage() {
     positions,
     vehicles,
     safehouses,
+    npcGroups,
+    npcOutposts,
     zones,
     grid,
     objects,
@@ -166,6 +170,8 @@ export function MapPage() {
   const findable = useMemo(() => findablePlayers(positions.data, profiles.data, nameMode), [positions.data, profiles.data, nameMode])
   const vehicleList = useMemo(() => vehicleFeatures(vehicles.data, profiles.data, nameMode), [vehicles.data, profiles.data, nameMode])
   const safehouseList = useMemo(() => safehouseFeatures(safehouses.data, profiles.data, nameMode), [safehouses.data, profiles.data, nameMode])
+  const npcGroupList = useMemo(() => npcGroupFeatures(npcGroups.data), [npcGroups.data])
+  const npcOutpostList = useMemo(() => npcOutpostFeatures(npcOutposts.data), [npcOutposts.data])
   const zoneList = useMemo(() => zoneFeatures(zones.data), [zones.data])
   const objectList = useMemo(() => objectFeatures(objects.data), [objects.data])
   const heat = useMemo(() => (cfg ? heatPoints(grid.data, cfg, now) : []), [grid.data, cfg, now])
@@ -241,6 +247,8 @@ export function MapPage() {
         players={players}
         vehicles={vehicleList}
         safehouses={safehouseList}
+        npcGroups={npcGroupList}
+        npcOutposts={npcOutpostList}
         zones={zoneList}
         heat={heat}
         objects={objectList}

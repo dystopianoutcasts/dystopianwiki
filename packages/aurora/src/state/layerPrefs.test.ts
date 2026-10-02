@@ -48,4 +48,20 @@ describe('layer toggles persisted in storage', () => {
     expect(loadLayerPrefs(throwing)).toEqual(DEFAULT_LAYERS)
     expect(() => saveLayerPrefs(DEFAULT_LAYERS, throwing)).not.toThrow()
   })
+
+  it('both NPC layers are on by default', () => {
+    expect(DEFAULT_LAYERS.npcGroups).toBe(true)
+    expect(DEFAULT_LAYERS.npcOutposts).toBe(true)
+  })
+
+  it('prefs saved before the NPC layers existed keep working: their keys fall back to the defaults', () => {
+    const old = memoryStorage({ 'aurora.layers.v1': JSON.stringify({ streets: false, vehicles: false, zones: true }) })
+    expect(loadLayerPrefs(old)).toEqual({ ...DEFAULT_LAYERS, streets: false, vehicles: false, zones: true })
+    expect(loadLayerPrefs(old).npcGroups).toBe(true)
+  })
+
+  it('a saved NPC choice is honoured', () => {
+    const s = memoryStorage({ 'aurora.layers.v1': JSON.stringify({ npcGroups: false }) })
+    expect(loadLayerPrefs(s)).toEqual({ ...DEFAULT_LAYERS, npcGroups: false })
+  })
 })

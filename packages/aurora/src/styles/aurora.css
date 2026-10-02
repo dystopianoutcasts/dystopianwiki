@@ -368,6 +368,24 @@ fieldset.panel legend { padding: 0 4px; font-weight: 600; }
    well over 3:1 against light terrain at this opacity, the amber over dark terrain likewise. */
 .aurora-vehicle.is-ledger { opacity: 0.75; border-style: dashed; }
 
+/* A-Life NPC group: a diamond with the member count inside (players are dots, vehicles
+   squares). White text on #2b1d52 is about 15:1; the white edge over a near-black halo
+   holds 3:1 against light and dark terrain alike. */
+.aurora-npc { position: relative; display: block; width: 30px; height: 30px; }
+.aurora-npc svg { display: block; }
+.aurora-npc .npc-halo { fill: #2b1d52; stroke: #0a0a14; stroke-width: 5; stroke-linejoin: round; }
+.aurora-npc .npc-edge { fill: none; stroke: #fff; stroke-width: 2; stroke-linejoin: round; }
+.aurora-npc .npc-size { fill: #fff; font: 700 11px/1 system-ui, sans-serif; }
+/* Hostile: a heavier outline and a "!" badge (white on #b3261e is about 6.5:1), so it never rests on colour. */
+.aurora-npc.is-hostile .npc-halo { stroke-width: 8; }
+.aurora-npc.is-hostile .npc-edge { stroke-width: 4; }
+.aurora-npc .npc-bang { position: absolute; top: -4px; right: -4px; width: 14px; height: 14px; border: 1px solid #fff; border-radius: 50%; background: #b3261e; color: #fff; font: 700 11px/12px system-ui, sans-serif; text-align: center; }
+/* Dormant (not near any player): a muted fill and a dashed edge. White on #4a4470 is about 8:1. */
+.aurora-npc.is-dormant .npc-halo { fill: #4a4470; }
+.aurora-npc.is-dormant .npc-edge { stroke-dasharray: 4 3; }
+/* An admin-only group carries a dotted outer ring, so it is told apart without colour. */
+.aurora-npc.is-admin-only { outline: 2px dotted #fff; outline-offset: 1px; border-radius: 4px; }
+
 /* Permanent player-name label (T41, owner: "name labels on both server maps for player
    icons"; drawn in its own pane above every other layer, see map/panes.ts). Light text
    on a near-opaque dark pill regardless of the light/dark scheme above and regardless of

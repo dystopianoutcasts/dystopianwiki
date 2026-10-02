@@ -33,3 +33,24 @@ describe('T41: player markers and their names own two panes that nothing else us
     expect(afterPlayers).not.toMatch(/PLAYER_NAMES_PANE/)
   })
 })
+
+describe('A-Life NPC builders', () => {
+  const npc = buildSrc.slice(buildSrc.indexOf('export function buildNpcGroups'), buildSrc.indexOf('export function buildZones'))
+
+  it('group markers go in NPC_PANE, not the player panes', () => {
+    expect(npc).toMatch(/pane:\s*NPC_PANE/)
+    expect(npc).not.toMatch(/PLAYERS_PANE|PLAYER_NAMES_PANE/)
+  })
+
+  it('hostile gets a "!" badge and the marker carries the label as its accessible name', () => {
+    expect(npc).toMatch(/npc-bang/)
+    expect(npc).toMatch(/title: f\.label/)
+    expect(npc).toMatch(/alt: f\.label/)
+  })
+
+  it('outposts are dashed rectangles, heavier when hostile', () => {
+    expect(npc).toMatch(/L\.rectangle\(f\.bounds/)
+    expect(npc).toMatch(/dashArray/)
+    expect(npc).toMatch(/weight: f\.hostile \? 4 : 2/)
+  })
+})

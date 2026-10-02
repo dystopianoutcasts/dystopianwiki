@@ -8,6 +8,8 @@ const LABELS: Record<LayerKey, string> = {
   players: 'Players',
   vehicles: 'Vehicles',
   safehouses: 'Safehouses',
+  npcGroups: 'NPC groups',
+  npcOutposts: 'NPC outposts',
   zones: 'Zones',
   zombieHeat: 'Zombies now',
   zombieDensity: 'Zombie density (spawn)',

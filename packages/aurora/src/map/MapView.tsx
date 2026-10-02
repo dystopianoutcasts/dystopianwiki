@@ -14,6 +14,8 @@ import {
   buildAreas,
   measureAreaLabel,
   buildHeat,
+  buildNpcGroups,
+  buildNpcOutposts,
   buildObjects,
   buildPlayers,
   buildSafehouses,
@@ -25,6 +27,8 @@ import {
 } from '../layers/build'
 import type {
   AreaFeature,
+  NpcGroupFeature,
+  NpcOutpostFeature,
   ObjectFeature,
   PlayerFeature,
   RectFeature,
@@ -33,7 +37,7 @@ import type {
   WorldMapFeatures,
   ZoneFeature,
 } from '../layers/transform'
-import { PLAYERS_PANE, PLAYERS_PANE_Z_INDEX, PLAYER_NAMES_PANE, PLAYER_NAMES_PANE_Z_INDEX } from './panes'
+import { NPC_PANE, NPC_PANE_Z_INDEX, PLAYERS_PANE, PLAYERS_PANE_Z_INDEX, PLAYER_NAMES_PANE, PLAYER_NAMES_PANE_Z_INDEX } from './panes'
 
 // T41: re-exported so a consumer of this module sees them here, next to the map that
 // creates them; layers/build.ts imports the same constants from ./panes directly
@@ -79,6 +83,8 @@ interface Props {
   players: PlayerFeature[]
   vehicles: VehicleFeature[]
   safehouses: RectFeature[]
+  npcGroups: NpcGroupFeature[]
+  npcOutposts: NpcOutpostFeature[]
   zones: ZoneFeature[]
   heat: [number, number, number][]
   objects: ObjectFeature[]
@@ -108,6 +114,8 @@ export function MapView(props: Props) {
   const playersLayer = useRef<L.Layer | null>(null)
   const vehiclesLayer = useRef<L.Layer | null>(null)
   const safehousesLayer = useRef<L.Layer | null>(null)
+  const npcGroupsLayer = useRef<L.Layer | null>(null)
+  const npcOutpostsLayer = useRef<L.Layer | null>(null)
   const zonesLayer = useRef<L.Layer | null>(null)
   const heatLayer = useRef<L.Layer | null>(null)
   const zombieDensityLayer = useRef<L.Layer | null>(null)
@@ -127,6 +135,8 @@ export function MapView(props: Props) {
     })
     // T41: player markers and their permanent name labels get panes of their own, above
     // every other overlay and its hover text, below only a popup. See ./panes.ts.
+    // A-Life NPC markers: above the marker pane (vehicles), below tooltips and every player pane.
+    map.createPane(NPC_PANE).style.zIndex = String(NPC_PANE_Z_INDEX)
     map.createPane(PLAYERS_PANE).style.zIndex = String(PLAYERS_PANE_Z_INDEX)
     map.createPane(PLAYER_NAMES_PANE).style.zIndex = String(PLAYER_NAMES_PANE_Z_INDEX)
     // sizedTileLayer (./sizedTileLayer.ts): every tile drawn at its own size, so the
@@ -219,6 +229,14 @@ export function MapView(props: Props) {
   useEffect(() => {
     swap(mapRef.current, safehousesLayer, prefs.safehouses ? buildSafehouses(props.safehouses) : null)
   }, [prefs.safehouses, props.safehouses])
+
+  useEffect(() => {
+    swap(mapRef.current, npcOutpostsLayer, prefs.npcOutposts ? buildNpcOutposts(props.npcOutposts) : null)
+  }, [prefs.npcOutposts, props.npcOutposts])
+
+  useEffect(() => {
+    swap(mapRef.current, npcGroupsLayer, prefs.npcGroups ? buildNpcGroups(props.npcGroups) : null)
+  }, [prefs.npcGroups, props.npcGroups])
 
   useEffect(() => {
     swap(mapRef.current, zonesLayer, prefs.zones ? buildZones(props.zones) : null)

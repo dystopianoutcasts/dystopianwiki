@@ -6,6 +6,8 @@ import type {
   HealthSample,
   LinkCode,
   MapObject,
+  NpcGroup,
+  NpcOutpost,
   PlayerPublic,
   Safehouse,
   VisiblePosition,
@@ -153,6 +155,102 @@ export async function fetchVehiclesPublic(db: SupabaseClient, serverId: string, 
     claimColumns = false
   }
   return fill(await rows<Row>(read(VEHICLE_COLUMNS) as unknown as PromiseLike<{ data: Row[] | null; error: { message: string } | null }>, 'vehicles'))
+}
+
+// ---- A-Life NPCs (migration 029) ----------------------------------------------------
+// Public views for everyone, admin RPCs for the extra fields. Until 029 is live none of
+// them exist; that is "layer unavailable" (empty, no error banner), not a failure.
+
+/** How long a missing view or function is left alone before the next attempt. */
+export const NPC_RETRY_MS = 5 * 60_000
+
+interface Gate {
+  /** Epoch ms before which the thing is not asked for again. */
+  until: number
+  logged: boolean
+}
+
+const npcGates = {
+  groupsView: { until: 0, logged: false },
+  groupsRpc: { until: 0, logged: false },
+  outpostsView: { until: 0, logged: false },
+  outpostsRpc: { until: 0, logged: false },
+} satisfies Record<string, Gate>
+
+/** Test seam: forget which NPC views and functions were found missing. */
+export function resetNpcProbe(): void {
+  for (const g of Object.values(npcGates)) {
+    g.until = 0
+    g.logged = false
+  }
+}
+
+/** A missing view: PostgREST PGRST205 (not in the schema cache) or Postgres 42P01 (undefined table). */
+function isMissingRelation(error: { message: string; code?: string }): boolean {
+  return error.code === 'PGRST205' || error.code === '42P01' || /could not find the table|relation .* does not exist/i.test(error.message)
+}
+
+function closeGate(g: Gate, what: string): void {
+  g.until = Date.now() + NPC_RETRY_MS
+  if (!g.logged) {
+    g.logged = true
+    console.info(`aurora: ${what} not available yet; retrying every ${NPC_RETRY_MS / 60_000} minutes`)
+  }
+}
+
+type NpcError = { message: string; code?: string } | null
+
+/**
+ * One NPC dataset. An admin asks the RPC first; a missing function (or the view, for
+ * everyone) closes that gate for NPC_RETRY_MS, logs once, and the dataset is empty with
+ * no error. Any other error is real and thrown. The RPC has no `t > since`, so every
+ * call is a full fetch, which suits these small sets.
+ */
+async function readNpc<T>(
+  gates: { view: Gate; rpc: Gate },
+  names: { view: string; rpc: string; what: string },
+  db: SupabaseClient,
+  serverId: string,
+  columns: string,
+  isAdmin: boolean,
+): Promise<T[]> {
+  if (isAdmin && Date.now() >= gates.rpc.until) {
+    const { data, error } = (await db.rpc(names.rpc, { p_server: serverId })) as { data: T[] | null; error: NpcError }
+    if (!error) return data ?? []
+    if (!isMissingFunction(error)) throw new Error(`${names.what}: ${error.message}`)
+    closeGate(gates.rpc, `aurora.${names.rpc}`)
+  }
+  if (Date.now() < gates.view.until) return []
+  const { data, error } = (await db.from(names.view).select(columns).eq('server_id', serverId)) as unknown as { data: T[] | null; error: NpcError }
+  if (!error) return data ?? []
+  if (!isMissingRelation(error)) throw new Error(`${names.what}: ${error.message}`)
+  closeGate(gates.view, `aurora.${names.view}`)
+  return []
+}
+
+const NPC_GROUP_COLUMNS = 'server_id,group_id,faction_name,stance,size,x,y,z,active,t'
+const NPC_OUTPOST_COLUMNS = 'server_id,outpost_id,faction_name,stance,hostile,x1,y1,x2,y2,t'
+
+export function fetchNpcGroups(db: SupabaseClient, serverId: string, isAdmin: boolean): Promise<NpcGroup[]> {
+  return readNpc<NpcGroup>(
+    { view: npcGates.groupsView, rpc: npcGates.groupsRpc },
+    { view: 'npc_groups_visible', rpc: 'npc_groups_admin', what: 'npc groups' },
+    db,
+    serverId,
+    NPC_GROUP_COLUMNS,
+    isAdmin,
+  )
+}
+
+export function fetchNpcOutposts(db: SupabaseClient, serverId: string, isAdmin: boolean): Promise<NpcOutpost[]> {
+  return readNpc<NpcOutpost>(
+    { view: npcGates.outpostsView, rpc: npcGates.outpostsRpc },
+    { view: 'npc_outposts_visible', rpc: 'npc_outposts_admin', what: 'npc outposts' },
+    db,
+    serverId,
+    NPC_OUTPOST_COLUMNS,
+    isAdmin,
+  )
 }
 
 export function fetchSafehouses(db: SupabaseClient, serverId: string): Promise<Safehouse[]> {

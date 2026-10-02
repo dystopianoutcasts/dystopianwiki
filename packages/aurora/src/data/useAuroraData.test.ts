@@ -105,3 +105,15 @@ describe('T34: vehicles are public (type and position); only an admin also gets 
     expect(effect).not.toBe('')
   })
 })
+
+describe('A-Life NPCs (migration 029): polling and role', () => {
+  it('groups poll on the live interval, outposts on the slow one, each gated by its own toggle', () => {
+    expect(useAuroraData).toMatch(/useDataset\(prefs\.npcGroups, \(\) => fetchNpcGroups\(client, serverId, isAdmin\), LIVE_POLL_MS\)/)
+    expect(useAuroraData).toMatch(/useDataset\(prefs\.npcOutposts, \(\) => fetchNpcOutposts\(client, serverId, isAdmin\), SLOW_POLL_MS\)/)
+  })
+
+  it('both are refetched when the viewer signs in or out, or becomes an admin', () => {
+    expect(useAuroraData.match(/npcGroups\.refresh\(\)/g)).toHaveLength(2)
+    expect(useAuroraData.match(/npcOutposts\.refresh\(\)/g)).toHaveLength(2)
+  })
+})

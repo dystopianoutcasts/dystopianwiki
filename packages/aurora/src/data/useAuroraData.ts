@@ -16,6 +16,8 @@ import {
   fetchLatestHealth,
   fetchMapObjects,
   fetchMyLinkCodes,
+  fetchNpcGroups,
+  fetchNpcOutposts,
   fetchPlayerProfiles,
   fetchPositions,
   fetchSafehouses,
@@ -76,6 +78,11 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
     fullMs: isAdmin ? LIVE_POLL_MS : live.fullMs,
   })
   const safehouses = useDataset(prefs.safehouses, () => fetchSafehouses(client, serverId), SLOW_POLL_MS)
+  // A-Life NPCs (migration 029): public, spoilers already filtered by the database. Groups
+  // are a small set (under ~100 rows) read in full on the live interval; outposts barely
+  // move, so they ride the slow one. An admin gets the RPC's extra fields instead.
+  const npcGroups = useDataset(prefs.npcGroups, () => fetchNpcGroups(client, serverId, isAdmin), LIVE_POLL_MS)
+  const npcOutposts = useDataset(prefs.npcOutposts, () => fetchNpcOutposts(client, serverId, isAdmin), SLOW_POLL_MS)
   const zones = useDataset(prefs.zones, () => fetchZones(client, serverId), VERY_SLOW_POLL_MS)
   // The zombie grid changes once a minute (the exporter's zgrid cadence), so it stays at the ingest interval.
   const grid = useDataset(prefs.zombieHeat, () => fetchZombieGrid(client, serverId), INGEST_INTERVAL_MS)
@@ -118,6 +125,8 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
   useEffect(() => {
     positions.refresh()
     vehicles.refresh()
+    if (prefs.npcGroups) npcGroups.refresh()
+    if (prefs.npcOutposts) npcOutposts.refresh()
     // refresh functions are stable; only the identity change should trigger this
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uid])
@@ -128,6 +137,8 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
   // stale mix of the two shapes.
   useEffect(() => {
     vehicles.refresh()
+    if (prefs.npcGroups) npcGroups.refresh()
+    if (prefs.npcOutposts) npcOutposts.refresh()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAdmin])
 
@@ -172,6 +183,8 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
     positions,
     vehicles,
     safehouses,
+    npcGroups,
+    npcOutposts,
     zones,
     grid,
     objects,

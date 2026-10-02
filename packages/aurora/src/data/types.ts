@@ -103,3 +103,44 @@ export interface LinkCode {
   consumed_at: string | null
   username: string | null
 }
+
+/** Row of `aurora.npc_groups_visible` (migration 029). The database already withholds spoilers and
+ * groups not seen in the last 3 minutes; the admin RPC adds the fields marked below. */
+export interface NpcGroup {
+  server_id: string
+  group_id: string
+  faction_name: string | null
+  /** hostile | careful | neutral | friendly | allied; null when the faction has no stance. */
+  stance: string | null
+  size: number
+  x: number
+  y: number
+  z: number
+  /** False: not near any player right now (dormant). */
+  active: boolean
+  t: string | null
+  /** Admin RPC only. */
+  faction_id?: string | null
+  source?: 'actor' | 'squad' | null
+  encounter?: string | null
+  /** A group the public view would not show; the RPC returns it for admins only. */
+  sensitive?: boolean
+}
+
+/** Row of `aurora.npc_outposts_visible` (migration 029); corners are world squares. */
+export interface NpcOutpost {
+  server_id: string
+  outpost_id: string
+  faction_name: string | null
+  stance: string | null
+  hostile: boolean
+  x1: number
+  y1: number
+  x2: number
+  y2: number
+  t: string | null
+  /** Admin RPC only. */
+  faction_id?: string | null
+  state?: string | null
+  hidden?: boolean
+}
