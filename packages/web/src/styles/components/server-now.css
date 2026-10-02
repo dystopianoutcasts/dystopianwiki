@@ -6,8 +6,10 @@
  * already in styles/variables.css.
  */
 
+/* No side padding on the section: the map is a full-width banner. The text
+   columns above and below it carry their own. */
 .server-now {
-  padding: var(--spacing-12) var(--spacing-4);
+  padding: var(--spacing-12) 0;
   background: var(--color-surface);
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
@@ -16,6 +18,7 @@
 .server-now__content {
   max-width: 1100px;
   margin: 0 auto;
+  padding: 0 var(--spacing-4);
   text-align: center;
 }
 
@@ -37,14 +40,12 @@
 .server-now__viewport {
   position: relative;
   width: 100%;
-  max-width: 1100px;
   height: 560px;
-  margin: 0 auto;
+  margin: var(--spacing-6) 0 0;
   overflow: auto;
   background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-md);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
   cursor: grab;
   touch-action: pan-x pan-y;
   /* Dragging pans the map; it must not select text or drag a tile image. */
@@ -168,7 +169,7 @@
 
 @media (max-width: 640px) {
   .server-now {
-    padding: var(--spacing-8) var(--spacing-4);
+    padding: var(--spacing-8) 0;
   }
 
   .server-now__viewport {

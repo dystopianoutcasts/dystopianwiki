@@ -7,7 +7,7 @@
  */
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { centerOf, imageSize, scrollFor, truncateName, WORLD_HEIGHT, WORLD_WIDTH } from './mapView'
+import { centerAt, centerOf, fitScale, imageSize, scrollAt, scrollFor, truncateName, WORLD_HEIGHT, WORLD_WIDTH } from './mapView'
 
 const ZOOM = 12
 const VIEWPORT = { width: 1100, height: 560 }
@@ -88,4 +88,35 @@ test('truncateName cuts a name over 24 characters and ends it in an ellipsis', (
 test('truncateName does not cut a name of exactly 24 characters', () => {
   const exact = 'x'.repeat(24)
   assert.equal(truncateName(exact), exact)
+})
+
+test('fitScale: a wide screen shows the whole world width with the sharpest tiles that cover it', () => {
+  const s = fitScale(1366)
+  assert.equal(s.width, 1366)
+  assert.equal(s.tileZoom, 12, 'zoom 11 is 1248 wide, too small to cover 1366 without stretching')
+  assert.equal(s.height, Math.round((WORLD_HEIGHT * 1366) / WORLD_WIDTH))
+  assert.equal(fitScale(2496).tileZoom, 12)
+  assert.equal(fitScale(2497).tileZoom, 13)
+  assert.equal(fitScale(9000).tileZoom, 13, 'never past zoom 13')
+})
+
+test('fitScale: a phone gets zoom 11 at its natural size and pans both ways', () => {
+  const s = fitScale(390)
+  assert.equal(s.tileZoom, 11)
+  assert.equal(s.width, imageSize(11).width)
+  assert.equal(s.height, imageSize(11).height)
+})
+
+test('scrollAt/centerAt round-trip on a scaled picture, and a full-width picture never scrolls sideways', () => {
+  const s = fitScale(1366)
+  const v = { width: 1366, height: 560 }
+  const scroll = scrollAt({ x: 8350, y: 11750 }, v, s)
+  assert.equal(scroll.x, 0, 'the picture is exactly as wide as the viewport')
+  const back = centerAt(scroll, v, s)
+  assert.ok(Math.abs(back.y - 11750) <= 1, `y round-trips, got ${back.y}`)
+  const phone = fitScale(390)
+  const pv = { width: 390, height: 560 }
+  // Away from every edge (at zoom 11 Rosewood is too close to the bottom to centre).
+  const c = centerAt(scrollAt({ x: 8350, y: 8000 }, pv, phone), pv, phone)
+  assert.ok(Math.abs(c.x - 8350) <= 2 && Math.abs(c.y - 8000) <= 2, `phone round-trip, got ${c.x},${c.y}`)
 })

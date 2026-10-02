@@ -43,38 +43,79 @@ function clamp(v: number, lo: number, hi: number): number {
 }
 
 /**
- * scrollLeft/scrollTop that centre `center` (world squares) in a viewport of
- * `viewportSize` CSS pixels at `zoom`, clamped so the picture always fills
- * the viewport (never a margin of empty space past an edge, and never a
- * negative scroll when the viewport is bigger than the picture).
+ * How the home page map is drawn at a given viewport width: which tile level to
+ * load, and the size of the whole picture in CSS pixels.
+ *
+ * The picture always spans at least the viewport's width (the owner's banner,
+ * 2026-10-02): on a wide screen the whole world's width is visible and the map
+ * only pans up and down. It is never narrower than zoom 11 (1,248 px), so on a
+ * phone it pans both ways instead of shrinking to a smear. The tile level is the
+ * smallest whose own width covers the drawn width, so tiles are only ever scaled
+ * down (sharp), up to zoom 13 for very wide screens.
  */
-export function scrollFor(center: WorldPoint, viewportSize: ViewportSize, zoom: number): PixelPoint {
-  const spp = squaresPerPixel(zoom)
-  const { width: imgW, height: imgH } = imageSize(zoom)
-  const px = center.x / spp
-  const py = center.y / spp
-  const maxX = Math.max(0, imgW - viewportSize.width)
-  const maxY = Math.max(0, imgH - viewportSize.height)
+export interface MapScale {
+  tileZoom: number
+  /** CSS pixels per world square. */
+  pixelsPerSquare: number
+  width: number
+  height: number
+}
+
+export const MIN_TILE_ZOOM = 11
+export const MAX_TILE_ZOOM = 13
+
+export function fitScale(viewportWidth: number): MapScale {
+  const width = Math.max(viewportWidth, imageSize(MIN_TILE_ZOOM).width)
+  let tileZoom = MIN_TILE_ZOOM
+  while (tileZoom < MAX_TILE_ZOOM && imageSize(tileZoom).width < width) tileZoom++
+  const pixelsPerSquare = width / WORLD_WIDTH
+  return { tileZoom, pixelsPerSquare, width: Math.round(width), height: Math.round(WORLD_HEIGHT * pixelsPerSquare) }
+}
+
+/** The scale of one tile level drawn at its natural size. */
+export function zoomScale(zoom: number): MapScale {
+  const { width, height } = imageSize(zoom)
+  return { tileZoom: zoom, pixelsPerSquare: 1 / squaresPerPixel(zoom), width, height }
+}
+
+/**
+ * scrollLeft/scrollTop that centre `center` (world squares) in a viewport of
+ * `viewportSize` CSS pixels on a picture drawn at `scale`, clamped so the picture
+ * always fills the viewport (never a margin of empty space past an edge, and never
+ * a negative scroll when the viewport is bigger than the picture).
+ */
+export function scrollAt(center: WorldPoint, viewportSize: ViewportSize, scale: MapScale): PixelPoint {
+  const px = center.x * scale.pixelsPerSquare
+  const py = center.y * scale.pixelsPerSquare
+  const maxX = Math.max(0, scale.width - viewportSize.width)
+  const maxY = Math.max(0, scale.height - viewportSize.height)
   return {
     x: clamp(px - viewportSize.width / 2, 0, maxX),
     y: clamp(py - viewportSize.height / 2, 0, maxY),
   }
 }
 
-/**
- * The world square at the centre of the viewport, given its current scroll
- * position. Inverse of scrollFor away from the clamp:
- * `centerOf(scrollFor(c, v, z), v, z)` equals `c` whenever `c` is not past
- * an edge of the picture for that viewport size.
- */
-export function centerOf(scroll: PixelPoint, viewportSize: ViewportSize, zoom: number): WorldPoint {
-  const spp = squaresPerPixel(zoom)
+/** The world square at the centre of the viewport. Inverse of scrollAt away from the clamp. */
+export function centerAt(scroll: PixelPoint, viewportSize: ViewportSize, scale: MapScale): WorldPoint {
   const px = scroll.x + viewportSize.width / 2
   const py = scroll.y + viewportSize.height / 2
   return {
-    x: Math.round(px * spp),
-    y: Math.round(py * spp),
+    x: Math.round(px / scale.pixelsPerSquare),
+    y: Math.round(py / scale.pixelsPerSquare),
   }
+}
+
+/** scrollAt for one tile level at its natural size. */
+export function scrollFor(center: WorldPoint, viewportSize: ViewportSize, zoom: number): PixelPoint {
+  return scrollAt(center, viewportSize, zoomScale(zoom))
+}
+
+/**
+ * centerOf for one tile level at its natural size:
+ * `centerOf(scrollFor(c, v, z), v, z)` equals `c` whenever `c` is not past an edge.
+ */
+export function centerOf(scroll: PixelPoint, viewportSize: ViewportSize, zoom: number): WorldPoint {
+  return centerAt(scroll, viewportSize, zoomScale(zoom))
 }
 
 /** Names over 24 characters end in an ellipsis, so a long name never breaks the one-line layout. */
