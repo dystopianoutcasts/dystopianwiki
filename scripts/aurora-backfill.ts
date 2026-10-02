@@ -134,6 +134,11 @@ async function main(): Promise<number> {
           rowsWritten += batch.length;
         }
       }
+      // aurora.upsert_vehicles and the like: after the upserts (servers exists), as tail.ts does.
+      for (const call of plan.rpcs) {
+        await rest.rpc(call.fn, call.args);
+        rowsWritten += call.rows;
+      }
       for (const patch of plan.patches) {
         await rest.patch(`${patch.table}?${patch.filter}`, patch.body);
       }
@@ -152,7 +157,10 @@ async function main(): Promise<number> {
       }
     }
 
-    const planned = plan.upserts.map((u) => `${u.table}=${u.rows.length}`).join(' ');
+    const planned = [
+      ...plan.upserts.map((u) => `${u.table}=${u.rows.length}`),
+      ...plan.rpcs.map((r) => `${r.fn}=${r.rows}`),
+    ].join(' ');
     console.log(`${name}  ${summarise(stats)}  rows[${planned}] patches=${plan.patches.length}`);
   }
 

@@ -43,7 +43,9 @@
 //            hs hours survived, al access level
 //   veh      id vehicle id, s script name, ty vehicle type, x, y, z,
 //            d driver username or null (exporter 0.2; `sc` is the name this
-//            contract used before and is still accepted)
+//            contract used before and is still accepted),
+//            q persistent save id (exporter 0.3, absent when unknown),
+//            o claim owner, "" in the record that reports a release
 //   sh       id, x, y, w, h, o owner, ti title, p [usernames], lv last visited ms,
 //            c created ms
 //   zone     kd kind, ti title, x1, y1, x2, y2
@@ -179,6 +181,16 @@ export interface VehRecord extends BaseRecord {
   y: number;
   z?: number;
   d?: string | null;
+  /**
+   * The car's persistent save id (v:getSqlId()), stable across restarts, unlike
+   * `id`. Exporter 0.3 and later; records from older logs have none.
+   */
+  q?: number;
+  /**
+   * DystopianVehicleClaim owner (modData.dvcOwner). Present while the car is
+   * claimed; the empty string marks the record that reports a release.
+   */
+  o?: string;
 }
 
 export interface ShRecord extends BaseRecord {

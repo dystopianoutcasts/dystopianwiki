@@ -1,5 +1,6 @@
-// aurora-ingest - tails the exporter log over SFTP, reads players.db and the
-// server's own settings files, and upserts into the `aurora` schema. Health data comes from the exporter's
+// aurora-ingest - tails the exporter log over SFTP, reads players.db, the
+// server's own settings files and the vehicle-claim ledger, and upserts into the
+// `aurora` schema. Health data comes from the exporter's
 // heartbeat records; RCON is retired (STATUS "RCON OPEN QUESTION ANSWERED":
 // plaintext over the public internet) and this function opens no socket other
 // than SSH on the SFTP port and HTTPS to PostgREST. Invoked once a minute by
@@ -44,6 +45,14 @@
 import { connect as sftpConnect, type SftpSession } from '../../../packages/shared/aurora/sftp.ts';
 import { parsePins } from '../../../packages/shared/aurora/hostkey.ts';
 import { buildSavedPlayerRows, chunk } from '../../../packages/shared/aurora/ingest-core.ts';
+import {
+  buildClaimRows,
+  CLAIMS_MISS_LIMIT,
+  claimsReadTrusted,
+  isLedgerMissing,
+  parseClaimsLedger,
+  shouldPrune,
+} from '../../../packages/shared/aurora/claims.ts';
 import { parsePlayersDb, type SqlJsStatic } from '../../../packages/shared/aurora/playersdb.ts';
 import { parseSandboxVars, parseServerIni } from '../../../packages/shared/aurora/serverconfig.ts';
 import { AuroraRest } from '../../../packages/shared/aurora/rest.ts';
@@ -64,6 +73,7 @@ const BATCH_ROWS = 500;
 const DEFAULT_MAX_READ = 262_144; // 256 KiB: CPU, not bandwidth, is the limit
 const PLAYERS_DB_MAX_BYTES = 8 * 1024 * 1024; // the real file is ~250 KB
 const CONFIG_MAX_BYTES = 1024 * 1024; // the .ini is ~10 KB, SandboxVars ~60 KB
+const CLAIMS_MAX_BYTES = 1024 * 1024; // a ledger line is ~150 bytes; this is thousands of claims
 
 interface Config {
   supabaseUrl: string;
@@ -75,6 +85,8 @@ interface Config {
   savesDir: string;
   /** Where the server keeps <name>.ini and <name>_SandboxVars.lua. */
   configDir: string;
+  /** DystopianVehicleClaim's ledger file (028). */
+  claimsFile: string;
   /** Explicit save folder name; discovered by listing savesDir when unset. */
   saveName: string | null;
   maxReadBytes: number;
@@ -115,6 +127,9 @@ function readConfig(): Config {
     logDir: Deno.env.get('AURORA_LOG_DIR') ?? 'server-data/Logs',
     savesDir: Deno.env.get('AURORA_SAVES_DIR') ?? 'server-data/Saves/Multiplayer',
     configDir: Deno.env.get('AURORA_CONFIG_DIR') ?? 'server-data/Server',
+    // Zomboid/Lua/DVC/Claims/vehicles.txt, a sibling of Logs, Saves and Server
+    // under the same data root. Assumed, not observed: set it if the host differs.
+    claimsFile: Deno.env.get('AURORA_CLAIMS_FILE') ?? 'server-data/Lua/DVC/Claims/vehicles.txt',
     saveName: Deno.env.get('AURORA_SAVE_NAME') ?? null,
     maxReadBytes: Number(Deno.env.get('AURORA_MAX_READ_BYTES') ?? String(DEFAULT_MAX_READ)),
     runBudgetMs: resolveRunBudget(Deno.env.get('AURORA_RUN_BUDGET_MS')),
@@ -211,9 +226,9 @@ interface ServerConfigResult {
   ms: number;
 }
 
-async function readText(session: SftpSession, path: string): Promise<string> {
+async function readText(session: SftpSession, path: string, maxBytes = CONFIG_MAX_BYTES): Promise<string> {
   const { size } = await session.stat(path);
-  if (size > CONFIG_MAX_BYTES) throw new Error(`${path} is ${size} bytes, over the ${CONFIG_MAX_BYTES} byte limit`);
+  if (size > maxBytes) throw new Error(`${path} is ${size} bytes, over the ${maxBytes} byte limit`);
   return new TextDecoder().decode(await session.readRange(path, 0, size));
 }
 
@@ -248,6 +263,69 @@ async function readServerConfig(
     sandbox: Object.keys(sandbox).length,
     ms: Date.now() - started,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Vehicle claims (028)
+// ---------------------------------------------------------------------------
+// DystopianVehicleClaim keeps its ledger in Zomboid/Lua/DVC/Claims/vehicles.txt
+// and rewrites the whole file on every change, so a read can land mid-write. The
+// rules (claims.ts): a read that fails changes nothing; every claim found is
+// upserted with miss_count 0; a claim is deleted only after CLAIMS_MISS_LIMIT
+// consecutive TRUSTED reads missed it (any complete read, an empty file included,
+// which is one miss for every claim). Reads are counted, not minutes, so an
+// outage followed by one bad read releases nothing. The prune is skipped in a run
+// whose claims step failed, was not trusted, or released anything. A ledger file
+// that does not exist is the exception: no claims information, nothing is
+// released, and the prune still runs (it never deletes a claimed car).
+
+interface ClaimsResult {
+  claims: number;
+  skipped: number;
+  complete: boolean;
+  trusted: boolean;
+  released: number;
+  pruned: number | null;
+  ms: number;
+}
+
+async function readClaims(session: SftpSession, db: AuroraRest, cfg: Config): Promise<ClaimsResult> {
+  const started = Date.now();
+  const parsed = parseClaimsLedger(await readText(session, cfg.claimsFile, CLAIMS_MAX_BYTES));
+  const rows = buildClaimRows(parsed.claims, cfg.serverId, new Date(started).toISOString());
+
+  await db.upsert('servers', [{ id: cfg.serverId }], 'id');
+  const trusted = claimsReadTrusted(parsed);
+  for (const batch of chunk(rows, BATCH_ROWS)) {
+    await db.upsert('vehicle_claims', batch, 'server_id,sql_id');
+  }
+  // Only a trusted read counts misses; the function resets the claims it was
+  // given and releases those at the limit.
+  let released = 0;
+  if (trusted) {
+    const n = await db.rpc('release_missing_claims', {
+      p_server: cfg.serverId,
+      p_present: rows.map((r) => r.sql_id),
+      p_misses: CLAIMS_MISS_LIMIT,
+    });
+    released = typeof n === 'number' ? n : 0;
+  }
+
+  return {
+    claims: rows.length,
+    skipped: parsed.skipped,
+    complete: parsed.complete,
+    trusted,
+    released,
+    pruned: null,
+    ms: Date.now() - started,
+  };
+}
+
+/** Old restart duplicates and scrapped cars: unclaimed rows unseen for 14 days. Bounded in SQL. */
+async function pruneVehicles(db: AuroraRest): Promise<number> {
+  const n = await db.rpc('prune_vehicles', { p_days: 14, p_limit: 5000 });
+  return typeof n === 'number' ? n : 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -317,6 +395,9 @@ Deno.serve(async (req: Request) => {
     loop: null as LoopResult | null,
     playersDb: null as PlayersDbResult | null,
     serverConfig: null as ServerConfigResult | null,
+    claims: null as ClaimsResult | null,
+    /** Informational: the ledger file does not exist on this host. Not an error. */
+    claimsNote: null as { missing: boolean; path: string } | null,
     errors: [] as string[],
     ms: 0,
   };
@@ -365,6 +446,39 @@ Deno.serve(async (req: Request) => {
         } catch (err) {
           summary.errors.push(`serverconfig: ${String(err).slice(0, 300)}`);
           console.error(JSON.stringify({ at: 'serverconfig', error: String(err) }));
+        }
+
+        // The vehicle claim ledger, once per run, then the stale-vehicle prune.
+        // Separate steps so neither stops the other or the tail loop below. The
+        // prune runs after a trusted read that released nothing, and also when
+        // the ledger file does not exist (claimsMissing: no claims information,
+        // nothing was released). It does NOT run after any other claims failure.
+        let claimsMissing = false;
+        try {
+          summary.claims = await readClaims(session, db, cfg);
+          console.log(JSON.stringify({ at: 'claims', ...summary.claims }));
+        } catch (err) {
+          claimsMissing = isLedgerMissing(err);
+          if (claimsMissing) {
+            // No ledger on this host: a note, not an error (an error is a 207 every minute).
+            summary.claimsNote = { missing: true, path: cfg.claimsFile };
+            console.log(JSON.stringify({ at: 'claims', missing: true, path: cfg.claimsFile }));
+          } else {
+            summary.errors.push(`claims: ${String(err).slice(0, 300)}`);
+            console.error(JSON.stringify({ at: 'claims', error: String(err) }));
+          }
+        }
+        try {
+          if (shouldPrune(summary.claims, claimsMissing)) {
+            const pruned = await pruneVehicles(db);
+            if (summary.claims) summary.claims.pruned = pruned;
+            if (pruned > 0) console.log(JSON.stringify({ at: 'prune', table: 'vehicles', rows: pruned }));
+          } else {
+            console.log(JSON.stringify({ at: 'prune', skipped: 'claims step failed (not a missing file), was cut, or released claims' }));
+          }
+        } catch (err) {
+          summary.errors.push(`prune: ${String(err).slice(0, 300)}`);
+          console.error(JSON.stringify({ at: 'prune', error: String(err) }));
         }
 
         if (target) {

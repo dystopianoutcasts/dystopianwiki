@@ -248,6 +248,10 @@ export async function tailStep(
       totals.rows[upsert.table] = (totals.rows[upsert.table] ?? 0) + batch.length;
     }
   }
+  for (const call of plan.rpcs) {
+    await db.rpc(call.fn, call.args);
+    totals.rows[call.fn] = (totals.rows[call.fn] ?? 0) + call.rows;
+  }
   for (const patch of plan.patches) {
     await db.patch(`${patch.table}?${patch.filter}`, patch.body);
     console.log(JSON.stringify({ at: 'patch', table: patch.table, why: patch.why }));

@@ -52,6 +52,15 @@ export interface TablePatch {
   why: string;
 }
 
+/** A call to `aurora.<fn>(args)`, run after every upsert and before the patches. */
+export interface TableRpc {
+  fn: string;
+  args: Row;
+  /** Rows the call writes, for the totals. */
+  rows: number;
+  why: string;
+}
+
 /** A DELETE against `table?filter`, run after every upsert and patch in the plan. */
 export interface TableDelete {
   table: string;
@@ -63,6 +72,8 @@ export interface TableDelete {
 export interface IngestPlan {
   /** Dependency-ordered. Execute sequentially. */
   upserts: TableUpsert[];
+  /** Run after the upserts (servers exists by then), before the patches. */
+  rpcs: TableRpc[];
   /** Run after the upserts, in order. */
   patches: TablePatch[];
   /** Run after the upserts and patches, in order. */
@@ -136,6 +147,7 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
   const now = opts.now ?? newestT ?? Date.now();
 
   const upserts: TableUpsert[] = [];
+  const rpcs: TableRpc[] = [];
   const patches: TablePatch[] = [];
   const deletes: TableDelete[] = [];
 
@@ -236,24 +248,18 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
   }
 
   // --- vehicles ------------------------------------------------------------
-  const vehicleRows = dedupe(vehicles, (v: VehRecord) => String(v.id), (v) => v.t).map(
-    (v): Row => ({
-      server_id: serverId,
-      vehicle_id: v.id,
-      // The exporter writes `s`; `sc` was this contract's name before exporter 0.2.
-      script_name: v.s ?? v.sc ?? null,
-      x: v.x,
-      y: v.y,
-      z: v.z ?? 0,
-      t: toIso(v.t),
-      driver_username: v.d ?? null,
-    }),
-  );
+  // Written through aurora.upsert_vehicles (028), not a PostgREST upsert: the
+  // engine reassigns net ids on every restart, so a car can take over an id
+  // another row still holds and two cars can swap ids inside one batch, which no
+  // single INSERT ... ON CONFLICT can do. The key is the persistent save id `q`
+  // when the record has one (ONE row per car across restarts), else the net id.
+  const vehicleRows = buildVehicleRows(vehicles);
   if (vehicleRows.length > 0) {
-    upserts.push({
-      table: 'vehicles',
-      onConflict: 'server_id,vehicle_id',
-      rows: vehicleRows,
+    rpcs.push({
+      fn: 'upsert_vehicles',
+      args: { p_server: serverId, p_rows: vehicleRows },
+      rows: vehicleRows.length,
+      why: `${vehicleRows.length} vehicles`,
     });
   }
 
@@ -366,7 +372,53 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
     });
   }
 
-  return { upserts, patches, deletes, links, counts };
+  return { upserts, rpcs, patches, deletes, links, counts };
+}
+
+// ---------------------------------------------------------------------------
+// veh -> vehicles
+// ---------------------------------------------------------------------------
+
+/** A usable persistent save id: a positive whole number. */
+function saveId(v: VehRecord): number | null {
+  return typeof v.q === 'number' && Number.isSafeInteger(v.q) && v.q > 0 ? v.q : null;
+}
+
+/**
+ * Rows for aurora.upsert_vehicles. Every row carries every key (sql_id and
+ * claimed_by null for a record without `q`), the shape jsonb_to_recordset reads.
+ *
+ * Deduped twice. First to the newest record per car (by `q`, else by net id), so
+ * a car seen under two net ids in one batch, which happens when the log spans a
+ * restart, keeps its newest. Then to one record per net id, because two cars can
+ * hold the same net id across that restart and the function parks rows by id.
+ *
+ * claimed_by is the record's `o`, null when empty or absent: a record with `q`
+ * always states the car's current claim, and the exporter sends the empty owner
+ * in the record that reports a release. A record without `q` says nothing about
+ * claims and sends null, which the function does not write.
+ */
+export function buildVehicleRows(vehicles: VehRecord[]): Row[] {
+  const perCar = dedupe(
+    vehicles,
+    (v: VehRecord) => (saveId(v) !== null ? `q${saveId(v)}` : `i${v.id}`),
+    (v) => v.t,
+  );
+  return dedupe(perCar, (v: VehRecord) => String(v.id), (v) => v.t).map((v): Row => {
+    const q = saveId(v);
+    return {
+      vehicle_id: v.id,
+      sql_id: q,
+      // The exporter writes `s`; `sc` was this contract's name before exporter 0.2.
+      script_name: v.s ?? v.sc ?? null,
+      x: v.x,
+      y: v.y,
+      z: v.z ?? 0,
+      t: toIso(v.t),
+      driver_username: v.d ?? null,
+      claimed_by: q !== null && typeof v.o === 'string' && v.o !== '' ? v.o : null,
+    };
+  });
 }
 
 // ---------------------------------------------------------------------------

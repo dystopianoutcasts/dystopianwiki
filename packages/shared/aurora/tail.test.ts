@@ -325,3 +325,37 @@ Deno.test('each batch records its log-to-row lag against the newest record in it
   await tailStep(session, db, CFG, target, totals, () => base + 99_000); // nothing new: no lag sample
   assertEquals(totals.lagSumMs, 10_200);
 });
+
+Deno.test('vehicle records go to aurora.upsert_vehicles, before the cursor is written', async () => {
+  const file = new FakeFile();
+  file.append(
+    '[02-10-26 12:00:00.000] A1 {"k":"veh","t":1759406400000,"id":9,"q":4242,"s":"Base.Van","x":10,"y":20,"z":0,"o":"alice"}.\n',
+  );
+  const order: string[] = [];
+  const calls: { fn: string; args: Row }[] = [];
+  const db = fakeDb();
+  const upsert = db.upsert;
+  db.upsert = (table, rows, onConflict) => {
+    order.push(table);
+    return upsert(table, rows, onConflict);
+  };
+  db.rpc = (fn, args) => {
+    order.push(`rpc:${fn}`);
+    calls.push({ fn, args });
+    return Promise.resolve(null);
+  };
+
+  const session = fakeSession(file);
+  const target = (await findTarget(session, db, CFG))!;
+  const totals = emptyTotals();
+  await tailStep(session, db, CFG, target, totals);
+
+  assertEquals(calls.length, 1);
+  assertEquals(calls[0].fn, 'upsert_vehicles');
+  assertEquals(calls[0].args.p_server, 'test-aurora');
+  assertEquals((calls[0].args.p_rows as Row[])[0].sql_id, 4242);
+  assertEquals(totals.rows['upsert_vehicles'], 1);
+  assert(order.indexOf('servers') < order.indexOf('rpc:upsert_vehicles'), 'the server row comes first');
+  assert(order.indexOf('rpc:upsert_vehicles') < order.indexOf('ingest_cursor'), 'rows before the cursor');
+  assertEquals(db.tables['vehicles'], undefined, 'no plain upsert into vehicles');
+});

@@ -249,3 +249,14 @@ Deno.test('catalog: weight is `w`; catalogv is a known kind carrying only cv', (
   assert(v.ok, 'catalogv is known');
   assertEquals(parseLineDetailed(`${P1} A1 {"k":"catalogv","t":1}.`).ok, false, 'catalogv without cv is a bad shape, not unknown');
 });
+
+Deno.test('veh records keep the persistent id q and the claim owner o, and old ones still parse', () => {
+  const next = parseLine(`${P1} A1 {"k":"veh","t":1759000000000,"id":9,"q":4242,"x":1,"y":2,"o":"alice"}.`);
+  assertEquals((next as { q?: number }).q, 4242);
+  assertEquals((next as { o?: string }).o, 'alice');
+  const released = parseLine(`${P1} A1 {"k":"veh","t":1759000000000,"id":9,"q":4242,"x":1,"y":2,"o":""}.`);
+  assertEquals((released as { o?: string }).o, '');
+  const old = parseLine(`${P1} A1 {"k":"veh","t":1759000000000,"id":9,"x":1,"y":2}.`);
+  assertEquals(old?.k, 'veh');
+  assertEquals((old as { q?: number }).q, undefined);
+});

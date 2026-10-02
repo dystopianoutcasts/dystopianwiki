@@ -8,6 +8,7 @@ import {
   isHealthHeartbeat,
   ONLINE_WINDOW_MS,
   planRead,
+  type IngestPlan,
   type TableUpsert,
 } from './ingest-core.ts';
 import { parseLineDetailed } from './parser.ts';
@@ -27,6 +28,12 @@ const SERVER = 'test-aurora';
 
 function table(upserts: TableUpsert[], name: string): TableUpsert | undefined {
   return upserts.find((u) => u.table === name);
+}
+
+/** The rows the plan sends to aurora.upsert_vehicles (028). */
+function vehicleRows(plan: IngestPlan): Record<string, unknown>[] {
+  const call = plan.rpcs.find((r) => r.fn === 'upsert_vehicles');
+  return ((call?.args.p_rows as Record<string, unknown>[] | undefined) ?? []);
 }
 
 Deno.test('servers is always first so the foreign keys resolve on a cold database', () => {
@@ -113,7 +120,7 @@ Deno.test('the vehicle script name is read from the exporter key, and from the o
     { k: 'veh', t: 1, id: 2, x: 1, y: 1, sc: 'Base.Van' },
     { k: 'veh', t: 1, id: 3, x: 1, y: 1 },
   ];
-  const rows = table(buildPlan(recs, SERVER).upserts, 'vehicles')?.rows ?? [];
+  const rows = vehicleRows(buildPlan(recs, SERVER));
   assertEquals(rows.find((r) => r.vehicle_id === 1)?.script_name, 'Base.CarNormal');
   assertEquals(rows.find((r) => r.vehicle_id === 2)?.script_name, 'Base.Van');
   assertEquals(rows.find((r) => r.vehicle_id === 3)?.script_name, null);
@@ -125,7 +132,7 @@ Deno.test('a real exporter 0.2 vehicle line keeps its script name end to end', (
   );
   assert(parsed.ok, 'the line parses');
   if (!parsed.ok) return;
-  const rows = table(buildPlan([parsed.record], SERVER).upserts, 'vehicles')?.rows ?? [];
+  const rows = vehicleRows(buildPlan([parsed.record], SERVER));
   assertEquals(rows[0]?.script_name, 'Base.PickUpTruck');
 });
 
@@ -143,10 +150,11 @@ Deno.test('every keyed table is deduped', () => {
     { k: 'catalog', t: 2, ft: 'Base.Axe' },
   ];
   const plan = buildPlan(recs, SERVER);
-  for (const name of ['vehicles', 'safehouses', 'zones', 'zombie_grid', 'item_catalog']) {
+  for (const name of ['safehouses', 'zones', 'zombie_grid', 'item_catalog']) {
     assertEquals(table(plan.upserts, name)?.rows.length, 1, `${name} must dedupe`);
   }
-  assertEquals(table(plan.upserts, 'vehicles')?.rows[0].x, 2, 'newest vehicle sample wins');
+  assertEquals(vehicleRows(plan).length, 1, 'vehicles must dedupe');
+  assertEquals(vehicleRows(plan)[0].x, 2, 'newest vehicle sample wins');
   assertEquals(table(plan.upserts, 'zombie_grid')?.rows[0].count, 9);
 });
 
@@ -170,11 +178,100 @@ Deno.test('on_conflict targets match the schema primary keys', () => {
   const plan = buildPlan(recs, SERVER);
   assertEquals(table(plan.upserts, 'players')?.onConflict, 'server_id,username');
   assertEquals(table(plan.upserts, 'player_positions')?.onConflict, 'server_id,username');
-  assertEquals(table(plan.upserts, 'vehicles')?.onConflict, 'server_id,vehicle_id');
+  assertEquals(table(plan.upserts, 'vehicles'), undefined, 'vehicles go through upsert_vehicles, not a plain upsert');
   assertEquals(table(plan.upserts, 'safehouses')?.onConflict, 'server_id,id');
   assertEquals(table(plan.upserts, 'zones')?.onConflict, 'server_id,kind,title,x1,y1');
   assertEquals(table(plan.upserts, 'zombie_grid')?.onConflict, 'server_id,cell_x,cell_y');
   assertEquals(table(plan.upserts, 'item_catalog')?.onConflict, 'server_id,full_type');
+});
+
+// --- vehicles: persistent id and claim owner (028) ---------------------------
+
+Deno.test('a record with q keys the row on the save id and carries the claim owner', () => {
+  const plan = buildPlan([{ k: 'veh', t: 5, id: 3, q: 4242, x: 1, y: 2, s: 'Base.Van', o: 'alice' }], SERVER);
+  const call = plan.rpcs.find((r) => r.fn === 'upsert_vehicles');
+  assertEquals(call?.args.p_server, SERVER);
+  const row = vehicleRows(plan)[0];
+  assertEquals(row.sql_id, 4242);
+  assertEquals(row.claimed_by, 'alice');
+  assertEquals(row.vehicle_id, 3);
+});
+
+Deno.test('an empty owner is a release: claimed_by is null, never an empty string', () => {
+  const rows = vehicleRows(buildPlan([{ k: 'veh', t: 5, id: 3, q: 4242, x: 1, y: 2, o: '' }], SERVER));
+  assertEquals(rows[0].claimed_by, null);
+});
+
+Deno.test('a record with q and no o is unclaimed', () => {
+  const rows = vehicleRows(buildPlan([{ k: 'veh', t: 5, id: 3, q: 4242, x: 1, y: 2 }], SERVER));
+  assertEquals(rows[0].claimed_by, null);
+});
+
+Deno.test('an old record with neither q nor o still maps, with a null sql_id and no claim', () => {
+  const rows = vehicleRows(buildPlan([{ k: 'veh', t: 5, id: 3, x: 1, y: 2, s: 'Base.Van' }], SERVER));
+  assertEquals(rows[0].sql_id, null);
+  assertEquals(rows[0].claimed_by, null);
+  assertEquals(rows[0].vehicle_id, 3);
+});
+
+Deno.test('an old record cannot claim a car, whatever o it carries', () => {
+  const rows = vehicleRows(buildPlan([{ k: 'veh', t: 5, id: 3, x: 1, y: 2, o: 'mallory' }], SERVER));
+  assertEquals(rows[0].claimed_by, null);
+});
+
+Deno.test('a q that is not a positive whole number is treated as absent', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'veh', t: 1, id: 1, q: 0, x: 1, y: 1 },
+    { k: 'veh', t: 1, id: 2, q: -7, x: 1, y: 1 },
+    { k: 'veh', t: 1, id: 3, q: 1.5, x: 1, y: 1 },
+    { k: 'veh', t: 1, id: 4, q: Number.NaN, x: 1, y: 1 },
+  ];
+  for (const r of vehicleRows(buildPlan(recs, SERVER))) assertEquals(r.sql_id, null, `id ${r.vehicle_id}`);
+});
+
+Deno.test('one car under two net ids in a batch (a restart) yields one row, the newest', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'veh', t: 1, id: 5, q: 100, x: 1, y: 1 },
+    { k: 'veh', t: 9, id: 7, q: 100, x: 9, y: 9 },
+  ];
+  const rows = vehicleRows(buildPlan(recs, SERVER));
+  assertEquals(rows.length, 1);
+  assertEquals(rows[0].vehicle_id, 7);
+  assertEquals(rows[0].x, 9);
+});
+
+Deno.test('two cars holding one net id across a restart never share a row', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'veh', t: 1, id: 5, q: 100, x: 1, y: 1 },
+    { k: 'veh', t: 9, id: 5, q: 200, x: 9, y: 9 },
+  ];
+  const rows = vehicleRows(buildPlan(recs, SERVER));
+  assertEquals(rows.length, 1);
+  assertEquals(rows[0].sql_id, 200);
+});
+
+Deno.test('every vehicle row carries the same fields, as jsonb_to_recordset reads them', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'veh', t: 1, id: 1, q: 10, x: 1, y: 1, o: 'a' },
+    { k: 'veh', t: 1, id: 2, x: 1, y: 1 },
+  ];
+  const rows = vehicleRows(buildPlan(recs, SERVER));
+  assertEquals(Object.keys(rows[0]), Object.keys(rows[1]));
+});
+
+Deno.test('a real exporter 0.3 vehicle line keeps q and o end to end', () => {
+  const parsed = parseLineDetailed(
+    '[02-10-26 12:00:00.000] [ 0] A1 {"k":"veh","t":1759406400000,"id":9,"q":4242,"s":"Base.PickUpTruck","ty":"PickUp","x":10.5,"y":20.5,"z":0,"o":"alice"}.',
+  );
+  assert(parsed.ok, 'the line parses');
+  if (!parsed.ok) return;
+  const row = vehicleRows(buildPlan([parsed.record], SERVER))[0];
+  assertEquals(row.sql_id, 4242);
+  assertEquals(row.claimed_by, 'alice');
+});
+
+Deno.test('a batch with no vehicles makes no vehicle call', () => {
+  assertEquals(buildPlan([{ k: 'pos', t: 1, u: 'a', x: 1, y: 1 }], SERVER).rpcs.length, 0);
 });
 
 // --- zombie_grid staleness --------------------------------------------------
