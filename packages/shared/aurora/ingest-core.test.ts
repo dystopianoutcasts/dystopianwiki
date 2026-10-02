@@ -870,3 +870,78 @@ Deno.test('runPlanStep skips an optional missing object, and nothing else', asyn
   }
   assert(threw, 'an optional write that fails for any other reason still throws');
 });
+
+// ---------------------------------------------------------------------------
+// death -> aurora.deaths (030) and boot.gv -> servers.game_version
+// ---------------------------------------------------------------------------
+
+const deathRec = (o: Record<string, unknown> & { u: string; t: number }): AuroraRecord =>
+  ({ k: 'death', x: 10, y: 20, z: 0, src: 'isdead', hs: 5, ...o }) as unknown as AuroraRecord;
+
+Deno.test('a death upserts aurora.deaths on (server_id, username, t), marked optional and NOT liveOnly', () => {
+  const plan = buildPlan([deathRec({ u: 'alice', t: 1759000000000 })], SERVER);
+  const d = table(plan.upserts, 'deaths');
+  assert(d !== undefined, 'deaths upsert present');
+  assertEquals(d!.onConflict, 'server_id,username,t');
+  assertEquals(d!.optional, true, 'a missing table (030 not applied) must not stall the ingest');
+  assert(d!.liveOnly !== true, 'a replay must write deaths (idempotent through the unique key)');
+  assertEquals(d!.rows[0], {
+    server_id: SERVER, username: 'alice', x: 10, y: 20, z: 0,
+    t: '2025-09-27T19:06:40.000Z', src: 'isdead', hours_survived: 5,
+  });
+});
+
+Deno.test('a death with no hs or an unknown src stores nulls and every row has every key', () => {
+  const plan = buildPlan([
+    deathRec({ u: 'a', t: 1000, hs: undefined, src: 'bogus' }),
+    { k: 'death', t: 2000, u: 'b', x: 1, y: 2 } as AuroraRecord,
+  ], SERVER);
+  const rows = table(plan.upserts, 'deaths')!.rows;
+  const keys = JSON.stringify(Object.keys(rows[0]).sort());
+  assertEquals(JSON.stringify(Object.keys(rows[1]).sort()), keys);
+  assertEquals(rows[0].src, null);
+  assertEquals(rows[0].hours_survived, null);
+  assertEquals(rows[1].z, 0);
+});
+
+Deno.test('the same death twice in one batch collapses, two deaths of one player at different times both stay', () => {
+  const plan = buildPlan([
+    deathRec({ u: 'a', t: 1000 }), deathRec({ u: 'a', t: 1000 }), deathRec({ u: 'a', t: 500000 }),
+  ], SERVER);
+  assertEquals(table(plan.upserts, 'deaths')!.rows.length, 2);
+});
+
+Deno.test('no death records, no deaths upsert; deaths are written after servers', () => {
+  assert(table(buildPlan([{ k: 'hb', t: 1 }] as AuroraRecord[], SERVER).upserts, 'deaths') === undefined, 'none');
+  const plan = buildPlan([deathRec({ u: 'a', t: 1 })], SERVER);
+  assertEquals(plan.upserts[0].table, 'servers');
+});
+
+Deno.test('boot gv becomes servers.game_version; the newest wins; none leaves the column out', () => {
+  const withGv = buildPlan([
+    { k: 'boot', t: 1000, gv: '42.19.0' }, { k: 'boot', t: 2000, gv: ' 42.20.0 ' },
+  ] as AuroraRecord[], SERVER);
+  assertEquals(withGv.upserts[0].rows[0].game_version, '42.20.0');
+  const without = buildPlan([{ k: 'boot', t: 1000 }] as AuroraRecord[], SERVER);
+  assert(!('game_version' in without.upserts[0].rows[0]), 'game_version is not written when the boot has no gv');
+  const blank = buildPlan([{ k: 'boot', t: 1000, gv: '  ' }] as AuroraRecord[], SERVER);
+  assert(!('game_version' in blank.upserts[0].rows[0]), 'a blank gv is ignored');
+});
+
+Deno.test('the heartbeat keeps the new game stats in raw.game', () => {
+  const row = buildHealthRow({
+    k: 'hb', t: 1, src: 'tick',
+    st: { game: { 'zombies-killed': 12, 'world-age-hours': 3.5, 'oa-ev-zombie-dead': 12, 'oa-ev-character-death': 0 } },
+  } as HbRecord, SERVER);
+  assertEquals((row.raw as { game: Record<string, number> }).game['zombies-killed'], 12);
+  assertEquals((row.raw as { game: Record<string, number> }).game['world-age-hours'], 3.5);
+});
+
+Deno.test('a negative or non-numeric hours survived is stored as null', () => {
+  const rows = table(buildPlan([
+    deathRec({ u: 'a', t: 1, hs: -3 }),
+    deathRec({ u: 'b', t: 2, hs: 'x' as unknown as number }),
+    deathRec({ u: 'c', t: 3, hs: 0 }),
+  ], SERVER).upserts, 'deaths')!.rows;
+  assertEquals(rows.map((r) => r.hours_survived), [null, null, 0]);
+});

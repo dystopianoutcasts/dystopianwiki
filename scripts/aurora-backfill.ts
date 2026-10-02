@@ -136,6 +136,8 @@ async function main(): Promise<number> {
       for (const upsert of plan.upserts) {
         // NPC groups and outposts are live state stamped with the ingest's clock
         // (seen_at); replaying an old log would make old states look freshly seen.
+        // (deaths are NOT liveOnly: they carry their own time and the unique key
+        // (server_id, username, t) makes a replay idempotent.)
         if (upsert.liveOnly) continue;
         for (const batch of chunk(upsert.rows, BATCH_ROWS)) {
           const wrote = await runPlanStep(

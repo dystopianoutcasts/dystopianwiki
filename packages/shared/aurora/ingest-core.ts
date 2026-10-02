@@ -26,6 +26,7 @@ import type {
   AuroraRecord,
   BootRecord,
   CatalogRecord,
+  DeathRecord,
   HbRecord,
   LinkRecord,
   NpcOutpostRecord,
@@ -212,10 +213,13 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
   // --- servers -------------------------------------------------------------
   // Always present so the foreign keys below resolve on a cold database. The
   // exporter's boot record carries no version or stamp (observed shape); the
-  // launch stamp is the file name, supplied by the caller. game_version is left
-  // untouched until the exporter emits one.
+  // launch stamp is the file name, supplied by the caller. game_version comes from
+  // the newest boot record that carries `gv` (exporter 0.5.0) and is left untouched
+  // when none does.
   const serverRow: Row = { id: serverId, last_seen: toIso(newestT ?? now) };
   if (opts.launchStamp) serverRow.last_launch_stamp = opts.launchStamp;
+  const gvBoot = newestOf(byKind(records, 'boot').filter((b) => typeof b.gv === 'string' && b.gv.trim() !== ''));
+  if (gvBoot !== undefined) serverRow.game_version = (gvBoot.gv as string).trim().slice(0, 40);
   upserts.push({ table: 'servers', onConflict: 'id', rows: [serverRow] });
 
   // --- health_samples ------------------------------------------------------
@@ -436,6 +440,17 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
   }
   pushGoneDeletes(deletes, 'npc_outposts', 'outpost_id', serverId, outpostFinal);
 
+  // --- deaths (030) -----------------------------------------------------------
+  // One row per (username, t), the table's unique key, so a replay (the backfill)
+  // upserts the same rows and never doubles a death. Not liveOnly: a death carries
+  // its own time and replays safely. Optional: 030 may not be applied yet, and a
+  // missing table must not stall the cursor.
+  const deathRows = dedupe(byKind(records, 'death'), (d) => `${d.u}\u0000${d.t}`, (d) => d.t)
+    .map((d) => buildDeathRow(d, serverId));
+  if (deathRows.length > 0) {
+    upserts.push({ table: 'deaths', onConflict: 'server_id,username,t', rows: deathRows, optional: true });
+  }
+
   // --- item_catalog --------------------------------------------------------
   const catalogRows = dedupe(catalog, (c: CatalogRecord) => c.ft, (c) => c.t).map((c): Row => ({
     server_id: serverId,
@@ -561,6 +576,22 @@ function pushGoneDeletes<T>(
       optional: true,
     });
   }
+}
+
+const DEATH_SOURCES = ['isdead', 'chardeath', 'dodeathlog', 'cosmicmap'];
+
+/** A death's row; every column present, null when unknown (PostgREST bulk-insert rule). */
+export function buildDeathRow(r: DeathRecord, serverId: string): Row {
+  return {
+    server_id: serverId,
+    username: r.u.slice(0, 100),
+    x: r.x,
+    y: r.y,
+    z: typeof r.z === 'number' && Number.isFinite(r.z) ? r.z : 0,
+    t: toIso(r.t),
+    src: typeof r.src === 'string' && DEATH_SOURCES.includes(r.src) ? r.src : null,
+    hours_survived: typeof r.hs === 'number' && Number.isFinite(r.hs) && r.hs >= 0 ? r.hs : null,
+  };
 }
 
 function text(v: unknown, max = 120): string | null {

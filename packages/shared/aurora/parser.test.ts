@@ -309,3 +309,29 @@ Deno.test('a kind this parser does not know is skipped and counted, never a fail
   assertEquals(stats.unknownKind, { someFutureKind: 1 });
   assertEquals(stats.badJson + stats.badShape, 0, 'an unknown kind is not a parse error');
 });
+
+// ---------------------------------------------------------------------------
+// death (exporter 0.5.0, migration 030) and boot.gv
+// ---------------------------------------------------------------------------
+
+Deno.test('death is a known kind and needs a string u and numeric x and y', () => {
+  const ok = parseLineDetailed(`${P1} A1 {"k":"death","t":5,"u":"alice","x":10.5,"y":20,"z":0,"src":"isdead","hs":3.2}.`);
+  assert(ok.ok, 'a full death parses');
+  assertEquals(parseLine(`${P1} A1 {"k":"death","t":5,"u":"alice","x":1,"y":2}.`)?.k, 'death');
+  for (const bad of [
+    '{"k":"death","t":5,"x":1,"y":2}',
+    '{"k":"death","t":5,"u":"","x":1,"y":2}',
+    '{"k":"death","t":5,"u":7,"x":1,"y":2}',
+    '{"k":"death","t":5,"u":"a","x":"1","y":2}',
+    '{"k":"death","t":5,"u":"a","x":1}',
+    '{"k":"death","u":"a","x":1,"y":2}',
+  ]) {
+    const r = parseLineDetailed(`${P1} A1 ${bad}.`);
+    assert(!r.ok && r.reason === 'bad-shape', `rejected as bad-shape: ${bad}`);
+  }
+});
+
+Deno.test('a boot record with gv still parses and keeps gv', () => {
+  const r = parseLine(`${P1} A1 {"k":"boot","t":1,"v":"0.5.0","gv":"42.20.0"}.`);
+  assertEquals((r as { gv?: string }).gv, '42.20.0');
+});

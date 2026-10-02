@@ -61,6 +61,15 @@
 //   npco     id outpost id, f, fn, st, hp hostile to players, x1, y1, x2, y2, z,
 //            state, hid map-hidden
 //   npcogone id of an outpost that disappeared or expired
+//   death    u username, x, y, z (where the character died), src which source saw
+//            it ("isdead" | "chardeath" | "dodeathlog" | "cosmicmap"), hs hours the
+//            character survived when known (exporter 0.5.0; one record per player
+//            per 120 s at most)
+//
+// `boot.gv` (exporter 0.5.0) is the game version; it becomes servers.game_version.
+// `hb.st.game` also carries zombies-killed, world-age-hours, oa-ev-zombie-dead and
+// oa-ev-character-death from 0.5.0; they need no parser support, they land in
+// health_samples.raw.game and the SQL reads them there.
 //
 // A kind this version does not know is SKIPPED, never a failure: parseLineDetailed
 // answers { ok: false, reason: 'unknown-kind' }, splitLines counts it in
@@ -84,6 +93,7 @@ export const KINDS = [
   'npcgone',
   'npco',
   'npcogone',
+  'death',
   // Diagnostic kinds: known so they are not reported as unknown, but they map
   // to no table - buildPlan produces no rows for them.
   'probe',
@@ -110,10 +120,11 @@ export interface BaseRecord {
 
 export interface BootRecord extends BaseRecord {
   k: 'boot';
-  // OBSERVED shape (OutcastMods 9aad789, live log 2026-09-28_21-10). The exporter
-  // does not emit a game version or a launch stamp: the stamp is the file name
-  // and game_version stays null until the exporter reports one.
+  // OBSERVED shape (OutcastMods 9aad789, live log 2026-09-28_21-10). The launch
+  // stamp is the file name. `gv` (exporter 0.5.0) is getCore():getVersion(), absent
+  // when the call failed; it becomes servers.game_version.
   v?: string;
+  gv?: string;
   schema?: number;
   apis?: Record<string, boolean>;
   events?: Record<string, boolean>;
@@ -312,6 +323,17 @@ export interface NpcOutpostGoneRecord extends BaseRecord {
   id: string;
 }
 
+/** One player death (exporter 0.5.0). `src` stays admin-only downstream; `hs` is hours survived. */
+export interface DeathRecord extends BaseRecord {
+  k: 'death';
+  u: string;
+  x: number;
+  y: number;
+  z?: number;
+  src?: string;
+  hs?: number;
+}
+
 export type AuroraRecord =
   | BootRecord
   | ProbeRecord
@@ -329,7 +351,8 @@ export type AuroraRecord =
   | NpcRecord
   | NpcGoneRecord
   | NpcOutpostRecord
-  | NpcOutpostGoneRecord;
+  | NpcOutpostGoneRecord
+  | DeathRecord;
 
 export type ParseFailure =
   | 'not-aurora' // no A1 marker: someone else's log line
@@ -398,6 +421,8 @@ function checkShape(o: Record<string, unknown>): boolean {
       return isStr(o.c) && isStr(o.u);
     case 'npc':
       return isStr(o.id) && o.id !== '' && isNum(o.x) && isNum(o.y);
+    case 'death':
+      return isStr(o.u) && o.u !== '' && isNum(o.x) && isNum(o.y);
     case 'npcgone':
     case 'npcogone':
       return isStr(o.id) && o.id !== '';

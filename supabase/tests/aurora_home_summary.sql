@@ -43,14 +43,22 @@ VALUES
   ('test-home', 'nohours', 'Nil', NOW(), NOW(),                 FALSE, NULL,   'None',  FALSE);
 
 -- Two hours inside the week (peaks 4 and 6), one sample 8 days old with 99 players
--- (outside the week, must not count). The newest sample carries the daily counters.
+-- (outside the week, must not count). The newest sample carries the zombie counter (030).
 INSERT INTO aurora.health_samples (server_id, t, players, raw) VALUES
   ('test-home', date_trunc('hour', NOW()) - INTERVAL '2 hours' + INTERVAL '5 minutes', 3, '{}'::jsonb),
   ('test-home', date_trunc('hour', NOW()) - INTERVAL '2 hours' + INTERVAL '25 minutes', 4, '{}'::jsonb),
   ('test-home', date_trunc('hour', NOW()) - INTERVAL '1 hour' + INTERVAL '5 minutes', 6, '{}'::jsonb),
   ('test-home', NOW() - INTERVAL '8 days', 99, '{}'::jsonb),
-  ('test-home', NOW() - INTERVAL '1 minute', 2,
-   '{"game": {"zombies-killed-today": 1234, "players-killed-by-zombie-today": 3}}'::jsonb);
+  ('test-home', NOW(), 2,
+   '{"game": {"zombies-killed": 1234, "world-age-hours": 77.5}}'::jsonb);
+
+-- 030: the daily counters are the exporter's own, not the engine's (which Lua cannot
+-- reach). Kills are the delta sum since local midnight (the one sample above counts its
+-- own value); deaths are rows of aurora.deaths since midnight.
+INSERT INTO aurora.deaths (server_id, username, x, y, t, src) VALUES
+  ('test-home', 'u1', 1, 1, NOW(), 'isdead'),
+  ('test-home', 'u2', 2, 2, NOW(), 'chardeath'),
+  ('test-home', 'u3', 3, 3, NOW(), 'dodeathlog');
 
 INSERT INTO aurora.safehouses (server_id, id, x, y, w, h, owner, title) VALUES
   ('test-home', 'S1', 0, 0, 5, 5, 'u1', 'Home'),
@@ -113,7 +121,7 @@ BEGIN
   IF (s->>'zombies_killed_today')::int <> 1234 OR (s->>'players_killed_today')::int <> 3 THEN
     RAISE EXCEPTION 'FAIL: daily counters % %', s->>'zombies_killed_today', s->>'players_killed_today';
   END IF;
-  RAISE NOTICE 'PASS daily counters from the newest sample';
+  RAISE NOTICE 'PASS daily counters (kills from samples since midnight, deaths from aurora.deaths)';
 
   IF jsonb_array_length(s->'longest_survivors') <> 5 THEN
     RAISE EXCEPTION 'FAIL: % survivors listed, expected 5', jsonb_array_length(s->'longest_survivors');
