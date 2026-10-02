@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import tilesJson from '../../public/tiles.json'
 import type { TilesConfig } from '../map/tiles'
 import type { PlayerPublic, VisiblePosition } from '../data/types'
+import { mergeByKey, vehicleKey } from '../data/live'
 import {
   areaFeatures,
   buildSparkline,
@@ -187,6 +188,56 @@ describe('vehicles, safehouses, zones', () => {
     // No matching profile: falls back to the raw username in either mode.
     const [noProfile] = vehicleFeatures(vehicles, [], 'character')
     expect(noProfile.label).toBe('Base.CarTaxi - driver alice')
+  })
+
+  describe('claimed cars (migration 028)', () => {
+    const car = { server_id: 's', vehicle_id: 7, script_name: 'Base.CarTaxi', x: 5, y: 6, z: 0, t: null, driver_username: null }
+
+    it('a claimed car reads "<car> - claimed by <owner>" and is marked claimed', () => {
+      const [v] = vehicleFeatures([{ ...car, claimed_by: 'alice' }], [], 'character')
+      expect(v.label).toBe('Base.CarTaxi - claimed by alice')
+      expect(v.claimed).toBe(true)
+    })
+
+    it('the owner follows the name mode like a safehouse owner', () => {
+      const claimed = [{ ...car, claimed_by: 'alice' }]
+      expect(vehicleFeatures(claimed, [prof()], 'character')[0].label).toBe('Base.CarTaxi - claimed by Alice W')
+      expect(vehicleFeatures(claimed, [prof()], 'account')[0].label).toBe('Base.CarTaxi - claimed by alice')
+    })
+
+    it('the key prefers sql_id and falls back to vehicle_id', () => {
+      const [a, b] = vehicleFeatures([{ ...car, sql_id: 4242 }, { ...car, vehicle_id: 8 }], [], 'character')
+      expect(a.key).toBe('s/q4242')
+      expect(b.key).toBe('s/i8')
+    })
+
+    it('a vehicle_id equal to another car\'s sql_id does not collide: both are drawn and both survive the merge', () => {
+      const cars = [{ ...car, vehicle_id: 5, sql_id: 77 }, { ...car, vehicle_id: 77, sql_id: null, x: 9 }]
+      const features = vehicleFeatures(cars, [], 'character')
+      expect(new Set(features.map((f) => f.key)).size).toBe(2)
+      expect(mergeByKey(cars.slice(0, 1), cars.slice(1), vehicleKey)).toHaveLength(2)
+    })
+
+    it('a from_ledger car is marked and says "last seen here"', () => {
+      const [v] = vehicleFeatures([{ ...car, vehicle_id: -3, claimed_by: 'alice', from_ledger: true }], [], 'character')
+      expect(v.ledger).toBe(true)
+      expect(v.label).toBe('Base.CarTaxi - claimed by alice - last seen here')
+    })
+
+    it('an admin row with claimed_at adds the date to the claim, and the driver still shows', () => {
+      const iso = '2026-09-20T10:00:00Z'
+      const [v] = vehicleFeatures([{ ...car, claimed_by: 'alice', claimed_at: iso, driver_username: 'bob' }], [], 'account')
+      const date = new Date(iso).toLocaleDateString([], { month: 'short', day: 'numeric' })
+      expect(v.label).toBe(`Base.CarTaxi - claimed by alice since ${date} - driver bob`)
+    })
+
+    it('an unclaimed car has no claimed text and is not marked', () => {
+      const [v] = vehicleFeatures([{ ...car, claimed_by: null, sql_id: null, from_ledger: false }], [], 'character')
+      expect(v.label).toBe('Base.CarTaxi')
+      expect(v.label).not.toContain('claimed')
+      expect(v.claimed).toBe(false)
+      expect(v.ledger).toBe(false)
+    })
   })
 
   it('safehouse rectangle runs from (x,y) to (x+w,y+h) as [y,x] pairs', () => {

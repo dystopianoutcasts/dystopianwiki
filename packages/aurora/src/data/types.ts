@@ -33,6 +33,14 @@ export interface Vehicle {
   z: number
   t: string | null
   driver_username: string | null
+  /** Migration 028 (public view and admin RPC; absent on the admin fallback table read): the owner's name when claimed. */
+  claimed_by?: string | null
+  /** The car's persistent id; stable across restarts, unlike `vehicle_id`. */
+  sql_id?: number | null
+  /** Not loaded now: drawn at the claim ledger's last-known position. `vehicle_id` is negative for these. */
+  from_ledger?: boolean
+  /** Admin RPC only: when the claim was made. */
+  claimed_at?: string | null
 }
 
 export interface Safehouse {

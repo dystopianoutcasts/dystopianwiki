@@ -3,6 +3,7 @@
 import type { TilesConfig } from '../map/tiles'
 import { cellCentre } from '../map/coords'
 import type { HealthSample, MapObject, PlayerPublic, Safehouse, Vehicle, VisiblePosition, Zone, ZombieCell } from '../data/types'
+import { vehicleKey } from '../data/live'
 import type { NameMode } from '../state/nameMode'
 
 /** T44: usernames are intentionally public (owner decision, reversing T27); every
@@ -100,23 +101,51 @@ export function findablePlayers(positions: VisiblePosition[], profiles: PlayerPu
   return out
 }
 
+/** Month and day in the viewer's locale, or null for an unparseable timestamp. */
+export function shortDate(iso: string): string | null {
+  const ms = Date.parse(iso)
+  return Number.isNaN(ms) ? null : new Date(ms).toLocaleDateString([], { month: 'short', day: 'numeric' })
+}
+
 export interface VehicleFeature {
   key: string
   label: string
   latlng: [number, number]
+  /** Claimed by a player (migration 028): drawn with a lock badge, never by colour alone. */
+  claimed: boolean
+  /** Not loaded now; drawn at the claim ledger's last-known position, dimmed. */
+  ledger: boolean
 }
 
 /** `driver_username` is already `null` for a public (signed-out) caller
  * (`data/queries.ts` `fetchVehiclesPublic`) - that admin-only gate is unrelated to T44
- * and unchanged here; `mode` only changes how an already-visible driver name reads. */
+ * and unchanged here; `mode` only changes how an already-visible driver name reads.
+ *
+ * A claim's owner (`claimed_by`) is shown to everyone, like a safehouse owner (owner
+ * decision), and reads through `pickName` the same way. The key prefers `sql_id`, the
+ * car's persistent id, so a marker does not jump when a restart renumbers `vehicle_id`
+ * (which is also negative for a ledger-only car, so it is never a game id). */
 export function vehicleFeatures(vehicles: Vehicle[], profiles: PlayerPublic[], mode: NameMode): VehicleFeature[] {
   const byUsername = new Map(profiles.map((p) => [p.username, p]))
   return vehicles.map((v) => {
     const driver = v.driver_username ? pickName(mode, byUsername.get(v.driver_username)?.display_name, v.driver_username) : null
+    const owner = v.claimed_by ? pickName(mode, byUsername.get(v.claimed_by)?.display_name, v.claimed_by) : null
+    const ledger = v.from_ledger === true
+    // Admin rows only (the RPC): the public view carries no claim date.
+    const since = owner && v.claimed_at ? shortDate(v.claimed_at) : null
     return {
-      key: `${v.server_id}/${v.vehicle_id}`,
-      label: [v.script_name ?? 'Vehicle', driver ? `driver ${driver}` : null].filter(Boolean).join(' - '),
+      key: `${v.server_id}/${vehicleKey(v)}`,
+      label: [
+        v.script_name ?? 'Vehicle',
+        owner ? `claimed by ${owner}${since ? ` since ${since}` : ''}` : null,
+        driver ? `driver ${driver}` : null,
+        ledger ? 'last seen here' : null,
+      ]
+        .filter(Boolean)
+        .join(' - '),
       latlng: [v.y, v.x],
+      claimed: owner !== null,
+      ledger,
     }
   })
 }

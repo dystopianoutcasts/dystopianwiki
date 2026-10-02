@@ -92,10 +92,11 @@ describe('T34: vehicles are public (type and position); only an admin also gets 
     expect(call).not.toMatch(/user/)
   })
 
-  it('the fetch is chosen by role: fetchVehicles for an admin, fetchVehiclesPublic otherwise', () => {
+  it('the fetch is chosen by role: fetchVehiclesAdmin (the RPC, always a full fetch) for an admin, fetchVehiclesPublic otherwise', () => {
     const call = useAuroraData.match(/const vehicles = useLiveDataset\(\{[\s\S]*?\}\)/)?.[0] ?? ''
-    expect(call).toMatch(/isAdmin \? fetchVehicles\(client, serverId\) : fetchVehiclesPublic\(client, serverId\)/)
-    expect(call).toMatch(/isAdmin \? fetchVehicles\(client, serverId, since\) : fetchVehiclesPublic\(client, serverId, since\)/)
+    expect(call).toMatch(/isAdmin \? fetchVehiclesAdmin\(client, serverId\) : fetchVehiclesPublic\(client, serverId\)/)
+    expect(call).toMatch(/isAdmin \? fetchVehiclesAdmin\(client, serverId\) : fetchVehiclesPublic\(client, serverId, since\)/)
+    expect(call).toMatch(/fullMs: isAdmin \? LIVE_POLL_MS/)
   })
 
   it('vehicles refetch in full when the admin flag itself changes', () => {

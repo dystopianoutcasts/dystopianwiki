@@ -362,6 +362,11 @@ fieldset.panel legend { padding: 0 4px; font-weight: 600; }
 .aurora-dot.is-delayed { background: transparent; border-style: dashed; border-color: #ffd866; }
 .aurora-dot.is-own { box-shadow: 0 0 0 3px #ff5fa2; }
 .aurora-vehicle { display: block; width: 12px; height: 12px; margin: 1px; background: #f0b050; border: 2px solid #1b1300; }
+/* Claimed: a lock badge on a larger square (a shape, not a colour). #1b1300 on #f0b050 is about 9:1. */
+.aurora-vehicle.is-claimed { display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; color: #1b1300; }
+/* Ledger-only (not loaded, last-known position): dashed and dimmed. The dark outline keeps
+   well over 3:1 against light terrain at this opacity, the amber over dark terrain likewise. */
+.aurora-vehicle.is-ledger { opacity: 0.75; border-style: dashed; }
 
 /* Permanent player-name label (T41, owner: "name labels on both server maps for player
    icons"; drawn in its own pane above every other layer, see map/panes.ts). Light text

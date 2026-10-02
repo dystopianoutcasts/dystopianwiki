@@ -55,11 +55,22 @@ export function buildPlayers(features: PlayerFeature[], own: ReadonlySet<string>
   return group
 }
 
+/** The lock on a claimed car: a shackle over a body, so "claimed" is a shape, not a colour.
+ * Decorative (`aria-hidden`); the marker's own `title`/`alt` carries "claimed by ...". */
+const LOCK_SVG =
+  '<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false">' +
+  '<path d="M3.5 5.5V4a2.5 2.5 0 0 1 5 0v1.5" fill="none" stroke="currentColor" stroke-width="1.4"/>' +
+  '<rect x="2" y="5.5" width="8" height="5.5" rx="1" fill="currentColor"/></svg>'
+
+/** Claimed cars get a lock badge on a larger square; a ledger-only car (not loaded, at its
+ * last-known spot) is dashed and dimmed, so that state is not opacity alone either. */
 export function buildVehicles(features: VehicleFeature[]): L.Layer {
   const group = L.layerGroup()
   for (const f of features) {
+    const cls = ['aurora-vehicle', f.claimed ? 'is-claimed' : '', f.ledger ? 'is-ledger' : ''].join(' ').trim()
+    const size = f.claimed ? 20 : 14
     const marker = L.marker(f.latlng, {
-      icon: L.divIcon({ className: 'aurora-marker', html: '<span class="aurora-vehicle"></span>', iconSize: [14, 14] }),
+      icon: L.divIcon({ className: 'aurora-marker', html: `<span class="${cls}">${f.claimed ? LOCK_SVG : ''}</span>`, iconSize: [size, size] }),
       title: f.label,
       alt: f.label,
       keyboard: true,

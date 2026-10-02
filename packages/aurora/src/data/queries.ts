@@ -63,20 +63,96 @@ export function fetchVehicles(db: SupabaseClient, serverId: string, since?: stri
   return rows<Vehicle>(since ? q.gt('t', since) : q, 'vehicles')
 }
 
+/** Whether `aurora.vehicles_admin` exists (migration 028). Null until the first admin
+ * vehicle read decides; then fixed for the session. */
+let adminRpc: boolean | null = null
+
+/** Test seam: forget the session's decision about the admin RPC. */
+export function resetVehicleAdminProbe(): void {
+  adminRpc = null
+}
+
+/** A missing function: PostgREST PGRST202, surfaced as a 404 "Could not find the function". */
+function isMissingFunction(error: { message: string; code?: string }): boolean {
+  return error.code === 'PGRST202' || /could not find the function/i.test(error.message)
+}
+
+/**
+ * The admin vehicle read: `aurora.vehicles_admin` (migration 028), the same row set as
+ * the public view (24 h filter, claims, ledger cars) plus the driver and `claimed_at`.
+ * An RPC has no `t > since`, so every call is a full fetch (useAuroraData polls it that
+ * way). A non-admin gets zero rows, not an error. Until 028 is live the function does
+ * not exist; one such failure falls back to the raw table read for the session.
+ */
+export async function fetchVehiclesAdmin(db: SupabaseClient, serverId: string): Promise<Vehicle[]> {
+  if (adminRpc !== false) {
+    const { data, error } = (await db.rpc('vehicles_admin', { p_server: serverId })) as {
+      data: Vehicle[] | null
+      error: { message: string; code?: string } | null
+    }
+    if (!error) {
+      adminRpc = true
+      return (data ?? []).map((v) => ({ ...v, claimed_by: v.claimed_by ?? null, sql_id: v.sql_id ?? null, from_ledger: v.from_ledger === true }))
+    }
+    if (!isMissingFunction(error)) throw new Error(`vehicles: ${error.message}`)
+    adminRpc = false
+  }
+  return fetchVehicles(db, serverId)
+}
+
+const VEHICLE_COLUMNS = 'server_id,vehicle_id,script_name,x,y,z,t'
+const VEHICLE_CLAIM_COLUMNS = `${VEHICLE_COLUMNS},claimed_by,sql_id,from_ledger`
+
+/** Whether `aurora.vehicles_visible` has the claim columns (migration 028). Null until
+ * the first public vehicle read decides; then fixed for the session, so a database that
+ * lacks them costs one failed request, not one per poll. */
+let claimColumns: boolean | null = null
+
+/** Test seam: forget the session's decision about the claim columns. */
+export function resetVehicleClaimProbe(): void {
+  claimColumns = null
+}
+
+/** PostgREST fails the whole request when a selected column is missing: Postgres 42703,
+ * surfaced as a 400 whose message names the column. */
+function isMissingColumn(error: { message: string; code?: string }): boolean {
+  return error.code === '42703' || /column .* does not exist/i.test(error.message)
+}
+
 /**
  * The public vehicle surface (VISIBILITY.md, T35/022): type and position for everyone,
  * never the driver. Reads `aurora.vehicles_visible`, which carries no driver column at
  * all, so `driver_username: null` here is not a redaction - it is filled in only so the
  * row has the same shape `vehicleFeatures` already expects from the admin query.
+ *
+ * Migration 028 adds `claimed_by`, `sql_id` and `from_ledger` to the view. Until it is
+ * live, asking for them fails the whole request, so one such failure retries with the
+ * original seven columns and the claim fields come back null/false.
  */
-export function fetchVehiclesPublic(db: SupabaseClient, serverId: string, since?: string): Promise<Vehicle[]> {
-  const q = db
-    .from('vehicles_visible')
-    .select('server_id,vehicle_id,script_name,x,y,z,t')
-    .eq('server_id', serverId)
-  return rows<Omit<Vehicle, 'driver_username'>>(since ? q.gt('t', since) : q, 'vehicles').then((list) =>
-    list.map((v) => ({ ...v, driver_username: null })),
-  )
+export async function fetchVehiclesPublic(db: SupabaseClient, serverId: string, since?: string): Promise<Vehicle[]> {
+  const read = (columns: string) => {
+    const q = db.from('vehicles_visible').select(columns).eq('server_id', serverId)
+    return since ? q.gt('t', since) : q
+  }
+  type Row = Omit<Vehicle, 'driver_username'>
+  const fill = (list: Row[]): Vehicle[] =>
+    list.map((v) => ({
+      ...v,
+      claimed_by: v.claimed_by ?? null,
+      sql_id: v.sql_id ?? null,
+      from_ledger: v.from_ledger === true,
+      driver_username: null,
+    }))
+  if (claimColumns !== false) {
+    const { data, error } = (await read(VEHICLE_CLAIM_COLUMNS)) as unknown as { data: Row[] | null; error: { message: string; code?: string } | null }
+    if (!error) {
+      claimColumns = true
+      return fill(data ?? [])
+    }
+    if (!isMissingColumn(error)) throw new Error(`vehicles: ${error.message}`)
+    claimColumns = false
+  }
+  return fill(await rows<Row>(read(VEHICLE_COLUMNS) as unknown as PromiseLike<{ data: Row[] | null; error: { message: string } | null }>, 'vehicles'))
 }
 
 export function fetchSafehouses(db: SupabaseClient, serverId: string): Promise<Safehouse[]> {

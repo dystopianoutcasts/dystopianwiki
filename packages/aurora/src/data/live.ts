@@ -55,3 +55,13 @@ export function tickKind(tick: number, fullEvery: number | null, since: string |
   if (fullEvery <= 1 || tick % fullEvery === 0) return 'full'
   return 'delta'
 }
+
+/**
+ * A vehicle row's identity: `q<sql_id>` (the persistent id) when known, else
+ * `i<vehicle_id>`. The prefixes keep the two id spaces apart, so a row without a
+ * `sql_id` whose game id equals another car's `sql_id` is not the same car. Shared by the
+ * poll merge and the map feature key so they cannot drift.
+ */
+export function vehicleKey(v: { sql_id?: number | null; vehicle_id: number }): string {
+  return v.sql_id != null ? `q${v.sql_id}` : `i${v.vehicle_id}`
+}

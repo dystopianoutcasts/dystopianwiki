@@ -9,7 +9,7 @@ import type { SupabaseClient, User } from '@supabase/supabase-js'
 import { INGEST_INTERVAL_MS, LIVE_POLL_MS, SLOW_POLL_MS, VERY_SLOW_POLL_MS, LINK_FEATURE_ENABLED } from '../config'
 import { useDataset } from './useDataset'
 import { useLiveDataset } from './useLiveDataset'
-import { newestT } from './live'
+import { newestT, vehicleKey } from './live'
 import {
   fetchHealthAfter,
   fetchHealthSince,
@@ -19,7 +19,7 @@ import {
   fetchPlayerProfiles,
   fetchPositions,
   fetchSafehouses,
-  fetchVehicles,
+  fetchVehiclesAdmin,
   fetchVehiclesPublic,
   fetchVisibility,
   fetchZombieGrid,
@@ -66,11 +66,14 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
   // chosen by role so the two row shapes never mix in what's held.
   const vehicles = useLiveDataset({
     enabled: prefs.vehicles,
-    fetchFull: () => (isAdmin ? fetchVehicles(client, serverId) : fetchVehiclesPublic(client, serverId)),
-    fetchSince: (since) => (isAdmin ? fetchVehicles(client, serverId, since) : fetchVehiclesPublic(client, serverId, since)),
-    keyOf: (v) => String(v.vehicle_id),
+    fetchFull: () => (isAdmin ? fetchVehiclesAdmin(client, serverId) : fetchVehiclesPublic(client, serverId)),
+    // The admin read is an RPC with no `t > since`: it is a full fetch every poll (see `fullMs`).
+    fetchSince: (since) => (isAdmin ? fetchVehiclesAdmin(client, serverId) : fetchVehiclesPublic(client, serverId, since)),
+    // sql_id when known, so a car moving between loaded and ledger-only (whose vehicle_id differs) replaces its own row.
+    keyOf: vehicleKey,
     tOf: (v) => v.t,
     ...live,
+    fullMs: isAdmin ? LIVE_POLL_MS : live.fullMs,
   })
   const safehouses = useDataset(prefs.safehouses, () => fetchSafehouses(client, serverId), SLOW_POLL_MS)
   const zones = useDataset(prefs.zones, () => fetchZones(client, serverId), VERY_SLOW_POLL_MS)
