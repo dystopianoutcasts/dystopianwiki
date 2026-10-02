@@ -1,5 +1,5 @@
-// aurora-ingest - tails the exporter log over SFTP, reads players.db, and
-// upserts into the `aurora` schema. Health data comes from the exporter's
+// aurora-ingest - tails the exporter log over SFTP, reads players.db and the
+// server's own settings files, and upserts into the `aurora` schema. Health data comes from the exporter's
 // heartbeat records; RCON is retired (STATUS "RCON OPEN QUESTION ANSWERED":
 // plaintext over the public internet) and this function opens no socket other
 // than SSH on the SFTP port and HTTPS to PostgREST. Invoked once a minute by
@@ -45,6 +45,7 @@ import { connect as sftpConnect, type SftpSession } from '../../../packages/shar
 import { parsePins } from '../../../packages/shared/aurora/hostkey.ts';
 import { buildSavedPlayerRows, chunk } from '../../../packages/shared/aurora/ingest-core.ts';
 import { parsePlayersDb, type SqlJsStatic } from '../../../packages/shared/aurora/playersdb.ts';
+import { parseSandboxVars, parseServerIni } from '../../../packages/shared/aurora/serverconfig.ts';
 import { AuroraRest } from '../../../packages/shared/aurora/rest.ts';
 import {
   emptyTotals,
@@ -62,6 +63,7 @@ import {
 const BATCH_ROWS = 500;
 const DEFAULT_MAX_READ = 262_144; // 256 KiB: CPU, not bandwidth, is the limit
 const PLAYERS_DB_MAX_BYTES = 8 * 1024 * 1024; // the real file is ~250 KB
+const CONFIG_MAX_BYTES = 1024 * 1024; // the .ini is ~10 KB, SandboxVars ~60 KB
 
 interface Config {
   supabaseUrl: string;
@@ -71,6 +73,8 @@ interface Config {
   sftp: { host: string; port: number; username: string; password: string; hostKeySha256: string[] };
   logDir: string;
   savesDir: string;
+  /** Where the server keeps <name>.ini and <name>_SandboxVars.lua. */
+  configDir: string;
   /** Explicit save folder name; discovered by listing savesDir when unset. */
   saveName: string | null;
   maxReadBytes: number;
@@ -110,6 +114,7 @@ function readConfig(): Config {
     },
     logDir: Deno.env.get('AURORA_LOG_DIR') ?? 'server-data/Logs',
     savesDir: Deno.env.get('AURORA_SAVES_DIR') ?? 'server-data/Saves/Multiplayer',
+    configDir: Deno.env.get('AURORA_CONFIG_DIR') ?? 'server-data/Server',
     saveName: Deno.env.get('AURORA_SAVE_NAME') ?? null,
     maxReadBytes: Number(Deno.env.get('AURORA_MAX_READ_BYTES') ?? String(DEFAULT_MAX_READ)),
     runBudgetMs: resolveRunBudget(Deno.env.get('AURORA_RUN_BUDGET_MS')),
@@ -191,6 +196,61 @@ async function readPlayersDb(session: SftpSession, db: AuroraRest, cfg: Config):
 }
 
 // ---------------------------------------------------------------------------
+// Server settings (027)
+// ---------------------------------------------------------------------------
+// The server is named after its save folder, and its settings files carry the
+// same name. Only the keys serverconfig.ts keeps are stored: the .ini holds the
+// join password, the RCON password and the Discord token, and none of them ever
+// leaves this function. The row lands in aurora.server_config, which no client
+// role can read; aurora.home_summary() publishes a fixed subset of it.
+
+interface ServerConfigResult {
+  name: string;
+  settings: number;
+  sandbox: number;
+  ms: number;
+}
+
+async function readText(session: SftpSession, path: string): Promise<string> {
+  const { size } = await session.stat(path);
+  if (size > CONFIG_MAX_BYTES) throw new Error(`${path} is ${size} bytes, over the ${CONFIG_MAX_BYTES} byte limit`);
+  return new TextDecoder().decode(await session.readRange(path, 0, size));
+}
+
+async function readServerConfig(
+  session: SftpSession,
+  db: AuroraRest,
+  cfg: Config,
+  saveName: string,
+): Promise<ServerConfigResult> {
+  const started = Date.now();
+  const settings = parseServerIni(await readText(session, `${cfg.configDir}/${saveName}.ini`));
+  // A server without a sandbox file still has its .ini worth publishing.
+  let sandbox = {};
+  try {
+    sandbox = parseSandboxVars(await readText(session, `${cfg.configDir}/${saveName}_SandboxVars.lua`));
+  } catch (err) {
+    console.error(JSON.stringify({ at: 'sandboxvars', error: String(err).slice(0, 300) }));
+  }
+  const publicName = typeof settings.PublicName === 'string' && settings.PublicName.trim() !== ''
+    ? settings.PublicName.trim()
+    : saveName;
+  await db.upsert('servers', [{ id: cfg.serverId, name: publicName }], 'id');
+  await db.upsert('server_config', [{
+    server_id: cfg.serverId,
+    settings,
+    sandbox,
+    updated_at: new Date().toISOString(),
+  }], 'server_id');
+  return {
+    name: publicName,
+    settings: Object.keys(settings).length,
+    sandbox: Object.keys(sandbox).length,
+    ms: Date.now() - started,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Entry point
 // ---------------------------------------------------------------------------
 
@@ -256,6 +316,7 @@ Deno.serve(async (req: Request) => {
     tail: null as (TailTotals & { file: string | null; launchStamp: string | null }) | null,
     loop: null as LoopResult | null,
     playersDb: null as PlayersDbResult | null,
+    serverConfig: null as ServerConfigResult | null,
     errors: [] as string[],
     ms: 0,
   };
@@ -294,6 +355,16 @@ Deno.serve(async (req: Request) => {
         } catch (err) {
           summary.errors.push(`playersdb: ${String(err).slice(0, 300)}`);
           console.error(JSON.stringify({ at: 'playersdb', error: String(err) }));
+        }
+
+        // The server's settings, once per run, after players.db (same save name).
+        try {
+          const saveName = summary.playersDb?.saveName ?? await discoverSaveName(session, cfg);
+          summary.serverConfig = await readServerConfig(session, db, cfg, saveName);
+          console.log(JSON.stringify({ at: 'serverconfig', ...summary.serverConfig }));
+        } catch (err) {
+          summary.errors.push(`serverconfig: ${String(err).slice(0, 300)}`);
+          console.error(JSON.stringify({ at: 'serverconfig', error: String(err) }));
         }
 
         if (target) {
