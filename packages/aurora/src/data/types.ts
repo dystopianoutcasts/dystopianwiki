@@ -43,6 +43,12 @@ export interface Vehicle {
   claimed_at?: string | null
 }
 
+/** One row of `aurora.vehicle_names_visible` (migration 031). */
+export interface VehicleName {
+  script_name: string
+  display_name: string
+}
+
 export interface Safehouse {
   server_id: string
   id: string

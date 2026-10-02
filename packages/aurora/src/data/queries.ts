@@ -1,6 +1,7 @@
 // Read queries. Visibility is enforced by the database (RLS, column grants and the
 // player_positions_visible view); nothing here filters "for privacy". A dataset the caller
 // may not read comes back as an error or an empty list, and the UI just shows that.
+import { VEHICLE_NAMES_VIEW, VEHICLE_NAME_COLUMNS } from './vehicleNames'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type {
   Death,
@@ -13,6 +14,7 @@ import type {
   Safehouse,
   VisiblePosition,
   Vehicle,
+  VehicleName,
   Zone,
   ZombieCell,
 } from './types'
@@ -178,6 +180,7 @@ const npcGates = {
   outpostsRpc: { until: 0, logged: false },
   deathsView: { until: 0, logged: false },
   deathsRpc: { until: 0, logged: false },
+  vehicleNamesView: { until: 0, logged: false },
 } satisfies Record<string, Gate>
 
 /** Test seam: forget which NPC views and functions were found missing. */
@@ -254,6 +257,16 @@ export function fetchNpcOutposts(db: SupabaseClient, serverId: string, isAdmin: 
     NPC_OUTPOST_COLUMNS,
     isAdmin,
   )
+}
+
+/** The vehicle name catalogue (migration 031). Missing before 031: empty, no error, retried no sooner than NPC_RETRY_MS. */
+export async function fetchVehicleNames(db: SupabaseClient): Promise<VehicleName[]> {
+  if (Date.now() < npcGates.vehicleNamesView.until) return []
+  const { data, error } = (await db.from(VEHICLE_NAMES_VIEW).select(VEHICLE_NAME_COLUMNS)) as unknown as { data: VehicleName[] | null; error: NpcError }
+  if (!error) return data ?? []
+  if (!isMissingRelation(error)) throw new Error(`vehicle names: ${error.message}`)
+  closeGate(npcGates.vehicleNamesView, `aurora.${VEHICLE_NAMES_VIEW}`)
+  return []
 }
 
 const DEATH_COLUMNS = 'server_id,username,x,y,z,t,hours_survived'

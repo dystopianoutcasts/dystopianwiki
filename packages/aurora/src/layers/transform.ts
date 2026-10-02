@@ -4,6 +4,7 @@ import type { TilesConfig } from '../map/tiles'
 import { cellCentre } from '../map/coords'
 import type { Death, HealthSample, MapObject, NpcGroup, NpcOutpost, PlayerPublic, Safehouse, Vehicle, VisiblePosition, Zone, ZombieCell } from '../data/types'
 import { vehicleKey } from '../data/live'
+import { vehicleDisplayName } from '../data/vehicleNames'
 import type { NameMode } from '../state/nameMode'
 
 /** T44: usernames are intentionally public (owner decision, reversing T27); every
@@ -111,7 +112,7 @@ export interface VehicleFeature {
   key: string
   label: string
   latlng: [number, number]
-  /** Claimed by a player (migration 028): drawn with a lock badge, never by colour alone. */
+  /** Claimed by a player (migration 028): drawn with a ring and a lock badge, never by colour alone. */
   claimed: boolean
   /** Not loaded now; drawn at the claim ledger's last-known position, dimmed. */
   ledger: boolean
@@ -125,7 +126,7 @@ export interface VehicleFeature {
  * decision), and reads through `pickName` the same way. The key prefers `sql_id`, the
  * car's persistent id, so a marker does not jump when a restart renumbers `vehicle_id`
  * (which is also negative for a ledger-only car, so it is never a game id). */
-export function vehicleFeatures(vehicles: Vehicle[], profiles: PlayerPublic[], mode: NameMode): VehicleFeature[] {
+export function vehicleFeatures(vehicles: Vehicle[], profiles: PlayerPublic[], mode: NameMode, names: ReadonlyMap<string, string> = new Map()): VehicleFeature[] {
   const byUsername = new Map(profiles.map((p) => [p.username, p]))
   return vehicles.map((v) => {
     const driver = v.driver_username ? pickName(mode, byUsername.get(v.driver_username)?.display_name, v.driver_username) : null
@@ -136,7 +137,7 @@ export function vehicleFeatures(vehicles: Vehicle[], profiles: PlayerPublic[], m
     return {
       key: `${v.server_id}/${vehicleKey(v)}`,
       label: [
-        v.script_name ?? 'Vehicle',
+        vehicleDisplayName(v.script_name, names),
         owner ? `claimed by ${owner}${since ? ` since ${since}` : ''}` : null,
         driver ? `driver ${driver}` : null,
         ledger ? 'last seen here' : null,

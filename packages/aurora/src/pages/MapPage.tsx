@@ -149,6 +149,7 @@ export function MapPage() {
     profiles,
     positions,
     vehicles,
+    vehicleNames,
     safehouses,
     npcGroups,
     npcOutposts,
@@ -170,7 +171,7 @@ export function MapPage() {
   const areas = useMemo(() => areaFeatures(rawAreas), [rawAreas])
   const players = useMemo(() => playerFeatures(positions.data, profiles.data, nameMode), [positions.data, profiles.data, nameMode])
   const findable = useMemo(() => findablePlayers(positions.data, profiles.data, nameMode), [positions.data, profiles.data, nameMode])
-  const vehicleList = useMemo(() => vehicleFeatures(vehicles.data, profiles.data, nameMode), [vehicles.data, profiles.data, nameMode])
+  const vehicleList = useMemo(() => vehicleFeatures(vehicles.data, profiles.data, nameMode, vehicleNames), [vehicles.data, profiles.data, nameMode, vehicleNames])
   const safehouseList = useMemo(() => safehouseFeatures(safehouses.data, profiles.data, nameMode), [safehouses.data, profiles.data, nameMode])
   const npcGroupList = useMemo(() => npcGroupFeatures(npcGroups.data), [npcGroups.data])
   const npcOutpostList = useMemo(() => npcOutpostFeatures(npcOutposts.data), [npcOutposts.data])

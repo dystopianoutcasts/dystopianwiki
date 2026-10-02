@@ -164,7 +164,7 @@ describe('vehicles, safehouses, zones', () => {
       [],
       'character',
     )
-    expect(a.label).toBe('Base.CarTaxi - driver alice')
+    expect(a.label).toBe('Car Taxi - driver alice')
     expect(a.latlng).toEqual([6, 5])
     expect(b.label).toBe('Vehicle')
   })
@@ -175,19 +175,19 @@ describe('vehicles, safehouses, zones', () => {
       [],
       'character',
     )
-    expect(v.label).toBe('Base.PickUpVan')
+    expect(v.label).toBe('Pick Up Van')
     expect(v.label).not.toContain('driver')
   })
 
   it('T44: the driver line resolves through profiles the same way a player name does', () => {
     const vehicles = [{ server_id: 's', vehicle_id: 1, script_name: 'Base.CarTaxi', x: 5, y: 6, z: 0, t: null, driver_username: 'alice' }]
     const [character] = vehicleFeatures(vehicles, [prof()], 'character')
-    expect(character.label).toBe('Base.CarTaxi - driver Alice W')
+    expect(character.label).toBe('Car Taxi - driver Alice W')
     const [account] = vehicleFeatures(vehicles, [prof()], 'account')
-    expect(account.label).toBe('Base.CarTaxi - driver alice')
+    expect(account.label).toBe('Car Taxi - driver alice')
     // No matching profile: falls back to the raw username in either mode.
     const [noProfile] = vehicleFeatures(vehicles, [], 'character')
-    expect(noProfile.label).toBe('Base.CarTaxi - driver alice')
+    expect(noProfile.label).toBe('Car Taxi - driver alice')
   })
 
   describe('claimed cars (migration 028)', () => {
@@ -195,14 +195,14 @@ describe('vehicles, safehouses, zones', () => {
 
     it('a claimed car reads "<car> - claimed by <owner>" and is marked claimed', () => {
       const [v] = vehicleFeatures([{ ...car, claimed_by: 'alice' }], [], 'character')
-      expect(v.label).toBe('Base.CarTaxi - claimed by alice')
+      expect(v.label).toBe('Car Taxi - claimed by alice')
       expect(v.claimed).toBe(true)
     })
 
     it('the owner follows the name mode like a safehouse owner', () => {
       const claimed = [{ ...car, claimed_by: 'alice' }]
-      expect(vehicleFeatures(claimed, [prof()], 'character')[0].label).toBe('Base.CarTaxi - claimed by Alice W')
-      expect(vehicleFeatures(claimed, [prof()], 'account')[0].label).toBe('Base.CarTaxi - claimed by alice')
+      expect(vehicleFeatures(claimed, [prof()], 'character')[0].label).toBe('Car Taxi - claimed by Alice W')
+      expect(vehicleFeatures(claimed, [prof()], 'account')[0].label).toBe('Car Taxi - claimed by alice')
     })
 
     it('the key prefers sql_id and falls back to vehicle_id', () => {
@@ -221,19 +221,19 @@ describe('vehicles, safehouses, zones', () => {
     it('a from_ledger car is marked and says "last seen here"', () => {
       const [v] = vehicleFeatures([{ ...car, vehicle_id: -3, claimed_by: 'alice', from_ledger: true }], [], 'character')
       expect(v.ledger).toBe(true)
-      expect(v.label).toBe('Base.CarTaxi - claimed by alice - last seen here')
+      expect(v.label).toBe('Car Taxi - claimed by alice - last seen here')
     })
 
     it('an admin row with claimed_at adds the date to the claim, and the driver still shows', () => {
       const iso = '2026-09-20T10:00:00Z'
       const [v] = vehicleFeatures([{ ...car, claimed_by: 'alice', claimed_at: iso, driver_username: 'bob' }], [], 'account')
       const date = new Date(iso).toLocaleDateString([], { month: 'short', day: 'numeric' })
-      expect(v.label).toBe(`Base.CarTaxi - claimed by alice since ${date} - driver bob`)
+      expect(v.label).toBe(`Car Taxi - claimed by alice since ${date} - driver bob`)
     })
 
     it('an unclaimed car has no claimed text and is not marked', () => {
       const [v] = vehicleFeatures([{ ...car, claimed_by: null, sql_id: null, from_ledger: false }], [], 'character')
-      expect(v.label).toBe('Base.CarTaxi')
+      expect(v.label).toBe('Car Taxi')
       expect(v.label).not.toContain('claimed')
       expect(v.claimed).toBe(false)
       expect(v.ledger).toBe(false)

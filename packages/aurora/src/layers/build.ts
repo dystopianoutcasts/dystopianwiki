@@ -58,19 +58,28 @@ export function buildPlayers(features: PlayerFeature[], own: ReadonlySet<string>
 /** The lock on a claimed car: a shackle over a body, so "claimed" is a shape, not a colour.
  * Decorative (`aria-hidden`); the marker's own `title`/`alt` carries "claimed by ...". */
 const LOCK_SVG =
-  '<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false">' +
+  '<svg class="car-lock" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" focusable="false">' +
   '<path d="M3.5 5.5V4a2.5 2.5 0 0 1 5 0v1.5" fill="none" stroke="currentColor" stroke-width="1.4"/>' +
   '<rect x="2" y="5.5" width="8" height="5.5" rx="1" fill="currentColor"/></svg>'
 
-/** Claimed cars get a lock badge on a larger square; a ledger-only car (not loaded, at its
- * last-known spot) is dashed and dimmed, so that state is not opacity alone either. */
+/** The car glyph: a top-down car (hood up; there is no heading data), amber with a dark outline
+ * so it reads on any terrain. Decorative (`aria-hidden`); the marker's `title`/`alt` is the name. */
+const CAR_SVG =
+  '<svg class="car-glyph" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">' +
+  '<g fill="#1b1300"><rect x="1" y="3" width="3" height="4" rx="1"/><rect x="12" y="3" width="3" height="4" rx="1"/><rect x="1" y="10" width="3" height="4" rx="1"/><rect x="12" y="10" width="3" height="4" rx="1"/></g>' +
+  '<rect x="3.5" y="0.8" width="9" height="14.4" rx="3.4" fill="#f0b050" stroke="#1b1300" stroke-width="1.3"/>' +
+  '<rect x="5" y="4.2" width="6" height="2.8" rx="0.7" fill="#1b1300"/><rect x="5" y="10.2" width="6" height="2" rx="0.6" fill="#1b1300"/></svg>'
+
+/** Every car is the glyph. A claimed car adds a bright ring (one colour for every owner) and the
+ * lock badge; a ledger-only claimed car (not loaded, at its last-known spot) has the ring dashed
+ * and dimmed, so that state is not opacity alone either. */
 export function buildVehicles(features: VehicleFeature[]): L.Layer {
   const group = L.layerGroup()
   for (const f of features) {
     const cls = ['aurora-vehicle', f.claimed ? 'is-claimed' : '', f.ledger ? 'is-ledger' : ''].join(' ').trim()
-    const size = f.claimed ? 20 : 14
+    const size = f.claimed ? 26 : 16
     const marker = L.marker(f.latlng, {
-      icon: L.divIcon({ className: 'aurora-marker', html: `<span class="${cls}">${f.claimed ? LOCK_SVG : ''}</span>`, iconSize: [size, size] }),
+      icon: L.divIcon({ className: 'aurora-marker', html: `<span class="${cls}">${CAR_SVG}${f.claimed ? LOCK_SVG : ''}</span>`, iconSize: [size, size] }),
       title: f.label,
       alt: f.label,
       keyboard: true,

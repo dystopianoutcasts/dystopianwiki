@@ -54,3 +54,26 @@ describe('A-Life NPC builders', () => {
     expect(npc).toMatch(/weight: f\.hostile \? 4 : 2/)
   })
 })
+
+describe('car glyph, claimed ring and ledger dimming', () => {
+  const css = readFileSync(fileURLToPath(new URL('../styles/aurora.css', import.meta.url)), 'utf8')
+  const fn = buildSrc.slice(buildSrc.indexOf('export function buildVehicles'), buildSrc.indexOf('export function buildSafehouses'))
+
+  it('every car is the glyph, and only a claimed car also gets the lock', () => {
+    expect(fn).toMatch(/\$\{CAR_SVG\}\$\{f\.claimed \? LOCK_SVG : ''\}/)
+  })
+  it('the claimed flag adds is-claimed (the ring); the ledger flag adds is-ledger', () => {
+    expect(fn).toMatch(/f\.claimed \? 'is-claimed' : ''/)
+    expect(fn).toMatch(/f\.ledger \? 'is-ledger' : ''/)
+  })
+  it('the ring exists only on .is-claimed, one colour for all owners', () => {
+    const rule = css.match(/\.aurora-vehicle\.is-claimed \{[^}]*\}/)?.[0] ?? ''
+    expect(rule).toMatch(/border:\s*3px solid #00e5ff/)
+    const plain = css.match(/\.aurora-vehicle \{[^}]*\}/)?.[0] ?? ''
+    expect(plain).not.toMatch(/border/)
+  })
+  it('a ledger-only claimed car has its ring dashed and the marker dimmed', () => {
+    expect(css).toMatch(/\.aurora-vehicle\.is-ledger \{[^}]*opacity:\s*0\.75/)
+    expect(css).toMatch(/\.aurora-vehicle\.is-ledger\.is-claimed \{[^}]*border-style:\s*dashed/)
+  })
+})

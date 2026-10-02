@@ -9,6 +9,7 @@ import type { SupabaseClient, User } from '@supabase/supabase-js'
 import { INGEST_INTERVAL_MS, LIVE_POLL_MS, SLOW_POLL_MS, VERY_SLOW_POLL_MS, LINK_FEATURE_ENABLED } from '../config'
 import { useDataset } from './useDataset'
 import { useLiveDataset } from './useLiveDataset'
+import { VEHICLE_NAMES_POLL_MS, vehicleNameMap } from './vehicleNames'
 import { newestT, vehicleKey } from './live'
 import {
   fetchDeaths,
@@ -22,6 +23,7 @@ import {
   fetchPlayerProfiles,
   fetchPositions,
   fetchSafehouses,
+  fetchVehicleNames,
   fetchVehiclesAdmin,
   fetchVehiclesPublic,
   fetchVisibility,
@@ -86,6 +88,9 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
   const npcOutposts = useDataset(prefs.npcOutposts, () => fetchNpcOutposts(client, serverId, isAdmin), SLOW_POLL_MS)
   // Death markers (migration 030): one per player, hours to years old, so the slow interval is plenty.
   const deaths = useDataset(prefs.deaths, () => fetchDeaths(client, serverId, isAdmin), SLOW_POLL_MS)
+  // Car display names (migration 031): read on load, then rarely; the map stays empty until 031 is live.
+  const vehicleNameRows = useDataset(true, () => fetchVehicleNames(client), VEHICLE_NAMES_POLL_MS)
+  const vehicleNames = useMemo(() => vehicleNameMap(vehicleNameRows.data), [vehicleNameRows.data])
   const zones = useDataset(prefs.zones, () => fetchZones(client, serverId), VERY_SLOW_POLL_MS)
   // The zombie grid changes once a minute (the exporter's zgrid cadence), so it stays at the ingest interval.
   const grid = useDataset(prefs.zombieHeat, () => fetchZombieGrid(client, serverId), INGEST_INTERVAL_MS)
@@ -187,6 +192,7 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
     profiles,
     positions,
     vehicles,
+    vehicleNames,
     safehouses,
     npcGroups,
     npcOutposts,

@@ -188,7 +188,7 @@ describe('T44: name mode toggle (usernames are intentionally public, owner decis
   it('MapPage.tsx threads nameMode into every feature builder that can show a name', () => {
     expect(mapPageSrc).toMatch(/playerFeatures\(positions\.data, profiles\.data, nameMode\)/)
     expect(mapPageSrc).toMatch(/findablePlayers\(positions\.data, profiles\.data, nameMode\)/)
-    expect(mapPageSrc).toMatch(/vehicleFeatures\(vehicles\.data, profiles\.data, nameMode\)/)
+    expect(mapPageSrc).toMatch(/vehicleFeatures\(vehicles\.data, profiles\.data, nameMode, vehicleNames\)/)
     expect(mapPageSrc).toMatch(/safehouseFeatures\(safehouses\.data, profiles\.data, nameMode\)/)
     expect(mapPageSrc).toMatch(/<RosterPanel profiles=\{profiles\.data\} error=\{profiles\.error\} mode=\{nameMode\}/)
   })
