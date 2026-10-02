@@ -422,14 +422,37 @@
   font-style: italic;
 }
 
+/* Wrapped flex rather than a grid so an incomplete last row is centred, not
+   left-aligned. --settings-cols is the column count, picked from the width of
+   the list itself (a container query): one column up to 455px, then 2, 3 and 4
+   from 456, 692 and 928px, the same steps the old auto-fit grid took at a
+   220px minimum. Items never grow, so a short last row keeps their width. */
 .home-settings {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--spacing-2) var(--spacing-4);
+  --settings-gap: var(--spacing-4);
+  container-type: inline-size;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--spacing-2) var(--settings-gap);
   margin: 0;
 }
 
+@container (min-width: 456px) {
+  .home-settings > .home-setting { --settings-cols: 2; }
+}
+
+@container (min-width: 692px) {
+  .home-settings > .home-setting { --settings-cols: 3; }
+}
+
+@container (min-width: 928px) {
+  .home-settings > .home-setting { --settings-cols: 4; }
+}
+
 .home-setting {
+  --settings-cols: 1;
+  flex: 0 0 calc((100% - (var(--settings-cols) - 1) * var(--settings-gap)) / var(--settings-cols));
+  min-width: 0;
   display: flex;
   justify-content: space-between;
   gap: var(--spacing-3);

@@ -12,10 +12,15 @@ import '../../styles/components/server-now.css';
 //
 // The banner is as wide as the page and a fixed height (owner, 2026-10-02). On a
 // wide screen the whole world's width is visible and it pans up and down; on a phone
-// it shows zoom 11 and pans both ways. utils/mapView.ts fitScale picks the tile
+// it shows zoom 11 and pans both ways (a finger pans sideways only: vertical swipes
+// scroll the page, owner 2026-10-02). utils/mapView.ts fitScale picks the tile
 // level (11 to 13 of map/tiles/base_top/layer0.dzi: 256 px tiles, no overlap,
 // sparse) and the drawn size from the measured viewport width.
 const TILE = 256;
+
+// Arrow-key pan distance in px; Shift takes the larger step.
+const PAN_STEP = 80;
+const PAN_STEP_LARGE = 320;
 
 // Rosewood (map/areas.json): the opening position, owner's decision.
 const ROSEWOOD: WorldPoint = { x: 8350, y: 11750 };
@@ -104,17 +109,53 @@ export function ServerNow() {
     scrollTimer.current = setTimeout(updateCenterFromScroll, 150);
   }, [updateCenterFromScroll]);
 
-  // Dragging: an alternative to the scrollbar and touch scroll, never the
-  // only way to move the map (WCAG 2.5.7). Touch already scrolls the region
-  // natively via touch-action, so this only runs for mouse/pen pointers.
-  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.pointerType === 'touch' || e.button !== 0) return;
+  // The viewport is overflow: hidden, so the wheel and trackpad never move the map
+  // (the page keeps scrolling past it) and only these handlers do: dragging, and the
+  // arrow keys as the non-drag alternative (WCAG 2.5.7). Programmatic scrollLeft and
+  // scrollTop still work, and still fire the scroll event that tracks the centre.
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.ctrlKey || e.altKey || e.metaKey) return;
     const el = viewportRef.current;
     if (!el) return;
+    const step = e.shiftKey ? PAN_STEP_LARGE : PAN_STEP;
+    switch (e.key) {
+      case 'ArrowLeft':
+        el.scrollLeft -= step;
+        break;
+      case 'ArrowRight':
+        el.scrollLeft += step;
+        break;
+      case 'ArrowUp':
+        el.scrollTop -= step;
+        break;
+      case 'ArrowDown':
+        el.scrollTop += step;
+        break;
+      case 'Home':
+        el.scrollLeft = 0;
+        break;
+      case 'End':
+        el.scrollLeft = el.scrollWidth;
+        break;
+      default:
+        return;
+    }
+    e.preventDefault();
+  }, []);
+
+  // Dragging with a mouse or pen moves both axes. A finger moves the map sideways
+  // only: touch-action: pan-y leaves vertical swipes to the page, and the browser
+  // cancels the pointer when it takes one over.
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return;
+    const el = viewportRef.current;
+    if (!el) return;
+    const touch = e.pointerType === 'touch';
     // The map is made of <img> tiles. Without this the browser starts dragging the
     // image itself (its native drag-and-drop), which cancels this pointer drag, so
-    // the map only moved by its scrollbars. Focus still lands on the region.
-    e.preventDefault();
+    // the map never moved. Not for touch, where it would only fight the page scroll.
+    // Focus still lands on the region.
+    if (!touch) e.preventDefault();
     el.focus({ preventScroll: true });
     dragRef.current = { x: e.clientX, y: e.clientY, scrollLeft: el.scrollLeft, scrollTop: el.scrollTop };
     el.classList.add('server-now__viewport--grabbing');
@@ -124,7 +165,7 @@ export function ServerNow() {
       const target = viewportRef.current;
       if (!drag || !target) return;
       target.scrollLeft = drag.scrollLeft - (ev.clientX - drag.x);
-      target.scrollTop = drag.scrollTop - (ev.clientY - drag.y);
+      if (!touch) target.scrollTop = drag.scrollTop - (ev.clientY - drag.y);
     };
     const endDrag = () => {
       dragRef.current = null;
@@ -184,8 +225,9 @@ export function ServerNow() {
         className="server-now__viewport"
         tabIndex={0}
         role="region"
-        aria-label="Server map, centred on Rosewood. Scroll or drag to move."
+        aria-label="Server map, centred on Rosewood. Drag, or use the arrow keys, to move."
         onScroll={handleScroll}
+        onKeyDown={handleKeyDown}
         onPointerDown={handlePointerDown}
       >
         <div className="server-now__inner" style={{ width: scale.width, height: scale.height }}>
@@ -232,7 +274,7 @@ export function ServerNow() {
       </div>
 
       <div className="server-now__content">
-        <p className="server-now__help">Drag or scroll to look around.</p>
+        <p className="server-now__help">Drag to look around, or focus the map and use the arrow keys.</p>
         <p className="server-now__link-row">
           <a className="server-now__link" href={liveMapHref}>
             Open the live map
