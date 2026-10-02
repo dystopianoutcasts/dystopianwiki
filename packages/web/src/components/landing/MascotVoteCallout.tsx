@@ -2,10 +2,6 @@ import { Link } from 'react-router-dom';
 import { MASCOT_ENTRIES } from '../../data/mascotEntries';
 import '../../styles/components/mascot-vote-callout.css';
 
-const THUMBNAIL_IDS = ['art_001', 'art_003', 'art_005', 'art_006'];
-
-const thumbnails = MASCOT_ENTRIES.filter((entry) => THUMBNAIL_IDS.includes(entry.id));
-
 export function MascotVoteCallout() {
   return (
     <section className="mascot-callout" aria-labelledby="mascot-callout-title">
@@ -22,7 +18,8 @@ export function MascotVoteCallout() {
           </Link>
         </div>
         <div className="mascot-callout__thumbs" aria-hidden="true">
-          {thumbnails.map((entry) => (
+          {/* Every entry, in entry order and uncropped, so the home page favours none. */}
+          {MASCOT_ENTRIES.map((entry) => (
             <img
               key={entry.id}
               src={entry.image}

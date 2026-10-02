@@ -67,16 +67,18 @@
 
 .mascot-callout__thumbs {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--spacing-2);
 }
 
+/* Same fill and fit as the vote page's frames: the whole image on a light square, never cropped. */
 .mascot-callout__thumb {
+  display: block;
   width: 100%;
   aspect-ratio: 1;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: var(--border-radius-lg);
-  background: var(--color-surface-elevated);
+  background: var(--color-neutral-50);
 }
 
 .mascot-callout__thumb--pixel {
@@ -87,20 +89,28 @@
   width: 100%;
 }
 
-/* @breakpoint-md: 768px - Tablet and up: text beside thumbnails */
-@media (min-width: 769px) {
+/* @breakpoint-sm: 640px - All six thumbnails in one row, still under the text */
+@media (min-width: 640px) {
+  .mascot-callout__button {
+    width: auto;
+  }
+
+  .mascot-callout__thumbs {
+    grid-template-columns: repeat(6, 1fr);
+    max-width: 480px;
+  }
+}
+
+/* @breakpoint-lg: 1024px - Desktop: text beside thumbnails */
+@media (min-width: 1025px) {
   .mascot-callout__inner {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
   }
 
-  .mascot-callout__button {
-    width: auto;
-  }
-
   .mascot-callout__thumbs {
     flex-shrink: 0;
-    width: 360px;
+    width: 480px;
   }
 }
