@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { NPC_PANE, NPC_PANE_Z_INDEX, PLAYERS_PANE, PLAYERS_PANE_Z_INDEX, PLAYER_NAMES_PANE, PLAYER_NAMES_PANE_Z_INDEX } from './panes'
+import { DEATH_PANE, DEATH_PANE_Z_INDEX, NPC_PANE, NPC_PANE_Z_INDEX, PLAYERS_PANE, PLAYERS_PANE_Z_INDEX, PLAYER_NAMES_PANE, PLAYER_NAMES_PANE_Z_INDEX } from './panes'
 
 // T41 (owner): player markers and their names must draw above every other layer. This
 // is the pure module map/MapView.tsx imports its pane names and z-indices from and
@@ -35,5 +35,17 @@ describe('panes: A-Life NPC markers sit above vehicles and below players', () =>
   it('NPC_PANE is its own pane', () => {
     expect(NPC_PANE).not.toBe(PLAYERS_PANE)
     expect(NPC_PANE).not.toBe(PLAYER_NAMES_PANE)
+  })
+})
+
+describe('panes: death markers sit above vehicles, below NPC groups and players', () => {
+  it('DEATH_PANE_Z_INDEX is above the marker pane (600) and below the NPC pane', () => {
+    expect(DEATH_PANE_Z_INDEX).toBeGreaterThan(600)
+    expect(DEATH_PANE_Z_INDEX).toBeLessThan(NPC_PANE_Z_INDEX)
+    expect(DEATH_PANE_Z_INDEX).toBeLessThan(PLAYERS_PANE_Z_INDEX)
+  })
+
+  it('DEATH_PANE is its own pane', () => {
+    expect(new Set([DEATH_PANE, NPC_PANE, PLAYERS_PANE, PLAYER_NAMES_PANE]).size).toBe(4)
   })
 })

@@ -127,6 +127,20 @@ export interface NpcGroup {
   sensitive?: boolean
 }
 
+/** Row of `aurora.deaths_visible` (migration 030): one per player, their most recent death, with no age
+ * limit. The admin RPC `deaths_admin` returns every death instead, plus `src`. */
+export interface Death {
+  server_id: string
+  username: string
+  x: number
+  y: number
+  z: number
+  t: string
+  hours_survived: number | null
+  /** Admin RPC only. */
+  src?: string | null
+}
+
 /** Row of `aurora.npc_outposts_visible` (migration 029); corners are world squares. */
 export interface NpcOutpost {
   server_id: string

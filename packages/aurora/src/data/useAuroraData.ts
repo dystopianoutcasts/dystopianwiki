@@ -11,6 +11,7 @@ import { useDataset } from './useDataset'
 import { useLiveDataset } from './useLiveDataset'
 import { newestT, vehicleKey } from './live'
 import {
+  fetchDeaths,
   fetchHealthAfter,
   fetchHealthSince,
   fetchLatestHealth,
@@ -83,6 +84,8 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
   // move, so they ride the slow one. An admin gets the RPC's extra fields instead.
   const npcGroups = useDataset(prefs.npcGroups, () => fetchNpcGroups(client, serverId, isAdmin), LIVE_POLL_MS)
   const npcOutposts = useDataset(prefs.npcOutposts, () => fetchNpcOutposts(client, serverId, isAdmin), SLOW_POLL_MS)
+  // Death markers (migration 030): one per player, hours to years old, so the slow interval is plenty.
+  const deaths = useDataset(prefs.deaths, () => fetchDeaths(client, serverId, isAdmin), SLOW_POLL_MS)
   const zones = useDataset(prefs.zones, () => fetchZones(client, serverId), VERY_SLOW_POLL_MS)
   // The zombie grid changes once a minute (the exporter's zgrid cadence), so it stays at the ingest interval.
   const grid = useDataset(prefs.zombieHeat, () => fetchZombieGrid(client, serverId), INGEST_INTERVAL_MS)
@@ -127,6 +130,7 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
     vehicles.refresh()
     if (prefs.npcGroups) npcGroups.refresh()
     if (prefs.npcOutposts) npcOutposts.refresh()
+    if (prefs.deaths) deaths.refresh()
     // refresh functions are stable; only the identity change should trigger this
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uid])
@@ -139,6 +143,7 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
     vehicles.refresh()
     if (prefs.npcGroups) npcGroups.refresh()
     if (prefs.npcOutposts) npcOutposts.refresh()
+    if (prefs.deaths) deaths.refresh()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAdmin])
 
@@ -185,6 +190,7 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
     safehouses,
     npcGroups,
     npcOutposts,
+    deaths,
     zones,
     grid,
     objects,

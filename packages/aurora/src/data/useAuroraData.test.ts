@@ -117,3 +117,13 @@ describe('A-Life NPCs (migration 029): polling and role', () => {
     expect(useAuroraData.match(/npcOutposts\.refresh\(\)/g)).toHaveLength(2)
   })
 })
+
+describe('Deaths (migration 030): polling and role', () => {
+  it('deaths ride the slow interval, gated by their toggle, with the role passed to the fetch', () => {
+    expect(useAuroraData).toMatch(/useDataset\(prefs\.deaths, \(\) => fetchDeaths\(client, serverId, isAdmin\), SLOW_POLL_MS\)/)
+  })
+
+  it('deaths refetch on sign-in or out and when the admin flag changes', () => {
+    expect(useAuroraData.match(/deaths\.refresh\(\)/g)).toHaveLength(2)
+  })
+})

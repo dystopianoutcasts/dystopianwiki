@@ -3,6 +3,7 @@
 // may not read comes back as an error or an empty list, and the UI just shows that.
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type {
+  Death,
   HealthSample,
   LinkCode,
   MapObject,
@@ -175,6 +176,8 @@ const npcGates = {
   groupsRpc: { until: 0, logged: false },
   outpostsView: { until: 0, logged: false },
   outpostsRpc: { until: 0, logged: false },
+  deathsView: { until: 0, logged: false },
+  deathsRpc: { until: 0, logged: false },
 } satisfies Record<string, Gate>
 
 /** Test seam: forget which NPC views and functions were found missing. */
@@ -249,6 +252,22 @@ export function fetchNpcOutposts(db: SupabaseClient, serverId: string, isAdmin: 
     db,
     serverId,
     NPC_OUTPOST_COLUMNS,
+    isAdmin,
+  )
+}
+
+const DEATH_COLUMNS = 'server_id,username,x,y,z,t,hours_survived'
+
+/** Death markers (migration 030), read like the NPC sets: until 030 is live the layer is empty with no
+ * error. The public view holds each player's latest death; the admin RPC returns all of them (and `src`),
+ * which the transform reduces to the latest per player. */
+export function fetchDeaths(db: SupabaseClient, serverId: string, isAdmin: boolean): Promise<Death[]> {
+  return readNpc<Death>(
+    { view: npcGates.deathsView, rpc: npcGates.deathsRpc },
+    { view: 'deaths_visible', rpc: 'deaths_admin', what: 'deaths' },
+    db,
+    serverId,
+    DEATH_COLUMNS,
     isAdmin,
   )
 }

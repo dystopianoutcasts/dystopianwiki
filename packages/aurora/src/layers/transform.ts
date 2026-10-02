@@ -2,7 +2,7 @@
 // are tested directly. Everything is in world squares; latlng is [y, x] (see map/coords.ts).
 import type { TilesConfig } from '../map/tiles'
 import { cellCentre } from '../map/coords'
-import type { HealthSample, MapObject, NpcGroup, NpcOutpost, PlayerPublic, Safehouse, Vehicle, VisiblePosition, Zone, ZombieCell } from '../data/types'
+import type { Death, HealthSample, MapObject, NpcGroup, NpcOutpost, PlayerPublic, Safehouse, Vehicle, VisiblePosition, Zone, ZombieCell } from '../data/types'
 import { vehicleKey } from '../data/live'
 import type { NameMode } from '../state/nameMode'
 
@@ -420,6 +420,65 @@ export function describeDuration(iso: string, now: number = Date.now()): string 
   const h = Math.floor(min / 60)
   if (h < 48) return `${h} h`
   return `${Math.floor(h / 24)} d`
+}
+
+/** Long-hand age for a sentence: "just now", "5 minutes ago", "1 hour ago", "2 days ago". Future times read as "just now". */
+export function describeAgeWords(iso: string, now: number = Date.now()): string {
+  const diff = Math.max(0, now - Date.parse(iso))
+  const unit = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'} ago`
+  const min = Math.floor(diff / 60_000)
+  if (min < 1) return 'just now'
+  if (min < 60) return unit(min, 'minute')
+  const h = Math.floor(min / 60)
+  if (h < 24) return unit(h, 'hour')
+  return unit(Math.floor(h / 24), 'day')
+}
+
+export interface DeathFeature {
+  key: string
+  /** "<name> died here - <age> - survived <n> h", plus "died <n> times" for an admin; the one text the tooltip and the marker's name use. */
+  label: string
+  latlng: [number, number]
+}
+
+/** Each player's most recent death. The public view already holds one row per player; the admin RPC
+ * returns all of them, so this reduces either to the latest per (server, username), and counts the rows
+ * it saw per player. A row with no readable time loses to any row with one; on a tie the later row wins. */
+export function latestDeaths(list: Death[]): { latest: Death[]; counts: Map<string, number> } {
+  const best = new Map<string, { row: Death; ms: number }>()
+  const counts = new Map<string, number>()
+  for (const d of list) {
+    const k = `${d.server_id}/${d.username}`
+    counts.set(k, (counts.get(k) ?? 0) + 1)
+    const parsed = Date.parse(d.t)
+    const ms = Number.isNaN(parsed) ? -Infinity : parsed
+    const cur = best.get(k)
+    if (!cur || ms >= cur.ms) best.set(k, { row: d, ms })
+  }
+  return { latest: [...best.values()].map((b) => b.row), counts }
+}
+
+/** Death markers. Names go through `pickName` and the profiles like every other player name. "died N times"
+ * is for an admin only, and only from two deaths up; the public never learns more than the latest. */
+export function deathFeatures(list: Death[], profiles: PlayerPublic[], mode: NameMode, isAdmin: boolean, now: number = Date.now()): DeathFeature[] {
+  const byUsername = new Map(profiles.map((p) => [p.username, p]))
+  const { latest, counts } = latestDeaths(list)
+  return latest.map((d) => {
+    const key = `death/${d.server_id}/${d.username}`
+    const times = counts.get(`${d.server_id}/${d.username}`) ?? 1
+    return {
+      key,
+      label: [
+        `${pickName(mode, byUsername.get(d.username)?.display_name, d.username)} died here`,
+        Number.isNaN(Date.parse(d.t)) ? null : describeAgeWords(d.t, now),
+        d.hours_survived != null ? `survived ${Math.floor(d.hours_survived)} h` : null,
+        isAdmin && times > 1 ? `died ${times} times` : null,
+      ]
+        .filter(Boolean)
+        .join(' - '),
+      latlng: [d.y, d.x],
+    }
+  })
 }
 
 export type NpcStance = 'hostile' | 'careful' | 'neutral' | 'friendly' | 'allied'

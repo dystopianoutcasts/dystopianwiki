@@ -65,3 +65,19 @@ describe('layer toggles persisted in storage', () => {
     expect(loadLayerPrefs(s)).toEqual({ ...DEFAULT_LAYERS, npcGroups: false })
   })
 })
+
+describe('deaths layer pref', () => {
+  it('is on by default, and prefs saved before it existed keep their other choices and get it on', () => {
+    expect(DEFAULT_LAYERS.deaths).toBe(true)
+    const old = memoryStorage({ 'aurora.layers.v1': JSON.stringify({ streets: false, npcGroups: false }) })
+    const loaded = loadLayerPrefs(old)
+    expect(loaded.deaths).toBe(true)
+    expect(loaded.streets).toBe(false)
+  })
+
+  it('an explicit off survives a reload', () => {
+    const s = memoryStorage()
+    saveLayerPrefs({ ...DEFAULT_LAYERS, deaths: false }, s)
+    expect(loadLayerPrefs(s).deaths).toBe(false)
+  })
+})

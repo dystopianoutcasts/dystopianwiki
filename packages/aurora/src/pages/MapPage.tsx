@@ -17,6 +17,7 @@ import {
   heatPoints,
   objectFeatures,
   playerFeatures,
+  deathFeatures,
   npcGroupFeatures,
   npcOutpostFeatures,
   safehouseFeatures,
@@ -151,6 +152,7 @@ export function MapPage() {
     safehouses,
     npcGroups,
     npcOutposts,
+    deaths,
     zones,
     grid,
     objects,
@@ -172,6 +174,7 @@ export function MapPage() {
   const safehouseList = useMemo(() => safehouseFeatures(safehouses.data, profiles.data, nameMode), [safehouses.data, profiles.data, nameMode])
   const npcGroupList = useMemo(() => npcGroupFeatures(npcGroups.data), [npcGroups.data])
   const npcOutpostList = useMemo(() => npcOutpostFeatures(npcOutposts.data), [npcOutposts.data])
+  const deathList = useMemo(() => deathFeatures(deaths.data, profiles.data, nameMode, isAdmin, now), [deaths.data, profiles.data, nameMode, isAdmin, now])
   const zoneList = useMemo(() => zoneFeatures(zones.data), [zones.data])
   const objectList = useMemo(() => objectFeatures(objects.data), [objects.data])
   const heat = useMemo(() => (cfg ? heatPoints(grid.data, cfg, now) : []), [grid.data, cfg, now])
@@ -224,6 +227,7 @@ export function MapPage() {
     players: playersNote({ signedIn: !!user, positionCount: positions.data.length, vis, linkEnabled: LINK_FEATURE_ENABLED }),
     vehicles: vehicles.error ? vehicles.error : vehicles.data.length === 0 ? 'None visible to you right now.' : undefined,
     safehouses: safehouses.error ?? undefined,
+    deaths: deaths.error ?? undefined,
     zones: zones.error ?? undefined,
     zombieHeat: grid.error ?? (grid.data.length === 0 ? 'No zombie counts reported yet.' : undefined),
     mapObjects: objects.error ?? (objects.data.length === 0 ? 'No map objects reported yet.' : undefined),
@@ -249,6 +253,7 @@ export function MapPage() {
         safehouses={safehouseList}
         npcGroups={npcGroupList}
         npcOutposts={npcOutpostList}
+        deaths={deathList}
         zones={zoneList}
         heat={heat}
         objects={objectList}

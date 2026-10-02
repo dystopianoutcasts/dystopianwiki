@@ -371,6 +371,10 @@ fieldset.panel legend { padding: 0 4px; font-weight: 600; }
 /* A-Life NPC group: a diamond with the member count inside (players are dots, vehicles
    squares). White text on #2b1d52 is about 15:1; the white edge over a near-black halo
    holds 3:1 against light and dark terrain alike. */
+.aurora-death { display: block; width: 20px; height: 20px; }
+.aurora-death svg { display: block; }
+.aurora-death .death-halo { fill: none; stroke: #1a0a0a; stroke-width: 7; stroke-linecap: round; }
+.aurora-death .death-edge { fill: none; stroke: #ffd9d6; stroke-width: 3; stroke-linecap: round; }
 .aurora-npc { position: relative; display: block; width: 30px; height: 30px; }
 .aurora-npc svg { display: block; }
 .aurora-npc .npc-halo { fill: #2b1d52; stroke: #0a0a14; stroke-width: 5; stroke-linejoin: round; }

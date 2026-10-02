@@ -3,7 +3,7 @@
 import L from 'leaflet'
 import 'leaflet.markercluster'
 import 'leaflet.heat'
-import type { AreaFeature, NpcGroupFeature, NpcOutpostFeature, ObjectFeature, PlayerFeature, RectFeature, StreetFeature, VehicleFeature, WorldMapFeatures, ZoneFeature } from './transform'
+import type { AreaFeature, DeathFeature, NpcGroupFeature, NpcOutpostFeature, ObjectFeature, PlayerFeature, RectFeature, StreetFeature, VehicleFeature, WorldMapFeatures, ZoneFeature } from './transform'
 import { streetWeight } from './transform'
 import type { TilesConfig } from '../map/tiles'
 import { zombieTileUrl } from '../map/tiles'
@@ -12,7 +12,7 @@ import { sizedTileLayer } from '../map/sizedTileLayer'
 import { placeLabels } from './labelPlacement'
 // T41: imported from ./panes directly (not from map/MapView.tsx, which imports this
 // very file) to avoid a circular import - see panes.ts's own header comment.
-import { NPC_PANE, PLAYERS_PANE, PLAYER_NAMES_PANE } from '../map/panes'
+import { DEATH_PANE, NPC_PANE, PLAYERS_PANE, PLAYER_NAMES_PANE } from '../map/panes'
 
 function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -87,6 +87,31 @@ export function buildSafehouses(features: RectFeature[]): L.Layer {
     L.rectangle(f.bounds, { color: '#e0a030', weight: 2, fillOpacity: 0.15, dashArray: '4 3' })
       .bindTooltip(escapeHtml(f.label), { sticky: true })
       .addTo(group)
+  }
+  return group
+}
+
+/** The death marker: a cross (players are dots, vehicles squares, NPC groups diamonds). A dark halo
+ * under a light stroke keeps it readable on any terrain; decorative (`aria-hidden`), the marker's own
+ * `title`/`alt` carries the label. */
+const DEATH_SVG =
+  '<svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false">' +
+  '<path class="death-halo" d="M4 4L16 16M16 4L4 16"/>' +
+  '<path class="death-edge" d="M4 4L16 16M16 4L4 16"/></svg>'
+
+/** One cross per player, at their latest death, in its own pane above vehicles and below NPC groups and players. */
+export function buildDeaths(features: DeathFeature[]): L.Layer {
+  const group = L.layerGroup()
+  for (const f of features) {
+    const marker = L.marker(f.latlng, {
+      icon: L.divIcon({ className: 'aurora-marker', html: `<span class="aurora-death">${DEATH_SVG}</span>`, iconSize: [20, 20] }),
+      title: f.label,
+      alt: f.label,
+      keyboard: true,
+      pane: DEATH_PANE,
+    })
+    marker.bindTooltip(escapeHtml(f.label), { direction: 'top', offset: [0, -10] })
+    group.addLayer(marker)
   }
   return group
 }
