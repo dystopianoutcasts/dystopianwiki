@@ -18,6 +18,8 @@ import {
   parseHomeSummary,
   settingRows,
   TBD,
+  formatWorldAge,
+  counterText,
 } from './homeSummary'
 
 const RAW = {
@@ -130,6 +132,37 @@ test('settings read in plain words, and TBD where unknown', () => {
   assert.equal(rows['Zombie toughness'], TBD)
   assert.equal(rows['World age'], TBD)
   assert.equal(rows['Game version'], TBD)
+})
+
+test('world age reads in days and hours', () => {
+  assert.equal(formatWorldAge(0), '0 days 0 hours')
+  assert.equal(formatWorldAge(1), '0 days 1 hour')
+  assert.equal(formatWorldAge(25.5), '1 day 1 hour')
+  assert.equal(formatWorldAge(689.4), '28 days 17 hours')
+  assert.equal(formatWorldAge(-3), '0 days 0 hours')
+})
+
+test('world age and game version come from the summary, TBD when absent or the wrong type', () => {
+  const rows = (extra: object) => Object.fromEntries(settingRows(parseHomeSummary({ ...RAW, ...extra })).map((r) => [r.label, r.value]))
+  const ok = rows({ world_age_hours: 689.4, game_version: ' 42.21.0 ', day_tz: 'America/Chicago' })
+  assert.equal(ok['World age'], '28 days 17 hours')
+  assert.equal(ok['Game version'], '42.21.0')
+  assert.equal(parseHomeSummary({ ...RAW, day_tz: 'America/Chicago' })?.dayTz, 'America/Chicago')
+  assert.equal(parseHomeSummary(RAW)?.dayTz, null)
+  assert.equal(rows({ world_age_hours: 0 })['World age'], '0 days 0 hours')
+  assert.equal(rows({ world_age_hours: null, game_version: null })['World age'], TBD)
+  const bad = rows({ world_age_hours: 'soon', game_version: 42 })
+  assert.equal(bad['World age'], TBD)
+  assert.equal(bad['Game version'], TBD)
+  assert.equal(rows({ game_version: '  ' })['Game version'], TBD)
+})
+
+test('a counter shows 0 as 0 and only an unreported figure as TBD', () => {
+  assert.equal(counterText(0), '0')
+  assert.equal(counterText(1234), '1,234')
+  assert.equal(counterText(null), TBD)
+  assert.equal(counterText(undefined), TBD)
+  assert.equal(counterText(Number.NaN), TBD)
 })
 
 test('the Map row leaves out mod helpers that are not places to play', () => {

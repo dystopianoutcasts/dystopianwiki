@@ -1,7 +1,8 @@
-import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useServerNow } from '../../hooks/useServerNow';
 import { useHomeSummary } from '../../hooks/useHomeSummary';
-import { TBD } from '../../lib/homeSummary';
+import { counterText, TBD } from '../../lib/homeSummary';
+import { dayCaption, viewerTimeZone } from '../../lib/homeSummaryRpc';
 import { centerAt, fitScale, imageSize, scrollAt, truncateName, type MapScale, type WorldPoint } from '../../utils/mapView';
 import '../../styles/components/server-now.css';
 
@@ -21,6 +22,13 @@ const TILE = 256;
 // Arrow-key pan distance in px; Shift takes the larger step.
 const PAN_STEP = 80;
 const PAN_STEP_LARGE = 320;
+
+// How long the found player's marker stays ringed after their name is clicked.
+const FOUND_MS = 2000;
+
+function reducedMotion(): boolean {
+  return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
 
 // Rosewood (map/areas.json): the opening position, owner's decision.
 const ROSEWOOD: WorldPoint = { x: 8350, y: 11750 };
@@ -52,10 +60,10 @@ function describe(count: number): string {
 
 /** One counter; TBD when the server has not reported it. */
 function Counter({ value, label }: { value: number | null | undefined; label: string }) {
-  const known = typeof value === 'number';
+  const text = counterText(value);
   return (
-    <li className={known ? 'home-counter' : 'home-counter home-counter--tbd'}>
-      <span className="home-counter__value">{known ? value.toLocaleString() : TBD}</span>
+    <li className={text !== TBD ? 'home-counter' : 'home-counter home-counter--tbd'}>
+      <span className="home-counter__value">{text}</span>
       <span className="home-counter__label">{label}</span>
     </li>
   );
@@ -68,6 +76,10 @@ export function ServerNow() {
   const dragRef = useRef<{ x: number; y: number; scrollLeft: number; scrollTop: number } | null>(null);
   const scrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const centerRef = useRef<WorldPoint>(ROSEWOOD);
+  const foundTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const announceFrame = useRef<number | null>(null);
+  const [foundId, setFoundId] = useState<string | null>(null);
+  const [announcement, setAnnouncement] = useState('');
   const [center, setCenter] = useState<WorldPoint>(ROSEWOOD);
   const [scale, setScale] = useState<MapScale>(() => fitScale(1100));
 
@@ -181,6 +193,43 @@ export function ServerNow() {
     document.addEventListener('pointerleave', endDrag);
   }, []);
 
+  // A name under "Who is on now": centre the map on that player, bring the map into view
+  // if it is off screen, ring their marker for a moment, and say so politely. Focus stays
+  // on the button. A dot with no usable position (the list is built from positions, so
+  // this should not happen) does nothing.
+  const showOnMap = useCallback(
+    (dot: { id: string; name: string; x: number; y: number }) => {
+      const el = viewportRef.current;
+      if (!el || !Number.isFinite(dot.x) || !Number.isFinite(dot.y)) return;
+      const behavior: ScrollBehavior = reducedMotion() ? 'auto' : 'smooth';
+      const size = { width: el.clientWidth, height: el.clientHeight };
+      const scroll = scrollAt(dot, size, scale);
+      el.scrollTo({ left: scroll.x, top: scroll.y, behavior });
+      // Set now, so "Open the live map" is right at once; the scroll events agree with it at the end.
+      const c = centerAt(scroll, size, scale);
+      centerRef.current = c;
+      setCenter(c);
+      el.scrollIntoView({ block: 'nearest', behavior });
+      setFoundId(dot.id);
+      if (foundTimer.current) clearTimeout(foundTimer.current);
+      foundTimer.current = setTimeout(() => setFoundId(null), FOUND_MS);
+      // Cleared first so a repeat click is announced again.
+      setAnnouncement('');
+      if (announceFrame.current !== null) cancelAnimationFrame(announceFrame.current);
+      announceFrame.current = requestAnimationFrame(() => setAnnouncement(`Map centred on ${dot.name}`));
+    },
+    [scale],
+  );
+
+  // Nothing may fire after the page is left.
+  useEffect(
+    () => () => {
+      if (foundTimer.current) clearTimeout(foundTimer.current);
+      if (announceFrame.current !== null) cancelAnimationFrame(announceFrame.current);
+    },
+    [],
+  );
+
   const liveMapHref = `/map/?x=${Math.round(center.x)}&y=${Math.round(center.y)}&zoom=15`;
   const grid = tilesFor(scale.tileZoom);
 
@@ -198,14 +247,22 @@ export function ServerNow() {
           <Counter value={summary?.zombiesKilledToday} label="zombies killed today" />
           <Counter value={summary?.playersKilledToday} label="survivors lost today" />
         </ul>
+        <p className="home-counters__note">{dayCaption(summary?.dayTz, viewerTimeZone())}</p>
 
         <div className="home-onnow">
           <h3 className="home-onnow__title">Who is on now</h3>
           {dots.length > 0 ? (
             <ul className="home-onnow__list">
               {dots.map((dot) => (
-                <li key={dot.id} className="home-onnow__name">
-                  {dot.name}
+                <li key={dot.id} className="home-onnow__item">
+                  <button
+                    type="button"
+                    className="home-onnow__name"
+                    aria-label={`Show ${dot.name} on the map`}
+                    onClick={() => showOnMap(dot)}
+                  >
+                    {dot.name}
+                  </button>
                 </li>
               ))}
             </ul>
@@ -216,6 +273,9 @@ export function ServerNow() {
                 : 'Nobody is on right now. Be the first.'}
             </p>
           )}
+          <p className="sr-only" role="status" aria-live="polite">
+            {announcement}
+          </p>
         </div>
       </div>
 
@@ -262,7 +322,7 @@ export function ServerNow() {
             {dots.map((dot) => (
               <li
                 key={dot.id}
-                className="server-now__player"
+                className={dot.id === foundId ? 'server-now__player server-now__player--found' : 'server-now__player'}
                 style={{ left: dot.x * scale.pixelsPerSquare, top: dot.y * scale.pixelsPerSquare }}
               >
                 <span className="server-now__dot" />

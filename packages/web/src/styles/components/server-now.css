@@ -140,6 +140,42 @@
   border-radius: var(--border-radius-full);
 }
 
+/* The player a name was clicked for: a ring around the dot that grows and fades, for
+   about two seconds. The ring is a shape and a size, not only a colour. Reduced
+   motion gets the same ring, still and thicker. */
+.server-now__player--found .server-now__dot {
+  position: relative;
+}
+
+.server-now__player--found .server-now__dot::after {
+  content: '';
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 0 2px rgba(8, 10, 18, 0.92);
+  animation: server-now-found 0.8s ease-out 2;
+}
+
+@keyframes server-now-found {
+  from {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.2);
+    opacity: 0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .server-now__player--found .server-now__dot::after {
+    animation: none;
+    inset: -8px;
+    border-width: 4px;
+  }
+}
+
 .server-now__help {
   margin: var(--spacing-2) 0 0;
   font-size: var(--font-size-sm);

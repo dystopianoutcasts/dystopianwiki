@@ -41,6 +41,12 @@ export interface HomeSummary {
   settings: Record<string, unknown>
   sandbox: Record<string, SandboxEntry>
   configUpdatedAt: Date | null
+  /** In-game hours since the world began (migration 030). */
+  worldAgeHours: number | null
+  /** The server's version, e.g. "42.21.0" (030). */
+  gameVersion: string | null
+  /** The time zone the "today" counters were counted in (030); null from the one-argument form. */
+  dayTz: string | null
 }
 
 /** Shown wherever a figure is not available yet. */
@@ -119,6 +125,9 @@ export function parseHomeSummary(raw: unknown): HomeSummary | null {
     settings: isRecord(raw.settings) ? raw.settings : {},
     sandbox,
     configUpdatedAt: date(raw.config_updated_at),
+    worldAgeHours: num(raw.world_age_hours),
+    gameVersion: str(raw.game_version),
+    dayTz: str(raw.day_tz),
   }
 }
 
@@ -151,6 +160,19 @@ export function formatHoursSurvived(hours: number): string {
   const rest = whole % 24
   if (days === 0) return `${rest} h`
   return `${days} ${days === 1 ? 'day' : 'days'} ${rest} h`
+}
+
+/** In-game world age as days and hours, minutes dropped: "0 days 0 hours", "1 day 1 hour", "28 days 17 hours". */
+export function formatWorldAge(hours: number): string {
+  const whole = Math.max(0, Math.floor(hours))
+  const days = Math.floor(whole / 24)
+  const rest = whole % 24
+  return `${days} ${days === 1 ? 'day' : 'days'} ${rest} ${rest === 1 ? 'hour' : 'hours'}`
+}
+
+/** A counter's text: 0 is a real answer ("0"); only a figure the server has not reported is TBD. */
+export function counterText(value: number | null | undefined): string {
+  return typeof value === 'number' && Number.isFinite(value) ? value.toLocaleString('en-US') : TBD
 }
 
 /** "7 pm", "12 am". */
@@ -260,7 +282,7 @@ export function settingRows(summary: HomeSummary | null): SettingRow[] {
     { label: 'Zombie respawn', value: label(summary, 'ZombieRespawn') },
     { label: 'Day length', value: label(summary, 'DayLength') },
     { label: 'XP rate', value: xp && typeof xp.v === 'number' ? `${xp.v}x` : TBD },
-    { label: 'World age', value: TBD },
-    { label: 'Game version', value: TBD },
+    { label: 'World age', value: summary?.worldAgeHours != null ? formatWorldAge(summary.worldAgeHours) : TBD },
+    { label: 'Game version', value: summary?.gameVersion ?? TBD },
   ]
 }

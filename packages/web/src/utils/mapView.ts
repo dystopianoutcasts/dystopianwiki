@@ -95,6 +95,11 @@ export function scrollAt(center: WorldPoint, viewportSize: ViewportSize, scale: 
   }
 }
 
+/** Where a world square sits on the drawn picture, in CSS pixels from its top left. */
+export function worldToPixel(point: WorldPoint, scale: MapScale): PixelPoint {
+  return { x: point.x * scale.pixelsPerSquare, y: point.y * scale.pixelsPerSquare }
+}
+
 /** The world square at the centre of the viewport. Inverse of scrollAt away from the clamp. */
 export function centerAt(scroll: PixelPoint, viewportSize: ViewportSize, scale: MapScale): WorldPoint {
   const px = scroll.x + viewportSize.width / 2

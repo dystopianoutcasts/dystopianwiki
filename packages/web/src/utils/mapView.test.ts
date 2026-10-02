@@ -7,7 +7,7 @@
  */
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { centerAt, centerOf, fitScale, imageSize, scrollAt, scrollFor, truncateName, WORLD_HEIGHT, WORLD_WIDTH } from './mapView'
+import { centerAt, centerOf, fitScale, imageSize, scrollAt, scrollFor, truncateName, worldToPixel, WORLD_HEIGHT, WORLD_WIDTH } from './mapView'
 
 const ZOOM = 12
 const VIEWPORT = { width: 1100, height: 560 }
@@ -119,4 +119,19 @@ test('scrollAt/centerAt round-trip on a scaled picture, and a full-width picture
   // Away from every edge (at zoom 11 Rosewood is too close to the bottom to centre).
   const c = centerAt(scrollAt({ x: 8350, y: 8000 }, pv, phone), pv, phone)
   assert.ok(Math.abs(c.x - 8350) <= 2 && Math.abs(c.y - 8000) <= 2, `phone round-trip, got ${c.x},${c.y}`)
+})
+
+test('clicking a name on the home page: the player ends up at the viewport centre, or at the picture edge', () => {
+  const scale = fitScale(1100)
+  const view = { width: 800, height: 400 }
+  const mid = { x: 8400, y: 11700 }
+  const s = scrollAt(mid, view, scale)
+  const px = worldToPixel(mid, scale)
+  assert.ok(Math.abs(s.x + view.width / 2 - px.x) < 1e-9)
+  assert.ok(Math.abs(s.y + view.height / 2 - px.y) < 1e-9)
+  // Far north-west: clamped, so the player is off-centre but the picture still fills the viewport.
+  assert.deepEqual(scrollAt({ x: 10, y: 10 }, view, scale), { x: 0, y: 0 })
+  // The centre the link then reports is the player's own square, within rounding.
+  const back = centerAt(s, view, scale)
+  assert.ok(Math.abs(back.x - mid.x) <= 1 && Math.abs(back.y - mid.y) <= 1)
 })

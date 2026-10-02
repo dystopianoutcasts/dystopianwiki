@@ -1,5 +1,5 @@
 /**
- * The home page's server summary: one call to aurora.home_summary() (migration 027),
+ * The home page's server summary: one call to aurora.home_summary() (migration 027; 030 adds the viewer's time zone, see lib/homeSummaryRpc.ts),
  * refetched every minute. Totals and a fixed list of settings only; the database
  * decides what is public, this hook never reads a raw table.
  *
@@ -10,12 +10,13 @@
 import { useQuery } from '@tanstack/react-query'
 import { auroraClient, AURORA_SERVER_ID } from '../lib/aurora'
 import { parseHomeSummary, type HomeSummary } from '../lib/homeSummary'
+import { callHomeSummary, viewerTimeZone } from '../lib/homeSummaryRpc'
 
 async function fetchSummary(): Promise<HomeSummary | null> {
   if (!auroraClient) return null
   try {
-    const { data, error } = await auroraClient.rpc('home_summary', { p_server: AURORA_SERVER_ID })
-    if (error) return null
+    const client = auroraClient
+    const data = await callHomeSummary((fn, args) => client.rpc(fn, args), AURORA_SERVER_ID, viewerTimeZone())
     return parseHomeSummary(data)
   } catch {
     return null
