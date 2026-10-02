@@ -26,10 +26,10 @@ SET LOCAL client_min_messages = NOTICE;
 -- FIXTURES
 -- ============================================================================
 
--- raw_user_meta_data MUST carry a distinct `username`: the on_auth_user_created
--- trigger copies it into public.user_profiles.username, which is NOT NULL and
--- carries a unique index on lower(username). An empty metadata object makes the
--- trigger insert NULL and the fixture dies on a not-null violation.
+-- Each fixture carries a distinct `username`, which the on_auth_user_created
+-- trigger copies into public.user_profiles.username. Before migration 026 that
+-- column was NOT NULL and empty metadata killed the fixture (and every real
+-- Discord or Google sign-up); since 026 a missing username is stored as NULL.
 INSERT INTO auth.users (
   instance_id, id, aud, role, email, encrypted_password,
   email_confirmed_at, created_at, updated_at,
