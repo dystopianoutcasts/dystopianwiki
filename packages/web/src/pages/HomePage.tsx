@@ -9,6 +9,7 @@ import { OutcastModsShowcase } from '../components/landing/OutcastModsShowcase';
 import { AboutSection } from '../components/landing/AboutSection';
 import { MascotVoteCallout } from '../components/landing/MascotVoteCallout';
 import { CommunityBanner } from '../components/landing/CommunityBanner';
+import { SupportSection } from '../components/landing/SupportSection';
 import { SEOHead } from '../components/seo/SEOHead';
 
 // Top to bottom: the server and how to get in, proof it is alive (the map, who is
@@ -33,6 +34,7 @@ export function HomePage() {
         <OutcastModsShowcase />
         <AboutSection />
         <CommunityBanner />
+        <SupportSection />
       </main>
     </Layout>
   );
