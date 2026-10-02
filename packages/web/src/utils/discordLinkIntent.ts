@@ -27,24 +27,30 @@ function write(key: string, value: unknown): void {
   }
 }
 
-/** Reads and clears a mark; null when missing, malformed or older than ten minutes. */
+/** A stored mark when it is well formed and from the last ten minutes, else null. */
+function fresh(raw: string): Record<string, unknown> | null {
+  const parsed: unknown = JSON.parse(raw);
+  if (typeof parsed !== 'object' || parsed === null) return null;
+  const at = (parsed as { at?: unknown }).at;
+  if (typeof at !== 'number' || Date.now() - at > MAX_AGE_MS || at > Date.now() + 60_000) return null;
+  return parsed as Record<string, unknown>;
+}
+
+/** Reads and clears a mark; null when missing or not fresh (see fresh()). */
 function take(key: string): Record<string, unknown> | null {
   try {
     const raw = sessionStorage.getItem(key);
     if (raw === null) return null;
     sessionStorage.removeItem(key);
-    const parsed: unknown = JSON.parse(raw);
-    if (typeof parsed !== 'object' || parsed === null) return null;
-    const at = (parsed as { at?: unknown }).at;
-    if (typeof at !== 'number' || Date.now() - at > MAX_AGE_MS || at > Date.now() + 60_000) return null;
-    return parsed as Record<string, unknown>;
+    return fresh(raw);
   } catch {
     return null;
   }
 }
 
-/** Called by "Connect Discord" just before it leaves for Discord. */
+/** Called by "Connect Discord" just before it leaves for Discord. Drops any old switch notice. */
 export function rememberLinkIntent(returnPath: string): void {
+  take(SWITCH_KEY);
   write(INTENT_KEY, { path: safeNext(returnPath) ?? '/', at: Date.now() });
 }
 
@@ -53,9 +59,7 @@ export function hasLinkIntent(): boolean {
   try {
     const raw = sessionStorage.getItem(INTENT_KEY);
     if (raw === null) return false;
-    const parsed: unknown = JSON.parse(raw);
-    const at = typeof parsed === 'object' && parsed !== null ? (parsed as { at?: unknown }).at : undefined;
-    return typeof at === 'number' && Date.now() - at <= MAX_AGE_MS && at <= Date.now() + 60_000;
+    return fresh(raw) !== null;
   } catch {
     return false;
   }

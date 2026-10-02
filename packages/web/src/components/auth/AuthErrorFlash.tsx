@@ -89,15 +89,18 @@ export function AuthErrorFlash() {
   }, [shown, signInWithOAuth]);
 
   // Back from that Discord log-in: say what happened, once, on the page they return to.
+  // Once the session has Discord, any leftover intent is spent (the link worked).
   useEffect(() => {
     if (shown !== null || !user || onLoginPage) return;
     if (!hasDiscordIdentity(user)) return;
+    takeLinkIntent();
     if (takeSwitched()) setShown({ type: 'switched' });
   }, [shown, user, onLoginPage]);
 
   // The button disappears with the message, so put keyboard focus on the page's heading
   // instead of letting it fall back to the top of the document.
   const dismiss = () => {
+    clearPendingAuthError();
     setShown(null);
     requestAnimationFrame(() => {
       const target =

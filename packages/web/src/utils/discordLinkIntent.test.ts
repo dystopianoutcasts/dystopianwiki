@@ -70,6 +70,12 @@ test('the switch notice shows once', () => {
   assert.equal(takeSwitched(), false)
 })
 
+test('pressing Connect Discord again drops a notice left by an unfinished switch', () => {
+  rememberSwitched()
+  rememberLinkIntent('/vote')
+  assert.equal(takeSwitched(), false)
+})
+
 test('without storage nothing throws and nothing switches', () => {
   const saved = (globalThis as { sessionStorage?: unknown }).sessionStorage
   ;(globalThis as { sessionStorage?: unknown }).sessionStorage = {
