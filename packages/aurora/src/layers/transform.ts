@@ -25,16 +25,18 @@ export interface PlayerFeature {
   delayed: boolean
 }
 
-/** Positions joined to profiles. Dead characters are not drawn; unknown profiles fall back to the username. */
+/** Positions joined to profiles. Only online, living characters are drawn: an admin also
+ * receives last-known rows for everyone offline (aurora.player_positions keeps them), and a position
+ * with no matching profile cannot be shown to be online. Same online test as the roster. */
 export function playerFeatures(positions: VisiblePosition[], profiles: PlayerPublic[], mode: NameMode): PlayerFeature[] {
   const byName = new Map(profiles.map((p) => [p.username, p]))
   const out: PlayerFeature[] = []
   for (const pos of positions) {
     const profile = byName.get(pos.username)
-    if (profile?.is_dead) continue
-    const name = pickName(mode, profile?.display_name, pos.username)
+    if (!profile || !profile.online || profile.is_dead) continue
+    const name = pickName(mode, profile.display_name, pos.username)
     const parts = [name]
-    if (profile?.hours_survived != null) parts.push(`${Math.floor(profile.hours_survived)} h survived`)
+    if (profile.hours_survived != null) parts.push(`${Math.floor(profile.hours_survived)} h survived`)
     if (pos.is_delayed) parts.push('approximate position, delayed')
     out.push({
       key: `${pos.server_id}/${pos.username}`,

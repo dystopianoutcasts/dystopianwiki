@@ -57,10 +57,26 @@ describe('player features', () => {
     expect(f.label).toContain('approximate position, delayed')
   })
 
-  it('does not draw dead characters and falls back to the username without a profile', () => {
+  it('does not draw dead characters', () => {
     expect(playerFeatures([pos()], [prof({ is_dead: true })], 'character')).toEqual([])
-    const [f] = playerFeatures([pos({ username: 'bob' })], [], 'character')
-    expect(f.label).toBe('bob')
+  })
+
+  it('does not draw an offline player even with a position row (an admin receives last-known rows)', () => {
+    expect(playerFeatures([pos()], [prof({ online: false })], 'character')).toEqual([])
+  })
+
+  it('draws an online player and skips the offline one beside them', () => {
+    const out = playerFeatures(
+      [pos(), pos({ username: 'bob' })],
+      [prof(), prof({ username: 'bob', online: false })],
+      'character',
+    )
+    expect(out.map((f) => f.username)).toEqual(['alice'])
+  })
+
+  it('does not draw a position with no matching profile', () => {
+    expect(playerFeatures([pos({ username: 'bob' })], [], 'character')).toEqual([])
+    expect(playerFeatures([pos({ username: 'bob' })], [prof()], 'character')).toEqual([])
   })
 
   it('an anonymous caller who is shown no rows gets no markers', () => {
