@@ -89,6 +89,11 @@ export function ServerNow() {
     if (e.pointerType === 'touch' || e.button !== 0) return;
     const el = viewportRef.current;
     if (!el) return;
+    // The map is made of <img> tiles. Without this the browser starts dragging the
+    // image itself (its native drag-and-drop), which cancels this pointer drag, so
+    // the map only moved by its scrollbars. Focus still lands on the region.
+    e.preventDefault();
+    el.focus({ preventScroll: true });
     dragRef.current = { x: e.clientX, y: e.clientY, scrollLeft: el.scrollLeft, scrollTop: el.scrollTop };
     el.classList.add('server-now__viewport--grabbing');
 
@@ -159,6 +164,7 @@ export function ServerNow() {
                   height={tileExtent(IMAGE_H, tile.y)}
                   loading="lazy"
                   decoding="async"
+                  draggable={false}
                   onError={(e) => {
                     // The pyramid is sparse: tiles with no populated cells do not exist.
                     e.currentTarget.style.visibility = 'hidden';
