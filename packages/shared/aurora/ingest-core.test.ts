@@ -945,3 +945,76 @@ Deno.test('a negative or non-numeric hours survived is stored as null', () => {
   ], SERVER).upserts, 'deaths')!.rows;
   assertEquals(rows.map((r) => r.hours_survived), [null, null, 0]);
 });
+
+// ---------------------------------------------------------------------------
+// vname -> aurora.vehicle_names (031)
+// ---------------------------------------------------------------------------
+
+const vnameRec = (n: unknown, t: number): AuroraRecord => ({ k: 'vname', t, n }) as unknown as AuroraRecord;
+
+Deno.test('vname upserts aurora.vehicle_names on script_name, optional, not liveOnly, global (no server_id)', () => {
+  const plan = buildPlan([vnameRec([['Base.CarTaxi', 'Taxi'], ['Base.CarNormal', 'Chevalier Nyala']], 1759000000000)], SERVER);
+  const v = table(plan.upserts, 'vehicle_names');
+  assert(v !== undefined, 'vehicle_names upsert present');
+  assertEquals(v!.onConflict, 'script_name');
+  assert(v!.optional === true, 'optional: 031 may not be applied yet');
+  assert(v!.liveOnly !== true, 'names replay safely');
+  assertEquals(v!.rows, [
+    { script_name: 'Base.CarTaxi', display_name: 'Taxi', updated_at: new Date(1759000000000).toISOString() },
+    { script_name: 'Base.CarNormal', display_name: 'Chevalier Nyala', updated_at: new Date(1759000000000).toISOString() },
+  ]);
+  assert(!('server_id' in v!.rows[0]), 'a script name means the same car on every server');
+});
+
+Deno.test('vname chunks of one pass are merged; the newest record per script wins', () => {
+  const plan = buildPlan([
+    vnameRec([['Base.A', 'Old A'], ['Base.B', 'B']], 1000),
+    vnameRec([['Base.A', 'New A']], 2000),
+    vnameRec([['Base.B', 'Stale B']], 500),
+  ], SERVER);
+  const rows = table(plan.upserts, 'vehicle_names')!.rows;
+  assertEquals(rows.length, 2);
+  assertEquals(rows.find((r) => r.script_name === 'Base.A')!.display_name, 'New A');
+  assertEquals(rows.find((r) => r.script_name === 'Base.B')!.display_name, 'B');
+});
+
+Deno.test('vname drops malformed pairs, untranslated keys and echoes, and keeps the good ones', () => {
+  const plan = buildPlan([vnameRec([
+    ['Base.Good', ' Good Car '],
+    ['Base.Key', 'IGUI_VehicleNameKey'],
+    ['Base.Echo', 'Base.Echo'],
+    ['Base.Empty', ''],
+    ['', 'No Script'],
+    ['Base.Number', 5],
+    ['Base.Short'],
+    'not a pair',
+    null,
+  ], 10)], SERVER);
+  const rows = table(plan.upserts, 'vehicle_names')!.rows;
+  assertEquals(rows.map((r) => [r.script_name, r.display_name]), [['Base.Good', 'Good Car']]);
+});
+
+Deno.test('vname caps the lengths, and a record with no usable pair writes nothing', () => {
+  const long = 'x'.repeat(500);
+  const rows = table(buildPlan([vnameRec([['Base.L', long]], 1)], SERVER).upserts, 'vehicle_names')!.rows;
+  assertEquals((rows[0].display_name as string).length, 120);
+  assert(table(buildPlan([vnameRec([], 1)], SERVER).upserts, 'vehicle_names') === undefined, 'empty n, no upsert');
+  assert(table(buildPlan([{ k: 'hb', t: 1 }] as AuroraRecord[], SERVER).upserts, 'vehicle_names') === undefined, 'no vname, no upsert');
+});
+
+Deno.test('vname is written after servers, and a missing table is skipped, not thrown', async () => {
+  const plan = buildPlan([vnameRec([['Base.A', 'A']], 1)], SERVER);
+  assertEquals(plan.upserts[0].table, 'servers');
+  const step = table(plan.upserts, 'vehicle_names')!;
+  let skipped = 0;
+  const wrote = await runPlanStep(step.optional, () => Promise.reject(new Error('upsert vehicle_names: 404 {"code":"PGRST205"}')), () => { skipped++; });
+  assertEquals(wrote, false);
+  assertEquals(skipped, 1);
+  let threw = false;
+  try {
+    await runPlanStep(step.optional, () => Promise.reject(new Error('upsert vehicle_names: 500 boom')));
+  } catch {
+    threw = true;
+  }
+  assert(threw, 'any other failure still throws');
+});

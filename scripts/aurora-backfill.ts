@@ -98,7 +98,7 @@ async function main(): Promise<number> {
   const totals = emptyStats();
   const kindTotals: Record<string, number> = {};
   let rowsWritten = 0;
-  // Writes to tables from a migration that is not applied yet (029), skipped as the live ingest skips them.
+  // Writes to tables from a migration that is not applied yet (029, 030, 031), skipped as the live ingest skips them.
   let skippedOptional = 0;
   const onSkipped = () => {
     skippedOptional++;
@@ -137,7 +137,8 @@ async function main(): Promise<number> {
         // NPC groups and outposts are live state stamped with the ingest's clock
         // (seen_at); replaying an old log would make old states look freshly seen.
         // (deaths are NOT liveOnly: they carry their own time and the unique key
-        // (server_id, username, t) makes a replay idempotent.)
+        // (server_id, username, t) makes a replay idempotent. Vehicle names are not
+        // either: a replay writes the same pairs and the newest record per script wins.)
         if (upsert.liveOnly) continue;
         for (const batch of chunk(upsert.rows, BATCH_ROWS)) {
           const wrote = await runPlanStep(
@@ -187,7 +188,7 @@ async function main(): Promise<number> {
   console.log(`records by kind  ${JSON.stringify(kindTotals)}`);
   console.log(`rows written     ${args.dryRun ? '(dry run)' : rowsWritten}`);
   if (skippedOptional > 0) {
-    console.log(`skipped writes   ${skippedOptional} (a table from a migration that is not applied yet, 029)`);
+    console.log(`skipped writes   ${skippedOptional} (a table from a migration that is not applied yet: 029, 030 or 031)`);
   }
   console.log(`link codes       ok=${linksOk} failed=${linksFailed}`);
 

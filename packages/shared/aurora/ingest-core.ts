@@ -34,6 +34,7 @@ import type {
   ShRecord,
   StatTables,
   VehRecord,
+  VnameRecord,
   ZgridRecord,
   ZoneRecord,
 } from './parser.ts';
@@ -451,6 +452,17 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
     upserts.push({ table: 'deaths', onConflict: 'server_id,username,t', rows: deathRows, optional: true });
   }
 
+  // --- vehicle names (031) ----------------------------------------------------
+  // Global, not per server: a script name means the same car everywhere. The newest
+  // record per script wins, and the rows OVERWRITE the 031 seed (the vanilla English
+  // names), which is the point of sending them. Not liveOnly: a name carries the
+  // record's own time and a replay writes the same values. Optional: 031 may not be
+  // applied yet, and a missing table must not stall the cursor.
+  const vnameRows = buildVehicleNameRows(byKind(records, 'vname'));
+  if (vnameRows.length > 0) {
+    upserts.push({ table: 'vehicle_names', onConflict: 'script_name', rows: vnameRows, optional: true });
+  }
+
   // --- item_catalog --------------------------------------------------------
   const catalogRows = dedupe(catalog, (c: CatalogRecord) => c.ft, (c) => c.t).map((c): Row => ({
     server_id: serverId,
@@ -592,6 +604,38 @@ export function buildDeathRow(r: DeathRecord, serverId: string): Row {
     src: typeof r.src === 'string' && DEATH_SOURCES.includes(r.src) ? r.src : null,
     hours_survived: typeof r.hs === 'number' && Number.isFinite(r.hs) && r.hs >= 0 ? r.hs : null,
   };
+}
+
+/** Longest script or display name kept, in characters. */
+const VNAME_MAX = 120;
+
+/**
+ * Rows for aurora.vehicle_names from `vname` records. A pair is kept only when both
+ * halves are non-empty strings; a display name equal to the script name or still
+ * carrying the translation prefix is the engine's "no translation" answer and is
+ * dropped (the exporter filters it too, this is the second line). Deduped to the
+ * newest record per script; later records of one pass win a tie.
+ */
+export function buildVehicleNameRows(records: VnameRecord[]): Row[] {
+  const best = new Map<string, { name: string; t: number }>();
+  for (const r of records) {
+    if (!Array.isArray(r.n)) continue;
+    for (const pair of r.n as unknown[]) {
+      if (!Array.isArray(pair) || pair.length < 2) continue;
+      const [script, display] = pair as [unknown, unknown];
+      if (typeof script !== 'string' || typeof display !== 'string') continue;
+      const s = script.trim().slice(0, VNAME_MAX);
+      const d = display.trim().slice(0, VNAME_MAX);
+      if (s === '' || d === '' || d === s || d.includes('IGUI_VehicleName')) continue;
+      const prev = best.get(s);
+      if (prev === undefined || r.t >= prev.t) best.set(s, { name: d, t: r.t });
+    }
+  }
+  return [...best.entries()].map(([script, v]): Row => ({
+    script_name: script,
+    display_name: v.name,
+    updated_at: toIso(v.t),
+  }));
 }
 
 function text(v: unknown, max = 120): string | null {

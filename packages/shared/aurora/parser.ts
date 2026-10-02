@@ -65,6 +65,8 @@
 //            it ("isdead" | "chardeath" | "dodeathlog" | "cosmicmap"), hs hours the
 //            character survived when known (exporter 0.5.0; one record per player
 //            per 120 s at most)
+//   vname    n [[full script name, display name], ...], several records per pass
+//            (exporter 0.5.1). The script name is what `veh.s` carries ("Base.CarTaxi").
 //
 // `boot.gv` (exporter 0.5.0) is the game version; it becomes servers.game_version.
 // `hb.st.game` also carries zombies-killed, world-age-hours, oa-ev-zombie-dead and
@@ -94,6 +96,7 @@ export const KINDS = [
   'npco',
   'npcogone',
   'death',
+  'vname',
   // Diagnostic kinds: known so they are not reported as unknown, but they map
   // to no table - buildPlan produces no rows for them.
   'probe',
@@ -334,6 +337,12 @@ export interface DeathRecord extends BaseRecord {
   hs?: number;
 }
 
+/** Vehicle display names (exporter 0.5.1): [fullScriptName, displayName] pairs. */
+export interface VnameRecord extends BaseRecord {
+  k: 'vname';
+  n: [string, string][];
+}
+
 export type AuroraRecord =
   | BootRecord
   | ProbeRecord
@@ -352,7 +361,8 @@ export type AuroraRecord =
   | NpcGoneRecord
   | NpcOutpostRecord
   | NpcOutpostGoneRecord
-  | DeathRecord;
+  | DeathRecord
+  | VnameRecord;
 
 export type ParseFailure =
   | 'not-aurora' // no A1 marker: someone else's log line
@@ -423,6 +433,10 @@ function checkShape(o: Record<string, unknown>): boolean {
       return isStr(o.id) && o.id !== '' && isNum(o.x) && isNum(o.y);
     case 'death':
       return isStr(o.u) && o.u !== '' && isNum(o.x) && isNum(o.y);
+    case 'vname':
+      // The array must be there; a malformed PAIR inside it is dropped by the
+      // row builder, not a reason to reject the whole record.
+      return Array.isArray(o.n);
     case 'npcgone':
     case 'npcogone':
       return isStr(o.id) && o.id !== '';

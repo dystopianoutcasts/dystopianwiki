@@ -335,3 +335,33 @@ Deno.test('a boot record with gv still parses and keeps gv', () => {
   const r = parseLine(`${P1} A1 {"k":"boot","t":1,"v":"0.5.0","gv":"42.20.0"}.`);
   assertEquals((r as { gv?: string }).gv, '42.20.0');
 });
+
+// ---------------------------------------------------------------------------
+// vname (exporter 0.5.1, migration 031)
+// ---------------------------------------------------------------------------
+
+Deno.test('vname is a known kind and needs an array n', () => {
+  const ok = parseLine(`${P1} A1 {"k":"vname","n":[["Base.CarTaxi","Taxi"],["Base.CarNormal","Chevalier Nyala"]],"t":1759000000000}.`);
+  assertEquals(ok?.k, 'vname');
+  assertEquals((ok as { n: string[][] }).n.length, 2);
+  for (const bad of [
+    '{"k":"vname","t":5}',
+    '{"k":"vname","t":5,"n":"Base.CarTaxi"}',
+    '{"k":"vname","t":5,"n":{"Base.CarTaxi":"Taxi"}}',
+    '{"k":"vname","n":[["Base.CarTaxi","Taxi"]]}',
+  ]) {
+    const r = parseLineDetailed(`${P1} A1 ${bad}.`);
+    assert(!r.ok && r.reason === 'bad-shape', `rejected as bad-shape: ${bad}`);
+  }
+});
+
+Deno.test('a vname line is counted as parsed, never as unknown, and several chunks all arrive', () => {
+  const stats = emptyStats();
+  const text = [
+    `${P1} A1 {"k":"vname","n":[["Base.A","A"]],"t":1}.`,
+    `${P1} A1 {"k":"vname","n":[["Base.B","B"]],"t":1}.`,
+  ].join('\n') + '\n';
+  const out = splitLines(text, '', stats);
+  assertEquals(out.records.map((r) => r.k), ['vname', 'vname']);
+  assertEquals(stats.unknownKind, {});
+});
