@@ -1,0 +1,64 @@
+/**
+ * Auth Error Flash
+ * A sign-in or registration error, shown once under the header on any page
+ */
+
+.auth-error-flash {
+  padding: var(--spacing-4) var(--spacing-4) 0;
+}
+
+.auth-error-flash__inner {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  border: 1px solid var(--color-alert-warning-border);
+  border-left-width: 6px;
+  border-radius: var(--border-radius-md);
+  background: var(--color-alert-warning-bg);
+  color: var(--color-text-primary);
+}
+
+.auth-error-flash__text {
+  margin: 0;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+}
+
+.auth-error-flash__dismiss {
+  min-height: 48px;
+  min-width: 48px;
+  padding: var(--spacing-2) var(--spacing-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+.auth-error-flash__dismiss:hover {
+  background: var(--color-surface-elevated);
+}
+
+.auth-error-flash__dismiss:focus-visible {
+  outline: 3px solid var(--color-accent-400);
+  outline-offset: 2px;
+}
+
+/* @breakpoint-sm: 640px - Message and button side by side */
+@media (min-width: 640px) {
+  .auth-error-flash__inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .auth-error-flash__dismiss {
+    flex-shrink: 0;
+  }
+}

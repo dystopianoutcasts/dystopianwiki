@@ -6,7 +6,7 @@
  * Returns the member to `?next=` (same-site paths only), or the home page.
  */
 import { useEffect, useRef, useState } from 'react'
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Layout } from '../components/layout/Layout'
 import { SEOHead } from '../components/seo/SEOHead'
 import { useAuth } from '../context/AuthContext'
@@ -40,7 +40,6 @@ const COPY = {
 export function LoginPage({ mode = 'login' }: LoginPageProps) {
   const { user, loading, signInWithOAuth } = useAuth()
   const navigate = useNavigate()
-  const location = useLocation()
   const [params] = useSearchParams()
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
@@ -51,9 +50,8 @@ export function LoginPage({ mode = 'login' }: LoginPageProps) {
   // Re-validated here: the value came back through a URL we do not control.
   const next = safeNext(params.get('next'))
 
-  // A provider that refuses or fails returns here with an error in the URL.
-  const providerFailed =
-    params.has('error') || params.has('error_description') || /[#&]error(_description)?=/.test(location.hash)
+  // A provider that refuses or fails returns with an error in the URL. AuthErrorFlash
+  // (in Layout) explains it on whatever page that is, this one included.
 
   // Already logged in (or just returned from the provider): send them on at once.
   useEffect(() => {
@@ -117,9 +115,9 @@ export function LoginPage({ mode = 'login' }: LoginPageProps) {
                 </div>
               )}
 
-              {(providerFailed || error) && (
+              {error && (
                 <p className="login-page__error" role="alert">
-                  {error ?? 'The sign-in did not complete. Please try again.'}
+                  {error}
                 </p>
               )}
 

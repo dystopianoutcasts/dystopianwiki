@@ -1,3 +1,5 @@
+// First, so it reads a sign-in error from the URL before the Supabase client starts.
+import './utils/authErrorCapture';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';

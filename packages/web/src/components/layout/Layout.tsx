@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { MobileMenu } from './MobileMenu';
+import { AuthErrorFlash } from '../auth/AuthErrorFlash';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -26,6 +27,7 @@ export function Layout({ children, hideHeader = false, hideFooter = false }: Lay
         <Header onMobileMenuToggle={handleMobileMenuToggle} />
       )}
       <MobileMenu isOpen={mobileMenuOpen} onClose={handleMobileMenuClose} />
+      <AuthErrorFlash />
       {children}
       {!hideFooter && <Footer />}
     </div>
