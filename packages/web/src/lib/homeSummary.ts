@@ -232,11 +232,18 @@ export function joiningText(summary: HomeSummary | null): string {
   return parts.length > 0 ? parts.join(', ') : TBD
 }
 
+/** Map= entries that are mod helpers, not places to play (owner, 2026-10-02). Compared lower-case. */
+const NOT_REAL_MAPS = new Set(['lawnmower', 'vehicle spawn zones'])
+
 /** The settings list on the home page, in reading order, with TBD where unknown. */
 export function settingRows(summary: HomeSummary | null): SettingRow[] {
   const s = summary?.settings ?? {}
   const maxPlayers = num(s.MaxPlayers)
-  const maps = Array.isArray(s.Map) ? (s.Map as unknown[]).filter((m) => typeof m === 'string') : []
+  const maps = Array.isArray(s.Map)
+    ? (s.Map as unknown[]).filter(
+        (m): m is string => typeof m === 'string' && !NOT_REAL_MAPS.has(m.trim().toLowerCase()),
+      )
+    : []
   const workshop = Array.isArray(s.WorkshopItems) ? (s.WorkshopItems as unknown[]).length : null
   const xp = summary?.sandbox['MultiplierConfig.Global']
   return [

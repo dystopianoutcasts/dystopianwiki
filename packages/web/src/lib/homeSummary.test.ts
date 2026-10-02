@@ -132,6 +132,15 @@ test('settings read in plain words, and TBD where unknown', () => {
   assert.equal(rows['Game version'], TBD)
 })
 
+test('the Map row leaves out mod helpers that are not places to play', () => {
+  const s = parseHomeSummary({
+    ...RAW,
+    settings: { ...RAW.settings, Map: ['Muldraugh, KY', 'Lawnmower', ' vehicle spawn zones '] },
+  })
+  const rows = Object.fromEntries(settingRows(s).map((r) => [r.label, r.value]))
+  assert.equal(rows['Map'], 'Muldraugh, KY')
+})
+
 test('with no summary at all, every setting is TBD', () => {
   for (const row of settingRows(null)) assert.equal(row.value, TBD, row.label)
   assert.equal(modeBadge(null), TBD)

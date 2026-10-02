@@ -112,8 +112,8 @@
 
 .home-address__value {
   font-family: var(--font-family-mono);
-  color: var(--color-text-secondary);
-  font-style: italic;
+  color: var(--color-text-primary);
+  user-select: all;
 }
 
 /* ---- Map section: counters and who is on ----------------------------------- */
@@ -522,51 +522,6 @@
   border: 1px solid var(--home-online);
   color: var(--home-online);
   white-space: nowrap;
-}
-
-/* ---- Mods ------------------------------------------------------------------ */
-
-.home-mods {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: var(--spacing-3);
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.home-mod__link {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-2);
-  height: 100%;
-  padding: var(--spacing-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-lg);
-  background: var(--color-background);
-  text-decoration: none;
-  transition: border-color var(--transition-fast), transform var(--transition-fast);
-}
-
-.home-mod__link:hover {
-  border-color: var(--color-accent-500);
-  transform: translateY(-2px);
-  text-decoration: none;
-}
-
-.home-mod__link:focus-visible {
-  outline: 3px solid var(--color-focus-ring);
-  outline-offset: 2px;
-}
-
-.home-mod__name {
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-bold);
-}
-
-.home-mod__description {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
 }
 
 @media (max-width: 640px) {

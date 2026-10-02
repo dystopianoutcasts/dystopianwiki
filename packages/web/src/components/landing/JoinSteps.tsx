@@ -1,10 +1,11 @@
 import { useId } from 'react';
 import { useHomeSummary } from '../../hooks/useHomeSummary';
 import { joiningText, TBD } from '../../lib/homeSummary';
+import { SERVER_IP, SERVER_PORT } from '../../lib/links';
 
-// "Join in three steps". The Workshop collection link and the server address are
-// not published yet (the owner decides), so they read TBD; the mod count and the
-// joining rules come from the server's own settings (027).
+// "Join in three steps". The Workshop collection link is not published yet (the
+// owner decides), so it reads TBD; the address is the owner's (lib/links.ts); the mod
+// count and the joining rules come from the server's own settings (027).
 
 const DISCORD = 'https://discord.gg/KgNBWyfcvZ';
 
@@ -38,7 +39,8 @@ export function JoinSteps() {
             <h3 className="home-step__title">Connect</h3>
             <p>In Project Zomboid, choose Join, then add the server by its address.</p>
             <p className="home-step__detail">
-              Address: <span className="home-tbd">{TBD}</span>
+              IP: <code className="home-address__value">{SERVER_IP}</code>, port:{' '}
+              <code className="home-address__value">{SERVER_PORT}</code>
             </p>
             <p className="home-step__detail">Joining: {joiningText(summary)}</p>
           </li>

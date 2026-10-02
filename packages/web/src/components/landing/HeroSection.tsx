@@ -9,6 +9,7 @@ import {
   TBD,
   type HomeSummary,
 } from '../../lib/homeSummary';
+import { SERVER_ADDRESS } from '../../lib/links';
 import '../../styles/components/hero.css';
 import '../../styles/components/home-sections.css';
 
@@ -138,9 +139,8 @@ export function HeroSection() {
             See the live map
           </a>
         </div>
-        {/* The owner has not said yet whether the address may be public. */}
         <p className="home-address">
-          Server address: <span className="home-address__value">{TBD}</span>
+          Server address: <code className="home-address__value">{SERVER_ADDRESS}</code>
         </p>
 
         {/* Search Bar */}
