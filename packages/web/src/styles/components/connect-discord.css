@@ -37,6 +37,12 @@
   cursor: default;
 }
 
+.connect-discord__hint {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
 .connect-discord__error {
   margin: 0;
   font-size: var(--font-size-sm);

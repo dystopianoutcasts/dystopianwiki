@@ -22,6 +22,12 @@
   color: var(--color-text-primary);
 }
 
+/* A notice rather than a problem: the site did something on the member's behalf. */
+.auth-error-flash--info .auth-error-flash__inner {
+  border-color: var(--color-primary-400);
+  background: var(--color-surface-elevated);
+}
+
 .auth-error-flash__text {
   margin: 0;
   font-size: var(--font-size-base);
