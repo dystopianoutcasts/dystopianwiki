@@ -27,7 +27,7 @@
 // LOCK_MARGIN_MS of LOCK_TTL_S.
 
 import { emptyStats, launchStampFromFileName, splitChunkBytes, type SplitStats } from './parser.ts';
-import { buildPlan, chunk, planRead, type CursorState, type Row } from './ingest-core.ts';
+import { buildPlan, chunk, planRead, runPlanStep, type CursorState, type Row } from './ingest-core.ts';
 
 /** Time between the starts of two reads inside one run. */
 export const TAIL_INTERVAL_MS = 5_000;
@@ -179,6 +179,11 @@ export interface TailTotals {
   rows: Record<string, number>;
   patches: number;
   deletes: number;
+  /**
+   * Writes skipped because their (optional) table or function does not exist
+   * yet: 029 not applied. A non-zero count is the signal to apply the migration.
+   */
+  skippedOptional: number;
   stats: SplitStats;
   linksOk: number;
   linksFailed: number;
@@ -197,9 +202,21 @@ export interface TailTotals {
 
 export function emptyTotals(): TailTotals {
   return {
-    bytes: 0, records: 0, kinds: {}, rows: {}, patches: 0, deletes: 0, stats: emptyStats(),
+    bytes: 0, records: 0, kinds: {}, rows: {}, patches: 0, deletes: 0, skippedOptional: 0, stats: emptyStats(),
     linksOk: 0, linksFailed: 0, rotated: false, batches: 0,
     lagMinMs: null, lagMaxMs: null, lagSumMs: 0,
+  };
+}
+
+const warnedOptional = new Set<string>();
+
+/** Count a skipped optional write and say so once per object per isolate. */
+function skipNote(totals: TailTotals, what: string): (err: unknown) => void {
+  return (err) => {
+    totals.skippedOptional++;
+    if (warnedOptional.has(what)) return;
+    warnedOptional.add(what);
+    console.warn(JSON.stringify({ at: 'optional-missing', what, error: String(err).slice(0, 200) }));
   };
 }
 
@@ -241,24 +258,42 @@ export async function tailStep(
   addStats(totals.stats, parsed.stats);
   if (consumed === 0) return;
 
-  const plan = buildPlan(parsed.records, cfg.serverId, { launchStamp: target.launchStamp });
+  // seenAt is the ingest's own clock at the moment of the write (NPC rows, 029).
+  const plan = buildPlan(parsed.records, cfg.serverId, {
+    launchStamp: target.launchStamp,
+    seenAt: new Date(now()).toISOString(),
+  });
+  // An `optional` write (029's tables) whose table does not exist is skipped, not
+  // thrown: a new ingest deployed ahead of its migration must not stall the cursor.
   for (const upsert of plan.upserts) {
     for (const batch of chunk(upsert.rows, cfg.batchRows)) {
-      await db.upsert(upsert.table, batch, upsert.onConflict);
-      totals.rows[upsert.table] = (totals.rows[upsert.table] ?? 0) + batch.length;
+      const wrote = await runPlanStep(
+        upsert.optional,
+        () => db.upsert(upsert.table, batch, upsert.onConflict),
+        skipNote(totals, upsert.table),
+      );
+      if (wrote) totals.rows[upsert.table] = (totals.rows[upsert.table] ?? 0) + batch.length;
     }
   }
   for (const call of plan.rpcs) {
-    await db.rpc(call.fn, call.args);
-    totals.rows[call.fn] = (totals.rows[call.fn] ?? 0) + call.rows;
+    const wrote = await runPlanStep(call.optional, () => db.rpc(call.fn, call.args), skipNote(totals, call.fn));
+    if (wrote) totals.rows[call.fn] = (totals.rows[call.fn] ?? 0) + call.rows;
   }
   for (const patch of plan.patches) {
     await db.patch(`${patch.table}?${patch.filter}`, patch.body);
     console.log(JSON.stringify({ at: 'patch', table: patch.table, why: patch.why }));
   }
+  let deleted = 0;
   for (const del of plan.deletes) {
-    await db.delete(`${del.table}?${del.filter}`);
-    console.log(JSON.stringify({ at: 'delete', table: del.table, why: del.why }));
+    const done = await runPlanStep(
+      del.optional,
+      () => db.delete(`${del.table}?${del.filter}`),
+      skipNote(totals, `delete ${del.table}`),
+    );
+    if (done) {
+      deleted++;
+      console.log(JSON.stringify({ at: 'delete', table: del.table, why: del.why }));
+    }
   }
   for (const link of plan.links) {
     try {
@@ -291,7 +326,7 @@ export async function tailStep(
   totals.bytes += consumed;
   totals.records += parsed.records.length;
   totals.patches += plan.patches.length;
-  totals.deletes += plan.deletes.length;
+  totals.deletes += deleted;
   totals.batches++;
   addCounts(totals.kinds, plan.counts);
 }

@@ -44,7 +44,7 @@
 
 import { connect as sftpConnect, type SftpSession } from '../../../packages/shared/aurora/sftp.ts';
 import { parsePins } from '../../../packages/shared/aurora/hostkey.ts';
-import { buildSavedPlayerRows, chunk } from '../../../packages/shared/aurora/ingest-core.ts';
+import { buildSavedPlayerRows, chunk, isMissingObjectError } from '../../../packages/shared/aurora/ingest-core.ts';
 import {
   buildClaimRows,
   CLAIMS_MISS_LIMIT,
@@ -329,6 +329,31 @@ async function pruneVehicles(db: AuroraRest): Promise<number> {
 }
 
 // ---------------------------------------------------------------------------
+// NPC prune (029)
+// ---------------------------------------------------------------------------
+// NPC groups unseen for 10 minutes and outposts unseen for 2 hours. The exporter
+// re-sends a live group every 60 s and an outpost every 10 minutes, so a row older
+// than that belongs to something that is gone (a restart, a missed `npcgone`). The
+// public view hides a group after 3 minutes anyway; this is the cleanup. Bounded in
+// SQL, and a missing function (029 not applied yet) is a note, never an error.
+
+const NPC_GROUP_PRUNE_MINUTES = 10;
+const NPC_OUTPOST_PRUNE_MINUTES = 120;
+
+async function pruneNpcs(db: AuroraRest): Promise<number | null> {
+  try {
+    const n = await db.rpc('prune_npcs', {
+      p_group_minutes: NPC_GROUP_PRUNE_MINUTES,
+      p_outpost_minutes: NPC_OUTPOST_PRUNE_MINUTES,
+    });
+    return typeof n === 'number' ? n : 0;
+  } catch (err) {
+    if (isMissingObjectError(err)) return null;
+    throw err;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Entry point
 // ---------------------------------------------------------------------------
 
@@ -479,6 +504,19 @@ Deno.serve(async (req: Request) => {
         } catch (err) {
           summary.errors.push(`prune: ${String(err).slice(0, 300)}`);
           console.error(JSON.stringify({ at: 'prune', error: String(err) }));
+        }
+
+        // The NPC prune, after the claims steps and independent of them.
+        try {
+          const pruned = await pruneNpcs(db);
+          if (pruned === null) {
+            console.log(JSON.stringify({ at: 'prune', table: 'npc', skipped: 'prune_npcs does not exist yet (029 not applied)' }));
+          } else if (pruned > 0) {
+            console.log(JSON.stringify({ at: 'prune', table: 'npc', rows: pruned }));
+          }
+        } catch (err) {
+          summary.errors.push(`npcprune: ${String(err).slice(0, 300)}`);
+          console.error(JSON.stringify({ at: 'npcprune', error: String(err) }));
         }
 
         if (target) {

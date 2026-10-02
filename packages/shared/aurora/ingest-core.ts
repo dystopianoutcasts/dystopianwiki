@@ -21,12 +21,15 @@
 //    counter it offered is in the heartbeat's `st` tables. Nothing in this file
 //    knows how to talk to RCON and nothing should be added that does.
 
+import { inList } from './rest.ts';
 import type {
   AuroraRecord,
   BootRecord,
   CatalogRecord,
   HbRecord,
   LinkRecord,
+  NpcOutpostRecord,
+  NpcRecord,
   ShRecord,
   StatTables,
   VehRecord,
@@ -41,6 +44,18 @@ export interface TableUpsert {
   /** Comma-separated primary key columns, for PostgREST's on_conflict. */
   onConflict: string;
   rows: Row[];
+  /**
+   * The table comes from a migration that may not be applied yet (029). A
+   * "table does not exist" answer is skipped and counted, not thrown, so a new
+   * ingest deployed ahead of its migration cannot stall the cursor.
+   */
+  optional?: boolean;
+  /**
+   * Written by the LIVE ingest only. A replay of an old log (the backfill) must
+   * skip it: the row carries `seen_at`, the ingest's own clock, and a replay would
+   * make an old state look freshly seen.
+   */
+  liveOnly?: boolean;
 }
 
 /** A PATCH against `table?filter`, run after every upsert in the plan. */
@@ -59,6 +74,8 @@ export interface TableRpc {
   /** Rows the call writes, for the totals. */
   rows: number;
   why: string;
+  /** As TableUpsert.optional: a missing function is skipped, not thrown. */
+  optional?: boolean;
 }
 
 /** A DELETE against `table?filter`, run after every upsert and patch in the plan. */
@@ -67,6 +84,8 @@ export interface TableDelete {
   /** PostgREST filter query string, already encoded. */
   filter: string;
   why: string;
+  /** As TableUpsert.optional: a missing table is skipped, not thrown. */
+  optional?: boolean;
 }
 
 export interface IngestPlan {
@@ -92,10 +111,49 @@ export interface PlanOptions {
    * must not mark everyone offline just because the replay happens later.
    */
   now?: number;
+  /**
+   * The ingest's own clock for `seen_at` on the NPC rows (ISO). The live ingest
+   * passes the moment of the write; defaults to the current time.
+   */
+  seenAt?: string;
 }
 
 /** A player seen this recently in a `pos` record is online. */
 export const ONLINE_WINDOW_MS = 2 * 60_000;
+
+/**
+ * True when a PostgREST failure says the table or function does not exist: what
+ * a write to an object from a migration that has not been applied answers
+ * (PGRST205 / PGRST202 / 42P01 / 42883, HTTP 404). The AuroraRest message is
+ * "<what>: <status> <body>", so the text is all there is to read.
+ */
+export function isMissingObjectError(err: unknown): boolean {
+  const text = String(err);
+  return /\b(PGRST205|PGRST202|42P01|42883)\b/.test(text)
+    || /could not find the (table|function)/i.test(text)
+    || /relation "[^"]*" does not exist/i.test(text);
+}
+
+/**
+ * Run one write of a plan. An `optional` write whose target does not exist yet
+ * (migration not applied) is skipped: `onSkipped` is told and the result is
+ * false. Every other failure, and any failure of a non-optional write, throws as
+ * before. Returns true when the write happened.
+ */
+export async function runPlanStep(
+  optional: boolean | undefined,
+  op: () => Promise<unknown>,
+  onSkipped?: (err: unknown) => void,
+): Promise<boolean> {
+  try {
+    await op();
+    return true;
+  } catch (err) {
+    if (optional !== true || !isMissingObjectError(err)) throw err;
+    onSkipped?.(err);
+    return false;
+  }
+}
 
 /** Server epoch milliseconds -> Postgres timestamptz. */
 export function toIso(ms: number): string {
@@ -355,6 +413,29 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
     });
   }
 
+  // --- NPC groups and outposts (029) ----------------------------------------
+  // Latest word per id across the batch, npc and npcgone together, in log order:
+  // a group seen and then gone in one batch is gone, one gone and then seen again
+  // is seen. Optional (029 may not be applied): see TableUpsert.optional.
+  const seenAt = opts.seenAt ?? new Date().toISOString();
+  const groupFinal = finalStates(records, 'npc', 'npcgone');
+  const groupRows = [...groupFinal.values()]
+    .filter((s) => s.rec !== undefined)
+    .map((s) => buildNpcGroupRow(s.rec as NpcRecord, serverId, seenAt));
+  if (groupRows.length > 0) {
+    upserts.push({ table: 'npc_groups', onConflict: 'server_id,group_id', rows: groupRows, optional: true, liveOnly: true });
+  }
+  pushGoneDeletes(deletes, 'npc_groups', 'group_id', serverId, groupFinal);
+
+  const outpostFinal = finalStates(records, 'npco', 'npcogone');
+  const outpostRows = [...outpostFinal.values()]
+    .filter((s) => s.rec !== undefined)
+    .map((s) => buildNpcOutpostRow(s.rec as NpcOutpostRecord, serverId, seenAt));
+  if (outpostRows.length > 0) {
+    upserts.push({ table: 'npc_outposts', onConflict: 'server_id,outpost_id', rows: outpostRows, optional: true, liveOnly: true });
+  }
+  pushGoneDeletes(deletes, 'npc_outposts', 'outpost_id', serverId, outpostFinal);
+
   // --- item_catalog --------------------------------------------------------
   const catalogRows = dedupe(catalog, (c: CatalogRecord) => c.ft, (c) => c.t).map((c): Row => ({
     server_id: serverId,
@@ -419,6 +500,119 @@ export function buildVehicleRows(vehicles: VehRecord[]): Row[] {
       claimed_by: q !== null && typeof v.o === 'string' && v.o !== '' ? v.o : null,
     };
   });
+}
+
+// ---------------------------------------------------------------------------
+// npc, npcgone, npco, npcogone -> npc_groups, npc_outposts (029)
+// ---------------------------------------------------------------------------
+
+interface FinalState<T> {
+  t: number;
+  /** The record that is the latest word; undefined when the latest word is a `gone`. */
+  rec?: T;
+}
+
+/**
+ * The latest word per id among `kind` and `goneKind` records. Later records win
+ * ties, matching log order. Groups and outposts are separate calls: their ids are
+ * different namespaces.
+ */
+function finalStates<K extends 'npc' | 'npco'>(
+  records: AuroraRecord[],
+  kind: K,
+  goneKind: 'npcgone' | 'npcogone',
+): Map<string, FinalState<Extract<AuroraRecord, { k: K }>>> {
+  const out = new Map<string, FinalState<Extract<AuroraRecord, { k: K }>>>();
+  for (const r of records) {
+    if (r.k !== kind && r.k !== goneKind) continue;
+    const id = (r as { id: string }).id;
+    const prev = out.get(id);
+    if (prev !== undefined && r.t < prev.t) continue;
+    out.set(id, r.k === kind ? { t: r.t, rec: r as Extract<AuroraRecord, { k: K }> } : { t: r.t });
+  }
+  return out;
+}
+
+/** Ids per DELETE: the filter rides in the URL, which has a length limit. */
+const GONE_DELETE_IDS = 100;
+
+/**
+ * One DELETE per GONE_DELETE_IDS ids whose latest word is `gone`. The `t` guard
+ * (not newer than the newest gone record of the chunk) keeps an old replayed
+ * `gone` from deleting a row a later record has since refreshed.
+ */
+function pushGoneDeletes<T>(
+  deletes: TableDelete[],
+  table: string,
+  idColumn: string,
+  serverId: string,
+  final: Map<string, FinalState<T>>,
+): void {
+  const gone = [...final.entries()].filter(([, s]) => s.rec === undefined);
+  for (const part of chunk(gone, GONE_DELETE_IDS)) {
+    const newest = Math.max(...part.map(([, s]) => s.t));
+    const ids = part.map(([id]) => id);
+    deletes.push({
+      table,
+      filter: `server_id=eq.${encodeURIComponent(serverId)}`
+        + `&${idColumn}=in.${encodeURIComponent(inList(ids))}`
+        + `&t=lte.${encodeURIComponent(toIso(newest))}`,
+      why: `${ids.length} ${table} row(s) reported gone`,
+      optional: true,
+    });
+  }
+}
+
+function text(v: unknown, max = 120): string | null {
+  return typeof v === 'string' && v !== '' ? v.slice(0, max) : null;
+}
+
+/**
+ * A group's row. Every row carries every column (PostgREST rejects a bulk insert
+ * whose objects differ in keys). FAILS CLOSED: a record without an explicit
+ * `sen: false` is stored sensitive, so only a record that says it is safe can
+ * reach the public view.
+ */
+export function buildNpcGroupRow(r: NpcRecord, serverId: string, seenAt: string = new Date().toISOString()): Row {
+  return {
+    server_id: serverId,
+    group_id: r.id,
+    faction_id: text(r.f),
+    faction_name: text(r.fn),
+    stance: text(r.st, 20),
+    size: typeof r.n === 'number' && Number.isFinite(r.n) && r.n >= 1 ? Math.round(r.n) : 1,
+    x: r.x,
+    y: r.y,
+    z: typeof r.z === 'number' && Number.isFinite(r.z) ? r.z : 0,
+    source: r.src === 'squad' ? 'squad' : 'actor',
+    active: r.act === 'active',
+    encounter: text(r.enc, 40),
+    sensitive: r.sen !== false,
+    t: toIso(r.t),
+    // The ingest's clock, not the game's: freshness in the views is judged on this.
+    seen_at: seenAt,
+  };
+}
+
+/** An outpost's row. FAILS CLOSED the same way: a record without an explicit `hid: false` is hidden. */
+export function buildNpcOutpostRow(r: NpcOutpostRecord, serverId: string, seenAt: string = new Date().toISOString()): Row {
+  return {
+    server_id: serverId,
+    outpost_id: r.id,
+    faction_id: text(r.f),
+    faction_name: text(r.fn),
+    stance: text(r.st, 20),
+    hostile: r.hp === true,
+    x1: r.x1,
+    y1: r.y1,
+    x2: r.x2,
+    y2: r.y2,
+    z: typeof r.z === 'number' && Number.isFinite(r.z) ? r.z : 0,
+    state: text(r.state, 40) ?? 'unknown',
+    hidden: r.hid !== false,
+    t: toIso(r.t),
+    seen_at: seenAt,
+  };
 }
 
 // ---------------------------------------------------------------------------

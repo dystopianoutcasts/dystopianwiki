@@ -260,3 +260,52 @@ Deno.test('veh records keep the persistent id q and the claim owner o, and old o
   assertEquals(old?.k, 'veh');
   assertEquals((old as { q?: number }).q, undefined);
 });
+
+// ---------------------------------------------------------------------------
+// npc, npcgone, npco, npcogone (exporter 0.4.0, migration 029)
+// ---------------------------------------------------------------------------
+
+Deno.test('npc, npcgone, npco and npcogone are known kinds with their required fields', () => {
+  const npc = parseLine(
+    `${P1} A1 {"k":"npc","t":1759000000000,"id":"squad:12","f":"raiders","fn":"Road Raiders","st":"hostile","n":3,"x":100,"y":200,"z":0,"src":"actor","act":"active","enc":"patrol","sen":false}.`,
+  );
+  assertEquals(npc?.k, 'npc');
+  assertEquals((npc as { sen: boolean }).sen, false);
+  assertEquals(parseLine(`${P1} A1 {"k":"npcgone","t":1,"id":"squad:12"}.`)?.k, 'npcgone');
+  assertEquals(
+    parseLine(`${P1} A1 {"k":"npco","t":1,"id":"site:1","x1":1,"y1":2,"x2":3,"y2":4,"hid":false}.`)?.k,
+    'npco',
+  );
+  assertEquals(parseLine(`${P1} A1 {"k":"npcogone","t":1,"id":"site:1"}.`)?.k, 'npcogone');
+});
+
+Deno.test('the npc kinds reject a record without its required fields as a bad shape, not unknown', () => {
+  const cases = [
+    '{"k":"npc","t":1,"x":1,"y":2}', // no id
+    '{"k":"npc","t":1,"id":"a","x":"1","y":2}', // x not a number
+    '{"k":"npc","t":1,"id":"","x":1,"y":2}', // empty id
+    '{"k":"npcgone","t":1}',
+    '{"k":"npco","t":1,"id":"s","x1":1,"y1":2,"x2":3}', // no y2
+    '{"k":"npcogone","t":1,"id":5}',
+  ];
+  for (const body of cases) {
+    const r = parseLineDetailed(`${P1} A1 ${body}.`);
+    assertEquals(r.ok, false, body);
+    assertEquals((r as { reason: string }).reason, 'bad-shape', body);
+  }
+});
+
+Deno.test('a kind this parser does not know is skipped and counted, never a failure (exporter ahead of ingest)', () => {
+  // The live parser before 029 knew none of the npc kinds. This is the same path:
+  // an unknown kind in a chunk with good records around it.
+  const stats = emptyStats();
+  const text = [
+    `${P1} A1 {"k":"pos","t":1,"u":"a","x":1,"y":2}.`,
+    `${P1} A1 {"k":"someFutureKind","t":2,"id":"x"}.`,
+    `${P1} A1 {"k":"pos","t":3,"u":"b","x":3,"y":4}.`,
+  ].join('\n') + '\n';
+  const out = splitLines(text, '', stats);
+  assertEquals(out.records.map((r) => r.k), ['pos', 'pos']);
+  assertEquals(stats.unknownKind, { someFutureKind: 1 });
+  assertEquals(stats.badJson + stats.badShape, 0, 'an unknown kind is not a parse error');
+});

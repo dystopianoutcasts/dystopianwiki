@@ -1,5 +1,9 @@
 // Run with: deno test packages/shared/aurora/ingest-core.test.ts
 import {
+  buildNpcGroupRow,
+  buildNpcOutpostRow,
+  isMissingObjectError,
+  runPlanStep,
   buildHealthRow,
   buildHealthRows,
   buildPlan,
@@ -12,7 +16,7 @@ import {
   type TableUpsert,
 } from './ingest-core.ts';
 import { parseLineDetailed } from './parser.ts';
-import type { AuroraRecord, HbRecord } from './parser.ts';
+import type { AuroraRecord, HbRecord, NpcOutpostRecord, NpcRecord } from './parser.ts';
 
 function assertEquals<T>(actual: T, expected: T, msg = ''): void {
   const a = JSON.stringify(actual);
@@ -690,4 +694,179 @@ Deno.test('every exporter field name lands in its column (T09 record shapes)', (
   const item = table(plan.upserts, 'item_catalog')?.rows[0] ?? {};
   assertEquals([item.full_type, item.display_name, item.category, item.weight, item.catalog_version], ['Base.Axe', 'Axe', 'Weapon', 3, 'abc'], 'catalog: w is weight');
   assertEquals(plan.upserts.some((u) => u.table === 'catalogv'), false, 'catalogv produces no table rows');
+});
+
+// ---------------------------------------------------------------------------
+// npc, npcgone, npco, npcogone -> npc_groups, npc_outposts (029)
+// ---------------------------------------------------------------------------
+
+const npcRec = (o: Partial<NpcRecord> & { id: string; t: number }): NpcRecord =>
+  ({ k: 'npc', x: 10, y: 20, n: 2, f: 'raiders', fn: 'Road Raiders', st: 'hostile', z: 0, src: 'actor', act: 'active', enc: 'patrol', sen: false, ...o }) as NpcRecord;
+
+const outRec = (o: Partial<NpcOutpostRecord> & { id: string; t: number }): NpcOutpostRecord =>
+  ({ k: 'npco', x1: 1, y1: 2, x2: 30, y2: 40, z: 0, f: 'raiders', fn: 'Road Raiders', st: 'hostile', hp: true, state: 'built', hid: false, ...o }) as NpcOutpostRecord;
+
+Deno.test('npc records upsert npc_groups on (server_id, group_id), marked optional', () => {
+  const plan = buildPlan([npcRec({ id: 'squad:1', t: 1000 })], SERVER);
+  const t = table(plan.upserts, 'npc_groups');
+  assertEquals(t?.onConflict, 'server_id,group_id');
+  assertEquals(t?.optional, true);
+  const row = t!.rows[0];
+  assertEquals(row.group_id, 'squad:1');
+  assertEquals(row.server_id, SERVER);
+  assertEquals(row.faction_name, 'Road Raiders');
+  assertEquals(row.size, 2);
+  assertEquals(row.active, true);
+  assertEquals(row.source, 'actor');
+  assertEquals(row.sensitive, false);
+  assertEquals(row.t, new Date(1000).toISOString());
+});
+
+Deno.test('seen_at is the ingest clock passed in, not the record time, and the npc upserts are liveOnly', () => {
+  const seen = '2031-01-02T03:04:05.000Z';
+  const plan = buildPlan(
+    [npcRec({ id: 'g', t: 1000 }), outRec({ id: 's', t: 2000 })],
+    SERVER,
+    { seenAt: seen },
+  );
+  const g = table(plan.upserts, 'npc_groups')!;
+  const o = table(plan.upserts, 'npc_outposts')!;
+  assertEquals(g.rows[0].seen_at, seen);
+  assertEquals(g.rows[0].t, new Date(1000).toISOString(), 't stays the record time');
+  assertEquals(o.rows[0].seen_at, seen);
+  assertEquals(g.liveOnly, true);
+  assertEquals(buildNpcGroupRow({ k: 'npc', t: 1, id: 'g', x: 1, y: 2 } as NpcRecord, SERVER).stance, null, 'no stance is stored as null');
+  assertEquals(o.liveOnly, true);
+  assertEquals(plan.upserts.filter((u) => u.liveOnly).map((u) => u.table).sort(), ['npc_groups', 'npc_outposts']);
+});
+
+Deno.test('a group record that does not say sen:false is stored SENSITIVE (fail closed)', () => {
+  const rec = { k: 'npc', t: 1, id: 'g', x: 1, y: 2 } as NpcRecord;
+  assertEquals(buildNpcGroupRow(rec, SERVER).sensitive, true);
+  assertEquals(buildNpcGroupRow({ ...rec, sen: true } as NpcRecord, SERVER).sensitive, true);
+  assertEquals(buildNpcGroupRow({ ...rec, sen: false } as NpcRecord, SERVER).sensitive, false);
+  assertEquals(buildNpcGroupRow({ ...rec, sen: 'false' as unknown as boolean } as NpcRecord, SERVER).sensitive, true);
+});
+
+Deno.test('an outpost record that does not say hid:false is stored HIDDEN (fail closed)', () => {
+  const rec = { k: 'npco', t: 1, id: 's', x1: 1, y1: 2, x2: 3, y2: 4 } as NpcOutpostRecord;
+  assertEquals(buildNpcOutpostRow(rec, SERVER).hidden, true);
+  assertEquals(buildNpcOutpostRow({ ...rec, hid: false } as NpcOutpostRecord, SERVER).hidden, false);
+  assertEquals(buildNpcOutpostRow(rec, SERVER).state, 'unknown');
+  assertEquals(buildNpcOutpostRow(rec, SERVER).hostile, false);
+});
+
+Deno.test('every npc group row carries every column, as PostgREST bulk inserts require', () => {
+  const plan = buildPlan([
+    npcRec({ id: 'a', t: 1 }),
+    { k: 'npc', t: 2, id: 'b', x: 1, y: 2 } as NpcRecord, // a bare record
+  ], SERVER);
+  const rows = table(plan.upserts, 'npc_groups')!.rows;
+  assertEquals(Object.keys(rows[0]).sort(), Object.keys(rows[1]).sort());
+  assertEquals(Object.keys(rows[0]).sort(), [
+    'active', 'encounter', 'faction_id', 'faction_name', 'group_id', 'seen_at', 'sensitive', 'server_id',
+    'size', 'source', 'stance', 't', 'x', 'y', 'z',
+  ]);
+});
+
+Deno.test('outpost rows carry every column of npc_outposts', () => {
+  const plan = buildPlan([outRec({ id: 'site:1', t: 5 })], SERVER);
+  const t = table(plan.upserts, 'npc_outposts');
+  assertEquals(t?.onConflict, 'server_id,outpost_id');
+  assertEquals(t?.optional, true);
+  assertEquals(Object.keys(t!.rows[0]).sort(), [
+    'faction_id', 'faction_name', 'hidden', 'hostile', 'outpost_id', 'seen_at', 'server_id', 'stance',
+    'state', 't', 'x1', 'x2', 'y1', 'y2', 'z',
+  ]);
+});
+
+Deno.test('repeated npc records for one group collapse to the newest', () => {
+  const plan = buildPlan([
+    npcRec({ id: 'g', t: 3000, x: 3 }),
+    npcRec({ id: 'g', t: 1000, x: 1 }),
+    npcRec({ id: 'g', t: 2000, x: 2 }),
+  ], SERVER);
+  const rows = table(plan.upserts, 'npc_groups')!.rows;
+  assertEquals(rows.length, 1);
+  assertEquals(rows[0].x, 3);
+});
+
+Deno.test('npcgone deletes the group row, guarded by the record time, and writes no row', () => {
+  const plan = buildPlan([{ k: 'npcgone', t: 9000, id: 'squad:5' }], SERVER);
+  assertEquals(table(plan.upserts, 'npc_groups'), undefined);
+  const del = plan.deletes.find((d) => d.table === 'npc_groups');
+  assert(del !== undefined, 'a delete');
+  assertEquals(del!.optional, true);
+  assert(del!.filter.startsWith(`server_id=eq.${SERVER}`), 'scoped to the server');
+  assert(decodeURIComponent(del!.filter).includes('group_id=in.("squad:5")'), del!.filter);
+  assert(del!.filter.includes(`t=lte.${encodeURIComponent(new Date(9000).toISOString())}`), del!.filter);
+});
+
+Deno.test('the latest word wins inside a batch: seen-then-gone is gone, gone-then-seen is seen', () => {
+  const goneLast = buildPlan([npcRec({ id: 'g', t: 1000 }), { k: 'npcgone', t: 2000, id: 'g' }], SERVER);
+  assertEquals(table(goneLast.upserts, 'npc_groups'), undefined);
+  assertEquals(goneLast.deletes.filter((d) => d.table === 'npc_groups').length, 1);
+
+  const seenLast = buildPlan([{ k: 'npcgone', t: 1000, id: 'g' }, npcRec({ id: 'g', t: 2000 })], SERVER);
+  assertEquals(table(seenLast.upserts, 'npc_groups')?.rows.length, 1);
+  assertEquals(seenLast.deletes.filter((d) => d.table === 'npc_groups').length, 0);
+});
+
+Deno.test('npcogone deletes the outpost row; ids with quotes and colons are quoted safely', () => {
+  const plan = buildPlan([{ k: 'npcogone', t: 5, id: 'site:"7"' }], SERVER);
+  const del = plan.deletes.find((d) => d.table === 'npc_outposts')!;
+  assert(decodeURIComponent(del.filter).includes('outpost_id=in.("site:\\"7\\"")'), del.filter);
+});
+
+Deno.test('gone deletes are chunked so a URL never carries more than 100 ids', () => {
+  const recs = Array.from({ length: 250 }, (_, i) => ({ k: 'npcgone', t: 10 + i, id: `g${i}` })) as AuroraRecord[];
+  const dels = buildPlan(recs, SERVER).deletes.filter((d) => d.table === 'npc_groups');
+  assertEquals(dels.length, 3);
+});
+
+Deno.test('a batch with no npc records plans no npc writes at all', () => {
+  const plan = buildPlan([{ k: 'pos', t: 1, u: 'a', x: 1, y: 2 }] as AuroraRecord[], SERVER);
+  assertEquals(plan.upserts.some((u) => u.table.startsWith('npc_')), false);
+  assertEquals(plan.deletes.some((d) => d.table.startsWith('npc_')), false);
+});
+
+Deno.test('npc kinds are counted in the plan counts', () => {
+  const plan = buildPlan([npcRec({ id: 'g', t: 1 }), { k: 'npcgone', t: 2, id: 'h' }], SERVER);
+  assertEquals(plan.counts.npc, 1);
+  assertEquals(plan.counts.npcgone, 1);
+});
+
+Deno.test('the ingest knows a missing table or function by what PostgREST answers', () => {
+  assert(
+    isMissingObjectError(new Error('upsert npc_groups: 404 {"code":"PGRST205","message":"Could not find the table \'aurora.npc_groups\' in the schema cache"}')),
+    'PGRST205',
+  );
+  assert(isMissingObjectError(new Error('rpc prune_npcs: 404 {"code":"PGRST202","message":"Could not find the function aurora.prune_npcs"}')), 'PGRST202');
+  assert(isMissingObjectError(new Error('delete x: 400 {"code":"42P01","message":"relation \\"aurora.npc_groups\\" does not exist"}')), '42P01');
+  assert(!isMissingObjectError(new Error('upsert npc_groups: 400 {"code":"22P02","message":"invalid input syntax"}')), 'a bad value is not a missing table');
+  assert(!isMissingObjectError(new Error('upsert npc_groups: 401 {"message":"Invalid API key"}')), 'auth is not a missing table');
+  assert(!isMissingObjectError(new Error('upsert npc_groups: 500 boom')), '500');
+});
+
+Deno.test('runPlanStep skips an optional missing object, and nothing else', async () => {
+  const missing = () => Promise.reject(new Error('upsert t: 404 {"code":"PGRST205"}'));
+  let skipped = 0;
+  assertEquals(await runPlanStep(true, missing, () => skipped++), false);
+  assertEquals(skipped, 1);
+  assertEquals(await runPlanStep(true, () => Promise.resolve(), () => skipped++), true);
+
+  let threw = false;
+  try {
+    await runPlanStep(false, missing);
+  } catch {
+    threw = true;
+  }
+  assert(threw, 'a non-optional missing table still throws');
+  threw = false;
+  try {
+    await runPlanStep(true, () => Promise.reject(new Error('upsert t: 500 boom')));
+  } catch {
+    threw = true;
+  }
+  assert(threw, 'an optional write that fails for any other reason still throws');
 });

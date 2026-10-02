@@ -31,7 +31,7 @@ import {
   splitLines,
   type SplitStats,
 } from '../packages/shared/aurora/parser.ts';
-import { buildPlan, chunk } from '../packages/shared/aurora/ingest-core.ts';
+import { buildPlan, chunk, runPlanStep } from '../packages/shared/aurora/ingest-core.ts';
 import { AuroraRest } from '../packages/shared/aurora/rest.ts';
 
 const BATCH_ROWS = 500;
@@ -98,6 +98,11 @@ async function main(): Promise<number> {
   const totals = emptyStats();
   const kindTotals: Record<string, number> = {};
   let rowsWritten = 0;
+  // Writes to tables from a migration that is not applied yet (029), skipped as the live ingest skips them.
+  let skippedOptional = 0;
+  const onSkipped = () => {
+    skippedOptional++;
+  };
   let linksOk = 0;
   let linksFailed = 0;
 
@@ -129,16 +134,26 @@ async function main(): Promise<number> {
       // Ordered, never parallel: player_positions has a foreign key into
       // players, which references servers.
       for (const upsert of plan.upserts) {
+        // NPC groups and outposts are live state stamped with the ingest's clock
+        // (seen_at); replaying an old log would make old states look freshly seen.
+        if (upsert.liveOnly) continue;
         for (const batch of chunk(upsert.rows, BATCH_ROWS)) {
-          await rest.upsert(upsert.table, batch, upsert.onConflict);
-          rowsWritten += batch.length;
+          const wrote = await runPlanStep(
+            upsert.optional,
+            () => rest!.upsert(upsert.table, batch, upsert.onConflict),
+            onSkipped,
+          );
+          if (wrote) rowsWritten += batch.length;
         }
       }
       // aurora.upsert_vehicles and the like: after the upserts (servers exists), as tail.ts does.
       for (const call of plan.rpcs) {
-        await rest.rpc(call.fn, call.args);
-        rowsWritten += call.rows;
+        const wrote = await runPlanStep(call.optional, () => rest!.rpc(call.fn, call.args), onSkipped);
+        if (wrote) rowsWritten += call.rows;
       }
+      // plan.deletes (zombie_grid staleness, `npcgone` and `npcogone` removals) are not
+      // replayed either: a historic bundle must not delete what the live ingest has since
+      // written. With the npc upserts skipped there is nothing for them to undo.
       for (const patch of plan.patches) {
         await rest.patch(`${patch.table}?${patch.filter}`, patch.body);
       }
@@ -169,6 +184,9 @@ async function main(): Promise<number> {
   console.log(`totals           ${summarise(totals)}`);
   console.log(`records by kind  ${JSON.stringify(kindTotals)}`);
   console.log(`rows written     ${args.dryRun ? '(dry run)' : rowsWritten}`);
+  if (skippedOptional > 0) {
+    console.log(`skipped writes   ${skippedOptional} (a table from a migration that is not applied yet, 029)`);
+  }
   console.log(`link codes       ok=${linksOk} failed=${linksFailed}`);
 
   const parseErrors = totals.badJson + totals.badShape;

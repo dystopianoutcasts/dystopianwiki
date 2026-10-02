@@ -359,3 +359,88 @@ Deno.test('vehicle records go to aurora.upsert_vehicles, before the cursor is wr
   assert(order.indexOf('rpc:upsert_vehicles') < order.indexOf('ingest_cursor'), 'rows before the cursor');
   assertEquals(db.tables['vehicles'], undefined, 'no plain upsert into vehicles');
 });
+
+// ---------------------------------------------------------------------------
+// 029 not applied yet: the npc writes are optional and must never stall the cursor
+// ---------------------------------------------------------------------------
+
+const NPC_LINES =
+  '[02-10-26 12:00:00.000] A1 {"k":"npc","t":1759406400000,"id":"squad:1","f":"r","fn":"R","st":"hostile","n":2,"x":1,"y":2,"z":0,"src":"actor","act":"active","enc":"patrol","sen":false}.\n'
+  + '[02-10-26 12:00:00.000] A1 {"k":"npcgone","t":1759406400000,"id":"squad:2"}.\n'
+  + '[02-10-26 12:00:00.000] A1 {"k":"npco","t":1759406400000,"id":"site:1","x1":1,"y1":2,"x2":3,"y2":4,"hid":false}.\n';
+
+function dbWithoutNpcTables(): TailDb & { tables: Record<string, Row[]> } {
+  const db = fakeDb();
+  const missing = (what: string) => Promise.reject(new Error(`${what}: 404 {"code":"PGRST205","message":"Could not find the table"}`));
+  const upsert = db.upsert;
+  db.upsert = (table, rows, onConflict) => table.startsWith('npc_') ? missing(`upsert ${table}`) : upsert(table, rows, onConflict);
+  db.delete = (path) => path.startsWith('npc_') ? missing(`delete ${path}`) : Promise.resolve();
+  return db;
+}
+
+Deno.test('with 029 not applied, npc records are skipped and counted and the cursor still advances', async () => {
+  const file = new FakeFile();
+  file.append(NPC_LINES + posLine(0));
+  const session = fakeSession(file);
+  const db = dbWithoutNpcTables();
+  const target = (await findTarget(session, db, CFG))!;
+  const totals = emptyTotals();
+  await tailStep(session, db, CFG, target, totals); // must not throw
+  assert(totals.skippedOptional >= 2, `skipped ${totals.skippedOptional}`);
+  assertEquals(totals.rows['npc_groups'], undefined, 'nothing counted as written');
+  assertEquals(totals.deletes, 0, 'a skipped delete is not counted as a delete');
+  assertEquals(db.tables['player_positions']?.length, 1, 'the other kinds in the batch were written');
+  assert((db.tables['ingest_cursor']?.[0]?.byte_offset as number) > 0, 'the cursor advanced');
+  assertEquals(target.cursor?.byte_offset, db.tables['ingest_cursor'][0].byte_offset);
+});
+
+Deno.test('a real failure on an npc write (not a missing table) still stops the step and holds the cursor', async () => {
+  const file = new FakeFile();
+  file.append(NPC_LINES);
+  const session = fakeSession(file);
+  const db = fakeDb();
+  db.upsert = (table) =>
+    table === 'npc_groups' ? Promise.reject(new Error('upsert npc_groups: 500 boom')) : Promise.resolve();
+  const target = (await findTarget(session, db, CFG))!;
+  let threw = false;
+  try {
+    await tailStep(session, db, CFG, target, emptyTotals());
+  } catch {
+    threw = true;
+  }
+  assert(threw, 'a 500 is a failure');
+  assertEquals(db.tables['ingest_cursor'], undefined, 'the cursor was not written');
+});
+
+Deno.test('the live tail stamps npc rows with its own clock (seen_at), not the log time', async () => {
+  const file = new FakeFile();
+  file.append(NPC_LINES);
+  const session = fakeSession(file);
+  const db = fakeDb();
+  const target = (await findTarget(session, db, CFG))!;
+  await tailStep(session, db, CFG, target, emptyTotals(), () => Date.UTC(2030, 5, 7, 8, 9, 10));
+  assertEquals(db.tables['npc_groups'][0].seen_at, '2030-06-07T08:09:10.000Z');
+  assertEquals(db.tables['npc_outposts'][0].seen_at, '2030-06-07T08:09:10.000Z');
+  assert(db.tables['npc_groups'][0].t !== db.tables['npc_groups'][0].seen_at, 't is still the log time');
+});
+
+Deno.test('with 029 applied, npc rows and gone deletes are written and counted', async () => {
+  const file = new FakeFile();
+  file.append(NPC_LINES);
+  const session = fakeSession(file);
+  const db = fakeDb();
+  const deletes: string[] = [];
+  db.delete = (path) => {
+    deletes.push(path);
+    return Promise.resolve();
+  };
+  const target = (await findTarget(session, db, CFG))!;
+  const totals = emptyTotals();
+  await tailStep(session, db, CFG, target, totals);
+  assertEquals(totals.skippedOptional, 0);
+  assertEquals(totals.rows['npc_groups'], 1);
+  assertEquals(totals.rows['npc_outposts'], 1);
+  assertEquals(deletes.length, 1);
+  assert(deletes[0].startsWith('npc_groups?'), deletes[0]);
+  assertEquals(totals.deletes, 1);
+});

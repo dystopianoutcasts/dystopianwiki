@@ -53,6 +53,21 @@
 //   catalog  ft full type, dn display name, cat category, w weight, cv version
 //   catalogv cv version (header line before a catalog set)
 //   link     c code, u username
+//   npc      id group key ("squad:12", "group:...", "actor:<uid>"), f faction id,
+//            fn faction name, st stance, n members, x, y, z (centroid), src "actor" |
+//            "squad", act "active" | "dormant", enc most common encounter, sen true
+//            when the group must never be public (exporter 0.4.0)
+//   npcgone  id of a group that disappeared
+//   npco     id outpost id, f, fn, st, hp hostile to players, x1, y1, x2, y2, z,
+//            state, hid map-hidden
+//   npcogone id of an outpost that disappeared or expired
+//
+// A kind this version does not know is SKIPPED, never a failure: parseLineDetailed
+// answers { ok: false, reason: 'unknown-kind' }, splitLines counts it in
+// stats.unknownKind and carries on, and nothing downstream treats that count as an
+// error. So an exporter that ships a new kind before the ingest that reads it
+// costs nothing but a line in the totals (this held for npc* on 2026-10-02: the
+// 0.4.0 exporter may ship before 029 and the new ingest).
 
 export const KINDS = [
   'boot',
@@ -65,6 +80,10 @@ export const KINDS = [
   'catalog',
   'catalogv',
   'link',
+  'npc',
+  'npcgone',
+  'npco',
+  'npcogone',
   // Diagnostic kinds: known so they are not reported as unknown, but they map
   // to no table - buildPlan produces no rows for them.
   'probe',
@@ -245,6 +264,54 @@ export interface LinkRecord extends BaseRecord {
   u: string;
 }
 
+/**
+ * One NPC group (Project A-Life), exporter 0.4.0. `sen` marks a group that must
+ * never reach the public map (raid, assassination, hunting a named player); the
+ * ingest treats a record WITHOUT it as sensitive.
+ */
+export interface NpcRecord extends BaseRecord {
+  k: 'npc';
+  id: string;
+  f?: string;
+  fn?: string;
+  st?: string;
+  n?: number;
+  x: number;
+  y: number;
+  z?: number;
+  src?: string;
+  act?: string;
+  enc?: string;
+  sen?: boolean;
+}
+
+export interface NpcGoneRecord extends BaseRecord {
+  k: 'npcgone';
+  id: string;
+}
+
+/** One A-Life outpost as an area. `hid` is the mod's mapHidden; a record without it is read as hidden. */
+export interface NpcOutpostRecord extends BaseRecord {
+  k: 'npco';
+  id: string;
+  f?: string;
+  fn?: string;
+  st?: string;
+  hp?: boolean;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  z?: number;
+  state?: string;
+  hid?: boolean;
+}
+
+export interface NpcOutpostGoneRecord extends BaseRecord {
+  k: 'npcogone';
+  id: string;
+}
+
 export type AuroraRecord =
   | BootRecord
   | ProbeRecord
@@ -258,7 +325,11 @@ export type AuroraRecord =
   | ZgridRecord
   | CatalogRecord
   | CatalogvRecord
-  | LinkRecord;
+  | LinkRecord
+  | NpcRecord
+  | NpcGoneRecord
+  | NpcOutpostRecord
+  | NpcOutpostGoneRecord;
 
 export type ParseFailure =
   | 'not-aurora' // no A1 marker: someone else's log line
@@ -325,6 +396,13 @@ function checkShape(o: Record<string, unknown>): boolean {
       return isStr(o.cv);
     case 'link':
       return isStr(o.c) && isStr(o.u);
+    case 'npc':
+      return isStr(o.id) && o.id !== '' && isNum(o.x) && isNum(o.y);
+    case 'npcgone':
+    case 'npcogone':
+      return isStr(o.id) && o.id !== '';
+    case 'npco':
+      return isStr(o.id) && o.id !== '' && isNum(o.x1) && isNum(o.y1) && isNum(o.x2) && isNum(o.y2);
     default:
       return false;
   }
