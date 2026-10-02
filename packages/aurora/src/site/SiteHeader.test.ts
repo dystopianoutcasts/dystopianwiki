@@ -47,3 +47,17 @@ describe('T39: the site header on the map', () => {
     expect(src).toMatch(/<div className="site-header__actions">\s*<AccountControl \/>/)
   })
 })
+
+describe('the site header styles', () => {
+  const css = readFileSync(fileURLToPath(new URL('../styles/aurora.css', import.meta.url)), 'utf8')
+
+  // A token the header uses but the map never defines makes the rule fall back silently:
+  // "Log in" rendered as plain text instead of the wiki's orange button until 2026-10-02.
+  it('defines every wiki token the header rules use', () => {
+    const headerRules = css.match(/\.site-header[^{]*\{[^}]*\}/g) ?? []
+    const used = new Set(headerRules.join('\n').match(/--color-[a-z0-9-]+/g) ?? [])
+    expect(used.size).toBeGreaterThan(0)
+    const missing = [...used].filter((name) => !new RegExp(`${name}\\s*:`).test(css))
+    expect(missing).toEqual([])
+  })
+})

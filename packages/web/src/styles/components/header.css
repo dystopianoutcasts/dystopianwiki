@@ -147,32 +147,6 @@
 }
 
 /* Version Selector */
-.header__version-select {
-  font-size: var(--font-size-sm);
-  padding: var(--spacing-2) var(--spacing-3);
-  padding-right: var(--spacing-8);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-md);
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 8px center;
-}
-
-.header__version-select:hover {
-  border-color: var(--color-primary-400);
-}
-
-/* @breakpoint-md: 768px - Tablet: Hide version selector on mobile */
-@media (max-width: 768px) {
-  .header__version-select {
-    display: none;
-  }
-}
-
 /* Theme Toggle */
 .header__theme-toggle {
   display: flex;

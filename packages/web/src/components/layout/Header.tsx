@@ -1,7 +1,8 @@
-import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { FuzzySearchBar } from '../search/FuzzySearchBar';
 import { AuthButton } from '../auth/AuthButton';
-import { VERSIONS, DEFAULT_VERSION, getVersion } from '../../config/versions.generated';
+import { DEFAULT_VERSION, getVersion } from '../../config/versions.generated';
+import '../../styles/components/header.css';
 
 /** The top links: a version's sections that have articles, in displayOrder. Shared with MobileMenu. */
 export function siteSections(versionId: string) {
@@ -9,7 +10,6 @@ export function siteSections(versionId: string) {
     .filter((s) => s.categories.some((c) => c.articleCount > 0))
     .sort((a, b) => a.displayOrder - b.displayOrder);
 }
-import '../../styles/components/header.css';
 
 // Icons
 const MenuIcon = () => (
@@ -25,39 +25,11 @@ interface HeaderProps {
 }
 
 export function Header({ onMobileMenuToggle }: HeaderProps) {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { version, section, category, slug } = useParams<{
-    version?: string;
-    section?: string;
-    category?: string;
-    slug?: string;
-  }>();
-
-  const currentVersion = version || DEFAULT_VERSION;
-
   // The same links on every page, matching the live map's copy of this header
   // (packages/aurora/src/site/SiteHeader.tsx): the default version's sections in
   // displayOrder, skipping sections with no articles, then Live Map. Older builds
-  // are reached through the version selector, not the top links.
+  // are reached through VersionSelect, in the guide sidebar and the phone menu.
   const navSections = siteSections(DEFAULT_VERSION);
-
-  // Version switcher: preserve as much of the current location as the plan
-  // allows. Only /pz/{version}/... URLs get their section/category/slug
-  // carried over; every other location just lands on the version page.
-  const handleVersionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newVersion = event.target.value;
-    const pathParts = location.pathname.split('/').filter(Boolean);
-    const isPzPrefixed = pathParts[0] === 'pz';
-
-    if (isPzPrefixed && section && category && slug) {
-      navigate(`/pz/${newVersion}/${section}/${category}/${slug}`);
-    } else if (isPzPrefixed && section) {
-      navigate(`/pz/${newVersion}/${section}${category ? `/${category}` : ''}`);
-    } else {
-      navigate(`/pz/${newVersion}`);
-    }
-  };
 
   return (
     <header className="header">
@@ -102,21 +74,6 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
         {/* Actions */}
         <div className="header__actions">
           <AuthButton />
-
-          {/* Version Selector */}
-          <select
-            className="header__version-select"
-            value={currentVersion}
-            onChange={handleVersionChange}
-            aria-label="Select documentation version"
-          >
-            {VERSIONS.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.name}
-                {v.status === 'legacy' ? ' (legacy)' : ''}
-              </option>
-            ))}
-          </select>
 
           {/* Mobile Menu Button */}
           <button

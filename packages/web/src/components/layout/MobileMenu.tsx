@@ -4,6 +4,7 @@ import { useArticleTOC } from '../../context/ArticleContext';
 import { DEFAULT_VERSION } from '../../config/versions.generated';
 import { siteSections } from './Header';
 import { resolveIcon } from './Sidebar';
+import { VersionSelect } from './VersionSelect';
 import '../../styles/components/mobile-menu.css';
 
 interface MobileMenuProps {
@@ -81,6 +82,12 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             <a href="/map/" className="mobile-menu__nav-link" onClick={onClose}>
               Live Map
             </a>
+          </div>
+
+          {/* The game build switch, which the top bar no longer carries. */}
+          <div className="mobile-menu__divider" />
+          <div className="mobile-menu__section">
+            <VersionSelect onChange={onClose} />
           </div>
 
           {/* Article TOC (only shown when viewing an article) */}
