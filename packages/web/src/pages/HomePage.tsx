@@ -1,11 +1,20 @@
 import { Layout } from '../components/layout/Layout';
 import { HeroSection } from '../components/landing/HeroSection';
 import { ServerNow } from '../components/landing/ServerNow';
+import { ActivitySection } from '../components/landing/ActivitySection';
+import { ServerSettings } from '../components/landing/ServerSettings';
+import { JoinSteps } from '../components/landing/JoinSteps';
+import { SurvivorsBoard } from '../components/landing/SurvivorsBoard';
+import { OutcastModsShowcase } from '../components/landing/OutcastModsShowcase';
 import { AboutSection } from '../components/landing/AboutSection';
 import { MascotVoteCallout } from '../components/landing/MascotVoteCallout';
 import { CommunityBanner } from '../components/landing/CommunityBanner';
 import { SEOHead } from '../components/seo/SEOHead';
 
+// Top to bottom: the server and how to get in, proof it is alive (the map, who is
+// on, when people play, who has lasted), how it plays, what we build, who we are.
+// Live figures come from aurora.home_summary() (migration 027); anything not
+// reported yet reads "TBD".
 export function HomePage() {
   return (
     <Layout>
@@ -17,6 +26,11 @@ export function HomePage() {
         <HeroSection />
         <MascotVoteCallout />
         <ServerNow />
+        <ActivitySection />
+        <JoinSteps />
+        <ServerSettings />
+        <SurvivorsBoard />
+        <OutcastModsShowcase />
         <AboutSection />
         <CommunityBanner />
       </main>

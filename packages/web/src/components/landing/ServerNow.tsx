@@ -1,12 +1,14 @@
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { useServerNow } from '../../hooks/useServerNow';
+import { useHomeSummary } from '../../hooks/useHomeSummary';
+import { TBD } from '../../lib/homeSummary';
 import { centerOf, imageSize, scrollFor, squaresPerPixel, truncateName, type WorldPoint } from '../../utils/mapView';
 import '../../styles/components/server-now.css';
 
-// Home page map centerpiece: a scrollable window onto the zoom-12 picture of
-// the whole server map, a dot and name for each player who is online, and a
-// link to the live map centred on the same place. No zoom control, no
-// roster, no server status, no Leaflet.
+// Home page map centerpiece: live counters from aurora.home_summary() (027), a
+// scrollable window onto the zoom-12 picture of the whole server map, a dot and
+// name for each player who is online, the same names as a list, and a link to the
+// live map centred on the same place. No zoom control, no Leaflet.
 //
 // The picture is zoom level 12 of the Deep Zoom pyramid the /map/ app serves
 // (map/tiles/base_top/layer0.dzi: 256 px tiles, no overlap; 70 of 80 tiles
@@ -40,8 +42,20 @@ function describe(count: number): string {
   return `Server map of the whole Build 42 world, with ${count} players shown`;
 }
 
+/** One counter; TBD when the server has not reported it. */
+function Counter({ value, label }: { value: number | null | undefined; label: string }) {
+  const known = typeof value === 'number';
+  return (
+    <li className={known ? 'home-counter' : 'home-counter home-counter--tbd'}>
+      <span className="home-counter__value">{known ? value.toLocaleString() : TBD}</span>
+      <span className="home-counter__label">{label}</span>
+    </li>
+  );
+}
+
 export function ServerNow() {
   const dots = useServerNow();
+  const { summary } = useHomeSummary();
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<{ x: number; y: number; scrollLeft: number; scrollTop: number } | null>(null);
   const scrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -105,8 +119,16 @@ export function ServerNow() {
     <section className="server-now" aria-labelledby="server-now-title">
       <div className="server-now__content">
         <h2 className="server-now__title" id="server-now-title">
-          The server map
+          The world right now
         </h2>
+
+        <ul className="home-counters" aria-label="Server right now">
+          <Counter value={summary?.onlineNow} label="survivors online" />
+          <Counter value={summary?.safehouses} label="safehouses claimed" />
+          <Counter value={summary?.vehicles} label="vehicles on the map" />
+          <Counter value={summary?.zombiesKilledToday} label="zombies killed today" />
+          <Counter value={summary?.playersKilledToday} label="survivors lost today" />
+        </ul>
 
         <div
           ref={viewportRef}
@@ -162,6 +184,25 @@ export function ServerNow() {
         </div>
 
         <p className="server-now__help">Drag or scroll to look around.</p>
+
+        <div className="home-onnow">
+          <h3 className="home-onnow__title">Who is on now</h3>
+          {dots.length > 0 ? (
+            <ul className="home-onnow__list">
+              {dots.map((dot) => (
+                <li key={dot.id} className="home-onnow__name">
+                  {dot.name}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="home-onnow__empty">
+              {summary && summary.onlineNow > 0
+                ? `${summary.onlineNow} on now, positions hidden.`
+                : 'Nobody is on right now. Be the first.'}
+            </p>
+          )}
+        </div>
 
         <p className="server-now__link-row">
           <a className="server-now__link" href={liveMapHref}>
