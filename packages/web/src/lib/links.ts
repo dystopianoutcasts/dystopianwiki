@@ -6,7 +6,7 @@
  */
 export const SUPPORT_URL = 'https://payment.indifferentbroccoli.com/b/aEU3e1b6m2zh4ghgzh'
 
-/** The game server, published by the owner on 2026-10-02. The in-game Join screen asks for the two separately. */
-export const SERVER_IP = '51.81.166.143'
-export const SERVER_PORT = 26950
+/** The game server. The owner gave this new address on 2026-10-02; it replaced an earlier host. The in-game Join screen asks for the two separately. */
+export const SERVER_IP = '208.75.182.207'
+export const SERVER_PORT = 27130
 export const SERVER_ADDRESS = `${SERVER_IP}:${SERVER_PORT}`
