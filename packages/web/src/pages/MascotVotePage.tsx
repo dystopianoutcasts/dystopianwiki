@@ -381,12 +381,14 @@ function HowItWorks({ drawOrder }: { drawOrder: readonly string[] }) {
         <li>If not, the entry with the fewest ballots is eliminated and its ballots move to their next choice.</li>
         <li>This repeats until there is a winner.</li>
       </ol>
-      <p className="mascot-vote__draw">
-        <strong>Draw order:</strong> {drawOrderText(drawOrder, nameOf)}
-      </p>
       <p>
-        If two entries are tied for last place in every round, the one that comes first in this list is eliminated. It
-        was drawn at random when the vote was set up.
+        Ties for last place are settled by the earlier rounds, starting from round 1: the tied entry that had fewer
+        votes in the first round where they differed goes out. Only if the tied entries were level in every earlier
+        round too does the tie-breaker order below decide, and the entry that comes first in it is eliminated. The order was drawn at random when the vote was set up and is shown before
+        anyone votes, so it cannot be picked after the results are known.
+      </p>
+      <p className="mascot-vote__draw">
+        <strong>Tie-breaker order:</strong> {drawOrderText(drawOrder, nameOf)}
       </p>
     </section>
   )

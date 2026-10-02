@@ -281,5 +281,5 @@ export function roundNote(round: Round, nameOf: (id: string) => string, winner: 
   if (tb.kind === 'earlier-round') {
     return `${tied} were tied on ${n}; ${out} had fewer in round ${tb.round}, so it was eliminated.`
   }
-  return `${tied} were tied on ${n}, and no earlier round separated them; ${out} comes first in the draw order, so it was eliminated.`
+  return `${tied} were tied on ${n}, and no earlier round separated them; ${out} comes first in the tie-breaker order, so it was eliminated.`
 }

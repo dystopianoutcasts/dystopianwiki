@@ -272,9 +272,9 @@ test('roundNote: a tie settled by the draw order says so, and the draw order dec
   const ids = ['art_001', 'art_002', 'art_003']
   const ballots = [...Array(3).fill(['art_001', 'art_002']), ...Array(2).fill(['art_002']), ...Array(2).fill(['art_003'])]
   const cFirst = noteLines(['art_003', 'art_002', 'art_001'], ballots, ids).notes[0]
-  assert.equal(cFirst, 'Entry 2 and Entry 3 were tied on 2, and no earlier round separated them; Entry 3 comes first in the draw order, so it was eliminated.')
+  assert.equal(cFirst, 'Entry 2 and Entry 3 were tied on 2, and no earlier round separated them; Entry 3 comes first in the tie-breaker order, so it was eliminated.')
   const bFirst = noteLines(['art_002', 'art_003', 'art_001'], ballots, ids).notes[0]
-  assert.match(bFirst, /Entry 2 comes first in the draw order/)
+  assert.match(bFirst, /Entry 2 comes first in the tie-breaker order/)
 })
 
 test('roundNote: zero ballots', () => {
