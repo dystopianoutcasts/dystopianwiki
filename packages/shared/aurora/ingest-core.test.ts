@@ -80,6 +80,55 @@ Deno.test('the players upsert sends only the columns it owns', () => {
   assertEquals(row.online, true);
 });
 
+Deno.test('hours survived and access level are stored when the record carries them', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'pos', t: 1, u: 'a', x: 1, y: 2, hs: 41.5, al: 'admin', n: 'Ann', id: 3 },
+    { k: 'pos', t: 1, u: 'b', x: 1, y: 2, hs: 7, al: '' },
+    { k: 'pos', t: 1, u: 'c', x: 1, y: 2 },
+    { k: 'pos', t: 1, u: 'd', x: 1, y: 2, hs: -1 },
+    { k: 'pos', t: 1, u: 'e', x: 1, y: 2, hs: Number.NaN },
+  ];
+  const players = buildPlan(recs, SERVER).upserts.filter((u) => u.table === 'players');
+  assertEquals(players.length, 2, 'rows with and without stats go in separate upserts');
+  for (const u of players) {
+    const keys = u.rows.map((r) => Object.keys(r).sort().join(','));
+    assertEquals(new Set(keys).size, 1, 'every row of one upsert has the same keys');
+  }
+  const all = players.flatMap((u) => u.rows);
+  const a = all.find((r) => r.username === 'a');
+  assertEquals(a?.hours_survived, 41.5);
+  assertEquals(a?.access_level, 'admin');
+  assertEquals(all.find((r) => r.username === 'b')?.access_level, null, 'a blank level is stored as null');
+  for (const u of ['c', 'd', 'e']) {
+    const row = all.find((r) => r.username === u) ?? {};
+    assert(!('hours_survived' in row), `${u}: a missing or invalid hs must not overwrite the stored value`);
+    assert(!('access_level' in row), `${u}: nor the access level`);
+  }
+  assert(!('display_name' in (a ?? {})), 'the display name stays owned by players.db');
+});
+
+Deno.test('the vehicle script name is read from the exporter key, and from the old one', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'veh', t: 1, id: 1, x: 1, y: 1, s: 'Base.CarNormal', ty: 'Normal' },
+    { k: 'veh', t: 1, id: 2, x: 1, y: 1, sc: 'Base.Van' },
+    { k: 'veh', t: 1, id: 3, x: 1, y: 1 },
+  ];
+  const rows = table(buildPlan(recs, SERVER).upserts, 'vehicles')?.rows ?? [];
+  assertEquals(rows.find((r) => r.vehicle_id === 1)?.script_name, 'Base.CarNormal');
+  assertEquals(rows.find((r) => r.vehicle_id === 2)?.script_name, 'Base.Van');
+  assertEquals(rows.find((r) => r.vehicle_id === 3)?.script_name, null);
+});
+
+Deno.test('a real exporter 0.2 vehicle line keeps its script name end to end', () => {
+  const parsed = parseLineDetailed(
+    '[02-10-26 12:00:00.000] [ 0] A1 {"k":"veh","t":1759406400000,"id":9,"s":"Base.PickUpTruck","ty":"PickUp","x":10.5,"y":20.5,"z":0,"d":null}.',
+  );
+  assert(parsed.ok, 'the line parses');
+  if (!parsed.ok) return;
+  const rows = table(buildPlan([parsed.record], SERVER).upserts, 'vehicles')?.rows ?? [];
+  assertEquals(rows[0]?.script_name, 'Base.PickUpTruck');
+});
+
 Deno.test('every keyed table is deduped', () => {
   const recs: AuroraRecord[] = [
     { k: 'veh', t: 1, id: 7, x: 1, y: 1 },
@@ -461,9 +510,21 @@ Deno.test('players.db rows are keyed on the account name and store whole squares
   assertEquals(rows.find((r) => r.username === 'kitten')?.last_saved_x, 10000, 'last occurrence wins');
   assertEquals(
     Object.keys(bob ?? {}).sort(),
-    ['display_name', 'last_saved_x', 'last_saved_y', 'server_id', 'username'],
+    ['display_name', 'is_dead', 'last_saved_x', 'last_saved_y', 'server_id', 'username'],
     'must not clobber online, last_seen, linked_user_id or hours_survived',
   );
+  assertEquals(bob?.is_dead, false, 'no flag means alive');
+});
+
+Deno.test('players.db rows carry the dead flag of the newest character', () => {
+  const rows = buildSavedPlayerRows([
+    { username: 'kitten', name: 'first life', x: 1, y: 1, isDead: true },
+    { username: 'kitten', name: 'second life', x: 2, y: 2, isDead: false },
+    { username: 'gone', name: 'only life', x: 3, y: 3, isDead: true },
+  ], SERVER);
+  assertEquals(rows.find((r) => r.username === 'kitten')?.is_dead, false);
+  assertEquals(rows.find((r) => r.username === 'kitten')?.display_name, 'second life');
+  assertEquals(rows.find((r) => r.username === 'gone')?.is_dead, true);
 });
 
 // --- cursor / rotation -----------------------------------------------------

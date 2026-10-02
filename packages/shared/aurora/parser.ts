@@ -39,8 +39,11 @@
 //   hb       players online count, src "tick" | "gametime",
 //            st { perf {name: number}, game {...}, net {...} } - the three
 //            server statistics tables; only src "tick" becomes a health sample
-//   pos      u username, x, y, z, v vehicle id or null
-//   veh      id vehicle id, sc script name, x, y, z, d driver username or null
+//   pos      u username, n display name, id online id, x, y, z, v vehicle id or null,
+//            hs hours survived, al access level
+//   veh      id vehicle id, s script name, ty vehicle type, x, y, z,
+//            d driver username or null (exporter 0.2; `sc` is the name this
+//            contract used before and is still accepted)
 //   sh       id, x, y, w, h, o owner, ti title, p [usernames], lv last visited ms,
 //            c created ms
 //   zone     kd kind, ti title, x1, y1, x2, y2
@@ -154,12 +157,24 @@ export interface PosRecord extends BaseRecord {
   y: number;
   z?: number;
   v?: number | null;
+  /** Display name, online id: emitted, not stored (players.db owns the name). */
+  n?: string;
+  id?: number;
+  /** Hours the current character has survived. */
+  hs?: number;
+  /** Access level ("None", "admin", ...). Stored, never public (027). */
+  al?: string;
 }
 
 export interface VehRecord extends BaseRecord {
   k: 'veh';
   id: number;
+  /** Script name, as the exporter writes it (OA_Vehicles.lua). */
+  s?: string;
+  /** Script name under its old contract key, from logs written before exporter 0.2. */
   sc?: string;
+  /** Vehicle type; emitted, not stored. */
+  ty?: string;
   x: number;
   y: number;
   z?: number;

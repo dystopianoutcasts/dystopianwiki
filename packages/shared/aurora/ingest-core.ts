@@ -161,17 +161,31 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
   // online window is online; one seen in this batch but not that recently is
   // offline (they were online earlier in the window and have since stopped
   // producing positions, which is what logging off looks like).
-  // Only these columns are sent, so an upsert never clobbers hours_survived,
-  // access_level, linked_user_id or the players.db columns.
+  // Only these columns are sent, so an upsert never clobbers linked_user_id or
+  // the players.db columns. hours_survived and access_level come from the
+  // record when it carries them (exporter 0.2's hs and al); a record without
+  // them leaves the stored values alone. PostgREST wants every row of one
+  // request to have the same keys, so the two kinds go in separate upserts.
   const newestPositions = dedupe(positions, (p) => p.u, (p) => p.t);
-  const playerRows = newestPositions.map((p): Row => ({
-    server_id: serverId,
-    username: p.u,
-    last_seen: toIso(p.t),
-    online: now - p.t <= ONLINE_WINDOW_MS,
-  }));
-  if (playerRows.length > 0) {
-    upserts.push({ table: 'players', onConflict: 'server_id,username', rows: playerRows });
+  const withStats: Row[] = [];
+  const withoutStats: Row[] = [];
+  for (const p of newestPositions) {
+    const row: Row = {
+      server_id: serverId,
+      username: p.u,
+      last_seen: toIso(p.t),
+      online: now - p.t <= ONLINE_WINDOW_MS,
+    };
+    if (typeof p.hs === 'number' && Number.isFinite(p.hs) && p.hs >= 0) {
+      row.hours_survived = p.hs;
+      row.access_level = typeof p.al === 'string' && p.al !== '' ? p.al : null;
+      withStats.push(row);
+    } else {
+      withoutStats.push(row);
+    }
+  }
+  for (const rows of [withStats, withoutStats]) {
+    if (rows.length > 0) upserts.push({ table: 'players', onConflict: 'server_id,username', rows });
   }
 
   // When the newest heartbeat says nobody is online AND it is the latest word
@@ -226,7 +240,8 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
     (v): Row => ({
       server_id: serverId,
       vehicle_id: v.id,
-      script_name: v.sc ?? null,
+      // The exporter writes `s`; `sc` was this contract's name before exporter 0.2.
+      script_name: v.s ?? v.sc ?? null,
       x: v.x,
       y: v.y,
       z: v.z ?? 0,
@@ -477,6 +492,8 @@ export interface SavedPlayer {
   name: string;
   x: number;
   y: number;
+  /** The saved character is dead (players.db isDead). */
+  isDead?: boolean;
 }
 
 /**
@@ -484,7 +501,10 @@ export interface SavedPlayer {
  * save file owns are sent: the character name and the last saved square, which
  * is what the map shows for an offline character. Coordinates are stored as
  * whole squares (the columns are INT). Rows without a username are skipped,
- * and a username that appears twice keeps its last occurrence.
+ * and a username that appears twice keeps its last occurrence (parsePlayersDb
+ * reads in id order, so that is the newest character). is_dead is the save
+ * file's flag for that character; the map hides dead characters and the home
+ * page leaves them off the longest-survivor list.
  */
 export function buildSavedPlayerRows(players: SavedPlayer[], serverId: string): Row[] {
   const byName = new Map<string, Row>();
@@ -497,6 +517,7 @@ export function buildSavedPlayerRows(players: SavedPlayer[], serverId: string): 
       display_name: p.name || null,
       last_saved_x: Math.round(p.x),
       last_saved_y: Math.round(p.y),
+      is_dead: p.isDead === true,
     });
   }
   return [...byName.values()];

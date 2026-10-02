@@ -66,7 +66,8 @@ export function parsePlayersDb(SQL: SqlJsStatic, bytes: Uint8Array): PlayersDbRe
   try {
     const table: PlayersTable = countRows(db, 'networkPlayers') > 0 ? 'networkPlayers' : 'localPlayers';
     const usernameExpr = table === 'networkPlayers' ? 'username' : 'name AS username';
-    const stmt = db.prepare(`SELECT ${usernameExpr}, name, x, y, z, isDead FROM ${table}`);
+    // In id order, so a username with several characters ends on its newest one.
+    const stmt = db.prepare(`SELECT ${usernameExpr}, name, x, y, z, isDead FROM ${table} ORDER BY id`);
     const players: SavedPlayerRow[] = [];
     try {
       while (stmt.step()) {

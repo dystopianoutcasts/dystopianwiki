@@ -54,6 +54,17 @@ Deno.test('multiplayer rows are keyed on username, with the character name kept 
   assertEquals(out.players[1].isDead, true);
 });
 
+Deno.test('rows come back in id order, so the newest character of an account is last', () => {
+  const bytes = image((db) => {
+    db.run(`INSERT INTO networkPlayers (id, world, username, playerIndex, name, steamid, x, y, z, isDead)
+            VALUES (7, 'servertest', 'kitten', 0, 'second life', '2', 2, 2, 0, 0)`);
+    db.run(`INSERT INTO networkPlayers (id, world, username, playerIndex, name, steamid, x, y, z, isDead)
+            VALUES (3, 'servertest', 'kitten', 0, 'first life', '2', 1, 1, 0, 1)`);
+  });
+  const out = parsePlayersDb(SQL as SqlJsStatic, bytes);
+  assertEquals(out.players.map((p) => p.name), ['first life', 'second life']);
+});
+
 Deno.test('an empty multiplayer table falls back to localPlayers, where the name is the username', () => {
   const bytes = image((db) => {
     db.run(`INSERT INTO localPlayers (name, wx, wy, x, y, z, isDead) VALUES ('Solo', 30, 20, 9000, 6000, 0, 0)`);
