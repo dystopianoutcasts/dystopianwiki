@@ -1,0 +1,170 @@
+/**
+ * "Made by Dystopian Outcasts" (OutcastModsShowcase): mod cards in four groups.
+ * Site tokens from styles/variables.css. The section frame (.home-section*) is in
+ * home-sections.css.
+ *
+ * The grid is a flex-wrap with centred rows and fixed card widths, so a short last row
+ * sits in the middle (the same pattern as .home-settings); the columns follow the
+ * grid's own width through container queries. One column is a compact row: poster left,
+ * text right.
+ */
+
+.our-mods__group + .our-mods__group {
+  margin-top: var(--spacing-10);
+}
+
+.our-mods__group-title {
+  margin: 0 0 var(--spacing-4);
+  padding-bottom: var(--spacing-2);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.our-mods__count {
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-normal);
+}
+
+.our-mods__grid {
+  --mods-gap: var(--spacing-4);
+  container-type: inline-size;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--mods-gap);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+@container (min-width: 456px) {
+  .our-mods__grid > .our-mod { --mods-cols: 2; }
+}
+
+@container (min-width: 692px) {
+  .our-mods__grid > .our-mod { --mods-cols: 3; }
+}
+
+@container (min-width: 928px) {
+  .our-mods__grid > .our-mod { --mods-cols: 4; }
+}
+
+.our-mod {
+  --mods-cols: 1;
+  flex: 0 0 calc((100% - (var(--mods-cols) - 1) * var(--mods-gap)) / var(--mods-cols));
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  background: var(--color-background);
+}
+
+.our-mod__poster {
+  flex: 0 0 96px;
+  align-self: flex-start;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--border-radius-md);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.our-mod__poster img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.our-mod__poster-none {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.our-mod__body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-2);
+}
+
+.our-mod__name {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+}
+
+.our-mod__badge {
+  padding: 0 var(--spacing-2);
+  border: 1px solid var(--home-online);
+  border-radius: var(--border-radius-full);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+}
+
+.our-mod__blurb {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.our-mod__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-1) var(--spacing-4);
+  margin: auto 0 0;
+  font-size: var(--font-size-sm);
+}
+
+.our-mod__links a {
+  color: var(--color-link);
+  text-underline-offset: 2px;
+}
+
+.our-mod__links a:hover {
+  color: var(--color-link-hover);
+}
+
+.our-mod__links a:focus-visible,
+.our-mods__toggle:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.our-mods__toggle {
+  display: block;
+  margin: var(--spacing-4) auto 0;
+  min-height: 44px;
+  padding: var(--spacing-2) var(--spacing-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.our-mods__toggle:hover {
+  border-color: var(--color-accent-500);
+}
+
+/* Two or more columns: the poster sits above the text. */
+@container (min-width: 456px) {
+  .our-mods__grid > .our-mod { flex-direction: column; }
+  .our-mods__grid > .our-mod .our-mod__poster { flex: none; align-self: stretch; aspect-ratio: 4 / 3; }
+}

@@ -1,0 +1,323 @@
+[
+  {
+    "id": "OutcastUpright",
+    "workshopId": "3778988335",
+    "name": "Outcast Upright",
+    "group": "Outcast",
+    "blurb": "Walk up to an overturned car, truck or trailer, open the radial menu and flip it back onto its wheels.",
+    "poster": "/assets/mods/OutcastUpright.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastProximity",
+    "workshopId": "3778987974",
+    "name": "Outcast Proximity",
+    "group": "Outcast",
+    "blurb": "Every container you can already reach, as one searchable list.",
+    "poster": "/assets/mods/OutcastProximity.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastHusbandry",
+    "workshopId": "3778967781",
+    "name": "Outcast Husbandry",
+    "group": "Outcast",
+    "blurb": "Livestock in a designated animal zone get hungry, thirsty and sick while you are away, but never starve to death.",
+    "poster": null
+  },
+  {
+    "id": "OutcastHearing",
+    "workshopId": "3778967689",
+    "name": "Outcast Hearing",
+    "group": "Outcast",
+    "blurb": "Gunfire damages your hearing.",
+    "poster": "/assets/mods/OutcastHearing.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastSawAll",
+    "workshopId": "3777720992",
+    "name": "Outcast Saw All",
+    "group": "Outcast",
+    "blurb": "One context-menu button that saws every log you can get to, in your bags and on the ground around you.",
+    "poster": "/assets/mods/OutcastSawAll.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastRipAll",
+    "workshopId": "3777620871",
+    "name": "Outcast Rip All",
+    "group": "Outcast",
+    "blurb": "One context-menu button that rips every rippable garment in your inventory and the containers around you.",
+    "poster": "/assets/mods/OutcastRipAll.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastLightLoad",
+    "workshopId": "3777386409",
+    "name": "Outcast Light Load",
+    "group": "Outcast",
+    "blurb": "Hauling raw materials stops being the whole afternoon.",
+    "poster": "/assets/mods/OutcastLightLoad.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastLadders",
+    "workshopId": "3777373070",
+    "name": "Outcast Ladders",
+    "group": "Outcast",
+    "blurb": "Climb the ladders that are already in the world.",
+    "poster": "/assets/mods/OutcastLadders.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastPunch",
+    "workshopId": "3775742087",
+    "name": "Outcast Punch",
+    "group": "Outcast",
+    "blurb": "Punch zombies with your bare hands. The vanilla shove is untouched.",
+    "poster": "/assets/mods/OutcastPunch.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastMotors",
+    "workshopId": "3782914142",
+    "name": "Outcast Motors",
+    "group": "Outcast",
+    "blurb": "Engines are built, not repaired.",
+    "poster": "/assets/mods/OutcastMotors.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastMotorsAnimated",
+    "workshopId": "3782914294",
+    "name": "Outcast Motors Animated",
+    "group": "Outcast",
+    "blurb": "Panels that actually open.",
+    "poster": "/assets/mods/OutcastMotorsAnimated.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastMotorsUI",
+    "workshopId": "3782915479",
+    "name": "Outcast Motors UI",
+    "group": "Outcast",
+    "blurb": "A vehicle mechanics window that presents the whole car.",
+    "poster": "/assets/mods/OutcastMotorsUI.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "DystopianQoL",
+    "workshopId": "3777144094",
+    "name": "Dystopian QoL",
+    "group": "Dystopian",
+    "blurb": "Adds weapon and health HUD indicators, a player stat panel, crowbar prying and vehicle dismantling.",
+    "poster": "/assets/mods/DystopianQoL.webp",
+    "blurbSource": "derived",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "DystopianNexus",
+    "workshopId": "3781342201",
+    "name": "Dystopian Nexus",
+    "group": "Dystopian",
+    "blurb": "Adds an icon that opens an in-game help window and a death log panel.",
+    "poster": "/assets/mods/DystopianNexus.webp",
+    "blurbSource": "derived",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "DystopianArsenal",
+    "workshopId": "3781355461",
+    "name": "Dystopian Arsenal",
+    "group": "Dystopian",
+    "blurb": "Adds 14 weapons, 22 bags and a range of clothing, from hats and masks to armour sets.",
+    "poster": "/assets/mods/DystopianArsenal.webp",
+    "blurbSource": "derived",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "DystopianMusic",
+    "workshopId": "3781343221",
+    "name": "Dystopian Music",
+    "group": "Dystopian",
+    "blurb": "Adds more than 300 cassette tapes and 12 vinyl records to play in the game.",
+    "poster": "/assets/mods/DystopianMusic.webp",
+    "blurbSource": "derived",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "dystopianvehicleclaim",
+    "workshopId": "3783625977",
+    "name": "Dystopian Vehicle Claim",
+    "group": "Dystopian",
+    "blurb": "Claim a vehicle from the radial menu and keep track of every vehicle you own from a panel.",
+    "poster": "/assets/mods/dystopianvehicleclaim.webp",
+    "posterWidth": 320,
+    "posterHeight": 213
+  },
+  {
+    "id": "DystopianVehicleRespawn",
+    "workshopId": "3786016611",
+    "name": "Dystopian Vehicle Respawn",
+    "group": "Dystopian",
+    "blurb": "Removes vehicles left unseen for too long and replaces them nearby, on the server.",
+    "poster": "/assets/mods/DystopianVehicleRespawn.webp",
+    "blurbSource": "derived",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "DystopianAutos",
+    "workshopId": "3786624763",
+    "name": "Dystopian Autos",
+    "group": "Dystopian",
+    "blurb": "A car mod to add custom cars for use on the Dystopian Outcasts Server.",
+    "poster": "/assets/mods/DystopianAutos.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "DystopianBioFuel",
+    "workshopId": "3787137446",
+    "name": "Dystopian BioFuel",
+    "group": "Dystopian",
+    "blurb": "A mod that allows a player to create fuel and propane from crops.",
+    "poster": "/assets/mods/DystopianBioFuel.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "DystopianCrossbow",
+    "workshopId": "3787699430",
+    "name": "Dystopian Crossbow",
+    "group": "Dystopian",
+    "blurb": "Adds a Crossbow skill.",
+    "poster": "/assets/mods/DystopianCrossbow.webp",
+    "blurbSource": "derived",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "DystopianGym",
+    "workshopId": "3788852762",
+    "name": "Dystopian Gym",
+    "group": "Dystopian",
+    "blurb": "A mod that allows players to use Treadmills and Benchpresses.",
+    "poster": "/assets/mods/DystopianGym.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "DystopianTraits",
+    "workshopId": "3794104910",
+    "name": "Dystopian Traits",
+    "group": "Dystopian",
+    "blurb": "Adds 58 character traits to the server, including Survivor, Medic, Butcher and Mortician.",
+    "poster": "/assets/mods/DystopianTraits.webp",
+    "blurbSource": "derived",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "DystopianVehicleBuilder",
+    "workshopId": "3798218860",
+    "name": "Dystopian Vehicle Builder",
+    "group": "Dystopian",
+    "blurb": "Lets experienced mechanics build and spawn stripped vehicles from an Automotive Building Kit.",
+    "poster": "/assets/mods/DystopianVehicleBuilder.webp",
+    "blurbSource": "derived",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "DystopianSpearFishing",
+    "workshopId": "3798907324",
+    "name": "Dystopian Spear Fishing",
+    "group": "Dystopian",
+    "blurb": "Restores spear fishing, removed from vanilla in Build 42.",
+    "poster": "/assets/mods/DystopianSpearFishing.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "DystopianTinkering",
+    "workshopId": "3799704805",
+    "name": "Dystopian Tinkering",
+    "group": "Dystopian",
+    "blurb": "Adds a Tinkering skill for re-working melee weapons with randomized tiered affixes.",
+    "poster": "/assets/mods/DystopianTinkering.webp",
+    "blurbSource": "derived",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "DystopianTransit",
+    "workshopId": "3809923895",
+    "name": "Dystopian Transit",
+    "group": "Dystopian",
+    "blurb": "Lets an admin place bus stops that players use to teleport between stops.",
+    "poster": "/assets/mods/DystopianTransit.webp",
+    "blurbSource": "derived",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "MRAPMC",
+    "workshopId": "3801434536",
+    "name": "MRAP Mine Clearer",
+    "group": "Dystopian",
+    "blurb": "Adds an MRAP mine clearer vehicle.",
+    "poster": "/assets/mods/MRAPMC.webp",
+    "blurbSource": "derived",
+    "note": "mod.info name is \"MRAPMC\"",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "CosmicSolar",
+    "workshopId": "3792538685",
+    "name": "Cosmic Solar",
+    "group": "Cosmic",
+    "blurb": "Silent solar power.",
+    "poster": "/assets/mods/CosmicSolar.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "CosmicLoadout",
+    "workshopId": "3793798119",
+    "name": "Cosmic Loadout",
+    "group": "Cosmic",
+    "blurb": "A black-and-gold overhaul of the equipment and character UI.",
+    "poster": "/assets/mods/CosmicLoadout.webp",
+    "note": "mod.info name is \"UIoverhaul\"",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "SquirrellyIndustries",
+    "workshopId": "3797845758",
+    "name": "Squirrelly Industries",
+    "group": "Squirrelly Industries",
+    "blurb": "Industrial machines and factory automation for vehicle part manufacturing.",
+    "poster": "/assets/mods/SquirrellyIndustries.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  }
+]
