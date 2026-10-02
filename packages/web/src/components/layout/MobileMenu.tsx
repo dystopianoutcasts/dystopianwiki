@@ -1,27 +1,21 @@
 import { useCallback } from 'react';
-import { NavLink, useParams } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useArticleTOC } from '../../context/ArticleContext';
-import { DEFAULT_VERSION, getVersion } from '../../config/versions.generated';
+import { DEFAULT_VERSION } from '../../config/versions.generated';
+import { siteSections } from './Header';
 import { resolveIcon } from './Sidebar';
 import '../../styles/components/mobile-menu.css';
 
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  version?: string;
 }
 
-export function MobileMenu({ isOpen, onClose, version: versionProp }: MobileMenuProps) {
+export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const tocItems = useArticleTOC();
-  const params = useParams<{ version?: string }>();
-  const version = versionProp || params.version || DEFAULT_VERSION;
 
-  // Same rule as the header: sections of the current version in displayOrder,
-  // and the Build 41 learning path only on build-41.
-  const navSections = [...(getVersion(version)?.sections ?? [])]
-    .filter((s) => s.categories.some((c) => c.articleCount > 0))
-    .sort((a, b) => a.displayOrder - b.displayOrder);
-  const showLearningPath = version === 'build-41';
+  // The same links as the header on every page: the default version's sections, then Live Map.
+  const navSections = siteSections(DEFAULT_VERSION);
 
   const handleTocClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
@@ -69,22 +63,10 @@ export function MobileMenu({ isOpen, onClose, version: versionProp }: MobileMenu
               <span className="mobile-menu__nav-icon">🏠</span>
               Home
             </NavLink>
-            {showLearningPath && (
-              <NavLink
-                to="/learning-path"
-                className={({ isActive }) =>
-                  `mobile-menu__nav-link ${isActive ? 'mobile-menu__nav-link--active' : ''}`
-                }
-                onClick={onClose}
-              >
-                <span className="mobile-menu__nav-icon">{resolveIcon('book')}</span>
-                Learning Path
-              </NavLink>
-            )}
             {navSections.map((s) => (
               <NavLink
                 key={s.id}
-                to={`/pz/${version}/${s.id}`}
+                to={`/pz/${DEFAULT_VERSION}/${s.id}`}
                 className={({ isActive }) =>
                   `mobile-menu__nav-link ${isActive ? 'mobile-menu__nav-link--active' : ''}`
                 }
@@ -97,7 +79,7 @@ export function MobileMenu({ isOpen, onClose, version: versionProp }: MobileMenu
             {/* Plain <a>, not NavLink (T20): /map/ is a separately built
                 static app at map/, not a route inside this SPA. */}
             <a href="/map/" className="mobile-menu__nav-link" onClick={onClose}>
-              Map
+              Live Map
             </a>
           </div>
 

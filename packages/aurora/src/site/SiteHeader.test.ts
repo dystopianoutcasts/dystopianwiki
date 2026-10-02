@@ -30,8 +30,8 @@ describe('T39: the site header on the map', () => {
     expect(src).toMatch(/id="site-search-q"/)
   })
 
-  it('"Map" is the current page, and is a plain link to /map/', () => {
-    expect(src).toMatch(/<a href="\/map\/"[^>]*aria-current="page"[^>]*>\s*Map\s*<\/a>/)
+  it('"Live Map" is the current page, and is a plain link to /map/', () => {
+    expect(src).toMatch(/<a href="\/map\/"[^>]*aria-current="page"[^>]*>\s*Live Map\s*<\/a>/)
   })
 
   it('section links come from the published navigation', () => {

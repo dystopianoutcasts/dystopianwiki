@@ -2,6 +2,13 @@ import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router
 import { FuzzySearchBar } from '../search/FuzzySearchBar';
 import { AuthButton } from '../auth/AuthButton';
 import { VERSIONS, DEFAULT_VERSION, getVersion } from '../../config/versions.generated';
+
+/** The top links: a version's sections that have articles, in displayOrder. Shared with MobileMenu. */
+export function siteSections(versionId: string) {
+  return [...(getVersion(versionId)?.sections ?? [])]
+    .filter((s) => s.categories.some((c) => c.articleCount > 0))
+    .sort((a, b) => a.displayOrder - b.displayOrder);
+}
 import '../../styles/components/header.css';
 
 // Icons
@@ -27,21 +34,13 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
     slug?: string;
   }>();
 
-  // Check if we're on homepage or game-specific pages
-  const isHomePage = location.pathname === '/';
-  const isInPZContext = location.pathname.startsWith('/pz') ||
-                        location.pathname.startsWith(`/${DEFAULT_VERSION}`) ||
-                        location.pathname.startsWith('/learning-path');
-
   const currentVersion = version || DEFAULT_VERSION;
 
-  // Section links follow the current version's sections from the generated
-  // navigation module, in displayOrder, skipping sections with no articles.
-  // The learning path is Build 41 content, so its link shows only there.
-  const navSections = [...(getVersion(currentVersion)?.sections ?? [])]
-    .filter((s) => s.categories.some((c) => c.articleCount > 0))
-    .sort((a, b) => a.displayOrder - b.displayOrder);
-  const showLearningPath = currentVersion === 'build-41';
+  // The same links on every page, matching the live map's copy of this header
+  // (packages/aurora/src/site/SiteHeader.tsx): the default version's sections in
+  // displayOrder, skipping sections with no articles, then Live Map. Older builds
+  // are reached through the version selector, not the top links.
+  const navSections = siteSections(DEFAULT_VERSION);
 
   // Version switcher: preserve as much of the current location as the plan
   // allows. Only /pz/{version}/... URLs get their section/category/slug
@@ -73,60 +72,26 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
           <span className="header__logo-text">Dystopian Outcasts</span>
         </Link>
 
-        {/* Navigation - changes based on context */}
-        <nav className="header__nav">
-          {isHomePage ? (
-            // Homepage: Show game options
+        <nav className="header__nav" aria-label="Site">
+          {navSections.map((s) => (
             <NavLink
-              to={`/pz/${DEFAULT_VERSION}/modding`}
-              className="header__nav-link"
+              key={s.id}
+              to={`/pz/${DEFAULT_VERSION}/${s.id}`}
+              className={({ isActive }) =>
+                `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
+              }
             >
-              Project Zomboid
+              {s.name}
             </NavLink>
-          ) : isInPZContext ? (
-            // PZ context: Show section links
-            <>
-              {showLearningPath && (
-                <NavLink
-                  to="/learning-path"
-                  className={({ isActive }) =>
-                    `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
-                  }
-                >
-                  Learning Path
-                </NavLink>
-              )}
-              {navSections.map((s) => (
-                <NavLink
-                  key={s.id}
-                  to={`/pz/${currentVersion}/${s.id}`}
-                  className={({ isActive }) =>
-                    `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`
-                  }
-                >
-                  {s.name}
-                </NavLink>
-              ))}
-            </>
-          ) : (
-            // Other contexts: placeholder
-            <NavLink
-                to="/"
-                className="header__nav-link"
-              >
-                All Games
-              </NavLink>
-          )}
+          ))}
           {/*
             Plain <a>, not react-router's Link/NavLink (T20, 2026-09-29):
             /map/ is a separately built static app committed at map/, not a
             route inside this SPA. A client-side Link would hijack the click
             and try to virtually route somewhere this app has no match for,
             instead of letting the browser actually request map/index.html.
-            Always rendered, unlike the branches above, so it survives
-            whichever context the visitor is in.
           */}
-          <a href="/map/" className="header__nav-link">Map</a>
+          <a href="/map/" className="header__nav-link">Live Map</a>
         </nav>
 
         {/* Search Bar */}

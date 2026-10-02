@@ -7,7 +7,7 @@
 // runs a HashRouter, and a Link would turn "/" into "#/" and stay on the map.
 //
 // Differences from the wiki header, on purpose:
-// - "Map" is marked as the current page.
+// - "Live Map" is marked as the current page.
 // - The search box is a plain form that lands on the wiki's search page, not the
 //   wiki's live-suggestion search, which needs the wiki's search index and code.
 // - No version selector: the map is Build 42's server, and the menu follows the
@@ -49,7 +49,7 @@ function SiteLinks({ sections }: { sections: readonly SiteSection[] }) {
         </a>
       ))}
       <a href="/map/" className="site-header__nav-link site-header__nav-link--active" aria-current="page">
-        Map
+        Live Map
       </a>
     </>
   )
