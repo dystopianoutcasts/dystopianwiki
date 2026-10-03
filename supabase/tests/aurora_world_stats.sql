@@ -418,8 +418,11 @@ BEGIN
      OR has_function_privilege('authenticated', 'aurora.safe_tz(text)', 'EXECUTE') THEN
     RAISE EXCEPTION 'FAIL: safe_tz is internal and must not be client-callable';
   END IF;
-  IF has_function_privilege('anon', 'aurora.deaths_admin(text)', 'EXECUTE')
-     OR NOT has_function_privilege('authenticated', 'aurora.deaths_admin(text)', 'EXECUTE') THEN
+  -- 032 replaces deaths_admin(text) with deaths_admin(text, text DEFAULT NULL); check
+  -- whichever form exists (exactly one does), with the same rule.
+  IF COALESCE(to_regprocedure('aurora.deaths_admin(text,text)'), to_regprocedure('aurora.deaths_admin(text)')) IS NULL
+     OR has_function_privilege('anon', COALESCE(to_regprocedure('aurora.deaths_admin(text,text)'), to_regprocedure('aurora.deaths_admin(text)'))::oid, 'EXECUTE')
+     OR NOT has_function_privilege('authenticated', COALESCE(to_regprocedure('aurora.deaths_admin(text,text)'), to_regprocedure('aurora.deaths_admin(text)'))::oid, 'EXECUTE') THEN
     RAISE EXCEPTION 'FAIL: deaths_admin must be authenticated only';
   END IF;
   IF has_table_privilege('anon', 'aurora.deaths', 'SELECT') OR has_table_privilege('authenticated', 'aurora.deaths', 'SELECT') THEN
