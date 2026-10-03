@@ -9,39 +9,16 @@
  * the Aurora visibility setting allows it, already delayed and rounded as that
  * setting says. Zero rows is a normal answer, not an error.
  *
- * The join to online, living players mirrors playerFeatures in
- * packages/aurora/src/layers/transform.ts. It is copied rather than imported:
- * aurora is not a dependency of the web package.
- *
- * `name` is `display_name`, falling back to `username` only when there is no
- * display name. T27 removes that fallback everywhere at once; this is the one
- * place in packages/web that decides it, per VISIBILITY.md note 3.
+ * The join to online, living players is lib/serverNowDots.ts (buildDots), which
+ * mirrors playerFeatures in packages/aurora/src/layers/transform.ts. Each dot carries
+ * the username and the survivor's name (T62); components/landing/ServerNow.tsx picks
+ * which one to show from the Survivor name / Username toggle (lib/nameMode.ts).
  */
 import { useQuery } from '@tanstack/react-query'
 import { auroraClient, AURORA_SERVER_ID } from '../lib/aurora'
+import { buildDots, type MapDot, type PlayerRow, type PositionRow } from '../lib/serverNowDots'
 
-export interface MapDot {
-  /** Stable key for React. Never rendered. */
-  id: string
-  /** Shown next to the dot. */
-  name: string
-  /** World squares. */
-  x: number
-  y: number
-}
-
-interface PlayerRow {
-  username: string
-  display_name: string | null
-  online: boolean
-  is_dead: boolean | null
-}
-
-interface PositionRow {
-  username: string
-  x: number
-  y: number
-}
+export type { MapDot }
 
 async function fetchDots(): Promise<MapDot[]> {
   if (!auroraClient) return []
@@ -61,15 +38,7 @@ async function fetchDots(): Promise<MapDot[]> {
     const players = (playersRes.data ?? []) as PlayerRow[]
     const positions = (positionsRes.data ?? []) as PositionRow[]
 
-    // Only players who are online now and alive. The positions view does not
-    // filter on online by itself, so a logged-off player can still have a row.
-    const drawable = new Map(
-      players.filter((p) => !p.is_dead).map((p) => [p.username, p.display_name || p.username]),
-    )
-
-    return positions
-      .filter((pos) => drawable.has(pos.username) && Number.isFinite(pos.x) && Number.isFinite(pos.y))
-      .map((pos) => ({ id: pos.username, name: drawable.get(pos.username) as string, x: pos.x, y: pos.y }))
+    return buildDots(players, positions)
   } catch {
     return []
   }

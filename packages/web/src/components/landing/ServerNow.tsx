@@ -3,13 +3,17 @@ import { useServerNow } from '../../hooks/useServerNow';
 import { useHomeSummary } from '../../hooks/useHomeSummary';
 import { counterText, TBD } from '../../lib/homeSummary';
 import { dayCaption, viewerTimeZone } from '../../lib/homeSummaryRpc';
+import { chooseNameMode, loadNameMode, NAME_MODE_STORAGE_KEY, shownName, type NameMode } from '../../lib/nameMode';
+import type { MapDot } from '../../lib/serverNowDots';
 import { centerAt, fitScale, imageSize, scrollAt, truncateName, type MapScale, type WorldPoint } from '../../utils/mapView';
 import '../../styles/components/server-now.css';
+import { WhoIsOnNow } from './WhoIsOnNow';
 
 // "The world right now": live counters from aurora.home_summary() (027), who is on,
 // then the server map as a full-width banner with a dot and name for each player
 // online, and a link to the live map centred on the same place. No zoom control,
-// no Leaflet.
+// no Leaflet. Names follow the Survivor name / Username switch (T62), saved under the
+// live map's own localStorage key, so one choice applies to both.
 //
 // The banner is as wide as the page and a fixed height (owner, 2026-10-02). On a
 // wide screen the whole world's width is visible and it pans up and down; on a phone
@@ -82,6 +86,17 @@ export function ServerNow() {
   const [announcement, setAnnouncement] = useState('');
   const [center, setCenter] = useState<WorldPoint>(ROSEWOOD);
   const [scale, setScale] = useState<MapScale>(() => fitScale(1100));
+  const [nameMode, setNameMode] = useState<NameMode>(() => loadNameMode());
+  const changeNameMode = useCallback((mode: NameMode) => chooseNameMode(mode, setNameMode), []);
+
+  // The live map in another tab changed the choice: follow it here too.
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === NAME_MODE_STORAGE_KEY) setNameMode(loadNameMode());
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
 
   // Measure the banner and size the picture to it, before paint, and again whenever
   // the window is resized; the view stays centred on the same place.
@@ -198,7 +213,7 @@ export function ServerNow() {
   // on the button. A dot with no usable position (the list is built from positions, so
   // this should not happen) does nothing.
   const showOnMap = useCallback(
-    (dot: { id: string; name: string; x: number; y: number }) => {
+    (dot: MapDot) => {
       const el = viewportRef.current;
       if (!el || !Number.isFinite(dot.x) || !Number.isFinite(dot.y)) return;
       const behavior: ScrollBehavior = reducedMotion() ? 'auto' : 'smooth';
@@ -216,9 +231,9 @@ export function ServerNow() {
       // Cleared first so a repeat click is announced again.
       setAnnouncement('');
       if (announceFrame.current !== null) cancelAnimationFrame(announceFrame.current);
-      announceFrame.current = requestAnimationFrame(() => setAnnouncement(`Map centred on ${dot.name}`));
+      announceFrame.current = requestAnimationFrame(() => setAnnouncement(`Map centred on ${shownName(dot, nameMode)}`));
     },
-    [scale],
+    [scale, nameMode],
   );
 
   // Nothing may fire after the page is left.
@@ -250,29 +265,17 @@ export function ServerNow() {
         <p className="home-counters__note">{dayCaption(summary?.dayTz, viewerTimeZone())}</p>
 
         <div className="home-onnow">
-          <h3 className="home-onnow__title">Who is on now</h3>
-          {dots.length > 0 ? (
-            <ul className="home-onnow__list">
-              {dots.map((dot) => (
-                <li key={dot.id} className="home-onnow__item">
-                  <button
-                    type="button"
-                    className="home-onnow__name"
-                    aria-label={`Show ${dot.name} on the map`}
-                    onClick={() => showOnMap(dot)}
-                  >
-                    {dot.name}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="home-onnow__empty">
-              {summary && summary.onlineNow > 0
+          <WhoIsOnNow
+            dots={dots}
+            mode={nameMode}
+            onModeChange={changeNameMode}
+            onShow={showOnMap}
+            emptyText={
+              summary && summary.onlineNow > 0
                 ? `${summary.onlineNow} on now, positions hidden.`
-                : 'Nobody is on right now. Be the first.'}
-            </p>
-          )}
+                : 'Nobody is on right now. Be the first.'
+            }
+          />
           <p className="sr-only" role="status" aria-live="polite">
             {announcement}
           </p>
@@ -326,7 +329,7 @@ export function ServerNow() {
                 style={{ left: dot.x * scale.pixelsPerSquare, top: dot.y * scale.pixelsPerSquare }}
               >
                 <span className="server-now__dot" />
-                <span className="server-now__name">{truncateName(dot.name)}</span>
+                <span className="server-now__name">{truncateName(shownName(dot, nameMode))}</span>
               </li>
             ))}
           </ul>
