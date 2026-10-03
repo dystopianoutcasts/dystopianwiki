@@ -59,7 +59,19 @@ export function saveNameMode(mode: NameMode, storage: StorageLike | null = defau
   }
 }
 
-/** What the toggle does on a click: save the choice, then show it. */
+/** Other sections of this page that follow the switch (the leaderboard, T66). A 'storage'
+ * event only reaches OTHER tabs, so a change made on this page is passed on here. */
+const listeners = new Set<(mode: NameMode) => void>()
+
+/** Follow the switch on this page; returns the unsubscribe. */
+export function subscribeNameMode(listener: (mode: NameMode) => void): () => void {
+  listeners.add(listener)
+  return () => {
+    listeners.delete(listener)
+  }
+}
+
+/** What the toggle does on a click: save the choice, show it, and tell the page's other sections. */
 export function chooseNameMode(
   mode: NameMode,
   apply: (mode: NameMode) => void,
@@ -67,6 +79,7 @@ export function chooseNameMode(
 ): void {
   saveNameMode(mode, storage)
   apply(mode)
+  for (const l of [...listeners]) l(mode)
 }
 
 /** The name to show for a player: the survivor's name (falling back to the username when

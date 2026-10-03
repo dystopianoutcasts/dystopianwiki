@@ -1,0 +1,159 @@
+/**
+ * Home page leaderboard (components/landing/LeaderboardView.tsx, T66).
+ * Site tokens, plus three medal colours for the rank 1-3 crowns. Both site themes
+ * are dark, and each crown also carries its rank number and a text alternative,
+ * so the colour is never the only signal.
+ */
+
+.lb {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* Tabs: a segmented row like the name switch. Selected is filled and bold, so the
+   state is not colour alone. 40px tall (WCAG 2.5.8 asks for 24px). */
+.lb-tabs {
+  display: flex;
+  gap: var(--spacing-2);
+  margin: 0 0 var(--spacing-3);
+  padding: var(--spacing-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-full);
+  background: var(--color-background);
+}
+
+.lb-tab {
+  flex: 1 1 0;
+  min-height: 40px;
+  min-width: 0;
+  padding: 0 var(--spacing-3);
+  border: 0;
+  border-radius: var(--border-radius-full);
+  background: transparent;
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+.lb-tab:hover:not([aria-selected='true']) {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+.lb-tab[aria-selected='true'] {
+  background: var(--color-link);
+  color: var(--color-background);
+  font-weight: var(--font-weight-bold);
+}
+
+.lb-tab:focus-visible,
+.lb-panel:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.lb-panel {
+  border-radius: var(--border-radius-md, 6px);
+}
+
+.lb-help {
+  margin: 0 0 var(--spacing-3);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.lb-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.lb-table th {
+  padding: var(--spacing-2) var(--spacing-3);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: left;
+}
+
+.lb-table td {
+  padding: var(--spacing-2) var(--spacing-3);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  vertical-align: middle;
+}
+
+.lb-table .lb-rank {
+  width: 3.5rem;
+  text-align: center;
+}
+
+td.lb-rank {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+.lb-name {
+  font-weight: var(--font-weight-bold);
+  overflow-wrap: anywhere;
+}
+
+.lb-table .lb-value {
+  text-align: right;
+  white-space: nowrap;
+}
+
+td.lb-value {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Crown with the rank number under it. */
+.lb-medal {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.lb-medal__crown {
+  display: block;
+  stroke: var(--color-background);
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+
+.lb-medal__num {
+  margin-top: 2px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.lb-medal--gold { color: #f2c94c; }
+.lb-medal--silver { color: #d3d9e0; }
+.lb-medal--bronze { color: #e0965a; }
+.lb-medal--gold .lb-medal__crown { fill: #f2c94c; }
+.lb-medal--silver .lb-medal__crown { fill: #d3d9e0; }
+.lb-medal--bronze .lb-medal__crown { fill: #e0965a; }
+
+.lb-source {
+  margin-top: var(--spacing-3);
+}
+
+@media (max-width: 480px) {
+  .lb-table th,
+  .lb-table td {
+    padding: var(--spacing-2);
+  }
+
+  .lb-table .lb-rank {
+    width: 2.75rem;
+  }
+}
