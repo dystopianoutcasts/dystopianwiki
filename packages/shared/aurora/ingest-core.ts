@@ -40,9 +40,11 @@ import type {
   StatTables,
   VehRecord,
   VnameRecord,
+  VscrRecord,
   ZgridRecord,
   ZoneRecord,
 } from './parser.ts';
+import { isVehicleScriptName } from './parser.ts';
 
 export type Row = Record<string, unknown>;
 
@@ -153,8 +155,8 @@ export interface PlanOptions {
 /**
  * Tables whose rows carry `world_id` (032). vehicles is tagged inside
  * aurora.upsert_vehicles (it reads the server's current world), vehicle_claims by
- * claims.ts's rows, map_objects is not written by the importer. servers, item_catalog and vehicle_names are not
- * per world.
+ * claims.ts's rows, map_objects is not written by the importer. servers, item_catalog, vehicle_names and
+ * vehicle_scripts (038) are not per world.
  */
 export const WORLD_TAGGED_TABLES: ReadonlySet<string> = new Set([
   'health_samples',
@@ -629,6 +631,18 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
     upserts.push({ table: 'vehicle_names', onConflict: 'script_name', rows: vnameRows, optional: true });
   }
 
+  // --- vehicle scripts (038) --------------------------------------------------
+  // Every script the server has loaded, per server, not per world (a catalogue, like
+  // item_catalog). One row per script, the newest record's t as seen_at; merged on
+  // conflict, so seen_at moves forward and a script missing from the newest pass keeps
+  // its old seen_at (the public view shows the newest pass only). Not liveOnly: a
+  // record carries its own time and a replay writes the same values. Optional: 038 may
+  // not be applied yet, and a missing table must not stall the cursor.
+  const vscrRows = buildVehicleScriptRows(byKind(records, 'vscr'), serverId);
+  if (vscrRows.length > 0) {
+    upserts.push({ table: 'vehicle_scripts', onConflict: 'server_id,script_name', rows: vscrRows, optional: true });
+  }
+
   // --- item_catalog --------------------------------------------------------
   const catalogRows = dedupe(catalog, (c: CatalogRecord) => c.ft, (c) => c.t).map((c): Row => ({
     server_id: serverId,
@@ -1007,6 +1021,29 @@ export function buildVehicleNameRows(records: VnameRecord[]): Row[] {
     script_name: script,
     display_name: v.name,
     updated_at: toIso(v.t),
+  }));
+}
+
+/**
+ * Rows for aurora.vehicle_scripts from `vscr` records: { server_id, script_name,
+ * seen_at: ISO of t }, one per script, keeping the newest t. An entry that is not a
+ * non-empty string of at most 120 characters is dropped (the parser drops it first;
+ * this is the second line for records built elsewhere).
+ */
+export function buildVehicleScriptRows(records: VscrRecord[], serverId: string): Row[] {
+  const newest = new Map<string, number>();
+  for (const r of records) {
+    if (!Array.isArray(r.n)) continue;
+    for (const name of r.n as unknown[]) {
+      if (!isVehicleScriptName(name)) continue;
+      const prev = newest.get(name);
+      if (prev === undefined || r.t > prev) newest.set(name, r.t);
+    }
+  }
+  return [...newest.entries()].map(([script, t]): Row => ({
+    server_id: serverId,
+    script_name: script,
+    seen_at: toIso(t),
   }));
 }
 

@@ -367,6 +367,47 @@ Deno.test('a vname line is counted as parsed, never as unknown, and several chun
 });
 
 // ---------------------------------------------------------------------------
+// vscr (exporter 0.7.3, T73; migration 038)
+// ---------------------------------------------------------------------------
+
+Deno.test('vscr: a good record parses, keeps every name in order, and is counted as parsed', () => {
+  const r = parseLineDetailed(`${P1} A1 {"k":"vscr","t":1759500000000,"n":["Base.76chevyK20","Base.CarNormal","Base.MRAPMC"]}.`);
+  if (!r.ok || r.record.k !== 'vscr') throw new Error(`not vscr: ${JSON.stringify(r)}`);
+  assertEquals(r.record.t, 1759500000000);
+  assertEquals(r.record.n, ['Base.76chevyK20', 'Base.CarNormal', 'Base.MRAPMC']);
+  const stats = emptyStats();
+  const out = splitLines(`${P1} A1 {"k":"vscr","t":1,"n":["Base.A"]}.\n${P1} A1 {"k":"vscr","t":1,"n":["Base.B"]}.\n`, '', stats);
+  assertEquals(out.records.map((x) => x.k), ['vscr', 'vscr']);
+  assertEquals(stats.unknownKind, {});
+  assertEquals(stats.badShape, 0);
+});
+
+Deno.test('vscr: bad entries are dropped and the rest kept', () => {
+  const long = 'x'.repeat(121);
+  const ok120 = 'y'.repeat(120);
+  const r = parseLineDetailed(
+    `${P1} A1 {"k":"vscr","t":5,"n":["Base.Good","",5,null,["Base.Nested"],{"s":"Base.Obj"},"${long}","${ok120}",true,"Base.Also"]}.`,
+  );
+  if (!r.ok || r.record.k !== 'vscr') throw new Error(`not vscr: ${JSON.stringify(r)}`);
+  assertEquals(r.record.n, ['Base.Good', ok120, 'Base.Also']);
+  const empty = parseLineDetailed(`${P1} A1 {"k":"vscr","t":5,"n":[]}.`);
+  assert(empty.ok && empty.record.k === 'vscr' && empty.record.n.length === 0, 'n [] parses to an empty list');
+});
+
+Deno.test('vscr: n missing or not an array drops the record (bad-shape)', () => {
+  for (const bad of [
+    '{"k":"vscr","t":5}',
+    '{"k":"vscr","t":5,"n":"Base.CarTaxi"}',
+    '{"k":"vscr","t":5,"n":{"0":"Base.CarTaxi"}}',
+    '{"k":"vscr","t":5,"n":null}',
+    '{"k":"vscr","n":["Base.CarTaxi"]}',
+  ]) {
+    const r = parseLineDetailed(`${P1} A1 ${bad}.`);
+    assert(!r.ok && r.reason === 'bad-shape', `rejected as bad-shape: ${bad}`);
+  }
+});
+
+// ---------------------------------------------------------------------------
 // world (exporter 0.6.0, T46/T48)
 // ---------------------------------------------------------------------------
 

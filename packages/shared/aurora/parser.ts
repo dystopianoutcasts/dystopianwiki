@@ -86,6 +86,13 @@
 //            entries; every 10 min and on change; "e":[] means the table is empty).
 //            A bad entry is dropped, never a shape failure; "e":{} (an empty Lua
 //            table through the old JSON writer) reads as [].
+//   vscr     n [full script name, ...], EVERY vehicle script the server has loaded
+//            (exporter 0.7.3, T73; sorted, split over several records of about
+//            1,800 characters, all carrying the same t; sent once per boot, then on
+//            change or every 24 h). `n` must be an array or the record is dropped
+//            (bad-shape); an entry that is not a non-empty string of at most 120
+//            characters is dropped, the rest kept. It feeds aurora.vehicle_scripts
+//            (038); seen_at is the record's t.
 //
 // `boot.gv` (exporter 0.5.0) is the game version; it becomes servers.game_version.
 // `hb.st.game` also carries zombies-killed, world-age-hours, oa-ev-zombie-dead and
@@ -120,6 +127,7 @@ export const KINDS = [
   'kill',
   'facs',
   'lb',
+  'vscr',
   // Diagnostic kinds: known so they are not reported as unknown, but they map
   // to no table - buildPlan produces no rows for them.
   'probe',
@@ -429,6 +437,24 @@ export interface LbRecord extends BaseRecord {
   e: LbEntry[];
 }
 
+/**
+ * Every vehicle script the server has loaded (exporter 0.7.3, T73): full script
+ * names ("Base.CarTaxi"). One pass is several records with the same `t`. The parser
+ * has already dropped entries that are not usable script names.
+ */
+export interface VscrRecord extends BaseRecord {
+  k: 'vscr';
+  n: string[];
+}
+
+/** Longest vehicle script name kept, in characters (038's CHECK). */
+export const VEHICLE_SCRIPT_MAX = 120;
+
+/** A usable `vscr` entry: a non-empty string of at most 120 characters. */
+export function isVehicleScriptName(v: unknown): v is string {
+  return typeof v === 'string' && v !== '' && v.length <= VEHICLE_SCRIPT_MAX;
+}
+
 /** The exporter world id contract: 8-64 characters, letters, digits and dashes. */
 export const WORLD_ID_PATTERN = /^[A-Za-z0-9-]{8,64}$/;
 
@@ -455,7 +481,8 @@ export type AuroraRecord =
   | WorldRecord
   | KillRecord
   | FacsRecord
-  | LbRecord;
+  | LbRecord
+  | VscrRecord;
 
 export type ParseFailure =
   | 'not-aurora' // no A1 marker: someone else's log line
@@ -583,6 +610,9 @@ function checkShape(o: Record<string, unknown>): boolean {
       // The table must be there: an array, or {} (the old JSON writer's empty
       // table). A bad ENTRY is dropped after the check, never a shape failure.
       return Array.isArray(o.e) || (isPlainObject(o.e) && Object.keys(o.e).length === 0);
+    case 'vscr':
+      // The list must be an array; a bad ENTRY is dropped after the check.
+      return Array.isArray(o.n);
     case 'npcgone':
     case 'npcogone':
       return isStr(o.id) && o.id !== '';
@@ -621,6 +651,8 @@ export function parseLineDetailed(line: string): ParseResult {
     o.e = Array.isArray(o.e) ? o.e.filter(isLbEntry) : [];
     if (o.src !== undefined && !isStr(o.src)) delete o.src;
   }
+  // The script list: entries that are not usable script names dropped, the rest kept.
+  if (o.k === 'vscr') o.n = (o.n as unknown[]).filter(isVehicleScriptName);
 
   return { ok: true, record: o as unknown as AuroraRecord };
 }

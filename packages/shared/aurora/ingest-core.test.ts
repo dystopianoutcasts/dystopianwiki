@@ -14,7 +14,9 @@ import {
   buildHealthRows,
   buildPlan,
   buildSavedPlayerRows,
+  buildVehicleScriptRows,
   tagRows,
+  WORLD_TAGGED_TABLES,
   chunk,
   isHealthHeartbeat,
   ONLINE_WINDOW_MS,
@@ -25,7 +27,7 @@ import {
 } from './ingest-core.ts';
 import { parseLineDetailed } from './parser.ts';
 import { inList } from './rest.ts';
-import type { AuroraRecord, FacsRecord, HbRecord, LbRecord, NpcOutpostRecord, NpcRecord, PosRecord } from './parser.ts';
+import type { AuroraRecord, FacsRecord, HbRecord, LbRecord, NpcOutpostRecord, NpcRecord, PosRecord, VscrRecord } from './parser.ts';
 
 function assertEquals<T>(actual: T, expected: T, msg = ''): void {
   const a = JSON.stringify(actual);
@@ -1130,6 +1132,76 @@ Deno.test('vname is written after servers, and a missing table is skipped, not t
 });
 
 // ---------------------------------------------------------------------------
+// vscr -> aurora.vehicle_scripts (038)
+// ---------------------------------------------------------------------------
+
+const vscrLine = (json: string): AuroraRecord => {
+  const r = parseLineDetailed(`[03-10-26 22:00:00.000] A1 ${json}.`);
+  if (!r.ok) throw new Error(`fixture line rejected: ${json} ${JSON.stringify(r)}`);
+  return r.record;
+};
+
+Deno.test('vscr upserts aurora.vehicle_scripts on server_id,script_name, optional, not liveOnly, never world-tagged', () => {
+  const t = 1759500000000;
+  const plan = buildPlan([vscrLine(`{"k":"vscr","t":${t},"n":["Base.76chevyK20","Base.CarNormal"]}`)], SERVER, { worldId: 'w2' });
+  const v = table(plan.upserts, 'vehicle_scripts');
+  assert(v !== undefined, 'vehicle_scripts upsert present');
+  assertEquals(v!.onConflict, 'server_id,script_name');
+  assert(v!.optional === true, 'optional: 038 may not be applied yet');
+  assert(v!.liveOnly !== true, 'a script list replays safely');
+  assertEquals(v!.rows, [
+    { server_id: SERVER, script_name: 'Base.76chevyK20', seen_at: new Date(t).toISOString() },
+    { server_id: SERVER, script_name: 'Base.CarNormal', seen_at: new Date(t).toISOString() },
+  ]);
+  assert(!WORLD_TAGGED_TABLES.has('vehicle_scripts'), 'vehicle_scripts is not in WORLD_TAGGED_TABLES');
+  assertEquals(plan.upserts[0].table, 'servers');
+  assertEquals(plan.upserts.filter((u) => u.table === 'vehicle_scripts').length, 1);
+});
+
+Deno.test('vscr: two records with the same t (one pass) give one row per script', () => {
+  const t = 1759500000000;
+  const plan = buildPlan([
+    vscrLine(`{"k":"vscr","t":${t},"n":["Base.A","Base.B"]}`),
+    vscrLine(`{"k":"vscr","t":${t},"n":["Base.B","Base.C"]}`),
+  ], SERVER);
+  const rows = table(plan.upserts, 'vehicle_scripts')!.rows;
+  assertEquals(rows.map((r) => r.script_name).sort(), ['Base.A', 'Base.B', 'Base.C']);
+  for (const r of rows) assertEquals(r.seen_at, new Date(t).toISOString());
+});
+
+Deno.test('vscr: across passes the newest t per script wins, whatever the order', () => {
+  const rows = buildVehicleScriptRows([
+    { k: 'vscr', t: 2000, n: ['Base.A'] },
+    { k: 'vscr', t: 1000, n: ['Base.A', 'Base.Old'] },
+  ] as VscrRecord[], SERVER);
+  assertEquals(rows.find((r) => r.script_name === 'Base.A')!.seen_at, new Date(2000).toISOString());
+  assertEquals(rows.find((r) => r.script_name === 'Base.Old')!.seen_at, new Date(1000).toISOString());
+});
+
+Deno.test('vscr: a record with bad entries writes the good ones only (parsed line and a hand-built record)', () => {
+  const parsed = buildPlan([vscrLine(`{"k":"vscr","t":7,"n":["Base.Good","",3,null,"${'x'.repeat(121)}","Base.Too"]}`)], SERVER);
+  assertEquals(table(parsed.upserts, 'vehicle_scripts')!.rows.map((r) => r.script_name), ['Base.Good', 'Base.Too']);
+  const built = buildVehicleScriptRows([{ k: 'vscr', t: 7, n: ['Base.Good', '', 3, null, 'x'.repeat(121)] } as unknown as VscrRecord], SERVER);
+  assertEquals(built.map((r) => r.script_name), ['Base.Good']);
+});
+
+Deno.test('vscr: n missing drops the record and nothing is written; an empty list writes nothing', () => {
+  const r = parseLineDetailed('[03-10-26 22:00:00.000] A1 {"k":"vscr","t":7}.');
+  assert(!r.ok && r.reason === 'bad-shape', 'n missing is bad-shape');
+  assert(table(buildPlan([vscrLine('{"k":"vscr","t":7,"n":[]}')], SERVER).upserts, 'vehicle_scripts') === undefined, 'empty n, no upsert');
+  assert(table(buildPlan([vscrLine('{"k":"vscr","t":7,"n":["",5]}')], SERVER).upserts, 'vehicle_scripts') === undefined, 'no usable entry, no upsert');
+  assert(table(buildPlan([{ k: 'hb', t: 1 }] as AuroraRecord[], SERVER).upserts, 'vehicle_scripts') === undefined, 'no vscr, no upsert');
+});
+
+Deno.test('vscr: a missing table is skipped, not thrown', async () => {
+  const step = table(buildPlan([vscrLine('{"k":"vscr","t":1,"n":["Base.A"]}')], SERVER).upserts, 'vehicle_scripts')!;
+  let skipped = 0;
+  const wrote = await runPlanStep(step.optional, () => Promise.reject(new Error('upsert vehicle_scripts: 404 {"code":"PGRST205"}')), () => { skipped++; });
+  assertEquals(wrote, false);
+  assertEquals(skipped, 1);
+});
+
+// ---------------------------------------------------------------------------
 // Worlds (032, T48): every row of every tagged table, or none
 // ---------------------------------------------------------------------------
 
@@ -1156,6 +1228,7 @@ function everyKindBatch(): AuroraRecord[] {
     `{"k":"death","t":${t + 11},"u":"carol","x":5,"y":6}`,
     `{"k":"vname","t":${t + 12},"n":[["Base.Van","Van"]]}`,
     `{"k":"catalog","t":${t + 13},"ft":"Base.Axe","dn":"Axe"}`,
+    `{"k":"vscr","t":${t + 14},"n":["Base.Van","Base.Car"]}`,
   ];
   return lines.map((json) => {
     const r = parseLineDetailed(`[02-10-26 12:00:00.000] A1 ${json}.`);
@@ -1169,7 +1242,7 @@ const TAGGED_IN_BATCH = [
   'health_samples', 'players', 'player_positions', 'player_position_history', 'safehouses',
   'zones', 'zombie_grid', 'deaths', 'npc_groups', 'npc_outposts',
 ];
-const NEVER_TAGGED = ['servers', 'item_catalog', 'vehicle_names'];
+const NEVER_TAGGED = ['servers', 'item_catalog', 'vehicle_names', 'vehicle_scripts'];
 
 /** The key-set rule, walked over every upsert body and every upsert_vehicles row list. */
 function assertUniformKeys(plan: IngestPlan, label: string): void {
