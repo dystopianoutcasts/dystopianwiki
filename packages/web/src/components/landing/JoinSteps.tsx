@@ -2,6 +2,7 @@ import { useId } from 'react';
 import { useHomeSummary } from '../../hooks/useHomeSummary';
 import { joiningText, TBD } from '../../lib/homeSummary';
 import { SERVER_IP, SERVER_PORT } from '../../lib/links';
+import { CopyField } from './CopyField';
 
 // "Join in three steps". The Workshop collection link is not published yet (the
 // owner decides), so it reads TBD; the address is the owner's (lib/links.ts); the mod
@@ -39,8 +40,8 @@ export function JoinSteps() {
             <h3 className="home-step__title">Connect</h3>
             <p>In Project Zomboid, choose Join, then add the server by its address.</p>
             <p className="home-step__detail">
-              IP: <code className="home-address__value">{SERVER_IP}</code>, port:{' '}
-              <code className="home-address__value">{SERVER_PORT}</code>
+              IP: <CopyField value={SERVER_IP} what="IP" />, port:{' '}
+              <CopyField value={String(SERVER_PORT)} what="port" />
             </p>
             <p className="home-step__detail">Joining: {joiningText(summary)}</p>
           </li>

@@ -10,6 +10,7 @@ import {
   type HomeSummary,
 } from '../../lib/homeSummary';
 import { SERVER_ADDRESS } from '../../lib/links';
+import { CopyField } from './CopyField';
 import { homeWorldLine } from '../../lib/worldsPanel';
 import '../../styles/components/hero.css';
 import '../../styles/components/home-sections.css';
@@ -148,7 +149,7 @@ export function HeroSection() {
           </a>
         </div>
         <p className="home-address">
-          Server address: <code className="home-address__value">{SERVER_ADDRESS}</code>
+          Server address: <CopyField value={SERVER_ADDRESS} what="server address" />
         </p>
 
         {/* Search Bar */}
