@@ -5,6 +5,7 @@ import 'leaflet.markercluster'
 import 'leaflet.heat'
 import type { AreaFeature, DeathFeature, NpcGroupFeature, NpcOutpostFeature, ObjectFeature, PlayerFeature, RectFeature, StreetFeature, VehicleFeature, WorldMapFeatures, ZoneFeature } from './transform'
 import { streetWeight } from './transform'
+import { casingStyle, highlightFor, highlightedLast, styleForStreet } from './streetHighlights'
 import type { TilesConfig } from '../map/tiles'
 import { zombieTileUrl } from '../map/tiles'
 import { worldBounds } from '../map/coords'
@@ -207,8 +208,6 @@ export function buildZombieDensityLayer(cfg: TilesConfig, tilesBase?: string): L
   })
 }
 
-const STREET_COLOR = '#9aa0a8'
-const STREET_OPACITY = 0.55
 const STREET_HOVER_COLOR = '#ffffff'
 const STREET_HOVER_BOOST = 3
 /** The invisible line's own weight: how wide a pointer target every street gets, whatever
@@ -230,16 +229,23 @@ const STREET_HIT_WEIGHT = 16
  */
 export function buildStreets(features: StreetFeature[], zoom: number, minZoom: number, maxZoom: number): L.Layer {
   const group = L.layerGroup()
-  for (const f of features) {
+  // Highlighted streets (streetHighlights.ts) go last, so they draw above every plain one.
+  for (const f of highlightedLast(features)) {
     const weight = streetWeight(zoom, minZoom, maxZoom, f.width)
-    const visible = L.polyline(f.latlngs, { color: STREET_COLOR, weight, opacity: STREET_OPACITY, interactive: false })
+    const highlight = highlightFor(f.key)
+    const rest = styleForStreet(weight, highlight)
+    const casing = casingStyle(weight, highlight)
+    const visible = L.polyline(f.latlngs, { ...rest, interactive: false })
     const hit = L.polyline(f.latlngs, { color: '#000000', weight: STREET_HIT_WEIGHT, opacity: 0 })
     hit.bindTooltip(escapeHtml(f.label), { sticky: true })
     hit.on('mouseover', () => {
-      visible.setStyle({ color: STREET_HOVER_COLOR, weight: weight + STREET_HOVER_BOOST, opacity: 1 })
+      // A highlighted road keeps its colour on hover; the weight boost is the feedback.
+      visible.setStyle(highlight ? { ...rest, weight: rest.weight + STREET_HOVER_BOOST } : { color: STREET_HOVER_COLOR, weight: weight + STREET_HOVER_BOOST, opacity: 1 })
       visible.bringToFront()
     })
-    hit.on('mouseout', () => visible.setStyle({ color: STREET_COLOR, weight, opacity: STREET_OPACITY }))
+    hit.on('mouseout', () => visible.setStyle(rest))
+    // The casing sits under the coloured line, in the same layer group and added first.
+    if (casing) group.addLayer(L.polyline(f.latlngs, { ...casing, interactive: false }))
     group.addLayer(visible)
     group.addLayer(hit)
   }
