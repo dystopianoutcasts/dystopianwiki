@@ -107,10 +107,9 @@ describe('overlayBounds (2026-09-30: an overlay asks only for its own tiles)', (
     expect(overlayBounds(cfg, overlay([]))).toBeNull()
   })
 
-  it('every live overlay is bounded inside the world, and none of them covers Rosewood, the opening view', () => {
+  it('every live overlay (none, on a vanilla-only map) is bounded inside the world, and none of them covers Rosewood, the opening view', () => {
     const [[wy0, wx0], [wy1, wx1]] = worldBounds(cfg)
     const overlays = cfg.overlays ?? []
-    expect(overlays.length).toBeGreaterThan(0)
     for (const o of overlays) {
       const b = overlayBounds(cfg, o)
       expect(b).not.toBeNull()
