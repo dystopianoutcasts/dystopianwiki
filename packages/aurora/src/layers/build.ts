@@ -13,10 +13,24 @@ import { placeLabels } from './labelPlacement'
 // T41: imported from ./panes directly (not from map/MapView.tsx, which imports this
 // very file) to avoid a circular import - see panes.ts's own header comment.
 import { DEATH_PANE, NPC_PANE, PLAYERS_PANE, PLAYER_NAMES_PANE } from '../map/panes'
-
-function escapeHtml(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
-}
+// T67: every symbol's look lives in symbols.ts (no Leaflet), shared with the map key.
+import {
+  OBJECT_STYLE,
+  ROAD_STYLE,
+  SAFEHOUSE_STYLE,
+  STREET_COLOR,
+  STREET_OPACITY,
+  WORLD_FILL,
+  ZONE_AREA_STYLE,
+  ZONE_POINT_STYLE,
+  deathIconHtml,
+  escapeHtml,
+  npcGroupIconHtml,
+  outpostStyle,
+  playerIconHtml,
+  vehicleIconHtml,
+  vehicleIconSize,
+} from './symbols'
 
 /**
  * Players, clustered. A live position is a filled dot; a delayed, cell-rounded one is a
@@ -35,9 +49,8 @@ function escapeHtml(s: string): string {
 export function buildPlayers(features: PlayerFeature[], own: ReadonlySet<string>): L.Layer {
   const group = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 40, clusterPane: PLAYERS_PANE })
   for (const f of features) {
-    const cls = ['aurora-dot', f.delayed ? 'is-delayed' : 'is-live', own.has(f.username) ? 'is-own' : ''].join(' ').trim()
     const marker = L.marker(f.latlng, {
-      icon: L.divIcon({ className: 'aurora-marker', html: `<span class="${cls}"></span>`, iconSize: [18, 18] }),
+      icon: L.divIcon({ className: 'aurora-marker', html: playerIconHtml({ delayed: f.delayed, own: own.has(f.username) }), iconSize: [18, 18] }),
       title: f.label,
       alt: f.label,
       keyboard: true,
@@ -55,31 +68,13 @@ export function buildPlayers(features: PlayerFeature[], own: ReadonlySet<string>
   return group
 }
 
-/** The lock on a claimed car: a shackle over a body, so "claimed" is a shape, not a colour.
- * Decorative (`aria-hidden`); the marker's own `title`/`alt` carries "claimed by ...". */
-const LOCK_SVG =
-  '<svg class="car-lock" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" focusable="false">' +
-  '<path d="M3.5 5.5V4a2.5 2.5 0 0 1 5 0v1.5" fill="none" stroke="currentColor" stroke-width="1.4"/>' +
-  '<rect x="2" y="5.5" width="8" height="5.5" rx="1" fill="currentColor"/></svg>'
-
-/** The car glyph: a top-down car (hood up; there is no heading data), amber with a dark outline
- * so it reads on any terrain. Decorative (`aria-hidden`); the marker's `title`/`alt` is the name. */
-const CAR_SVG =
-  '<svg class="car-glyph" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">' +
-  '<g fill="#1b1300"><rect x="1" y="3" width="3" height="4" rx="1"/><rect x="12" y="3" width="3" height="4" rx="1"/><rect x="1" y="10" width="3" height="4" rx="1"/><rect x="12" y="10" width="3" height="4" rx="1"/></g>' +
-  '<rect x="3.5" y="0.8" width="9" height="14.4" rx="3.4" fill="#f0b050" stroke="#1b1300" stroke-width="1.3"/>' +
-  '<rect x="5" y="4.2" width="6" height="2.8" rx="0.7" fill="#1b1300"/><rect x="5" y="10.2" width="6" height="2" rx="0.6" fill="#1b1300"/></svg>'
-
-/** Every car is the glyph. A claimed car adds a bright ring (one colour for every owner) and the
- * lock badge; a ledger-only claimed car (not loaded, at its last-known spot) has the ring dashed
- * and dimmed, so that state is not opacity alone either. */
+/** Every car is the glyph; claimed and ledger-only variants are drawn by vehicleIconHtml (symbols.ts). */
 export function buildVehicles(features: VehicleFeature[]): L.Layer {
   const group = L.layerGroup()
   for (const f of features) {
-    const cls = ['aurora-vehicle', f.claimed ? 'is-claimed' : '', f.ledger ? 'is-ledger' : ''].join(' ').trim()
-    const size = f.claimed ? 26 : 16
+    const size = vehicleIconSize(f.claimed)
     const marker = L.marker(f.latlng, {
-      icon: L.divIcon({ className: 'aurora-marker', html: `<span class="${cls}">${CAR_SVG}${f.claimed ? LOCK_SVG : ''}</span>`, iconSize: [size, size] }),
+      icon: L.divIcon({ className: 'aurora-marker', html: vehicleIconHtml({ claimed: f.claimed, ledger: f.ledger }), iconSize: [size, size] }),
       title: f.label,
       alt: f.label,
       keyboard: true,
@@ -93,27 +88,19 @@ export function buildVehicles(features: VehicleFeature[]): L.Layer {
 export function buildSafehouses(features: RectFeature[]): L.Layer {
   const group = L.layerGroup()
   for (const f of features) {
-    L.rectangle(f.bounds, { color: '#e0a030', weight: 2, fillOpacity: 0.15, dashArray: '4 3' })
+    L.rectangle(f.bounds, { ...SAFEHOUSE_STYLE })
       .bindTooltip(escapeHtml(f.label), { sticky: true })
       .addTo(group)
   }
   return group
 }
 
-/** The death marker: a cross (players are dots, vehicles squares, NPC groups diamonds). A dark halo
- * under a light stroke keeps it readable on any terrain; decorative (`aria-hidden`), the marker's own
- * `title`/`alt` carries the label. */
-const DEATH_SVG =
-  '<svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false">' +
-  '<path class="death-halo" d="M4 4L16 16M16 4L4 16"/>' +
-  '<path class="death-edge" d="M4 4L16 16M16 4L4 16"/></svg>'
-
 /** One cross per player, at their latest death, in its own pane above vehicles and below NPC groups and players. */
 export function buildDeaths(features: DeathFeature[]): L.Layer {
   const group = L.layerGroup()
   for (const f of features) {
     const marker = L.marker(f.latlng, {
-      icon: L.divIcon({ className: 'aurora-marker', html: `<span class="aurora-death">${DEATH_SVG}</span>`, iconSize: [20, 20] }),
+      icon: L.divIcon({ className: 'aurora-marker', html: deathIconHtml(), iconSize: [20, 20] }),
       title: f.label,
       alt: f.label,
       keyboard: true,
@@ -125,29 +112,15 @@ export function buildDeaths(features: DeathFeature[]): L.Layer {
   return group
 }
 
-/** The group marker: a diamond (players are dots, vehicles squares) with the size inside.
- * Two stacked outlines, a dark halo under a light line, keep the edge readable on any
- * terrain. Decorative (`aria-hidden`); the marker's own `title`/`alt` carries the label. */
-function npcGroupSvg(f: NpcGroupFeature): string {
-  const text = f.size > 99 ? '99+' : String(f.size)
-  return (
-    '<svg viewBox="0 0 30 30" width="30" height="30" aria-hidden="true" focusable="false">' +
-    '<polygon class="npc-halo" points="15,2 28,15 15,28 2,15"/>' +
-    '<polygon class="npc-edge" points="15,2 28,15 15,28 2,15"/>' +
-    `<text class="npc-size" x="15" y="19" text-anchor="middle">${escapeHtml(text)}</text></svg>`
-  )
-}
-
 /** A-Life NPC groups, one marker per group, in their own pane above vehicles and below
- * players. Hostile: a heavier outline and a "!" badge. Dormant: muted and dashed. Neither
- * rests on colour; the tooltip states the stance and dormancy in words. */
+ * players. Hostile: a heavier outline and a "!" badge. Dormant: muted and dashed (both drawn
+ * by npcGroupIconHtml, symbols.ts). Neither rests on colour; the tooltip states the stance
+ * and dormancy in words, and the marker carries the label as its accessible name. */
 export function buildNpcGroups(features: NpcGroupFeature[]): L.Layer {
   const group = L.layerGroup()
   for (const f of features) {
-    const cls = ['aurora-npc', f.stance ? `is-${f.stance}` : '', f.active ? '' : 'is-dormant', f.adminOnly ? 'is-admin-only' : ''].filter(Boolean).join(' ')
-    const bang = f.stance === 'hostile' ? '<span class="npc-bang" aria-hidden="true">!</span>' : ''
     const marker = L.marker(f.latlng, {
-      icon: L.divIcon({ className: 'aurora-marker', html: `<span class="${cls}">${npcGroupSvg(f)}${bang}</span>`, iconSize: [30, 30] }),
+      icon: L.divIcon({ className: 'aurora-marker', html: npcGroupIconHtml(f), iconSize: [30, 30] }),
       title: f.label,
       alt: f.label,
       keyboard: true,
@@ -163,7 +136,7 @@ export function buildNpcGroups(features: NpcGroupFeature[]): L.Layer {
 export function buildNpcOutposts(features: NpcOutpostFeature[]): L.Layer {
   const group = L.layerGroup()
   for (const f of features) {
-    L.rectangle(f.bounds, { color: '#d94fb0', weight: f.hostile ? 4 : 2, fillOpacity: 0.1, dashArray: f.hostile ? '10 5' : '4 6' })
+    L.rectangle(f.bounds, outpostStyle(f.hostile))
       .bindTooltip(escapeHtml(f.label), { sticky: true })
       .addTo(group)
   }
@@ -174,8 +147,8 @@ export function buildZones(features: ZoneFeature[]): L.Layer {
   const group = L.layerGroup()
   for (const f of features) {
     const shape = f.point
-      ? L.circleMarker(f.bounds[0], { radius: 5, color: '#5aa0ff', weight: 2, fillOpacity: 0.3 })
-      : L.rectangle(f.bounds, { color: '#5aa0ff', weight: 1, fillOpacity: 0.1 })
+      ? L.circleMarker(f.bounds[0], { ...ZONE_POINT_STYLE })
+      : L.rectangle(f.bounds, { ...ZONE_AREA_STYLE })
     shape.bindTooltip(escapeHtml(f.label), { sticky: true }).addTo(group)
   }
   return group
@@ -207,8 +180,6 @@ export function buildZombieDensityLayer(cfg: TilesConfig, tilesBase?: string): L
   })
 }
 
-const STREET_COLOR = '#9aa0a8'
-const STREET_OPACITY = 0.55
 const STREET_HOVER_COLOR = '#ffffff'
 const STREET_HOVER_BOOST = 3
 /** The invisible line's own weight: how wide a pointer target every street gets, whatever
@@ -246,14 +217,6 @@ export function buildStreets(features: StreetFeature[], zoom: number, minZoom: n
   return group
 }
 
-const ROAD_STYLE: Record<string, L.PathOptions> = {
-  primary: { color: '#e8a33d', weight: 3 },
-  secondary: { color: '#d9c98a', weight: 2 },
-  tertiary: { color: '#c9c9c9', weight: 1.5 },
-  trail: { color: '#8b6b4a', weight: 1, dashArray: '3 3' },
-  railway: { color: '#333333', weight: 1.5, dashArray: '1 4' },
-}
-
 /**
  * The in-game map's own look, at 11,000+ buildings and tens of thousands of forest and
  * road shapes: everything shares ONE canvas renderer so the browser paints one <canvas>
@@ -264,16 +227,16 @@ export function buildWorldMap(features: WorldMapFeatures): L.Layer {
   const renderer = L.canvas({ padding: 0.5 })
   const group = L.layerGroup()
   for (const f of features.forest) {
-    L.polygon(f.latlngs, { renderer, interactive: false, stroke: false, fillColor: '#2f4a2f', fillOpacity: 0.55 }).addTo(group)
+    L.polygon(f.latlngs, { renderer, interactive: false, stroke: false, ...WORLD_FILL.forest }).addTo(group)
   }
   for (const f of features.water) {
-    L.polygon(f.latlngs, { renderer, interactive: false, stroke: false, fillColor: '#2f5d7c', fillOpacity: 0.6 }).addTo(group)
+    L.polygon(f.latlngs, { renderer, interactive: false, stroke: false, ...WORLD_FILL.water }).addTo(group)
   }
   for (const f of features.buildings) {
-    L.polygon(f.latlngs, { renderer, interactive: false, stroke: false, fillColor: '#4a4640', fillOpacity: 0.7 }).addTo(group)
+    L.polygon(f.latlngs, { renderer, interactive: false, stroke: false, ...WORLD_FILL.buildings }).addTo(group)
   }
   for (const f of features.roads) {
-    const style = ROAD_STYLE[f.type] ?? ROAD_STYLE.tertiary
+    const style = (ROAD_STYLE as Record<string, L.PathOptions>)[f.type] ?? ROAD_STYLE.tertiary
     const shape = f.closed
       ? L.polygon(f.latlngs, { renderer, interactive: false, fill: false, ...style })
       : L.polyline(f.latlngs, { renderer, interactive: false, ...style })
@@ -285,7 +248,7 @@ export function buildWorldMap(features: WorldMapFeatures): L.Layer {
 export function buildObjects(features: ObjectFeature[]): L.Layer {
   const group = L.layerGroup()
   for (const f of features) {
-    L.circleMarker(f.latlng, { radius: 4, color: '#b070e0', weight: 2, fillOpacity: 0.6 })
+    L.circleMarker(f.latlng, { ...OBJECT_STYLE })
       .bindTooltip(escapeHtml(`${f.label} (${f.kind})`), { sticky: true })
       .addTo(group)
   }

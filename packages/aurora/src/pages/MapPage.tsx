@@ -33,6 +33,7 @@ import { HealthPanel } from '../panels/Health'
 import { RosterPanel } from '../panels/Roster'
 import { NameModeToggle } from '../panels/NameModeToggle'
 import { LayerToggles } from '../panels/LayerToggles'
+import { MapKey } from '../panels/MapKey'
 import { StreetSearch } from '../panels/StreetSearch'
 import { FindPlayer } from '../panels/FindPlayer'
 import { MapNotices } from '../panels/MapNotices'
@@ -301,6 +302,7 @@ export function MapPage() {
         {isAdmin ? <HealthPanel latest={latest} samples={samples} error={healthError} now={now} /> : null}
         {isAdmin ? <MapNotices noTiles={noTiles} pendingWorld={serverMaps.pendingWorld} /> : null}
         <LayerToggles prefs={prefs} onChange={setLayer} notes={notes} />
+        <MapKey prefs={prefs} viewer={{ isAdmin, hasLinked: own.size > 0 }} />
       </aside>
     </div>
   )

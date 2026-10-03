@@ -1,7 +1,8 @@
 import { LAYER_KEYS } from '../state/layerPrefs'
 import type { LayerKey, LayerPrefs } from '../state/layerPrefs'
 
-const LABELS: Record<LayerKey, string> = {
+/** The layer names, shared with the map key (T67) so both read the same. */
+export const LAYER_LABELS: Record<LayerKey, string> = {
   streets: 'Streets',
   worldMap: 'World map',
   areas: 'Areas',
@@ -30,7 +31,7 @@ export function LayerToggles({ prefs, onChange, notes }: {
         <div key={key} className="layer-row">
           <label>
             <input type="checkbox" checked={prefs[key]} onChange={(e) => onChange(key, e.target.checked)} />
-            {LABELS[key]}
+            {LAYER_LABELS[key]}
           </label>
           {prefs[key] && notes[key] ? <span className="note">{notes[key]}</span> : null}
         </div>

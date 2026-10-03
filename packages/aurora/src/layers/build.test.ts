@@ -6,6 +6,8 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
+// T67: the symbols' look moved to symbols.ts (no Leaflet), so it is tested directly there.
+import { CAR_SVG, LOCK_SVG, npcGroupIconHtml, outpostStyle, vehicleIconHtml } from './symbols'
 
 const buildSrc = readFileSync(fileURLToPath(new URL('./build.ts', import.meta.url)), 'utf8')
 
@@ -43,15 +45,19 @@ describe('A-Life NPC builders', () => {
   })
 
   it('hostile gets a "!" badge and the marker carries the label as its accessible name', () => {
-    expect(npc).toMatch(/npc-bang/)
+    expect(npc).toMatch(/html: npcGroupIconHtml\(f\)/)
+    expect(npcGroupIconHtml({ size: 3, stance: 'hostile', active: true, adminOnly: false })).toMatch(/npc-bang/)
+    expect(npcGroupIconHtml({ size: 3, stance: 'neutral', active: true, adminOnly: false })).not.toMatch(/npc-bang/)
     expect(npc).toMatch(/title: f\.label/)
     expect(npc).toMatch(/alt: f\.label/)
   })
 
   it('outposts are dashed rectangles, heavier when hostile', () => {
-    expect(npc).toMatch(/L\.rectangle\(f\.bounds/)
-    expect(npc).toMatch(/dashArray/)
-    expect(npc).toMatch(/weight: f\.hostile \? 4 : 2/)
+    expect(npc).toMatch(/L\.rectangle\(f\.bounds, outpostStyle\(f\.hostile\)\)/)
+    expect(outpostStyle(false).dashArray).toBeTruthy()
+    expect(outpostStyle(true).dashArray).toBeTruthy()
+    expect(outpostStyle(true).weight).toBe(4)
+    expect(outpostStyle(false).weight).toBe(2)
   })
 })
 
@@ -60,11 +66,15 @@ describe('car glyph, claimed ring and ledger dimming', () => {
   const fn = buildSrc.slice(buildSrc.indexOf('export function buildVehicles'), buildSrc.indexOf('export function buildSafehouses'))
 
   it('every car is the glyph, and only a claimed car also gets the lock', () => {
-    expect(fn).toMatch(/\$\{CAR_SVG\}\$\{f\.claimed \? LOCK_SVG : ''\}/)
+    expect(fn).toMatch(/html: vehicleIconHtml\(\{ claimed: f\.claimed, ledger: f\.ledger \}\)/)
+    expect(vehicleIconHtml({ claimed: false, ledger: false })).toContain(CAR_SVG)
+    expect(vehicleIconHtml({ claimed: false, ledger: false })).not.toContain(LOCK_SVG)
+    expect(vehicleIconHtml({ claimed: true, ledger: false })).toContain(CAR_SVG + LOCK_SVG)
   })
   it('the claimed flag adds is-claimed (the ring); the ledger flag adds is-ledger', () => {
-    expect(fn).toMatch(/f\.claimed \? 'is-claimed' : ''/)
-    expect(fn).toMatch(/f\.ledger \? 'is-ledger' : ''/)
+    expect(vehicleIconHtml({ claimed: false, ledger: false })).toMatch(/class="aurora-vehicle"/)
+    expect(vehicleIconHtml({ claimed: true, ledger: false })).toMatch(/class="aurora-vehicle is-claimed"/)
+    expect(vehicleIconHtml({ claimed: true, ledger: true })).toMatch(/class="aurora-vehicle is-claimed is-ledger"/)
   })
   it('the ring exists only on .is-claimed, one colour for all owners', () => {
     const rule = css.match(/\.aurora-vehicle\.is-claimed \{[^}]*\}/)?.[0] ?? ''
