@@ -1,6 +1,7 @@
 // Run with: deno test packages/shared/aurora/ingest-core.test.ts
 import {
   buildFactionRows,
+  buildLeaderboardRows,
   buildLifeSampleRows,
   buildNpcGroupRow,
   buildNpcOutpostRow,
@@ -24,7 +25,7 @@ import {
 } from './ingest-core.ts';
 import { parseLineDetailed } from './parser.ts';
 import { inList } from './rest.ts';
-import type { AuroraRecord, FacsRecord, HbRecord, NpcOutpostRecord, NpcRecord, PosRecord } from './parser.ts';
+import type { AuroraRecord, FacsRecord, HbRecord, LbRecord, NpcOutpostRecord, NpcRecord, PosRecord } from './parser.ts';
 
 function assertEquals<T>(actual: T, expected: T, msg = ''): void {
   const a = JSON.stringify(actual);
@@ -1397,6 +1398,88 @@ Deno.test('T60 a faction whose member list is {} keeps the faction with no membe
     { name: 'Bears', tag: null, owner: 'kim', members: [] },
     { name: 'Wolves', tag: 'WLF', owner: 'zed', members: ['abe', 'zed'] },
   ]);
+});
+
+// ---------------------------------------------------------------------------
+// In-game leaderboard (036, T65): replace_leaderboard
+// ---------------------------------------------------------------------------
+
+Deno.test('T65 replace_leaderboard: one call with the NEWEST lb record\'s rows, world, ingest clock, liveOnly, optional', () => {
+  const recs = parsedLines([
+    'A1 {"k":"lb","src":"DQOL","t":3000,"e":[{"u":"new","bk":5,"bd":1,"lk":2,"lh":3.5}]}',
+    'A1 {"k":"lb","src":"DQOL","t":1000,"e":[{"u":"old","bk":9,"bd":9,"lk":9,"lh":9}]}',
+    'A1 {"k":"lb","src":"DQOL","t":2000,"e":[{"u":"mid","bk":7,"bd":7,"lk":7,"lh":7}]}',
+  ]);
+  const plan = buildPlan(recs, SERVER, { worldId: 'w2', seenAt: '2026-10-03T12:00:00.000Z' });
+  const calls = plan.rpcs.filter((r) => r.fn === 'replace_leaderboard');
+  assertEquals(calls.length, 1, 'one call per batch');
+  assertEquals(calls[0].optional, true, 'optional: a missing 036 never holds the cursor');
+  assertEquals(calls[0].liveOnly, true, 'liveOnly: the backfill never replays an old table');
+  assertEquals(calls[0].rows, 1);
+  assertEquals(calls[0].args, {
+    p_server: SERVER,
+    p_world: 'w2',
+    p_rows: [{ username: 'new', banked_kills: 5, banked_deaths: 1, live_kills: 2, live_hours: 3.5 }],
+    p_seen_at: '2026-10-03T12:00:00.000Z',
+  });
+  // No world: an explicit null (the function's p_world has no default).
+  assertEquals(rpcCall(buildPlan(recs, SERVER, {}), 'replace_leaderboard')!.args.p_world, null);
+});
+
+Deno.test('T65 replace_leaderboard: rows from the T64 line; bad entries dropped, duplicates keep the last', () => {
+  const plan = buildPlan(parsedLines([
+    'A1 {"e":[{"bd":1,"bk":300,"lh":176.33,"lk":181,"u":"Pootard"},{"bd":0,"bk":0,"lh":2.5,"lk":3,"u":"kim"},' +
+      '{"bd":0,"bk":0,"lh":1,"lk":1,"u":""},{"bd":-1,"bk":0,"lh":1,"lk":1,"u":"neg"},' +
+      '{"bd":2,"bk":2,"lh":2,"lk":2,"u":"kim"}],"k":"lb","src":"DQOL","t":1759000000000}',
+  ]), SERVER, { seenAt: '2026-10-03T12:00:00.000Z' });
+  assertEquals(rpcCall(plan, 'replace_leaderboard')!.args.p_rows, [
+    { username: 'Pootard', banked_kills: 300, banked_deaths: 1, live_kills: 181, live_hours: 176.33 },
+    { username: 'kim', banked_kills: 2, banked_deaths: 2, live_kills: 2, live_hours: 2 },
+  ]);
+  // The builder alone, past the parser: trims, keeps the last, bad numbers read 0.
+  const raw = {
+    k: 'lb', t: 1,
+    e: [{ u: ' a ', bk: 1, bd: 1, lk: 1, lh: 1 }, { u: 'b', bk: 'x', bd: -3, lk: Infinity, lh: null }, 'x', null, [1], { u: 7 }, { u: 'a', bk: 2, bd: 2, lk: 2, lh: 2 }],
+  } as unknown as LbRecord;
+  assertEquals(buildLeaderboardRows(raw), [
+    { username: 'b', banked_kills: 0, banked_deaths: 0, live_kills: 0, live_hours: 0 },
+    { username: 'a', banked_kills: 2, banked_deaths: 2, live_kills: 2, live_hours: 2 },
+  ]);
+});
+
+Deno.test('T65 replace_leaderboard: an empty table is a call with no rows (the world\'s table empties)', () => {
+  const plan = buildPlan(parsedLines(['A1 {"k":"lb","src":"DQOL","t":1,"e":[]}']), SERVER, { seenAt: '2026-10-03T12:00:00.000Z' });
+  const call = rpcCall(plan, 'replace_leaderboard');
+  assert(call !== undefined, 'still called');
+  assertEquals(call!.args.p_rows, []);
+  assertEquals(call!.rows, 0);
+});
+
+// The old JSON writer encodes an empty Lua table as {}. The parser reads "e":{} as [];
+// the row builder must not depend on that (a throw holds the cursor).
+Deno.test('T65 replace_leaderboard: e {} (old encoder) produces an empty replace and does not throw', () => {
+  const parsed = parsedLines(['A1 {"k":"lb","t":1,"e":{}}']);
+  assertEquals(rpcCall(buildPlan(parsed, SERVER, {}), 'replace_leaderboard')?.args.p_rows, []);
+  const bad = { k: 'lb', t: 1, e: {} } as unknown as LbRecord;
+  assertEquals(buildLeaderboardRows(bad), []);
+  const plan = buildPlan([bad as AuroraRecord], SERVER, { seenAt: '2026-10-03T12:00:00.000Z' });
+  assertEquals(rpcCall(plan, 'replace_leaderboard')?.args.p_rows, []);
+});
+
+Deno.test('T65 replace_leaderboard: a missing function (036 not applied) is an optional error, noted, never thrown', async () => {
+  const plan = buildPlan(parsedLines(['A1 {"k":"lb","t":1,"e":[{"u":"a","bk":1,"bd":0,"lk":0,"lh":0}]}']), SERVER, {});
+  const call = rpcCall(plan, 'replace_leaderboard')!;
+  const missing = new Error(
+    'rpc replace_leaderboard: 404 {"code":"PGRST202","message":"Could not find the function aurora.replace_leaderboard(p_rows, p_seen_at, p_server, p_world) in the schema cache"}',
+  );
+  assert(isMissingObjectError(missing), 'PGRST202 reads as a missing object');
+  const notes: OptionalError[] = [];
+  const wrote = await runPlanStep(call.optional, () => Promise.reject(missing), (e) => noteOptionalError(notes, call.fn, e));
+  assertEquals(wrote, false, 'skipped');
+  assertEquals(notes.length, 1);
+  assertEquals(notes[0].what, 'replace_leaderboard');
+  assertEquals(notes[0].status, 404);
+  assertEquals(notes[0].code, 'PGRST202');
 });
 
 Deno.test('T54 a batch without kill, zk/hs or facs records plans none of the three', () => {

@@ -31,6 +31,7 @@ import type {
   FactionEntry,
   HbRecord,
   KillRecord,
+  LbRecord,
   LinkRecord,
   NpcOutpostRecord,
   NpcRecord,
@@ -688,6 +689,26 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
     });
   }
 
+  // --- in-game leaderboard (036) -------------------------------------------------
+  // The newest lb record is the mod's whole table: replace_leaderboard deletes the
+  // world's rows it does not list and upserts the rest, so an empty table empties the
+  // world's rows (and the site falls back to Aurora's own count). As factions: the
+  // batch's world, seen_at the ingest clock and so liveOnly (a replay would make an
+  // old table look current), optional (036 may not be applied yet; a missing function
+  // is skipped and counted, never holds the cursor).
+  const lb = newestOf(byKind(records, 'lb'));
+  if (lb !== undefined) {
+    const lbRows = buildLeaderboardRows(lb);
+    rpcs.push({
+      fn: 'replace_leaderboard',
+      args: { p_server: serverId, p_world: pWorld, p_rows: lbRows, p_seen_at: opts.seenAt ?? new Date().toISOString() },
+      rows: lbRows.length,
+      why: `${lbRows.length} leaderboard rows (the in-game table)`,
+      optional: true,
+      liveOnly: true,
+    });
+  }
+
   applyWorld(upserts, opts.worldId);
 
   return { upserts, rpcs, patches, deletes, links, counts };
@@ -906,6 +927,39 @@ export function buildFactionRows(r: FacsRecord): Row[] {
     });
   }
   return [...byName.values()];
+}
+
+/** A finite non-negative number, else 0 (the T64 contract writes 0 for anything else). */
+function count(v: unknown): number {
+  return typeof v === 'number' && Number.isFinite(v) && v >= 0 ? v : 0;
+}
+
+/**
+ * Rows for aurora.replace_leaderboard (036): one per username (trimmed, the last entry
+ * wins, so the upsert never touches a key twice), every key on every row. Guarded like
+ * buildFactionRows against shapes the parser already rejects or drops: `e` that is not
+ * an array ({} from the old JSON writer) is the empty table, an entry without a
+ * non-empty string `u` is skipped, a bad number reads 0. Never throws.
+ */
+export function buildLeaderboardRows(r: LbRecord): Row[] {
+  const byUser = new Map<string, Row>();
+  if (!Array.isArray(r.e)) return [];
+  for (const entry of r.e as unknown[]) {
+    if (typeof entry !== 'object' || entry === null || Array.isArray(entry)) continue;
+    const e = entry as Record<string, unknown>;
+    if (typeof e.u !== 'string') continue;
+    const username = e.u.trim().slice(0, 100);
+    if (username === '') continue;
+    byUser.delete(username);
+    byUser.set(username, {
+      username,
+      banked_kills: count(e.bk),
+      banked_deaths: count(e.bd),
+      live_kills: count(e.lk),
+      live_hours: count(e.lh),
+    });
+  }
+  return [...byUser.values()];
 }
 
 const DEATH_SOURCES = ['isdead', 'chardeath', 'dodeathlog', 'cosmicmap'];
