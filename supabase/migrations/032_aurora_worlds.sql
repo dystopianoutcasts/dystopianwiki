@@ -272,7 +272,7 @@ BEGIN
   IF p_pending_world_id IS NOT NULL AND NOT EXISTS (
        SELECT 1 FROM aurora.worlds w
         WHERE w.server_id = p_server AND w.world_id = p_pending_world_id AND w.status = 'pending') THEN
-    RAISE EXCEPTION 'world_switch: % is not a pending world of %', p_pending_world_id, p_server USING ERRCODE = '22023';
+    RAISE EXCEPTION 'world_switch: % is not a pending world of %', p_pending_world_id, p_server;
   END IF;
 
   IF v_cur IS NOT NULL THEN
@@ -524,7 +524,10 @@ COMMENT ON FUNCTION aurora.current_world(TEXT) IS
 -- 9. ADMIN WORLD CONTROLS
 -- ============================================================================
 -- Readers: the WHERE clause (or an early RETURN NULL) is the gate, a non-admin gets
--- nothing. Writers: RAISE for a non-admin. EXECUTE to authenticated only.
+-- nothing. Writers: RAISE for a non-admin (SQLSTATE 42501). A refused button (not
+-- pending, undo window passed, nothing to go back to) RAISEs with the default SQLSTATE
+-- P0001 and a readable message, which the admin page shows as a refusal (T49).
+-- EXECUTE to authenticated only.
 
 CREATE OR REPLACE FUNCTION aurora.worlds_admin(p_server TEXT)
 RETURNS SETOF aurora.worlds
@@ -605,7 +608,7 @@ BEGIN
      AND w.world_id = p_world_id
      AND w.status = 'pending';
   IF NOT FOUND THEN
-    RAISE EXCEPTION 'dismiss_pending_world: % is not a pending world of %', p_world_id, p_server USING ERRCODE = '22023';
+    RAISE EXCEPTION 'dismiss_pending_world: % is not a pending world of %', p_world_id, p_server;
   END IF;
   RETURN p_world_id;
 END;
@@ -638,12 +641,11 @@ BEGIN
 
   SELECT s.current_world_id INTO v_cur FROM aurora.servers s WHERE s.id = p_server FOR UPDATE;
   IF v_cur IS NULL THEN
-    RAISE EXCEPTION 'undo_new_world: % has no current world', p_server USING ERRCODE = '22023';
+    RAISE EXCEPTION 'undo_new_world: % has no current world', p_server;
   END IF;
   SELECT w.started_at INTO v_started FROM aurora.worlds w WHERE w.server_id = p_server AND w.world_id = v_cur;
   IF v_started IS NULL OR v_started <= now() - INTERVAL '24 hours' THEN
-    RAISE EXCEPTION 'undo_new_world: world % started more than 24 hours ago and can no longer be undone', v_cur
-      USING ERRCODE = '22023';
+    RAISE EXCEPTION 'undo_new_world: world % started more than 24 hours ago and can no longer be undone', v_cur;
   END IF;
   SELECT w.world_id INTO v_prev
     FROM aurora.worlds w
@@ -652,7 +654,7 @@ BEGIN
    ORDER BY w.ended_at DESC NULLS LAST, w.seq DESC
    LIMIT 1;
   IF v_prev IS NULL THEN
-    RAISE EXCEPTION 'undo_new_world: % has no earlier world to go back to', p_server USING ERRCODE = '22023';
+    RAISE EXCEPTION 'undo_new_world: % has no earlier world to go back to', p_server;
   END IF;
 
   PERFORM aurora.world_retag(p_server, v_cur, v_prev);

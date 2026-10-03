@@ -807,9 +807,16 @@ BEGIN
   IF aurora.dismiss_pending_world('test-w', 'w3') <> 'w3' THEN RAISE EXCEPTION 'FAIL: dismiss did not return w3'; END IF;
   BEGIN
     PERFORM aurora.dismiss_pending_world('test-w', 'w2');
-  EXCEPTION WHEN invalid_parameter_value THEN ok := TRUE;
+  EXCEPTION WHEN raise_exception THEN ok := TRUE;
   END;
   IF NOT ok THEN RAISE EXCEPTION 'FAIL: dismissing the current world was accepted'; END IF;
+  ok := FALSE;
+  BEGIN
+    PERFORM aurora.confirm_pending_world('test-w', 'w1');
+  EXCEPTION WHEN raise_exception THEN ok := SQLERRM LIKE '%is not a pending world%';
+  END;
+  IF NOT ok THEN RAISE EXCEPTION 'FAIL: confirming an ended world was accepted'; END IF;
+  RAISE NOTICE 'PASS dismiss and confirm refuse a world that is not pending (SQLSTATE P0001, readable message)';
 END $$;
 RESET ROLE;
 
@@ -933,7 +940,7 @@ DECLARE
 BEGIN
   BEGIN
     PERFORM aurora.undo_new_world('test-w');
-  EXCEPTION WHEN invalid_parameter_value THEN ok := SQLERRM LIKE '%24 hours%';
+  EXCEPTION WHEN raise_exception THEN ok := SQLERRM LIKE '%24 hours%';
   END;
   IF NOT ok THEN RAISE EXCEPTION 'FAIL: undo was allowed for a world that started 25 hours ago'; END IF;
   RAISE NOTICE 'PASS undo_new_world refuses once the current world is 24 hours old';
@@ -962,7 +969,7 @@ DECLARE
 BEGIN
   BEGIN
     PERFORM aurora.undo_new_world('test-w');
-  EXCEPTION WHEN invalid_parameter_value THEN ok := SQLERRM LIKE '%no earlier world%';
+  EXCEPTION WHEN raise_exception THEN ok := SQLERRM LIKE '%no earlier world%';
   END;
   IF NOT ok THEN RAISE EXCEPTION 'FAIL: undo with no earlier ended world was allowed'; END IF;
 END $$;
