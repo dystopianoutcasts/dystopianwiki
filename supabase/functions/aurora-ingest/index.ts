@@ -71,7 +71,8 @@ import {
   parseClaimsLedger,
   shouldPrune,
 } from '../../../packages/shared/aurora/claims.ts';
-import { parsePlayersDb, type SqlJsStatic } from '../../../packages/shared/aurora/playersdb.ts';
+import { parsePlayersDb } from '../../../packages/shared/aurora/playersdb.ts';
+import { loadSqlJs, type WasmSource } from './sqljs.ts';
 import { parseSandboxVars, parseServerIni } from '../../../packages/shared/aurora/serverconfig.ts';
 import { AuroraRest } from '../../../packages/shared/aurora/rest.ts';
 import {
@@ -175,19 +176,8 @@ interface PlayersDbResult {
   players: number;
   rows: number;
   ms: number;
-}
-
-let sqlJs: SqlJsStatic | null = null;
-
-async function loadSqlJs(): Promise<SqlJsStatic> {
-  if (!sqlJs) {
-    // Loaded lazily, like ssh2 in sftp.ts, so a load failure is a catchable
-    // error with its message rather than a dead function at boot.
-    const mod = await import('npm:sql.js@1.14.2');
-    const init = (mod.default ?? mod) as (cfg?: unknown) => Promise<SqlJsStatic>;
-    sqlJs = await init();
-  }
-  return sqlJs;
+  /** How sql.js got its wasm (sqljs.ts): 'loader' means the readFileSync warning is still there. */
+  wasm: WasmSource;
 }
 
 async function discoverSaveName(session: SftpSession, cfg: Config): Promise<string> {
@@ -214,7 +204,7 @@ async function readPlayersDb(
     throw new Error(`${path} is ${size} bytes, over the ${PLAYERS_DB_MAX_BYTES} byte limit`);
   }
   const bytes = await session.readRange(path, 0, size);
-  const SQL = await loadSqlJs();
+  const { SQL, wasm } = await loadSqlJs();
   const parsed = parsePlayersDb(SQL, bytes);
   // world_id (032) on every row when the run has a current world; read once per
   // run, so after a switch the first tagged write lands with the next run.
@@ -232,6 +222,7 @@ async function readPlayersDb(
     players: parsed.players.length,
     rows: rows.length,
     ms: Date.now() - started,
+    wasm,
   };
 }
 
