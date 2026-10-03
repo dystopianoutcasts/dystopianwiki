@@ -23,16 +23,20 @@ import { shownName, type NameMode } from './nameMode'
 /** The function name: auroraClient.rpc('leaderboard', { p_server, p_limit }). */
 export const LEADERBOARD_FN = 'leaderboard'
 
-/** Rows shown per tab, and the most a payload may carry per tab. */
+/**
+ * Rows a tab shows before its "Show all N" button (T70), so the home page stays short.
+ * Every row the function returned is drawn once the button is pressed; none is cut here.
+ */
 export const LEADERBOARD_LIMIT = 10
+/** The most a payload may carry per tab (the function clamps p_limit to 1..100). */
 export const MAX_ROWS = 100
 
 /**
- * Rows asked for per tab: every row the function allows (it clamps p_limit to 1..100). The
- * function ranks kills by the lifetime total only, so the Kills tab (current life) is ranked
- * here from the whole list; a top 10 by total could leave out the best current life.
+ * Rows asked for per tab (T70): 50, the in-game window's MAX_ROWS, so the site lists every
+ * player the game lists. The function ranks kills by the lifetime total only, so the Kills
+ * tab (current life) is ranked here from that whole list.
  */
-export const LEADERBOARD_FETCH = MAX_ROWS
+export const LEADERBOARD_FETCH = 50
 
 /** How long a missing function is left alone before it is asked for again. */
 export const LEADERBOARD_RETRY_MS = 5 * 60_000
@@ -150,16 +154,17 @@ export function formatCount(n: number): string {
 }
 
 /**
- * The Kills tab's list: players with kills on their current character, ranked by those kills
- * the way the function ranks every list (RANK(): equal numbers share a rank; then username).
+ * The Kills tab's list: every kills row, ranked by the kills of the current character (live
+ * descending, then username), zero included, so it reads like the game's first number.
+ * The mod source (037, T69) numbers rows 1..n as the game's window does; any other source
+ * ranks the way its function does (RANK(): equal numbers share a rank).
  */
-export function currentLifeKills(rows: readonly KillsRow[]): KillsRow[] {
-  const sorted = rows
-    .filter((r) => r.live > 0)
-    .sort((a, b) => b.live - a.live || (a.username < b.username ? -1 : a.username > b.username ? 1 : 0))
+export function currentLifeKills(rows: readonly KillsRow[], source: BoardSource | null = null): KillsRow[] {
+  const sorted = [...rows].sort((a, b) => b.live - a.live || (a.username < b.username ? -1 : a.username > b.username ? 1 : 0))
   const out: KillsRow[] = []
   sorted.forEach((r, i) => {
-    out.push({ ...r, rank: i > 0 && sorted[i - 1].live === r.live ? out[i - 1].rank : i + 1 })
+    const shared = source !== 'mod' && i > 0 && sorted[i - 1].live === r.live
+    out.push({ ...r, rank: shared ? out[i - 1].rank : i + 1 })
   })
   return out
 }
@@ -220,13 +225,32 @@ function display(row: RowBase, value: string, mode: NameMode, i: number): Displa
   }
 }
 
-/** One tab's rows, in the order given (the database ranks them), at most `limit`. */
-export function tabRows(data: Leaderboard | null, tab: TabId, mode: NameMode, limit: number = LEADERBOARD_LIMIT): DisplayRow[] {
+/**
+ * One tab's rows: every row the function returned, in the order given (the database ranks
+ * them; Kills is re-ranked by the current life). Zero rows stay and read "0" (or "0h").
+ * How many are drawn before "Show all N" is the view's business (visibleRows).
+ */
+export function tabRows(data: Leaderboard | null, tab: TabId, mode: NameMode): DisplayRow[] {
   if (!data) return []
-  if (tab === 'kills') return currentLifeKills(data.kills).slice(0, limit).map((r, i) => display(r, formatCount(r.live), mode, i))
-  if (tab === 'alltime') return data.kills.slice(0, limit).map((r, i) => display(r, formatCount(r.total), mode, i))
-  if (tab === 'deaths') return data.deaths.slice(0, limit).map((r, i) => display(r, formatCount(r.deaths), mode, i))
-  return data.survival.slice(0, limit).map((r, i) => display(r, survivalValue(r.hours), mode, i))
+  if (tab === 'kills') return currentLifeKills(data.kills, data.source).map((r, i) => display(r, formatCount(r.live), mode, i))
+  if (tab === 'alltime') return data.kills.map((r, i) => display(r, formatCount(r.total), mode, i))
+  if (tab === 'deaths') return data.deaths.map((r, i) => display(r, formatCount(r.deaths), mode, i))
+  return data.survival.map((r, i) => display(r, survivalValue(r.hours), mode, i))
+}
+
+/** The rows drawn: the first LEADERBOARD_LIMIT while folded, every row once expanded. */
+export function visibleRows<T>(rows: readonly T[], expanded: boolean): T[] {
+  return expanded ? [...rows] : rows.slice(0, LEADERBOARD_LIMIT)
+}
+
+/** True when a tab has more rows than it shows folded, so it gets the button. */
+export function hasMoreRows(total: number): boolean {
+  return total > LEADERBOARD_LIMIT
+}
+
+/** The button under a long tab: "Show all 21" while folded (the real row count), "Show fewer" while open. */
+export function toggleLabel(total: number, expanded: boolean): string {
+  return expanded ? 'Show fewer' : `Show all ${total}`
 }
 
 export const TAB_LABELS: Record<TabId, string> = { kills: 'Kills', alltime: 'All-Time Kills', deaths: 'Deaths', survival: 'Survival' }
@@ -238,7 +262,7 @@ export const VALUE_HEADINGS: Record<TabId, string> = { kills: 'Kills', alltime: 
 export const TAB_HELP: Record<TabId, string> = {
   kills: "Zombie kills by each player's current character. Kills from characters that have died count only toward All-Time Kills.",
   alltime:
-    "Zombie kills across every character a player has had this season, including ones that died. If a player hasn't died, this matches their Kills.",
+    "Zombie kills across every character a player has had this season, including ones that died. If a player hasn't died, this matches their Kills. Ties are listed by name.",
   deaths: 'Deaths, ranked by how many characters each player has lost this season.',
   survival: 'Time the current character has survived, in game days and hours. Living characters only.',
 }

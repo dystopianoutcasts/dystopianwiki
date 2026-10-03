@@ -2,6 +2,7 @@ import type { KeyboardEvent } from 'react';
 import {
   boardTitle,
   EMPTY_LINES,
+  hasMoreRows,
   LOADING_LINE,
   nextTab,
   sourceLine,
@@ -9,8 +10,10 @@ import {
   TAB_IDS,
   TAB_LABELS,
   tabRows,
+  toggleLabel,
   UNAVAILABLE_LINE,
   VALUE_HEADINGS,
+  visibleRows,
   type DisplayRow,
   type Leaderboard,
   type TabId,
@@ -60,8 +63,21 @@ function RankCell({ row }: { row: DisplayRow }) {
   );
 }
 
-function Panel({ tab, prefix, selected, rows }: { tab: TabId; prefix: string; selected: boolean; rows: DisplayRow[] }) {
+interface PanelProps {
+  tab: TabId;
+  prefix: string;
+  selected: boolean;
+  /** Every row of the tab; the first LEADERBOARD_LIMIT are drawn until `expanded`. */
+  rows: DisplayRow[];
+  expanded: boolean;
+  onToggle: (tab: TabId) => void;
+}
+
+function Panel({ tab, prefix, selected, rows, expanded, onToggle }: PanelProps) {
   const helpId = `${prefix}-help-${tab}`;
+  const tableId = `${prefix}-table-${tab}`;
+  const more = hasMoreRows(rows.length);
+  const shown = visibleRows(rows, expanded || !more);
   return (
     <div
       className="lb-panel"
@@ -76,28 +92,41 @@ function Panel({ tab, prefix, selected, rows }: { tab: TabId; prefix: string; se
         {TAB_HELP[tab]}
       </p>
       {rows.length > 0 ? (
-        <table className="lb-table">
-          <thead>
-            <tr>
-              <th scope="col" className="lb-rank">
-                Rank
-              </th>
-              <th scope="col">Name</th>
-              <th scope="col" className="lb-value">
-                {VALUE_HEADINGS[tab]}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.key}>
-                <RankCell row={r} />
-                <td className="lb-name">{r.name}</td>
-                <td className="lb-value">{r.value}</td>
+        <>
+          <table className="lb-table" id={tableId}>
+            <thead>
+              <tr>
+                <th scope="col" className="lb-rank">
+                  Rank
+                </th>
+                <th scope="col">Name</th>
+                <th scope="col" className="lb-value">
+                  {VALUE_HEADINGS[tab]}
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {shown.map((r) => (
+                <tr key={r.key}>
+                  <RankCell row={r} />
+                  <td className="lb-name">{r.name}</td>
+                  <td className="lb-value">{r.value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {more && (
+            <button
+              type="button"
+              className="lb-more"
+              aria-expanded={expanded}
+              aria-controls={tableId}
+              onClick={() => onToggle(tab)}
+            >
+              {toggleLabel(rows.length, expanded)}
+            </button>
+          )}
+        </>
       ) : (
         <p className="home-section__empty">{EMPTY_LINES[tab]}</p>
       )}
@@ -117,10 +146,26 @@ export interface LeaderboardViewProps {
   tab: TabId;
   /** A tab was chosen: by click (viaKey false) or by an arrow, Home or End key (true: move focus too). */
   onSelect: (tab: TabId, viaKey: boolean) => void;
+  /** Tabs whose "Show all N" is pressed (T70); a tab not listed shows its first LEADERBOARD_LIMIT rows. */
+  expanded?: Partial<Record<TabId, boolean>>;
+  /** The "Show all N" / "Show fewer" button of a tab was pressed. */
+  onToggle?: (tab: TabId) => void;
   now: Date;
 }
 
-export function LeaderboardView({ titleId, prefix, data, unavailable, loading = false, mode, tab, onSelect, now }: LeaderboardViewProps) {
+export function LeaderboardView({
+  titleId,
+  prefix,
+  data,
+  unavailable,
+  loading = false,
+  mode,
+  tab,
+  onSelect,
+  expanded = {},
+  onToggle = () => {},
+  now,
+}: LeaderboardViewProps) {
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     const next = nextTab(tab, e.key);
     if (next === null) return;
@@ -160,7 +205,15 @@ export function LeaderboardView({ titleId, prefix, data, unavailable, loading = 
               ))}
             </div>
             {TAB_IDS.map((t) => (
-              <Panel key={t} tab={t} prefix={prefix} selected={t === tab} rows={tabRows(data, t, mode)} />
+              <Panel
+                key={t}
+                tab={t}
+                prefix={prefix}
+                selected={t === tab}
+                rows={tabRows(data, t, mode)}
+                expanded={expanded[t] === true}
+                onToggle={onToggle}
+              />
             ))}
             {footer !== '' && <p className="home-section__note lb-source">{footer}</p>}
           </div>

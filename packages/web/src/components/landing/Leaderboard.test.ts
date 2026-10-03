@@ -12,7 +12,7 @@ import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import { createElement, isValidElement, type ReactElement, type ReactNode } from 'react'
 import { LOADING_LINE, parseLeaderboard, UNAVAILABLE_LINE, type Leaderboard, type TabId } from '../../lib/leaderboard'
-import { CONTRACT } from '../../lib/leaderboard.fixture'
+import { BOARD_21, CONTRACT } from '../../lib/leaderboard.fixture'
 import { chooseNameMode, subscribeNameMode, type NameMode, type StorageLike } from '../../lib/nameMode'
 import { LeaderboardView } from './LeaderboardView'
 import { staticMarkup } from './staticMarkup'
@@ -21,7 +21,15 @@ const NOW = new Date('2026-10-03T12:05:30Z')
 const DATA = parseLeaderboard(CONTRACT)
 
 function view(
-  opts: { tab?: TabId; mode?: NameMode; data?: Leaderboard | null; unavailable?: boolean; onSelect?: (t: TabId, k: boolean) => void } = {},
+  opts: {
+    tab?: TabId
+    mode?: NameMode
+    data?: Leaderboard | null
+    unavailable?: boolean
+    onSelect?: (t: TabId, k: boolean) => void
+    expanded?: Partial<Record<TabId, boolean>>
+    onToggle?: (t: TabId) => void
+  } = {},
 ) {
   return createElement(LeaderboardView, {
     titleId: 'lb-title',
@@ -31,6 +39,8 @@ function view(
     mode: opts.mode ?? 'character',
     tab: opts.tab ?? 'kills',
     onSelect: opts.onSelect ?? (() => {}),
+    expanded: opts.expanded,
+    onToggle: opts.onToggle,
     now: NOW,
   })
 }
@@ -89,12 +99,69 @@ test('title is the season; four tabs in a tablist, Kills selected by default', (
   assert.equal(propsOf(panel(node, 'kills'))['aria-labelledby'], 'lb-tab-kills')
 })
 
-test('Kills rows: current character only, one number each, ranked by it', () => {
+test('Kills rows: current character only, one number each, ranked by it; a dead player\'s 0 stays', () => {
   assert.deepEqual(rowsOf(staticMarkup(view()), 'kills'), [
     ['1', 'Pete Tard', '181'],
     ['2', 'Hokalt', '12'],
     ['3', 'fisher man', '3'],
+    ['4', 'skye', '0'],
   ])
+})
+
+const BIG = parseLeaderboard(BOARD_21)
+
+/** The "Show all N" / "Show fewer" button of a tab, or undefined when there is none. */
+function moreButton(node: ReactNode, tab: TabId) {
+  return elements(panel(node, tab)).find((e) => e.type === 'button')
+}
+
+test('a long tab (T70): 10 rows, then all 21 after "Show all 21"; "Show fewer" folds them back', () => {
+  const folded = view({ data: BIG, tab: 'alltime' })
+  const rows = rowsOf(staticMarkup(folded), 'alltime')
+  assert.equal(rows.length, 10)
+  assert.deepEqual(rows.slice(-1)[0], ['10', 'Wren', '22'])
+  const html = staticMarkup(folded)
+  assert.ok(
+    html.includes('<button type="button" class="lb-more" aria-expanded="false" aria-controls="lb-table-alltime">Show all 21</button>'),
+  )
+  assert.match(html, /<table class="lb-table" id="lb-table-alltime">/)
+  const toggled: TabId[] = []
+  ;(propsOf(moreButton(view({ data: BIG, tab: 'alltime', onToggle: (t) => toggled.push(t) }), 'alltime')!).onClick as () => void)()
+  assert.deepEqual(toggled, ['alltime'])
+
+  const open = staticMarkup(view({ data: BIG, tab: 'alltime', expanded: { alltime: true } }))
+  const all = rowsOf(open, 'alltime')
+  assert.equal(all.length, 21)
+  assert.deepEqual(all.map((r) => r[0]), Array.from({ length: 21 }, (_, i) => String(i + 1)))
+  assert.deepEqual(all.slice(-1)[0], ['21', 'Payo', '0'])
+  assert.ok(open.includes('<button type="button" class="lb-more" aria-expanded="true" aria-controls="lb-table-alltime">Show fewer</button>'))
+  // Each tab folds on its own: Deaths is still at 10 with its own button.
+  assert.equal(rowsOf(open, 'deaths').length, 10)
+  assert.ok(open.includes('aria-controls="lb-table-deaths">Show all 21</button>'))
+})
+
+test('no button (T70) for a tab of 10 rows or fewer, and every row is drawn', () => {
+  assert.equal(moreButton(view(), 'alltime'), undefined)
+  assert.doesNotMatch(staticMarkup(view()), /lb-more/)
+  const ten = parseLeaderboard({ ...BOARD_21, kills: BOARD_21.kills.slice(0, 10) })
+  const node = view({ data: ten, tab: 'alltime' })
+  assert.equal(moreButton(node, 'alltime'), undefined)
+  assert.equal(moreButton(node, 'kills'), undefined)
+  assert.equal(rowsOf(staticMarkup(node), 'alltime').length, 10)
+  const eleven = parseLeaderboard({ ...BOARD_21, kills: BOARD_21.kills.slice(0, 11) })
+  assert.ok(staticMarkup(view({ data: eleven, tab: 'alltime' })).includes('>Show all 11</button>'))
+})
+
+test('zero rows (T70) render "0", and a dead player\'s Survival "0h", never hidden or blank', () => {
+  const open = staticMarkup(view({ data: BIG, expanded: { kills: true, alltime: true, deaths: true, survival: true } }))
+  assert.deepEqual(rowsOf(open, 'alltime').slice(-1)[0], ['21', 'Payo', '0'])
+  assert.deepEqual(rowsOf(open, 'kills').slice(-2), [
+    ['20', 'Crusty', '0'],
+    ['21', 'Payo', '0'],
+  ])
+  assert.equal(rowsOf(open, 'deaths').filter((r) => r[2] === '0').length, 20)
+  assert.deepEqual(rowsOf(open, 'survival').slice(-1)[0], ['21', 'Crusty', '0h'])
+  assert.doesNotMatch(open, /<td class="lb-value"><\/td>/)
 })
 
 test('All-Time Kills rows: every character this season, in the game\'s order', () => {
@@ -115,7 +182,7 @@ test('each kills tab explains itself in visible text under the tabs', () => {
   )
   assert.ok(
     html.includes(
-      `<p class="lb-help" id="lb-help-alltime">Zombie kills across every character a player has had this season, including ones that died. If a player hasn't died, this matches their Kills.</p>`,
+      `<p class="lb-help" id="lb-help-alltime">Zombie kills across every character a player has had this season, including ones that died. If a player hasn't died, this matches their Kills. Ties are listed by name.</p>`,
     ),
   )
   assert.equal(propsOf(panel(view(), 'kills'))['aria-describedby'], 'lb-help-kills')
@@ -183,8 +250,8 @@ test('the selected tab shows its own rows and value format', () => {
 })
 
 test('the name mode flips names: survivor name (username when none) or username', () => {
-  assert.deepEqual(rowsOf(staticMarkup(view({ mode: 'character' })), 'kills').map((r) => r[1]), ['Pete Tard', 'Hokalt', 'fisher man'])
-  assert.deepEqual(rowsOf(staticMarkup(view({ mode: 'account' })), 'kills').map((r) => r[1]), ['Pootard', 'hok', 'rax'])
+  assert.deepEqual(rowsOf(staticMarkup(view({ mode: 'character' })), 'kills').map((r) => r[1]), ['Pete Tard', 'Hokalt', 'fisher man', 'skye'])
+  assert.deepEqual(rowsOf(staticMarkup(view({ mode: 'account' })), 'kills').map((r) => r[1]), ['Pootard', 'hok', 'rax', 'skye'])
   assert.deepEqual(rowsOf(staticMarkup(view({ mode: 'account' })), 'alltime').map((r) => r[1]), ['Pootard', 'rax', 'skye', 'hok'])
 })
 

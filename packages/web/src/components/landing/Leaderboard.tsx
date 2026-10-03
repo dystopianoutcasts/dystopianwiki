@@ -17,6 +17,8 @@ export function Leaderboard() {
   const prefix = useId();
   const [tab, setTab] = useState<TabId>('kills');
   const [mode, setMode] = useState<NameMode>(() => loadNameMode());
+  // Which tabs have "Show all N" pressed (T70): each tab folds and unfolds on its own.
+  const [expanded, setExpanded] = useState<Partial<Record<TabId, boolean>>>({});
   const focusPending = useRef(false);
 
   useEffect(() => subscribeNameMode(setMode), []);
@@ -40,6 +42,10 @@ export function Leaderboard() {
     setTab(next);
   }, []);
 
+  const onToggle = useCallback((t: TabId) => {
+    setExpanded((prev) => ({ ...prev, [t]: !prev[t] }));
+  }, []);
+
   return (
     <LeaderboardView
       titleId={titleId}
@@ -50,6 +56,8 @@ export function Leaderboard() {
       mode={mode}
       tab={tab}
       onSelect={onSelect}
+      expanded={expanded}
+      onToggle={onToggle}
       now={new Date()}
     />
   );

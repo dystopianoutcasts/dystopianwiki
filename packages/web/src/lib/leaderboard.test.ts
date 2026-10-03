@@ -9,11 +9,13 @@ import type { RpcResult } from './homeSummaryRpc'
 import {
   LEADERBOARD_FETCH,
   LEADERBOARD_FN,
+  LEADERBOARD_LIMIT,
   LEADERBOARD_RETRY_MS,
   MAX_ROWS,
   boardTitle,
   callLeaderboard,
   currentLifeKills,
+  hasMoreRows,
   nextTab,
   ordinal,
   parseLeaderboard,
@@ -22,8 +24,10 @@ import {
   sourceLine,
   survivalValue,
   tabRows,
+  toggleLabel,
+  visibleRows,
 } from './leaderboard'
-import { CONTRACT } from './leaderboard.fixture'
+import { BOARD_21, CONTRACT } from './leaderboard.fixture'
 
 beforeEach(() => resetLeaderboardProbe())
 
@@ -87,24 +91,83 @@ test('parse: not an object is null; an empty object is an empty board; a list st
   assert.equal(parseLeaderboard({ deaths: many })?.deaths.length, MAX_ROWS)
 })
 
-test('current-life kills: ranked by live kills, no-kill lives dropped, ties share a rank', () => {
+test('current-life kills: live descending then username, zero lives kept; mod source numbers rows 1..n', () => {
   const d = parseLeaderboard(CONTRACT)
   assert.ok(d)
-  assert.deepEqual(currentLifeKills(d.kills).map((r) => [r.rank, r.username, r.live]), [
+  assert.deepEqual(currentLifeKills(d.kills, 'mod').map((r) => [r.rank, r.username, r.live]), [
     [1, 'Pootard', 181],
     [2, 'hok', 12],
     [3, 'rax', 3],
+    [4, 'skye', 0],
   ])
   const row = (username: string, live: number, total: number) => ({ rank: 9, username, displayName: null, live, total, alive: true, online: false })
-  assert.deepEqual(currentLifeKills([row('c', 2, 2), row('b', 5, 90), row('a', 5, 5)]).map((r) => [r.rank, r.username]), [
+  const tied = [row('c', 2, 2), row('b', 5, 90), row('z', 0, 7), row('a', 5, 5)]
+  // T69's rule in the mod source: a tie is listed by username and does not share a rank.
+  assert.deepEqual(currentLifeKills(tied, 'mod').map((r) => [r.rank, r.username, r.live]), [
+    [1, 'a', 5],
+    [2, 'b', 5],
+    [3, 'c', 2],
+    [4, 'z', 0],
+  ])
+  // Aurora's own count (036's aurora branch) still shares ranks on a tie.
+  assert.deepEqual(currentLifeKills(tied, 'aurora').map((r) => [r.rank, r.username]), [
     [1, 'a'],
     [1, 'b'],
     [3, 'c'],
+    [4, 'z'],
   ])
-  // The best current life can sit below the top 10 by total; it still ranks first here.
+  assert.deepEqual(currentLifeKills(tied).map((r) => r.rank), [1, 1, 3, 4])
+  // The best current life can sit low by total; it still ranks first here.
   const byTotal = Array.from({ length: 12 }, (_, i) => row(`t${i}`, 1, 100 - i)).concat(row('fresh', 50, 50))
-  assert.deepEqual(currentLifeKills(byTotal)[0], { ...row('fresh', 50, 50), rank: 1 })
-  assert.deepEqual(currentLifeKills([]), [])
+  assert.deepEqual(currentLifeKills(byTotal, 'mod')[0], { ...row('fresh', 50, 50), rank: 1 })
+  assert.deepEqual(currentLifeKills([], 'mod'), [])
+  // The input is not reordered in place (All-Time Kills reads the same list).
+  assert.deepEqual(tied.map((r) => r.username), ['c', 'b', 'z', 'a'])
+})
+
+test('all rows (T70): every row the function returned, 21 of 21 on every tab, nothing capped', () => {
+  const d = parseLeaderboard(BOARD_21)
+  assert.ok(d)
+  for (const tab of ['kills', 'alltime', 'deaths', 'survival'] as const) assert.equal(tabRows(d, tab, 'account').length, 21, tab)
+  assert.deepEqual(tabRows(d, 'alltime', 'account').map((r) => r.rank), Array.from({ length: 21 }, (_, i) => i + 1))
+  assert.deepEqual(tabRows(d, 'alltime', 'account').slice(3, 5).map((r) => [r.rank, r.name, r.value]), [
+    [4, 'Ann', '40'],
+    [5, 'Bo', '40'],
+  ])
+  // Kills (current life) re-ranks by live: Crusty's banked 76 is all-time only.
+  const kills = tabRows(d, 'kills', 'account')
+  assert.deepEqual(kills.slice(0, 3).map((r) => [r.rank, r.name, r.value]), [
+    [1, 'Pootard', '70'],
+    [2, 'Ann', '40'],
+    [3, 'hok', '33'],
+  ])
+  assert.deepEqual(kills.slice(-2).map((r) => [r.rank, r.name, r.value]), [
+    [20, 'Crusty', '0'],
+    [21, 'Payo', '0'],
+  ])
+})
+
+test('zero rows (T70) read "0", and a dead player\'s Survival reads "0h"; none is dropped', () => {
+  const d = parseLeaderboard(BOARD_21)
+  assert.deepEqual(tabRows(d, 'alltime', 'account').slice(-1)[0], { key: '21-Payo-20', rank: 21, medal: null, rankText: '21st', name: 'Payo', value: '0' })
+  assert.equal(tabRows(d, 'deaths', 'account').filter((r) => r.value === '0').length, 20)
+  assert.deepEqual(tabRows(d, 'survival', 'account').slice(-1)[0]?.value, '0h')
+  assert.equal(tabRows(d, 'survival', 'account').slice(-1)[0]?.name, 'Crusty')
+  assert.equal(d?.survival.slice(-1)[0]?.alive, false)
+})
+
+test('folding (T70): the first 10 rows until expanded; the button only past 10, with the real count', () => {
+  const rows = Array.from({ length: 21 }, (_, i) => i)
+  assert.equal(LEADERBOARD_LIMIT, 10)
+  assert.equal(visibleRows(rows, false).length, 10)
+  assert.equal(visibleRows(rows, true).length, 21)
+  assert.deepEqual(visibleRows([1, 2], false), [1, 2])
+  assert.equal(hasMoreRows(21), true)
+  assert.equal(hasMoreRows(11), true)
+  assert.equal(hasMoreRows(10), false)
+  assert.equal(hasMoreRows(0), false)
+  assert.equal(toggleLabel(21, false), 'Show all 21')
+  assert.equal(toggleLabel(21, true), 'Show fewer')
 })
 
 test('survival value: the game\'s Nd Nh from a day up, Nh under a day', () => {
@@ -132,9 +195,10 @@ test('tab rows: each tab formats its value, ranks 1-3 get medals (ties share), n
       [1, 'gold', '1st', 'Pete Tard', '181'],
       [2, 'silver', '2nd', 'Hokalt', '12'],
       [3, 'bronze', '3rd', 'fisher man', '3'],
+      [4, null, '4th', 'skye', '0'],
     ],
   )
-  assert.deepEqual(tabRows(d, 'kills', 'account').map((r) => r.name), ['Pootard', 'hok', 'rax'])
+  assert.deepEqual(tabRows(d, 'kills', 'account').map((r) => r.name), ['Pootard', 'hok', 'rax', 'skye'])
   assert.deepEqual(
     tabRows(d, 'alltime', 'character').map((r) => [r.rank, r.medal, r.name, r.value]),
     [
@@ -148,7 +212,6 @@ test('tab rows: each tab formats its value, ranks 1-3 get medals (ties share), n
   assert.deepEqual(tabRows(d, 'survival', 'character').map((r) => [r.medal, r.value]), [['gold', '7d 8h'], ['silver', '24h'], ['bronze', '5h']])
   assert.deepEqual(tabRows(null, 'kills', 'character'), [])
   assert.equal(new Set(kills.map((r) => r.key)).size, kills.length)
-  assert.equal(tabRows(d, 'kills', 'character', 2).length, 2)
 })
 
 test('title carries the season (world_seq)', () => {
@@ -210,8 +273,8 @@ test('call: asks leaderboard(p_server, p_limit) and parses the answer', async ()
   assert.equal(r.data?.kills.length, 4)
   assert.deepEqual(calls, [{ fn: LEADERBOARD_FN, args: { p_server: 'outcasts-main', p_limit: LEADERBOARD_FETCH } }])
   assert.equal(LEADERBOARD_FN, 'leaderboard')
-  // Every row the function allows (036 clamps p_limit to 1..100), so Kills can rank them all.
-  assert.equal(LEADERBOARD_FETCH, 100)
+  // T70: 50 rows, the in-game window's MAX_ROWS (the function clamps p_limit to 1..100).
+  assert.equal(LEADERBOARD_FETCH, 50)
 })
 
 test('call: a missing function (036 not applied) is unavailable and rests before asking again', async () => {

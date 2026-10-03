@@ -159,6 +159,33 @@ td.lb-value {
   margin-top: var(--spacing-3);
 }
 
+/* "Show all N" / "Show fewer" under a long tab (T70): an outlined pill in the tabs'
+   colours, 40px tall (WCAG 2.5.8 asks for 24px), centred under the table. */
+.lb-more {
+  display: block;
+  min-height: 40px;
+  margin: var(--spacing-3) auto 0;
+  padding: 0 var(--spacing-4);
+  border: 1px solid var(--color-link);
+  border-radius: var(--border-radius-full);
+  background: transparent;
+  color: var(--color-link);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.lb-more:hover {
+  background: var(--color-link);
+  color: var(--color-background);
+}
+
+.lb-more:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
 @media (max-width: 480px) {
   .lb-table th,
   .lb-table td {

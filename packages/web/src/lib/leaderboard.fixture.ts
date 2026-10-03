@@ -22,3 +22,32 @@ export const CONTRACT = {
     { rank: 3, username: 'rax', display_name: 'fisher man', hours: 5.4, alive: true, online: false },
   ],
 }
+
+/**
+ * T70: a mod-source answer after 037 (T69's contract), shaped like the owner's screenshot of
+ * the in-game window: 21 players, every one in every list, zeros included (Payo has no kills),
+ * ranks are row positions 1..n, ties ordered by username (Ann and Bo both 40). Crusty died and
+ * has banked kills but 0 on the current life; Crusty's Survival is 0 hours (alive false).
+ */
+const NAMES = [
+  'Crusty', 'Pootard', 'rax', 'Ann', 'Bo', 'hok', 'skye', 'Mira', 'Tomas', 'Wren', 'Juno',
+  'Kale', 'Lio', 'Nell', 'Oren', 'Pia', 'Quin', 'Rue', 'Sol', 'Teo', 'Payo',
+] as const
+const TOTALS = [76, 70, 55, 40, 40, 33, 30, 28, 25, 22, 20, 18, 15, 12, 10, 8, 6, 4, 3, 1, 0]
+const LIVES = [0, 70, 9, 40, 12, 33, 30, 28, 25, 22, 20, 18, 15, 12, 10, 8, 6, 4, 3, 1, 0]
+
+export const BOARD_21 = {
+  source: 'mod',
+  world_seq: 1,
+  seen_at: '2026-10-03T12:00:00Z',
+  kills: NAMES.map((username, i) => ({
+    rank: i + 1, username, display_name: null, live: LIVES[i], total: TOTALS[i], alive: username !== 'Crusty', online: false,
+  })),
+  // Crusty's 3 deaths, then everyone with 0, by username.
+  deaths: ['Crusty', ...NAMES.slice(1).sort()].map((username, i) => ({
+    rank: i + 1, username, display_name: null, deaths: username === 'Crusty' ? 3 : 0, alive: username !== 'Crusty', online: false,
+  })),
+  survival: [...NAMES.slice(1), 'Crusty'].map((username, i) => ({
+    rank: i + 1, username, display_name: null, hours: username === 'Crusty' ? 0 : 200 - i * 5, alive: username !== 'Crusty', online: false,
+  })),
+}
