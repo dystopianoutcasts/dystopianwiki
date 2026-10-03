@@ -27,7 +27,16 @@
 // LOCK_MARGIN_MS of LOCK_TTL_S.
 
 import { emptyStats, launchStampFromFileName, splitChunkBytes, type SplitStats } from './parser.ts';
-import { buildPlan, chunk, planRead, runPlanStep, type CursorState, type Row } from './ingest-core.ts';
+import {
+  buildPlan,
+  chunk,
+  noteOptionalError,
+  type OptionalError,
+  planRead,
+  runPlanStep,
+  type CursorState,
+  type Row,
+} from './ingest-core.ts';
 import { newestWorldRecord, registerBatchWorld, type WorldState } from './worlds.ts';
 import type { UpsertOptions } from './rest.ts';
 
@@ -182,10 +191,14 @@ export interface TailTotals {
   patches: number;
   deletes: number;
   /**
-   * Writes skipped because their (optional) table or function does not exist
-   * yet: 029 not applied. A non-zero count is the signal to apply the migration.
+   * Optional writes skipped because the database refused them: a table or
+   * function that does not exist yet (a migration not applied) or any other
+   * client-side error (runPlanStep). The cursor still advanced. A non-zero count
+   * is the signal to read optionalErrors.
    */
   skippedOptional: number;
+  /** Why, for the first OPTIONAL_ERRORS_CAP skips of the run: the code and message. */
+  optionalErrors: OptionalError[];
   stats: SplitStats;
   linksOk: number;
   linksFailed: number;
@@ -204,7 +217,7 @@ export interface TailTotals {
 
 export function emptyTotals(): TailTotals {
   return {
-    bytes: 0, records: 0, kinds: {}, rows: {}, patches: 0, deletes: 0, skippedOptional: 0, stats: emptyStats(),
+    bytes: 0, records: 0, kinds: {}, rows: {}, patches: 0, deletes: 0, skippedOptional: 0, optionalErrors: [], stats: emptyStats(),
     linksOk: 0, linksFailed: 0, rotated: false, batches: 0,
     lagMinMs: null, lagMaxMs: null, lagSumMs: 0,
   };
@@ -212,13 +225,17 @@ export function emptyTotals(): TailTotals {
 
 const warnedOptional = new Set<string>();
 
-/** Count a skipped optional write and say so once per object per isolate. */
+/**
+ * Count a skipped optional write, keep its error for the run summary (capped),
+ * and say so once per object per isolate.
+ */
 function skipNote(totals: TailTotals, what: string): (err: unknown) => void {
   return (err) => {
     totals.skippedOptional++;
+    noteOptionalError(totals.optionalErrors, what, err);
     if (warnedOptional.has(what)) return;
     warnedOptional.add(what);
-    console.warn(JSON.stringify({ at: 'optional-missing', what, error: String(err).slice(0, 200) }));
+    console.warn(JSON.stringify({ at: 'optional-skipped', what, error: String(err).slice(0, 200) }));
   };
 }
 
@@ -283,8 +300,9 @@ export async function tailStep(
     seenAt: new Date(now()).toISOString(),
     worldId: worlds?.enabled ? worlds.currentWorldId : null,
   });
-  // An `optional` write (029's tables) whose table does not exist is skipped, not
-  // thrown: a new ingest deployed ahead of its migration must not stall the cursor.
+  // An `optional` write the database refuses (a missing table, or any other 4xx)
+  // is skipped and counted, not thrown: a side feature must never stall the
+  // cursor. A 5xx or a network error still throws and the cursor holds.
   for (const upsert of plan.upserts) {
     for (const batch of chunk(upsert.rows, cfg.batchRows)) {
       const wrote = await runPlanStep(

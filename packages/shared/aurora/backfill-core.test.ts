@@ -117,6 +117,23 @@ Deno.test('backfill: the dry run looks nothing up and plans untagged', async () 
 // Season records (034, T54): kills and lives replay, factions do not
 // ---------------------------------------------------------------------------
 
+Deno.test('backfill: a 4xx on an optional write is skipped and counted with its reason; a 5xx throws', async () => {
+  const { db } = fakeDb([{ world_id: W_OLD, status: 'ended' }]);
+  db.rpc = (fn) => Promise.reject(new Error(`rpc ${fn}: 400 {"code":"PGRST203","message":"ambiguous"}`));
+  const text = world(W_OLD) + `${P} A1 {"k":"pos","t":1759312800000,"u":"alice","x":1,"y":2,"zk":3,"hs":1}.\n`;
+  const r = await replayFile(db, SERVER, NAME, text);
+  assert(r.skippedOptional >= 1, `skipped ${r.skippedOptional}`);
+  assertEquals(r.optionalErrors[0].code, 'PGRST203');
+  db.rpc = (fn) => Promise.reject(new Error(`rpc ${fn}: 503 down`));
+  let threw = false;
+  try {
+    await replayFile(db, SERVER, NAME, text);
+  } catch {
+    threw = true;
+  }
+  assert(threw, 'a 5xx still throws');
+});
+
 Deno.test('T54 backfill: kill events (ignoring duplicates) and observe_lives replay in file order; replace_factions does not', async () => {
   const f = fakeDb([{ world_id: 'w1', status: 'ended' }]);
   const opts: Record<string, unknown> = {};

@@ -6,7 +6,9 @@ import {
   OLD_WORLD_PRUNE_DAYS,
   OLD_WORLD_PRUNE_LIMIT,
   probePath,
+  PROBE_FAILED_NOTE,
   probeWorlds,
+  probeWorldsForRun,
   pruneOldWorlds,
   registerBatchWorld,
   registerWorldArgs,
@@ -211,4 +213,20 @@ Deno.test('summary: disabled, or the current world and the events', () => {
   assertEquals(summarizeWorlds(disabledWorlds('why')), 'disabled');
   const s = summarizeWorlds({ enabled: true, currentWorldId: 'w2', events: [], note: null });
   assertEquals(s, { state: 'enabled', current: 'w2', events: [], note: null });
+});
+
+Deno.test('probeWorldsForRun: a transient probe error means world unknown (enabled, no current world), not a skipped tail', async () => {
+  for (const text of ['select servers: 503 upstream', 'fetch failed']) {
+    const r = await probeWorldsForRun(fakeDb({ select: () => Promise.reject(new Error(text)) }), 's');
+    assertEquals(r.worlds.enabled, true, text);
+    assertEquals(r.worlds.currentWorldId, null, text);
+    assertEquals(r.worlds.note, PROBE_FAILED_NOTE, text);
+    assert((r.error ?? '').includes(text), `error reported: ${r.error}`);
+  }
+  const missing = await probeWorldsForRun(
+    fakeDb({ select: () => Promise.reject(new Error('select servers: 400 {"code":"42703","message":"column does not exist"}')) }),
+    's',
+  );
+  assertEquals(missing.worlds.enabled, false, 'a missing column still disables worlds');
+  assertEquals(missing.error, null);
 });

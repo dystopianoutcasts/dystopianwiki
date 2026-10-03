@@ -104,8 +104,9 @@ async function main(): Promise<number> {
   const totals = emptyStats();
   const kindTotals: Record<string, number> = {};
   let rowsWritten = 0;
-  // Writes to tables from a migration that is not applied yet (029, 030, 031), skipped as the live ingest skips them.
+  // Optional writes the database refused (a migration not applied, or any other 4xx), skipped as the live ingest skips them.
   let skippedOptional = 0;
+  const optionalErrors: string[] = [];
   let linksOk = 0;
   let linksFailed = 0;
   const skippedFiles: string[] = [];
@@ -128,6 +129,9 @@ async function main(): Promise<number> {
     }
     rowsWritten += r.rowsWritten;
     skippedOptional += r.skippedOptional;
+    for (const e of r.optionalErrors) {
+      if (optionalErrors.length < 20) optionalErrors.push(`${e.what}: ${e.code ?? e.status ?? '?'} ${e.message}`);
+    }
     linksOk += r.linksOk;
     linksFailed += r.linksFailed;
     if (r.skipped !== null) skippedFiles.push(`${name}: ${r.skipped}`);
@@ -146,7 +150,8 @@ async function main(): Promise<number> {
   console.log(`records by kind  ${JSON.stringify(kindTotals)}`);
   console.log(`rows written     ${args.dryRun ? '(dry run)' : rowsWritten}`);
   if (skippedOptional > 0) {
-    console.log(`skipped writes   ${skippedOptional} (a table from a migration that is not applied yet: 029, 030 or 031)`);
+    console.log(`skipped writes   ${skippedOptional} (optional writes the database refused; the first ones:)`);
+    for (const e of optionalErrors) console.log(`  ${e.slice(0, 300)}`);
   }
   console.log(`link codes       ok=${linksOk} failed=${linksFailed}`);
   if (skippedFiles.length > 0) {

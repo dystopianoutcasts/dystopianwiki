@@ -80,6 +80,35 @@ export async function probeWorlds(db: WorldDb, serverId: string): Promise<WorldS
   return { enabled: true, currentWorldId: typeof current === 'string' ? current : null, events: [], note: null };
 }
 
+/** The note a run carries when its probe failed and the current world is unknown. */
+export const PROBE_FAILED_NOTE =
+  'probe failed: current world unknown this run; rows without a world record are written untagged (NULL counts as current)';
+
+/**
+ * The run's probe, as the live ingest calls it. probeWorlds' answer when it has
+ * one. Any failure it throws (a transient read error) leaves the current world
+ * UNKNOWN for this run instead of skipping the tail: worlds stay enabled with no
+ * current world, so a batch without a `world` record is written untagged and a
+ * batch with one still registers it and is tagged with register_world's answer.
+ * Untagged is correct: NULL counts as current, and the next switch stamps NULL
+ * rows with the world that is ending, which is the world they were written in.
+ * What would be wrong, consuming a world record without registering it, cannot
+ * happen, because registration does not depend on the probe.
+ */
+export async function probeWorldsForRun(
+  db: WorldDb,
+  serverId: string,
+): Promise<{ worlds: WorldState; error: string | null }> {
+  try {
+    return { worlds: await probeWorlds(db, serverId), error: null };
+  } catch (err) {
+    return {
+      worlds: { enabled: true, currentWorldId: null, events: [], note: PROBE_FAILED_NOTE },
+      error: String(err).slice(0, 300),
+    };
+  }
+}
+
 /** The newest `world` record of a batch (later records win a tie, matching log order). */
 export function newestWorldRecord(records: AuroraRecord[]): WorldRecord | undefined {
   let best: WorldRecord | undefined;

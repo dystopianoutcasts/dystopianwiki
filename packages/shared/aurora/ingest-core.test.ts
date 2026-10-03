@@ -5,6 +5,9 @@ import {
   buildNpcGroupRow,
   buildNpcOutpostRow,
   isMissingObjectError,
+  noteOptionalError,
+  OPTIONAL_ERRORS_CAP,
+  type OptionalError,
   runPlanStep,
   buildHealthRow,
   buildHealthRows,
@@ -1271,4 +1274,53 @@ Deno.test('T54 a batch without kill, zk/hs or facs records plans none of the thr
   const plan = buildPlan(parsedLines(['A1 {"k":"pos","t":1,"u":"a","x":1,"y":1}']), SERVER, {});
   assertEquals(table(plan.upserts, 'kill_events'), undefined);
   assertEquals(plan.rpcs.map((r) => r.fn), []);
+});
+
+Deno.test('runPlanStep: an optional write refused with a 4xx or a PostgREST code is skipped; 5xx and network errors still throw', async () => {
+  const refusals = [
+    'upsert kill_events: 400 {"code":"PGRST204","message":"column not found"}',
+    'rpc observe_lives: 404 {"code":"PGRST203","message":"ambiguous function"}',
+    'upsert deaths: 403 {"code":"42501","message":"permission denied"}',
+    'rpc replace_factions: 400 {"code":"22023","message":"bad"}',
+    'rpc replace_factions: 400 {"code":"P0001","message":"raised"}',
+    'upsert x: 401 {"message":"Invalid API key"}',
+  ];
+  for (const text of refusals) {
+    const seen: unknown[] = [];
+    assertEquals(await runPlanStep(true, () => Promise.reject(new Error(text)), (e) => seen.push(e)), false, text);
+    assertEquals(seen.length, 1, text);
+  }
+  for (const text of ['upsert t: 500 boom', 'rpc f: 503 upstream', 'upsert t: 502 bad gateway', 'fetch failed', 'upsert t: timeout']) {
+    let threw = false;
+    try {
+      await runPlanStep(true, () => Promise.reject(new Error(text)), () => {});
+    } catch {
+      threw = true;
+    }
+    assert(threw, `optional + ${text} must throw`);
+  }
+});
+
+Deno.test('runPlanStep: a non-optional write refused with a 4xx still throws', async () => {
+  for (const text of ['upsert players: 400 {"code":"PGRST204","message":"x"}', 'upsert players: 403 {"code":"42501"}', 'upsert players: 404 {"code":"PGRST205"}']) {
+    let threw = false;
+    try {
+      await runPlanStep(undefined, () => Promise.reject(new Error(text)), () => {});
+    } catch {
+      threw = true;
+    }
+    assert(threw, `non-optional + ${text} must throw`);
+  }
+});
+
+Deno.test('noteOptionalError: records what, status, code and message, and stops at OPTIONAL_ERRORS_CAP', () => {
+  const list: OptionalError[] = [];
+  noteOptionalError(list, 'kill_events', new Error('upsert kill_events: 400 {"code":"PGRST204","message":"m"}'));
+  assertEquals(list[0].what, 'kill_events');
+  assertEquals(list[0].status, 400);
+  assertEquals(list[0].code, 'PGRST204');
+  assert(list[0].message.includes('PGRST204'), 'message kept');
+  for (let i = 0; i < 50; i++) noteOptionalError(list, `t${i}`, new Error('x: 400 {"code":"22023"}'));
+  assertEquals(list.length, 20, 'capped at 20');
+  assertEquals(OPTIONAL_ERRORS_CAP, 20);
 });

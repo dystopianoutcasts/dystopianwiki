@@ -208,10 +208,66 @@ export function isMissingObjectError(err: unknown): boolean {
 }
 
 /**
- * Run one write of a plan. An `optional` write whose target does not exist yet
- * (migration not applied) is skipped: `onSkipped` is told and the result is
- * false. Every other failure, and any failure of a non-optional write, throws as
- * before. Returns true when the write happened.
+ * The HTTP status in an AuroraRest failure ("<what>: <status> <body>"), or null
+ * when there is none (a network error, a timeout, anything thrown before an
+ * answer came back).
+ */
+export function httpStatusOf(err: unknown): number | null {
+  const text = err instanceof Error ? err.message : String(err);
+  const m = /: ([1-5]\d\d)(?: |$)/.exec(text);
+  return m ? Number(m[1]) : null;
+}
+
+/** The PostgREST / SQLSTATE code in a failure's body ({"code":"PGRST204",...}), or null. */
+export function postgrestCodeOf(err: unknown): string | null {
+  const m = /"code"\s*:\s*"([^"]+)"/.exec(String(err instanceof Error ? err.message : err));
+  return m ? m[1] : null;
+}
+
+/**
+ * True when the database answered and refused the request: an HTTP 4xx, or a
+ * PostgREST error code with no status at all. False for a 5xx and for a failure
+ * with neither (a network error), which may succeed on the next run.
+ */
+export function isClientSideError(err: unknown): boolean {
+  const status = httpStatusOf(err);
+  if (status !== null) return status >= 400 && status < 500;
+  return postgrestCodeOf(err) !== null;
+}
+
+/** One skipped optional write, as the run summary reports it. */
+export interface OptionalError {
+  what: string;
+  status: number | null;
+  code: string | null;
+  message: string;
+}
+
+/** The run summary keeps at most this many optionalErrors; the count goes on in skippedOptional. */
+export const OPTIONAL_ERRORS_CAP = 20;
+
+/** Append a skipped optional write's error to `list`, up to OPTIONAL_ERRORS_CAP entries. */
+export function noteOptionalError(list: OptionalError[], what: string, err: unknown): void {
+  if (list.length >= OPTIONAL_ERRORS_CAP) return;
+  list.push({
+    what,
+    status: httpStatusOf(err),
+    code: postgrestCodeOf(err),
+    message: String(err instanceof Error ? err.message : err).slice(0, 300),
+  });
+}
+
+/**
+ * Run one write of a plan. An `optional` write (a side feature: NPCs, deaths,
+ * vehicle names, the season records) that the database refuses is skipped:
+ * `onSkipped` is told and the result is false. That covers a missing object (a
+ * migration not applied) and every other client-side answer, any HTTP 4xx or
+ * PostgREST code (a stale schema cache, a grant, a Prefer header, an exception
+ * inside the function): the same request would be refused on every run, so
+ * throwing would hold the cursor forever and stall ALL ingest for a side feature.
+ * An optional write still throws on a 5xx or a network error (worth a retry: the
+ * cursor holds and the next run tries again). A non-optional write throws on any
+ * failure, as before. Returns true when the write happened.
  */
 export async function runPlanStep(
   optional: boolean | undefined,
@@ -222,7 +278,8 @@ export async function runPlanStep(
     await op();
     return true;
   } catch (err) {
-    if (optional !== true || !isMissingObjectError(err)) throw err;
+    if (optional !== true) throw err;
+    if (!isMissingObjectError(err) && !isClientSideError(err)) throw err;
     onSkipped?.(err);
     return false;
   }

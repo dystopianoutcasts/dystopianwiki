@@ -47,8 +47,9 @@
 // tailStep also writes kill_events (ignore-duplicates), rpc/observe_lives (the
 // newest pos per player carrying hs or zk) and rpc/replace_factions (the newest
 // full faction list, p_seen_at = this run's clock). All three are optional: before
-// 034 they are skipped and counted in tail.skippedOptional and the cursor still
-// advances. Their row counts appear in tail.rows under kill_events, observe_lives
+// 034, or on any other client-side refusal (HTTP 4xx), they are skipped, counted
+// in tail.skippedOptional with the reasons in tail.optionalErrors, and the cursor
+// still advances. Their row counts appear in tail.rows under kill_events, observe_lives
 // and replace_factions.
 
 import { connect as sftpConnect, type SftpSession } from '../../../packages/shared/aurora/sftp.ts';
@@ -56,7 +57,7 @@ import { parsePins } from '../../../packages/shared/aurora/hostkey.ts';
 import { buildSavedPlayerRows, chunk, isMissingObjectError, tagRows } from '../../../packages/shared/aurora/ingest-core.ts';
 import {
   disabledWorlds,
-  probeWorlds,
+  probeWorldsForRun,
   pruneOldWorlds,
   summarizeWorlds,
   type WorldState,
@@ -480,20 +481,18 @@ Deno.serve(async (req: Request) => {
         const totals = emptyTotals();
         const firstStepAt = Date.now();
         // The world probe (032), once per run, before any row is written. Disabled
-        // (no column, no table) is today's behaviour. Any other failure skips the
-        // tail this run: rows written untagged across a world switch would be
-        // stamped with the OLD world at the next switch, so the cursor waits.
-        let probed = false;
-        try {
-          worlds = await probeWorlds(db, cfg.serverId);
-          probed = true;
-        } catch (err) {
-          worlds = disabledWorlds('probe failed; tail skipped this run');
-          summary.errors.push(`worlds: ${String(err).slice(0, 300)}`);
-          console.error(JSON.stringify({ at: 'worlds', error: String(err) }));
+        // (no column, no table) is today's behaviour. Any other failure leaves the
+        // world UNKNOWN for this run (probeWorldsForRun): the tail still runs, rows
+        // are written untagged (NULL counts as current) and a world record in a
+        // batch still registers. The error is reported, never a reason to wait.
+        const probe = await probeWorldsForRun(db, cfg.serverId);
+        worlds = probe.worlds;
+        if (probe.error !== null) {
+          summary.errors.push(`worlds: ${probe.error}`);
+          console.error(JSON.stringify({ at: 'worlds', error: probe.error }));
         }
         try {
-          target = probed ? await findTarget(session, db, tailCfg) : null;
+          target = await findTarget(session, db, tailCfg);
           if (target) await tailStep(session, db, tailCfg, target, totals, Date.now, worlds);
           summary.tail = { file: target?.file ?? null, launchStamp: target?.launchStamp ?? null, ...totals };
         } catch (err) {

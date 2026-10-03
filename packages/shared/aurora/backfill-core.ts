@@ -10,7 +10,15 @@
 // count as the current world.
 
 import { emptyStats, launchStampFromFileName, splitLines, type SplitStats } from './parser.ts';
-import { buildPlan, chunk, isMissingObjectError, type IngestPlan, runPlanStep } from './ingest-core.ts';
+import {
+  buildPlan,
+  chunk,
+  isMissingObjectError,
+  type IngestPlan,
+  noteOptionalError,
+  type OptionalError,
+  runPlanStep,
+} from './ingest-core.ts';
 import { lookupWorld, newestWorldRecord } from './worlds.ts';
 import type { Row, UpsertOptions } from './rest.ts';
 
@@ -31,6 +39,8 @@ export interface FileResult {
   worldId: string | null;
   rowsWritten: number;
   skippedOptional: number;
+  /** Why, for the first OPTIONAL_ERRORS_CAP skips: the code and message. */
+  optionalErrors: OptionalError[];
   linksOk: number;
   linksFailed: number;
 }
@@ -73,7 +83,7 @@ export async function replayFile(
 
   const result: FileResult = {
     name, stats, plan: buildPlan([], serverId), skipped: null, worldId: null,
-    rowsWritten: 0, skippedOptional: 0, linksOk: 0, linksFailed: 0,
+    rowsWritten: 0, skippedOptional: 0, optionalErrors: [], linksOk: 0, linksFailed: 0,
   };
 
   if (db !== null) {
@@ -98,8 +108,9 @@ export async function replayFile(
   result.plan = plan;
   if (db === null) return result;
 
-  const onSkipped = () => {
+  const onSkipped = (what: string) => (err: unknown) => {
     result.skippedOptional++;
+    noteOptionalError(result.optionalErrors, what, err);
   };
   // Ordered, never parallel: player_positions has a foreign key into players,
   // which references servers.
@@ -117,7 +128,7 @@ export async function replayFile(
           upsert.ignoreDuplicates === true
             ? db.upsert(upsert.table, batch, upsert.onConflict, { ignoreDuplicates: true })
             : db.upsert(upsert.table, batch, upsert.onConflict),
-        onSkipped,
+        onSkipped(upsert.table),
       );
       if (wrote) result.rowsWritten += batch.length;
     }
@@ -127,7 +138,7 @@ export async function replayFile(
   // is the whole list, so an old file would delete newer factions.
   for (const call of plan.rpcs) {
     if (call.liveOnly) continue;
-    const wrote = await runPlanStep(call.optional, () => db.rpc(call.fn, call.args), onSkipped);
+    const wrote = await runPlanStep(call.optional, () => db.rpc(call.fn, call.args), onSkipped(call.fn));
     if (wrote) result.rowsWritten += call.rows;
   }
   // plan.deletes (zombie_grid staleness, `npcgone` and `npcogone` removals) are not

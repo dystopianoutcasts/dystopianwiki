@@ -629,6 +629,76 @@ Deno.test('T54 season records: kill events ignore duplicates; lives after player
   assert(order.indexOf('rpc:replace_factions') < order.indexOf('ingest_cursor'), 'before the cursor');
 });
 
+Deno.test('optional writes: a 4xx (not a missing object) is skipped, counted, reported, and the cursor advances', async () => {
+  const file = new FakeFile();
+  const t = 1790636586629;
+  file.append(
+    `[29-09-26 05:00:00.000] A1 {"k":"pos","t":${t},"u":"alice","x":1,"y":2,"zk":4}.\n` +
+      `[29-09-26 05:00:00.000] A1 {"k":"kill","t":${t},"u":"alice","x":5,"y":6}.\n` +
+      `[29-09-26 05:00:00.000] A1 {"k":"facs","t":${t},"f":[]}.\n`,
+  );
+  const session = fakeSession(file);
+  const db = fakeDb();
+  const upsert = db.upsert;
+  db.upsert = (table, rows, onConflict) =>
+    table === 'kill_events'
+      ? Promise.reject(new Error('upsert kill_events: 400 {"code":"PGRST204","message":"no column z"}'))
+      : upsert(table, rows, onConflict);
+  db.rpc = (fn) => Promise.reject(new Error(`rpc ${fn}: 400 {"code":"PGRST203","message":"ambiguous"}`));
+  const target = (await findTarget(session, db, CFG))!;
+  const totals = emptyTotals();
+  await tailStep(session, db, CFG, target, totals, () => 1790636600000);
+  assertEquals(db.tables['ingest_cursor'][0].byte_offset, file.bytes.length, 'cursor advanced');
+  assertEquals(totals.skippedOptional, 3, 'kill_events, observe_lives, replace_factions');
+  assertEquals(totals.optionalErrors.map((e) => `${e.what}:${e.code}`).sort(), ['kill_events:PGRST204', 'observe_lives:PGRST203', 'replace_factions:PGRST203']);
+  assert((db.tables['players'] ?? []).length === 1, 'the rest of the batch was written');
+});
+
+Deno.test('optional writes: a 5xx or a network error holds the cursor; a 4xx on a non-optional write holds it too', async () => {
+  const t = 1790636586629;
+  const line = `[29-09-26 05:00:00.000] A1 {"k":"kill","t":${t},"u":"alice","x":5,"y":6}.\n`;
+  const cases: { name: string; fail: (db: ReturnType<typeof fakeDb>) => void }[] = [
+    { name: 'optional 503', fail: (db) => { db.upsert = (tb) => tb === 'kill_events' ? Promise.reject(new Error('upsert kill_events: 503 down')) : Promise.resolve(); } },
+    { name: 'optional network', fail: (db) => { db.upsert = (tb) => tb === 'kill_events' ? Promise.reject(new TypeError('fetch failed')) : Promise.resolve(); } },
+    { name: 'non-optional 400', fail: (db) => { db.upsert = (tb) => tb === 'player_positions' ? Promise.reject(new Error('upsert player_positions: 400 {"code":"PGRST204","message":"x"}')) : Promise.resolve(); } },
+  ];
+  for (const c of cases) {
+    const file = new FakeFile();
+    file.append(line + posLine(0));
+    const session = fakeSession(file);
+    const db = fakeDb();
+    c.fail(db);
+    const target = (await findTarget(session, db, CFG))!;
+    let threw = false;
+    try {
+      await tailStep(session, db, CFG, target, emptyTotals());
+    } catch {
+      threw = true;
+    }
+    assert(threw, `${c.name} must throw`);
+    assertEquals(db.tables['ingest_cursor'], undefined, `${c.name}: cursor not written`);
+  }
+});
+
+Deno.test('optional writes: optionalErrors is capped at 20 while skippedOptional keeps counting', async () => {
+  const file = new FakeFile();
+  const t = 1790636586629;
+  let lines = '';
+  for (let i = 0; i < 30; i++) lines += `[29-09-26 05:00:00.000] A1 {"k":"kill","t":${t + i},"u":"alice","x":${i},"y":6}.\n`;
+  file.append(lines);
+  const session = fakeSession(file);
+  const db = fakeDb();
+  const upsert = db.upsert;
+  db.upsert = (table, rows, onConflict) =>
+    table === 'kill_events' ? Promise.reject(new Error('upsert kill_events: 400 {"code":"22023","message":"bad"}')) : upsert(table, rows, onConflict);
+  const cfg = { ...CFG, batchRows: 1 };
+  const target = (await findTarget(session, db, cfg))!;
+  const totals = emptyTotals();
+  await tailStep(session, db, cfg, target, totals);
+  assert(totals.skippedOptional > 20, `skipped ${totals.skippedOptional}`);
+  assertEquals(totals.optionalErrors.length, 20);
+});
+
 Deno.test('T54 season records: with 034 not applied, the three writes are skipped and the cursor advances', async () => {
   const file = new FakeFile();
   const t = 1790636586629;
