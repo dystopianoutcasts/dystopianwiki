@@ -37,7 +37,8 @@
 //            apis {name: bool}, events {name: bool}
 //   probe    fileWriter bool (v0.0 diagnostic; no table)
 //   statkeys perf [names], game [names], net [names] (once per launch; no table)
-//   hb       players online count, src "tick" | "gametime",
+//   hb       players online count, ol [usernames online, sorted] (exporter 0.7.1),
+//            src "tick" | "gametime",
 //            st { perf {name: number}, game {...}, net {...} } - the three
 //            server statistics tables; only src "tick" becomes a health sample
 //   pos      u username, n display name, id online id, x, y, z, v vehicle id or null,
@@ -187,6 +188,13 @@ export interface HbRecord extends BaseRecord {
   /** Online count. v0.0 spells it `players`; the synthetic fixture used `np`. */
   players?: number;
   np?: number;
+  /**
+   * Exporter 0.7.1: the roster, the sorted usernames online when the heartbeat
+   * fired. Absent from older exporters (the importer then falls back to the
+   * position window and the zero-players rule). Not policed by checkShape: the
+   * importer uses it only when it is an array of strings.
+   */
+  ol?: string[];
   /**
    * Revision 2: which clock fired this heartbeat. "tick" is OnTick + wall clock
    * and is the health feed; "gametime" pauses on an empty server (measured) and

@@ -396,9 +396,39 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
   // in the batch (no position is newer than it), everyone on the server is
   // offline, including players this batch never saw. Applied after the upserts
   // so the heartbeat overrides positions older than itself.
+  //
+  // Exporter 0.7.1 puts the roster on the heartbeat (`ol`, the usernames online).
+  // When the newest heartbeat carries one and is the latest word, it replaces the
+  // guess: everyone online who is not on it goes offline, everyone on it who is
+  // stored offline comes online. The position window alone left a player who
+  // logged off while others stayed on marked online until a 0-player heartbeat
+  // (17 online for 2 real players, 2026-10-03). last_seen is not touched: it means
+  // "last position seen". Without a roster (exporter 0.2.2) the zero rule below
+  // is the whole story, as before.
   const newestHb = newestOf(heartbeats);
   const newestPosT = newestOf(positions)?.t ?? -Infinity;
-  if (newestHb !== undefined && onlineCount(newestHb) === 0 && newestHb.t >= newestPosT) {
+  const roster = newestHb !== undefined ? rosterOf(newestHb) : undefined;
+  if (newestHb !== undefined && roster !== undefined && newestHb.t >= newestPosT) {
+    const server = `server_id=eq.${encodeURIComponent(serverId)}`;
+    const names = [...new Set(roster)];
+    const at = toIso(newestHb.t);
+    patches.push({
+      table: 'players',
+      filter: names.length > 0
+        ? `${server}&online=is.true&username=not.in.${encodeURIComponent(inList(names))}`
+        : `${server}&online=is.true`,
+      body: { online: false },
+      why: `heartbeat at ${at} roster lists ${names.length} player(s) online: everyone else is offline`,
+    });
+    if (names.length > 0) {
+      patches.push({
+        table: 'players',
+        filter: `${server}&online=is.false&username=in.${encodeURIComponent(inList(names))}`,
+        body: { online: true },
+        why: `heartbeat at ${at} roster lists ${names.length} player(s) online`,
+      });
+    }
+  } else if (newestHb !== undefined && onlineCount(newestHb) === 0 && newestHb.t >= newestPosT) {
     patches.push({
       table: 'players',
       filter: `server_id=eq.${encodeURIComponent(serverId)}&online=is.true`,
@@ -1027,6 +1057,17 @@ function onlineCount(hb: HbRecord): number | undefined {
   if (typeof hb.players === 'number' && Number.isFinite(hb.players)) return hb.players;
   if (typeof hb.np === 'number' && Number.isFinite(hb.np)) return hb.np;
   return undefined;
+}
+
+/**
+ * The heartbeat's roster (exporter 0.7.1 `ol`): the usernames online, or
+ * undefined when the heartbeat carries none or carries something that is not an
+ * array of strings (then the importer falls back to the older rules).
+ */
+export function rosterOf(hb: HbRecord): string[] | undefined {
+  const ol: unknown = hb.ol;
+  if (!Array.isArray(ol) || !ol.every((u) => typeof u === 'string')) return undefined;
+  return ol.filter((u) => u !== '');
 }
 
 /**

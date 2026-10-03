@@ -23,6 +23,7 @@ import {
   type TableUpsert,
 } from './ingest-core.ts';
 import { parseLineDetailed } from './parser.ts';
+import { inList } from './rest.ts';
 import type { AuroraRecord, FacsRecord, HbRecord, NpcOutpostRecord, NpcRecord, PosRecord } from './parser.ts';
 
 function assertEquals<T>(actual: T, expected: T, msg = ''): void {
@@ -598,6 +599,94 @@ Deno.test('a 0-player heartbeat older than a position does not override it', () 
 Deno.test('a heartbeat with players online produces no patch', () => {
   const recs: AuroraRecord[] = [{ k: 'hb', t: NOW, players: 2, src: 'tick' }];
   assertEquals(buildPlan(recs, SERVER).patches.length, 0);
+});
+
+// --- T60: the heartbeat roster (exporter 0.7.1 hb.ol) -------------------------
+
+const LEMUR = 'Hey Look The Great Lemur';
+const AWKWARD = 'a"b,c';
+
+Deno.test('T60 inList quotes every name, so spaces, quotes and commas stay inside one value', () => {
+  assertEquals(inList([LEMUR, AWKWARD]), '("Hey Look The Great Lemur","a\\"b,c")');
+  assertEquals(inList(['back\\slash']), '("back\\\\slash")');
+});
+
+Deno.test('T60 a roster on the newest heartbeat marks absentees offline and listed players online', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'pos', t: NOW - 1000, u: 'gone', x: 1, y: 1 },
+    { k: 'hb', t: NOW, players: 2, src: 'tick', ol: [AWKWARD, LEMUR] },
+  ];
+  const plan = buildPlan(recs, SERVER);
+  assertEquals(plan.patches.length, 2);
+  const [off, on] = plan.patches;
+  assertEquals(off.table, 'players');
+  assertEquals(off.body, { online: false });
+  assertEquals(
+    decodeURIComponent(off.filter),
+    `server_id=eq.${SERVER}&online=is.true&username=not.in.("a\\"b,c","Hey Look The Great Lemur")`,
+  );
+  assertEquals(on.table, 'players');
+  assertEquals(on.body, { online: true });
+  assertEquals(
+    decodeURIComponent(on.filter),
+    `server_id=eq.${SERVER}&online=is.false&username=in.("a\\"b,c","Hey Look The Great Lemur")`,
+  );
+  assert(!off.filter.includes(' ') && !on.filter.includes('"'), 'the filters are URL-encoded');
+  for (const p of plan.patches) {
+    assert(p.why.includes(new Date(NOW).toISOString()), `why names the heartbeat time: ${p.why}`);
+    assert(!('last_seen' in p.body), 'a roster change never bumps last_seen');
+  }
+});
+
+Deno.test('T60 an empty roster marks everyone offline, with no not.in part', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'pos', t: NOW - 1000, u: 'a', x: 1, y: 1 },
+    { k: 'hb', t: NOW, players: 0, src: 'tick', ol: [] },
+  ];
+  const plan = buildPlan(recs, SERVER);
+  assertEquals(plan.patches.length, 1, 'one patch, not the roster and the zero rule twice');
+  assertEquals(plan.patches[0].body, { online: false });
+  assertEquals(plan.patches[0].filter, `server_id=eq.${SERVER}&online=is.true`);
+});
+
+Deno.test('T60 a roster older than the newest position changes nothing', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'hb', t: NOW - 1000, players: 1, src: 'tick', ol: ['a'] },
+    { k: 'pos', t: NOW, u: 'b', x: 1, y: 1 },
+  ];
+  assertEquals(buildPlan(recs, SERVER).patches, []);
+  const empty: AuroraRecord[] = [
+    { k: 'hb', t: NOW - 1000, players: 0, src: 'tick', ol: [] },
+    { k: 'pos', t: NOW, u: 'b', x: 1, y: 1 },
+  ];
+  assertEquals(buildPlan(empty, SERVER).patches, [], 'an empty stale roster does not mark b offline');
+});
+
+Deno.test('T60 only the newest heartbeat speaks: an older roster in the same batch is ignored', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'hb', t: NOW - 1000, players: 1, src: 'tick', ol: ['a'] },
+    { k: 'hb', t: NOW, players: 2, src: 'tick' },
+  ];
+  assertEquals(buildPlan(recs, SERVER).patches, [], 'the newest has no roster and players > 0');
+});
+
+Deno.test('T60 a roster that is not an array of strings is ignored and the zero rule still applies', () => {
+  const bad = { k: 'hb', t: NOW, players: 0, src: 'tick', ol: ['a', 7] } as unknown as AuroraRecord;
+  const plan = buildPlan([bad], SERVER);
+  assertEquals(plan.patches.length, 1);
+  assertEquals(plan.patches[0].filter, `server_id=eq.${SERVER}&online=is.true`);
+  assert(plan.patches[0].why.includes('reports 0 players'), 'the zero rule, not the roster');
+  const notArray = { k: 'hb', t: NOW, players: 3, src: 'tick', ol: {} } as unknown as AuroraRecord;
+  assertEquals(buildPlan([notArray], SERVER).patches, []);
+});
+
+Deno.test('T60 a real 0.7.1 heartbeat line with a roster parses and drives the patches', () => {
+  const r = parseLineDetailed(
+    `[03-10-26 12:00:00.000] [ 1] A1 {"k":"hb","t":${NOW},"src":"tick","players":1,"ol":["${LEMUR}"]}.`,
+  );
+  assert(r.ok, 'parses');
+  const plan = buildPlan([(r as { ok: true; record: AuroraRecord }).record], SERVER);
+  assertEquals(plan.patches.map((p) => p.body), [{ online: false }, { online: true }]);
 });
 
 // --- players.db rows -------------------------------------------------------
