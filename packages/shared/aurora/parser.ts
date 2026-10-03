@@ -80,6 +80,12 @@
 //   facs     f [{n name, g tag ("" for none), o owner username, m [usernames]}], the
 //            FULL faction list (exporter 0.7.0; every 10 min and on change; `m`
 //            includes the owner once; "f":[] means every faction is disbanded)
+//   lb       src the table's source ("DQOL"), e [{u username, bk banked kills, bd
+//            banked deaths, lk live kills, lh live hours}], the FULL in-game
+//            leaderboard table (exporter 0.7.2, T64; sorted by u, at most 200
+//            entries; every 10 min and on change; "e":[] means the table is empty).
+//            A bad entry is dropped, never a shape failure; "e":{} (an empty Lua
+//            table through the old JSON writer) reads as [].
 //
 // `boot.gv` (exporter 0.5.0) is the game version; it becomes servers.game_version.
 // `hb.st.game` also carries zombies-killed, world-age-hours, oa-ev-zombie-dead and
@@ -113,6 +119,7 @@ export const KINDS = [
   'world',
   'kill',
   'facs',
+  'lb',
   // Diagnostic kinds: known so they are not reported as unknown, but they map
   // to no table - buildPlan produces no rows for them.
   'probe',
@@ -400,6 +407,28 @@ export interface FacsRecord extends BaseRecord {
   f: FactionEntry[];
 }
 
+/**
+ * One entry of an `lb` record: the DystopianQoL leaderboard row of one username.
+ * bk banked kills, bd banked deaths, lk live kills, lh live hours (may be fractional).
+ */
+export interface LbEntry {
+  u: string;
+  bk: number;
+  bd: number;
+  lk: number;
+  lh: number;
+}
+
+/**
+ * The in-game leaderboard table (exporter 0.7.2, T64). `e` is the whole table; an
+ * empty `e` means the table is empty. The parser has already dropped bad entries.
+ */
+export interface LbRecord extends BaseRecord {
+  k: 'lb';
+  src?: string;
+  e: LbEntry[];
+}
+
 /** The exporter world id contract: 8-64 characters, letters, digits and dashes. */
 export const WORLD_ID_PATTERN = /^[A-Za-z0-9-]{8,64}$/;
 
@@ -425,7 +454,8 @@ export type AuroraRecord =
   | VnameRecord
   | WorldRecord
   | KillRecord
-  | FacsRecord;
+  | FacsRecord
+  | LbRecord;
 
 export type ParseFailure =
   | 'not-aurora' // no A1 marker: someone else's log line
@@ -471,6 +501,24 @@ function isFactionEntry(v: unknown): v is FactionEntry {
     (v.o === undefined || isStr(v.o)) &&
     Array.isArray(v.m) &&
     v.m.every(isStr)
+  );
+}
+
+/** A finite, non-negative number. */
+function isCount(v: unknown): v is number {
+  return isNum(v) && v >= 0;
+}
+
+/** One usable `lb` entry: a non-empty username and four finite non-negative numbers. */
+export function isLbEntry(v: unknown): v is LbEntry {
+  return (
+    isPlainObject(v) &&
+    isStr(v.u) &&
+    v.u.trim() !== '' &&
+    isCount(v.bk) &&
+    isCount(v.bd) &&
+    isCount(v.lk) &&
+    isCount(v.lh)
   );
 }
 
@@ -531,6 +579,10 @@ function checkShape(o: Record<string, unknown>): boolean {
       // Strict: the record replaces the whole list downstream, so one malformed
       // faction rejects the record (the stored list stays) rather than deleting it.
       return Array.isArray(o.f) && o.f.every(isFactionEntry);
+    case 'lb':
+      // The table must be there: an array, or {} (the old JSON writer's empty
+      // table). A bad ENTRY is dropped after the check, never a shape failure.
+      return Array.isArray(o.e) || (isPlainObject(o.e) && Object.keys(o.e).length === 0);
     case 'npcgone':
     case 'npcogone':
       return isStr(o.id) && o.id !== '';
@@ -564,6 +616,11 @@ export function parseLineDetailed(line: string): ParseResult {
   if (!checkShape(o)) return { ok: false, reason: 'bad-shape', kind: o.k };
   // An unusable kill counter is dropped, never a reason to lose the position.
   if (o.k === 'pos' && o.zk !== undefined && !isKillCounter(o.zk)) delete o.zk;
+  // The leaderboard table: bad entries dropped, {} read as the empty table.
+  if (o.k === 'lb') {
+    o.e = Array.isArray(o.e) ? o.e.filter(isLbEntry) : [];
+    if (o.src !== undefined && !isStr(o.src)) delete o.src;
+  }
 
   return { ok: true, record: o as unknown as AuroraRecord };
 }

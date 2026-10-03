@@ -491,3 +491,53 @@ Deno.test('T54 facs: one malformed faction rejects the whole record', () => {
   // g and o are optional.
   assertEquals(parseLine(`${P1} A1 {"k":"facs","t":1,"f":[{"n":"Bears","m":[]}]}.`)?.k, 'facs');
 });
+
+// The in-game leaderboard table (exporter 0.7.2, T64/T65): lb
+const T64_LB_LINE =
+  'A1 {"e":[{"bd":1,"bk":300,"lh":176.33,"lk":181,"u":"Pootard"},{"bd":0,"bk":0,"lh":2.5,"lk":3,"u":"kim"}],"k":"lb","src":"DQOL","t":1759000000000}';
+
+Deno.test('T65 lb: a good record parses with every entry, src kept', () => {
+  const r = parseLineDetailed(`${P1} ${T64_LB_LINE}.`);
+  assert(r.ok, 'parsed');
+  if (!r.ok || r.record.k !== 'lb') throw new Error('not lb');
+  assertEquals(r.record.src, 'DQOL');
+  assertEquals(r.record.e.map((x) => [x.u, x.bk, x.bd, x.lk, x.lh]), [['Pootard', 300, 1, 181, 176.33], ['kim', 0, 0, 3, 2.5]]);
+  const empty = parseLineDetailed(`${P1} A1 {"k":"lb","t":1,"e":[]}.`);
+  assert(empty.ok && empty.record.k === 'lb' && empty.record.e.length === 0, 'e [] parses (the table is empty), src optional');
+});
+
+Deno.test('T65 lb: a bad entry is dropped, never a shape failure', () => {
+  const body =
+    '{"k":"lb","t":1,"src":7,"e":[' +
+    '{"u":"ok","bk":1,"bd":2,"lk":3,"lh":4},' +
+    '{"u":"","bk":1,"bd":2,"lk":3,"lh":4},' +
+    '{"u":"  ","bk":1,"bd":2,"lk":3,"lh":4},' +
+    '{"u":5,"bk":1,"bd":2,"lk":3,"lh":4},' +
+    '{"bk":1,"bd":2,"lk":3,"lh":4},' +
+    '{"u":"neg","bk":-1,"bd":2,"lk":3,"lh":4},' +
+    '{"u":"str","bk":"1","bd":2,"lk":3,"lh":4},' +
+    '{"u":"miss","bk":1,"bd":2,"lk":3},' +
+    '{"u":"nul","bk":1,"bd":null,"lk":3,"lh":4},' +
+    '"kim",null,[1],' +
+    '{"u":"ok2","bk":0,"bd":0,"lk":0,"lh":0.25}]}';
+  const r = parseLineDetailed(`${P1} A1 ${body}.`);
+  assert(r.ok, 'a record with bad entries still parses');
+  if (!r.ok || r.record.k !== 'lb') throw new Error('not lb');
+  assertEquals(r.record.e.map((x) => x.u), ['ok', 'ok2']);
+  assert(r.record.src === undefined, 'a non-string src is dropped');
+});
+
+Deno.test('T65 lb: {} reads as the empty table; a missing or other e is bad-shape', () => {
+  const r = parseLineDetailed(`${P1} A1 {"k":"lb","t":1,"e":{}}.`);
+  assert(r.ok && r.record.k === 'lb' && Array.isArray(r.record.e) && r.record.e.length === 0, 'e {} is []');
+  for (const body of [
+    '{"k":"lb","t":1}',
+    '{"k":"lb","t":1,"e":{"u":"kim"}}',
+    '{"k":"lb","t":1,"e":"x"}',
+    '{"k":"lb","t":1,"e":null}',
+    '{"k":"lb","e":[]}',
+  ]) {
+    const b = parseLineDetailed(`${P1} A1 ${body}.`);
+    assert(!b.ok && b.reason === 'bad-shape', `${body} is bad-shape`);
+  }
+});
