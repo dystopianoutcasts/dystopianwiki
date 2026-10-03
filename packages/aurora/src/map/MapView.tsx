@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
@@ -40,7 +42,7 @@ import type {
   WorldMapFeatures,
   ZoneFeature,
 } from '../layers/transform'
-import { DEATH_PANE, DEATH_PANE_Z_INDEX, NPC_PANE, NPC_PANE_Z_INDEX, PLAYERS_PANE, PLAYERS_PANE_Z_INDEX, PLAYER_NAMES_PANE, PLAYER_NAMES_PANE_Z_INDEX } from './panes'
+import { DEATH_PANE, DEATH_PANE_Z_INDEX, MAP_KEY_PANE, MAP_KEY_PANE_Z_INDEX, NPC_PANE, NPC_PANE_Z_INDEX, PLAYERS_PANE, PLAYERS_PANE_Z_INDEX, PLAYER_NAMES_PANE, PLAYER_NAMES_PANE_Z_INDEX } from './panes'
 
 // T41: re-exported so a consumer of this module sees them here, next to the map that
 // creates them; layers/build.ts imports the same constants from ./panes directly
@@ -97,6 +99,43 @@ interface Props {
   objects: ObjectFeature[]
   /** Set by the street search box to recentre the map; consumed once, then left alone. */
   flyTo: { x: number; y: number; zoom: number } | null
+  /** T68: drawn ON the map, top left beside the zoom buttons (the map key). It renders
+   *  nothing while its toggle is off. */
+  overlay?: ReactNode
+}
+
+/** Gap between the zoom buttons and the overlay, and between the overlay and the map's edges. */
+const OVERLAY_GAP = 10
+
+/**
+ * T68: the pane holding the overlay sits inside Leaflet's map pane (so its z-index orders it
+ * against markers, tooltips and popups, map/panes.ts), and the map pane is moved on every pan.
+ * Moving this pane back by the same amount keeps the overlay still on screen. Leaflet sets the
+ * map pane's position and then fires 'move' in the same tick (drag, pan animation, inertia,
+ * keyboard pan, setView), so the two never paint apart.
+ */
+function pinOverlayPane(map: L.Map, pane: HTMLElement): void {
+  const mapPane = map.getPane('mapPane')
+  if (!mapPane) return
+  L.DomUtil.setPosition(pane, L.DomUtil.getPosition(mapPane).multiplyBy(-1))
+}
+
+/** Place the overlay just right of the zoom buttons and hand CSS the map's size, so the
+ *  overlay's height is capped to the map and its width leaves the map visible. */
+function fitOverlayHost(map: L.Map, host: HTMLElement): void {
+  const size = map.getSize()
+  let left = OVERLAY_GAP
+  const zoom = map.zoomControl?.getContainer()
+  if (zoom) {
+    const c = map.getContainer().getBoundingClientRect()
+    const z = zoom.getBoundingClientRect()
+    if (z.width > 0) left = Math.round(z.right - c.left) + OVERLAY_GAP
+  }
+  host.style.left = `${left}px`
+  host.style.top = `${OVERLAY_GAP}px`
+  host.style.setProperty('--map-w', `${size.x}px`)
+  host.style.setProperty('--map-h', `${size.y}px`)
+  host.style.setProperty('--key-left', `${left}px`)
 }
 
 /** Replace the layer held in `ref`: remove the old one, add the new one if the toggle is on. */
@@ -114,6 +153,8 @@ export function MapView(props: Props) {
   const onViewChangeRef = useRef(onViewChange)
   onViewChangeRef.current = onViewChange
   const [zoom, setZoom] = useState(initialView.zoom)
+  /** T68: where the overlay is portalled to, inside its own pane; set once the map exists. */
+  const [overlayHost, setOverlayHost] = useState<HTMLElement | null>(null)
 
   const streetsLayer = useRef<L.Layer | null>(null)
   const worldMapLayer = useRef<L.Layer | null>(null)
@@ -152,6 +193,13 @@ export function MapView(props: Props) {
     map.createPane(NPC_PANE).style.zIndex = String(NPC_PANE_Z_INDEX)
     map.createPane(PLAYERS_PANE).style.zIndex = String(PLAYERS_PANE_Z_INDEX)
     map.createPane(PLAYER_NAMES_PANE).style.zIndex = String(PLAYER_NAMES_PANE_Z_INDEX)
+    // T68: the map key overlay. Clicks, drags, double clicks and the wheel over it stay
+    // with it (its content scrolls) and never reach the map; anywhere else the map gets them.
+    const keyPane = map.createPane(MAP_KEY_PANE)
+    keyPane.style.zIndex = String(MAP_KEY_PANE_Z_INDEX)
+    const keyHost = L.DomUtil.create('div', 'map-overlay-host', keyPane)
+    L.DomEvent.disableClickPropagation(keyHost)
+    L.DomEvent.disableScrollPropagation(keyHost)
     // sizedTileLayer (./sizedTileLayer.ts): every tile drawn at its own size, so the
     // pyramid's cut edge tiles are not stretched. The pyramid is sparse, so a 404 is normal.
     sizedTileLayer((coords) => tileUrl(cfg, cfg.layers.ground, coords.z, coords.x, coords.y, tilesBase), {
@@ -168,8 +216,14 @@ export function MapView(props: Props) {
       onViewChangeRef.current({ x: c.x, y: c.y, zoom: map.getZoom() })
     })
     map.on('zoomend', () => setZoom(map.getZoom()))
+    map.on('move zoom viewreset moveend zoomend resize', () => pinOverlayPane(map, keyPane))
+    map.on('resize', () => fitOverlayHost(map, keyHost))
+    pinOverlayPane(map, keyPane)
+    fitOverlayHost(map, keyHost)
+    setOverlayHost(keyHost)
     mapRef.current = map
     return () => {
+      setOverlayHost(null)
       map.remove()
       mapRef.current = null
       // The overlay layers went with the map: forget them, so a new map gets them all.
@@ -299,11 +353,14 @@ export function MapView(props: Props) {
   }, [flyTo])
 
   return (
-    <div
-      ref={container}
-      className="aurora-map"
-      role="application"
-      aria-label="Server map. Use the roster panel for a text list of players."
-    />
+    <>
+      <div
+        ref={container}
+        className="aurora-map"
+        role="application"
+        aria-label="Server map. Use the roster panel for a text list of players."
+      />
+      {overlayHost && props.overlay ? createPortal(props.overlay, overlayHost) : null}
+    </>
   )
 }

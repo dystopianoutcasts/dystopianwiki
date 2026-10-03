@@ -1,28 +1,9 @@
-import { useState } from 'react'
-import type { LayerPrefs } from '../state/layerPrefs'
+import { useCallback, useState } from 'react'
+import type { LayerKey, LayerPrefs } from '../state/layerPrefs'
+import { loadCollapsed, toggleCollapsed } from '../state/mapKeySections'
 import { LAYER_LABELS } from './LayerToggles'
 import { visibleKey } from './mapKeyRows'
 import type { KeySwatch, KeyViewer } from './mapKeyRows'
-
-const OPEN_KEY = 'aurora.mapKey.open'
-
-/** Closed by default; whether it was left open is remembered per browser. Storage can be
- * blocked, so every access is guarded and the key works without it. */
-function loadOpen(): boolean {
-  try {
-    return typeof localStorage !== 'undefined' && localStorage.getItem(OPEN_KEY) === '1'
-  } catch {
-    return false
-  }
-}
-
-function saveOpen(open: boolean): void {
-  try {
-    localStorage.setItem(OPEN_KEY, open ? '1' : '0')
-  } catch {
-    // blocked or full: the toggle still works for this visit
-  }
-}
 
 function rampCss(stops: readonly [number, string][]): string {
   return `linear-gradient(to right, ${stops.map(([at, c]) => `${c} ${Math.round(at * 100)}%`).join(', ')})`
@@ -92,43 +73,66 @@ function Swatch({ swatch }: { swatch: KeySwatch }) {
 }
 
 /**
- * T67: the map key. A collapsible section under the layer toggles, closed by default.
+ * T67, T68: the map key. An overlay on the map, top left beside the zoom buttons
+ * (map/MapView.tsx places it), shown while the "Map key" toggle in the layer list is on;
+ * renders nothing when it is off. The close button switches that toggle off.
+ *
  * Lists only the layers that are switched on (layers that are off are left out, not
- * dimmed), and only the symbols this viewer can see (VISIBILITY.md).
+ * dimmed), and only the symbols this viewer can see (VISIBILITY.md). Each layer is a
+ * section whose heading button collapses it; which sections are collapsed is remembered
+ * (state/mapKeySections.ts). Every section starts expanded.
  */
-export function MapKey({ prefs, viewer }: { prefs: LayerPrefs; viewer: KeyViewer }) {
-  const [open, setOpen] = useState(loadOpen)
+export function MapKey({ prefs, viewer, onClose }: { prefs: LayerPrefs; viewer: KeyViewer; onClose: () => void }) {
+  const [collapsed, setCollapsed] = useState(() => loadCollapsed())
+  const onToggleSection = useCallback((layer: LayerKey) => setCollapsed((c) => toggleCollapsed(c, layer)), [])
+  return <MapKeyView prefs={prefs} viewer={viewer} collapsed={collapsed} onToggleSection={onToggleSection} onClose={onClose} />
+}
+
+/** The key itself, without state (MapKey holds it), so tests can render it directly. */
+export function MapKeyView({ prefs, viewer, collapsed, onToggleSection, onClose }: {
+  prefs: LayerPrefs
+  viewer: KeyViewer
+  collapsed: ReadonlySet<LayerKey>
+  onToggleSection: (layer: LayerKey) => void
+  onClose: () => void
+}) {
+  if (!prefs.mapKey) return null
   const entries = visibleKey(prefs, viewer)
-  const toggle = () => {
-    setOpen((o) => {
-      saveOpen(!o)
-      return !o
-    })
-  }
   return (
-    <section className="panel map-key" aria-labelledby="map-key-h">
-      <h2 id="map-key-h" className="map-key-head">
-        <button type="button" className="map-key-toggle" aria-expanded={open} aria-controls="map-key-body" onClick={toggle}>
-          <span className="map-key-chevron" aria-hidden="true">{open ? '-' : '+'}</span>
-          Map key
+    <section className="map-key-overlay" aria-labelledby="map-key-h">
+      <div className="map-key-top">
+        <h2 id="map-key-h" className="map-key-title">Map key</h2>
+        <button type="button" className="map-key-close" aria-label="Close map key" onClick={onClose}>
+          <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
+            <path d="M3 3 L13 13 M13 3 L3 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
         </button>
-      </h2>
-      <div id="map-key-body" hidden={!open}>
-        <p className="note">What each symbol means. Only layers that are switched on are listed.</p>
+      </div>
+      <div className="map-key-body">
+        <p className="note">Only layers that are switched on are listed.</p>
         {entries.length === 0 ? <p className="note">No layers are switched on.</p> : null}
-        {entries.map((entry) => (
-          <div key={entry.layer} className="map-key-group">
-            <h3>{LAYER_LABELS[entry.layer]}</h3>
-            <ul className="map-key-rows">
-              {entry.rows.map((r) => (
-                <li key={r.id} className="map-key-row">
-                  <Swatch swatch={r.swatch} />
-                  <span className="map-key-label">{r.label}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        {entries.map((entry) => {
+          const shut = collapsed.has(entry.layer)
+          const rowsId = `map-key-rows-${entry.layer}`
+          return (
+            <div key={entry.layer} className="map-key-group">
+              <h3 className="map-key-group-head">
+                <button type="button" className="map-key-section" aria-expanded={!shut} aria-controls={rowsId} onClick={() => onToggleSection(entry.layer)}>
+                  <span className="map-key-chevron" aria-hidden="true">{shut ? '+' : '-'}</span>
+                  {LAYER_LABELS[entry.layer]}
+                </button>
+              </h3>
+              <ul id={rowsId} className="map-key-rows" hidden={shut}>
+                {entry.rows.map((r) => (
+                  <li key={r.id} className="map-key-row">
+                    <Swatch swatch={r.swatch} />
+                    <span className="map-key-label">{r.label}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        })}
       </div>
     </section>
   )

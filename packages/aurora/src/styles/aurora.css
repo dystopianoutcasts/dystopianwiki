@@ -313,18 +313,53 @@ fieldset.panel legend { padding: 0 4px; font-weight: 600; }
 .layer-row label { display: flex; align-items: center; gap: 10px; min-height: 44px; }
 .layer-row input { width: 22px; height: 22px; }
 
-/* Map key (T67). The heading is a real button (aria-expanded) at full width and 44 px tall.
-   Swatches sit on a mid ground tone like the map's own terrain, so a symbol made to read on
-   the map reads the same here, in either colour scheme. */
-.map-key-head { margin: 0; font-size: 1rem; }
-.map-key-toggle {
-  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; text-align: left; font-weight: 600;
+/* Map key (T67, T68). An overlay ON the map, top left just right of the zoom buttons:
+   map/MapView.tsx sets the host's left/top and hands over the map's size as --map-w and
+   --map-h, so the key is never taller than the map (its body scrolls) and never wider than
+   what leaves the map visible. Only the key itself takes the pointer; the rest of the map
+   still drags and zooms. Swatches sit on a mid ground tone like the map's own terrain, so a
+   symbol made to read on the map reads the same here, in either colour scheme. */
+.map-overlay-host { position: absolute; top: 10px; left: 54px; }
+.map-key-overlay {
+  display: flex; flex-direction: column; box-sizing: border-box;
+  width: min(300px, calc(var(--map-w, 100vw) - var(--key-left, 54px) - 10px));
+  max-height: calc(var(--map-h, 100vh) - 20px);
+  background: var(--surface); color: var(--text); border: 1px solid var(--control-border); border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  font: 14px/1.4 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  cursor: auto;
+}
+.map-key-top {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 4px 4px 4px 12px; border-bottom: 1px solid var(--border);
+}
+.map-key-title { margin: 0; font-size: 1rem; }
+.map-key-overlay button { font: inherit; color: var(--text); }
+.map-key-overlay button:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
+.map-key-close {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; min-height: 36px; padding: 0; flex: none;
+}
+.map-key-body { overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; padding: 4px 12px 10px; min-height: 0; }
+.map-key-body > .note { margin: 4px 0 2px; }
+.map-key-group-head { margin: 6px 0 0; font-size: 0.9rem; }
+.map-key-section {
+  display: flex; align-items: center; gap: 8px; width: 100%; min-height: 32px; padding: 4px 8px;
+  text-align: left; font-weight: 600; background: var(--surface-2);
 }
 .map-key-chevron { display: inline-block; width: 1ch; font-family: ui-monospace, Consolas, monospace; }
-.map-key-group h3 { margin: 12px 0 4px; font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
-.map-key-rows { list-style: none; margin: 0; padding: 0; }
-.map-key-row { display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 2px 0; }
-.map-key-label { font-size: 0.9rem; }
+.map-key-rows { list-style: none; margin: 4px 0 0; padding: 0; }
+.map-key-rows[hidden] { display: none; }
+.map-key-row { display: flex; align-items: center; gap: 10px; min-height: 34px; padding: 2px 0; }
+.map-key-label { font-size: 0.85rem; }
+@media (max-width: 760px) {
+  /* Phone width: the key leaves most of the map in view (at most about 60% of its width and
+     half its height); the close button inside turns the toggle off. */
+  .map-key-overlay {
+    width: min(260px, calc(var(--map-w, 100vw) * 0.62));
+    max-height: max(160px, calc(var(--map-h, 100vh) * 0.5));
+  }
+}
 .key-swatch {
   flex: none; display: flex; align-items: center; justify-content: center;
   width: 44px; height: 36px; border-radius: 6px; background: #5f6656; position: relative;

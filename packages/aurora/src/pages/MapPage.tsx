@@ -7,7 +7,7 @@ import type { TilesConfig } from '../map/tiles'
 import { parseView, writeView } from '../state/url'
 import type { MapView as View } from '../state/url'
 import { loadLayerPrefs, saveLayerPrefs } from '../state/layerPrefs'
-import type { LayerKey } from '../state/layerPrefs'
+import type { LayerKey, ToggleKey } from '../state/layerPrefs'
 import { loadNameMode, saveNameMode } from '../state/nameMode'
 import type { NameMode } from '../state/nameMode'
 import { useAuroraData } from '../data/useAuroraData'
@@ -32,7 +32,7 @@ import type { AreaRaw, StreetRaw, WorldMapRaw } from '../layers/transform'
 import { HealthPanel } from '../panels/Health'
 import { RosterPanel } from '../panels/Roster'
 import { NameModeToggle } from '../panels/NameModeToggle'
-import { LayerToggles } from '../panels/LayerToggles'
+import { LayerToggles, toggleInputId } from '../panels/LayerToggles'
 import { MapKey } from '../panels/MapKey'
 import { StreetSearch } from '../panels/StreetSearch'
 import { FindPlayer } from '../panels/FindPlayer'
@@ -200,13 +200,23 @@ export function MapPage() {
   const objectList = useMemo(() => objectFeatures(objects.data), [objects.data])
   const heat = useMemo(() => (cfg ? heatPoints(grid.data, cfg, now) : []), [grid.data, cfg, now])
 
-  const setLayer = useCallback((key: LayerKey, on: boolean) => {
+  const setLayer = useCallback((key: ToggleKey, on: boolean) => {
     setPrefs((p) => {
       const next = { ...p, [key]: on }
       saveLayerPrefs(next)
       return next
     })
   }, [])
+
+  // T68: the map key's close button switches its toggle off, then hands focus to that
+  // toggle, or on a phone (where the panels are a hidden sheet) to the sheet's button.
+  const sheetToggleRef = useRef<HTMLButtonElement>(null)
+  const closeMapKey = useCallback(() => {
+    setLayer('mapKey', false)
+    const input = document.getElementById(toggleInputId('mapKey'))
+    input?.focus()
+    if (document.activeElement !== input) sheetToggleRef.current?.focus()
+  }, [setLayer])
 
   const onNameModeChange = useCallback((mode: NameMode) => {
     saveNameMode(mode)
@@ -280,8 +290,10 @@ export function MapPage() {
         heat={heat}
         objects={objectList}
         flyTo={flyTo}
+        overlay={<MapKey prefs={prefs} viewer={{ isAdmin, hasLinked: own.size > 0 }} onClose={closeMapKey} />}
       />
       <button
+        ref={sheetToggleRef}
         type="button"
         className="sheet-toggle"
         aria-expanded={sheetOpen}
@@ -302,7 +314,6 @@ export function MapPage() {
         {isAdmin ? <HealthPanel latest={latest} samples={samples} error={healthError} now={now} /> : null}
         {isAdmin ? <MapNotices noTiles={noTiles} pendingWorld={serverMaps.pendingWorld} /> : null}
         <LayerToggles prefs={prefs} onChange={setLayer} notes={notes} />
-        <MapKey prefs={prefs} viewer={{ isAdmin, hasLinked: own.size > 0 }} />
       </aside>
     </div>
   )

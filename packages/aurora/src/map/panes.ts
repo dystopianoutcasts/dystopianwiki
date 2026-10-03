@@ -26,3 +26,11 @@ export const DEATH_PANE_Z_INDEX = 610
  * 600), below the tooltip pane (650) and so below the player panes (660, 670). */
 export const NPC_PANE = 'aurora-npcs'
 export const NPC_PANE_Z_INDEX = 620
+
+/** T68: the map key overlay. Above every marker, tooltip and player pane (so the key is never
+ * drawn under a symbol), below a popup (700). Leaflet's zoom buttons live in the control
+ * corner (z-index 1000, outside the map pane), so the key can never cover them. A pane moves
+ * with the map; map/MapView.tsx moves this one back by the same amount on every pan, so the
+ * key stays put on screen beside the zoom buttons. */
+export const MAP_KEY_PANE = 'aurora-map-key'
+export const MAP_KEY_PANE_Z_INDEX = 690

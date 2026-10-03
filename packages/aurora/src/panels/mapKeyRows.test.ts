@@ -4,13 +4,13 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { DEFAULT_LAYERS, LAYER_KEYS } from '../state/layerPrefs'
+import { DEFAULT_LAYERS, LAYER_KEYS, TOGGLE_KEYS } from '../state/layerPrefs'
 import type { LayerPrefs } from '../state/layerPrefs'
 import { MAP_KEY, visibleKey } from './mapKeyRows'
 import { SAFEHOUSE_STYLE, deathIconHtml, npcGroupIconHtml, outpostStyle, playerIconHtml, vehicleIconHtml } from '../layers/symbols'
 
-const ALL_ON = Object.fromEntries(LAYER_KEYS.map((k) => [k, true])) as LayerPrefs
-const ALL_OFF = Object.fromEntries(LAYER_KEYS.map((k) => [k, false])) as LayerPrefs
+const ALL_ON = Object.fromEntries(TOGGLE_KEYS.map((k) => [k, true])) as LayerPrefs
+const ALL_OFF = Object.fromEntries(TOGGLE_KEYS.map((k) => [k, false])) as LayerPrefs
 const ANON = { isAdmin: false, hasLinked: false }
 const ADMIN = { isAdmin: true, hasLinked: false }
 
@@ -101,17 +101,6 @@ describe('T67: swatches are the map\'s own symbols', () => {
 
 describe('T67: the MapKey panel', () => {
   const src = readFileSync(fileURLToPath(new URL('./MapKey.tsx', import.meta.url)), 'utf8')
-  const mapPageSrc = readFileSync(fileURLToPath(new URL('../pages/MapPage.tsx', import.meta.url)), 'utf8')
-
-  it('the toggle is a real button with aria-expanded and aria-controls', () => {
-    expect(src).toMatch(/<button type="button" className="map-key-toggle" aria-expanded=\{open\} aria-controls="map-key-body"/)
-    expect(src).toMatch(/Map key/)
-    expect(src).toMatch(/id="map-key-body" hidden=\{!open\}/)
-  })
-
-  it('closed by default', () => {
-    expect(src).toMatch(/=== '1'/)
-  })
 
   it('every swatch is decorative', () => {
     const swatches = src.match(/className="key-swatch[^"]*"[^>]*/g) ?? []
@@ -119,7 +108,8 @@ describe('T67: the MapKey panel', () => {
     for (const s of swatches) expect(s).toMatch(/aria-hidden="true"/)
   })
 
-  it('MapPage renders it under the layer toggles with the viewer\'s admin flag', () => {
-    expect(mapPageSrc).toMatch(/<LayerToggles[^\n]*\n\s*<MapKey prefs=\{prefs\} viewer=\{\{ isAdmin, hasLinked: own\.size > 0 \}\} \/>/)
+  it('the "Map key" toggle is not a map layer, so it never needs a key entry of its own', () => {
+    expect((LAYER_KEYS as readonly string[]).includes('mapKey')).toBe(false)
+    expect(visibleKey({ ...ALL_OFF, mapKey: true }, ADMIN)).toEqual([])
   })
 })
