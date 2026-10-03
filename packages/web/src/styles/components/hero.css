@@ -248,3 +248,8 @@
     padding: var(--spacing-2) var(--spacing-4);
   }
 }
+
+/* One line of the server's description: PZ's line breaks, kept (ServerDescription.tsx). */
+.hero__subtitle-line {
+  display: block;
+}

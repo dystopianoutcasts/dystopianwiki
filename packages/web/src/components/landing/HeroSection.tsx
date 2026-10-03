@@ -10,6 +10,7 @@ import {
   type HomeSummary,
 } from '../../lib/homeSummary';
 import { SERVER_ADDRESS } from '../../lib/links';
+import { ServerDescription } from './ServerDescription';
 import { CopyField } from './CopyField';
 import { homeWorldLine } from '../../lib/worldsPanel';
 import '../../styles/components/hero.css';
@@ -116,10 +117,10 @@ export function HeroSection() {
 
         <ServerStatus summary={summary} />
 
-        {/* The server's own browser description when it has one. */}
+        {/* The server's own browser description when it has one, one line per PZ line break. */}
         <p className="hero__subtitle">
           {description !== '' ? (
-            description
+            <ServerDescription text={description} />
           ) : (
             <>
               A <em>Project Zomboid</em> community. We play together, build mods, and write down what we learn.
