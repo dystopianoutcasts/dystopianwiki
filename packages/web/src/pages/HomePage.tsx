@@ -6,6 +6,7 @@ import { ServerSettings } from '../components/landing/ServerSettings';
 import { JoinSteps } from '../components/landing/JoinSteps';
 import { SurvivorsBoard } from '../components/landing/SurvivorsBoard';
 import { SeasonRecords } from '../components/landing/SeasonRecords';
+import { KillLeaderboard } from '../components/landing/KillLeaderboard';
 import { OutcastModsShowcase } from '../components/landing/OutcastModsShowcase';
 import { AboutSection } from '../components/landing/AboutSection';
 import { MascotVoteCallout } from '../components/landing/MascotVoteCallout';
@@ -33,6 +34,7 @@ export function HomePage() {
         <ServerSettings />
         <SurvivorsBoard />
         <SeasonRecords />
+        <KillLeaderboard />
         <OutcastModsShowcase />
         <AboutSection />
         <CommunityBanner />
