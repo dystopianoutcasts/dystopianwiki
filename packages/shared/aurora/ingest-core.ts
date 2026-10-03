@@ -464,7 +464,13 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
     h: s.h,
     owner: s.o ?? null,
     title: s.ti ?? null,
-    players: s.p ?? [],
+    // The exporter's JSON writer (OA_Json.lua isArray) encodes an empty Lua table as
+    // {} rather than [], so a safehouse with no members besides its owner arrives as
+    // "p":{}. The column is TEXT[]: PostgREST rejects the object (22P02, "expected
+    // JSON array") and with it the whole batch, so the ingest retried the same batch
+    // every run and the site froze (2026-10-03, from 08:19 UTC). Anything that is not
+    // an array is no members.
+    players: Array.isArray(s.p) ? s.p.map(String) : [],
     last_visited: s.lv === undefined ? null : toIso(s.lv),
     created_at: s.cr === undefined ? null : toIso(s.cr),
   }));

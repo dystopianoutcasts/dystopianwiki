@@ -683,6 +683,19 @@ Deno.test('chunk rejects a non-positive size instead of looping forever', () => 
   assert(threw, 'chunk(rows, 0) must throw');
 });
 
+Deno.test('a safehouse with no members ({} from the exporter, not []) still stores an empty list (2026-10-03 freeze)', () => {
+  const recs = [
+    { k: 'sh', t: 1, id: 1, x: 0, y: 0, w: 1, h: 1, o: 'alice', p: {} },
+    { k: 'sh', t: 1, id: 2, x: 0, y: 0, w: 1, h: 1, o: 'bob' },
+    { k: 'sh', t: 1, id: 3, x: 0, y: 0, w: 1, h: 1, o: 'cara', p: ['cara', 'dan'] },
+  ] as unknown as AuroraRecord[];
+  const rows = table(buildPlan(recs, SERVER).upserts, 'safehouses')?.rows ?? [];
+  const byId = Object.fromEntries(rows.map((r) => [r.id, r.players]));
+  assertEquals(byId['1'], [], 'p: {} becomes []');
+  assertEquals(byId['2'], [], 'missing p becomes []');
+  assertEquals(byId['3'], ['cara', 'dan'], 'a real list passes through');
+});
+
 Deno.test('every exporter field name lands in its column (T09 record shapes)', () => {
   const recs: AuroraRecord[] = [
     { k: 'sh', t: 1, id: 7, x: 10, y: 20, w: 5, h: 6, o: 'alice', ti: 'Home', p: ['alice'], lv: 100000, cr: 50000 },
