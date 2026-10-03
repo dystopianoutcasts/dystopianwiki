@@ -5,6 +5,7 @@ import { ActivitySection } from '../components/landing/ActivitySection';
 import { ServerSettings } from '../components/landing/ServerSettings';
 import { JoinSteps } from '../components/landing/JoinSteps';
 import { SurvivorsBoard } from '../components/landing/SurvivorsBoard';
+import { SeasonRecords } from '../components/landing/SeasonRecords';
 import { OutcastModsShowcase } from '../components/landing/OutcastModsShowcase';
 import { AboutSection } from '../components/landing/AboutSection';
 import { MascotVoteCallout } from '../components/landing/MascotVoteCallout';
@@ -31,6 +32,7 @@ export function HomePage() {
         <JoinSteps />
         <ServerSettings />
         <SurvivorsBoard />
+        <SeasonRecords />
         <OutcastModsShowcase />
         <AboutSection />
         <CommunityBanner />
