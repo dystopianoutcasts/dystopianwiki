@@ -22,6 +22,12 @@
  * world (an ended one too); a file with no `world` record or an id the live
  * ingest never registered is SKIPPED and listed. See backfill-core.ts.
  *
+ * Season records (034): kill events and character lives replay, in file-name
+ * order (the files are sorted, so lives are rebuilt in time order); a replay over
+ * existing rows changes nothing (the kill key ignores duplicates, a replayed
+ * sample never opens a life). Factions are live state and are not replayed; the
+ * summary marks them "(live only)".
+ *
  * Exit code is 1 if any A1 line failed to parse, which is the T08 acceptance
  * check. Lines without the A1 marker are other people's log output and are
  * counted separately, not treated as errors.
@@ -128,7 +134,7 @@ async function main(): Promise<number> {
 
     const planned = [
       ...plan.upserts.map((u) => `${u.table}=${u.rows.length}`),
-      ...plan.rpcs.map((c) => `${c.fn}=${c.rows}`),
+      ...plan.rpcs.map((c) => `${c.fn}=${c.rows}${c.liveOnly ? '(live only)' : ''}`),
     ].join(' ');
     const world = r.skipped !== null ? `SKIPPED (${r.skipped})` : r.worldId !== null ? `world=${r.worldId}` : 'world=(dry run)';
     console.log(`${name}  ${summarise(stats)}  ${world}  rows[${planned}] patches=${plan.patches.length}`);

@@ -41,6 +41,15 @@
 // next minute. That keeps the ingest stateless between invocations and makes a
 // crash mid-batch harmless - at worst some rows are upserted twice, and every
 // upsert is idempotent.
+//
+// Season records (034, exporter 0.7.0)
+// ---------------------------------------------------------------------------
+// tailStep also writes kill_events (ignore-duplicates), rpc/observe_lives (the
+// newest pos per player carrying hs or zk) and rpc/replace_factions (the newest
+// full faction list, p_seen_at = this run's clock). All three are optional: before
+// 034 they are skipped and counted in tail.skippedOptional and the cursor still
+// advances. Their row counts appear in tail.rows under kill_events, observe_lives
+// and replace_factions.
 
 import { connect as sftpConnect, type SftpSession } from '../../../packages/shared/aurora/sftp.ts';
 import { parsePins } from '../../../packages/shared/aurora/hostkey.ts';

@@ -10,6 +10,12 @@
 
 export type Row = Record<string, unknown>;
 
+/** Options of AuroraRest.upsert. */
+export interface UpsertOptions {
+  /** On a key conflict keep the stored row (resolution=ignore-duplicates). */
+  ignoreDuplicates?: boolean;
+}
+
 export interface RestOptions {
   /** Project URL, with or without a trailing slash. */
   url: string;
@@ -51,16 +57,19 @@ export class AuroraRest {
   /**
    * Insert, merging on conflict when `onConflict` names the key columns.
    * Pass an empty string for append-only tables such as player_position_history.
+   * `ignoreDuplicates` skips conflicting rows instead of merging them (034's
+   * kill_events, whose key is the event itself).
    */
-  async upsert(table: string, rows: Row[], onConflict: string): Promise<void> {
+  async upsert(table: string, rows: Row[], onConflict: string, opts?: UpsertOptions): Promise<void> {
     if (rows.length === 0) return;
     const qs = onConflict ? `?on_conflict=${encodeURIComponent(onConflict)}` : '';
+    const resolution = opts?.ignoreDuplicates === true ? 'ignore-duplicates' : 'merge-duplicates';
     const res = await this.doFetch(`${this.base}/${table}${qs}`, {
       method: 'POST',
       headers: this.headers({
         'Content-Profile': this.schema,
         Prefer: onConflict
-          ? 'resolution=merge-duplicates,return=minimal'
+          ? `resolution=${resolution},return=minimal`
           : 'return=minimal',
       }),
       body: JSON.stringify(rows),

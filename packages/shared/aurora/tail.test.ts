@@ -585,3 +585,69 @@ Deno.test('worlds: enabled with no current world and no record sends no world ke
   assertEquals(db.rpcs.length, 0);
   for (const r of db.tables['player_position_history']) assert(!('world_id' in r), 'no world_id: null either');
 });
+
+// ---------------------------------------------------------------------------
+// Season records (034, T54)
+// ---------------------------------------------------------------------------
+
+Deno.test('T54 season records: kill events ignore duplicates; lives after players; factions stamped with the clock', async () => {
+  const file = new FakeFile();
+  const t = 1790636586629;
+  file.append(
+    `[29-09-26 05:00:00.000] A1 {"k":"pos","t":${t},"u":"alice","x":1,"y":2,"hs":3,"zk":4}.\n` +
+      `[29-09-26 05:00:00.000] A1 {"k":"kill","t":${t},"u":"alice","x":5,"y":6}.\n` +
+      `[29-09-26 05:00:00.000] A1 {"k":"facs","t":${t},"f":[{"n":"Bears","g":"","o":"kim","m":["kim"]}]}.\n`,
+  );
+  const session = fakeSession(file);
+  const db = fakeDb();
+  const order: string[] = [];
+  const upsertOpts: Record<string, unknown> = {};
+  const rpcs: { fn: string; args: Row }[] = [];
+  const upsert = db.upsert;
+  db.upsert = (table, rows, onConflict, opts) => {
+    order.push(table);
+    upsertOpts[table] = opts;
+    return upsert(table, rows, onConflict);
+  };
+  db.rpc = (fn, args) => {
+    order.push(`rpc:${fn}`);
+    rpcs.push({ fn, args });
+    return Promise.resolve(null);
+  };
+  const target = (await findTarget(session, db, CFG))!;
+  await tailStep(session, db, CFG, target, emptyTotals(), () => 1790636600000, enabled('w2'));
+
+  assertEquals(upsertOpts['kill_events'], { ignoreDuplicates: true }, 'kill_events sent with ignore-duplicates');
+  assertEquals(upsertOpts['players'], undefined, 'other tables still merge');
+  assertEquals(db.tables['kill_events'][0].world_id, 'w2');
+  assert(order.indexOf('players') >= 0 && order.indexOf('players') < order.indexOf('rpc:observe_lives'), 'lives after players');
+  const lives = rpcs.find((r) => r.fn === 'observe_lives')!;
+  assertEquals(lives.args, { p_server: 'test-aurora', p_world: 'w2', p_rows: [{ username: 'alice', t: new Date(t).toISOString(), hs: 3, zk: 4 }] });
+  const facs = rpcs.find((r) => r.fn === 'replace_factions')!;
+  assertEquals(facs.args.p_seen_at, new Date(1790636600000).toISOString(), 'the ingest clock, not the log time');
+  assertEquals(facs.args.p_world, 'w2');
+  assert(order.indexOf('rpc:replace_factions') < order.indexOf('ingest_cursor'), 'before the cursor');
+});
+
+Deno.test('T54 season records: with 034 not applied, the three writes are skipped and the cursor advances', async () => {
+  const file = new FakeFile();
+  const t = 1790636586629;
+  file.append(
+    `[29-09-26 05:00:00.000] A1 {"k":"pos","t":${t},"u":"alice","x":1,"y":2,"zk":4}.\n` +
+      `[29-09-26 05:00:00.000] A1 {"k":"kill","t":${t},"u":"alice","x":5,"y":6}.\n` +
+      `[29-09-26 05:00:00.000] A1 {"k":"facs","t":${t},"f":[]}.\n`,
+  );
+  const session = fakeSession(file);
+  const db = fakeDb();
+  const upsert = db.upsert;
+  db.upsert = (table, rows, onConflict) =>
+    table === 'kill_events'
+      ? Promise.reject(new Error('upsert kill_events: 404 {"code":"42P01","message":"relation \\"aurora.kill_events\\" does not exist"}'))
+      : upsert(table, rows, onConflict);
+  db.rpc = (fn) => Promise.reject(new Error(`rpc ${fn}: 404 {"code":"PGRST202","message":"Could not find the function aurora.${fn}"}`));
+  const target = (await findTarget(session, db, CFG))!;
+  const totals = emptyTotals();
+  await tailStep(session, db, CFG, target, totals, () => 1790636600000);
+  assertEquals(db.tables['ingest_cursor'][0].byte_offset, file.bytes.length, 'cursor advanced');
+  assert((db.tables['players'] ?? []).length === 1, 'the rest of the batch was written');
+});

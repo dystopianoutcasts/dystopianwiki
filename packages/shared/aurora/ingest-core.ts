@@ -27,10 +27,13 @@ import type {
   BootRecord,
   CatalogRecord,
   DeathRecord,
+  FacsRecord,
   HbRecord,
+  KillRecord,
   LinkRecord,
   NpcOutpostRecord,
   NpcRecord,
+  PosRecord,
   ShRecord,
   StatTables,
   VehRecord,
@@ -58,6 +61,12 @@ export interface TableUpsert {
    * make an old state look freshly seen.
    */
   liveOnly?: boolean;
+  /**
+   * Conflicts on `onConflict` are skipped, never merged (PostgREST
+   * resolution=ignore-duplicates): for append-only rows whose key is the event
+   * itself (kill_events), so a replay leaves the stored row alone.
+   */
+  ignoreDuplicates?: boolean;
 }
 
 /** A PATCH against `table?filter`, run after every upsert in the plan. */
@@ -78,6 +87,8 @@ export interface TableRpc {
   why: string;
   /** As TableUpsert.optional: a missing function is skipped, not thrown. */
   optional?: boolean;
+  /** As TableUpsert.liveOnly: the backfill does not replay it. */
+  liveOnly?: boolean;
 }
 
 /** A DELETE against `table?filter`, run after every upsert and patch in the plan. */
@@ -128,6 +139,13 @@ export interface PlanOptions {
    * which register_world has already set for this batch.
    */
   worldId?: string | null;
+  /**
+   * Which pos samples go to aurora.observe_lives (034). 'newest' (the live ingest,
+   * the default): the newest sample per username that carries hs or zk. 'replay'
+   * (the backfill, one plan per whole log file): every sample where a life can
+   * change, in time order, so a file that spans a new character reproduces it.
+   */
+  lifeSamples?: 'newest' | 'replay';
 }
 
 /**
@@ -148,6 +166,7 @@ export const WORLD_TAGGED_TABLES: ReadonlySet<string> = new Set([
   'npc_groups',
   'npc_outposts',
   'vehicle_claims',
+  'kill_events',
 ]);
 
 /**
@@ -532,6 +551,49 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
     });
   }
 
+  // --- season records (034) ----------------------------------------------------
+  // kill_events: append-only, keyed by the event itself, so a replay inserts nothing
+  // twice (ignoreDuplicates) and is not liveOnly. observe_lives: after the players
+  // upsert (every rpc runs after every upsert), with the batch's world. Factions:
+  // the newest full list, stamped with the ingest's clock, so liveOnly (a replay
+  // would make an old list look current and delete newer factions). All three are
+  // optional: 034 may not be applied yet, and a missing object must not stall the
+  // cursor.
+  const killRows = dedupe(byKind(records, 'kill'), (k) => `${k.u}\u0000${k.t}\u0000${k.x}\u0000${k.y}`, (k) => k.t)
+    .map((k) => buildKillRow(k, serverId));
+  if (killRows.length > 0) {
+    upserts.push({
+      table: 'kill_events',
+      onConflict: 'server_id,username,t,x,y',
+      rows: killRows,
+      optional: true,
+      ignoreDuplicates: true,
+    });
+  }
+  const pWorld = typeof opts.worldId === 'string' ? opts.worldId : null;
+  const lifeRows = buildLifeSampleRows(positions, opts.lifeSamples ?? 'newest');
+  if (lifeRows.length > 0) {
+    rpcs.push({
+      fn: 'observe_lives',
+      args: { p_server: serverId, p_world: pWorld, p_rows: lifeRows },
+      rows: lifeRows.length,
+      why: `${lifeRows.length} life samples`,
+      optional: true,
+    });
+  }
+  const facs = newestOf(byKind(records, 'facs'));
+  if (facs !== undefined) {
+    const factionRows = buildFactionRows(facs);
+    rpcs.push({
+      fn: 'replace_factions',
+      args: { p_server: serverId, p_world: pWorld, p_rows: factionRows, p_seen_at: opts.seenAt ?? new Date().toISOString() },
+      rows: factionRows.length,
+      why: `${factionRows.length} factions (the full list)`,
+      optional: true,
+      liveOnly: true,
+    });
+  }
+
   applyWorld(upserts, opts.worldId);
 
   return { upserts, rpcs, patches, deletes, links, counts };
@@ -642,6 +704,100 @@ function pushGoneDeletes<T>(
       optional: true,
     });
   }
+}
+
+/** A kill event's row; every column present (PostgREST bulk-insert rule), z 0 when absent. */
+export function buildKillRow(r: KillRecord, serverId: string): Row {
+  return {
+    server_id: serverId,
+    username: r.u.slice(0, 100),
+    x: r.x,
+    y: r.y,
+    z: typeof r.z === 'number' && Number.isFinite(r.z) ? r.z : 0,
+    t: toIso(r.t),
+  };
+}
+
+/** One observe_lives row: username and t always, hs and zk only when usable. */
+function lifeRow(p: PosRecord): Row {
+  const row: Row = { username: p.u, t: toIso(p.t) };
+  if (typeof p.hs === 'number' && Number.isFinite(p.hs) && p.hs >= 0) row.hs = p.hs;
+  if (typeof p.zk === 'number' && Number.isSafeInteger(p.zk) && p.zk >= 0) row.zk = p.zk;
+  return row;
+}
+
+/**
+ * Rows for aurora.observe_lives (034), in time order. Only samples that carry hs or
+ * zk count. 'newest': one per username, the newest. 'replay': per username, the first
+ * and the last sample, the first positive zk after a zero, and both sides of every
+ * drop in zk or hs (where a new character can start), so the SQL sees every change
+ * of life and every life's maxima without the whole file.
+ */
+export function buildLifeSampleRows(positions: PosRecord[], mode: 'newest' | 'replay'): Row[] {
+  const usable = positions.filter((p) => {
+    const row = lifeRow(p);
+    return p.u !== '' && ('hs' in row || 'zk' in row);
+  });
+  if (mode === 'newest') {
+    return dedupe(usable, (p) => p.u, (p) => p.t)
+      .sort((a, b) => a.t - b.t)
+      .map(lifeRow);
+  }
+  const byUser = new Map<string, PosRecord[]>();
+  for (const p of usable) {
+    const list = byUser.get(p.u) ?? [];
+    list.push(p);
+    byUser.set(p.u, list);
+  }
+  const kept: PosRecord[] = [];
+  for (const list of byUser.values()) {
+    const ordered = [...list].sort((a, b) => a.t - b.t);
+    const keep = new Set<number>([0, ordered.length - 1]);
+    let lastZk: number | undefined;
+    let lastHs: number | undefined;
+    for (let i = 0; i < ordered.length; i++) {
+      const row = lifeRow(ordered[i]);
+      const zk = row.zk as number | undefined;
+      const hs = row.hs as number | undefined;
+      const drop = (zk !== undefined && lastZk !== undefined && zk < lastZk) ||
+        (hs !== undefined && lastHs !== undefined && hs < lastHs);
+      if (drop && i > 0) {
+        keep.add(i - 1);
+        keep.add(i);
+      }
+      if (zk !== undefined && zk > 0 && lastZk === 0) keep.add(i);
+      if (zk !== undefined) lastZk = zk;
+      if (hs !== undefined) lastHs = hs;
+    }
+    for (const i of [...keep].sort((a, b) => a - b)) kept.push(ordered[i]);
+  }
+  return kept.sort((a, b) => a.t - b.t).map(lifeRow);
+}
+
+/** Longest faction name and tag kept, in characters; most members kept per faction. */
+const FACTION_TEXT_MAX = 64;
+const FACTION_MEMBERS_MAX = 64;
+
+/**
+ * Rows for aurora.replace_factions (034): the record's whole list, one row per name
+ * (the last one wins), an empty tag as null. An empty list is an empty array, which
+ * the function reads as "every faction is disbanded".
+ */
+export function buildFactionRows(r: FacsRecord): Row[] {
+  const byName = new Map<string, Row>();
+  for (const f of r.f) {
+    const name = f.n.trim().slice(0, FACTION_TEXT_MAX);
+    if (name === '') continue;
+    const tag = typeof f.g === 'string' ? f.g.trim().slice(0, FACTION_TEXT_MAX) : '';
+    const owner = typeof f.o === 'string' ? f.o.trim() : '';
+    byName.set(name, {
+      name,
+      tag: tag === '' ? null : tag,
+      owner: owner === '' ? null : owner,
+      members: f.m.filter((m) => m.trim() !== '').slice(0, FACTION_MEMBERS_MAX),
+    });
+  }
+  return [...byName.values()];
 }
 
 const DEATH_SOURCES = ['isdead', 'chardeath', 'dodeathlog', 'cosmicmap'];

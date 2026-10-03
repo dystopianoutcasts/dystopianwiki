@@ -112,3 +112,36 @@ Deno.test('backfill: the dry run looks nothing up and plans untagged', async () 
   assert(r.plan.upserts.every((u) => u.rows.every((row) => !('world_id' in row))), 'untagged');
   assertEquals(r.plan.counts['world'], 1);
 });
+
+// ---------------------------------------------------------------------------
+// Season records (034, T54): kills and lives replay, factions do not
+// ---------------------------------------------------------------------------
+
+Deno.test('T54 backfill: kill events (ignoring duplicates) and observe_lives replay in file order; replace_factions does not', async () => {
+  const f = fakeDb([{ world_id: 'w1', status: 'ended' }]);
+  const opts: Record<string, unknown> = {};
+  const upsert = f.db.upsert;
+  f.db.upsert = (table, rows, onConflict, o) => {
+    opts[table] = o;
+    return upsert(table, rows, onConflict);
+  };
+  const t0 = 1759312800000;
+  const text = world(W_OLD) +
+    `${P} A1 {"k":"pos","t":${t0},"u":"alice","x":1,"y":1,"hs":5,"zk":9}.\n` +
+    `${P} A1 {"k":"pos","t":${t0 + 5000},"u":"alice","x":1,"y":1,"hs":6,"zk":10}.\n` +
+    `${P} A1 {"k":"pos","t":${t0 + 10000},"u":"alice","x":1,"y":1,"hs":0.1,"zk":0}.\n` +
+    `${P} A1 {"k":"pos","t":${t0 + 15000},"u":"alice","x":1,"y":1,"hs":0.2,"zk":0}.\n` +
+    `${P} A1 {"k":"kill","t":${t0 + 1000},"u":"alice","x":3,"y":4}.\n` +
+    `${P} A1 {"k":"facs","t":${t0},"f":[{"n":"Bears","g":"","o":"kim","m":["kim"]}]}.\n`;
+  const r = await replayFile(f.db, SERVER, NAME, text);
+  assertEquals(r.skipped, null);
+  assertEquals(opts['kill_events'], { ignoreDuplicates: true });
+  assertEquals(f.rows['kill_events'].map((k) => k.world_id), ['w1']);
+  assertEquals(f.rpcs.map((c) => c.fn).includes('replace_factions'), false, 'factions are liveOnly');
+  const lives = f.rpcs.find((c) => c.fn === 'observe_lives');
+  assert(lives !== undefined, 'observe_lives replayed');
+  assertEquals(lives!.args.p_world, 'w1');
+  // Both sides of the new character, in time order: the old life's maxima survive.
+  assertEquals((lives!.args.p_rows as Row[]).map((x) => [x.hs, x.zk]), [[5, 9], [6, 10], [0.1, 0], [0.2, 0]]);
+  assert(f.calls.indexOf('upsert players') < f.calls.indexOf('rpc observe_lives'), 'lives after players');
+});

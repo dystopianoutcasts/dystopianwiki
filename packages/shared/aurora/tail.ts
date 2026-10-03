@@ -29,6 +29,7 @@
 import { emptyStats, launchStampFromFileName, splitChunkBytes, type SplitStats } from './parser.ts';
 import { buildPlan, chunk, planRead, runPlanStep, type CursorState, type Row } from './ingest-core.ts';
 import { newestWorldRecord, registerBatchWorld, type WorldState } from './worlds.ts';
+import type { UpsertOptions } from './rest.ts';
 
 /** Time between the starts of two reads inside one run. */
 export const TAIL_INTERVAL_MS = 5_000;
@@ -126,7 +127,7 @@ export interface TailSession {
 
 export interface TailDb {
   select<T = unknown>(path: string): Promise<T[]>;
-  upsert(table: string, rows: Row[], onConflict: string): Promise<void>;
+  upsert(table: string, rows: Row[], onConflict: string, opts?: UpsertOptions): Promise<void>;
   patch(path: string, body: Row): Promise<void>;
   delete(path: string): Promise<void>;
   rpc(fn: string, args: Row): Promise<unknown>;
@@ -288,7 +289,10 @@ export async function tailStep(
     for (const batch of chunk(upsert.rows, cfg.batchRows)) {
       const wrote = await runPlanStep(
         upsert.optional,
-        () => db.upsert(upsert.table, batch, upsert.onConflict),
+        () =>
+          upsert.ignoreDuplicates === true
+            ? db.upsert(upsert.table, batch, upsert.onConflict, { ignoreDuplicates: true })
+            : db.upsert(upsert.table, batch, upsert.onConflict),
         skipNote(totals, upsert.table),
       );
       if (wrote) totals.rows[upsert.table] = (totals.rows[upsert.table] ?? 0) + batch.length;

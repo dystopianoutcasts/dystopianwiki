@@ -1,5 +1,7 @@
 // Run with: deno test packages/shared/aurora/ingest-core.test.ts
 import {
+  buildFactionRows,
+  buildLifeSampleRows,
   buildNpcGroupRow,
   buildNpcOutpostRow,
   isMissingObjectError,
@@ -14,10 +16,11 @@ import {
   ONLINE_WINDOW_MS,
   planRead,
   type IngestPlan,
+  type Row,
   type TableUpsert,
 } from './ingest-core.ts';
 import { parseLineDetailed } from './parser.ts';
-import type { AuroraRecord, HbRecord, NpcOutpostRecord, NpcRecord } from './parser.ts';
+import type { AuroraRecord, HbRecord, NpcOutpostRecord, NpcRecord, PosRecord } from './parser.ts';
 
 function assertEquals<T>(actual: T, expected: T, msg = ''): void {
   const a = JSON.stringify(actual);
@@ -1137,4 +1140,135 @@ Deno.test('worlds: tagRows tags every row or none', () => {
   assertEquals(tagRows(rows, null), rows);
   assertEquals(tagRows(rows, undefined), rows);
   assertEquals(tagRows([], 'w1'), []);
+});
+
+// Verbatim from STATUS "T53 PASS" (exporter 0.7.0 harness lines).
+const T53_POS_LINE =
+  'A1 {"al":"None","hs":77.5,"id":1,"k":"pos","n":"alice","t":1759000000000,"u":"alice","x":10650.5,"y":9800.25,"z":0,"zk":42}';
+const T53_KILL_LINE = 'A1 {"k":"kill","t":1759000000000,"u":"alice","x":10650.5,"y":9800.25,"z":1}';
+const T53_FACS_LINE =
+  'A1 {"f":[{"g":"","m":["kim","lou"],"n":"Bears","o":"kim"},{"g":"WLF","m":["abe","mia","zed"],"n":"Wolves","o":"zed"}],"k":"facs","t":1759000000000}';
+
+// ---------------------------------------------------------------------------
+// Season records (034, T54): kill_events, observe_lives, replace_factions
+// ---------------------------------------------------------------------------
+
+function parsedLines(lines: string[]): AuroraRecord[] {
+  return lines.map((l) => {
+    const r = parseLineDetailed(`[02-10-26 12:00:00.000] ${l}.`);
+    if (!r.ok) throw new Error(`does not parse: ${l}`);
+    return r.record;
+  });
+}
+
+function rpcCall(plan: IngestPlan, fn: string) {
+  return plan.rpcs.find((r) => r.fn === fn);
+}
+
+Deno.test('T54 kill_events: rows from kill records, optional, duplicates ignored, every row the same keys', () => {
+  const recs = parsedLines([
+    T53_KILL_LINE,
+    'A1 {"k":"kill","t":1759000001000,"u":"bob","x":5,"y":6}',
+    T53_KILL_LINE, // the same event twice in one batch
+  ]);
+  const plan = buildPlan(recs, SERVER, { worldId: 'w2' });
+  const u = table(plan.upserts, 'kill_events');
+  assert(u !== undefined, 'kill_events upsert');
+  assertEquals(u!.onConflict, 'server_id,username,t,x,y');
+  assertEquals(u!.optional, true, 'optional');
+  assertEquals(u!.ignoreDuplicates, true, 'duplicates ignored, never merged');
+  assert(!u!.liveOnly, 'replayed by the backfill');
+  assertEquals(u!.rows.length, 2, 'deduped');
+  assertEquals(u!.rows[0], {
+    server_id: SERVER, username: 'alice', x: 10650.5, y: 9800.25, z: 1, t: '2025-09-27T19:06:40.000Z', world_id: 'w2',
+  });
+  // bob's record has no z: the key is still there (PostgREST rejects mixed key sets).
+  assertEquals(Object.keys(u!.rows[1]), Object.keys(u!.rows[0]), 'same key set');
+  assertEquals(u!.rows[1].z, 0);
+  for (const r of u!.rows) assertEquals(r.world_id, 'w2', 'every kill row carries the world');
+});
+
+Deno.test('T54 observe_lives: the newest sample per player with hs or zk, after the players upsert, with the world', () => {
+  const recs = parsedLines([
+    'A1 {"k":"pos","t":1000,"u":"alice","x":1,"y":1,"hs":1,"zk":0}',
+    'A1 {"k":"pos","t":3000,"u":"alice","x":1,"y":1,"hs":2,"zk":3}',
+    'A1 {"k":"pos","t":2000,"u":"alice","x":1,"y":1,"hs":1.5,"zk":1}',
+    'A1 {"k":"pos","t":2500,"u":"bob","x":1,"y":1,"zk":7}',
+    'A1 {"k":"pos","t":2600,"u":"carl","x":1,"y":1}', // neither hs nor zk
+    'A1 {"k":"pos","t":2700,"u":"dee","x":1,"y":1,"zk":-4}', // zk dropped by the parser
+  ]);
+  const plan = buildPlan(recs, SERVER, { worldId: 'w2' });
+  const call = rpcCall(plan, 'observe_lives');
+  assert(call !== undefined, 'observe_lives called');
+  assertEquals(call!.optional, true, 'optional');
+  assert(!call!.liveOnly, 'replayed by the backfill');
+  assertEquals(call!.args, {
+    p_server: SERVER,
+    p_world: 'w2',
+    p_rows: [
+      { username: 'bob', t: '1970-01-01T00:00:02.500Z', zk: 7 },
+      { username: 'alice', t: '1970-01-01T00:00:03.000Z', hs: 2, zk: 3 },
+    ],
+  });
+  assertEquals(call!.rows, 2);
+  // Every rpc runs after every upsert: the players rows exist before the lives call.
+  assert(table(plan.upserts, 'players') !== undefined, 'players upserted in the same plan');
+  assertEquals(plan.upserts.some((u) => u.table === 'observe_lives'), false, 'not an upsert');
+});
+
+Deno.test('T54 observe_lives: no world sends p_world null (the function uses the current world)', () => {
+  const plan = buildPlan(parsedLines([T53_POS_LINE]), SERVER, {});
+  assertEquals(rpcCall(plan, 'observe_lives')!.args.p_world, null);
+  assertEquals((rpcCall(plan, 'observe_lives')!.args.p_rows as Row[])[0], {
+    username: 'alice', t: '2025-09-27T19:06:40.000Z', hs: 77.5, zk: 42,
+  });
+});
+
+Deno.test('T54 observe_lives replay mode: first, last, the first kill and both sides of every drop', () => {
+  const lines = [
+    [0, 1, 0], [1, 2, 0], [2, 3, 2], [3, 4, 5], [4, 5, 9], [5, 0.2, 0], [6, 1, 0], [7, 2, 1], [8, 3, 1],
+  ].map(([i, hs, zk]) => `A1 {"k":"pos","t":${1000 + i * 1000},"u":"alice","x":1,"y":1,"hs":${hs},"zk":${zk}}`);
+  const pos = parsedLines(lines).filter((r) => r.k === 'pos') as PosRecord[];
+  const kept = buildLifeSampleRows(pos, 'replay').map((r) => (Date.parse(r.t as string) - 1000) / 1000);
+  // 0 first; 2 the first kill; 4 and 5 the drop (9 -> 0 kills, 5 -> 0.2 hours); 7 the
+  // next first kill; 8 last.
+  assertEquals(kept, [0, 2, 4, 5, 7, 8]);
+  assertEquals(buildLifeSampleRows(pos, 'newest').length, 1);
+});
+
+Deno.test('T54 replace_factions: the newest facs record, liveOnly, seen_at is the ingest clock', () => {
+  const recs = parsedLines([
+    'A1 {"k":"facs","t":1,"f":[{"n":"Old","g":"","o":"x","m":["x"]}]}',
+    T53_FACS_LINE,
+  ]);
+  const plan = buildPlan(recs, SERVER, { worldId: 'w2', seenAt: '2026-10-02T12:00:00.000Z' });
+  const calls = plan.rpcs.filter((r) => r.fn === 'replace_factions');
+  assertEquals(calls.length, 1, 'one call, the newest list');
+  assertEquals(calls[0].liveOnly, true, 'liveOnly');
+  assertEquals(calls[0].optional, true, 'optional');
+  assertEquals(calls[0].args, {
+    p_server: SERVER,
+    p_world: 'w2',
+    p_rows: [
+      { name: 'Bears', tag: null, owner: 'kim', members: ['kim', 'lou'] },
+      { name: 'Wolves', tag: 'WLF', owner: 'zed', members: ['abe', 'mia', 'zed'] },
+    ],
+    p_seen_at: '2026-10-02T12:00:00.000Z',
+  });
+});
+
+Deno.test('T54 replace_factions: an empty list is a call with no rows (every faction disbanded)', () => {
+  const plan = buildPlan(parsedLines(['A1 {"k":"facs","t":1,"f":[]}']), SERVER, { seenAt: '2026-10-02T12:00:00.000Z' });
+  const call = rpcCall(plan, 'replace_factions');
+  assert(call !== undefined, 'still called');
+  assertEquals(call!.args.p_rows, []);
+  assertEquals(buildFactionRows({ k: 'facs', t: 1, f: [{ n: 'A', m: [] }, { n: ' ', m: [] }, { n: 'A', g: 'T', m: ['q'] }] }), [
+    { name: 'A', tag: 'T', owner: null, members: ['q'] },
+  ]);
+});
+
+Deno.test('T54 a batch without kill, zk/hs or facs records plans none of the three', () => {
+  const plan = buildPlan(parsedLines(['A1 {"k":"pos","t":1,"u":"a","x":1,"y":1}']), SERVER, {});
+  assertEquals(table(plan.upserts, 'kill_events'), undefined);
+  assertEquals(plan.rpcs.map((r) => r.fn), []);
 });

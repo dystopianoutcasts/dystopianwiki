@@ -412,3 +412,82 @@ Deno.test('world: a bad id or a wrongly typed optional field is a counted shape 
   splitLines(`${P1} A1 {"k":"world","t":1,"w":"bad id!"}.\n`, '', stats);
   assertEquals([stats.badShape, stats.parsed], [1, 0], 'counted, not fatal');
 });
+
+// Verbatim from STATUS "T53 PASS" (exporter 0.7.0 harness lines).
+const T53_POS_LINE =
+  'A1 {"al":"None","hs":77.5,"id":1,"k":"pos","n":"alice","t":1759000000000,"u":"alice","x":10650.5,"y":9800.25,"z":0,"zk":42}';
+const T53_KILL_LINE = 'A1 {"k":"kill","t":1759000000000,"u":"alice","x":10650.5,"y":9800.25,"z":1}';
+const T53_FACS_LINE =
+  'A1 {"f":[{"g":"","m":["kim","lou"],"n":"Bears","o":"kim"},{"g":"WLF","m":["abe","mia","zed"],"n":"Wolves","o":"zed"}],"k":"facs","t":1759000000000}';
+
+// ---------------------------------------------------------------------------
+// Season records (exporter 0.7.0, T53/T54): pos.zk, kill, facs
+// ---------------------------------------------------------------------------
+
+Deno.test('T54 pos: the T53 harness line parses with zk', () => {
+  const r = parseLineDetailed(`${P1} ${T53_POS_LINE}.`);
+  assert(r.ok, 'parsed');
+  if (!r.ok) return;
+  assertEquals(r.record.k, 'pos');
+  assertEquals((r.record as unknown as { zk: number; hs: number }).zk, 42);
+  assertEquals((r.record as unknown as { zk: number; hs: number }).hs, 77.5);
+});
+
+Deno.test('T54 pos: an unusable zk is dropped from the record, never a shape failure', () => {
+  for (const zk of ['-1', '1.5', '"3"', 'null', 'true', '1e400']) {
+    const r = parseLineDetailed(`${P1} A1 {"k":"pos","t":1,"u":"alice","x":1,"y":2,"zk":${zk}}.`);
+    assert(r.ok, `zk ${zk}: the position survives`);
+    if (r.ok) assert(!('zk' in r.record), `zk ${zk} must be dropped`);
+  }
+  const zero = parseLine(`${P1} A1 {"k":"pos","t":1,"u":"alice","x":1,"y":2,"zk":0}.`);
+  assertEquals((zero as unknown as { zk: number }).zk, 0, 'zero is a valid counter');
+});
+
+Deno.test('T54 kill: the T53 harness line parses with every field', () => {
+  const r = parseLineDetailed(`${P1} ${T53_KILL_LINE}.`);
+  assert(r.ok, 'parsed');
+  if (r.ok) assertEquals(r.record, { k: 'kill', t: 1759000000000, u: 'alice', x: 10650.5, y: 9800.25, z: 1 } as unknown as typeof r.record);
+});
+
+Deno.test('T54 kill: z is optional; u, x and y are required', () => {
+  assertEquals(parseLine(`${P1} A1 {"k":"kill","t":1,"u":"alice","x":1,"y":2}.`)?.k, 'kill');
+  for (const body of [
+    '{"k":"kill","t":1,"u":"","x":1,"y":2}',
+    '{"k":"kill","t":1,"x":1,"y":2}',
+    '{"k":"kill","t":1,"u":"alice","y":2}',
+    '{"k":"kill","t":1,"u":"alice","x":"1","y":2}',
+    '{"k":"kill","t":1,"u":7,"x":1,"y":2}',
+  ]) {
+    const r = parseLineDetailed(`${P1} A1 ${body}.`);
+    assert(!r.ok && r.reason === 'bad-shape', `${body} is bad-shape`);
+  }
+});
+
+Deno.test('T54 facs: the T53 harness line parses; an empty list is valid', () => {
+  const r = parseLineDetailed(`${P1} ${T53_FACS_LINE}.`);
+  assert(r.ok, 'parsed');
+  if (!r.ok) return;
+  const f = (r.record as unknown as { f: { n: string; g: string; o: string; m: string[] }[] }).f;
+  assertEquals(f.map((x) => [x.n, x.g, x.o, x.m.length]), [['Bears', '', 'kim', 2], ['Wolves', 'WLF', 'zed', 3]]);
+  const empty = parseLineDetailed(`${P1} A1 {"k":"facs","t":1,"f":[]}.`);
+  assert(empty.ok, 'f [] parses (every faction disbanded)');
+});
+
+Deno.test('T54 facs: one malformed faction rejects the whole record', () => {
+  for (const body of [
+    '{"k":"facs","t":1}',
+    '{"k":"facs","t":1,"f":{}}',
+    '{"k":"facs","t":1,"f":["Bears"]}',
+    '{"k":"facs","t":1,"f":[{"g":"","m":[],"o":"kim"}]}',
+    '{"k":"facs","t":1,"f":[{"n":"Bears","g":1,"m":[]}]}',
+    '{"k":"facs","t":1,"f":[{"n":"Bears","o":2,"m":[]}]}',
+    '{"k":"facs","t":1,"f":[{"n":"Bears"}]}',
+    '{"k":"facs","t":1,"f":[{"n":"Bears","m":["kim",3]}]}',
+    '{"k":"facs","t":1,"f":[{"n":"Ok","m":[]},{"n":"Bad","m":"kim"}]}',
+  ]) {
+    const r = parseLineDetailed(`${P1} A1 ${body}.`);
+    assert(!r.ok && r.reason === 'bad-shape', `${body} is bad-shape`);
+  }
+  // g and o are optional.
+  assertEquals(parseLine(`${P1} A1 {"k":"facs","t":1,"f":[{"n":"Bears","m":[]}]}.`)?.k, 'facs');
+});

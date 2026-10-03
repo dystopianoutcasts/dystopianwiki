@@ -12,11 +12,11 @@
 import { emptyStats, launchStampFromFileName, splitLines, type SplitStats } from './parser.ts';
 import { buildPlan, chunk, isMissingObjectError, type IngestPlan, runPlanStep } from './ingest-core.ts';
 import { lookupWorld, newestWorldRecord } from './worlds.ts';
-import type { Row } from './rest.ts';
+import type { Row, UpsertOptions } from './rest.ts';
 
 export interface BackfillDb {
   select<T = unknown>(path: string): Promise<T[]>;
-  upsert(table: string, rows: Row[], onConflict: string): Promise<void>;
+  upsert(table: string, rows: Row[], onConflict: string, opts?: UpsertOptions): Promise<void>;
   patch(path: string, body: Row): Promise<void>;
   rpc(fn: string, args: Row): Promise<unknown>;
 }
@@ -88,7 +88,13 @@ export async function replayFile(
 
   // The file name is the launch stamp; "now" for the online reconcile is the
   // newest record in the file (buildPlan's default), not the replay time.
-  const plan = buildPlan(records, serverId, { launchStamp: launchStampFromFileName(name), worldId: result.worldId });
+  // lifeSamples 'replay': the file is one plan, so observe_lives gets every sample
+  // where a life can change (in time order), not only the newest per player.
+  const plan = buildPlan(records, serverId, {
+    launchStamp: launchStampFromFileName(name),
+    worldId: result.worldId,
+    lifeSamples: 'replay',
+  });
   result.plan = plan;
   if (db === null) return result;
 
@@ -105,12 +111,22 @@ export async function replayFile(
     // either: a replay writes the same pairs and the newest record per script wins.)
     if (upsert.liveOnly) continue;
     for (const batch of chunk(upsert.rows, batchRows)) {
-      const wrote = await runPlanStep(upsert.optional, () => db.upsert(upsert.table, batch, upsert.onConflict), onSkipped);
+      const wrote = await runPlanStep(
+        upsert.optional,
+        () =>
+          upsert.ignoreDuplicates === true
+            ? db.upsert(upsert.table, batch, upsert.onConflict, { ignoreDuplicates: true })
+            : db.upsert(upsert.table, batch, upsert.onConflict),
+        onSkipped,
+      );
       if (wrote) result.rowsWritten += batch.length;
     }
   }
   // aurora.upsert_vehicles and the like: after the upserts (servers exists), as tail.ts does.
+  // replace_factions is liveOnly: its seen_at is the ingest's clock and the record
+  // is the whole list, so an old file would delete newer factions.
   for (const call of plan.rpcs) {
+    if (call.liveOnly) continue;
     const wrote = await runPlanStep(call.optional, () => db.rpc(call.fn, call.args), onSkipped);
     if (wrote) result.rowsWritten += call.rows;
   }

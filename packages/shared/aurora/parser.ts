@@ -41,7 +41,9 @@
 //            st { perf {name: number}, game {...}, net {...} } - the three
 //            server statistics tables; only src "tick" becomes a health sample
 //   pos      u username, n display name, id online id, x, y, z, v vehicle id or null,
-//            hs hours survived, al access level
+//            hs hours survived, al access level, zk the character's zombie kill
+//            counter (exporter 0.7.0; a non-negative integer, omitted when unreadable;
+//            any other value is dropped from the record, never a shape failure)
 //   veh      id vehicle id, s script name, ty vehicle type, x, y, z,
 //            d driver username or null (exporter 0.2; `sc` is the name this
 //            contract used before and is still accepted),
@@ -72,6 +74,11 @@
 //            wn true on the boot that created the id, wa world age hours, ws ms the
 //            id was created (exporter 0.6.0; once per boot, then every 6 h). It
 //            maps to no table: the importer hands it to aurora.register_world.
+//   kill     u killer username, x, y, z of the zombie (exporter 0.7.0; capped at 20
+//            per second at the source, so it undercounts: totals come from pos.zk)
+//   facs     f [{n name, g tag ("" for none), o owner username, m [usernames]}], the
+//            FULL faction list (exporter 0.7.0; every 10 min and on change; `m`
+//            includes the owner once; "f":[] means every faction is disbanded)
 //
 // `boot.gv` (exporter 0.5.0) is the game version; it becomes servers.game_version.
 // `hb.st.game` also carries zombies-killed, world-age-hours, oa-ev-zombie-dead and
@@ -103,6 +110,8 @@ export const KINDS = [
   'death',
   'vname',
   'world',
+  'kill',
+  'facs',
   // Diagnostic kinds: known so they are not reported as unknown, but they map
   // to no table - buildPlan produces no rows for them.
   'probe',
@@ -205,6 +214,8 @@ export interface PosRecord extends BaseRecord {
   hs?: number;
   /** Access level ("None", "admin", ...). Stored, never public (027). */
   al?: string;
+  /** The character's zombie kill counter (exporter 0.7.0): a non-negative integer or absent. */
+  zk?: number;
 }
 
 export interface VehRecord extends BaseRecord {
@@ -358,6 +369,29 @@ export interface WorldRecord extends BaseRecord {
   ws?: number;
 }
 
+/** One attributed zombie kill (exporter 0.7.0): the killer and where the zombie died. */
+export interface KillRecord extends BaseRecord {
+  k: 'kill';
+  u: string;
+  x: number;
+  y: number;
+  z?: number;
+}
+
+/** One faction of a `facs` record: name, tag ("" for none), owner, members (owner included). */
+export interface FactionEntry {
+  n: string;
+  g?: string;
+  o?: string;
+  m: string[];
+}
+
+/** The full faction list (exporter 0.7.0). An empty `f` means every faction is disbanded. */
+export interface FacsRecord extends BaseRecord {
+  k: 'facs';
+  f: FactionEntry[];
+}
+
 /** The exporter world id contract: 8-64 characters, letters, digits and dashes. */
 export const WORLD_ID_PATTERN = /^[A-Za-z0-9-]{8,64}$/;
 
@@ -381,7 +415,9 @@ export type AuroraRecord =
   | NpcOutpostGoneRecord
   | DeathRecord
   | VnameRecord
-  | WorldRecord;
+  | WorldRecord
+  | KillRecord
+  | FacsRecord;
 
 export type ParseFailure =
   | 'not-aurora' // no A1 marker: someone else's log line
@@ -417,6 +453,22 @@ function isStatTables(v: unknown): v is StatTables {
     if (table !== undefined && !isPlainObject(table)) return false;
   }
   return true;
+}
+
+function isFactionEntry(v: unknown): v is FactionEntry {
+  return (
+    isPlainObject(v) &&
+    isStr(v.n) &&
+    (v.g === undefined || isStr(v.g)) &&
+    (v.o === undefined || isStr(v.o)) &&
+    Array.isArray(v.m) &&
+    v.m.every(isStr)
+  );
+}
+
+/** A kill counter: a non-negative whole number. */
+export function isKillCounter(v: unknown): v is number {
+  return typeof v === 'number' && Number.isSafeInteger(v) && v >= 0;
 }
 
 /** Validate the kind-specific required fields. Optional fields are not policed. */
@@ -465,6 +517,12 @@ function checkShape(o: Record<string, unknown>): boolean {
         (o.wa === undefined || isNum(o.wa)) &&
         (o.ws === undefined || isNum(o.ws))
       );
+    case 'kill':
+      return isStr(o.u) && o.u !== '' && isNum(o.x) && isNum(o.y);
+    case 'facs':
+      // Strict: the record replaces the whole list downstream, so one malformed
+      // faction rejects the record (the stored list stays) rather than deleting it.
+      return Array.isArray(o.f) && o.f.every(isFactionEntry);
     case 'npcgone':
     case 'npcogone':
       return isStr(o.id) && o.id !== '';
@@ -496,6 +554,8 @@ export function parseLineDetailed(line: string): ParseResult {
   }
   if (!isNum(o.t)) return { ok: false, reason: 'bad-shape', kind: o.k };
   if (!checkShape(o)) return { ok: false, reason: 'bad-shape', kind: o.k };
+  // An unusable kill counter is dropped, never a reason to lose the position.
+  if (o.k === 'pos' && o.zk !== undefined && !isKillCounter(o.zk)) delete o.zk;
 
   return { ok: true, record: o as unknown as AuroraRecord };
 }
