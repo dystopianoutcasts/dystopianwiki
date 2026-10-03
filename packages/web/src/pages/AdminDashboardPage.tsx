@@ -48,6 +48,19 @@ import {
 } from '../lib/adminApi'
 import { AURORA_SERVER_ID } from '../lib/aurora'
 import { worldsApi } from '../lib/worldsClient'
+import { mapRebuildApi } from '../lib/mapRebuildClient'
+import type { MapRebuildResult, RebuildRequest } from '../lib/mapRebuildApi'
+import {
+  MAP_MISSING_TEXT,
+  TILE_STATE_TEXT,
+  classifyMaps,
+  isOpen,
+  parseTilesInfo,
+  renderedLine,
+  requestLine,
+  requestPhase,
+  type TilesInfo,
+} from '../lib/mapPanel'
 import type { Leftovers, World, WorldsResult } from '../lib/worldsApi'
 import {
   MISSING_TEXT,
@@ -63,6 +76,7 @@ import {
 import '../styles/pages/mascot-vote.css'
 import '../styles/pages/admin.css'
 import '../styles/pages/admin-worlds.css'
+import '../styles/pages/admin-map.css'
 
 const ENTRY_IDS = MASCOT_ENTRIES.map((e) => e.id)
 
@@ -187,6 +201,8 @@ function Dashboard({ superadmin, selfId }: { superadmin: boolean; selfId: string
       </section>
 
       <WorldSection />
+
+      <MapSection />
 
       {superadmin && <MembersSection selfId={selfId} />}
 
@@ -542,6 +558,223 @@ function WorldSection() {
         onCancel={dismissPending.cancel}
       >
         <p>The current world stays as it is and the report is set aside.</p>
+      </Confirm>
+    </section>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Live map tiles (T51)
+// ---------------------------------------------------------------------------
+
+type MapLoad =
+  | { state: 'loading' }
+  | { state: 'unconfigured' }
+  | { state: 'missing' }
+  | { state: 'error'; text: string }
+  | { state: 'ready'; maps: string[]; tiles: TilesInfo | null; requests: RebuildRequest[]; now: number }
+
+const MAP_REFRESH_MS = 30_000
+
+function mapFailureText(r: Extract<MapRebuildResult<unknown>, { ok: false }>): string {
+  if (r.reason === 'refused') return r.detail ?? 'The database refused that change. Reload the dashboard and try again.'
+  if (r.reason === 'missing') return MAP_MISSING_TEXT
+  return FAILURE_TEXT[r.reason]
+}
+
+/** The site's own tiles.json (same origin). null when it cannot be read; the panel then says so. */
+async function fetchTilesInfo(): Promise<TilesInfo | null> {
+  try {
+    const res = await fetch('/map/tiles.json', { cache: 'no-store' })
+    if (!res.ok) return null
+    return parseTilesInfo(await res.json())
+  } catch {
+    return null
+  }
+}
+
+function MapSection() {
+  const [load, setLoad] = useState<MapLoad>({ state: 'loading' })
+  const [key, setKey] = useState(0)
+  const [rebuildOpen, setRebuildOpen] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [cancelBusy, setCancelBusy] = useState(false)
+  const [cancelError, setCancelError] = useState<string | null>(null)
+  const reload = useCallback(() => setKey((k) => k + 1), [])
+
+  // One try per load; the first load shows "loading", later ones keep the panel as it is.
+  useEffect(() => {
+    let cancelled = false
+    if (!mapRebuildApi) {
+      setLoad({ state: 'unconfigured' })
+      return
+    }
+    const api = mapRebuildApi
+    void (async () => {
+      const [maps, requests, tiles] = await Promise.all([
+        api.fetchServerMaps(AURORA_SERVER_ID),
+        api.fetchRequests(AURORA_SERVER_ID, 5),
+        fetchTilesInfo(),
+      ])
+      if (cancelled) return
+      if (!requests.ok) {
+        setLoad(requests.reason === 'missing' ? { state: 'missing' } : { state: 'error', text: mapFailureText(requests) })
+        return
+      }
+      if (!maps.ok) {
+        setLoad(maps.reason === 'missing' ? { state: 'missing' } : { state: 'error', text: mapFailureText(maps) })
+        return
+      }
+      setLoad({ state: 'ready', maps: maps.value, tiles, requests: requests.value, now: Date.now() })
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [key])
+
+  const ready = load.state === 'ready' ? load : null
+  const latest = ready?.requests[0] ?? null
+  const open = isOpen(latest)
+
+  // Refresh every 30 seconds while a request is queued or running.
+  useEffect(() => {
+    if (!open) return
+    const timer = window.setInterval(reload, MAP_REFRESH_MS)
+    return () => window.clearInterval(timer)
+  }, [open, reload])
+
+  const classified = ready ? classifyMaps(ready.maps, ready.tiles?.overlays ?? []) : null
+  const phase = ready && latest ? requestPhase(latest, ready.now) : null
+
+  const askRebuild = () => {
+    setError(null)
+    setRebuildOpen(true)
+  }
+  const confirmRebuild = async () => {
+    if (!mapRebuildApi) return
+    setBusy(true)
+    setError(null)
+    const r = await mapRebuildApi.requestRebuild(AURORA_SERVER_ID, '')
+    setBusy(false)
+    if (r.ok) {
+      setRebuildOpen(false)
+      reload()
+    } else {
+      setError(mapFailureText(r))
+    }
+  }
+  const cancelRequest = async (id: number) => {
+    if (!mapRebuildApi) return
+    setCancelBusy(true)
+    setCancelError(null)
+    const r = await mapRebuildApi.cancelRebuild(id)
+    setCancelBusy(false)
+    if (!r.ok) setCancelError(mapFailureText(r))
+    else if (!r.value) setCancelError('That request was already picked up by the render PC, so it could not be cancelled.')
+    reload()
+  }
+
+  return (
+    <section className="mascot-vote__panel" aria-labelledby="ad-tiles">
+      <h2 id="ad-tiles" className="mascot-vote__panel-title">
+        Live map tiles
+      </h2>
+      {load.state === 'loading' && <p role="status">Loading the map tiles...</p>}
+      {load.state === 'unconfigured' && <p>Live data is not configured.</p>}
+      {load.state === 'missing' && <p>{MAP_MISSING_TEXT}</p>}
+      {load.state === 'error' && (
+        <>
+          <p role="alert">{load.text}</p>
+          <button type="button" className="mascot-vote__btn mascot-vote__btn--primary" onClick={reload}>
+            Try again
+          </button>
+        </>
+      )}
+      {ready && classified && (
+        <>
+          <p className="mascot-vote__meta">{renderedLine(ready.tiles?.renderedAt ?? null)}</p>
+          {!ready.tiles && <p className="mascot-vote__notice">The tile list (tiles.json) could not be read, so tile status is unknown.</p>}
+
+          {classified.rows.length === 0 ? (
+            <p>The server has not reported its map list yet.</p>
+          ) : (
+            <div className="mascot-vote__table-wrap" role="region" aria-labelledby="ad-tiles" tabIndex={0}>
+              <table className="mascot-vote__table admin__table">
+                <thead>
+                  <tr>
+                    <th scope="col">Map</th>
+                    <th scope="col">Tiles</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {classified.rows.map((row) => (
+                    <tr key={row.name}>
+                      <th scope="row">{row.name}</th>
+                      <td>{ready.tiles ? TILE_STATE_TEXT[row.state] : '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {classified.hidden.length > 0 && (
+            <p className="mascot-vote__meta">Hidden; tiles kept (the server no longer runs): {classified.hidden.join(', ')}</p>
+          )}
+
+          <div className="admin__actions">
+            <button type="button" className="mascot-vote__btn mascot-vote__btn--primary" disabled={open} onClick={askRebuild}>
+              Rebuild map
+            </button>
+          </div>
+
+          {latest && phase && (
+            <div className="admin__maprequest" aria-live="polite">
+              <p>
+                <strong>{requestLine(latest, ready.now)}</strong>
+              </p>
+              {latest.status === 'queued' && (
+                <div className="admin__actions">
+                  <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary" disabled={cancelBusy} onClick={() => void cancelRequest(latest.id)}>
+                    Cancel
+                  </button>
+                </div>
+              )}
+              {cancelError && (
+                <p className="mascot-vote__notice" role="alert">
+                  {cancelError}
+                </p>
+              )}
+              {(latest.status === 'running' || latest.status === 'failed') && latest.log && (
+                <details className="admin__maplog">
+                  <summary>{latest.status === 'running' ? 'Log so far' : 'Log'}</summary>
+                  <pre>{latest.log}</pre>
+                </details>
+              )}
+              {latest.status === 'failed' && (
+                <div className="admin__actions">
+                  <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary" onClick={askRebuild}>
+                    Try again
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      )}
+
+      <Confirm
+        open={rebuildOpen}
+        title="Rebuild the map?"
+        confirmLabel="Rebuild map"
+        busy={busy}
+        error={error}
+        onConfirm={() => void confirmRebuild()}
+        onCancel={() => {
+          if (!busy) setRebuildOpen(false)
+        }}
+      >
+        <p>The render PC rebuilds tiles for every map the server runs, publishes them and pushes. About 45 minutes when a new map needs rendering, a few minutes otherwise.</p>
       </Confirm>
     </section>
   )
