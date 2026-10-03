@@ -1,12 +1,13 @@
 import { useId } from 'react';
 import { useHomeSummary } from '../../hooks/useHomeSummary';
-import { joiningText, TBD } from '../../lib/homeSummary';
+import { joiningText } from '../../lib/homeSummary';
 import { SERVER_IP, SERVER_PORT } from '../../lib/links';
 import { CopyField } from './CopyField';
+import { GetTheModsStep } from './GetTheModsStep';
 
-// "Join in three steps". The Workshop collection link is not published yet (the
-// owner decides), so it reads TBD; the address is the owner's (lib/links.ts); the mod
-// count and the joining rules come from the server's own settings (027).
+// "Join in three steps". Step 1 links the Workshop collection (owner, 2026-10-03;
+// GetTheModsStep, ids in lib/links.ts); the address is the owner's (lib/links.ts); the
+// mod count and the joining rules come from the server's own settings (027).
 
 const DISCORD = 'https://discord.gg/KgNBWyfcvZ';
 
@@ -24,17 +25,7 @@ export function JoinSteps() {
           Join in three steps
         </h2>
         <ol className="home-steps">
-          <li className="home-step">
-            <span className="home-step__number" aria-hidden="true">1</span>
-            <h3 className="home-step__title">Get the mods</h3>
-            <p>
-              Subscribe to our Steam Workshop collection so the game downloads every mod the server runs
-              {workshop !== null ? ` (${workshop} Workshop items)` : ''}.
-            </p>
-            <p className="home-step__detail">
-              Collection link: <span className="home-tbd">{TBD}</span>
-            </p>
-          </li>
+          <GetTheModsStep workshop={workshop} />
           <li className="home-step">
             <span className="home-step__number" aria-hidden="true">2</span>
             <h3 className="home-step__title">Connect</h3>

@@ -434,6 +434,20 @@
   font-size: var(--font-size-sm);
 }
 
+/* The two collection links (T61): each a 24px-tall target (WCAG 2.5.8), on its
+   own row when they do not fit side by side. Colour stays the site link colour. */
+.home-step__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-1) var(--spacing-4);
+}
+
+.home-step__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+}
+
 /* ---- Settings -------------------------------------------------------------- */
 
 .home-welcome {
