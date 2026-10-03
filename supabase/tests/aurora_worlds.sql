@@ -788,10 +788,32 @@ BEGIN
     RAISE EXCEPTION 'FAIL: a pending world changed the public map: % -> %', current_setting('t47.snap'),
       t47.snap('test-w') || '|' || t47.snap('test-w2');
   END IF;
-  IF (aurora.home_summary_tz('test-w', 'UTC')->>'world_pending')::boolean IS NOT TRUE THEN
-    RAISE EXCEPTION 'FAIL: world_pending is not true';
+  IF (aurora.home_summary_tz('test-w', 'UTC')->'world_pending') IS DISTINCT FROM 'false'::jsonb THEN
+    RAISE EXCEPTION 'FAIL: anon sees world_pending %', aurora.home_summary_tz('test-w', 'UTC')->'world_pending';
   END IF;
-  RAISE NOTICE 'PASS a new id with age 100 is held pending as w3: nothing public changes, world_pending is true';
+  RAISE NOTICE 'PASS a new id with age 100 is held pending as w3: nothing public changes, world_pending is false for anon';
+END $$;
+RESET ROLE;
+
+SET LOCAL ROLE authenticated;
+SELECT set_config('request.jwt.claims', '{"sub":"ffffffff-0000-4000-8000-000000000001","role":"authenticated"}', TRUE);
+DO $$
+BEGIN
+  IF (aurora.home_summary_tz('test-w', 'UTC')->'world_pending') IS DISTINCT FROM 'false'::jsonb THEN
+    RAISE EXCEPTION 'FAIL: a non-admin sees world_pending';
+  END IF;
+  RAISE NOTICE 'PASS world_pending is false for a non-admin authenticated user';
+END $$;
+RESET ROLE;
+
+SET LOCAL ROLE authenticated;
+SELECT set_config('request.jwt.claims', '{"sub":"ffffffff-0000-4000-8000-000000000002","role":"authenticated"}', TRUE);
+DO $$
+BEGIN
+  IF (aurora.home_summary_tz('test-w', 'UTC')->'world_pending') IS DISTINCT FROM 'true'::jsonb THEN
+    RAISE EXCEPTION 'FAIL: an admin does not see world_pending true';
+  END IF;
+  RAISE NOTICE 'PASS world_pending is true for an admin';
 END $$;
 RESET ROLE;
 

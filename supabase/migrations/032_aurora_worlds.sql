@@ -1559,7 +1559,7 @@ AS $$
     'day_tz', (SELECT name FROM dy),
     'world_seq', (SELECT seq FROM wld),
     'world_started_at', (SELECT started_at FROM wld),
-    'world_pending', EXISTS (
+    'world_pending', aurora.is_aurora_admin() AND EXISTS (
       SELECT 1 FROM aurora.worlds w WHERE w.server_id = p_server AND w.status = 'pending'
     ),
     'longest_survivors', COALESCE((
@@ -1612,7 +1612,7 @@ REVOKE ALL ON FUNCTION aurora.home_summary_tz(TEXT, TEXT) FROM PUBLIC, anon, aut
 GRANT EXECUTE ON FUNCTION aurora.home_summary_tz(TEXT, TEXT) TO anon, authenticated, service_role;
 
 COMMENT ON FUNCTION aurora.home_summary_tz(TEXT, TEXT) IS
-  'Public (030, worlds 032): the home page''s server totals, "today" from midnight in p_tz. Player, safehouse, death, kill and world-age figures count the current world only; peak_7d and hourly_7d are server activity and stay unfiltered. world_seq, world_started_at, world_pending describe the world. Aggregates only.';
+  'Public (030, worlds 032): the home page''s server totals, "today" from midnight in p_tz. Player, safehouse, death, kill and world-age figures count the current world only; peak_7d and hourly_7d are server activity and stay unfiltered. world_seq, world_started_at, world_pending describe the world (world_pending is admin-only: false for everyone else). Aggregates only.';
 
 -- ============================================================================
 -- 11. BOOTSTRAP: every existing server gets w1
