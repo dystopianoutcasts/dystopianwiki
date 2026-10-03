@@ -1,17 +1,20 @@
--- Tests for migration 036: aurora.leaderboard_entries, replace_leaderboard, leaderboard,
--- leaderboard_admin and the two world triggers.
+-- Tests for migrations 036 and 037: aurora.leaderboard_entries, replace_leaderboard,
+-- leaderboard, leaderboard_admin and the two world triggers. The mod-source lists follow
+-- 037 (the game window's rules: every entry, zeros and the dead included, ROW_NUMBER
+-- ranks, ties by username); the aurora-source assertions are 036's, unchanged.
 --
--- Run the whole file as `postgres` (SQL editor, or psql -f) after 032, 034, 035 and 036.
--- It seeds fixtures, asserts, and ROLLS BACK. It prints "PASS ..." notices ending in
--- "ALL LEADERBOARD TESTS PASSED", or stops at the first failure.
+-- Run the whole file as `postgres` (SQL editor, or psql -f) after 032, 034, 035, 036
+-- and 037. It seeds fixtures, asserts, and ROLLS BACK. It prints "PASS ..." notices
+-- ending in "ALL LEADERBOARD TESTS PASSED", or stops at the first failure.
 --
--- "Running 036 twice is fine" cannot be asserted from inside this file; the run script
--- applies the migration twice before running it.
+-- "Running 036 / 037 twice is fine" cannot be asserted from inside this file; the run
+-- script applies each migration twice before running it.
 --
 -- Server l-s has two worlds: w1 (ended) and w2 (current). Old-world rows hold huge
 -- numbers (dave: 999 kills in lives, 9999 in the mod table) so a leak shows at once.
 -- Server l-many holds 12 mod rows for the limit checks. Server l-none has no current
--- world. Server l-u is only touched by the undo check.
+-- world. Server l-u is only touched by the undo check. Server l-p is the owner's
+-- screenshot shape (037 parity); server l-big holds 60 mod rows for the 50-row limit.
 
 BEGIN;
 
@@ -86,6 +89,35 @@ INSERT INTO aurora.deaths (server_id, world_id, username, x, y, t, hours_survive
 -- A previous world's mod table: must never show while w2 is current.
 INSERT INTO aurora.leaderboard_entries (server_id, world_id, username, banked_kills, banked_deaths, live_kills, live_hours, seen_at) VALUES
   ('l-s', 'w1', 'dave', 9999, 99, 9999, 999, TIMESTAMPTZ '2026-09-29 00:00:00+00');
+
+-- 037 parity fixture, the shape of the owner's in-game screenshot: payo has 0 on every
+-- tab; moss has banked kills and 0 live; gone is dead, so the game shows 0 hours;
+-- ash and bob tie on kills (31) and on hours (5); crusty leads with banked + live.
+INSERT INTO aurora.servers (id, name, first_seen, last_seen) VALUES
+  ('l-p',   'Parity Server', TIMESTAMPTZ '2026-01-01 00:00:00+00', NOW()),
+  ('l-big', 'Sixty Rows',    TIMESTAMPTZ '2026-01-01 00:00:00+00', NOW());
+INSERT INTO aurora.worlds (server_id, world_id, seq, status, detected_by, started_at, ended_at) VALUES
+  ('l-p',   'w1', 1, 'current', 'exporter', TIMESTAMPTZ '2026-09-30 00:00:00+00', NULL),
+  ('l-big', 'w1', 1, 'current', 'exporter', TIMESTAMPTZ '2026-09-30 00:00:00+00', NULL);
+UPDATE aurora.servers SET current_world_id = 'w1' WHERE id IN ('l-p', 'l-big');
+INSERT INTO aurora.players (server_id, username, display_name, is_dead, online, hours_survived, world_id) VALUES
+  ('l-p', 'crusty', 'Crusty', FALSE, TRUE,  30, 'w1'),
+  ('l-p', 'moss',   'Moss',   FALSE, FALSE, 12, 'w1'),
+  ('l-p', 'ash',    'Ash',    FALSE, FALSE, 5,  'w1'),
+  ('l-p', 'bob',    'Bob',    FALSE, TRUE,  5,  'w1'),
+  ('l-p', 'gone',   'Gone',   TRUE,  FALSE, 0,  'w1'),
+  ('l-p', 'payo',   'Payo',   FALSE, TRUE,  2,  'w1');
+INSERT INTO aurora.leaderboard_entries (server_id, world_id, username, banked_kills, banked_deaths, live_kills, live_hours, seen_at) VALUES
+  ('l-p', 'w1', 'crusty', 53, 2, 23, 30.5, TIMESTAMPTZ '2026-10-03 15:00:00+00'),
+  ('l-p', 'w1', 'moss',   40, 1, 0,  12,   TIMESTAMPTZ '2026-10-03 15:00:00+00'),
+  ('l-p', 'w1', 'bob',    10, 0, 21, 5,    TIMESTAMPTZ '2026-10-03 15:00:00+00'),
+  ('l-p', 'w1', 'ash',    0,  0, 31, 5,    TIMESTAMPTZ '2026-10-03 15:00:00+00'),
+  ('l-p', 'w1', 'gone',   15, 3, 0,  0,    TIMESTAMPTZ '2026-10-03 15:00:00+00'),
+  ('l-p', 'w1', 'payo',   0,  0, 0,  2.4,  TIMESTAMPTZ '2026-10-03 15:00:00+00');
+-- Sixty rows, all different totals (r01 the most), for p_limit 50.
+INSERT INTO aurora.leaderboard_entries (server_id, world_id, username, banked_kills, banked_deaths, live_kills, live_hours, seen_at)
+SELECT 'l-big', 'w1', 'r' || lpad(g::text, 2, '0'), 1000 - g, 0, 0, 0, TIMESTAMPTZ '2026-10-03 15:00:00+00'
+  FROM generate_series(1, 60) g;
 
 -- ============================================================================
 -- 1. GRANTS AND SHAPE
@@ -301,20 +333,28 @@ DECLARE
   v_want JSONB := $j${
     "source": "mod", "world_seq": 2,
     "kills": [
-      {"rank": 1, "username": "skye", "display_name": "Skye", "live": 181, "total": 481, "alive": true,  "online": true},
-      {"rank": 2, "username": "rax",  "display_name": "Rax",  "live": 0,   "total": 300, "alive": false, "online": false},
-      {"rank": 3, "username": "ann",  "display_name": "Ann",  "live": 181, "total": 181, "alive": true,  "online": false},
-      {"rank": 3, "username": "bea",  "display_name": null,   "live": 81,  "total": 181, "alive": true,  "online": true}
+      {"rank": 1, "username": "skye",   "display_name": "Skye", "live": 181, "total": 481, "alive": true,  "online": true},
+      {"rank": 2, "username": "rax",    "display_name": "Rax",  "live": 0,   "total": 300, "alive": false, "online": false},
+      {"rank": 3, "username": "ann",    "display_name": "Ann",  "live": 181, "total": 181, "alive": true,  "online": false},
+      {"rank": 4, "username": "bea",    "display_name": null,   "live": 81,  "total": 181, "alive": true,  "online": true},
+      {"rank": 5, "username": "newbie", "display_name": null,   "live": 0,   "total": 0,   "alive": false, "online": false},
+      {"rank": 6, "username": "zero",   "display_name": null,   "live": 0,   "total": 0,   "alive": false, "online": false}
     ],
     "deaths": [
       {"rank": 1, "username": "rax",    "display_name": "Rax",  "deaths": 4, "alive": false, "online": false},
       {"rank": 2, "username": "newbie", "display_name": null,   "deaths": 2, "alive": false, "online": false},
-      {"rank": 3, "username": "skye",   "display_name": "Skye", "deaths": 1, "alive": true,  "online": true}
+      {"rank": 3, "username": "skye",   "display_name": "Skye", "deaths": 1, "alive": true,  "online": true},
+      {"rank": 4, "username": "ann",    "display_name": "Ann",  "deaths": 0, "alive": true,  "online": false},
+      {"rank": 5, "username": "bea",    "display_name": null,   "deaths": 0, "alive": true,  "online": true},
+      {"rank": 6, "username": "zero",   "display_name": null,   "deaths": 0, "alive": false, "online": false}
     ],
     "survival": [
-      {"rank": 1, "username": "skye", "display_name": "Skye", "hours": 176.3, "alive": true, "online": true},
-      {"rank": 2, "username": "ann",  "display_name": "Ann",  "hours": 10.0,  "alive": true, "online": false},
-      {"rank": 2, "username": "bea",  "display_name": null,   "hours": 10.0,  "alive": true, "online": true}
+      {"rank": 1, "username": "skye",   "display_name": "Skye", "hours": 176.3, "alive": true,  "online": true},
+      {"rank": 2, "username": "ann",    "display_name": "Ann",  "hours": 10.0,  "alive": true,  "online": false},
+      {"rank": 3, "username": "bea",    "display_name": null,   "hours": 10.0,  "alive": true,  "online": true},
+      {"rank": 4, "username": "newbie", "display_name": null,   "hours": 5.0,   "alive": false, "online": false},
+      {"rank": 5, "username": "rax",    "display_name": "Rax",  "hours": 0.0,   "alive": false, "online": false},
+      {"rank": 6, "username": "zero",   "display_name": null,   "hours": 0.0,   "alive": false, "online": false}
     ]
   }$j$;
 BEGIN
@@ -325,7 +365,7 @@ BEGIN
   IF (v_got - 'seen_at') IS DISTINCT FROM v_want THEN
     RAISE EXCEPTION 'FAIL: mod-source contract mismatch: %', v_got;
   END IF;
-  RAISE NOTICE 'PASS mod source, exact (kills rank on banked + live with the live split, deaths banked, survival alive only and 0 hours left out, zero row absent, ties share a rank, previous world never shows)';
+  RAISE NOTICE 'PASS mod source, exact (037: kills rank on banked + live with the live split, deaths banked, survival live hours of everyone, zero rows and the dead listed, ties get consecutive row ranks by username, previous world never shows)';
   RAISE NOTICE 'JSON %', v_got;
 END $$;
 
@@ -342,8 +382,8 @@ BEGIN
   IF jsonb_array_length(aurora.leaderboard('l-many', 101)->'kills') <> 10 THEN RAISE EXCEPTION 'FAIL: limit 101 is not 10'; END IF;
   IF jsonb_array_length(aurora.leaderboard('l-many', NULL)->'kills') <> 10 THEN RAISE EXCEPTION 'FAIL: limit NULL is not 10'; END IF;
   v := aurora.leaderboard('l-many', 1);
-  IF jsonb_array_length(v->'kills') <> 1 OR jsonb_array_length(v->'deaths') <> 1 OR jsonb_array_length(v->'survival') <> 0 THEN
-    RAISE EXCEPTION 'FAIL: limit 1 (survival is empty: nobody on l-many has a players row, so nobody is alive): %', v;
+  IF jsonb_array_length(v->'kills') <> 1 OR jsonb_array_length(v->'deaths') <> 1 OR jsonb_array_length(v->'survival') <> 1 THEN
+    RAISE EXCEPTION 'FAIL: limit 1 (037: survival lists everyone, alive or not, so it has one row too): %', v;
   END IF;
   IF v->'kills'->0->>'username' <> 'f01' OR (v->'kills'->0->>'total')::int <> 99 THEN
     RAISE EXCEPTION 'FAIL: limit 1 must return the leader';
@@ -352,12 +392,90 @@ BEGIN
   IF jsonb_array_length(v->'kills') <> 12 OR jsonb_array_length(v->'deaths') <> 12 THEN
     RAISE EXCEPTION 'FAIL: limit 100 should return all 12';
   END IF;
-  -- Twelve equal death counts: one shared rank, ordered by username.
-  IF (SELECT count(DISTINCT x->>'rank') FROM jsonb_array_elements(v->'deaths') x) <> 1
-     OR v->'deaths'->11->>'username' <> 'f12' THEN
-    RAISE EXCEPTION 'FAIL: a 12-way tie must share rank 1, ordered by username: %', v->'deaths';
+  -- Twelve equal death counts (mod source, 037): ranks 1..12 by row, ordered by username.
+  IF (SELECT string_agg((x->>'rank') || ':' || (x->>'username'), ',' ORDER BY i)
+        FROM jsonb_array_elements(v->'deaths') WITH ORDINALITY q(x, i))
+     <> '1:f01,2:f02,3:f03,4:f04,5:f05,6:f06,7:f07,8:f08,9:f09,10:f10,11:f11,12:f12' THEN
+    RAISE EXCEPTION 'FAIL: a 12-way tie must get ranks 1..12 in username order: %', v->'deaths';
   END IF;
-  RAISE NOTICE 'PASS limit clamp (0, -5, 101, NULL -> 10; 1 and 100 honoured) and a wide tie';
+  RAISE NOTICE 'PASS limit clamp (0, -5, 101, NULL -> 10; 1 and 100 honoured) and a wide tie numbered by row';
+END $$;
+
+-- ============================================================================
+-- 5b. PARITY WITH THE GAME'S WINDOW (037; l-p, the screenshot shape; l-big, 60 rows)
+-- ============================================================================
+
+DO $$
+DECLARE
+  v_got  JSONB;
+  v_want JSONB := $j${
+    "source": "mod", "world_seq": 1,
+    "kills": [
+      {"rank": 1, "username": "crusty", "display_name": "Crusty", "live": 23, "total": 76, "alive": true,  "online": true},
+      {"rank": 2, "username": "moss",   "display_name": "Moss",   "live": 0,  "total": 40, "alive": true,  "online": false},
+      {"rank": 3, "username": "ash",    "display_name": "Ash",    "live": 31, "total": 31, "alive": true,  "online": false},
+      {"rank": 4, "username": "bob",    "display_name": "Bob",    "live": 21, "total": 31, "alive": true,  "online": true},
+      {"rank": 5, "username": "gone",   "display_name": "Gone",   "live": 0,  "total": 15, "alive": false, "online": false},
+      {"rank": 6, "username": "payo",   "display_name": "Payo",   "live": 0,  "total": 0,  "alive": true,  "online": true}
+    ],
+    "deaths": [
+      {"rank": 1, "username": "gone",   "display_name": "Gone",   "deaths": 3, "alive": false, "online": false},
+      {"rank": 2, "username": "crusty", "display_name": "Crusty", "deaths": 2, "alive": true,  "online": true},
+      {"rank": 3, "username": "moss",   "display_name": "Moss",   "deaths": 1, "alive": true,  "online": false},
+      {"rank": 4, "username": "ash",    "display_name": "Ash",    "deaths": 0, "alive": true,  "online": false},
+      {"rank": 5, "username": "bob",    "display_name": "Bob",    "deaths": 0, "alive": true,  "online": true},
+      {"rank": 6, "username": "payo",   "display_name": "Payo",   "deaths": 0, "alive": true,  "online": true}
+    ],
+    "survival": [
+      {"rank": 1, "username": "crusty", "display_name": "Crusty", "hours": 30.5, "alive": true,  "online": true},
+      {"rank": 2, "username": "moss",   "display_name": "Moss",   "hours": 12.0, "alive": true,  "online": false},
+      {"rank": 3, "username": "ash",    "display_name": "Ash",    "hours": 5.0,  "alive": true,  "online": false},
+      {"rank": 4, "username": "bob",    "display_name": "Bob",    "hours": 5.0,  "alive": true,  "online": true},
+      {"rank": 5, "username": "payo",   "display_name": "Payo",   "hours": 2.4,  "alive": true,  "online": true},
+      {"rank": 6, "username": "gone",   "display_name": "Gone",   "hours": 0.0,  "alive": false, "online": false}
+    ]
+  }$j$;
+  v JSONB;
+BEGIN
+  v_got := aurora.leaderboard('l-p', 50);
+  IF (v_got->>'seen_at')::timestamptz IS DISTINCT FROM TIMESTAMPTZ '2026-10-03 15:00:00+00' THEN
+    RAISE EXCEPTION 'FAIL: parity seen_at %', v_got->>'seen_at';
+  END IF;
+  IF (v_got - 'seen_at') IS DISTINCT FROM v_want THEN
+    RAISE EXCEPTION 'FAIL: parity contract mismatch: %', v_got;
+  END IF;
+  RAISE NOTICE 'PASS parity, exact (payo 0 on every tab is listed; moss banked with live 0; gone dead, on survival with 0 hours and alive false; ash and bob tied on kills and hours get consecutive ranks, ash first)';
+
+  -- Individual claims, so a failure names the rule it breaks.
+  IF NOT EXISTS (SELECT 1 FROM jsonb_array_elements(v_got->'kills') x WHERE x->>'username' = 'payo' AND (x->>'total')::int = 0) THEN
+    RAISE EXCEPTION 'FAIL: zero-row: payo (0 kills) missing from the mod-source kills list';
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM jsonb_array_elements(v_got->'survival') x
+                  WHERE x->>'username' = 'gone' AND (x->>'hours')::numeric = 0 AND (x->>'alive')::boolean = FALSE) THEN
+    RAISE EXCEPTION 'FAIL: the dead player is not on survival with 0 hours and alive false';
+  END IF;
+  IF (SELECT string_agg((x->>'rank') || ':' || (x->>'username'), ',' ORDER BY i)
+        FROM jsonb_array_elements(v_got->'kills') WITH ORDINALITY q(x, i) WHERE x->>'total' = '31') <> '3:ash,4:bob' THEN
+    RAISE EXCEPTION 'FAIL: tie: equal totals must get distinct consecutive ranks by username: %', v_got->'kills';
+  END IF;
+  RAISE NOTICE 'PASS parity rules: zero row present, dead player on survival, ties numbered by row';
+
+  -- p_limit 50 returns 50 of 60; the default stays 10; 100 returns all 60.
+  v := aurora.leaderboard('l-big', 50);
+  IF jsonb_array_length(v->'kills') <> 50 OR jsonb_array_length(v->'deaths') <> 50 OR jsonb_array_length(v->'survival') <> 50 THEN
+    RAISE EXCEPTION 'FAIL: p_limit 50 must return 50 rows per list: % % %',
+      jsonb_array_length(v->'kills'), jsonb_array_length(v->'deaths'), jsonb_array_length(v->'survival');
+  END IF;
+  IF v->'kills'->0->>'username' <> 'r01' OR (v->'kills'->49->>'rank')::int <> 50 OR v->'kills'->49->>'username' <> 'r50' THEN
+    RAISE EXCEPTION 'FAIL: p_limit 50 must be the top 50, ranked 1..50: %', v->'kills'->49;
+  END IF;
+  IF jsonb_array_length(aurora.leaderboard('l-big')->'kills') <> 10
+     OR jsonb_array_length(aurora.leaderboard('l-big', 100)->'kills') <> 60
+     OR jsonb_array_length(aurora.leaderboard('l-p', 50)->'kills') <> 6 THEN
+    RAISE EXCEPTION 'FAIL: default 10, limit 100 = all 60, limit 50 on 6 rows = 6';
+  END IF;
+  RAISE NOTICE 'PASS p_limit 50 returns up to 50 (50 of 60, 6 of 6), the default stays 10';
+  RAISE NOTICE 'JSON %', v_got;
 END $$;
 
 -- ============================================================================

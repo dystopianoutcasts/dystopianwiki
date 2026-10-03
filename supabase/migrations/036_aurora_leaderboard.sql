@@ -33,6 +33,8 @@
 --       kills    total = banked_kills + live_kills, live = live_kills; total > 0 only.
 --       deaths   deaths = banked_deaths; deaths > 0 only.
 --       survival hours = live_hours, alive players only, hours > 0 only.
+--     037 replaces these mod-source rules: the mod source mirrors the game's window
+--     (every entry in every list, zeros and the dead included, rank = row position).
 --   * source "aurora" otherwise; seen_at is null. Lists:
 --       kills    total = SUM(lives.kills) in the world (as 035), live = the kills of the
 --                player's open life(s) in the world, else 0; total > 0 only.
@@ -52,7 +54,7 @@
 --   * hours are rounded to 0.1 before ranking, so what the site shows is what ties.
 --   * rank = RANK() over the list's number, so equal numbers share a rank; rows are
 --     ordered by that number DESC, then username. p_limit is clamped to 1..100 (NULL
---     or out of range: 10), per list.
+--     or out of range: 10), per list. (037: the mod source ranks by ROW_NUMBER.)
 --   * username is public (owner decision 2026-09-29, T44); display_name is the players
 --     row's display name, NULL when absent or blank (the site falls back to username).
 --     No coordinates, no faction members, nothing of another world.
