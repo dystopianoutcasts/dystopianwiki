@@ -23,7 +23,7 @@ import {
   type TableUpsert,
 } from './ingest-core.ts';
 import { parseLineDetailed } from './parser.ts';
-import type { AuroraRecord, HbRecord, NpcOutpostRecord, NpcRecord, PosRecord } from './parser.ts';
+import type { AuroraRecord, FacsRecord, HbRecord, NpcOutpostRecord, NpcRecord, PosRecord } from './parser.ts';
 
 function assertEquals<T>(actual: T, expected: T, msg = ''): void {
   const a = JSON.stringify(actual);
@@ -1280,6 +1280,33 @@ Deno.test('T54 replace_factions: an empty list is a call with no rows (every fac
   assertEquals(call!.args.p_rows, []);
   assertEquals(buildFactionRows({ k: 'facs', t: 1, f: [{ n: 'A', m: [] }, { n: ' ', m: [] }, { n: 'A', g: 'T', m: ['q'] }] }), [
     { name: 'A', tag: 'T', owner: null, members: ['q'] },
+  ]);
+});
+
+// The exporter's JSON writer encodes an empty Lua table as {} (the 2026-10-03
+// safehouse freeze). The parser rejects these facs shapes today; the row builder
+// must not depend on that, because a throw inside the tail step holds the cursor.
+Deno.test('T60 a facs list that is {} instead of an array yields no rows and does not throw', () => {
+  const bad = { k: 'facs', t: 1, f: {} } as unknown as FacsRecord;
+  assertEquals(buildFactionRows(bad), []);
+  const plan = buildPlan([bad as AuroraRecord], SERVER, { seenAt: '2026-10-02T12:00:00.000Z' });
+  assertEquals(rpcCall(plan, 'replace_factions')?.args.p_rows, []);
+});
+
+Deno.test('T60 a faction whose member list is {} keeps the faction with no members', () => {
+  const rec = {
+    k: 'facs',
+    t: 1,
+    f: [
+      { n: 'Bears', g: '', o: 'kim', m: {} },
+      { n: 'Wolves', g: 'WLF', o: 'zed', m: ['abe', 7, null, 'zed'] },
+      'not an entry',
+      { n: 42, m: ['x'] },
+    ],
+  } as unknown as FacsRecord;
+  assertEquals(buildFactionRows(rec), [
+    { name: 'Bears', tag: null, owner: 'kim', members: [] },
+    { name: 'Wolves', tag: 'WLF', owner: 'zed', members: ['abe', 'zed'] },
   ]);
 });
 

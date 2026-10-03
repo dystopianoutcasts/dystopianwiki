@@ -28,6 +28,7 @@ import type {
   CatalogRecord,
   DeathRecord,
   FacsRecord,
+  FactionEntry,
   HbRecord,
   KillRecord,
   LinkRecord,
@@ -845,19 +846,33 @@ const FACTION_MEMBERS_MAX = 64;
  * Rows for aurora.replace_factions (034): the record's whole list, one row per name
  * (the last one wins), an empty tag as null. An empty list is an empty array, which
  * the function reads as "every faction is disbanded".
+ *
+ * Guarded against the shapes the parser already rejects (checkShape 'facs'), so a
+ * future loosening of the parser cannot throw here: the exporter's JSON writer
+ * encodes an empty Lua table as {} (the 2026-10-03 safehouse freeze), and a
+ * TypeError inside the tail step holds the cursor exactly like a refused write.
+ * A list that is not an array is no factions; a member list that is not an array
+ * is no members; a member that is not a string is dropped.
  */
 export function buildFactionRows(r: FacsRecord): Row[] {
   const byName = new Map<string, Row>();
-  for (const f of r.f) {
-    const name = f.n.trim().slice(0, FACTION_TEXT_MAX);
+  if (!Array.isArray(r.f)) return [];
+  for (const f of r.f as unknown[]) {
+    if (typeof f !== 'object' || f === null) continue;
+    const e = f as Partial<Record<keyof FactionEntry, unknown>>;
+    if (typeof e.n !== 'string') continue;
+    const name = e.n.trim().slice(0, FACTION_TEXT_MAX);
     if (name === '') continue;
-    const tag = typeof f.g === 'string' ? f.g.trim().slice(0, FACTION_TEXT_MAX) : '';
-    const owner = typeof f.o === 'string' ? f.o.trim() : '';
+    const tag = typeof e.g === 'string' ? e.g.trim().slice(0, FACTION_TEXT_MAX) : '';
+    const owner = typeof e.o === 'string' ? e.o.trim() : '';
+    const members: unknown[] = Array.isArray(e.m) ? e.m : [];
     byName.set(name, {
       name,
       tag: tag === '' ? null : tag,
       owner: owner === '' ? null : owner,
-      members: f.m.filter((m) => m.trim() !== '').slice(0, FACTION_MEMBERS_MAX),
+      members: members
+        .filter((m): m is string => typeof m === 'string' && m.trim() !== '')
+        .slice(0, FACTION_MEMBERS_MAX),
     });
   }
   return [...byName.values()];
