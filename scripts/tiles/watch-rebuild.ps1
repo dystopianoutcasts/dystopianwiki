@@ -70,13 +70,20 @@ function Test-KeyFileAcl([string]$Path) {
     return "key file not found: $Path (the owner creates it once; deploy.md, Rebuild from the admin page)"
   }
   $me = [System.Security.Principal.WindowsIdentity]::GetCurrent()
-  $acl = Get-Acl -LiteralPath $Path
+  $fix = ("Fix: icacls `"{0}`" /inheritance:r /grant:r `"{1}:F`"" -f $Path, $env:USERNAME)
+  try { $acl = Get-Acl -LiteralPath $Path }
+  catch { return ("cannot read the permissions of the key file ({0}); refusing. {1}" -f $_.Exception.Message, $fix) }
   $mine = $false
   foreach ($rule in $acl.Access) {
+    # An inherited entry is refused even when it is the current user's: the folder's
+    # inheritance can widen later. The key file must carry only explicit entries.
+    if ($rule.IsInherited) {
+      return ("key file has an inherited permission entry ({0}); only explicit entries for {1} are allowed. {2}" -f $rule.IdentityReference.Value, $me.Name, $fix)
+    }
     try { $sid = $rule.IdentityReference.Translate([System.Security.Principal.SecurityIdentifier]).Value }
     catch { $sid = $rule.IdentityReference.Value }
     if ($sid -ne $me.User.Value) {
-      return ("key file is accessible to {0}; only {1} may have access. Fix: icacls `"{2}`" /inheritance:r /grant:r `"{3}:F`"" -f $rule.IdentityReference.Value, $me.Name, $Path, $env:USERNAME)
+      return ("key file is accessible to {0}; only {1} may have access. {2}" -f $rule.IdentityReference.Value, $me.Name, $fix)
     }
     if ($rule.AccessControlType -eq 'Allow') { $mine = $true }
   }

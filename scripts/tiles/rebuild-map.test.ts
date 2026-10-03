@@ -59,6 +59,9 @@ interface WorldOptions {
   heartbeat?: boolean
   describe?: (o: DescribeOptions) => ModMapEntry[]
   onDisk?: string[]
+  /** Overlay ids of the committed tiles.json before the run (default: Raven Creek only, so
+   *  the default request ADDS Constown). publish-tiles replaces it with the built one. */
+  committed?: string[]
 }
 
 /** The files the verify step reads, for a successful run publishing `slugs`. */
@@ -92,7 +95,10 @@ function describeFake(o: DescribeOptions): ModMapEntry[] {
 }
 
 function world(o: WorldOptions = {}): World {
-  const files = new Map(Object.entries({ ...builtFiles(['raven-creek-b42', 'constown-ky']), ...(o.files ?? {}) }))
+  const final: Record<string, string> = { ...builtFiles(['raven-creek-b42', 'constown-ky']), ...(o.files ?? {}) }
+  const committed = o.committed ?? ['raven-creek-b42']
+  const committedTiles = JSON.stringify({ ...GEOM, ...(committed.length ? { overlays: committed.map((id) => ({ id })) } : {}) })
+  const files = new Map(Object.entries({ ...final, [TILES_JSON]: committedTiles, 'map/tiles.json': committedTiles }))
   const dirs = new Map(Object.entries(o.dirs ?? {}))
   const onDisk = new Set((o.onDisk ?? ['3484263516', '3480990544']).map((id) => `${MOD_ROOT}\\${id}`))
   const w: World = { calls: [], printed: [], heartbeats: [], finishes: [], writes: [], removes: [], run: undefined as unknown as Runners }
@@ -100,7 +106,12 @@ function world(o: WorldOptions = {}): World {
     exec: async (cmd, args) => {
       const line = `${cmd} ${args.join(' ')}`
       w.calls.push(line)
-      return o.exec?.(line) ?? { code: 0, output: line.includes('extract-streets') ? 'entries after: 1100' : '' }
+      const custom = o.exec?.(line)
+      if (custom) return custom
+      // What the real steps do to the files the decision and the verify step read.
+      if (line.includes('publish-tiles.ts')) files.set(TILES_JSON, final[TILES_JSON])
+      if (line === 'npm run aurora:build') files.set('map/tiles.json', files.get(TILES_JSON) ?? '')
+      return { code: 0, output: line.includes('extract-streets') ? 'entries after: 1100' : '' }
     },
     git: async (args) => {
       const line = `git ${args.join(' ')}`
@@ -108,7 +119,6 @@ function world(o: WorldOptions = {}): World {
       const custom = o.git?.(line)
       if (custom) return custom
       if (line === 'git rev-parse --abbrev-ref HEAD') return { code: 0, output: 'main\n' }
-      if (line === 'git rev-list --count origin/main..HEAD') return { code: 0, output: '0\n' }
       if (line.startsWith('git diff --cached --quiet')) return { code: 1, output: '' }
       if (line === 'git rev-parse HEAD') return { code: 0, output: 'abc1234\n' }
       return { code: 0, output: '' }
@@ -161,7 +171,7 @@ const PREFLIGHT = [
   'git rev-parse --abbrev-ref HEAD',
   `git status --porcelain -- ${PATHS}`,
   'git pull --ff-only origin main',
-  'git rev-list --count origin/main..HEAD',
+  'git log --format=%s origin/main..HEAD',
 ]
 const AFTER_PUBLISH = [
   `npx tsx scripts/tiles/extract-objects.ts ${MAP_ARGS} --towns scripts/tiles/mod-maps/server-towns.json`,
@@ -170,6 +180,7 @@ const AFTER_PUBLISH = [
   'npm run aurora:build',
   'npx vitest run',
   'git pull --ff-only origin main',
+  'git log --format=%s origin/main..HEAD',
   `git add -- ${PATHS}`,
   `git diff --cached --quiet -- ${PATHS}`,
   `git commit -m chore(tiles): rebuild the live map for Raven Creek B42; Muldraugh, KY; Constown, KY (admin request #42) -- ${PATHS}`,
@@ -194,6 +205,7 @@ describe('normaliseMaps', () => {
 describe('renderDecision', () => {
   const geom = { w: 19968, h: 17920, x0: 0, y0: 0 }
   const facts = (over: Partial<RenderFacts> = {}): RenderFacts => ({
+    source: 'out-latest',
     lastRenderMaps: ['raven-creek-b42', 'constown-ky', 'havenfall'],
     baseExists: true,
     pyramidExists: () => true,
@@ -316,13 +328,58 @@ describe('runRebuild: the command plan', () => {
   })
 
   it('vanilla only: no overlays, vanilla street range, the stale mod_maps folder of the render output dropped', async () => {
-    const w = world({ files: builtFiles([], 1000), dirs: { [MODS]: ['raven-creek-b42'], 'map/tiles/mod_maps': ['raven-creek-b42'] } })
+    const w = world({
+      files: {
+        ...builtFiles([], 1000),
+        [MANIFEST]: JSON.stringify({ maps: ['raven-creek-b42'] }),
+        [`${BASE}\\layer0.dzi`]: '',
+        [`${BASE}\\map_info.json`]: JSON.stringify({ w: 19968, h: 17920, x0: 0, y0: 0 }),
+      },
+      dirs: { [MODS]: ['raven-creek-b42'], 'map/tiles/mod_maps': ['raven-creek-b42'] },
+    })
     const r = await runRebuild({ id: 7, maps: ['Muldraugh, KY', 'Lawnmower'], workshopItems: [] }, w.run, OPTS)
     expect(r.status).toBe('done')
     expect(w.calls).toContain(`npx tsx scripts/tiles/publish-tiles.ts --from ${BASE} --to map/tiles`)
     expect(w.calls).toContain(`npx tsx scripts/tiles/extract-streets.ts --map ${VANILLA_FOLDER} --expect-range 950,1050`)
     expect(w.calls).toContain('git rm -r -q map/tiles/mod_maps/raven-creek-b42')
     expect(w.removes).toContain(`${MODS}\\raven-creek-b42`)
+  })
+
+  it('first press, vanilla only, committed site vanilla only: no render, no publish', async () => {
+    const w = world({ committed: [], files: { ...builtFiles([], 1000), 'map/tiles/base_top/layer0.dzi': '' } })
+    const r = await runRebuild({ id: 8, maps: ['Muldraugh, KY'], workshopItems: [] }, w.run, OPTS)
+    expect(r.status).toBe('done')
+    expect(w.calls.some((c) => c.startsWith('powershell.exe'))).toBe(false)
+    expect(w.calls.some((c) => c.includes('publish-tiles.ts'))).toBe(false)
+    expect(w.printed.join('\n')).toContain('the committed site already shows exactly this map set (vanilla only)')
+    expect(w.writes).not.toContain(MANIFEST)
+    expect(w.removes).toEqual(['map/assets'])
+  })
+
+  it('first press with the committed set in Map= order: no render, no publish', async () => {
+    const w = world({ committed: ['raven-creek-b42', 'constown-ky'], files: { 'map/tiles/base_top/layer0.dzi': '' } })
+    expect((await runRebuild(REQUEST, w.run, OPTS)).status).toBe('done')
+    expect(w.calls).toEqual([...PREFLIGHT, ...AFTER_PUBLISH])
+  })
+
+  it('first press with the committed set in another order renders (nothing to re-publish from)', async () => {
+    const w = world({ committed: ['constown-ky', 'raven-creek-b42'], files: { 'map/tiles/base_top/layer0.dzi': '' } })
+    expect((await runRebuild(REQUEST, w.run, OPTS)).status).toBe('done')
+    expect(w.calls).toContain(RENDER_LINE)
+  })
+
+  it('first press that adds a map to the committed site renders', async () => {
+    const w = world({ committed: [], files: { 'map/tiles/base_top/layer0.dzi': '' } })
+    expect((await runRebuild(REQUEST, w.run, OPTS)).status).toBe('done')
+    expect(w.calls).toEqual([...PREFLIGHT, RENDER_LINE, PUBLISH_LINE, ...AFTER_PUBLISH])
+    expect(w.printed.join('\n')).toContain('map raven-creek-b42 is not in the last render (vanilla only)')
+    expect(w.writes).toContain(MANIFEST)
+  })
+
+  it('first press with the committed set but a missing published base renders', async () => {
+    const w = world({ committed: ['raven-creek-b42', 'constown-ky'] })
+    await runRebuild(REQUEST, w.run, OPTS)
+    expect(w.calls).toContain(RENDER_LINE)
   })
 })
 
@@ -365,7 +422,7 @@ describe('runRebuild: never push after a failure', () => {
   })
 
   it('a failed verify (stale map/tiles.json) pushes nothing', async () => {
-    const w = world({ files: { 'map/tiles.json': '{}' } })
+    const w = world({ exec: (l) => (l === 'npm run aurora:build' ? { code: 0, output: '' } : undefined) })
     expect((await runRebuild(REQUEST, w.run, OPTS)).status).toBe('failed')
     noPush(w)
   })
@@ -390,14 +447,43 @@ describe('runRebuild: never push after a failure', () => {
     const w = world({ git: (l) => (l.startsWith('git push') ? { code: 1, output: 'rejected' } : undefined) })
     const r = await runRebuild(REQUEST, w.run, OPTS)
     expect(r.status).toBe('failed')
-    expect(w.finishes[0]).toEqual(expect.objectContaining({ status: 'failed', sha: null }))
+    expect(w.finishes[0]).toEqual(expect.objectContaining({ status: 'failed', sha: 'abc1234' }))
+    expect(w.finishes[0].log).toContain('push failed')
     expect(w.finishes[0].log).toContain('abc1234 is local only')
   })
 
-  it('refuses when local main is ahead of origin (it would push someone else\'s commits)', async () => {
-    const w = world({ git: (l) => (l.startsWith('git rev-list') ? { code: 0, output: '2\n' } : undefined) })
+  const OWN = 'chore(tiles): rebuild the live map for Raven Creek B42 (admin request #3)'
+
+  it('refuses when an unpushed commit is not the watcher\'s, even beside its own', async () => {
+    const w = world({ git: (l) => (l.startsWith('git log') ? { code: 0, output: `${OWN}\nfeat: something else\n` } : undefined) })
     expect((await runRebuild(REQUEST, w.run, OPTS)).status).toBe('failed')
     expect(w.calls).toEqual(PREFLIGHT)
+    expect(w.finishes[0].log).toContain('not the watcher\'s (first: "feat: something else")')
+  })
+
+  it('pushes its own earlier unpushed commits first, then carries on', async () => {
+    let logs = 0
+    const w = world({ git: (l) => (l.startsWith('git log') && ++logs === 1 ? { code: 0, output: `${OWN}\n${OWN}\n` } : undefined) })
+    const r = await runRebuild(REQUEST, w.run, OPTS)
+    expect(r.status).toBe('done')
+    expect(w.calls).toEqual([...PREFLIGHT, 'git push origin main', RENDER_LINE, PUBLISH_LINE, ...AFTER_PUBLISH])
+  })
+
+  it('fails when the retried push of its own commits fails, before any render', async () => {
+    const w = world({
+      git: (l) => (l.startsWith('git log') ? { code: 0, output: `${OWN}\n` } : l.startsWith('git push') ? { code: 1, output: 'rejected' } : undefined),
+    })
+    expect((await runRebuild(REQUEST, w.run, OPTS)).status).toBe('failed')
+    expect(w.calls).toEqual([...PREFLIGHT, 'git push origin main'])
+    expect(w.finishes[0].log).toContain('push failed again')
+  })
+
+  it('re-checks unpushed commits after the pull at the commit step', async () => {
+    let logs = 0
+    const w = world({ git: (l) => (l.startsWith('git log') && ++logs === 2 ? { code: 0, output: 'feat: committed during the render\n' } : undefined) })
+    expect((await runRebuild(REQUEST, w.run, OPTS)).status).toBe('failed')
+    expect(w.calls.some((c) => c.startsWith('git add') || c.startsWith('git commit') || c.startsWith('git push'))).toBe(false)
+    expect(w.calls[w.calls.length - 1]).toBe('git log --format=%s origin/main..HEAD')
   })
 
   it('refuses when its own paths are dirty, or the branch is not main', async () => {

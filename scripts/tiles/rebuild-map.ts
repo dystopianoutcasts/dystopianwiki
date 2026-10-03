@@ -12,8 +12,9 @@
 //
 // Steps (each logged with a timestamp; the log tail goes out in a heartbeat every 60 s
 // and in the final finish_map_rebuild):
-//   preflight  on main, the watcher's own paths clean, `git pull --ff-only`, and local
-//              main not ahead of origin (the watcher pushes only its own commit)
+//   preflight  on main, the watcher's own paths clean, `git pull --ff-only`; unpushed
+//              commits that are all the watcher's own (an earlier failed push) are pushed
+//              first, any other unpushed commit refuses
 //   a. normalise the maps: vanilla and the two helpers dropped, each slugged with mapId
 //   b. describe the map mods (describe-mod-maps.ts) and write server-maps.txt
 //   c. decide whether a render is needed (renderDecision below)
@@ -23,7 +24,8 @@
 //   g. the three extractors, every map folder in Map= order, vanilla LAST
 //   h. rm -rf map/assets, npm run aurora:build
 //   i. verify the build output and run the aurora test suite
-//   j. git pull --ff-only, stage the exact paths, commit, push origin main
+//   j. git pull --ff-only, the unpushed-commit check again, stage the exact paths,
+//      commit, push origin main (a failed push reports the local sha)
 //   k. finish_map_rebuild(id, 'done', log, sha); any failure: 'failed', no push
 //
 // --dry-run runs the same orchestrator with runners that only print: no command runs,
@@ -73,6 +75,9 @@ export const STAGE_PATHS = [
 ] as const
 
 /** Streets count gate: vanilla alone, and any run with map mods (wide, logged). */
+/** Subject prefix of the watcher's own commits (commitMessage). */
+export const OWN_COMMIT_PREFIX = 'chore(tiles): rebuild the live map'
+
 export const STREETS_RANGE_VANILLA: [number, number] = [950, 1050]
 export const STREETS_RANGE_MODS: [number, number] = [900, 3000]
 
@@ -146,6 +151,9 @@ export interface Geometry {
 }
 
 export interface RenderFacts {
+  /** Where the last render's set comes from: OUT's aurora-render.json, or, when that is
+   *  absent, the committed site (tiles.json's overlays; none means vanilla only). */
+  source: 'out-latest' | 'committed'
   /** The slugs the last successful render in OUT was made with; null when none is recorded. */
   lastRenderMaps: string[] | null
   baseExists: boolean
@@ -166,8 +174,9 @@ export function sameGeometry(a: Geometry | null, b: Geometry | null): boolean {
  * geometry is the one the committed tiles.json describes. Anything else renders.
  */
 export function renderDecision(slugs: readonly string[], facts: RenderFacts): { needed: boolean; reason: string } {
-  if (!facts.lastRenderMaps) return { needed: true, reason: `no recorded render in ${OUT}` }
-  if (!facts.baseExists) return { needed: true, reason: `${OUT} has no base_top pyramid` }
+  const where = facts.source === 'committed' ? 'the committed site' : OUT
+  if (!facts.lastRenderMaps) return { needed: true, reason: `no recorded render in ${OUT} and no readable committed tiles.json` }
+  if (!facts.baseExists) return { needed: true, reason: `${where} has no base_top pyramid` }
   const last = new Set(facts.lastRenderMaps)
   // Coordinator decision 2026-10-02: any added OR dropped map renders. A dropped map's
   // cells are drawn into base_top too, so a subset of the last render is not enough.
@@ -175,12 +184,20 @@ export function renderDecision(slugs: readonly string[], facts: RenderFacts): { 
   if (dropped.length > 0) return { needed: true, reason: `map(s) ${dropped.join(', ')} dropped since the last render` }
   for (const s of slugs) {
     if (!last.has(s)) return { needed: true, reason: `map ${s} is not in the last render (${facts.lastRenderMaps.join(', ') || 'vanilla only'})` }
-    if (!facts.pyramidExists(s)) return { needed: true, reason: `map ${s} has no pyramid in ${OUT}` }
+    if (!facts.pyramidExists(s)) return { needed: true, reason: `map ${s} has no pyramid in ${where}` }
   }
   if (!sameGeometry(facts.outGeometry, facts.committedGeometry)) {
     return { needed: true, reason: 'the last render\'s base geometry differs from the committed tiles.json' }
   }
-  return { needed: false, reason: 'every map is in the last render and its geometry matches the committed tiles.json' }
+  if (facts.source === 'committed') {
+    // Without out-latest there is nothing to re-publish from, so the committed overlays
+    // must already be stacked in Map= order (first on top); a reorder renders.
+    if (facts.lastRenderMaps.join(',') !== slugs.join(',')) {
+      return { needed: true, reason: `the committed overlay order (${facts.lastRenderMaps.join(', ')}) differs from Map= order and ${OUT} has no render to re-publish from` }
+    }
+    return { needed: false, reason: `no recorded render in ${OUT}, and the committed site already shows exactly this map set (${slugs.join(', ') || 'vanilla only'})` }
+  }
+  return { needed: false, reason: 'the last render has exactly this map set and its geometry matches the committed tiles.json' }
 }
 
 /** `--map` value for the extractors: the folder, then the id after the last colon. */
@@ -315,8 +332,27 @@ export async function runRebuild(req: RebuildRequest, run: Runners, opts: Rebuil
     else run.fs.remove(path)
   }
 
+  // Local commits not on origin: all the watcher's own (an earlier push failed) -> push
+  // them now; any other commit -> refuse, the watcher never deploys someone else's work.
+  const settleUnpushed = async () => {
+    const r = await mustGit(['log', '--format=%s', 'origin/main..HEAD'], 'cannot compare main with origin/main')
+    const subjects = r.output.split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
+    if (subjects.length === 0) return
+    const foreign = subjects.filter((l) => !l.startsWith(OWN_COMMIT_PREFIX))
+    if (foreign.length > 0) {
+      throw new StepError(
+        `local main has ${foreign.length} unpushed commit(s) that are not the watcher's (first: "${foreign[0]}"); ` +
+          'the watcher pushes only its own commits, so push or drop those first',
+      )
+    }
+    write(`${subjects.length} earlier watcher commit(s) not on origin yet (a push failed); pushing them first`)
+    const p = await git(['push', 'origin', 'main'])
+    if (p.code !== 0) throw new StepError(`push failed again for the earlier watcher commit(s) (git push exit ${p.code})`)
+  }
+
   let timer: ReturnType<typeof setInterval> | undefined
   let sha: string | null = null
+  let unpushedSha: string | null = null
   let pushed = false
   try {
     write(`rebuild ${req.id === null ? '(dry run)' : `request #${req.id}`} on ${opts.worker}${opts.dryRun ? ' -- DRY RUN: nothing runs, nothing is written' : ''}`)
@@ -332,9 +368,7 @@ export async function runRebuild(req: RebuildRequest, run: Runners, opts: Rebuil
     const dirty = await mustGit(['status', '--porcelain', '--', ...STAGE_PATHS], 'cannot read git status')
     if (dirty.output.trim()) throw new StepError('the watcher\'s own paths have uncommitted changes; commit or discard them first')
     await mustGit(['pull', '--ff-only', 'origin', 'main'], 'git pull --ff-only failed: origin/main has diverged from local main; not pushing')
-    const ahead = await mustGit(['rev-list', '--count', 'origin/main..HEAD'], 'cannot compare main with origin/main')
-    const aheadCount = Number(ahead.output.trim() || '0')
-    if (aheadCount > 0) throw new StepError(`local main is ${aheadCount} commit(s) ahead of origin/main; the watcher pushes only its own commit, so push or drop those first`)
+    await settleUnpushed()
 
     // --- a. normalise --------------------------------------------------------------
     write('== a. normalise maps')
@@ -389,17 +423,20 @@ export async function runRebuild(req: RebuildRequest, run: Runners, opts: Rebuil
         }
       }
     }
-    // Pyramids of maps not in this request are dropped from OUT, so make-tiles-json (which
-    // refuses a mod_maps folder without --order) and the next decision see only this set.
-    const outModMaps = winJoin(OUT, 'html', 'map_data', 'mod_maps')
-    for (const extra of run.fs.listDirs(outModMaps).filter((d) => !slugs.includes(d))) fsRemove(winJoin(outModMaps, extra))
-    if (slugs.length === 0 && run.fs.exists(outModMaps)) fsRemove(outModMaps)
-
     // --- e. publish ----------------------------------------------------------------
     write('== e. publish tiles')
-    const publishArgs = ['tsx', 'scripts/tiles/publish-tiles.ts', '--from', winJoin(OUT, 'html', 'map_data', 'base_top'), '--to', 'map/tiles']
-    for (const s of slugs) publishArgs.push('--overlay', `${s}=${winJoin(OUT, 'html', 'map_data', 'mod_maps', s, 'base_top')}`)
-    if ((await exec('npx', publishArgs)).code !== 0) throw new StepError('publish-tiles failed')
+    if (!decision.needed && facts.source === 'committed') {
+      write('publish skipped: the committed tiles already show this map set')
+    } else {
+      // Pyramids of maps not in this request are dropped from OUT, so make-tiles-json (which
+      // refuses a mod_maps folder without --order) and the next decision see only this set.
+      const outModMaps = winJoin(OUT, 'html', 'map_data', 'mod_maps')
+      for (const extra of run.fs.listDirs(outModMaps).filter((d) => !slugs.includes(d))) fsRemove(winJoin(outModMaps, extra))
+      if (slugs.length === 0 && run.fs.exists(outModMaps)) fsRemove(outModMaps)
+      const publishArgs = ['tsx', 'scripts/tiles/publish-tiles.ts', '--from', winJoin(OUT, 'html', 'map_data', 'base_top'), '--to', 'map/tiles']
+      for (const s of slugs) publishArgs.push('--overlay', `${s}=${winJoin(OUT, 'html', 'map_data', 'mod_maps', s, 'base_top')}`)
+      if ((await exec('npx', publishArgs)).code !== 0) throw new StepError('publish-tiles failed')
+    }
 
     // --- f. drop overlays no longer listed ----------------------------------------------
     write('== f. remove overlays of maps no longer listed')
@@ -438,6 +475,7 @@ export async function runRebuild(req: RebuildRequest, run: Runners, opts: Rebuil
     // --- j. git ----------------------------------------------------------------------
     write('== j. commit and push')
     await mustGit(['pull', '--ff-only', 'origin', 'main'], 'git pull --ff-only failed: origin/main has diverged from local main; not pushing')
+    await settleUnpushed()
     await mustGit(['add', '--', ...STAGE_PATHS], 'git add failed')
     const staged = await git(['diff', '--cached', '--quiet', '--', ...STAGE_PATHS])
     if (!opts.dryRun && staged.code === 0) {
@@ -447,8 +485,10 @@ export async function runRebuild(req: RebuildRequest, run: Runners, opts: Rebuil
       const head = await mustGit(['rev-parse', 'HEAD'], 'cannot read the new commit')
       sha = head.output.trim() || null
       write(`committed ${sha ?? '(dry run)'}`)
+      unpushedSha = sha
       const push = await git(['push', 'origin', 'main'])
-      if (push.code !== 0) throw new StepError(`git push failed (exit ${push.code}); commit ${sha} is local only: push it by hand`)
+      if (push.code !== 0) throw new StepError(`push failed (git push exit ${push.code}); commit ${sha} is local only; the next request pushes it first`)
+      unpushedSha = null
       pushed = true
     }
 
@@ -470,7 +510,7 @@ export async function runRebuild(req: RebuildRequest, run: Runners, opts: Rebuil
       return { status: 'stopped', sha: null, log }
     }
     write(`FAILED: ${e instanceof Error ? e.message : String(e)}`)
-    if (!opts.dryRun && req.id !== null) await safeFinish(run, req.id, 'failed', tail(), null, write)
+    if (!opts.dryRun && req.id !== null) await safeFinish(run, req.id, 'failed', tail(), unpushedSha, write)
     return { status: 'failed', sha: null, log }
   } finally {
     if (timer) clearInterval(timer)
@@ -500,19 +540,37 @@ function readJson<T>(fs: FsRunner, path: string): T | null {
 
 export function readRenderFacts(fs: FsRunner): RenderFacts {
   const manifest = readJson<{ maps?: unknown }>(fs, MANIFEST)
-  const lastRenderMaps = manifest && Array.isArray(manifest.maps) ? manifest.maps.map(String) : null
   const baseDir = winJoin(OUT, 'html', 'map_data', 'base_top')
   const info = readJson<{ w: number; h: number; x0: number; y0: number }>(fs, winJoin(baseDir, 'map_info.json'))
-  const tiles = readJson<{ world?: { pixels?: { w: number; h: number } }; originSquare?: { x: number; y: number } }>(fs, TILES_JSON)
+  const tiles = readJson<{
+    world?: { pixels?: { w: number; h: number } }
+    originSquare?: { x: number; y: number }
+    overlays?: { id?: unknown }[]
+  }>(fs, TILES_JSON)
+  const committedGeometry =
+    tiles?.world?.pixels && tiles.originSquare
+      ? { w: tiles.world.pixels.w, h: tiles.world.pixels.h, x0: tiles.originSquare.x, y0: tiles.originSquare.y }
+      : null
+  if (!(manifest && Array.isArray(manifest.maps))) {
+    // No recorded render (the first press, or out-latest was cleared): the committed site is
+    // the last render. Its set is tiles.json's overlays, its pyramids are the published ones.
+    return {
+      source: 'committed',
+      lastRenderMaps: tiles && committedGeometry ? (tiles.overlays ?? []).map((o) => String(o.id)) : null,
+      baseExists: fs.exists('map/tiles/base_top/layer0.dzi'),
+      pyramidExists: (slug) => fs.exists(`map/tiles/mod_maps/${slug}/base_top/layer0.dzi`),
+      outGeometry: committedGeometry,
+      committedGeometry,
+    }
+  }
+  const lastRenderMaps = manifest.maps.map(String)
   return {
+    source: 'out-latest',
     lastRenderMaps,
     baseExists: fs.exists(winJoin(baseDir, 'layer0.dzi')),
     pyramidExists: (slug) => fs.exists(winJoin(OUT, 'html', 'map_data', 'mod_maps', slug, 'base_top', 'layer0.dzi')),
     outGeometry: info ? { w: info.w, h: info.h, x0: info.x0, y0: info.y0 } : null,
-    committedGeometry:
-      tiles?.world?.pixels && tiles.originSquare
-        ? { w: tiles.world.pixels.w, h: tiles.world.pixels.h, x0: tiles.originSquare.x, y0: tiles.originSquare.y }
-        : null,
+    committedGeometry,
   }
 }
 
