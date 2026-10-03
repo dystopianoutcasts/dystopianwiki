@@ -230,3 +230,14 @@ Deno.test('a sql id is digits only: a decimal, a sign or an exponent is skipped'
   assertEquals(p.claims.map((c) => c.sqlId), [12]);
   assertEquals(p.skipped, 4);
 });
+
+Deno.test('worlds (032): every claim row carries the run world, or none carries a world key', () => {
+  const claims = parseClaimsLedger(line({ sql: '12' }) + '\n' + line({ sql: '13' }) + '\n').claims;
+  const tagged = buildClaimRows(claims, 'srv', '2026-10-02T12:00:00.000Z', 'w3');
+  assertEquals(tagged.map((r) => r.world_id), ['w3', 'w3']);
+  for (const worldId of [null, undefined]) {
+    const plain = buildClaimRows(claims, 'srv', '2026-10-02T12:00:00.000Z', worldId as null);
+    assert(plain.every((r) => !('world_id' in r)), 'no world_id key');
+  }
+  assert(buildClaimRows(claims, 'srv', '2026-10-02T12:00:00.000Z').every((r) => !('world_id' in r)), 'default untagged');
+});

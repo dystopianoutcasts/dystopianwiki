@@ -8,6 +8,7 @@ import {
   buildHealthRows,
   buildPlan,
   buildSavedPlayerRows,
+  tagRows,
   chunk,
   isHealthHeartbeat,
   ONLINE_WINDOW_MS,
@@ -1017,4 +1018,123 @@ Deno.test('vname is written after servers, and a missing table is skipped, not t
     threw = true;
   }
   assert(threw, 'any other failure still throws');
+});
+
+// ---------------------------------------------------------------------------
+// Worlds (032, T48): every row of every tagged table, or none
+// ---------------------------------------------------------------------------
+
+/** One batch that reaches every table buildPlan writes. */
+function everyKindBatch(): AuroraRecord[] {
+  const t = 1759406400000;
+  const lines = [
+    `{"k":"boot","t":${t},"v":"0.6.0","gv":"42.12.3"}`,
+    `{"k":"hb","t":${t + 1},"src":"tick","players":2,"st":{"game":{"zombies-loaded":5}}}`,
+    `{"k":"pos","t":${t + 2},"u":"alice","x":1,"y":2,"z":0,"hs":12.5,"al":""}`,
+    `{"k":"pos","t":${t + 3},"u":"bob","x":3,"y":4}`,
+    `{"k":"veh","t":${t + 4},"id":9,"q":4242,"s":"Base.Van","x":10,"y":20,"z":0,"o":"alice"}`,
+    `{"k":"veh","t":${t + 4},"id":10,"s":"Base.Car","x":11,"y":21}`,
+    `{"k":"sh","t":${t + 5},"id":"s1","x":1,"y":1,"w":5,"h":5,"o":"alice"}`,
+    `{"k":"sh","t":${t + 5},"id":"s2","x":9,"y":9,"w":5,"h":5}`,
+    `{"k":"zone","t":${t + 6},"kind":"pvp","ti":"Arena","x1":1,"y1":2,"x2":3,"y2":4}`,
+    `{"k":"zone","t":${t + 6},"kind":"safe","ti":"Camp","x1":5,"y1":6}`,
+    `{"k":"zgrid","t":${t + 7},"cx":1,"cy":2,"c":3}`,
+    `{"k":"zgrid","t":${t + 7},"cx":2,"cy":2,"c":1}`,
+    `{"k":"npc","t":${t + 8},"id":"squad:1","f":"r","n":2,"x":1,"y":2}`,
+    `{"k":"npc","t":${t + 8},"id":"squad:2","x":1,"y":2,"sen":true}`,
+    `{"k":"npco","t":${t + 9},"id":"site:1","x1":1,"y1":2,"x2":3,"y2":4,"hid":false}`,
+    `{"k":"death","t":${t + 10},"u":"bob","x":3,"y":4,"src":"isdead","hs":2}`,
+    `{"k":"death","t":${t + 11},"u":"carol","x":5,"y":6}`,
+    `{"k":"vname","t":${t + 12},"n":[["Base.Van","Van"]]}`,
+    `{"k":"catalog","t":${t + 13},"ft":"Base.Axe","dn":"Axe"}`,
+  ];
+  return lines.map((json) => {
+    const r = parseLineDetailed(`[02-10-26 12:00:00.000] A1 ${json}.`);
+    if (!r.ok) throw new Error(`fixture line rejected: ${json} ${JSON.stringify(r)}`);
+    return r.record;
+  });
+}
+
+/** Written here on purpose rather than imported: a table dropped from the code's set must fail this test. */
+const TAGGED_IN_BATCH = [
+  'health_samples', 'players', 'player_positions', 'player_position_history', 'safehouses',
+  'zones', 'zombie_grid', 'deaths', 'npc_groups', 'npc_outposts',
+];
+const NEVER_TAGGED = ['servers', 'item_catalog', 'vehicle_names'];
+
+/** The key-set rule, walked over every upsert body and every upsert_vehicles row list. */
+function assertUniformKeys(plan: IngestPlan, label: string): void {
+  for (const u of plan.upserts) {
+    const first = JSON.stringify(Object.keys(u.rows[0]).sort());
+    u.rows.forEach((r, i) => {
+      assertEquals(JSON.stringify(Object.keys(r).sort()), first, `${label}: ${u.table} row ${i} key set`);
+    });
+  }
+  for (const c of plan.rpcs) {
+    const rows = (c.args.p_rows as Record<string, unknown>[] | undefined) ?? [];
+    const first = rows.length > 0 ? JSON.stringify(Object.keys(rows[0]).sort()) : '';
+    rows.forEach((r, i) => assertEquals(JSON.stringify(Object.keys(r).sort()), first, `${label}: ${c.fn} row ${i}`));
+  }
+}
+
+Deno.test('worlds: with a world id every row of every tagged table carries it; upsert_vehicles gets no world argument', () => {
+  const plan = buildPlan(everyKindBatch(), SERVER, { worldId: 'w2', seenAt: '2026-10-02T12:00:00.000Z' });
+  const present = new Set(plan.upserts.map((u) => u.table));
+  for (const name of [...TAGGED_IN_BATCH, ...NEVER_TAGGED]) assert(present.has(name), `fixture reaches ${name}`);
+  for (const u of plan.upserts) {
+    assert(u.rows.length >= 1, `${u.table} has rows`);
+    for (const r of u.rows) {
+      if (TAGGED_IN_BATCH.includes(u.table)) assertEquals(r.world_id, 'w2', `${u.table} world_id`);
+      else assert(!('world_id' in r), `${u.table} must not carry world_id`);
+    }
+  }
+  // players is two upserts (with and without stats): both tagged.
+  assertEquals(plan.upserts.filter((u) => u.table === 'players').length, 2);
+  // 032 kept upsert_vehicles(p_server, p_rows) and stamps the current world inside it;
+  // an undeclared argument would be "could not find the function" and stall the cursor.
+  const veh = plan.rpcs.find((c) => c.fn === 'upsert_vehicles');
+  assertEquals(Object.keys(veh?.args ?? {}).sort(), ['p_rows', 'p_server']);
+  assertEquals(veh?.args.p_server, SERVER);
+  assertEquals((veh?.args.p_rows as unknown[]).length, 2);
+  assertUniformKeys(plan, 'tagged');
+});
+
+Deno.test('worlds: the key-set rule holds per table with tables of several rows', () => {
+  const plan = buildPlan(everyKindBatch(), SERVER, { worldId: 'w2', seenAt: '2026-10-02T12:00:00.000Z' });
+  // The walk only proves something where a table has more than one row.
+  for (const name of ['player_position_history', 'safehouses', 'zones', 'zombie_grid', 'deaths', 'npc_groups']) {
+    assert((plan.upserts.find((u) => u.table === name)?.rows.length ?? 0) >= 2, `${name} has 2+ rows in the fixture`);
+  }
+  assertUniformKeys(plan, 'tagged');
+});
+
+Deno.test('worlds: a null or absent world id sends no world key at all (not world_id: null)', () => {
+  for (const opts of [{}, { worldId: null }, { worldId: undefined }]) {
+    const plan = buildPlan(everyKindBatch(), SERVER, { ...opts, seenAt: '2026-10-02T12:00:00.000Z' });
+    for (const u of plan.upserts) {
+      for (const r of u.rows) assert(!('world_id' in r), `${u.table} carries world_id with ${JSON.stringify(opts)}`);
+    }
+    const veh = plan.rpcs.find((c) => c.fn === 'upsert_vehicles');
+    assert(veh !== undefined && !('p_world' in veh.args), 'no p_world key');
+    assertUniformKeys(plan, `untagged ${JSON.stringify(opts)}`);
+  }
+});
+
+Deno.test('worlds: tagging changes nothing else in the plan', () => {
+  const a = buildPlan(everyKindBatch(), SERVER, { seenAt: '2026-10-02T12:00:00.000Z' });
+  const b = buildPlan(everyKindBatch(), SERVER, { worldId: 'w7', seenAt: '2026-10-02T12:00:00.000Z' });
+  const strip = (p: IngestPlan) => JSON.stringify({
+    upserts: p.upserts.map((u) => ({ ...u, rows: u.rows.map(({ world_id: _w, ...rest }) => rest) })),
+    rpcs: p.rpcs.map((c) => ({ ...c, args: (({ p_world: _p, ...rest }) => rest)(c.args) })),
+    patches: p.patches, deletes: p.deletes, counts: p.counts,
+  });
+  assertEquals(strip(b), strip(a));
+});
+
+Deno.test('worlds: tagRows tags every row or none', () => {
+  const rows = [{ a: 1 }, { a: 2, b: 3 }];
+  assertEquals(tagRows(rows, 'w1'), [{ a: 1, world_id: 'w1' }, { a: 2, b: 3, world_id: 'w1' }]);
+  assertEquals(tagRows(rows, null), rows);
+  assertEquals(tagRows(rows, undefined), rows);
+  assertEquals(tagRows([], 'w1'), []);
 });

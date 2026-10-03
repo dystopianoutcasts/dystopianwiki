@@ -12,6 +12,7 @@ import {
   tailStep,
 } from './tail.ts';
 import type { Row } from './ingest-core.ts';
+import { disabledWorlds, type WorldState } from './worlds.ts';
 
 function assertEquals<T>(actual: T, expected: T, msg = ''): void {
   const a = JSON.stringify(actual);
@@ -443,4 +444,144 @@ Deno.test('with 029 applied, npc rows and gone deletes are written and counted',
   assertEquals(deletes.length, 1);
   assert(deletes[0].startsWith('npc_groups?'), deletes[0]);
   assertEquals(totals.deletes, 1);
+});
+
+// ---------------------------------------------------------------------------
+// Worlds (032, T48): register before writing, tag every row, hold the cursor on failure
+// ---------------------------------------------------------------------------
+
+const WORLD_T = 1790636586629;
+function worldLine(w: string, extra = ''): string {
+  return `[29-09-26 05:00:00.000] A1 {"k":"world","t":${WORLD_T},"w":"${w}"${extra}}.\n`;
+}
+const W_NEW = '3f2b8c1e-9a4d-4e6f-b7a2-0c5d1e8f9a3b';
+
+/** A fake database that records every write in order and answers register_world from `answer`. */
+function worldDb(answer: (args: Row) => Promise<unknown>) {
+  const db = fakeDb();
+  const order: string[] = [];
+  const rpcs: { fn: string; args: Row }[] = [];
+  const upsert = db.upsert;
+  db.upsert = (table, rows, onConflict) => {
+    order.push(table);
+    return upsert(table, rows, onConflict);
+  };
+  db.rpc = (fn, args) => {
+    order.push(`rpc:${fn}`);
+    rpcs.push({ fn, args });
+    return fn === 'register_world' ? answer(args) : Promise.resolve(null);
+  };
+  return Object.assign(db, { order, rpcs });
+}
+
+function enabled(current: string | null): WorldState {
+  return { enabled: true, currentWorldId: current, events: [], note: null };
+}
+
+Deno.test('worlds: a batch with a world record registers it before any data row, and tags the batch with the answer', async () => {
+  const file = new FakeFile();
+  // The position comes BEFORE the world record in the file: the whole batch still gets the new world.
+  file.append(posLine(0) + worldLine(W_NEW, ',"wn":true,"wa":0.2,"ws":1790636500000'));
+  const session = fakeSession(file);
+  const db = worldDb(() => Promise.resolve({ world_id: 'w2', status: 'current', switched: true }));
+  const worlds = enabled('w1');
+  const target = (await findTarget(session, db, CFG))!;
+  await tailStep(session, db, CFG, target, emptyTotals(), Date.now, worlds);
+
+  const reg = db.order.indexOf('rpc:register_world');
+  assert(reg >= 0, 'register_world called');
+  // Only the bare server row (the worlds FK) may precede it.
+  assertEquals(db.order.slice(0, reg), ['servers'], 'writes before register_world');
+  assertEquals(db.tables['servers'][0], { id: 'test-aurora' }, 'the pre-registration server row is the bare id');
+  for (const t of ['players', 'player_positions', 'player_position_history']) {
+    assert(db.order.indexOf(t) > reg, `${t} after register_world`);
+    for (const r of db.tables[t]) assertEquals(r.world_id, 'w2', `${t} tagged with the answer`);
+  }
+  assertEquals(db.rpcs[0].args, {
+    p_server: 'test-aurora', p_exporter_world_id: W_NEW, p_new: true, p_world_age_hours: 0.2, p_started_ms: 1790636500000,
+  });
+  assertEquals(worlds.currentWorldId, 'w2');
+  assertEquals(worlds.events.map((e) => [e.worldId, e.switched]), [['w2', true]]);
+  assertEquals(db.order.at(-1), 'ingest_cursor');
+});
+
+Deno.test('worlds: the next batch without a record keeps the registered world, and does not call register_world again', async () => {
+  const file = new FakeFile();
+  file.append(worldLine(W_NEW) + posLine(0));
+  const session = fakeSession(file);
+  const db = worldDb(() => Promise.resolve({ world_id: 'w5', status: 'current', switched: false, adopted: true }));
+  const worlds = enabled(null);
+  const target = (await findTarget(session, db, CFG))!;
+  await tailStep(session, db, CFG, target, emptyTotals(), Date.now, worlds);
+  file.append(posLine(1));
+  const before = db.tables['player_position_history'].length;
+  await tailStep(session, db, CFG, target, emptyTotals(), Date.now, worlds);
+  const second = db.tables['player_position_history'].slice(before);
+  assertEquals(second.length, 1);
+  assertEquals(second[0].world_id, 'w5');
+  assertEquals(db.rpcs.filter((c) => c.fn === 'register_world').length, 1);
+  assertEquals(worlds.events[0].adopted, true);
+});
+
+Deno.test('worlds: a failing register_world stops the step before any data row and before the cursor', async () => {
+  const file = new FakeFile();
+  file.append(posLine(0) + worldLine(W_NEW));
+  const session = fakeSession(file);
+  const db = worldDb(() => Promise.reject(new Error('rpc register_world: 500 boom')));
+  const worlds = enabled('w1');
+  const target = (await findTarget(session, db, CFG))!;
+  let threw = false;
+  try {
+    await tailStep(session, db, CFG, target, emptyTotals(), Date.now, worlds);
+  } catch {
+    threw = true;
+  }
+  assert(threw, 'the step throws');
+  assertEquals(db.tables['ingest_cursor'], undefined, 'the cursor was not written');
+  assertEquals(db.tables['player_position_history'], undefined, 'no data row was written');
+  assertEquals(target.cursor, null, 'the in-memory cursor did not move');
+  assertEquals(worlds.currentWorldId, 'w1');
+});
+
+Deno.test('worlds: a missing register_world disables worlds and the batch still writes, untagged', async () => {
+  const file = new FakeFile();
+  file.append(worldLine(W_NEW) + posLine(0));
+  const session = fakeSession(file);
+  const db = worldDb(() => Promise.reject(new Error('rpc register_world: 404 {"code":"PGRST202","message":"Could not find the function"}')));
+  const worlds = enabled('w1');
+  const target = (await findTarget(session, db, CFG))!;
+  await tailStep(session, db, CFG, target, emptyTotals(), Date.now, worlds);
+  assertEquals(worlds.enabled, false);
+  for (const t of ['players', 'player_positions', 'player_position_history']) {
+    for (const r of db.tables[t]) assert(!('world_id' in r), `${t} carries no world key`);
+  }
+  assert((db.tables['ingest_cursor']?.[0]?.byte_offset as number) > 0, 'the cursor advanced');
+});
+
+Deno.test('worlds: disabled or absent, the step sends what it sent before 032 (no RPC, no world key)', async () => {
+  for (const worlds of [undefined, disabledWorlds()]) {
+    const file = new FakeFile();
+    file.append(worldLine(W_NEW) + posLine(0));
+    const session = fakeSession(file);
+    const db = worldDb(() => Promise.resolve({ world_id: 'w9', status: 'current', switched: true }));
+    const target = (await findTarget(session, db, CFG))!;
+    const totals = emptyTotals();
+    await tailStep(session, db, CFG, target, totals, Date.now, worlds);
+    assertEquals(db.rpcs.length, 0, 'no register_world');
+    for (const rows of Object.values(db.tables)) {
+      for (const r of rows) assert(!('world_id' in r), 'no world key');
+    }
+    assertEquals(totals.kinds['world'], 1, 'the record is still counted');
+  }
+});
+
+Deno.test('worlds: enabled with no current world and no record sends no world key (NULL stays current)', async () => {
+  const file = new FakeFile();
+  file.append(posLine(0));
+  const session = fakeSession(file);
+  const db = worldDb(() => Promise.resolve({ world_id: 'w9', status: 'current', switched: true }));
+  const target = (await findTarget(session, db, CFG))!;
+  await tailStep(session, db, CFG, target, emptyTotals(), Date.now, enabled(null));
+  assertEquals(db.rpcs.length, 0);
+  for (const r of db.tables['player_position_history']) assert(!('world_id' in r), 'no world_id: null either');
 });

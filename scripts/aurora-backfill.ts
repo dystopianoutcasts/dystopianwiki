@@ -17,6 +17,11 @@
  *                        in SUPABASE_SERVICE_ROLE_KEY will be rejected; it is
  *                        only read as a fallback.
  *
+ * Worlds (032): a replay never creates or switches a world. Each file's newest
+ * `world` record is looked up in aurora.worlds and its rows are tagged with that
+ * world (an ended one too); a file with no `world` record or an id the live
+ * ingest never registered is SKIPPED and listed. See backfill-core.ts.
+ *
  * Exit code is 1 if any A1 line failed to parse, which is the T08 acceptance
  * check. Lines without the A1 marker are other people's log output and are
  * counted separately, not treated as errors.
@@ -25,13 +30,8 @@ import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import process from 'node:process';
 
-import {
-  emptyStats,
-  launchStampFromFileName,
-  splitLines,
-  type SplitStats,
-} from '../packages/shared/aurora/parser.ts';
-import { buildPlan, chunk, runPlanStep } from '../packages/shared/aurora/ingest-core.ts';
+import { emptyStats, type SplitStats } from '../packages/shared/aurora/parser.ts';
+import { replayFile } from '../packages/shared/aurora/backfill-core.ts';
 import { AuroraRest } from '../packages/shared/aurora/rest.ts';
 
 const BATCH_ROWS = 500;
@@ -100,23 +100,14 @@ async function main(): Promise<number> {
   let rowsWritten = 0;
   // Writes to tables from a migration that is not applied yet (029, 030, 031), skipped as the live ingest skips them.
   let skippedOptional = 0;
-  const onSkipped = () => {
-    skippedOptional++;
-  };
   let linksOk = 0;
   let linksFailed = 0;
+  const skippedFiles: string[] = [];
 
   for (const name of names) {
-    const stats = emptyStats();
-    let text = await readFile(join(args.dir, name), 'utf8');
-    // A log that ends without a newline would otherwise lose its final line to
-    // the carry, which matters here because the file will never be extended.
-    if (!text.endsWith('\n')) text += '\n';
-
-    const { records } = splitLines(text, '', stats);
-    // The file name is the launch stamp; "now" for the online reconcile is the
-    // newest record in the file (buildPlan's default), not the replay time.
-    const plan = buildPlan(records, args.server, { launchStamp: launchStampFromFileName(name) });
+    const text = await readFile(join(args.dir, name), 'utf8');
+    const r = await replayFile(rest ?? null, args.server, name, text, BATCH_ROWS);
+    const { stats, plan } = r;
 
     for (const [kind, n] of Object.entries(plan.counts)) {
       kindTotals[kind] = (kindTotals[kind] ?? 0) + n;
@@ -129,57 +120,18 @@ async function main(): Promise<number> {
     for (const [k, n] of Object.entries(stats.unknownKind)) {
       totals.unknownKind[k] = (totals.unknownKind[k] ?? 0) + n;
     }
-
-    if (rest) {
-      // Ordered, never parallel: player_positions has a foreign key into
-      // players, which references servers.
-      for (const upsert of plan.upserts) {
-        // NPC groups and outposts are live state stamped with the ingest's clock
-        // (seen_at); replaying an old log would make old states look freshly seen.
-        // (deaths are NOT liveOnly: they carry their own time and the unique key
-        // (server_id, username, t) makes a replay idempotent. Vehicle names are not
-        // either: a replay writes the same pairs and the newest record per script wins.)
-        if (upsert.liveOnly) continue;
-        for (const batch of chunk(upsert.rows, BATCH_ROWS)) {
-          const wrote = await runPlanStep(
-            upsert.optional,
-            () => rest!.upsert(upsert.table, batch, upsert.onConflict),
-            onSkipped,
-          );
-          if (wrote) rowsWritten += batch.length;
-        }
-      }
-      // aurora.upsert_vehicles and the like: after the upserts (servers exists), as tail.ts does.
-      for (const call of plan.rpcs) {
-        const wrote = await runPlanStep(call.optional, () => rest!.rpc(call.fn, call.args), onSkipped);
-        if (wrote) rowsWritten += call.rows;
-      }
-      // plan.deletes (zombie_grid staleness, `npcgone` and `npcogone` removals) are not
-      // replayed either: a historic bundle must not delete what the live ingest has since
-      // written. With the npc upserts skipped there is nothing for them to undo.
-      for (const patch of plan.patches) {
-        await rest.patch(`${patch.table}?${patch.filter}`, patch.body);
-      }
-      for (const link of plan.links) {
-        try {
-          await rest.rpc('consume_link_code', {
-            p_code: link.c,
-            p_username: link.u,
-            p_server_id: args.server,
-          });
-          linksOk++;
-        } catch {
-          // Expired or already-consumed codes are expected in a replay.
-          linksFailed++;
-        }
-      }
-    }
+    rowsWritten += r.rowsWritten;
+    skippedOptional += r.skippedOptional;
+    linksOk += r.linksOk;
+    linksFailed += r.linksFailed;
+    if (r.skipped !== null) skippedFiles.push(`${name}: ${r.skipped}`);
 
     const planned = [
       ...plan.upserts.map((u) => `${u.table}=${u.rows.length}`),
-      ...plan.rpcs.map((r) => `${r.fn}=${r.rows}`),
+      ...plan.rpcs.map((c) => `${c.fn}=${c.rows}`),
     ].join(' ');
-    console.log(`${name}  ${summarise(stats)}  rows[${planned}] patches=${plan.patches.length}`);
+    const world = r.skipped !== null ? `SKIPPED (${r.skipped})` : r.worldId !== null ? `world=${r.worldId}` : 'world=(dry run)';
+    console.log(`${name}  ${summarise(stats)}  ${world}  rows[${planned}] patches=${plan.patches.length}`);
   }
 
   console.log('');
@@ -191,6 +143,10 @@ async function main(): Promise<number> {
     console.log(`skipped writes   ${skippedOptional} (a table from a migration that is not applied yet: 029, 030 or 031)`);
   }
   console.log(`link codes       ok=${linksOk} failed=${linksFailed}`);
+  if (skippedFiles.length > 0) {
+    console.log(`skipped files    ${skippedFiles.length} (no world record, or a world the live ingest never registered)`);
+    for (const f of skippedFiles) console.log(`  ${f}`);
+  }
 
   const parseErrors = totals.badJson + totals.badShape;
   if (parseErrors > 0) {

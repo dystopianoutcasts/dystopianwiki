@@ -33,7 +33,8 @@
 // is the log file's own name (<yyyy-MM-dd_HH-mm>_Aurora.txt), see
 // launchStampFromFileName below.
 //
-//   boot     v exporter version, schema, players, apis {name: bool}, events {name: bool}
+//   boot     v exporter version, gv game version (0.5.0), schema, players,
+//            apis {name: bool}, events {name: bool}
 //   probe    fileWriter bool (v0.0 diagnostic; no table)
 //   statkeys perf [names], game [names], net [names] (once per launch; no table)
 //   hb       players online count, src "tick" | "gametime",
@@ -67,6 +68,10 @@
 //            per 120 s at most)
 //   vname    n [[full script name, display name], ...], several records per pass
 //            (exporter 0.5.1). The script name is what `veh.s` carries ("Base.CarTaxi").
+//   world    w exporter world id (8-64 chars [A-Za-z0-9-], a save's ModData UUID),
+//            wn true on the boot that created the id, wa world age hours, ws ms the
+//            id was created (exporter 0.6.0; once per boot, then every 6 h). It
+//            maps to no table: the importer hands it to aurora.register_world.
 //
 // `boot.gv` (exporter 0.5.0) is the game version; it becomes servers.game_version.
 // `hb.st.game` also carries zombies-killed, world-age-hours, oa-ev-zombie-dead and
@@ -97,6 +102,7 @@ export const KINDS = [
   'npcogone',
   'death',
   'vname',
+  'world',
   // Diagnostic kinds: known so they are not reported as unknown, but they map
   // to no table - buildPlan produces no rows for them.
   'probe',
@@ -343,6 +349,18 @@ export interface VnameRecord extends BaseRecord {
   n: [string, string][];
 }
 
+/** The save's world id (exporter 0.6.0). `wn` true only on the boot that created the id. */
+export interface WorldRecord extends BaseRecord {
+  k: 'world';
+  w: string;
+  wn?: boolean;
+  wa?: number;
+  ws?: number;
+}
+
+/** The exporter world id contract: 8-64 characters, letters, digits and dashes. */
+export const WORLD_ID_PATTERN = /^[A-Za-z0-9-]{8,64}$/;
+
 export type AuroraRecord =
   | BootRecord
   | ProbeRecord
@@ -362,7 +380,8 @@ export type AuroraRecord =
   | NpcOutpostRecord
   | NpcOutpostGoneRecord
   | DeathRecord
-  | VnameRecord;
+  | VnameRecord
+  | WorldRecord;
 
 export type ParseFailure =
   | 'not-aurora' // no A1 marker: someone else's log line
@@ -437,6 +456,15 @@ function checkShape(o: Record<string, unknown>): boolean {
       // The array must be there; a malformed PAIR inside it is dropped by the
       // row builder, not a reason to reject the whole record.
       return Array.isArray(o.n);
+    case 'world':
+      // A bad id is a shape failure (counted), never a world registration.
+      return (
+        isStr(o.w) &&
+        WORLD_ID_PATTERN.test(o.w) &&
+        (o.wn === undefined || typeof o.wn === 'boolean') &&
+        (o.wa === undefined || isNum(o.wa)) &&
+        (o.ws === undefined || isNum(o.ws))
+      );
     case 'npcgone':
     case 'npcogone':
       return isStr(o.id) && o.id !== '';

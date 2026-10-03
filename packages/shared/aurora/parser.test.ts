@@ -365,3 +365,50 @@ Deno.test('a vname line is counted as parsed, never as unknown, and several chun
   assertEquals(out.records.map((r) => r.k), ['vname', 'vname']);
   assertEquals(stats.unknownKind, {});
 });
+
+// ---------------------------------------------------------------------------
+// world (exporter 0.6.0, T46/T48)
+// ---------------------------------------------------------------------------
+
+// Verbatim from STATUS "T46 PASS": the harness's first `world` line.
+const T46_WORLD_LINE =
+  'A1 {"k":"world","t":1759000000000,"w":"3f2b8c1e-9a4d-4e6f-b7a2-0c5d1e8f9a3b","wa":123.5,"wn":true,"ws":1759000000000}';
+
+Deno.test('world: the exporter harness line from T46 parses with every field', () => {
+  const r = parseLineDetailed(`${P2} ${T46_WORLD_LINE}.`);
+  assert(r.ok, `rejected: ${JSON.stringify(r)}`);
+  const rec = (r as unknown as { record: Record<string, unknown> }).record;
+  assertEquals(rec, {
+    k: 'world', t: 1759000000000, w: '3f2b8c1e-9a4d-4e6f-b7a2-0c5d1e8f9a3b', wa: 123.5, wn: true, ws: 1759000000000,
+  });
+});
+
+Deno.test('world: wn, wa and ws are optional', () => {
+  const rec = parseLine(`${P1} A1 {"k":"world","t":1759000000000,"w":"t0000000"}.`);
+  assertEquals(rec?.k, 'world');
+  assertEquals((rec as { w: string }).w, 't0000000');
+  assertEquals(parseLine(`${P1} A1 {"k":"world","t":1,"w":"abcdefgh","wn":false}.`)?.k, 'world');
+});
+
+Deno.test('world: a bad id or a wrongly typed optional field is a counted shape failure', () => {
+  const bad = [
+    '{"k":"world","t":1,"w":"short"}', // 5 chars, under 8
+    `{"k":"world","t":1,"w":"${'a'.repeat(65)}"}`, // over 64
+    '{"k":"world","t":1,"w":"abc_defgh"}', // underscore
+    '{"k":"world","t":1,"w":"abc defgh"}', // space
+    '{"k":"world","t":1,"w":12345678}', // not a string
+    '{"k":"world","t":1}', // missing
+    '{"k":"world","t":1,"w":"abcdefgh","wn":"yes"}',
+    '{"k":"world","t":1,"w":"abcdefgh","wa":"12"}',
+    '{"k":"world","t":1,"w":"abcdefgh","ws":null}',
+  ];
+  for (const json of bad) {
+    const r = parseLineDetailed(`${P1} A1 ${json}.`);
+    assertEquals(r, { ok: false, reason: 'bad-shape', kind: 'world' }, json);
+  }
+  // 64 is still fine.
+  assertEquals(parseLine(`${P1} A1 {"k":"world","t":1,"w":"${'a'.repeat(64)}"}.`)?.k, 'world');
+  const stats = emptyStats();
+  splitLines(`${P1} A1 {"k":"world","t":1,"w":"bad id!"}.\n`, '', stats);
+  assertEquals([stats.badShape, stats.parsed], [1, 0], 'counted, not fatal');
+});

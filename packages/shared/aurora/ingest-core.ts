@@ -118,6 +118,58 @@ export interface PlanOptions {
    * passes the moment of the write; defaults to the current time.
    */
   seenAt?: string;
+  /**
+   * The world every row of this batch belongs to (032, aurora.worlds). A string
+   * puts `world_id` on EVERY row of every table in WORLD_TAGGED_TABLES. null or
+   * absent sends no world key at all: before 032, or with 032 applied but no world
+   * registered yet, when the column default NULL keeps the rows visible (NULL
+   * counts as current). upsert_vehicles takes no world argument: 032 kept its
+   * signature (p_server, p_rows) and it stamps servers.current_world_id itself,
+   * which register_world has already set for this batch.
+   */
+  worldId?: string | null;
+}
+
+/**
+ * Tables whose rows carry `world_id` (032). vehicles is tagged inside
+ * aurora.upsert_vehicles (it reads the server's current world), vehicle_claims by
+ * claims.ts's rows, map_objects is not written by the importer. servers, item_catalog and vehicle_names are not
+ * per world.
+ */
+export const WORLD_TAGGED_TABLES: ReadonlySet<string> = new Set([
+  'health_samples',
+  'players',
+  'player_positions',
+  'player_position_history',
+  'safehouses',
+  'zones',
+  'zombie_grid',
+  'deaths',
+  'npc_groups',
+  'npc_outposts',
+  'vehicle_claims',
+]);
+
+/**
+ * `rows` with `world_id: worldId` on every row, or the rows untouched when
+ * worldId is not a string. Every row or none: PostgREST rejects a bulk upsert
+ * whose rows have different key sets.
+ */
+export function tagRows(rows: Row[], worldId: string | null | undefined): Row[] {
+  if (typeof worldId !== 'string') return rows;
+  return rows.map((r) => ({ ...r, world_id: worldId }));
+}
+
+/**
+ * Put the batch's world on every tagged upsert. Mutates the plan. The rpcs are
+ * left alone on purpose: an argument upsert_vehicles does not declare would make
+ * PostgREST answer "could not find the function" and stall the cursor.
+ */
+function applyWorld(upserts: TableUpsert[], worldId: string | null | undefined): void {
+  if (typeof worldId !== 'string') return;
+  for (const u of upserts) {
+    if (WORLD_TAGGED_TABLES.has(u.table)) u.rows = tagRows(u.rows, worldId);
+  }
 }
 
 /** A player seen this recently in a `pos` record is online. */
@@ -479,6 +531,8 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
       rows: catalogRows,
     });
   }
+
+  applyWorld(upserts, opts.worldId);
 
   return { upserts, rpcs, patches, deletes, links, counts };
 }

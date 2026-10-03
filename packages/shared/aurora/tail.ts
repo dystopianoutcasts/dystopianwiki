@@ -28,6 +28,7 @@
 
 import { emptyStats, launchStampFromFileName, splitChunkBytes, type SplitStats } from './parser.ts';
 import { buildPlan, chunk, planRead, runPlanStep, type CursorState, type Row } from './ingest-core.ts';
+import { newestWorldRecord, registerBatchWorld, type WorldState } from './worlds.ts';
 
 /** Time between the starts of two reads inside one run. */
 export const TAIL_INTERVAL_MS = 5_000;
@@ -238,6 +239,13 @@ function addStats(into: SplitStats, from: SplitStats): void {
  * `target.cursor` and `totals`. The cursor is written LAST, after every row of
  * this step, and only ever to the byte after the final complete line: a partial
  * trailing line is re-read by the next step.
+ *
+ * `worlds` (032) is the run's world state from probeWorlds; absent or disabled,
+ * the step sends exactly what it sent before 032 (no world key, no RPC). Enabled,
+ * the batch's newest `world` record is registered BEFORE any data row is written
+ * and every row is tagged with the answer; a batch without a record keeps the
+ * run's current world. A failed registration throws, so the cursor never passes
+ * rows that could not be tagged.
  */
 export async function tailStep(
   session: TailSession,
@@ -246,6 +254,7 @@ export async function tailStep(
   target: TailTarget,
   totals: TailTotals,
   now: () => number = Date.now,
+  worlds?: WorldState,
 ): Promise<void> {
   const { size } = await session.stat(target.path);
   const window = planRead(target.cursor, target.file, size, cfg.maxReadBytes);
@@ -258,10 +267,20 @@ export async function tailStep(
   addStats(totals.stats, parsed.stats);
   if (consumed === 0) return;
 
+  // The world first. aurora.worlds references servers, so on a cold database the
+  // server row must exist before register_world can create the first world; the
+  // bare-id upsert is the one write that precedes it and carries no world data.
+  const worldRec = worlds?.enabled ? newestWorldRecord(parsed.records) : undefined;
+  if (worlds !== undefined && worldRec !== undefined) {
+    await db.upsert('servers', [{ id: cfg.serverId }], 'id');
+    await registerBatchWorld(db, cfg.serverId, worldRec, worlds);
+  }
+
   // seenAt is the ingest's own clock at the moment of the write (NPC rows, 029).
   const plan = buildPlan(parsed.records, cfg.serverId, {
     launchStamp: target.launchStamp,
     seenAt: new Date(now()).toISOString(),
+    worldId: worlds?.enabled ? worlds.currentWorldId : null,
   });
   // An `optional` write (029's tables) whose table does not exist is skipped, not
   // thrown: a new ingest deployed ahead of its migration must not stall the cursor.

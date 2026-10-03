@@ -44,7 +44,14 @@
 
 import { connect as sftpConnect, type SftpSession } from '../../../packages/shared/aurora/sftp.ts';
 import { parsePins } from '../../../packages/shared/aurora/hostkey.ts';
-import { buildSavedPlayerRows, chunk, isMissingObjectError } from '../../../packages/shared/aurora/ingest-core.ts';
+import { buildSavedPlayerRows, chunk, isMissingObjectError, tagRows } from '../../../packages/shared/aurora/ingest-core.ts';
+import {
+  disabledWorlds,
+  probeWorlds,
+  pruneOldWorlds,
+  summarizeWorlds,
+  type WorldState,
+} from '../../../packages/shared/aurora/worlds.ts';
 import {
   buildClaimRows,
   CLAIMS_MISS_LIMIT,
@@ -182,7 +189,12 @@ async function discoverSaveName(session: SftpSession, cfg: Config): Promise<stri
   );
 }
 
-async function readPlayersDb(session: SftpSession, db: AuroraRest, cfg: Config): Promise<PlayersDbResult> {
+async function readPlayersDb(
+  session: SftpSession,
+  db: AuroraRest,
+  cfg: Config,
+  worlds: WorldState,
+): Promise<PlayersDbResult> {
   const started = Date.now();
   const saveName = await discoverSaveName(session, cfg);
   const path = `${cfg.savesDir}/${saveName}/players.db`;
@@ -193,7 +205,9 @@ async function readPlayersDb(session: SftpSession, db: AuroraRest, cfg: Config):
   const bytes = await session.readRange(path, 0, size);
   const SQL = await loadSqlJs();
   const parsed = parsePlayersDb(SQL, bytes);
-  const rows = buildSavedPlayerRows(parsed.players, cfg.serverId);
+  // world_id (032) on every row when the run has a current world; read once per
+  // run, so after a switch the first tagged write lands with the next run.
+  const rows = tagRows(buildSavedPlayerRows(parsed.players, cfg.serverId), worlds.enabled ? worlds.currentWorldId : null);
 
   // The tail may have found no log yet; the players rows still need a server.
   await db.upsert('servers', [{ id: cfg.serverId }], 'id');
@@ -289,10 +303,15 @@ interface ClaimsResult {
   ms: number;
 }
 
-async function readClaims(session: SftpSession, db: AuroraRest, cfg: Config): Promise<ClaimsResult> {
+async function readClaims(session: SftpSession, db: AuroraRest, cfg: Config, worlds: WorldState): Promise<ClaimsResult> {
   const started = Date.now();
   const parsed = parseClaimsLedger(await readText(session, cfg.claimsFile, CLAIMS_MAX_BYTES));
-  const rows = buildClaimRows(parsed.claims, cfg.serverId, new Date(started).toISOString());
+  const rows = buildClaimRows(
+    parsed.claims,
+    cfg.serverId,
+    new Date(started).toISOString(),
+    worlds.enabled ? worlds.currentWorldId : null,
+  );
 
   await db.upsert('servers', [{ id: cfg.serverId }], 'id');
   const trusted = claimsReadTrusted(parsed);
@@ -423,9 +442,16 @@ Deno.serve(async (req: Request) => {
     claims: null as ClaimsResult | null,
     /** Informational: the ledger file does not exist on this host. Not an error. */
     claimsNote: null as { missing: boolean; path: string } | null,
+    /** 032: `disabled` before the migration, else the current world and this run's registrations. */
+    worlds: null as unknown,
+    /** Why worlds are disabled, or a note from this run (a missing function). */
+    worldsNote: null as string | null,
+    /** Rows prune_old_worlds deleted this run; null when it did not run. */
+    worldsPruned: null as number | null,
     errors: [] as string[],
     ms: 0,
   };
+  let worlds: WorldState = disabledWorlds();
 
   try {
     let session: SftpSession | null = null;
@@ -444,9 +470,22 @@ Deno.serve(async (req: Request) => {
         let target: TailTarget | null = null;
         const totals = emptyTotals();
         const firstStepAt = Date.now();
+        // The world probe (032), once per run, before any row is written. Disabled
+        // (no column, no table) is today's behaviour. Any other failure skips the
+        // tail this run: rows written untagged across a world switch would be
+        // stamped with the OLD world at the next switch, so the cursor waits.
+        let probed = false;
         try {
-          target = await findTarget(session, db, tailCfg);
-          if (target) await tailStep(session, db, tailCfg, target, totals);
+          worlds = await probeWorlds(db, cfg.serverId);
+          probed = true;
+        } catch (err) {
+          worlds = disabledWorlds('probe failed; tail skipped this run');
+          summary.errors.push(`worlds: ${String(err).slice(0, 300)}`);
+          console.error(JSON.stringify({ at: 'worlds', error: String(err) }));
+        }
+        try {
+          target = probed ? await findTarget(session, db, tailCfg) : null;
+          if (target) await tailStep(session, db, tailCfg, target, totals, Date.now, worlds);
           summary.tail = { file: target?.file ?? null, launchStamp: target?.launchStamp ?? null, ...totals };
         } catch (err) {
           target = null; // no loop after a failed first read
@@ -456,7 +495,7 @@ Deno.serve(async (req: Request) => {
 
         // players.db once per run, never per loop.
         try {
-          summary.playersDb = await readPlayersDb(session, db, cfg);
+          summary.playersDb = await readPlayersDb(session, db, cfg, worlds);
           console.log(JSON.stringify({ at: 'playersdb', ...summary.playersDb }));
         } catch (err) {
           summary.errors.push(`playersdb: ${String(err).slice(0, 300)}`);
@@ -480,7 +519,7 @@ Deno.serve(async (req: Request) => {
         // nothing was released). It does NOT run after any other claims failure.
         let claimsMissing = false;
         try {
-          summary.claims = await readClaims(session, db, cfg);
+          summary.claims = await readClaims(session, db, cfg, worlds);
           console.log(JSON.stringify({ at: 'claims', ...summary.claims }));
         } catch (err) {
           claimsMissing = isLedgerMissing(err);
@@ -519,12 +558,24 @@ Deno.serve(async (req: Request) => {
           console.error(JSON.stringify({ at: 'npcprune', error: String(err) }));
         }
 
+        // Old worlds' live-state rows, once per run, after the NPC prune. Only with
+        // worlds enabled; a missing function is a note, never an error.
+        try {
+          summary.worldsPruned = await pruneOldWorlds(db, worlds);
+          if ((summary.worldsPruned ?? 0) > 0) {
+            console.log(JSON.stringify({ at: 'prune', table: 'worlds', rows: summary.worldsPruned }));
+          }
+        } catch (err) {
+          summary.errors.push(`worldprune: ${String(err).slice(0, 300)}`);
+          console.error(JSON.stringify({ at: 'worldprune', error: String(err) }));
+        }
+
         if (target) {
           const t = target;
           summary.loop = await runTailLoop({
             deadline,
             lastStepAt: firstStepAt,
-            step: () => tailStep(session!, db, tailCfg, t, totals),
+            step: () => tailStep(session!, db, tailCfg, t, totals, Date.now, worlds),
           });
           summary.tail = { file: t.file, launchStamp: t.launchStamp, ...totals };
           if (summary.loop.error) {
@@ -533,6 +584,9 @@ Deno.serve(async (req: Request) => {
           }
         }
         console.log(JSON.stringify({ at: 'tail', loops: summary.loop?.loops ?? 0, ...summary.tail }));
+        summary.worlds = summarizeWorlds(worlds);
+        summary.worldsNote = worlds.note;
+        console.log(JSON.stringify({ at: 'worlds', worlds: summary.worlds, note: worlds.note }));
       } finally {
         session.close();
       }
@@ -556,6 +610,7 @@ Deno.serve(async (req: Request) => {
     loops: summary.loop?.loops ?? 0,
     bytes: summary.tail?.bytes ?? 0,
     lagMaxMs: summary.tail?.lagMaxMs ?? null,
+    worlds: summary.worlds ?? 'disabled',
     errors: summary.errors,
     ms: summary.ms,
   }));

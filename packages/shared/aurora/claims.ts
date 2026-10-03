@@ -38,7 +38,7 @@
 //
 // Tests: claims.test.ts.
 
-import type { Row } from './ingest-core.ts';
+import { type Row, tagRows } from './ingest-core.ts';
 
 export interface LedgerClaim {
   /** The claiming account (DVC's nameOk: 1-48 characters, no control characters, pipes or commas). */
@@ -144,8 +144,14 @@ function isoOrNull(seconds: number | null): string | null {
  * stamp that says "found in the ledger at this run" (and the `t` the public view
  * shows). miss_count 0: a claim that is in the file has missed nothing.
  */
-export function buildClaimRows(claims: LedgerClaim[], serverId: string, syncedAt: string): Row[] {
-  return claims.map((c): Row => ({
+export function buildClaimRows(
+  claims: LedgerClaim[],
+  serverId: string,
+  syncedAt: string,
+  worldId: string | null = null,
+): Row[] {
+  // world_id (032) on every row when the run has a current world, on none otherwise.
+  return tagRows(claims.map((c): Row => ({
     server_id: serverId,
     sql_id: c.sqlId,
     owner: c.owner,
@@ -157,7 +163,7 @@ export function buildClaimRows(claims: LedgerClaim[], serverId: string, syncedAt
     last_seen: isoOrNull(c.lastSeen),
     synced_at: syncedAt,
     miss_count: 0,
-  }));
+  })), worldId);
 }
 
 /** A claim is released when this many consecutive trusted reads did not contain it. */
