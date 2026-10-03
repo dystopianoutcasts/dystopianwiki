@@ -97,7 +97,8 @@ describe('T34: server health is for admins only', () => {
   })
 
   it('useAuroraData keeps vehicles available to everyone, only gated on the layer toggle', () => {
-    expect(useAuroraDataSrc).toMatch(/enabled: prefs\.vehicles,/)
+    // T72: or while the viewer watches for a car; the layer toggle alone still turns it on.
+    expect(useAuroraDataSrc).toMatch(/enabled: prefs\.vehicles \|\| watching\.size > 0,/)
     expect(useAuroraDataSrc).not.toMatch(/enabled: prefs\.vehicles && user/)
   })
 })
@@ -188,7 +189,9 @@ describe('T44: name mode toggle (usernames are intentionally public, owner decis
   it('MapPage.tsx threads nameMode into every feature builder that can show a name', () => {
     expect(mapPageSrc).toMatch(/playerFeatures\(positions\.data, profiles\.data, nameMode\)/)
     expect(mapPageSrc).toMatch(/findablePlayers\(positions\.data, profiles\.data, nameMode\)/)
-    expect(mapPageSrc).toMatch(/vehicleFeatures\(vehicles\.data, profiles\.data, nameMode, vehicleNames\)/)
+    // T72: the ordinary cars (watched ones left out) and the watched ones, both by name mode.
+    expect(mapPageSrc).toMatch(/vehicleFeatures\(split\.ordinary, profiles\.data, nameMode, vehicleNames\)/)
+    expect(mapPageSrc).toMatch(/watchedVehicleFeatures\(split\.matches, profiles\.data, nameMode, vehicleNames\)/)
     expect(mapPageSrc).toMatch(/safehouseFeatures\(safehouses\.data, profiles\.data, nameMode\)/)
     expect(mapPageSrc).toMatch(/<RosterPanel profiles=\{profiles\.data\} error=\{profiles\.error\} mode=\{nameMode\}/)
   })

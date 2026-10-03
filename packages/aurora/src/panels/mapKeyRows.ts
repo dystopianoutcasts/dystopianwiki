@@ -27,6 +27,7 @@ import {
   outpostStyle,
   playerIconHtml,
   vehicleIconHtml,
+  watchedVehicleIconHtml,
 } from '../layers/symbols'
 
 export type KeySwatch =
@@ -124,10 +125,19 @@ export const MAP_KEY: Record<LayerKey, KeyRow[]> = {
   mapObjects: [row('object', 'Map object (hover or tap for its name and kind)', { kind: 'dot', style: OBJECT_STYLE })],
 }
 
+/**
+ * T72: the watched-car symbol (buildWatchedVehicles). Not in MAP_KEY: the watched layer is not a
+ * LayerKey (it has no toggle; it exists while a signed-in account watches at least one car), so it
+ * is listed on its own, only to that viewer (KeyViewer.watching).
+ */
+export const WATCHED_KEY_ROW: KeyRow = row('vehicle-watched', 'Car you are watching for (magenta, pulsing ring)', { kind: 'marker', html: watchedVehicleIconHtml() })
+
 export interface KeyViewer {
   isAdmin: boolean
   /** True when the signed-in viewer has a linked character (the `own` set is not empty). */
   hasLinked: boolean
+  /** T72: true when the signed-in viewer watches at least one car. */
+  watching?: boolean
 }
 
 function canSee(audience: KeyAudience, viewer: KeyViewer): boolean {

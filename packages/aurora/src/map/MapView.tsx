@@ -25,6 +25,7 @@ import {
   buildSafehouses,
   buildStreets,
   buildVehicles,
+  buildWatchedVehicles,
   buildWorldMap,
   buildZombieDensityLayer,
   buildZones,
@@ -42,7 +43,7 @@ import type {
   WorldMapFeatures,
   ZoneFeature,
 } from '../layers/transform'
-import { DEATH_PANE, DEATH_PANE_Z_INDEX, MAP_KEY_PANE, MAP_KEY_PANE_Z_INDEX, NPC_PANE, NPC_PANE_Z_INDEX, PLAYERS_PANE, PLAYERS_PANE_Z_INDEX, PLAYER_NAMES_PANE, PLAYER_NAMES_PANE_Z_INDEX } from './panes'
+import { DEATH_PANE, DEATH_PANE_Z_INDEX, MAP_KEY_PANE, MAP_KEY_PANE_Z_INDEX, NPC_PANE, NPC_PANE_Z_INDEX, PLAYERS_PANE, PLAYERS_PANE_Z_INDEX, PLAYER_NAMES_PANE, PLAYER_NAMES_PANE_Z_INDEX, WATCHED_PANE, WATCHED_PANE_Z_INDEX } from './panes'
 
 // T41: re-exported so a consumer of this module sees them here, next to the map that
 // creates them; layers/build.ts imports the same constants from ./panes directly
@@ -90,6 +91,9 @@ interface Props {
   areas: AreaFeature[]
   players: PlayerFeature[]
   vehicles: VehicleFeature[]
+  /** T72: cars the signed-in viewer is watching for; drawn whether or not the Vehicles layer is on.
+   *  `vehicles` never holds them too (vehicleCatalog.ts splitWatched). */
+  watched: VehicleFeature[]
   safehouses: RectFeature[]
   npcGroups: NpcGroupFeature[]
   npcOutposts: NpcOutpostFeature[]
@@ -161,6 +165,7 @@ export function MapView(props: Props) {
   const areasLayer = useRef<L.Layer | null>(null)
   const playersLayer = useRef<L.Layer | null>(null)
   const vehiclesLayer = useRef<L.Layer | null>(null)
+  const watchedLayer = useRef<L.Layer | null>(null)
   const safehousesLayer = useRef<L.Layer | null>(null)
   const npcGroupsLayer = useRef<L.Layer | null>(null)
   const npcOutpostsLayer = useRef<L.Layer | null>(null)
@@ -191,6 +196,8 @@ export function MapView(props: Props) {
     // Death markers: above the marker pane (vehicles), below the NPC groups.
     map.createPane(DEATH_PANE).style.zIndex = String(DEATH_PANE_Z_INDEX)
     map.createPane(NPC_PANE).style.zIndex = String(NPC_PANE_Z_INDEX)
+    // T72: watched cars above every other car, deaths and NPC groups; below tooltips and players.
+    map.createPane(WATCHED_PANE).style.zIndex = String(WATCHED_PANE_Z_INDEX)
     map.createPane(PLAYERS_PANE).style.zIndex = String(PLAYERS_PANE_Z_INDEX)
     map.createPane(PLAYER_NAMES_PANE).style.zIndex = String(PLAYER_NAMES_PANE_Z_INDEX)
     // T68: the map key overlay. Clicks, drags, double clicks and the wheel over it stay
@@ -310,6 +317,11 @@ export function MapView(props: Props) {
   useEffect(() => {
     swap(mapRef.current, vehiclesLayer, prefs.vehicles ? buildVehicles(props.vehicles) : null)
   }, [prefs.vehicles, props.vehicles])
+
+  // T72: not a user toggle. It exists while the account watches a car that is on the map.
+  useEffect(() => {
+    swap(mapRef.current, watchedLayer, props.watched.length > 0 ? buildWatchedVehicles(props.watched) : null)
+  }, [props.watched])
 
   useEffect(() => {
     swap(mapRef.current, safehousesLayer, prefs.safehouses ? buildSafehouses(props.safehouses) : null)

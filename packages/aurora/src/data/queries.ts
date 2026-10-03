@@ -181,6 +181,7 @@ const npcGates = {
   deathsView: { until: 0, logged: false },
   deathsRpc: { until: 0, logged: false },
   vehicleNamesView: { until: 0, logged: false },
+  vehicleScriptsView: { until: 0, logged: false },
   serverMapsRpc: { until: 0, logged: false },
   pendingWorldRpc: { until: 0, logged: false },
 } satisfies Record<string, Gate>
@@ -268,6 +269,23 @@ export async function fetchVehicleNames(db: SupabaseClient): Promise<VehicleName
   if (!error) return data ?? []
   if (!isMissingRelation(error)) throw new Error(`vehicle names: ${error.message}`)
   closeGate(npcGates.vehicleNamesView, `aurora.${VEHICLE_NAMES_VIEW}`)
+  return []
+}
+
+/** T72 (T71 contract, migration 038): every vehicle script the game server has loaded. */
+export const VEHICLE_SCRIPTS_VIEW = 'vehicle_scripts_visible'
+
+/** The server's vehicle scripts. Empty or missing until exporter 0.7.3 and 038 are live; missing is
+ * treated exactly like empty (no error), logged once and retried no sooner than NPC_RETRY_MS. */
+export async function fetchVehicleScripts(db: SupabaseClient, serverId: string): Promise<string[]> {
+  if (Date.now() < npcGates.vehicleScriptsView.until) return []
+  const { data, error } = (await db.from(VEHICLE_SCRIPTS_VIEW).select('script_name').eq('server_id', serverId)) as unknown as {
+    data: { script_name: string | null }[] | null
+    error: NpcError
+  }
+  if (!error) return (data ?? []).map((r) => r.script_name).filter((s): s is string => typeof s === 'string' && s !== '')
+  if (!isMissingRelation(error)) throw new Error(`vehicle scripts: ${error.message}`)
+  closeGate(npcGates.vehicleScriptsView, `aurora.${VEHICLE_SCRIPTS_VIEW}`)
   return []
 }
 

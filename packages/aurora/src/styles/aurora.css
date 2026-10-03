@@ -319,7 +319,14 @@ fieldset.panel legend { padding: 0 4px; font-weight: 600; }
    what leaves the map visible. Only the key itself takes the pointer; the rest of the map
    still drags and zooms. Swatches sit on a mid ground tone like the map's own terrain, so a
    symbol made to read on the map reads the same here, in either colour scheme. */
-.map-overlay-host { position: absolute; top: 10px; left: 54px; }
+/* T72: the host holds the "Spotted" notice above the key (one slot, a fragment). As a column capped
+   to the map, the key below the notice shrinks and scrolls instead of running off the map. */
+.map-overlay-host {
+  position: absolute; top: 10px; left: 54px;
+  display: flex; flex-direction: column; align-items: flex-start;
+  max-height: calc(var(--map-h, 100vh) - 20px);
+}
+.map-overlay-host > .map-key-overlay { flex: 0 1 auto; min-height: 0; }
 .map-key-overlay {
   display: flex; flex-direction: column; box-sizing: border-box;
   width: min(300px, calc(var(--map-w, 100vw) - var(--key-left, 54px) - 10px));
@@ -384,6 +391,34 @@ fieldset.panel legend { padding: 0 4px; font-weight: 600; }
 }
 .street-results button:hover, .street-results button:focus-visible { background: var(--accent); color: #fff; }
 
+/* "Watch for a car" (T72). Native checkboxes in labels; the checklist scrolls inside the panel. */
+.watch-title { margin: 0 0 4px; font-size: 1rem; }
+.watch-sub { margin: 8px 0 4px; font-size: 0.9rem; }
+.watch-list { list-style: none; margin: 4px 0 0; padding: 0; }
+.watch-list.choose { max-height: 40vh; overflow-y: auto; overscroll-behavior: contain; border: 1px solid var(--border); border-radius: 6px; padding: 2px 6px; }
+.watch-row { display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
+.watch-row:last-child { border-bottom: 0; }
+.watch-row label { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 2px 0; cursor: pointer; }
+.watch-row input, .watch-wrecks input { flex: none; width: 22px; height: 22px; margin: 0; }
+.watch-entry { display: flex; flex-direction: column; min-width: 0; overflow-wrap: anywhere; }
+.watch-label { font-weight: 600; }
+.watch-detail { color: var(--text-muted); font-size: 0.8rem; }
+.watch-onmap { color: var(--text); font-size: 0.8rem; font-weight: 600; }
+.watch-onmap::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 5px; border-radius: 50%; background: #ff2fd0; box-shadow: 0 0 0 1px #fff; vertical-align: 1px; }
+.watch-small { flex: none; min-height: 36px; padding: 4px 10px; font-size: 0.85rem; }
+.watch-disclosure { display: flex; align-items: center; gap: 8px; width: 100%; margin-top: 10px; text-align: left; font-weight: 600; }
+.watch-chevron { display: inline-block; width: 1ch; font-family: ui-monospace, Consolas, monospace; }
+.watch-choose[hidden] { display: none; }
+.watch-choose { margin-top: 8px; }
+.watch-search-label { display: block; font-weight: 600; margin-bottom: 6px; }
+.watch-choose input[type="search"] {
+  width: 100%; min-height: 44px; padding: 0 10px; box-sizing: border-box;
+  background: var(--surface-2); border: 1px solid var(--control-border); border-radius: 6px; color: inherit; font: inherit;
+}
+.watch-wrecks { display: flex; align-items: center; gap: 10px; min-height: 44px; }
+.watch-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.watch-actions:empty { display: none; }
+
 .find-player label { display: block; font-weight: 600; margin-bottom: 6px; }
 .find-player select {
   width: 100%; min-height: 44px; padding: 0 10px; box-sizing: border-box;
@@ -435,6 +470,28 @@ fieldset.panel legend { padding: 0 4px; font-weight: 600; }
 /* Ledger-only claimed (not loaded, last-known position): the ring is dashed and the whole marker dimmed. */
 .aurora-vehicle.is-ledger { opacity: 0.75; }
 .aurora-vehicle.is-ledger.is-claimed { border-style: dashed; }
+
+/* A car the signed-in viewer watches for (T72): the car in magenta #ff2fd0 with a white outline on a
+   near-black disc (#25041f), inside a white ring that stays and a ping ring that expands and fades
+   (1.6 s, transform and opacity only). Magenta is none of the amber car, the cyan claim ring or the
+   pink own-player ring. The white ring against #5f6656 grass is about 6:1; its #25041f outer edge
+   against white roofs and roads is about 18.8:1, so the ring clears 3:1 on any terrain; magenta on the
+   #25041f disc is about 5.9:1. A shape (rings) and a motion besides the colour. */
+.aurora-watched {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; box-sizing: border-box; border-radius: 50%;
+  background: #25041f; border: 2px solid #ffffff; box-shadow: 0 0 0 1.5px #25041f;
+}
+.aurora-watched .car-glyph { display: block; width: 16px; height: 16px; }
+.aurora-watched .watch-ping {
+  position: absolute; inset: -4px; border-radius: 50%; border: 3px solid #ff2fd0; pointer-events: none;
+  animation: watch-ping 1.6s ease-out infinite; will-change: transform, opacity;
+}
+@keyframes watch-ping {
+  0% { transform: scale(0.9); opacity: 0.95; }
+  80% { transform: scale(2.1); opacity: 0; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
 
 /* A-Life NPC group: a diamond with the member count inside (players are dots, vehicles
    squares). White text on #2b1d52 is about 15:1; the white edge over a near-black halo
@@ -500,6 +557,28 @@ fieldset.panel legend { padding: 0 4px; font-weight: 600; }
 .aurora-area-label.is-town { font-weight: 700; font-size: 0.95rem; letter-spacing: 0.02em; }
 .aurora-area-label.is-landmark { font-weight: 400; font-size: 0.7rem; opacity: 0.85; }
 
+/* The "Spotted" notice (T72), on the map above the key: a light panel with a magenta mark, the text
+   and two buttons on one row, the text at most two lines, so the notice stays within two lines at
+   390 px. Text uses the panel tokens (4.5:1 or better in both schemes); the magenta border is
+   5.1:1 on the dark surface and 3.2:1 on the light one. */
+/* The live region stays mounted (and empty, so zero-size) for a sighting to be announced into. */
+.watch-notice {
+  display: flex; align-items: center; gap: 8px; box-sizing: border-box; margin-bottom: 8px;
+  width: min(380px, calc(var(--map-w, 100vw) - var(--key-left, 54px) - 10px));
+  padding: 6px 6px 6px 10px;
+  background: var(--surface); color: var(--text); border: 2px solid #ff2fd0; border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  font: 14px/1.3 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; cursor: auto;
+}
+.watch-notice-mark { flex: none; width: 12px; height: 12px; border-radius: 50%; background: #ff2fd0; box-shadow: 0 0 0 2px #fff, 0 0 0 3px #25041f; }
+.watch-notice-text {
+  flex: 1; min-width: 0; margin: 0; font-weight: 600;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
+}
+.watch-notice-actions { flex: none; display: flex; gap: 6px; }
+.watch-notice button { font: inherit; color: var(--text); min-height: 36px; padding: 4px 10px; }
+.watch-notice button:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+
 /* ---- pages ----------------------------------------------------------------------- */
 .page { max-width: 640px; margin: 0 auto; padding: 24px 16px; }
 .code-box { margin: 16px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
@@ -512,4 +591,6 @@ fieldset.panel legend { padding: 0 4px; font-weight: 600; }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  /* T72: no ping. A static second ring instead, so the watched car still has its double ring. */
+  .aurora-watched .watch-ping { animation: none !important; transform: scale(1.35); opacity: 1; border-width: 2px; }
 }

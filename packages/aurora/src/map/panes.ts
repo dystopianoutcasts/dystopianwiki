@@ -27,6 +27,11 @@ export const DEATH_PANE_Z_INDEX = 610
 export const NPC_PANE = 'aurora-npcs'
 export const NPC_PANE_Z_INDEX = 620
 
+/** T72: cars the signed-in viewer is watching for. Above every other car (the marker pane, 600),
+ * deaths (610) and NPC groups (620); below the tooltip pane (650) and every player pane (660, 670). */
+export const WATCHED_PANE = 'aurora-watched'
+export const WATCHED_PANE_Z_INDEX = 630
+
 /** T68: the map key overlay. Above every marker, tooltip and player pane (so the key is never
  * drawn under a symbol), below a popup (700). Leaflet's zoom buttons live in the control
  * corner (z-index 1000, outside the map pane), so the key can never cover them. A pane moves

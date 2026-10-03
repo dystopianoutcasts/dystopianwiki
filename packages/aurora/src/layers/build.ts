@@ -12,7 +12,7 @@ import { sizedTileLayer } from '../map/sizedTileLayer'
 import { placeLabels } from './labelPlacement'
 // T41: imported from ./panes directly (not from map/MapView.tsx, which imports this
 // very file) to avoid a circular import - see panes.ts's own header comment.
-import { DEATH_PANE, NPC_PANE, PLAYERS_PANE, PLAYER_NAMES_PANE } from '../map/panes'
+import { DEATH_PANE, NPC_PANE, PLAYERS_PANE, PLAYER_NAMES_PANE, WATCHED_PANE } from '../map/panes'
 // T67: every symbol's look lives in symbols.ts (no Leaflet), shared with the map key.
 import {
   OBJECT_STYLE,
@@ -30,6 +30,8 @@ import {
   playerIconHtml,
   vehicleIconHtml,
   vehicleIconSize,
+  watchedVehicleIconHtml,
+  WATCHED_ICON_SIZE,
 } from './symbols'
 
 /**
@@ -80,6 +82,26 @@ export function buildVehicles(features: VehicleFeature[]): L.Layer {
       keyboard: true,
     })
     marker.bindTooltip(escapeHtml(f.label), { direction: 'top', offset: [0, -6] })
+    group.addLayer(marker)
+  }
+  return group
+}
+
+/** T72: the cars the viewer is watching for, in their own pane (map/panes.ts WATCHED_PANE: above
+ * every other car, below players). Always on while the account watches anything, whether or not the
+ * Vehicles layer is; a match is never also drawn by buildVehicles (vehicleCatalog.ts splitWatched). */
+export function buildWatchedVehicles(features: VehicleFeature[]): L.Layer {
+  const group = L.layerGroup()
+  const half = WATCHED_ICON_SIZE / 2
+  for (const f of features) {
+    const marker = L.marker(f.latlng, {
+      icon: L.divIcon({ className: 'aurora-marker', html: watchedVehicleIconHtml(), iconSize: [WATCHED_ICON_SIZE, WATCHED_ICON_SIZE], iconAnchor: [half, half] }),
+      title: f.label,
+      alt: f.label,
+      keyboard: true,
+      pane: WATCHED_PANE,
+    })
+    marker.bindTooltip(escapeHtml(f.label), { direction: 'top', offset: [0, -half] })
     group.addLayer(marker)
   }
   return group

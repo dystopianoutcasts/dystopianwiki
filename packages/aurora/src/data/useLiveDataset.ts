@@ -15,6 +15,12 @@ export interface LiveDatasetOptions<T> {
   fullMs: number | null
 }
 
+/** T72: useDataset's shape plus `fullSeq`, which counts successful FULL fetches. A delta cannot see
+ * a row disappear, so anything that concludes "gone" must wait for `fullSeq` to move. */
+export interface LiveDataset<T> extends Dataset<T> {
+  fullSeq: number
+}
+
 /**
  * useDataset's contract with an incremental poll underneath (T23 addendum; the rules
  * are in live.ts). One timer, one request per tick: every (fullMs / liveMs)-th tick
@@ -22,10 +28,11 @@ export interface LiveDatasetOptions<T> {
  * useDataset, a response from an older request never overwrites a newer one, and
  * `refresh` (sign-in or out) is always a full fetch.
  */
-export function useLiveDataset<T>(opts: LiveDatasetOptions<T>): Dataset<T> {
+export function useLiveDataset<T>(opts: LiveDatasetOptions<T>): LiveDataset<T> {
   const [data, setData] = useState<T[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [fullSeq, setFullSeq] = useState(0)
   const optsRef = useRef(opts)
   optsRef.current = opts
   const held = useRef<T[]>([])
@@ -46,6 +53,7 @@ export function useLiveDataset<T>(opts: LiveDatasetOptions<T>): Dataset<T> {
         held.current = next
         setData(next)
       }
+      if (mode === 'full') setFullSeq((n) => n + 1)
       setError(null)
     } catch (e) {
       if (mine !== seq.current) return
@@ -72,5 +80,5 @@ export function useLiveDataset<T>(opts: LiveDatasetOptions<T>): Dataset<T> {
   const refresh = useCallback(() => {
     if (optsRef.current.enabled) void load('full')
   }, [load])
-  return { data, error, loading, refresh }
+  return { data, error, loading, refresh, fullSeq }
 }

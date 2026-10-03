@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react'
 import type { LayerKey, LayerPrefs } from '../state/layerPrefs'
 import { loadCollapsed, toggleCollapsed } from '../state/mapKeySections'
 import { LAYER_LABELS } from './LayerToggles'
-import { visibleKey } from './mapKeyRows'
+import { WATCHED_KEY_ROW, visibleKey } from './mapKeyRows'
 import type { KeySwatch, KeyViewer } from './mapKeyRows'
 
 function rampCss(stops: readonly [number, string][]): string {
@@ -110,6 +110,17 @@ export function MapKeyView({ prefs, viewer, collapsed, onToggleSection, onClose 
       </div>
       <div className="map-key-body">
         <p className="note">Only layers that are switched on are listed.</p>
+        {viewer.watching ? (
+          <div className="map-key-group">
+            <h3 className="map-key-group-head map-key-plain-head">Watch for a car</h3>
+            <ul className="map-key-rows">
+              <li className="map-key-row">
+                <Swatch swatch={WATCHED_KEY_ROW.swatch} />
+                <span className="map-key-label">{WATCHED_KEY_ROW.label}</span>
+              </li>
+            </ul>
+          </div>
+        ) : null}
         {entries.length === 0 ? <p className="note">No layers are switched on.</p> : null}
         {entries.map((entry) => {
           const shut = collapsed.has(entry.layer)

@@ -122,7 +122,8 @@ describe('T68: the key is an overlay that only exists while its toggle is on', (
 
   it('MapPage draws the key on the map, not in the side panel, and its close turns the toggle off', () => {
     const page = readFileSync(fileURLToPath(new URL('../pages/MapPage.tsx', import.meta.url)), 'utf8')
-    expect(page).toMatch(/overlay=\{<MapKey prefs=\{prefs\} viewer=\{\{ isAdmin, hasLinked: own\.size > 0 \}\} onClose=\{closeMapKey\} \/>\}/)
+    // T72: the overlay slot holds a fragment, the "Spotted" notice first and the key below it.
+    expect(page).toMatch(/overlay=\{\s*<>[\s\S]*<WatchNotice [\s\S]*<MapKey prefs=\{prefs\} viewer=\{\{ isAdmin, hasLinked: own\.size > 0, watching: user !== null && watches\.watching\.size > 0 \}\} onClose=\{closeMapKey\} \/>\s*<\/>\s*\}/)
     expect(page.match(/<MapKey /g)?.length).toBe(1)
     expect(page).toMatch(/const closeMapKey = useCallback\(\(\) => \{\s*setLayer\('mapKey', false\)/)
     const aside = page.slice(page.indexOf('<aside'), page.indexOf('</aside>'))

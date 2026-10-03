@@ -11,6 +11,9 @@ import type { LayerKey, ToggleKey } from '../state/layerPrefs'
 import { loadNameMode, saveNameMode } from '../state/nameMode'
 import type { NameMode } from '../state/nameMode'
 import { useAuroraData } from '../data/useAuroraData'
+import { useSightings, useWatches } from '../data/useWatches'
+import { buildCatalog, splitWatched, watchingEntries } from '../data/vehicleCatalog'
+import { vehicleKey } from '../data/live'
 import { useServerMaps } from '../data/serverMaps'
 import { allowedMapIds, filterByServerMaps, mapsWithoutTiles, overlaysToDraw } from '../map/followMaps'
 import {
@@ -25,6 +28,7 @@ import {
   safehouseFeatures,
   streetFeatures,
   vehicleFeatures,
+  watchedVehicleFeatures,
   worldMapFeatures,
   zoneFeatures,
 } from '../layers/transform'
@@ -36,6 +40,8 @@ import { LayerToggles, toggleInputId } from '../panels/LayerToggles'
 import { MapKey } from '../panels/MapKey'
 import { StreetSearch } from '../panels/StreetSearch'
 import { FindPlayer } from '../panels/FindPlayer'
+import { WatchCars } from '../panels/WatchCars'
+import { WatchNotice } from '../panels/WatchNotice'
 import { MapNotices } from '../panels/MapNotices'
 import { LINK_FEATURE_ENABLED } from '../config'
 import { playersNote } from './playersNote'
@@ -137,7 +143,7 @@ function useTilesConfig(): { cfg: TilesConfig | null; error: string | null } {
 export function MapPage() {
   const { client, config } = getAurora()
   const serverId = config.serverId
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const isAdmin = useIsAdmin(client, user)
   const { cfg, error: cfgError } = useTilesConfig()
   const { streets: rawStreets, error: streetsError } = useStreets()
@@ -148,12 +154,15 @@ export function MapPage() {
   const { worldMap: rawWorldMap, error: worldMapError } = useWorldMap(prefs.worldMap)
   const [sheetOpen, setSheetOpen] = useState(false)
   const [flyTo, setFlyTo] = useState<{ x: number; y: number; zoom: number } | null>(null)
+  // T72: the signed-in viewer's watched car types. Signed out: empty, and no request is made.
+  const watches = useWatches(client, serverId, user?.id ?? null, authLoading)
 
   const {
     profiles,
     positions,
     vehicles,
     vehicleNames,
+    vehicleScripts,
     safehouses,
     npcGroups,
     npcOutposts,
@@ -168,7 +177,7 @@ export function MapPage() {
     own,
     now,
     statusText,
-  } = useAuroraData(client, serverId, prefs, user, isAdmin)
+  } = useAuroraData(client, serverId, prefs, user, isAdmin, watches.watching)
 
   // T50: only the maps the server runs. Unknown list (no migration 033 yet): everything,
   // as before. Streets, areas and world-map shapes of other maps are dropped before any
@@ -191,7 +200,21 @@ export function MapPage() {
   const areas = useMemo(() => areaFeatures(shown.areas), [shown.areas])
   const players = useMemo(() => playerFeatures(positions.data, profiles.data, nameMode), [positions.data, profiles.data, nameMode])
   const findable = useMemo(() => findablePlayers(positions.data, profiles.data, nameMode), [positions.data, profiles.data, nameMode])
-  const vehicleList = useMemo(() => vehicleFeatures(vehicles.data, profiles.data, nameMode, vehicleNames), [vehicles.data, profiles.data, nameMode, vehicleNames])
+  // T72: a watched car is drawn once, in the watched layer, and left out of the ordinary one.
+  const split = useMemo(() => splitWatched(vehicles.data, watches.watching), [vehicles.data, watches.watching])
+  const vehicleList = useMemo(() => vehicleFeatures(split.ordinary, profiles.data, nameMode, vehicleNames), [split.ordinary, profiles.data, nameMode, vehicleNames])
+  const watchedList = useMemo(() => watchedVehicleFeatures(split.matches, profiles.data, nameMode, vehicleNames), [split.matches, profiles.data, nameMode, vehicleNames])
+  const catalog = useMemo(() => buildCatalog(vehicleScripts, vehicleNames, vehicles.data), [vehicleScripts, vehicleNames, vehicles.data])
+  const watchingList = useMemo(
+    () => watchingEntries(watches.watching, catalog, vehicleNames, vehicles.data),
+    [watches.watching, catalog, vehicleNames, vehicles.data],
+  )
+  const sightings = useSightings(user?.id ?? null, vehicles.data, vehicles.fullSeq, split.matches, watches.watching)
+  const matchesOf = useCallback(
+    (script: string) => split.matches.filter((v) => v.script_name === script).sort((a, b) => vehicleKey(a).localeCompare(vehicleKey(b))),
+    [split.matches],
+  )
+  const flyToCar = useCallback((pos: { x: number; y: number }) => setFlyTo({ x: pos.x, y: pos.y, zoom: SEARCH_PLAYER_ZOOM }), [])
   const safehouseList = useMemo(() => safehouseFeatures(safehouses.data, profiles.data, nameMode), [safehouses.data, profiles.data, nameMode])
   const npcGroupList = useMemo(() => npcGroupFeatures(npcGroups.data), [npcGroups.data])
   const npcOutpostList = useMemo(() => npcOutpostFeatures(npcOutposts.data), [npcOutposts.data])
@@ -282,6 +305,7 @@ export function MapPage() {
         areas={areas}
         players={players}
         vehicles={vehicleList}
+        watched={watchedList}
         safehouses={safehouseList}
         npcGroups={npcGroupList}
         npcOutposts={npcOutpostList}
@@ -290,7 +314,14 @@ export function MapPage() {
         heat={heat}
         objects={objectList}
         flyTo={flyTo}
-        overlay={<MapKey prefs={prefs} viewer={{ isAdmin, hasLinked: own.size > 0 }} onClose={closeMapKey} />}
+        overlay={
+          <>
+            {user ? (
+              <WatchNotice pending={sightings.pending} matches={split.matches} names={vehicleNames} onFly={flyToCar} onDismiss={sightings.dismiss} />
+            ) : null}
+            <MapKey prefs={prefs} viewer={{ isAdmin, hasLinked: own.size > 0, watching: user !== null && watches.watching.size > 0 }} onClose={closeMapKey} />
+          </>
+        }
       />
       <button
         ref={sheetToggleRef}
@@ -310,6 +341,18 @@ export function MapPage() {
         <NameModeToggle mode={nameMode} onChange={onNameModeChange} />
         <StreetSearch streets={streets} onSelect={onSelectStreet} />
         <FindPlayer players={findable} onSelect={(pos) => setFlyTo({ x: pos.x, y: pos.y, zoom: SEARCH_PLAYER_ZOOM })} />
+        <WatchCars
+          status={watches.status}
+          catalog={catalog}
+          watching={watchingList}
+          watchedSet={watches.watching}
+          message={watches.message}
+          matchesOf={matchesOf}
+          onAdd={watches.add}
+          onRemove={watches.remove}
+          onFly={flyToCar}
+          onRetry={watches.retry}
+        />
         <RosterPanel profiles={profiles.data} error={profiles.error} mode={nameMode} />
         {isAdmin ? <HealthPanel latest={latest} samples={samples} error={healthError} now={now} /> : null}
         {isAdmin ? <MapNotices noTiles={noTiles} pendingWorld={serverMaps.pendingWorld} /> : null}

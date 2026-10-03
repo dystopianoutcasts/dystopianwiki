@@ -88,7 +88,9 @@ describe('T23: live datasets poll at LIVE_POLL_MS with an INGEST_INTERVAL_MS sel
 describe('T34: vehicles are public (type and position); only an admin also gets the driver', () => {
   it('vehicles are enabled by the layer toggle alone, with no sign-in gate', () => {
     const call = useAuroraData.match(/const vehicles = useLiveDataset\(\{[\s\S]*?\}\)/)?.[0] ?? ''
-    expect(call).toMatch(/enabled: prefs\.vehicles,/)
+    // T72: also on while the signed-in viewer watches for a car (watching is empty when signed out),
+    // still with no sign-in gate of its own.
+    expect(call).toMatch(/enabled: prefs\.vehicles \|\| watching\.size > 0,/)
     expect(call).not.toMatch(/user/)
   })
 

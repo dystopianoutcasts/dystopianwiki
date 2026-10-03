@@ -40,6 +40,28 @@ export function vehicleIconSize(claimed: boolean): number {
   return claimed ? 26 : 16
 }
 
+/** T72: the watched car's colours. None of them is the amber car (#f0b050), the claimed ring
+ * (#00e5ff) or the own-player ring (#ff5fa2). Magenta body, white outline, on a near-black disc. */
+export const WATCHED_CAR_COLOR = '#ff2fd0'
+export const WATCHED_CAR_OUTLINE = '#ffffff'
+export const WATCHED_CAR_DARK = '#25041f'
+
+/** The car glyph again, recoloured for a car the viewer is watching for. Decorative (`aria-hidden`). */
+export const WATCHED_CAR_SVG =
+  '<svg class="car-glyph" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">' +
+  `<g fill="${WATCHED_CAR_DARK}" stroke="${WATCHED_CAR_OUTLINE}" stroke-width="0.6"><rect x="1" y="3" width="3" height="4" rx="1"/><rect x="12" y="3" width="3" height="4" rx="1"/><rect x="1" y="10" width="3" height="4" rx="1"/><rect x="12" y="10" width="3" height="4" rx="1"/></g>` +
+  `<rect x="3.5" y="0.8" width="9" height="14.4" rx="3.4" fill="${WATCHED_CAR_COLOR}" stroke="${WATCHED_CAR_OUTLINE}" stroke-width="1.3"/>` +
+  `<rect x="5" y="4.2" width="6" height="2.8" rx="0.7" fill="${WATCHED_CAR_DARK}"/><rect x="5" y="10.2" width="6" height="2" rx="0.6" fill="${WATCHED_CAR_DARK}"/></svg>`
+
+/** A watched car: the magenta car on a dark disc inside a white ring that stays, plus a ping (a
+ * second ring that expands and fades, aurora.css; a static second ring under reduced motion). So the
+ * state is a shape and a motion as well as a colour. */
+export function watchedVehicleIconHtml(): string {
+  return `<span class="aurora-watched"><span class="watch-ping" aria-hidden="true"></span>${WATCHED_CAR_SVG}</span>`
+}
+
+export const WATCHED_ICON_SIZE = 26
+
 /** The death marker: a cross (players are dots, vehicles cars, NPC groups diamonds). A dark halo
  * under a light stroke keeps it readable on any terrain; decorative (`aria-hidden`), the marker's own
  * `title`/`alt` carries the label. */

@@ -151,6 +151,13 @@ export function vehicleFeatures(vehicles: Vehicle[], profiles: PlayerPublic[], m
   })
 }
 
+/** T72: the cars the signed-in viewer is watching for (data/vehicleCatalog.ts matchWatched), drawn
+ * in their own layer. The tooltip and accessible name start "Watching for: " and keep every part
+ * the ordinary car label has. */
+export function watchedVehicleFeatures(matches: Vehicle[], profiles: PlayerPublic[], mode: NameMode, names: ReadonlyMap<string, string> = new Map()): VehicleFeature[] {
+  return vehicleFeatures(matches, profiles, mode, names).map((f) => ({ ...f, label: `Watching for: ${f.label}` }))
+}
+
 export interface RectFeature {
   key: string
   label: string

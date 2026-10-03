@@ -24,6 +24,7 @@ import {
   fetchPositions,
   fetchSafehouses,
   fetchVehicleNames,
+  fetchVehicleScripts,
   fetchVehiclesAdmin,
   fetchVehiclesPublic,
   fetchVisibility,
@@ -45,7 +46,8 @@ function formatClock(ms: number): string {
   return new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
 }
 
-export function useAuroraData(client: SupabaseClient, serverId: string, prefs: LayerPrefs, user: User | null, isAdmin: boolean) {
+/** `watching` (T72): the signed-in viewer's watched vehicle scripts; empty when signed out. */
+export function useAuroraData(client: SupabaseClient, serverId: string, prefs: LayerPrefs, user: User | null, isAdmin: boolean, watching: ReadonlySet<string> = new Set()) {
   const [now, setNow] = useState(() => Date.now())
   const [lastUpdated, setLastUpdated] = useState<number | null>(null)
 
@@ -69,8 +71,10 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
   // Vehicles are public (VISIBILITY.md/T35): everyone gets type and position, never the
   // driver; only an admin's request additionally carries it. The fetch function is
   // chosen by role so the two row shapes never mix in what's held.
+  // T72: a viewer watching for a car needs the vehicles even with the Vehicles layer off; only the
+  // matches are drawn then (MapView).
   const vehicles = useLiveDataset({
-    enabled: prefs.vehicles,
+    enabled: prefs.vehicles || watching.size > 0,
     fetchFull: () => (isAdmin ? fetchVehiclesAdmin(client, serverId) : fetchVehiclesPublic(client, serverId)),
     // The admin read is an RPC with no `t > since`: it is a full fetch every poll (see `fullMs`).
     fetchSince: (since) => (isAdmin ? fetchVehiclesAdmin(client, serverId) : fetchVehiclesPublic(client, serverId, since)),
@@ -91,6 +95,9 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
   // Car display names (migration 031): read on load, then rarely; the map stays empty until 031 is live.
   const vehicleNameRows = useDataset(true, () => fetchVehicleNames(client), VEHICLE_NAMES_POLL_MS)
   const vehicleNames = useMemo(() => vehicleNameMap(vehicleNameRows.data), [vehicleNameRows.data])
+  // T72: every script the game server loaded (038 + exporter 0.7.3), for the "Watch for a car"
+  // catalogue. Signed-in viewers only (the panel is theirs), on the names' cadence; missing is empty.
+  const vehicleScripts = useDataset(user !== null, () => fetchVehicleScripts(client, serverId), VEHICLE_NAMES_POLL_MS)
   const zones = useDataset(prefs.zones, () => fetchZones(client, serverId), VERY_SLOW_POLL_MS)
   // The zombie grid changes once a minute (the exporter's zgrid cadence), so it stays at the ingest interval.
   const grid = useDataset(prefs.zombieHeat, () => fetchZombieGrid(client, serverId), INGEST_INTERVAL_MS)
@@ -193,6 +200,7 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
     positions,
     vehicles,
     vehicleNames,
+    vehicleScripts: vehicleScripts.data,
     safehouses,
     npcGroups,
     npcOutposts,
