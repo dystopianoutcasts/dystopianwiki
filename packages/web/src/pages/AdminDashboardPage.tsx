@@ -46,8 +46,23 @@ import {
   setStatus,
   type ApiResult,
 } from '../lib/adminApi'
+import { AURORA_SERVER_ID } from '../lib/aurora'
+import { worldsApi } from '../lib/worldsClient'
+import type { Leftovers, World, WorldsResult } from '../lib/worldsApi'
+import {
+  MISSING_TEXT,
+  canUndo,
+  currentWorld,
+  formatDate,
+  leftoversText,
+  originText,
+  pendingText,
+  statusLine,
+  worldCountText,
+} from '../lib/worldsPanel'
 import '../styles/pages/mascot-vote.css'
 import '../styles/pages/admin.css'
+import '../styles/pages/admin-worlds.css'
 
 const ENTRY_IDS = MASCOT_ENTRIES.map((e) => e.id)
 
@@ -170,6 +185,8 @@ function Dashboard({ superadmin, selfId }: { superadmin: boolean; selfId: string
           Open the live map
         </a>
       </section>
+
+      <WorldSection />
 
       {superadmin && <MembersSection selfId={selfId} />}
 
@@ -300,6 +317,234 @@ function useConfirmedAction<T>(run: (target: T) => Promise<ApiResult<null>>, onD
     }
   }
   return { target, busy, error, ask, cancel, confirm }
+}
+
+// ---------------------------------------------------------------------------
+// Aurora world (T49)
+// ---------------------------------------------------------------------------
+
+type WorldLoad =
+  | { state: 'loading' }
+  | { state: 'unconfigured' }
+  | { state: 'missing' }
+  | { state: 'error'; text: string }
+  | { state: 'ready'; worlds: World[]; leftovers: Leftovers | null }
+
+function worldFailureText(r: Extract<WorldsResult<unknown>, { ok: false }>): string {
+  if (r.reason === 'refused') return r.detail ?? 'The database refused that change. Reload the dashboard and try again.'
+  if (r.reason === 'missing') return MISSING_TEXT
+  return FAILURE_TEXT[r.reason]
+}
+
+/** Like useConfirmedAction, for the world functions: refusals show the server's own message. */
+function useWorldAction<T>(run: (target: T) => Promise<WorldsResult<null>>, onDone: () => void) {
+  const [target, setTarget] = useState<T | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const ask = (t: T) => {
+    setError(null)
+    setTarget(t)
+  }
+  const cancel = () => {
+    if (!busy) setTarget(null)
+  }
+  const confirm = async () => {
+    if (target === null) return
+    setBusy(true)
+    setError(null)
+    const r = await run(target)
+    setBusy(false)
+    if (r.ok) {
+      setTarget(null)
+      onDone()
+    } else {
+      setError(worldFailureText(r))
+    }
+  }
+  return { target, busy, error, ask, cancel, confirm }
+}
+
+function WorldSection() {
+  const [load, setLoad] = useState<WorldLoad>({ state: 'loading' })
+  const [key, setKey] = useState(0)
+  const [note, setNote] = useState('')
+  const noteId = useId()
+  const reload = useCallback(() => setKey((k) => k + 1), [])
+
+  // One try per load (and one more after each action); a missing function is an answer, not a retry.
+  useEffect(() => {
+    let cancelled = false
+    if (!worldsApi) {
+      setLoad({ state: 'unconfigured' })
+      return
+    }
+    const api = worldsApi
+    void (async () => {
+      const w = await api.fetchWorlds(AURORA_SERVER_ID)
+      if (cancelled) return
+      if (!w.ok) {
+        setLoad(w.reason === 'missing' ? { state: 'missing' } : { state: 'error', text: worldFailureText(w) })
+        return
+      }
+      const l = await api.fetchLeftovers(AURORA_SERVER_ID)
+      if (cancelled) return
+      if (!l.ok && l.reason === 'missing') {
+        setLoad({ state: 'missing' })
+        return
+      }
+      setLoad({ state: 'ready', worlds: w.value, leftovers: l.ok ? l.value : null })
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [key])
+
+  const start = useWorldAction<true>(
+    () => worldsApi!.startNewWorld(AURORA_SERVER_ID, note.trim()),
+    () => {
+      setNote('')
+      reload()
+    },
+  )
+  const undo = useWorldAction<true>(() => worldsApi!.undoNewWorld(AURORA_SERVER_ID), reload)
+  const confirmPending = useWorldAction<string>((id) => worldsApi!.confirmPendingWorld(AURORA_SERVER_ID, id), reload)
+  const dismissPending = useWorldAction<string>((id) => worldsApi!.dismissPendingWorld(AURORA_SERVER_ID, id), reload)
+
+  const ready = load.state === 'ready' ? load : null
+  const current = ready ? currentWorld(ready.worlds) : null
+  const pending = ready?.leftovers?.pending ?? null
+  // Read once per render; the section reloads after every action, so this is current enough.
+  const showUndo = canUndo(current, Date.now())
+
+  return (
+    <section className="mascot-vote__panel" aria-labelledby="ad-world">
+      <h2 id="ad-world" className="mascot-vote__panel-title">
+        Aurora world
+      </h2>
+      {load.state === 'loading' && <p role="status">Loading the world record...</p>}
+      {load.state === 'unconfigured' && <p>Live data is not configured.</p>}
+      {load.state === 'missing' && <p>{MISSING_TEXT}</p>}
+      {load.state === 'error' && (
+        <>
+          <p role="alert">{load.text}</p>
+          <button type="button" className="mascot-vote__btn mascot-vote__btn--primary" onClick={reload}>
+            Try again
+          </button>
+        </>
+      )}
+      {ready && (
+        <>
+          <p>
+            <strong>{current ? statusLine(current) : 'No current world is recorded yet.'}</strong>
+          </p>
+          <p className="mascot-vote__meta">{worldCountText(ready.worlds.length)}</p>
+
+          {pending && (
+            <div className="mascot-vote__notice" role="alert">
+              <p>{pendingText(pending)}</p>
+              <div className="admin__actions">
+                <button type="button" className="mascot-vote__btn mascot-vote__btn--primary" onClick={() => confirmPending.ask(pending.worldId)}>
+                  Confirm new world
+                </button>
+                <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary" onClick={() => dismissPending.ask(pending.worldId)}>
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          )}
+
+          <p>{ready.leftovers ? leftoversText(ready.leftovers) : 'Leftovers could not be read.'}</p>
+
+          <div className="admin__actions">
+            <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary" onClick={() => start.ask(true)}>
+              Start a new world
+            </button>
+            {showUndo && (
+              <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary" onClick={() => undo.ask(true)}>
+                This was not a wipe
+              </button>
+            )}
+          </div>
+
+          <div className="mascot-vote__table-wrap" role="region" aria-labelledby="ad-world" tabIndex={0}>
+            <table className="mascot-vote__table admin__table">
+              <thead>
+                <tr>
+                  <th scope="col">World</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Detected by</th>
+                  <th scope="col">Started</th>
+                  <th scope="col">Ended</th>
+                  <th scope="col">Note</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ready.worlds.map((w) => (
+                  <tr key={w.worldId}>
+                    <th scope="row">{w.seq}</th>
+                    <td>{w.status}</td>
+                    <td>{originText(w.detectedBy)}</td>
+                    <td>{formatDate(w.startedAt)}</td>
+                    <td>{formatDate(w.endedAt)}</td>
+                    <td>{w.note ?? '-'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
+      <Confirm
+        open={start.target !== null}
+        title="Start a new world?"
+        confirmLabel="Start a new world"
+        busy={start.busy}
+        error={start.error}
+        onConfirm={() => void start.confirm()}
+        onCancel={start.cancel}
+      >
+        <p>Use after a wipe the server did not detect. Public data switches to the new world at once; the old world stays as history.</p>
+        <div className="admin__closing">
+          <label htmlFor={noteId}>Note (optional)</label>
+          <input id={noteId} type="text" value={note} maxLength={200} onChange={(e) => setNote(e.target.value)} />
+        </div>
+      </Confirm>
+      <Confirm
+        open={undo.target !== null}
+        title="This was not a wipe?"
+        confirmLabel="Restore the previous world"
+        busy={undo.busy}
+        error={undo.error}
+        onConfirm={() => void undo.confirm()}
+        onCancel={undo.cancel}
+      >
+        <p>This restores the previous world and hides the new one.</p>
+      </Confirm>
+      <Confirm
+        open={confirmPending.target !== null}
+        title="Confirm the new world?"
+        confirmLabel="Confirm new world"
+        busy={confirmPending.busy}
+        error={confirmPending.error}
+        onConfirm={() => void confirmPending.confirm()}
+        onCancel={confirmPending.cancel}
+      >
+        <p>Public data switches to the new world at once; the old world stays as history.</p>
+      </Confirm>
+      <Confirm
+        open={dismissPending.target !== null}
+        title="Dismiss the pending world?"
+        confirmLabel="Dismiss"
+        busy={dismissPending.busy}
+        error={dismissPending.error}
+        onConfirm={() => void dismissPending.confirm()}
+        onCancel={dismissPending.cancel}
+      >
+        <p>The current world stays as it is and the report is set aside.</p>
+      </Confirm>
+    </section>
+  )
 }
 
 // ---------------------------------------------------------------------------

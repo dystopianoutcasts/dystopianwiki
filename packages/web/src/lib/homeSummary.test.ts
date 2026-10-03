@@ -185,3 +185,24 @@ test('PvP and an open server without a password', () => {
   assert.equal(modeBadge(s), 'PvP')
   assert.equal(joiningText(s), 'Open to everyone, no password')
 })
+
+test('the world keys are read when present', () => {
+  const s = parseHomeSummary({ ...RAW, world_seq: 3, world_started_at: '2026-10-02T09:00:00+00:00', world_pending: true })
+  assert.ok(s)
+  assert.equal(s.worldSeq, 3)
+  assert.equal(s.worldStartedAt?.toISOString(), '2026-10-02T09:00:00.000Z')
+  assert.equal(s.worldPending, true)
+})
+
+test('a database without migration 032 gives null, null, false', () => {
+  const s = parseHomeSummary(RAW)
+  assert.ok(s)
+  assert.equal(s.worldSeq, null)
+  assert.equal(s.worldStartedAt, null)
+  assert.equal(s.worldPending, false)
+  const odd = parseHomeSummary({ ...RAW, world_seq: 'x', world_started_at: 7, world_pending: 'yes' })
+  assert.ok(odd)
+  assert.equal(odd.worldSeq, null)
+  assert.equal(odd.worldStartedAt, null)
+  assert.equal(odd.worldPending, false)
+})

@@ -47,6 +47,12 @@ export interface HomeSummary {
   gameVersion: string | null
   /** The time zone the "today" counters were counted in (030); null from the one-argument form. */
   dayTz: string | null
+  /** Which world this is (032); null from a database without 032 or before a world is recorded. */
+  worldSeq: number | null
+  /** When that world began (032). */
+  worldStartedAt: Date | null
+  /** A new world is waiting for an admin's confirmation (032); false when absent. */
+  worldPending: boolean
 }
 
 /** Shown wherever a figure is not available yet. */
@@ -128,6 +134,9 @@ export function parseHomeSummary(raw: unknown): HomeSummary | null {
     worldAgeHours: num(raw.world_age_hours),
     gameVersion: str(raw.game_version),
     dayTz: str(raw.day_tz),
+    worldSeq: num(raw.world_seq),
+    worldStartedAt: date(raw.world_started_at),
+    worldPending: raw.world_pending === true,
   }
 }
 

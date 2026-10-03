@@ -1,0 +1,16 @@
+/* Admin dashboard: the "Aurora world" panel (T49). Reuses the vote panel, notice, button and table classes. */
+
+.mascot-vote__panel .mascot-vote__notice .admin__actions {
+  margin-bottom: 0;
+}
+
+.mascot-vote__dialog .admin__closing,
+.mascot-dialog .admin__closing {
+  margin-top: var(--spacing-3);
+  padding-top: 0;
+  border-top: 0;
+}
+
+.mascot-dialog .admin__closing input {
+  width: 100%;
+}

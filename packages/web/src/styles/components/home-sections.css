@@ -554,3 +554,11 @@
   .home-setting { flex-direction: column; gap: 0; }
   .home-setting dd { text-align: left; }
 }
+
+/* Which world this is, under the badges (T49). Quiet on purpose. */
+.home-world {
+  margin: calc(-1 * var(--spacing-4)) auto var(--spacing-6);
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}

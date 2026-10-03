@@ -10,6 +10,7 @@ import {
   type HomeSummary,
 } from '../../lib/homeSummary';
 import { SERVER_ADDRESS } from '../../lib/links';
+import { homeWorldLine } from '../../lib/worldsPanel';
 import '../../styles/components/hero.css';
 import '../../styles/components/home-sections.css';
 
@@ -41,6 +42,12 @@ function ServerStatus({ summary }: { summary: HomeSummary | null }) {
       )}
     </p>
   );
+}
+
+/** Which world this is and since when: a quiet line under the badges, nothing until the server says. */
+function WorldLine({ summary }: { summary: HomeSummary | null }) {
+  const text = summary ? homeWorldLine(summary.worldSeq, summary.worldStartedAt) : null;
+  return text ? <p className="home-world">{text}</p> : null;
 }
 
 /** The few settings a player decides on first. TBD until the server reports them. */
@@ -120,6 +127,7 @@ export function HeroSection() {
         </p>
 
         <HeroBadges summary={summary} />
+        <WorldLine summary={summary} />
 
         {/*
           Plain <a>, not react-router's Link (T43, 2026-09-29): /map/ is a
