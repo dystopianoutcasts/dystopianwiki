@@ -264,7 +264,7 @@ export const TAB_HELP: Record<TabId, string> = {
   alltime:
     "Zombie kills across every character a player has had this season, including ones that died. If a player hasn't died, this matches their Kills. Ties are listed by name.",
   deaths: 'Deaths, ranked by how many characters each player has lost this season.',
-  survival: 'Time the current character has survived, in game days and hours. Living characters only.',
+  survival: "Time the current character has survived, in game days and hours. A player whose character just died shows 0h until the next one starts.",
 }
 
 export const EMPTY_LINES: Record<TabId, string> = {
