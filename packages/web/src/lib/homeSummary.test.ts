@@ -134,22 +134,28 @@ test('settings read in plain words, and TBD where unknown', () => {
   assert.equal(rows['Game version'], TBD)
 })
 
-test('world age reads in days and hours', () => {
-  assert.equal(formatWorldAge(0), '0 days 0 hours')
-  assert.equal(formatWorldAge(1), '0 days 1 hour')
-  assert.equal(formatWorldAge(25.5), '1 day 1 hour')
-  assert.equal(formatWorldAge(689.4), '28 days 17 hours')
-  assert.equal(formatWorldAge(-3), '0 days 0 hours')
+test('world age reads like the game World Time panel: Nd Nh Nm, under a day Nh Nm, each part floored', () => {
+  assert.equal(formatWorldAge(176.35), '7d 8h 21m')
+  assert.equal(formatWorldAge(0), '0h 0m')
+  assert.equal(formatWorldAge(1), '1h 0m')
+  assert.equal(formatWorldAge(24), '1d 0h 0m')
+  assert.equal(formatWorldAge(25.5), '1d 1h 30m')
+  assert.equal(formatWorldAge(689.4), '28d 17h 24m')
+  // floored, never rounded: 1.995 h is 1h 59.7m, which rounds to 2h 0m
+  assert.equal(formatWorldAge(1.995), '1h 59m')
+  assert.equal(formatWorldAge(23.999), '23h 59m')
+  assert.equal(formatWorldAge(-3), '0h 0m')
 })
 
 test('world age and game version come from the summary, TBD when absent or the wrong type', () => {
   const rows = (extra: object) => Object.fromEntries(settingRows(parseHomeSummary({ ...RAW, ...extra })).map((r) => [r.label, r.value]))
   const ok = rows({ world_age_hours: 689.4, game_version: ' 42.21.0 ', day_tz: 'America/Chicago' })
-  assert.equal(ok['World age'], '28 days 17 hours')
+  assert.equal(ok['World age'], '28d 17h 24m')
   assert.equal(ok['Game version'], '42.21.0')
   assert.equal(parseHomeSummary({ ...RAW, day_tz: 'America/Chicago' })?.dayTz, 'America/Chicago')
   assert.equal(parseHomeSummary(RAW)?.dayTz, null)
-  assert.equal(rows({ world_age_hours: 0 })['World age'], '0 days 0 hours')
+  assert.equal(rows({ world_age_hours: 0 })['World age'], '0h 0m')
+  assert.equal(rows({ world_age_hours: 176.35 })['World age'], '7d 8h 21m')
   assert.equal(rows({ world_age_hours: null, game_version: null })['World age'], TBD)
   const bad = rows({ world_age_hours: 'soon', game_version: 42 })
   assert.equal(bad['World age'], TBD)

@@ -171,12 +171,17 @@ export function formatHoursSurvived(hours: number): string {
   return `${days} ${days === 1 ? 'day' : 'days'} ${rest} h`
 }
 
-/** In-game world age as days and hours, minutes dropped: "0 days 0 hours", "1 day 1 hour", "28 days 17 hours". */
+/**
+ * In-game world age as DystopianQoL's World Time panel writes it ("World Age: 7d 8h 21m"):
+ * "7d 8h 21m", under a day "8h 21m"; each part floored. Counted in whole minutes first
+ * (with a hair of slack for float noise), so 176.35 h is 7d 8h 21m and never 20m.
+ */
 export function formatWorldAge(hours: number): string {
-  const whole = Math.max(0, Math.floor(hours))
-  const days = Math.floor(whole / 24)
-  const rest = whole % 24
-  return `${days} ${days === 1 ? 'day' : 'days'} ${rest} ${rest === 1 ? 'hour' : 'hours'}`
+  const minutes = Math.max(0, Math.floor(hours * 60 + 1e-6))
+  const days = Math.floor(minutes / 1440)
+  const h = Math.floor((minutes % 1440) / 60)
+  const m = minutes % 60
+  return days > 0 ? `${days}d ${h}h ${m}m` : `${h}h ${m}m`
 }
 
 /** A counter's text: 0 is a real answer ("0"); only a figure the server has not reported is TBD. */
