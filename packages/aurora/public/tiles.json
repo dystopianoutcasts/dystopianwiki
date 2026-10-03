@@ -13,15 +13,15 @@
   "world": {
     "pixels": {
       "w": 19968,
-      "h": 17920
+      "h": 16128
     },
     "cells": {
       "w": 78,
-      "h": 70
+      "h": 63
     },
     "squares": {
       "w": 19968,
-      "h": 17920
+      "h": 16128
     }
   },
   "cellRects": [
@@ -53,13 +53,13 @@
   "baseUrl": "",
   "tileUrlTemplate": "{baseUrl}/base_top/layer{layer}_files/{z}/{x}_{y}.webp",
   "sparse": true,
-  "renderedWithMapMods": true,
+  "renderedWithMapMods": false,
   "source": {
     "tool": "pzmap2dzi",
     "version": "1.1.17",
     "commit": "5025122c1a6de655122d79ef84dfcb40a632ea68",
-    "renderedAt": "2026-09-30",
-    "renderSeconds": 2409
+    "renderedAt": "2026-09-28",
+    "renderSeconds": 1903
   },
-  "_mapModsNote": "Rendered WITH map mods: sources.json names a mod source for at least one of the 4065 populated cells, or 6 overlay(s) are published."
+  "_mapModsNote": "Vanilla B42 only: sources.json names no mod source for any of the 4065 populated cells. Mod texture folders under out/texture/ can appear anyway as a side effect of use_depend_texture_only=false and do NOT mean those maps were rendered - sources.json's per-cell provenance is the reliable signal, not the texture folder listing."
 }
