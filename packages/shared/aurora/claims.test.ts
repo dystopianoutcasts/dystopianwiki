@@ -240,4 +240,5 @@ Deno.test('worlds (032): every claim row carries the run world, or none carries 
     assert(plain.every((r) => !('world_id' in r)), 'no world_id key');
   }
   assert(buildClaimRows(claims, 'srv', '2026-10-02T12:00:00.000Z').every((r) => !('world_id' in r)), 'default untagged');
+  assert(buildClaimRows(claims, 'srv', '2026-10-02T12:00:00.000Z', '').every((r) => !('world_id' in r)), 'empty id untagged');
 });

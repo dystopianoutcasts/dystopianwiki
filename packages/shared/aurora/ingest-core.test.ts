@@ -1324,3 +1324,43 @@ Deno.test('noteOptionalError: records what, status, code and message, and stops 
   assertEquals(list.length, 20, 'capped at 20');
   assertEquals(OPTIONAL_ERRORS_CAP, 20);
 });
+
+/** Every key of every row of every upsert body and every rpc's row list: no world_id anywhere. */
+function assertNoWorldKey(plan: IngestPlan, label: string): void {
+  let rows = 0;
+  for (const u of plan.upserts) {
+    for (const r of u.rows) {
+      rows++;
+      assertEquals('world_id' in r, false, `${label}: ${u.table} row carries a world_id key`);
+    }
+  }
+  assert(rows > 10, `${label}: the walk saw ${rows} rows`);
+  for (const c of plan.rpcs) {
+    for (const r of (c.args.p_rows as Row[] | undefined) ?? []) {
+      assertEquals('world_id' in r, false, `${label}: rpc ${c.fn} row carries a world_id key`);
+    }
+    // upsert_vehicles declares no world argument at all. observe_lives and
+    // replace_factions declare p_world as a REQUIRED argument (034, no default), so
+    // they send an explicit null, which the function reads as "the current world".
+    if (c.fn === 'upsert_vehicles') assertEquals('p_world' in c.args, false, `${label}: upsert_vehicles has no p_world`);
+    else if ('p_world' in c.args) assertEquals(c.args.p_world, null, `${label}: ${c.fn} p_world is null`);
+  }
+}
+
+Deno.test('T48 contract: an unknown world (disabled, enabled-but-null, empty) puts no world_id key on any row of any table', () => {
+  // Disabled and enabled-with-no-world both reach buildPlan as worldId null (activeWorldId).
+  for (const worldId of [null, undefined, '']) {
+    const plan = buildPlan(everyKindBatch(), SERVER, { worldId, seenAt: '2026-10-02T12:00:00.000Z' });
+    const present = new Set(plan.upserts.map((u) => u.table));
+    for (const name of TAGGED_IN_BATCH) assert(present.has(name), `fixture reaches ${name}`);
+    assertNoWorldKey(plan, `worldId ${JSON.stringify(worldId)}`);
+    assertUniformKeys(plan, `unknown ${JSON.stringify(worldId)}`);
+  }
+});
+
+Deno.test('T48 contract: tagRows sends no key for null, undefined or an empty id', () => {
+  const rows: Row[] = [{ a: 1 }, { a: 2 }];
+  for (const worldId of [null, undefined, '']) {
+    assertEquals(tagRows(rows, worldId).some((r) => 'world_id' in r), false, `tagRows ${JSON.stringify(worldId)}`);
+  }
+});

@@ -1,5 +1,6 @@
 // Run with: deno test packages/shared/aurora/worlds.test.ts
 import {
+  activeWorldId,
   disabledWorlds,
   isMissingColumnError,
   newestWorldRecord,
@@ -229,4 +230,14 @@ Deno.test('probeWorldsForRun: a transient probe error means world unknown (enabl
   );
   assertEquals(missing.worlds.enabled, false, 'a missing column still disables worlds');
   assertEquals(missing.error, null);
+});
+
+Deno.test('activeWorldId: a non-empty string only while enabled; everything else is null (no world key)', () => {
+  const st = (on: boolean, id: string | null): WorldState => ({ enabled: on, currentWorldId: id, events: [], note: null });
+  assertEquals(activeWorldId(st(true, 'w1')), 'w1');
+  assertEquals(activeWorldId(st(true, null)), null, 'enabled, no current world');
+  assertEquals(activeWorldId(st(true, '')), null, 'empty id');
+  assertEquals(activeWorldId(st(false, 'w1')), null, 'disabled wins over a stale id');
+  assertEquals(activeWorldId(disabledWorlds('x')), null);
+  assertEquals(activeWorldId(undefined), null);
 });

@@ -175,7 +175,7 @@ export const WORLD_TAGGED_TABLES: ReadonlySet<string> = new Set([
  * whose rows have different key sets.
  */
 export function tagRows(rows: Row[], worldId: string | null | undefined): Row[] {
-  if (typeof worldId !== 'string') return rows;
+  if (typeof worldId !== 'string' || worldId === '') return rows;
   return rows.map((r) => ({ ...r, world_id: worldId }));
 }
 
@@ -185,7 +185,7 @@ export function tagRows(rows: Row[], worldId: string | null | undefined): Row[] 
  * PostgREST answer "could not find the function" and stall the cursor.
  */
 function applyWorld(upserts: TableUpsert[], worldId: string | null | undefined): void {
-  if (typeof worldId !== 'string') return;
+  if (typeof worldId !== 'string' || worldId === '') return;
   for (const u of upserts) {
     if (WORLD_TAGGED_TABLES.has(u.table)) u.rows = tagRows(u.rows, worldId);
   }
@@ -627,7 +627,7 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
       ignoreDuplicates: true,
     });
   }
-  const pWorld = typeof opts.worldId === 'string' ? opts.worldId : null;
+  const pWorld = typeof opts.worldId === 'string' && opts.worldId !== '' ? opts.worldId : null;
   const lifeRows = buildLifeSampleRows(positions, opts.lifeSamples ?? 'newest');
   if (lifeRows.length > 0) {
     rpcs.push({

@@ -41,6 +41,18 @@ export function disabledWorlds(note: string | null = null): WorldState {
 }
 
 /**
+ * The world id a run may tag rows with: a non-empty string, and only while worlds
+ * are enabled. null for everything else (disabled, no current world, an empty id),
+ * and a null sends no `world_id` key at all (the column default keeps NULL, which
+ * counts as current). Every tagging site reads the state through this one function.
+ */
+export function activeWorldId(worlds: WorldState | undefined): string | null {
+  if (worlds === undefined || !worlds.enabled) return null;
+  const id = worlds.currentWorldId;
+  return typeof id === 'string' && id !== '' ? id : null;
+}
+
+/**
  * True when a PostgREST failure says a COLUMN does not exist: 42703 from
  * Postgres, PGRST204 from PostgREST's schema cache. isMissingObjectError does
  * not cover this on purpose: elsewhere an unknown column is a real failure.

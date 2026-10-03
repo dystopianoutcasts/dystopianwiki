@@ -56,6 +56,7 @@ import { connect as sftpConnect, type SftpSession } from '../../../packages/shar
 import { parsePins } from '../../../packages/shared/aurora/hostkey.ts';
 import { buildSavedPlayerRows, chunk, isMissingObjectError, tagRows } from '../../../packages/shared/aurora/ingest-core.ts';
 import {
+  activeWorldId,
   disabledWorlds,
   probeWorldsForRun,
   pruneOldWorlds,
@@ -217,7 +218,7 @@ async function readPlayersDb(
   const parsed = parsePlayersDb(SQL, bytes);
   // world_id (032) on every row when the run has a current world; read once per
   // run, so after a switch the first tagged write lands with the next run.
-  const rows = tagRows(buildSavedPlayerRows(parsed.players, cfg.serverId), worlds.enabled ? worlds.currentWorldId : null);
+  const rows = tagRows(buildSavedPlayerRows(parsed.players, cfg.serverId), activeWorldId(worlds));
 
   // The tail may have found no log yet; the players rows still need a server.
   await db.upsert('servers', [{ id: cfg.serverId }], 'id');
@@ -320,7 +321,7 @@ async function readClaims(session: SftpSession, db: AuroraRest, cfg: Config, wor
     parsed.claims,
     cfg.serverId,
     new Date(started).toISOString(),
-    worlds.enabled ? worlds.currentWorldId : null,
+    activeWorldId(worlds),
   );
 
   await db.upsert('servers', [{ id: cfg.serverId }], 'id');

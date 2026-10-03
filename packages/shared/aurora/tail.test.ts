@@ -12,7 +12,7 @@ import {
   tailStep,
 } from './tail.ts';
 import type { Row } from './ingest-core.ts';
-import { disabledWorlds, type WorldState } from './worlds.ts';
+import { disabledWorlds, PROBE_FAILED_NOTE, type WorldState } from './worlds.ts';
 
 function assertEquals<T>(actual: T, expected: T, msg = ''): void {
   const a = JSON.stringify(actual);
@@ -584,6 +584,53 @@ Deno.test('worlds: enabled with no current world and no record sends no world ke
   await tailStep(session, db, CFG, target, emptyTotals(), Date.now, enabled(null));
   assertEquals(db.rpcs.length, 0);
   for (const r of db.tables['player_position_history']) assert(!('world_id' in r), 'no world_id: null either');
+});
+
+Deno.test('T48 contract: disabled, enabled-but-null and probe-failed runs send no world_id key on a full tail step', async () => {
+  const T0 = 1790636586629;
+  const lines = [
+    `{"k":"boot","t":${T0},"v":"0.6.0","gv":"42.12.3"}`,
+    `{"k":"hb","t":${T0 + 1},"src":"tick","players":2,"st":{"game":{"zombies-loaded":5}}}`,
+    `{"k":"pos","t":${T0 + 2},"u":"alice","x":1,"y":2,"z":0,"hs":12.5,"zk":3}`,
+    `{"k":"veh","t":${T0 + 4},"id":9,"q":4242,"s":"Base.Van","x":10,"y":20,"z":0,"o":"alice"}`,
+    `{"k":"sh","t":${T0 + 5},"id":"s1","x":1,"y":1,"w":5,"h":5,"o":"alice"}`,
+    `{"k":"zone","t":${T0 + 6},"kind":"pvp","ti":"Arena","x1":1,"y1":2,"x2":3,"y2":4}`,
+    `{"k":"zgrid","t":${T0 + 7},"cx":1,"cy":2,"c":3}`,
+    `{"k":"npc","t":${T0 + 8},"id":"squad:1","f":"r","n":2,"x":1,"y":2}`,
+    `{"k":"npco","t":${T0 + 9},"id":"site:1","x1":1,"y1":2,"x2":3,"y2":4,"hid":false}`,
+    `{"k":"death","t":${T0 + 10},"u":"bob","x":3,"y":4,"src":"isdead","hs":2}`,
+    `{"k":"kill","t":${T0 + 11},"u":"alice","x":1,"y":2,"z":0}`,
+    `{"k":"facs","t":${T0 + 12},"f":[{"n":"Old","g":"","o":"x","m":["x"]}]}`,
+  ].map((j) => `[02-10-26 12:00:00.000] A1 ${j}.\n`).join('');
+  const states: [string, WorldState | undefined][] = [
+    ['disabled', disabledWorlds('servers.current_world_id does not exist (032 not applied)')],
+    ['enabled-null', enabled(null)],
+    ['probe-failed', { enabled: true, currentWorldId: null, events: [], note: PROBE_FAILED_NOTE }],
+    ['enabled-empty', enabled('')],
+  ];
+  for (const [label, worlds] of states) {
+    const file = new FakeFile();
+    file.append(lines);
+    const session = fakeSession(file);
+    const db = worldDb(() => Promise.resolve({ world_id: 'w9', status: 'current', switched: true }));
+    const target = (await findTarget(session, db, CFG))!;
+    await tailStep(session, db, CFG, target, emptyTotals(), Date.now, worlds);
+    let rows = 0;
+    for (const [table, trs] of Object.entries(db.tables)) {
+      for (const r of trs) {
+        rows++;
+        assertEquals('world_id' in r, false, `${label}: ${table} row carries a world_id key`);
+      }
+    }
+    assert('health_samples' in db.tables && 'players' in db.tables, `${label}: health_samples and players written`);
+    assert(rows > 8, `${label}: the walk saw ${rows} rows`);
+    for (const c of db.rpcs) {
+      for (const r of (c.args.p_rows as Row[] | undefined) ?? []) assertEquals('world_id' in r, false, `${label}: rpc ${c.fn} row`);
+      if (c.fn === 'upsert_vehicles') assertEquals('p_world' in c.args, false, `${label}: no p_world on upsert_vehicles`);
+      else if ('p_world' in c.args) assertEquals(c.args.p_world, null, `${label}: ${c.fn} p_world null`);
+    }
+    assertEquals(db.rpcs.some((c) => c.fn === 'register_world'), false, `${label}: no register_world without a record`);
+  }
 });
 
 // ---------------------------------------------------------------------------

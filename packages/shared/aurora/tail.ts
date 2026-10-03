@@ -37,7 +37,7 @@ import {
   type CursorState,
   type Row,
 } from './ingest-core.ts';
-import { newestWorldRecord, registerBatchWorld, type WorldState } from './worlds.ts';
+import { activeWorldId, newestWorldRecord, registerBatchWorld, type WorldState } from './worlds.ts';
 import type { UpsertOptions } from './rest.ts';
 
 /** Time between the starts of two reads inside one run. */
@@ -298,7 +298,7 @@ export async function tailStep(
   const plan = buildPlan(parsed.records, cfg.serverId, {
     launchStamp: target.launchStamp,
     seenAt: new Date(now()).toISOString(),
-    worldId: worlds?.enabled ? worlds.currentWorldId : null,
+    worldId: activeWorldId(worlds),
   });
   // An `optional` write the database refuses (a missing table, or any other 4xx)
   // is skipped and counted, not thrown: a side feature must never stall the
