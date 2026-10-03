@@ -7,13 +7,13 @@ import assert from 'node:assert/strict'
 import { beforeEach, test } from 'node:test'
 import type { RpcResult } from './homeSummaryRpc'
 import {
+  LEADERBOARD_FETCH,
   LEADERBOARD_FN,
-  LEADERBOARD_LIMIT,
   LEADERBOARD_RETRY_MS,
   MAX_ROWS,
   boardTitle,
   callLeaderboard,
-  killsValue,
+  currentLifeKills,
   nextTab,
   ordinal,
   parseLeaderboard,
@@ -87,12 +87,24 @@ test('parse: not an object is null; an empty object is an empty board; a list st
   assert.equal(parseLeaderboard({ deaths: many })?.deaths.length, MAX_ROWS)
 })
 
-test('kills value: "live / total" once kills are on dead characters, else the total alone', () => {
-  assert.equal(killsValue({ live: 3, total: 214 }), '3 / 214')
-  assert.equal(killsValue({ live: 0, total: 214 }), '0 / 214')
-  assert.equal(killsValue({ live: 181, total: 181 }), '181')
-  assert.equal(killsValue({ live: 0, total: 0 }), '0')
-  assert.equal(killsValue({ live: 1200, total: 15000 }), '1,200 / 15,000')
+test('current-life kills: ranked by live kills, no-kill lives dropped, ties share a rank', () => {
+  const d = parseLeaderboard(CONTRACT)
+  assert.ok(d)
+  assert.deepEqual(currentLifeKills(d.kills).map((r) => [r.rank, r.username, r.live]), [
+    [1, 'Pootard', 181],
+    [2, 'hok', 12],
+    [3, 'rax', 3],
+  ])
+  const row = (username: string, live: number, total: number) => ({ rank: 9, username, displayName: null, live, total, alive: true, online: false })
+  assert.deepEqual(currentLifeKills([row('c', 2, 2), row('b', 5, 90), row('a', 5, 5)]).map((r) => [r.rank, r.username]), [
+    [1, 'a'],
+    [1, 'b'],
+    [3, 'c'],
+  ])
+  // The best current life can sit below the top 10 by total; it still ranks first here.
+  const byTotal = Array.from({ length: 12 }, (_, i) => row(`t${i}`, 1, 100 - i)).concat(row('fresh', 50, 50))
+  assert.deepEqual(currentLifeKills(byTotal)[0], { ...row('fresh', 50, 50), rank: 1 })
+  assert.deepEqual(currentLifeKills([]), [])
 })
 
 test('survival value: the game\'s Nd Nh from a day up, Nh under a day', () => {
@@ -118,12 +130,20 @@ test('tab rows: each tab formats its value, ranks 1-3 get medals (ties share), n
     kills.map((r) => [r.rank, r.medal, r.rankText, r.name, r.value]),
     [
       [1, 'gold', '1st', 'Pete Tard', '181'],
-      [2, 'silver', '2nd', 'fisher man', '3 / 214'],
-      [2, 'silver', '2nd', 'skye', '0 / 214'],
-      [4, null, '4th', 'Hokalt', '12'],
+      [2, 'silver', '2nd', 'Hokalt', '12'],
+      [3, 'bronze', '3rd', 'fisher man', '3'],
     ],
   )
-  assert.deepEqual(tabRows(d, 'kills', 'account').map((r) => r.name), ['Pootard', 'rax', 'skye', 'hok'])
+  assert.deepEqual(tabRows(d, 'kills', 'account').map((r) => r.name), ['Pootard', 'hok', 'rax'])
+  assert.deepEqual(
+    tabRows(d, 'alltime', 'character').map((r) => [r.rank, r.medal, r.name, r.value]),
+    [
+      [1, 'gold', 'Pete Tard', '181'],
+      [2, 'silver', 'fisher man', '214'],
+      [2, 'silver', 'skye', '214'],
+      [4, null, 'Hokalt', '12'],
+    ],
+  )
   assert.deepEqual(tabRows(d, 'deaths', 'character').map((r) => [r.name, r.value]), [['skye', '4'], ['fisher man', '1']])
   assert.deepEqual(tabRows(d, 'survival', 'character').map((r) => [r.medal, r.value]), [['gold', '7d 8h'], ['silver', '24h'], ['bronze', '5h']])
   assert.deepEqual(tabRows(null, 'kills', 'character'), [])
@@ -163,10 +183,11 @@ test('relative time', () => {
 })
 
 test('arrow keys move across the tabs and wrap; Home and End jump; other keys do nothing', () => {
-  assert.equal(nextTab('kills', 'ArrowRight'), 'deaths')
+  assert.equal(nextTab('kills', 'ArrowRight'), 'alltime')
+  assert.equal(nextTab('alltime', 'ArrowRight'), 'deaths')
   assert.equal(nextTab('survival', 'ArrowRight'), 'kills')
   assert.equal(nextTab('kills', 'ArrowLeft'), 'survival')
-  assert.equal(nextTab('deaths', 'ArrowLeft'), 'kills')
+  assert.equal(nextTab('deaths', 'ArrowLeft'), 'alltime')
   assert.equal(nextTab('deaths', 'Home'), 'kills')
   assert.equal(nextTab('kills', 'End'), 'survival')
   assert.equal(nextTab('kills', 'Enter'), null)
@@ -187,8 +208,10 @@ test('call: asks leaderboard(p_server, p_limit) and parses the answer', async ()
   const r = await callLeaderboard(rpc, 'outcasts-main', 1000)
   assert.equal(r.unavailable, false)
   assert.equal(r.data?.kills.length, 4)
-  assert.deepEqual(calls, [{ fn: LEADERBOARD_FN, args: { p_server: 'outcasts-main', p_limit: LEADERBOARD_LIMIT } }])
+  assert.deepEqual(calls, [{ fn: LEADERBOARD_FN, args: { p_server: 'outcasts-main', p_limit: LEADERBOARD_FETCH } }])
   assert.equal(LEADERBOARD_FN, 'leaderboard')
+  // Every row the function allows (036 clamps p_limit to 1..100), so Kills can rank them all.
+  assert.equal(LEADERBOARD_FETCH, 100)
 })
 
 test('call: a missing function (036 not applied) is unavailable and rests before asking again', async () => {

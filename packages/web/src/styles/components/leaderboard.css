@@ -37,6 +37,18 @@
   cursor: pointer;
 }
 
+/* Four tabs on a phone: less side padding, and a long label wraps inside its pill. */
+@media (max-width: 480px) {
+  .lb-tabs {
+    gap: var(--spacing-1);
+  }
+
+  .lb-tab {
+    padding: var(--spacing-1);
+    line-height: 1.15;
+  }
+}
+
 .lb-tab:hover:not([aria-selected='true']) {
   color: var(--color-link);
   text-decoration: underline;

@@ -1,6 +1,6 @@
 /**
  * The home page leaderboard (T66): the shape of aurora.leaderboard(p_server, p_limit)
- * (T65, migration 036), read defensively, and the display text for its three tabs.
+ * (T65, migration 036), read defensively, and the display text for its four tabs.
  *
  * Contract (tasks/T65-leaderboard-backend-036.md), every key always present on a good answer:
  *   { source: "mod" | "aurora", world_seq, seen_at,
@@ -23,15 +23,22 @@ import { shownName, type NameMode } from './nameMode'
 /** The function name: auroraClient.rpc('leaderboard', { p_server, p_limit }). */
 export const LEADERBOARD_FN = 'leaderboard'
 
-/** Rows asked for per tab, and the most a payload may carry per tab. */
+/** Rows shown per tab, and the most a payload may carry per tab. */
 export const LEADERBOARD_LIMIT = 10
 export const MAX_ROWS = 100
+
+/**
+ * Rows asked for per tab: every row the function allows (it clamps p_limit to 1..100). The
+ * function ranks kills by the lifetime total only, so the Kills tab (current life) is ranked
+ * here from the whole list; a top 10 by total could leave out the best current life.
+ */
+export const LEADERBOARD_FETCH = MAX_ROWS
 
 /** How long a missing function is left alone before it is asked for again. */
 export const LEADERBOARD_RETRY_MS = 5 * 60_000
 
-export type TabId = 'kills' | 'deaths' | 'survival'
-export const TAB_IDS: readonly TabId[] = ['kills', 'deaths', 'survival']
+export type TabId = 'kills' | 'alltime' | 'deaths' | 'survival'
+export const TAB_IDS: readonly TabId[] = ['kills', 'alltime', 'deaths', 'survival']
 
 export type BoardSource = 'mod' | 'aurora'
 
@@ -142,9 +149,19 @@ export function formatCount(n: number): string {
   return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
-/** The game's Kills value: "live / total" once some kills are on dead characters, else the total. */
-export function killsValue(row: { live: number; total: number }): string {
-  return row.total > row.live ? `${formatCount(row.live)} / ${formatCount(row.total)}` : formatCount(row.total)
+/**
+ * The Kills tab's list: players with kills on their current character, ranked by those kills
+ * the way the function ranks every list (RANK(): equal numbers share a rank; then username).
+ */
+export function currentLifeKills(rows: readonly KillsRow[]): KillsRow[] {
+  const sorted = rows
+    .filter((r) => r.live > 0)
+    .sort((a, b) => b.live - a.live || (a.username < b.username ? -1 : a.username > b.username ? 1 : 0))
+  const out: KillsRow[] = []
+  sorted.forEach((r, i) => {
+    out.push({ ...r, rank: i > 0 && sorted[i - 1].live === r.live ? out[i - 1].rank : i + 1 })
+  })
+  return out
 }
 
 /**
@@ -206,26 +223,29 @@ function display(row: RowBase, value: string, mode: NameMode, i: number): Displa
 /** One tab's rows, in the order given (the database ranks them), at most `limit`. */
 export function tabRows(data: Leaderboard | null, tab: TabId, mode: NameMode, limit: number = LEADERBOARD_LIMIT): DisplayRow[] {
   if (!data) return []
-  if (tab === 'kills') return data.kills.slice(0, limit).map((r, i) => display(r, killsValue(r), mode, i))
+  if (tab === 'kills') return currentLifeKills(data.kills).slice(0, limit).map((r, i) => display(r, formatCount(r.live), mode, i))
+  if (tab === 'alltime') return data.kills.slice(0, limit).map((r, i) => display(r, formatCount(r.total), mode, i))
   if (tab === 'deaths') return data.deaths.slice(0, limit).map((r, i) => display(r, formatCount(r.deaths), mode, i))
   return data.survival.slice(0, limit).map((r, i) => display(r, survivalValue(r.hours), mode, i))
 }
 
-export const TAB_LABELS: Record<TabId, string> = { kills: 'Kills', deaths: 'Deaths', survival: 'Survival' }
+export const TAB_LABELS: Record<TabId, string> = { kills: 'Kills', alltime: 'All-Time Kills', deaths: 'Deaths', survival: 'Survival' }
 
 /** The value column's heading per tab. */
-export const VALUE_HEADINGS: Record<TabId, string> = { kills: 'Kills', deaths: 'Deaths', survival: 'Survived' }
+export const VALUE_HEADINGS: Record<TabId, string> = { kills: 'Kills', alltime: 'Kills', deaths: 'Deaths', survival: 'Survived' }
 
 /** The game's tab tooltip, shown as visible text under the tab (a tooltip alone fails on touch). */
 export const TAB_HELP: Record<TabId, string> = {
-  kills:
-    'Zombie kills, ranked by lifetime total. Once a player has kills carried over from characters that have died, the value reads as current life / all lives. A single number means every kill is on their current character.',
+  kills: "Zombie kills by each player's current character. Kills from characters that have died count only toward All-Time Kills.",
+  alltime:
+    "Zombie kills across every character a player has had this season, including ones that died. If a player hasn't died, this matches their Kills.",
   deaths: 'Deaths, ranked by how many characters each player has lost this season.',
   survival: 'Time the current character has survived, in game days and hours. Living characters only.',
 }
 
 export const EMPTY_LINES: Record<TabId, string> = {
-  kills: 'No kills recorded yet this season.',
+  kills: 'No kills by a current character yet this season.',
+  alltime: 'No kills recorded yet this season.',
   deaths: 'No deaths recorded yet this season.',
   survival: 'Nobody has survived long enough to rank yet this season.',
 }
@@ -290,7 +310,7 @@ export function resetLeaderboardProbe(): void {
  */
 export async function callLeaderboard(rpc: RpcCall, serverId: string, now: number = Date.now()): Promise<LeaderboardResult> {
   if (now < closedUntil) return { data: null, unavailable: true }
-  const { data, error } = await rpc(LEADERBOARD_FN, { p_server: serverId, p_limit: LEADERBOARD_LIMIT })
+  const { data, error } = await rpc(LEADERBOARD_FN, { p_server: serverId, p_limit: LEADERBOARD_FETCH })
   if (error) {
     if (isMissingFunction(error)) {
       closedUntil = now + LEADERBOARD_RETRY_MS

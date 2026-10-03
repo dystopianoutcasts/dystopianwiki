@@ -6,7 +6,7 @@ import { LeaderboardView, tabDomId } from './LeaderboardView';
 import '../../styles/components/home-sections.css';
 import '../../styles/components/leaderboard.css';
 
-// "Season <n> leaderboard" (T66): aurora.leaderboard() (T65, migration 036) in three tabs.
+// "Season <n> leaderboard" (T66): aurora.leaderboard() (T65, migration 036) in four tabs.
 // Before 036 exists the function is missing and the section shows one quiet line.
 // Names follow the Survivor name / Username switch in "Who is on now" (T62): the same
 // saved choice, a change on this page (subscribeNameMode) or on the map in another tab.

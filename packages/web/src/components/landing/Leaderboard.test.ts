@@ -73,44 +73,62 @@ function rowsOf(html: string, tab: TabId): string[][] {
   ])
 }
 
-test('title is the season; three tabs in a tablist, Kills selected by default', () => {
+test('title is the season; four tabs in a tablist, Kills selected by default', () => {
   const node = view()
   const html = staticMarkup(node)
   assert.match(html, /<h2 class="home-section__title" id="lb-title">Season 1 leaderboard<\/h2>/)
   assert.match(html, /<div class="lb-tabs" role="tablist" aria-labelledby="lb-title">/)
   const t = tabs(node).map(propsOf)
-  assert.deepEqual(t.map((p) => p.children), ['Kills', 'Deaths', 'Survival'])
-  assert.deepEqual(t.map((p) => p['aria-selected']), [true, false, false])
-  assert.deepEqual(t.map((p) => p.tabIndex), [0, -1, -1])
-  assert.deepEqual(t.map((p) => p['aria-controls']), ['lb-panel-kills', 'lb-panel-deaths', 'lb-panel-survival'])
-  assert.deepEqual(t.map((p) => p.id), ['lb-tab-kills', 'lb-tab-deaths', 'lb-tab-survival'])
+  assert.deepEqual(t.map((p) => p.children), ['Kills', 'All-Time Kills', 'Deaths', 'Survival'])
+  assert.deepEqual(t.map((p) => p['aria-selected']), [true, false, false, false])
+  assert.deepEqual(t.map((p) => p.tabIndex), [0, -1, -1, -1])
+  assert.deepEqual(t.map((p) => p['aria-controls']), ['lb-panel-kills', 'lb-panel-alltime', 'lb-panel-deaths', 'lb-panel-survival'])
+  assert.deepEqual(t.map((p) => p.id), ['lb-tab-kills', 'lb-tab-alltime', 'lb-tab-deaths', 'lb-tab-survival'])
   assert.equal(propsOf(panel(node, 'kills')).hidden, false)
   assert.equal(propsOf(panel(node, 'deaths')).hidden, true)
   assert.equal(propsOf(panel(node, 'kills'))['aria-labelledby'], 'lb-tab-kills')
 })
 
-test('Kills rows: rank, name, value; live / total only when kills are on dead characters', () => {
+test('Kills rows: current character only, one number each, ranked by it', () => {
   assert.deepEqual(rowsOf(staticMarkup(view()), 'kills'), [
     ['1', 'Pete Tard', '181'],
-    ['2', 'fisher man', '3 / 214'],
-    ['2', 'skye', '0 / 214'],
+    ['2', 'Hokalt', '12'],
+    ['3', 'fisher man', '3'],
+  ])
+})
+
+test('All-Time Kills rows: every character this season, in the game\'s order', () => {
+  assert.deepEqual(rowsOf(staticMarkup(view({ tab: 'alltime' })), 'alltime'), [
+    ['1', 'Pete Tard', '181'],
+    ['2', 'fisher man', '214'],
+    ['2', 'skye', '214'],
     ['4', 'Hokalt', '12'],
   ])
 })
 
-test('the Kills tooltip text is visible under the tabs and describes the panel', () => {
-  const html = staticMarkup(view())
-  assert.match(
-    html,
-    /<p class="lb-help" id="lb-help-kills">Zombie kills, ranked by lifetime total\. Once a player has kills carried over from characters that have died, the value reads as current life \/ all lives\. A single number means every kill is on their current character\.<\/p>/,
+test('each kills tab explains itself in visible text under the tabs', () => {
+  const html = staticMarkup(view()).replace(/&#x27;/g, "'")
+  assert.ok(
+    html.includes(
+      `<p class="lb-help" id="lb-help-kills">Zombie kills by each player's current character. Kills from characters that have died count only toward All-Time Kills.</p>`,
+    ),
+  )
+  assert.ok(
+    html.includes(
+      `<p class="lb-help" id="lb-help-alltime">Zombie kills across every character a player has had this season, including ones that died. If a player hasn't died, this matches their Kills.</p>`,
+    ),
   )
   assert.equal(propsOf(panel(view(), 'kills'))['aria-describedby'], 'lb-help-kills')
+  assert.equal(propsOf(panel(view(), 'alltime'))['aria-describedby'], 'lb-help-alltime')
 })
 
 test('crowns for ranks 1-3 have the rank in words as their text alternative; ties share', () => {
   const html = staticMarkup(view())
   const medals = [...html.matchAll(/<span class="lb-medal lb-medal--(\w+)" role="img" aria-label="(\w+)">/g)].map((m) => [m[1], m[2]])
   assert.deepEqual(medals, [
+    ['gold', '1st'],
+    ['silver', '2nd'],
+    ['bronze', '3rd'],
     ['gold', '1st'],
     ['silver', '2nd'],
     ['silver', '2nd'],
@@ -127,7 +145,7 @@ test('crowns for ranks 1-3 have the rank in words as their text alternative; tie
 test('switching tabs: a click selects without moving focus; arrows select and move focus', () => {
   const picks: [TabId, boolean][] = []
   const node = view({ onSelect: (t, k) => picks.push([t, k]) })
-  ;(propsOf(tabs(node)[2]).onClick as () => void)()
+  ;(propsOf(tabs(node)[3]).onClick as () => void)()
   const list = elements(node).find((e) => propsOf(e).role === 'tablist')
   assert.ok(list)
   const key = (k: string) => {
@@ -141,7 +159,7 @@ test('switching tabs: a click selects without moving focus; arrows select and mo
   assert.equal(key('Tab'), false)
   assert.deepEqual(picks, [
     ['survival', false],
-    ['deaths', true],
+    ['alltime', true],
     ['survival', true],
     ['survival', true],
   ])
@@ -151,7 +169,7 @@ test('the selected tab shows its own rows and value format', () => {
   const deaths = view({ tab: 'deaths' })
   assert.equal(propsOf(panel(deaths, 'deaths')).hidden, false)
   assert.equal(propsOf(panel(deaths, 'kills')).hidden, true)
-  assert.deepEqual(tabs(deaths).map((e) => propsOf(e)['aria-selected']), [false, true, false])
+  assert.deepEqual(tabs(deaths).map((e) => propsOf(e)['aria-selected']), [false, false, true, false])
   assert.deepEqual(rowsOf(staticMarkup(deaths), 'deaths'), [
     ['1', 'skye', '4'],
     ['2', 'fisher man', '1'],
@@ -165,8 +183,9 @@ test('the selected tab shows its own rows and value format', () => {
 })
 
 test('the name mode flips names: survivor name (username when none) or username', () => {
-  assert.deepEqual(rowsOf(staticMarkup(view({ mode: 'character' })), 'kills').map((r) => r[1]), ['Pete Tard', 'fisher man', 'skye', 'Hokalt'])
-  assert.deepEqual(rowsOf(staticMarkup(view({ mode: 'account' })), 'kills').map((r) => r[1]), ['Pootard', 'rax', 'skye', 'hok'])
+  assert.deepEqual(rowsOf(staticMarkup(view({ mode: 'character' })), 'kills').map((r) => r[1]), ['Pete Tard', 'Hokalt', 'fisher man'])
+  assert.deepEqual(rowsOf(staticMarkup(view({ mode: 'account' })), 'kills').map((r) => r[1]), ['Pootard', 'hok', 'rax'])
+  assert.deepEqual(rowsOf(staticMarkup(view({ mode: 'account' })), 'alltime').map((r) => r[1]), ['Pootard', 'rax', 'skye', 'hok'])
 })
 
 test('the source line under the table', () => {
@@ -196,6 +215,7 @@ test('no rows: each tab says so, and no table is drawn', () => {
   const empty = parseLeaderboard({ source: 'aurora', world_seq: 2, seen_at: null, kills: [], deaths: [], survival: [] })
   const html = staticMarkup(view({ data: empty }))
   assert.match(html, /Season 2 leaderboard/)
+  assert.ok(html.includes('<p class="home-section__empty">No kills by a current character yet this season.</p>'))
   assert.ok(html.includes('<p class="home-section__empty">No kills recorded yet this season.</p>'))
   assert.ok(html.includes('<p class="home-section__empty">No deaths recorded yet this season.</p>'))
   assert.doesNotMatch(html, /<table/)

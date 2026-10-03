@@ -17,17 +17,18 @@ import {
 } from '../../lib/leaderboard';
 import type { NameMode } from '../../lib/nameMode';
 
-// The home page leaderboard as DystopianQoL's in-game window shows it (T66): Kills,
-// Deaths and Survival tabs over one table each. No hooks, so it renders in a test;
+// The home page leaderboard as DystopianQoL's in-game window shows it (T66): Kills
+// (current character), All-Time Kills (the game's own Kills order), Deaths and Survival
+// tabs over one table each. No hooks, so it renders in a test;
 // Leaderboard.tsx owns the data, the selected tab, focus and the name mode.
 //
 // Tabs follow the WAI-ARIA tabs pattern: role tablist/tab/tabpanel, aria-selected,
-// roving tabindex, Left/Right (wrapping), Home and End. All three panels are in the
-// page; the two not selected are `hidden`. Ranks 1-3 get a crown drawn here (never the
+// roving tabindex, Left/Right (wrapping), Home and End. Every panel is in the page;
+// the ones not selected are `hidden`. Ranks 1-3 get a crown drawn here (never the
 // mod's PNGs) whose text alternative is the rank in words ("1st").
 
 export const LEAD_LINE =
-  'Ranked as the in-game Leaderboard window ranks them. Names follow the Survivor name / Username switch above.';
+  'All-Time Kills, Deaths and Survival are ranked as the in-game Leaderboard window ranks them. Names follow the Survivor name / Username switch above.';
 
 export function tabDomId(prefix: string, tab: TabId): string {
   return `${prefix}-tab-${tab}`;
