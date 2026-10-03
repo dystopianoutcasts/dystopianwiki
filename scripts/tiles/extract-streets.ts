@@ -18,8 +18,15 @@
 // pieces), and tells apart the ones that are not (the same name reused in a different
 // town) by the nearest named area. See `clusterStreets` below for the measured facts
 // this is built on.
+//
+// T50 (2026-10-02): every merged feature carries `m`, the map id (describe-mod-maps.ts
+// `mapId`) of the map that owns it, so the live map can drop the features of a map the
+// server stopped running. Vanilla ("Muldraugh, KY" -> muldraugh-ky) is never tagged, so a
+// vanilla-only run writes the same bytes as before. `--map` takes an optional id after
+// the last colon (`--map "<folder>:<id>"`); without one the id is mapId(folder name).
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs'
-import { dirname, join, resolve } from 'node:path'
+import { basename, dirname, join, resolve } from 'node:path'
+import { mapId } from './describe-mod-maps'
 
 const DEFAULT_STREETS_XML =
   'R:/Games/Steam/steamapps/common/ProjectZomboid/media/maps/Muldraugh, KY/streets.xml'
@@ -46,6 +53,8 @@ export interface StreetPiece {
   name: string
   width: number
   points: [number, number][]
+  /** T50: the id of the map this piece came from; absent for vanilla. */
+  m?: string
 }
 
 /** Shape of one entry in packages/aurora/public/data/areas.json (extract-objects.ts). */
@@ -74,6 +83,9 @@ export interface Street {
   lines: [number, number][][]
   /** A point ON the road, nearest to the length-weighted centroid of its segments. */
   center: [number, number]
+  /** T50: the map that owns this road; absent for vanilla. Always written LAST, so an
+   *  untagged entry is byte-identical to the pre-T50 shape. */
+  m?: string
 }
 
 const STREET_RE = /<street\s+name="([^"]*)"\s+width="([\d.]+)"\s*>([\s\S]*?)<\/street>/g
@@ -334,18 +346,29 @@ export function clusterStreets(pieces: StreetPiece[], areas: AreaRaw[], joinDist
 
   const out: Street[] = []
   for (const [name, group] of byName) {
-    const clusters = clusterPiecesByProximity(group, joinDistance)
+    // T50: pieces of one name from different maps never join, so every road belongs to
+    // exactly one map and is dropped with it. Same-named roads of two maps are then told
+    // apart below like any other same-named roads. One map (vanilla alone): one partition,
+    // the same clusters in the same order as before.
+    const byMap = new Map<string | undefined, StreetPiece[]>()
+    for (const p of group) {
+      const list = byMap.get(p.m)
+      if (list) list.push(p)
+      else byMap.set(p.m, [p])
+    }
+    const clusters = [...byMap.values()].flatMap((pieces) => clusterPiecesByProximity(pieces, joinDistance))
     const built = clusters.map((cluster) => {
       const lines = cluster.map((c) => c.points)
       const width = Math.max(...cluster.map((c) => c.width))
       const centroid = weightedCentroid(lines)
       const center = nearestPointOnLines(lines, centroid)
       const area = nearestArea(center, areas)
-      return { name, width, lines, center, area }
+      return { name, width, lines, center, area, m: cluster[0].m }
     })
+    const tag = (m: string | undefined) => (m !== undefined ? { m } : {})
 
     if (built.length === 1) {
-      out.push({ id: slug(name), name, label: name, area: built[0].area?.name ?? null, width: built[0].width, lines: built[0].lines, center: built[0].center })
+      out.push({ id: slug(name), name, label: name, area: built[0].area?.name ?? null, width: built[0].width, lines: built[0].lines, center: built[0].center, ...tag(built[0].m) })
       continue
     }
 
@@ -389,7 +412,7 @@ export function clusterStreets(pieces: StreetPiece[], areas: AreaRaw[], joinDist
       seen.add(l)
     }
     built.forEach((b, i) => {
-      out.push({ id: slug(disambiguated[i]), name, label: disambiguated[i], area: b.area?.name ?? null, width: b.width, lines: b.lines, center: b.center })
+      out.push({ id: slug(disambiguated[i]), name, label: disambiguated[i], area: b.area?.name ?? null, width: b.width, lines: b.lines, center: b.center, ...tag(b.m) })
     })
   }
 
@@ -489,6 +512,50 @@ export function mergeByOwnership<T>(
   return merged
 }
 
+// --- T50: which map a feature came from ------------------------------------------------
+
+/** The vanilla map's id. Its features are never tagged: the live map always draws them. */
+export const VANILLA_MAP_ID = mapId('Muldraugh, KY')
+
+/** One `--map` value: the map folder, and the id its features are tagged with. */
+export interface MapSpec {
+  folder: string
+  id: string
+}
+
+/**
+ * Parse `--map "<folder>"` or `--map "<folder>:<id>"`. The id is what follows the LAST
+ * colon when that colon is not a drive letter's ("R:/...") and what follows it looks like
+ * an id (lower case letters, digits, "_" and "-"); otherwise the whole value is the folder
+ * and the id is mapId(folder name), the same id the tile overlay gets.
+ */
+export function parseMapArg(value: string): MapSpec {
+  const i = value.lastIndexOf(':')
+  if (i > 1) {
+    const rest = value.slice(i + 1)
+    if (/^[a-z0-9_-]*$/.test(rest)) {
+      const folder = value.slice(0, i)
+      return { folder, id: rest || mapId(basename(folder)) }
+    }
+  }
+  return { folder: value, id: mapId(basename(value)) }
+}
+
+/** The `m` a map's features carry: its id, or none for vanilla. */
+export function mapTag(spec: MapSpec): string | undefined {
+  return spec.id === VANILLA_MAP_ID ? undefined : spec.id
+}
+
+/** `items` with `m` added last on each, or `items` unchanged for an untagged (vanilla) map. */
+export function tagItems<T extends object>(items: T[], m: string | undefined): (T & { m?: string })[] {
+  return m === undefined ? items : items.map((item) => ({ ...item, m }))
+}
+
+/** `--map` values (strings, parsed) or ready specs, as one list of specs. */
+export function toSpecs(maps: (string | MapSpec)[]): MapSpec[] {
+  return maps.map((m) => (typeof m === 'string' ? parseMapArg(m) : m))
+}
+
 /** Read one map folder's streets.xml, or no streets at all when it does not ship one
  *  (a mod map need not add streets). */
 export function readMapFolderStreets(mapFolder: string): StreetPiece[] {
@@ -500,10 +567,12 @@ export function readMapFolderStreets(mapFolder: string): StreetPiece[] {
   }
 }
 
-/** Merge street pieces from several map folders, in Map= order. */
-export function mergeStreetPieces(mapFolders: string[]): StreetPiece[] {
-  const cellSets = mapFolders.map(readOwnedCells)
-  const perMap = mapFolders.map(readMapFolderStreets)
+/** Merge street pieces from several map folders, in Map= order, each piece tagged with
+ *  its map (T50; vanilla untagged). */
+export function mergeStreetPieces(maps: (string | MapSpec)[]): StreetPiece[] {
+  const specs = toSpecs(maps)
+  const cellSets = specs.map((s) => readOwnedCells(s.folder))
+  const perMap = specs.map((s) => tagItems(readMapFolderStreets(s.folder), mapTag(s)))
   return mergeByOwnership(perMap, cellSets, (p) => p.points)
 }
 

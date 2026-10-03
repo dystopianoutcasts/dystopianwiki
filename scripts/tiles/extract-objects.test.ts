@@ -142,3 +142,56 @@ describe('T45: mod towns from the committed towns file', () => {
     expect(towns).toHaveLength(6)
   })
 })
+
+describe('T50: areas name the map that owns them', () => {
+  it('a mod town carries its file entry\'s map as m, written last', () => {
+    const towns = parseModTowns(JSON.stringify({ towns: [{ map: 'raven-creek-b42', name: 'Raven Creek', x: 5376, y: 16128, areaSquares: 7602176 }] }))
+    const [town] = addModTowns([], towns)
+    expect(town).toEqual({ name: 'Raven Creek', kind: 'town', x: 5376, y: 16128, areaSquares: 7602176, count: 0, mod: true, m: 'raven-creek-b42' })
+    expect(Object.keys(town).at(-1)).toBe('m')
+  })
+
+  it('every town in the committed towns file carries a map id', () => {
+    const file = fileURLToPath(new URL('./mod-maps/server-towns.json', import.meta.url))
+    const towns = parseModTowns(readFileSync(file, 'utf8'))
+    // addModTowns sorts biggest first, so compare as sorted lists.
+    expect(addModTowns([], towns).map((a) => a.m).sort()).toEqual(towns.map((t) => t.map).sort())
+    expect(towns.every((t) => typeof t.map === 'string' && t.map.length > 0)).toBe(true)
+  })
+
+  it('refuses a towns entry whose map is not a string', () => {
+    expect(() => parseModTowns(JSON.stringify({ towns: [{ map: 7, name: 'A', x: 1, y: 1, areaSquares: 1 }] }))).toThrow()
+  })
+
+  it('mergeRegionRows + groupAreas: the mod area carries m, the vanilla area has no m key', () => {
+    const make = (cells: string[], lua: string) => {
+      const dir = mkdtempSync(join(tmpdir(), 'aurora-t50-objects-'))
+      for (const cell of cells) writeFileSync(join(dir, `${cell}.lotheader`), '')
+      writeFileSync(join(dir, 'regions.lua'), lua)
+      return dir
+    }
+    const modDir = make(['0_0'], 'regions = {\n  { name = "ModTown", type = "Region", x = 20, y = 20, z = 0, width = 10, height = 10, },\n}')
+    const vanillaDir = make(['1_0'], 'regions = {\n  { name = "FarTown", type = "Region", x = 300, y = 10, z = 0, width = 20, height = 20, },\n}')
+    try {
+      const areas = groupAreas(mergeRegionRows([`${modDir}:havenfall`, `${vanillaDir}:muldraugh-ky`]))
+      expect(areas.find((a) => a.name === 'ModTown')!.m).toBe('havenfall')
+      expect('m' in areas.find((a) => a.name === 'FarTown')!).toBe(false)
+    } finally {
+      rmSync(modDir, { recursive: true, force: true })
+      rmSync(vanillaDir, { recursive: true, force: true })
+    }
+  })
+
+  it('one name in two maps is two areas, one per map (vanilla alone: unchanged grouping)', () => {
+    const rows = [
+      { name: 'Twin', type: 'Region', x: 0, y: 0, width: 10, height: 10 },
+      { name: 'Twin', type: 'Region', x: 100, y: 0, width: 10, height: 10, m: 'havenfall' },
+    ]
+    expect(groupAreas(rows).map((a) => a.m)).toEqual([undefined, 'havenfall'])
+    expect(groupAreas(rows.map((r) => ({ name: r.name, type: r.type, x: r.x, y: r.y, width: r.width, height: r.height })))).toHaveLength(1)
+  })
+
+  it('a vanilla-only grouping writes no m key anywhere', () => {
+    expect(JSON.stringify(groupAreas(parseRegions(FIXTURE)))).not.toContain('"m"')
+  })
+})

@@ -11,6 +11,8 @@ import type { LayerKey } from '../state/layerPrefs'
 import { loadNameMode, saveNameMode } from '../state/nameMode'
 import type { NameMode } from '../state/nameMode'
 import { useAuroraData } from '../data/useAuroraData'
+import { useServerMaps } from '../data/serverMaps'
+import { allowedMapIds, filterByServerMaps, mapsWithoutTiles, overlaysToDraw } from '../map/followMaps'
 import {
   areaFeatures,
   findablePlayers,
@@ -33,6 +35,7 @@ import { NameModeToggle } from '../panels/NameModeToggle'
 import { LayerToggles } from '../panels/LayerToggles'
 import { StreetSearch } from '../panels/StreetSearch'
 import { FindPlayer } from '../panels/FindPlayer'
+import { MapNotices } from '../panels/MapNotices'
 import { LINK_FEATURE_ENABLED } from '../config'
 import { playersNote } from './playersNote'
 import { SEARCH_STREET_ZOOM, SEARCH_PLAYER_ZOOM } from '../map/MapView'
@@ -166,9 +169,25 @@ export function MapPage() {
     statusText,
   } = useAuroraData(client, serverId, prefs, user, isAdmin)
 
-  const streets = useMemo(() => streetFeatures(rawStreets), [rawStreets])
-  const worldMap = useMemo(() => worldMapFeatures(rawWorldMap), [rawWorldMap])
-  const areas = useMemo(() => areaFeatures(rawAreas), [rawAreas])
+  // T50: only the maps the server runs. Unknown list (no migration 033 yet): everything,
+  // as before. Streets, areas and world-map shapes of other maps are dropped before any
+  // layer or the street search sees them.
+  const serverMaps = useServerMaps(client, serverId, isAdmin)
+  const allowed = useMemo(() => allowedMapIds(serverMaps.list), [serverMaps.list])
+  const shown = useMemo(
+    () => filterByServerMaps({ streets: rawStreets, areas: rawAreas, worldMap: rawWorldMap }, allowed),
+    [rawStreets, rawAreas, rawWorldMap, allowed],
+  )
+  const overlays = useMemo(() => overlaysToDraw(cfg?.overlays ?? [], allowed), [cfg, allowed])
+  // Admins only, and only from a list read without error: a notice never comes from a guess.
+  const noTiles = useMemo(
+    () => (isAdmin && serverMaps.error === null ? mapsWithoutTiles(serverMaps.list, cfg?.overlays ?? []) : []),
+    [isAdmin, serverMaps.error, serverMaps.list, cfg],
+  )
+
+  const streets = useMemo(() => streetFeatures(shown.streets), [shown.streets])
+  const worldMap = useMemo(() => worldMapFeatures(shown.worldMap), [shown.worldMap])
+  const areas = useMemo(() => areaFeatures(shown.areas), [shown.areas])
   const players = useMemo(() => playerFeatures(positions.data, profiles.data, nameMode), [positions.data, profiles.data, nameMode])
   const findable = useMemo(() => findablePlayers(positions.data, profiles.data, nameMode), [positions.data, profiles.data, nameMode])
   const vehicleList = useMemo(() => vehicleFeatures(vehicles.data, profiles.data, nameMode, vehicleNames), [vehicles.data, profiles.data, nameMode, vehicleNames])
@@ -241,6 +260,7 @@ export function MapPage() {
     <div className="aurora-shell">
       <MapView
         cfg={cfg}
+        overlays={overlays}
         tilesBase={config.tilesBaseUrl}
         initialView={initialView}
         onViewChange={onViewChange}
@@ -279,6 +299,7 @@ export function MapPage() {
         <FindPlayer players={findable} onSelect={(pos) => setFlyTo({ x: pos.x, y: pos.y, zoom: SEARCH_PLAYER_ZOOM })} />
         <RosterPanel profiles={profiles.data} error={profiles.error} mode={nameMode} />
         {isAdmin ? <HealthPanel latest={latest} samples={samples} error={healthError} now={now} /> : null}
+        {isAdmin ? <MapNotices noTiles={noTiles} pendingWorld={serverMaps.pendingWorld} /> : null}
         <LayerToggles prefs={prefs} onChange={setLayer} notes={notes} />
       </aside>
     </div>

@@ -11,6 +11,7 @@ import type { TileOverlay, TilesConfig } from './tiles'
 import { overlayTileUrl, tileCssSize } from './tiles'
 
 const mapViewSrc = readFileSync(fileURLToPath(new URL('./MapView.tsx', import.meta.url)), 'utf8')
+const mapPageSrc = readFileSync(fileURLToPath(new URL('../pages/MapPage.tsx', import.meta.url)), 'utf8')
 
 const cfg: TilesConfig = {
   coordinateSpace: 'b42-square',
@@ -58,35 +59,49 @@ describe('overlayTileUrl', () => {
 })
 
 describe('MapView.tsx: mod-map overlays (source text - see header note)', () => {
-  // Captures the exact loop this task requires: reverse index order over cfg.overlays,
-  // each overlay added straight to the map (no `pane:` override, so it lands in the
-  // default tile pane, above the base tile layer and below every vector/marker layer).
-  const overlayBlock = mapViewSrc.match(
-    /for \(let i = overlays\.length - 1; i >= 0; i--\) \{[\s\S]*?\.addTo\(map\)\s*\}/,
-  )
+  // T50: overlays are no longer created once in the mount effect. A separate effect over
+  // the `overlays` prop (cfg.overlays less the maps the server does not run) asks
+  // reconcileOverlays (./followMaps.ts, unit-tested in followMaps.test.ts) what to remove
+  // and what to add, and adds in the order it returns: bottom first, so the first Map=
+  // entry ends on top. Each is added straight to the map (no `pane:` override, so it lands
+  // in the default tile pane, above the base tile layer and below every vector/marker layer).
+  const overlayBlock = mapViewSrc.match(/for \(const id of add\) \{[\s\S]*?overlayLayers\.current\.set\(id, layer\)\s*\}/)
 
-  it('imports overlayTileUrl from ./tiles', () => {
+  it('imports overlayTileUrl from ./tiles and reconcileOverlays from ./followMaps', () => {
     expect(mapViewSrc).toMatch(/import\s*\{[^}]*overlayTileUrl[^}]*\}\s*from\s*'\.\/tiles'/)
+    expect(mapViewSrc).toMatch(/import\s*\{[^}]*reconcileOverlays[^}]*\}\s*from\s*'\.\/followMaps'/)
   })
 
-  it('MUTATION - overlay order reversed: iterates overlays in REVERSE list order (last added first), so the first overlay (Map= winner) paints on top', () => {
+  it('MUTATION - overlay order reversed: adds exactly the ids reconcileOverlays returns, in the order it returns them (bottom first), never re-sorted', () => {
+    expect(mapViewSrc).toMatch(/const \{ remove, add \} = reconcileOverlays\(overlayOrder\.current, overlays\.map\(\(o\) => o\.id\)\)/)
     expect(overlayBlock).not.toBeNull()
+    expect(mapViewSrc).not.toMatch(/add\.reverse\(\)|\[\.\.\.add\]\.reverse\(\)|add\.sort\(/)
   })
 
-  it('reads cfg.overlays with a safe fallback, so today\'s tiles.json (no overlays field) still works', () => {
-    expect(mapViewSrc).toMatch(/const overlays = cfg\.overlays \?\? \[\]/)
+  it('removes what reconcileOverlays says to remove, and remembers the ids on the map in Map= order', () => {
+    expect(mapViewSrc).toMatch(/for \(const id of remove\) \{[\s\S]*?map\.removeLayer\(layer\)/)
+    expect(mapViewSrc).toMatch(/overlayOrder\.current = overlays\.map\(\(o\) => o\.id\)\.filter\(\(id\) => overlayLayers\.current\.has\(id\)\)/)
+  })
+
+  it('re-runs when the drawn overlay list changes (the server Map= list changed while the page is open)', () => {
+    expect(mapViewSrc).toMatch(/\}, \[overlays, cfg, tilesBase\]\)/)
+  })
+
+  it('MapPage feeds it cfg.overlays with a safe fallback, so a tiles.json with no overlays field still works', () => {
+    expect(mapPageSrc).toMatch(/overlaysToDraw\(cfg\?\.overlays \?\? \[\], allowed\)/)
+    expect(mapPageSrc).toMatch(/overlays=\{overlays\}/)
   })
 
   it('MUTATION - overlay drawn above the street layer: the overlay TileLayer sets no explicit `pane`, so it never escapes the default tile pane into the vector/marker panes streets and players use', () => {
     expect(overlayBlock![0]).not.toMatch(/pane:/)
   })
 
-  it('the overlay block runs before map.setView (inside the mount-once effect, alongside the base tile layer)', () => {
-    const overlayIndex = mapViewSrc.indexOf('for (let i = overlays.length - 1; i >= 0; i--)')
-    const setViewIndex = mapViewSrc.indexOf('map.setView(squareToLatLng({ x: initialView.x')
-    expect(overlayIndex).toBeGreaterThan(-1)
-    expect(setViewIndex).toBeGreaterThan(-1)
-    expect(overlayIndex).toBeLessThan(setViewIndex)
+  it('the overlay effect is declared after the mount-once effect, so the map exists when it first runs, and the unmount forgets the layers', () => {
+    const mountIndex = mapViewSrc.indexOf('const map = L.map(container.current')
+    const overlayIndex = mapViewSrc.indexOf('reconcileOverlays(overlayOrder.current')
+    expect(mountIndex).toBeGreaterThan(-1)
+    expect(overlayIndex).toBeGreaterThan(mountIndex)
+    expect(mapViewSrc).toMatch(/overlayLayers\.current\.clear\(\)\s*overlayOrder\.current = \[\]/)
   })
 
   it('each overlay layer resolves its tile URL through overlayTileUrl, not tileUrl', () => {

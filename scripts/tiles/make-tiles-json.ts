@@ -1,7 +1,7 @@
 // Derive tiles.json from a rendered pyramid so it is never written by hand.
 //
 //   npx tsx scripts/tiles/make-tiles-json.ts <base_top dir> [--baseUrl <url>] [--out <file>]
-//     [--order <map1,map2,...>]
+//     [--order <map1,map2,...>] [--names <server-maps.txt>]
 //
 // <base_top dir> is <render out>/html/map_data/base_top (holds layer0.dzi,
 // map_info.json and sources.json). Run twice on the same render: the second
@@ -14,8 +14,15 @@
 // map/MapView.tsx). Each entry's own map_info.json must describe the exact same
 // pyramid geometry as the base's (same rule Part RENDER's render.ps1 enforces at
 // render time): a mismatch refuses rather than shipping a misaligned overlay.
+//
+// T50: each overlay also carries `mapName`, the map's folder name exactly as a `Map=` entry
+// spells it, read from describe-mod-maps.ts's server-maps.txt (`map_name` under the id's
+// key). `--names <path>` names that file (default scripts/tiles/mod-maps/server-maps.txt);
+// an id the file does not list gets no mapName, and the map app falls back to its id.
 import { existsSync, readdirSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
+
+const DEFAULT_NAMES = 'scripts/tiles/mod-maps/server-maps.txt'
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(name)
@@ -36,6 +43,8 @@ export interface TileOverlayEntry {
   title: string
   tileUrlTemplate: string
   cellRects: [number, number, number, number][]
+  /** T50: the map folder name as Map= spells it; absent when server-maps.txt lacks the id. */
+  mapName?: string
 }
 
 export interface TilesJson {
@@ -157,7 +166,7 @@ export function populatedCellsOf(pyramidDir: string): [number, number][] | null 
  * its `title` too (Part FINAL or a later task can replace this with a friendlier name).
  * `cellRects` is the OVERLAY's own populated-cell rectangles, not the base's.
  */
-export function buildOverlay(id: string, modMapsDir: string, base: MapInfo): TileOverlayEntry {
+export function buildOverlay(id: string, modMapsDir: string, base: MapInfo, mapName?: string): TileOverlayEntry {
   const infoPath = join(modMapsDir, id, 'base_top', 'map_info.json')
   if (!existsSync(infoPath)) {
     throw new Error(`overlay '${id}' has no map_info.json at ${infoPath}`)
@@ -170,7 +179,28 @@ export function buildOverlay(id: string, modMapsDir: string, base: MapInfo): Til
     title: id,
     tileUrlTemplate: `{baseUrl}/mod_maps/${id}/base_top/layer{layer}_files/{z}/{x}_{y}.webp`,
     cellRects: cells ? rectsFromCells(cells) : overlayInfo.cell_rects,
+    ...(mapName !== undefined ? { mapName } : {}),
   }
+}
+
+/**
+ * T50: id -> map folder name from describe-mod-maps.ts's output (server-maps.txt). Each
+ * entry starts with `<id>:` at the start of a line; its `map_name:` line is a YAML
+ * single-quoted scalar, whose only escape is a doubled quote. Anything else is ignored.
+ */
+export function parseServerMapNames(text: string): Map<string, string> {
+  const out = new Map<string, string>()
+  let current: string | null = null
+  for (const line of text.split(/\r?\n/)) {
+    const key = /^([^\s#][^:]*):\s*$/.exec(line)
+    if (key) {
+      current = key[1]
+      continue
+    }
+    const name = /^\s+map_name:\s*'((?:[^']|'')*)'\s*$/.exec(line)
+    if (name && current !== null) out.set(current, name[1].replace(/''/g, "'"))
+  }
+  return out
 }
 
 /**
@@ -178,7 +208,7 @@ export function buildOverlay(id: string, modMapsDir: string, base: MapInfo): Til
  * run as a CLI script) so tests can point it at a small fixture render folder instead of
  * the real multi-gigabyte output - see make-tiles-json.test.ts.
  */
-export function generateTilesJson(dir: string, opts: { baseUrl?: string; order?: string[] } = {}): TilesJson {
+export function generateTilesJson(dir: string, opts: { baseUrl?: string; order?: string[]; names?: Map<string, string> } = {}): TilesJson {
   // --- layer0.dzi: pixel dimensions and tile format -------------------------
   const dzi = readFileSync(join(dir, 'layer0.dzi'), 'utf8')
   const tileSize = Number(/TileSize="(\d+)"/.exec(dzi)?.[1])
@@ -250,7 +280,7 @@ export function generateTilesJson(dir: string, opts: { baseUrl?: string; order?:
         `Map= order (first entry drawn on top), e.g. --order sd_cc,other_mod`,
       )
     }
-    overlays = opts.order.map((id) => buildOverlay(id, modMapsDir, mapInfo))
+    overlays = opts.order.map((id) => buildOverlay(id, modMapsDir, mapInfo, opts.names?.get(id)))
   }
   const renderedWithMapMods = sourcesNameAMod || overlays.length > 0
 
@@ -294,14 +324,24 @@ export function generateTilesJson(dir: string, opts: { baseUrl?: string; order?:
 function main() {
   const dir = process.argv[2]
   if (!dir || dir.startsWith('--')) {
-    console.error('usage: make-tiles-json.ts <base_top dir> [--baseUrl <url>] [--out <file>] [--order <map1,map2,...>]')
+    console.error('usage: make-tiles-json.ts <base_top dir> [--baseUrl <url>] [--out <file>] [--order <map1,map2,...>] [--names <server-maps.txt>]')
     process.exit(1)
   }
   const out = resolve(arg('--out') ?? 'packages/aurora/public/tiles.json')
   const orderArg = arg('--order')
   const order = orderArg ? orderArg.split(',').map((s) => s.trim()).filter((s) => s.length > 0) : undefined
 
-  const tiles = generateTilesJson(dir, { baseUrl: arg('--baseUrl'), order })
+  // The default names file is optional (a vanilla-only render has no mod maps to name);
+  // a --names path given explicitly must exist.
+  const namesArg = arg('--names')
+  const namesPath = resolve(namesArg ?? DEFAULT_NAMES)
+  if (namesArg && !existsSync(namesPath)) {
+    console.error(`--names ${namesPath} does not exist`)
+    process.exit(1)
+  }
+  const names = existsSync(namesPath) ? parseServerMapNames(readFileSync(namesPath, 'utf8')) : undefined
+
+  const tiles = generateTilesJson(dir, { baseUrl: arg('--baseUrl'), order, names })
 
   mkdirSync(dirname(out), { recursive: true })
   writeFileSync(out, JSON.stringify(tiles, null, 2) + '\n')

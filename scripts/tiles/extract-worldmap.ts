@@ -16,7 +16,8 @@
 // B41 and B42 (300 squares to 256), not the square unit itself.
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
-import { simplify, readOwnedCells, mergeByOwnership } from './extract-streets'
+import { simplify, readOwnedCells, mergeByOwnership, mapTag, tagItems, toSpecs } from './extract-streets'
+import type { MapSpec } from './extract-streets'
 
 const CELL_SQUARES = 300
 
@@ -40,10 +41,11 @@ function args(name: string): string[] {
 
 export type RoadType = 'primary' | 'secondary' | 'tertiary' | 'trail' | 'railway'
 export type BuildingType = string
-export interface RoadFeature { type: RoadType; closed: boolean; points: [number, number][] }
-export interface BuildingFeature { type: BuildingType; points: [number, number][] }
-export interface WaterFeature { points: [number, number][] }
-export interface ForestFeature { points: [number, number][] }
+// T50: `m` is the id of the map that owns the shape, absent for vanilla, always last.
+export interface RoadFeature { type: RoadType; closed: boolean; points: [number, number][]; m?: string }
+export interface BuildingFeature { type: BuildingType; points: [number, number][]; m?: string }
+export interface WaterFeature { points: [number, number][]; m?: string }
+export interface ForestFeature { points: [number, number][]; m?: string }
 export interface WorldMap {
   roads: RoadFeature[]
   buildings: BuildingFeature[]
@@ -61,6 +63,13 @@ export interface RawFeature {
   geometryType: 'Polygon' | 'LineString' | 'Point'
   points: [number, number][]
   properties: Record<string, string>
+  /** T50: the id of the map this feature came from; absent for vanilla. */
+  m?: string
+}
+
+/** `{ m }` for a tagged feature, nothing for vanilla: spread LAST so key order is fixed. */
+function tag(m: string | undefined): { m?: string } {
+  return m !== undefined ? { m } : {}
 }
 
 /** Parse one worldmap-shaped XML file (worldmap.xml or worldmap-forest.xml). Regex, not a
@@ -98,13 +107,13 @@ export function classifyMain(features: RawFeature[]): { roads: RoadFeature[]; bu
     if (f.geometryType === 'Point') continue // place labels etc.: out of Part B's scope
     const closed = f.geometryType === 'Polygon'
     if (f.properties.highway) {
-      roads.push({ type: f.properties.highway as RoadType, closed, points: f.points })
+      roads.push({ type: f.properties.highway as RoadType, closed, points: f.points, ...tag(f.m) })
     } else if (f.properties.railway) {
-      roads.push({ type: 'railway', closed, points: f.points })
+      roads.push({ type: 'railway', closed, points: f.points, ...tag(f.m) })
     } else if (f.properties.building) {
-      buildings.push({ type: f.properties.building, points: f.points })
+      buildings.push({ type: f.properties.building, points: f.points, ...tag(f.m) })
     } else if (f.properties.water) {
-      water.push({ points: f.points })
+      water.push({ points: f.points, ...tag(f.m) })
     }
   }
   return { roads, buildings, water }
@@ -127,7 +136,7 @@ function bboxArea(points: [number, number][]): number {
 export function classifyForest(features: RawFeature[], minArea = 0): ForestFeature[] {
   return features
     .filter((f) => f.geometryType === 'Polygon' && bboxArea(f.points) >= minArea)
-    .map((f) => ({ points: f.points }))
+    .map((f) => ({ points: f.points, ...tag(f.m) }))
 }
 
 /**
@@ -174,10 +183,12 @@ export function readMapFolderForest(mapFolder: string): RawFeature[] {
 /** Merge worldmap.xml and worldmap-forest.xml raw features from several map folders, in
  *  Map= order. Classification (classifyMain/classifyForest) runs once on the merged
  *  lists afterward, same as the single-map path. */
-export function mergeWorldmapRaw(mapFolders: string[]): { main: RawFeature[]; forest: RawFeature[] } {
-  const cellSets = mapFolders.map(readOwnedCells)
-  const main = mergeByOwnership(mapFolders.map(readMapFolderWorldmapMain), cellSets, (f) => f.points)
-  const forest = mergeByOwnership(mapFolders.map(readMapFolderForest), cellSets, (f) => f.points)
+export function mergeWorldmapRaw(maps: (string | MapSpec)[]): { main: RawFeature[]; forest: RawFeature[] } {
+  const specs = toSpecs(maps)
+  const cellSets = specs.map((s) => readOwnedCells(s.folder))
+  // T50: each feature tagged with its map (vanilla untagged) before the merge.
+  const main = mergeByOwnership(specs.map((s) => tagItems(readMapFolderWorldmapMain(s.folder), mapTag(s))), cellSets, (f) => f.points)
+  const forest = mergeByOwnership(specs.map((s) => tagItems(readMapFolderForest(s.folder), mapTag(s))), cellSets, (f) => f.points)
   return { main, forest }
 }
 
@@ -207,8 +218,8 @@ function main() {
   const simplified: WorldMap = {
     roads: roads.map((r) => ({ ...r, points: simplifyRing(r.points, r.closed, tolerance) })),
     buildings: buildings.map((b) => ({ ...b, points: simplifyRing(b.points, true, tolerance) })),
-    water: water.map((w) => ({ points: simplifyRing(w.points, true, tolerance) })),
-    forest: forestRaw.map((f) => ({ points: simplifyRing(f.points, true, forestTolerance) })),
+    water: water.map((w) => ({ points: simplifyRing(w.points, true, tolerance), ...tag(w.m) })),
+    forest: forestRaw.map((f) => ({ points: simplifyRing(f.points, true, forestTolerance), ...tag(f.m) })),
   }
 
   const sumPoints = (lists: { points: [number, number][] }[][]) =>

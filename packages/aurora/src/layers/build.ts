@@ -200,6 +200,10 @@ export function buildZombieDensityLayer(cfg: TilesConfig, tilesBase?: string): L
     bounds: worldBounds(cfg),
     noWrap: true,
     opacity: 0.6,
+    // T50: mod-map overlays can be added after this layer (the server's Map= list changed
+    // while the page was open); a z-index above theirs (Leaflet's default 1) keeps the
+    // density shading on top of them, as it is when everything is added on load.
+    zIndex: 2,
   })
 }
 

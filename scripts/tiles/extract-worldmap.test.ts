@@ -183,6 +183,22 @@ describe('classifyForest', () => {
     const [f] = classifyForest(parseWorldmap(FOREST_FIXTURE))
     expect(Object.keys(f)).toEqual(['points'])
   })
+
+  it('T50: a tagged feature keeps its map as m; untagged (vanilla) has no m key', () => {
+    const raw = parseWorldmap(FOREST_FIXTURE)
+    const tagged = classifyForest(raw.map((f) => ({ ...f, m: 'havenfall' })))
+    expect(tagged.every((f) => f.m === 'havenfall')).toBe(true)
+    expect(JSON.stringify(classifyForest(raw))).not.toContain('"m"')
+  })
+})
+
+describe('T50: classifyMain tags', () => {
+  it('buildings and water keep a tagged feature\'s m; vanilla output has no m key anywhere', () => {
+    const raw = parseWorldmap(MAIN_FIXTURE)
+    const tagged = classifyMain(raw.map((f) => ({ ...f, m: 'raccooncity' })))
+    expect([...tagged.roads, ...tagged.buildings, ...tagged.water].every((f) => f.m === 'raccooncity')).toBe(true)
+    expect(JSON.stringify(classifyMain(raw))).not.toContain('"m"')
+  })
 })
 
 describe('simplifyRing', () => {
@@ -272,6 +288,22 @@ describe('mergeWorldmapRaw (T45 Part EXTRACT: real map folders on disk, first in
       expect(readMapFolderWorldmapMain(dir)).toEqual([])
     } finally {
       rmSync(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('T50: the mod-owned road carries m, the vanilla road has no m key, and classifyMain keeps both that way', () => {
+    const modDir = makeMapFolder(['0_0'], { 'worldmap.xml': roadXml(0, 0, 20, 20, 60, 20) })
+    const vanillaDir = makeMapFolder(['1_0'], { 'worldmap.xml': roadXml(1, 0, 10, 10, 60, 10) })
+    try {
+      const merged = mergeWorldmapRaw([`${modDir}:constown-ky`, { folder: vanillaDir, id: 'muldraugh-ky' }])
+      const { roads } = classifyMain(merged.main)
+      const mod = roads.find((r) => r.points[0][0] === 20)!
+      const vanilla = roads.find((r) => r.points[0][0] === 310)!
+      expect(mod).toEqual({ type: 'secondary', closed: false, points: mod.points, m: 'constown-ky' })
+      expect(Object.keys(vanilla)).toEqual(['type', 'closed', 'points'])
+    } finally {
+      rmSync(modDir, { recursive: true, force: true })
+      rmSync(vanillaDir, { recursive: true, force: true })
     }
   })
 

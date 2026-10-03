@@ -3,8 +3,9 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
-import type { TilesConfig } from './tiles'
+import type { TileOverlay, TilesConfig } from './tiles'
 import { overlayTileUrl, tileUrl } from './tiles'
+import { reconcileOverlays } from './followMaps'
 import { sizedTileLayer } from './sizedTileLayer'
 import { latLngToSquare, overlayBounds, squareToLatLng, worldBounds } from './coords'
 import { makeCrs } from './crs'
@@ -74,6 +75,9 @@ export const SEARCH_PLAYER_ZOOM = 17
 
 interface Props {
   cfg: TilesConfig
+  /** T50: the mod-map overlays to draw, in Map= order (first on top): cfg.overlays less
+   *  the maps the server does not run (map/followMaps.ts overlaysToDraw). */
+  overlays: TileOverlay[]
   tilesBase?: string
   initialView: View
   onViewChange: (v: View) => void
@@ -104,7 +108,7 @@ function swap(map: L.Map | null, ref: { current: L.Layer | null }, next: L.Layer
 }
 
 export function MapView(props: Props) {
-  const { cfg, tilesBase, initialView, onViewChange, prefs, ownUsernames, flyTo } = props
+  const { cfg, overlays, tilesBase, initialView, onViewChange, prefs, ownUsernames, flyTo } = props
   const container = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
   const onViewChangeRef = useRef(onViewChange)
@@ -124,6 +128,9 @@ export function MapView(props: Props) {
   const heatLayer = useRef<L.Layer | null>(null)
   const zombieDensityLayer = useRef<L.Layer | null>(null)
   const objectsLayer = useRef<L.Layer | null>(null)
+  /** T50: the overlay layers on the map, by overlay id, and their ids in Map= order. */
+  const overlayLayers = useRef(new Map<string, L.Layer>())
+  const overlayOrder = useRef<string[]>([])
 
   // Create the map once. Tiles, view and the URL callback are set here and never rebuilt.
   useEffect(() => {
@@ -155,33 +162,6 @@ export function MapView(props: Props) {
       noWrap: true,
     }).addTo(map)
 
-    // T45 Part PUBLISH: mod-map overlays share the base pyramid's exact geometry (Part
-    // RENDER's all_mod_maps rule), so each is just another TileLayer in the SAME default
-    // tile pane as the base layer above (no `pane:` override here) - never the vector
-    // overlayPane that streets/areas/safehouses use, nor the players panes: an overlay
-    // must sit above the base and below every data layer, never cover a street, an area
-    // label or a marker. cfg.overlays is in Map= order, first entry on top; within one
-    // pane a later-added DOM node paints over an earlier one, so overlays are added in
-    // REVERSE list order - the last entry first, the first entry last - so the first
-    // entry (the Map= winner) ends up painted on top of the rest.
-    const overlays = cfg.overlays ?? []
-    for (let i = overlays.length - 1; i >= 0; i--) {
-      const overlay = overlays[i]
-      // A mod pyramid has tiles only where that mod has cells, so the layer is bounded to
-      // the box around them (coords.ts overlayBounds): a whole-world bound made every
-      // overlay ask for every tile on screen, nearly all 404s. A 404 inside the box (a
-      // corner its cells do not fill) is still normal, not an error.
-      const bounds = overlayBounds(cfg, overlay)
-      if (!bounds) continue
-      sizedTileLayer((coords) => overlayTileUrl(overlay, cfg, cfg.layers.ground, coords.z, coords.x, coords.y, tilesBase), {
-        tileSize: cfg.tileSize,
-        minNativeZoom: 0,
-        maxNativeZoom: cfg.maxLevel,
-        bounds,
-        noWrap: true,
-      }).addTo(map)
-    }
-
     map.setView(squareToLatLng({ x: initialView.x, y: initialView.y }), initialView.zoom)
     map.on('moveend', () => {
       const c = latLngToSquare(map.getCenter())
@@ -192,10 +172,55 @@ export function MapView(props: Props) {
     return () => {
       map.remove()
       mapRef.current = null
+      // The overlay layers went with the map: forget them, so a new map gets them all.
+      overlayLayers.current.clear()
+      overlayOrder.current = []
     }
     // The map is created exactly once for the lifetime of the component.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // T45 Part PUBLISH, T50: mod-map overlays share the base pyramid's exact geometry (Part
+  // RENDER's all_mod_maps rule), so each is just another TileLayer in the SAME default
+  // tile pane as the base layer (no `pane:` override here) - never the vector overlayPane
+  // that streets/areas/safehouses use, nor the players panes: an overlay must sit above
+  // the base and below every data layer, never cover a street, an area label or a marker.
+  // `overlays` is in Map= order, first entry on top; within one pane a later-added layer
+  // paints over an earlier one, so reconcileOverlays (./followMaps.ts) hands back the ids
+  // to add bottom first - the last Map= entry first, the first entry last. T50: the list
+  // follows the server's Map= line, so a map the server stops running is removed and one
+  // it starts running is added while the page is open, keeping that order. This effect is
+  // declared after the mount-once effect above, so the map exists when it first runs.
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map) return
+    const byId = new Map(overlays.map((o) => [o.id, o]))
+    const { remove, add } = reconcileOverlays(overlayOrder.current, overlays.map((o) => o.id))
+    for (const id of remove) {
+      const layer = overlayLayers.current.get(id)
+      if (layer) map.removeLayer(layer)
+      overlayLayers.current.delete(id)
+    }
+    for (const id of add) {
+      const overlay = byId.get(id)
+      if (!overlay) continue
+      // A mod pyramid has tiles only where that mod has cells, so the layer is bounded to
+      // the box around them (coords.ts overlayBounds): a whole-world bound made every
+      // overlay ask for every tile on screen, nearly all 404s. A 404 inside the box (a
+      // corner its cells do not fill) is still normal, not an error.
+      const bounds = overlayBounds(cfg, overlay)
+      if (!bounds) continue
+      const layer = sizedTileLayer((coords) => overlayTileUrl(overlay, cfg, cfg.layers.ground, coords.z, coords.x, coords.y, tilesBase), {
+        tileSize: cfg.tileSize,
+        minNativeZoom: 0,
+        maxNativeZoom: cfg.maxLevel,
+        bounds,
+        noWrap: true,
+      }).addTo(map)
+      overlayLayers.current.set(id, layer)
+    }
+    overlayOrder.current = overlays.map((o) => o.id).filter((id) => overlayLayers.current.has(id))
+  }, [overlays, cfg, tilesBase])
 
   // Added before every other overlay (first swap effect to run) so it sits beneath
   // markers and the streets layer, the way the in-game map sits beneath both too.

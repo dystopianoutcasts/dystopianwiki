@@ -181,6 +181,8 @@ const npcGates = {
   deathsView: { until: 0, logged: false },
   deathsRpc: { until: 0, logged: false },
   vehicleNamesView: { until: 0, logged: false },
+  serverMapsRpc: { until: 0, logged: false },
+  pendingWorldRpc: { until: 0, logged: false },
 } satisfies Record<string, Gate>
 
 /** Test seam: forget which NPC views and functions were found missing. */
@@ -269,7 +271,36 @@ export async function fetchVehicleNames(db: SupabaseClient): Promise<VehicleName
   return []
 }
 
-const DEATH_COLUMNS = 'server_id,username,x,y,z,t,hours_survived'
+/**
+ * The server's `Map=` entries in Map= order (migration 033, T50), or null when unknown.
+ * Before 033 the function is missing: null (the map draws everything, as before), the
+ * gate rests NPC_RETRY_MS and logs once, the same as the NPC sets. Any other error throws;
+ * the caller keeps what it had.
+ */
+export async function fetchServerMaps(db: SupabaseClient, serverId: string): Promise<string[] | null> {
+  if (Date.now() < npcGates.serverMapsRpc.until) return null
+  const { data, error } = (await db.rpc('server_maps', { p_server: serverId })) as { data: unknown; error: NpcError }
+  if (!error) return Array.isArray(data) ? data.filter((s): s is string => typeof s === 'string') : null
+  if (!isMissingFunction(error)) throw new Error(`server maps: ${error.message}`)
+  closeGate(npcGates.serverMapsRpc, 'aurora.server_maps')
+  return null
+}
+
+/**
+ * Whether a new world is waiting for an admin to confirm it (migration 033 over 032).
+ * FALSE for a non-admin (the database's gate), and FALSE while the function is missing
+ * (gated like the rest). Any other error throws; the caller shows no notice.
+ */
+export async function fetchPendingWorld(db: SupabaseClient, serverId: string): Promise<boolean> {
+  if (Date.now() < npcGates.pendingWorldRpc.until) return false
+  const { data, error } = (await db.rpc('pending_world_exists', { p_server: serverId })) as { data: unknown; error: NpcError }
+  if (!error) return data === true
+  if (!isMissingFunction(error)) throw new Error(`pending world: ${error.message}`)
+  closeGate(npcGates.pendingWorldRpc, 'aurora.pending_world_exists')
+  return false
+}
+
+const DEATH_COLUMNS ='server_id,username,x,y,z,t,hours_survived'
 
 /** Death markers (migration 030), read like the NPC sets: until 030 is live the layer is empty with no
  * error. The public view holds each player's latest death; the admin RPC returns all of them (and `src`),

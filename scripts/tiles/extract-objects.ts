@@ -21,7 +21,8 @@
 // which would not hold if this file used a different coordinate space.
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
-import { readOwnedCells, mergeByOwnership } from './extract-streets'
+import { readOwnedCells, mergeByOwnership, mapTag, tagItems, toSpecs } from './extract-streets'
+import type { MapSpec } from './extract-streets'
 
 const DEFAULT_REGIONS_LUA =
   'R:/Games/Steam/steamapps/common/ProjectZomboid/media/maps/Muldraugh, KY/regions.lua'
@@ -48,6 +49,8 @@ export interface RegionRow {
   y: number
   width: number
   height: number
+  /** T50: the id of the map this row came from; absent for vanilla. */
+  m?: string
 }
 
 export type AreaKind = 'town' | 'landmark'
@@ -65,6 +68,8 @@ export interface Area {
   /** True for a map-mod town from the towns file (T45): the map draws vanilla names
    *  first and moves a mod name aside when the two would overlap. */
   mod?: boolean
+  /** T50: the map that owns this area (a map id); absent for vanilla. Written last. */
+  m?: string
 }
 
 const ROW_RE =
@@ -90,15 +95,19 @@ const NAMED_TYPES: Record<string, AreaKind> = { Region: 'town', BuildingName: 'l
  * whose name is blank, carry nothing to label and are dropped.
  */
 export function groupAreas(rows: RegionRow[]): Area[] {
+  // T50: keyed by map and name, so one area never mixes two maps' rows and is dropped
+  // with its map. Vanilla alone: every key is the name, as before.
   const byName = new Map<string, RegionRow[]>()
   for (const r of rows) {
     if (!r.name || !NAMED_TYPES[r.type]) continue
-    const list = byName.get(r.name) ?? []
+    const key = r.m === undefined ? r.name : `${r.m}\u0000${r.name}`
+    const list = byName.get(key) ?? []
     list.push(r)
-    byName.set(r.name, list)
+    byName.set(key, list)
   }
   const out: Area[] = []
-  for (const [name, list] of byName) {
+  for (const list of byName.values()) {
+    const name = list[0].name
     let weightSum = 0
     let sumX = 0
     let sumY = 0
@@ -117,6 +126,7 @@ export function groupAreas(rows: RegionRow[]): Area[] {
       y: Math.round(sumY / weightSum),
       areaSquares: totalArea,
       count: list.length,
+      ...(list[0].m !== undefined ? { m: list[0].m } : {}),
     })
   }
   return out.sort((a, b) => b.areaSquares - a.areaSquares)
@@ -146,10 +156,12 @@ export function readMapFolderRegions(mapFolder: string): RegionRow[] {
   }
 }
 
-/** Merge regions.lua rows from several map folders, in Map= order. */
-export function mergeRegionRows(mapFolders: string[]): RegionRow[] {
-  const cellSets = mapFolders.map(readOwnedCells)
-  const perMap = mapFolders.map(readMapFolderRegions)
+/** Merge regions.lua rows from several map folders, in Map= order, each row tagged with
+ *  its map (T50; vanilla untagged). */
+export function mergeRegionRows(maps: (string | MapSpec)[]): RegionRow[] {
+  const specs = toSpecs(maps)
+  const cellSets = specs.map((s) => readOwnedCells(s.folder))
+  const perMap = specs.map((s) => tagItems(readMapFolderRegions(s.folder), mapTag(s)))
   return mergeByOwnership(perMap, cellSets, rectCorners)
 }
 
@@ -160,9 +172,11 @@ export interface ModTown {
   x: number
   y: number
   areaSquares: number
+  /** T50: the map id the town belongs to (the file's `map`), emitted as the area's `m`. */
+  map?: string
 }
 
-/** Read and check a towns file: `{ towns: [{ name, x, y, areaSquares }] }`. Throws on a
+/** Read and check a towns file: `{ towns: [{ map?, name, x, y, areaSquares }] }`. Throws on a
  *  malformed entry, so a typo in a hand-edited name file stops the run. */
 export function parseModTowns(json: string): ModTown[] {
   const data: unknown = JSON.parse(json)
@@ -174,7 +188,10 @@ export function parseModTowns(json: string): ModTown[] {
     for (const k of ['x', 'y', 'areaSquares'] as const) {
       if (typeof o[k] !== 'number' || !Number.isFinite(o[k])) throw new Error(`towns file: entry ${i} (${o.name}) has no numeric ${k}`)
     }
-    return { name: o.name.trim(), x: o.x as number, y: o.y as number, areaSquares: o.areaSquares as number }
+    if (o.map !== undefined && (typeof o.map !== 'string' || o.map.trim() === '')) throw new Error(`towns file: entry ${i} (${o.name}) has a map that is not a map id`)
+    const town: ModTown = { name: o.name.trim(), x: o.x as number, y: o.y as number, areaSquares: o.areaSquares as number }
+    if (typeof o.map === 'string') town.map = o.map.trim()
+    return town
   })
 }
 
@@ -185,7 +202,7 @@ export function addModTowns(areas: Area[], towns: ModTown[]): Area[] {
   const have = new Set(areas.map((a) => a.name))
   const added: Area[] = towns
     .filter((t) => !have.has(t.name))
-    .map((t) => ({ name: t.name, kind: 'town' as const, x: t.x, y: t.y, areaSquares: t.areaSquares, count: 0, mod: true }))
+    .map((t) => ({ name: t.name, kind: 'town' as const, x: t.x, y: t.y, areaSquares: t.areaSquares, count: 0, mod: true, ...(t.map !== undefined ? { m: t.map } : {}) }))
   return [...areas, ...added].sort((a, b) => b.areaSquares - a.areaSquares)
 }
 

@@ -13,6 +13,9 @@ import {
   ownsAnyPoint,
   mergeByOwnership,
   mergeStreetPieces,
+  parseMapArg,
+  mapTag,
+  VANILLA_MAP_ID,
 } from './extract-streets'
 import type { StreetPiece, AreaRaw } from './extract-streets'
 
@@ -316,5 +319,75 @@ describe('clusterStreets against the real streets.xml', () => {
     const main = streets.filter((s) => s.name === 'Main St')
     expect(main).toHaveLength(5)
     expect(new Set(main.map((s) => s.label)).size).toBe(5)
+  })
+})
+
+// ---- T50: every merged feature names the map that owns it ---------------------------
+
+describe('T50: --map ids and tags', () => {
+  it('parseMapArg: the id after the last colon, else mapId of the folder name; a drive letter is not an id', () => {
+    expect(parseMapArg('R:/maps/Muldraugh, KY')).toEqual({ folder: 'R:/maps/Muldraugh, KY', id: 'muldraugh-ky' })
+    expect(parseMapArg('R:/maps/Raven Creek B42:rc')).toEqual({ folder: 'R:/maps/Raven Creek B42', id: 'rc' })
+    expect(parseMapArg('C:\\maps\\Constown, KY')).toEqual({ folder: 'C:\\maps\\Constown, KY', id: 'constown-ky' })
+    expect(parseMapArg('maps/New Hartburg, KY:')).toEqual({ folder: 'maps/New Hartburg, KY', id: 'new-hartburg-ky' })
+  })
+
+  it('vanilla is never tagged; any other map is tagged with its id', () => {
+    expect(VANILLA_MAP_ID).toBe('muldraugh-ky')
+    expect(mapTag({ folder: 'x', id: 'muldraugh-ky' })).toBeUndefined()
+    expect(mapTag({ folder: 'x', id: 'raven-creek-b42' })).toBe('raven-creek-b42')
+  })
+
+  function makeMapFolder(cells: string[], streetsXml: string): string {
+    const dir = mkdtempSync(join(tmpdir(), 'aurora-t50-streets-'))
+    for (const cell of cells) writeFileSync(join(dir, `${cell}.lotheader`), '')
+    writeFileSync(join(dir, 'streets.xml'), streetsXml)
+    return dir
+  }
+
+  it('mergeStreetPieces: the mod-owned piece carries m, the vanilla piece has no m key at all', () => {
+    const modDir = makeMapFolder(
+      ['0_0'],
+      '<streets version="1"><street name="New Elm St" width="8"><points><point x="20.0" y="20.0"/><point x="60.0" y="20.0"/></points></street></streets>',
+    )
+    const vanillaDir = makeMapFolder(
+      ['0_0', '1_0'],
+      '<streets version="1"><street name="Far Oak Ave" width="8"><points><point x="300.0" y="10.0"/><point x="350.0" y="10.0"/></points></street></streets>',
+    )
+    try {
+      const merged = mergeStreetPieces([`${modDir}:raven-creek-b42`, { folder: vanillaDir, id: 'muldraugh-ky' }])
+      const mod = merged.find((p) => p.name === 'New Elm St')!
+      const vanilla = merged.find((p) => p.name === 'Far Oak Ave')!
+      expect(mod.m).toBe('raven-creek-b42')
+      expect('m' in vanilla).toBe(false)
+      const streets = clusterStreets(merged, [])
+      expect(streets.find((s) => s.name === 'New Elm St')!.m).toBe('raven-creek-b42')
+      expect(Object.keys(streets.find((s) => s.name === 'Far Oak Ave')!)).toEqual(['id', 'name', 'label', 'area', 'width', 'lines', 'center'])
+    } finally {
+      rmSync(modDir, { recursive: true, force: true })
+      rmSync(vanillaDir, { recursive: true, force: true })
+    }
+  })
+
+  it('clusterStreets: touching same-named pieces of two maps stay two roads, each with its own map, labels kept unique', () => {
+    const areas: AreaRaw[] = [
+      { name: 'Westtown', kind: 'town', x: 0, y: 0, areaSquares: 1, count: 1 },
+      { name: 'Easttown', kind: 'town', x: 200, y: 0, areaSquares: 1, count: 1 },
+    ]
+    const pieces: StreetPiece[] = [
+      { name: 'Bridge St', width: 8, points: [[0, 0], [100, 0]] },
+      { name: 'Bridge St', width: 8, points: [[100, 0], [200, 0]], m: 'raven-creek-b42' },
+    ]
+    const out = clusterStreets(pieces, areas)
+    expect(out).toHaveLength(2)
+    expect(out.map((s) => s.m)).toEqual([undefined, 'raven-creek-b42'])
+    expect(new Set(out.map((s) => s.label)).size).toBe(2)
+    // Untagged, the same two pieces are one road, as before T50.
+    expect(clusterStreets(pieces.map((p) => ({ name: p.name, width: p.width, points: p.points })), areas)).toHaveLength(1)
+  })
+
+  it('a vanilla-only clustering writes no m key anywhere', () => {
+    const json = JSON.stringify(clusterStreets(parseStreets(FIXTURE), []))
+    expect(json).not.toContain('"m"')
   })
 })

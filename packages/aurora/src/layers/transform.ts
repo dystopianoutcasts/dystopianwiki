@@ -230,6 +230,8 @@ export interface StreetRaw {
   width: number
   lines: [number, number][][]
   center: [number, number]
+  /** T50: the map that owns this street (a map id, e.g. "raven-creek-b42"); absent for vanilla. */
+  m?: string
 }
 
 export interface StreetFeature {
@@ -280,10 +282,11 @@ export function streetFeatures(streets: StreetRaw[]): StreetFeature[] {
 
 /** Shape of map/data/worldmap.json (scripts/tiles/extract-worldmap.ts). */
 export interface WorldMapRaw {
-  roads: { type: string; closed: boolean; points: [number, number][] }[]
-  buildings: { type: string; points: [number, number][] }[]
-  water: { points: [number, number][] }[]
-  forest: { points: [number, number][] }[]
+  // T50: `m` is the map that owns the shape (a map id); absent for vanilla.
+  roads: { type: string; closed: boolean; points: [number, number][]; m?: string }[]
+  buildings: { type: string; points: [number, number][]; m?: string }[]
+  water: { points: [number, number][]; m?: string }[]
+  forest: { points: [number, number][]; m?: string }[]
 }
 
 export interface WorldMapFeatures {
@@ -331,6 +334,8 @@ export interface AreaRaw {
   count: number
   /** A map-mod town (T45); absent for every vanilla area. */
   mod?: boolean
+  /** T50: the map that owns this area (a map id); absent for vanilla. */
+  m?: string
 }
 
 export interface AreaFeature {
