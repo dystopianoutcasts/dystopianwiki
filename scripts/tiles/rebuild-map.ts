@@ -161,14 +161,18 @@ export function sameGeometry(a: Geometry | null, b: Geometry | null): boolean {
 }
 
 /**
- * Step c. A render is skipped only when the last render in OUT already holds every map
- * (the requested maps are a subset of its set, each with its pyramid) AND its base
+ * Step c. A render is skipped only when the last render in OUT was made with exactly the
+ * requested map set (same slugs, any order), each with its pyramid, AND its base
  * geometry is the one the committed tiles.json describes. Anything else renders.
  */
 export function renderDecision(slugs: readonly string[], facts: RenderFacts): { needed: boolean; reason: string } {
   if (!facts.lastRenderMaps) return { needed: true, reason: `no recorded render in ${OUT}` }
   if (!facts.baseExists) return { needed: true, reason: `${OUT} has no base_top pyramid` }
   const last = new Set(facts.lastRenderMaps)
+  // Coordinator decision 2026-10-02: any added OR dropped map renders. A dropped map's
+  // cells are drawn into base_top too, so a subset of the last render is not enough.
+  const dropped = [...last].filter((s) => !slugs.includes(s))
+  if (dropped.length > 0) return { needed: true, reason: `map(s) ${dropped.join(', ')} dropped since the last render` }
   for (const s of slugs) {
     if (!last.has(s)) return { needed: true, reason: `map ${s} is not in the last render (${facts.lastRenderMaps.join(', ') || 'vanilla only'})` }
     if (!facts.pyramidExists(s)) return { needed: true, reason: `map ${s} has no pyramid in ${OUT}` }

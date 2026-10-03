@@ -201,23 +201,31 @@ describe('renderDecision', () => {
     committedGeometry: geom,
     ...over,
   })
-  it('skips for a subset of the last render with the committed geometry', () => {
-    expect(renderDecision(['constown-ky'], facts()).needed).toBe(false)
-    expect(renderDecision([], facts()).needed).toBe(false)
+  const ALL = ['raven-creek-b42', 'constown-ky', 'havenfall']
+  it('skips only for exactly the last render set (any order) at the committed geometry', () => {
+    expect(renderDecision(ALL, facts()).needed).toBe(false)
+    expect(renderDecision(['havenfall', 'raven-creek-b42', 'constown-ky'], facts()).needed).toBe(false)
+    expect(renderDecision([], facts({ lastRenderMaps: [] })).needed).toBe(false)
+  })
+  it('renders for a subset of the last render (a dropped map)', () => {
+    const d = renderDecision(['constown-ky'], facts())
+    expect(d.needed).toBe(true)
+    expect(d.reason).toContain('raven-creek-b42, havenfall dropped')
+    expect(renderDecision([], facts()).needed).toBe(true)
   })
   it('renders for a map the last render did not have', () => {
-    const d = renderDecision(['raven-creek-b42', 'anruisitown'], facts())
+    const d = renderDecision([...ALL, 'anruisitown'], facts())
     expect(d.needed).toBe(true)
     expect(d.reason).toContain('anruisitown')
   })
   it('renders when the geometry differs from the committed tiles.json', () => {
-    expect(renderDecision(['constown-ky'], facts({ committedGeometry: { ...geom, w: 20224 } })).needed).toBe(true)
-    expect(renderDecision(['constown-ky'], facts({ outGeometry: null })).needed).toBe(true)
+    expect(renderDecision(ALL, facts({ committedGeometry: { ...geom, w: 20224 } })).needed).toBe(true)
+    expect(renderDecision(ALL, facts({ outGeometry: null })).needed).toBe(true)
   })
   it('renders with no recorded render, no base, or a missing pyramid', () => {
     expect(renderDecision([], facts({ lastRenderMaps: null })).needed).toBe(true)
-    expect(renderDecision([], facts({ baseExists: false })).needed).toBe(true)
-    expect(renderDecision(['constown-ky'], facts({ pyramidExists: () => false })).needed).toBe(true)
+    expect(renderDecision(ALL, facts({ baseExists: false })).needed).toBe(true)
+    expect(renderDecision(ALL, facts({ pyramidExists: () => false })).needed).toBe(true)
   })
 })
 
@@ -256,10 +264,24 @@ describe('runRebuild: the command plan', () => {
     ])
   })
 
-  it('skips the render when the last render holds every map at the committed geometry', async () => {
+  const SKIP_FILES = {
+    [`${BASE}\\layer0.dzi`]: '',
+    [`${BASE}\\map_info.json`]: JSON.stringify({ w: 19968, h: 17920, x0: 0, y0: 0 }),
+    [`${MODS}\\raven-creek-b42\\base_top\\layer0.dzi`]: '',
+    [`${MODS}\\constown-ky\\base_top\\layer0.dzi`]: '',
+  }
+
+  it('renders for a request that drops a map from the last render', async () => {
+    const w = world({ files: { ...SKIP_FILES, [MANIFEST]: JSON.stringify({ maps: ['raven-creek-b42', 'constown-ky', 'havenfall'] }) } })
+    expect((await runRebuild(REQUEST, w.run, OPTS)).status).toBe('done')
+    expect(w.calls).toContain(RENDER_LINE)
+    expect(w.printed.join('\n')).toContain('render NEEDED: map(s) havenfall dropped since the last render')
+  })
+
+  it('skips the render when the last render had exactly this map set at the committed geometry', async () => {
     const w = world({
       files: {
-        [MANIFEST]: JSON.stringify({ maps: ['raven-creek-b42', 'constown-ky', 'havenfall'] }),
+        [MANIFEST]: JSON.stringify({ maps: ['constown-ky', 'raven-creek-b42'] }),
         [`${BASE}\\layer0.dzi`]: '',
         [`${BASE}\\map_info.json`]: JSON.stringify({ w: 19968, h: 17920, x0: 0, y0: 0 }),
         [`${MODS}\\raven-creek-b42\\base_top\\layer0.dzi`]: '',
