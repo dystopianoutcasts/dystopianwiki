@@ -76,5 +76,11 @@
     "rule": "local-path",
     "line": "reloadLuaFile(\"C:/MyMod/media/lua/client/MyMod/MyScript.lua\")",
     "reason": "Teaching example: shown under Wrong as the absolute path reloadLuaFile must not be given."
+  },
+  {
+    "file": "articles/pz/build-42/modding/ui/ui-engine-reference.md",
+    "rule": "inside-voice",
+    "line": "my machine\" -- it is scale-dependent.",
+    "reason": "A quoted idiom (\"works on my machine\") naming how the scale-dependent bug presents, not the writer speaking about a private machine."
   }
 ]

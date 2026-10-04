@@ -13,7 +13,7 @@ tags:
   - ol-init
   - containers
 excerpt: >-
-  Established 2026-08-26 by the owner, and it corrects an assumption this module
+  Established 2026-08-26 by us, and it corrects an assumption this module
   was built on.
 last_updated: '2026-09-29'
 related_articles:
@@ -34,7 +34,7 @@ related_articles:
 
 > Source: OutcastLib/docs/API.md (compiled 2026-09-08, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
-Established 2026-08-26 by the owner, and it corrects an assumption this module
+Established 2026-08-26 by us, and it corrects an assumption this module
 was built on.
 
 **You cannot read another player's `console.txt`, and you cannot read another

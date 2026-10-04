@@ -13,7 +13,7 @@ tags:
   - ol-init
   - containers
 excerpt: >-
-  Changed 2026-09-08 on the owner's instruction, and it supersedes the section
+  Changed 2026-09-08 by our decision, and it supersedes the section
   below, which correctly diagnosed the problem and then only documented it.
 last_updated: '2026-09-29'
 related_articles:
@@ -34,7 +34,7 @@ related_articles:
 
 > Source: OutcastLib/docs/API.md (compiled 2026-09-08, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
-**Changed 2026-09-08 on the owner's instruction, and it supersedes the section
+**Changed 2026-09-08 by our decision, and it supersedes the section
 below**, which correctly diagnosed the problem and then only documented it.
 
 `OL_Debug` now writes through the engine's own channel:

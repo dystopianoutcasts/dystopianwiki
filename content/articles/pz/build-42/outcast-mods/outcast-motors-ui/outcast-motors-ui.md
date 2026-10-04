@@ -112,8 +112,8 @@ at all and the tray takes the width.
 
 This replaced three separate ways of saying which group was on screen -- a column
 under the picture, a fallback column instead of the picture, and a heading over
-the tray -- after the owner called the window "messy and pretty busy" on
-2026-09-27.
+the tray -- after we looked at the window again and called it "messy and
+pretty busy" on 2026-09-27.
 
 **Parts and Fluids** is a switch at the top right, because it changes what you are
 looking at. The bottom row holds only things you DO: 3D, Train, Close.
@@ -238,8 +238,7 @@ per car.
 
 ## Controller support
 
-**None. This mod does not support controllers**, decided by the owner
-2026-09-09. Mouse and keyboard are the supported inputs and the only ones any
+**None. This mod does not support controllers**, decided 2026-09-09. Mouse and keyboard are the supported inputs and the only ones any
 part of this window is designed around.
 
 Joypad handlers do exist in the code and are left in place -- the d-pad moves
@@ -313,7 +312,7 @@ artwork. It needs Pillow.
 - `preview.png` is a placeholder. It blocks a public listing and nothing else;
   the item ships `visibility=unlisted`.
 
-Under the owner's release policy, none of the above is a reason to hold a build:
+Under our release policy, none of the above is a reason to hold a build:
 shipping to testers is the test. A build is held only for a false claim in the
 description, a red check, or a staging mistake.
 

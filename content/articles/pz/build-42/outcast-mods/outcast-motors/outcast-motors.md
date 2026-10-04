@@ -116,8 +116,8 @@ a mechanic would keep them — a dealership beats a shop, a shop beats somebody'
 garage. **A wreck is still the cheapest source**; nothing spawns often enough to
 make stripping a car pointless.
 
-> This reverses an earlier pillar ("they never spawn as loot") on the owner's
-> call, 2026-08-27. Recorded here because the Workshop page used to say otherwise.
+> This reverses an earlier pillar ("they never spawn as loot") by our own
+> decision, 2026-08-27. Recorded here because the Workshop page used to say otherwise.
 
 ### The Mechanic Workshop
 
