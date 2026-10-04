@@ -84,6 +84,8 @@ Two folders are recognized, both in the cache folder (`%UserProfile%\Zomboid`):
         MyMod2/
 ```
 
+> **Proof:** Code. `zombie.core.znet.SteamWorkshopItem#validatePreviewImage` (square, width 256 or 512, at most 1,024,000 bytes, readable PNG). Build 42.20 (revision a2947723ca).
+
 Why Workshop over mods:
 
 - The in-game uploader needs it. From `mods/` you end up copying anyway -- and
