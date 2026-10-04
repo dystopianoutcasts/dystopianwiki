@@ -14,9 +14,7 @@ tags:
   - engine-reference
 excerpt: >-
   Machine-checked against the installed game, not recalled. Every line number
-  below was read out of
-  R:\Games\Steam\steamapps\common\ProjectZomboid\media\lua\client\ on
-  2026-08-09.
+  below was read out of the installed game's media/lua/client/ on 2026-08-09.
 last_updated: '2026-09-29'
 ---
 # UI engine reference and gotchas
@@ -24,8 +22,8 @@ last_updated: '2026-09-29'
 > Source: 01-ui-engine-reference.md (compiled 2026-08-09, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
 **Machine-checked against the installed game, not recalled.** Every line number
-below was read out of
-`R:\Games\Steam\steamapps\common\ProjectZomboid\media\lua\client\` on 2026-08-09.
+below was read out of the installed game's
+`media/lua/client/` on 2026-08-09.
 
 Written while building Outcast Motors UI. Several entries cost a real in-game
 run to find, and two of them had already cost Outcast Motors one.

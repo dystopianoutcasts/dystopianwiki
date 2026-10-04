@@ -14,7 +14,7 @@ tags:
   - item-blocks
 excerpt: >-
   Build: B42 stable, Steam buildid 24449119 Source of truth:
-  R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\generated\items\*.txt
+  media/scripts/generated/items/*.txt in the installed game
   Scope agreed: all raw crafting materials (wood + metal...
 last_updated: '2026-09-29'
 ---
@@ -23,11 +23,11 @@ last_updated: '2026-09-29'
 > Source: CANDIDATE_ITEMS.md (compiled 2026-08-03, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
 **Build:** B42 stable, Steam buildid `24449119`
-**Source of truth:** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\generated\items\*.txt`
+**Source of truth:** `media/scripts/generated/items/*.txt` in the installed game
 **Scope agreed:** all raw crafting materials (wood + metal core, plus fasteners, cordage, fiber, earth, glass, leather, fuel)
 **Method:** all 5,105 vanilla item blocks parsed to CSV, then filtered by `DisplayCategory` and ID keyword sweep. Every ID below was resolved against the live scripts -- 218/218 matched, zero invented IDs.
 **Status:** Audit complete. Tier 1 + Tier 2 shipped as the mod `OutcastLightLoad`
-(`R:\ZOMBOID\OutcastLightLoad`) at a flat x0.5 multiplier -- 110 items. Tiers 3 and 4
+at a flat x0.5 multiplier -- 110 items. Tiers 3 and 4
 remain unshipped and are still open decisions.
 
 **Engine fact established while building v1:** partial item blocks **merge** onto vanilla

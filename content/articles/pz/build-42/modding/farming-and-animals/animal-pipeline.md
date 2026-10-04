@@ -14,7 +14,7 @@ tags:
   - animsets
 excerpt: >-
   What the engine requires of a new animal type, measured from the B42 decompile
-  (R:\ZOMBOID\PZ_Engine_Records\B42\src) and the installed game files (PZ
+  and the installed game files (PZ
   42.19...
 last_updated: '2026-09-29'
 ---
@@ -22,7 +22,7 @@ last_updated: '2026-09-29'
 
 > Source: 09-pz-b42-animal-pipeline.md (compiled 2026-09-11, verified against Project Zomboid 42.19). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
-What the engine requires of a new animal type, measured from the B42 decompile (`R:\ZOMBOID\PZ_Engine_Records\B42\src`) and the installed game files (PZ 42.19, `R:\Games\Steam\steamapps\common\ProjectZomboid\media`).
+What the engine requires of a new animal type, measured from the B42 decompile and the installed game files (PZ 42.19, the `media` folder in your Steam library's `ProjectZomboid` folder).
 
 Tags: `[VERIFIED]` read in code or shipped data, with the citation. `[DERIVED]` computed from verified values. `[GAP]` not established. `[INFERENCE]` reasoned but not proven.
 

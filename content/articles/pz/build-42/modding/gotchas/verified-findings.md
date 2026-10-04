@@ -581,7 +581,7 @@ Verified against `furniture_shelving_01_40..43` and `crafted_04_88..95`.
 verified by execution in Blender 5.2)
 
 Derived by direct inspection of the live B42 install
-(`R:\Games\Steam\steamapps\common\ProjectZomboid\media`), not from engine source.
+(the `media` folder in your Steam library's `ProjectZomboid` folder), not from engine source.
 Counts are from the shipped tree at buildid `24449119`.
 
 ### Format inventory -- `media/models_X` (303.8 MB)

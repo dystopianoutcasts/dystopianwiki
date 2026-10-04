@@ -25,7 +25,7 @@ Machine-extracted from the installed game -- not from memory.
 
 - Definitions: `<PZ>/media/scripts/generated/characters/character_traits.txt` (97 `character_trait_definition` blocks)
 - Display text: `<PZ>/media/lua/shared/Translate/EN/UI.json` (B42 translations are JSON, not `.txt`)
-- B41 comparison: `R:/ZOMBOID/ProjectZomboid_B41_01312026/media/lua/shared/NPCs/MainCreationMethods.lua`
+- B41 comparison: `media/lua/shared/NPCs/MainCreationMethods.lua` in a copy of the Build 41 install, taken 2026-01-31
 
 ## Totals
 

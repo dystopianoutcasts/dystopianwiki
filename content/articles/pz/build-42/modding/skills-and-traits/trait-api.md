@@ -21,8 +21,8 @@ last_updated: '2026-09-29'
 
 Everything here was verified against the installed builds, not recalled:
 
-- B42: `R:/Games/Steam/steamapps/common/ProjectZomboid`
-- B41: `R:/ZOMBOID/ProjectZomboid_B41_01312026`
+- B42: the installed game (your Steam library's `ProjectZomboid` folder)
+- B41: a copy of the Build 41 install, taken 2026-01-31
 
 ## The headline: traits were rewritten between B41 and B42
 

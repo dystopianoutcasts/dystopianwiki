@@ -24,8 +24,8 @@ last_updated: '2026-09-29'
 Everything learned about Project Zomboid's Build 42 UI layer while building
 **Outcast Motors UI**, the vehicle mechanics window replacement.
 
-Machine-checked against the installed game at
-`R:\Games\Steam\steamapps\common\ProjectZomboid`, not recalled. Every claim
+Machine-checked against the installed game (your Steam library's `ProjectZomboid` folder),
+not recalled. Every claim
 carries a file and line so it can be re-checked rather than trusted.
 
 ## Documents
@@ -53,9 +53,9 @@ population, wear, ageing -- never runs on most of the cars in the world. Call
 
 ## Related
 
-- `R:\ZOMBOID\_dev\OutcastMotorsUI\` -- the mod this came out of; `01` there is
-  the vanilla mechanics-window analysis in depth
-- `R:\ZOMBOID\_dev\B42_Vehicles\` -- vehicle API and mod landscape
-- `R:\ZOMBOID\_dev\B42_Traits\` -- trait and profession API
-- `~\.claude\references\pz-ui-design-lens.md` -- the *design* lens; this pack is
+- Our research notes for Outcast Motors UI, the mod this came out of, include
+  the vanilla mechanics-window analysis in depth (not published yet)
+- Our Build 42 vehicle notes -- vehicle API and mod landscape
+- Our Build 42 trait notes -- trait and profession API
+- Our UI design lens, the *design* half (not published yet); this pack is
   the *engine* half and does not replace it

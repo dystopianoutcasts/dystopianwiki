@@ -14,8 +14,8 @@ tags:
   - containers
 excerpt: >-
   Written 2026-08-22. Answers the dive scoped in 05-state-and-next-build.md
-  section 6. Every claim below is cited to the B42 decompile at
-  R:/ZOMBOID/PZ_Engine_Records/B42 (revision a2947723ca...
+  section 6. Every claim below is cited to our B42 decompile (revision
+  a2947723ca...
 last_updated: '2026-10-04'
 ---
 # Outcast Motors -- fluid systems research
@@ -23,8 +23,8 @@ last_updated: '2026-10-04'
 > Source: 17-fluid-systems-research.md (compiled 2026-08-22, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
 Written 2026-08-22. Answers the dive scoped in `05-state-and-next-build.md` section 6.
-Every claim below is cited to the B42 decompile at
-`R:/ZOMBOID/PZ_Engine_Records/B42` (revision a2947723ca, buildid 24449119) or to
+Every claim below is cited to our B42 decompile (revision a2947723ca, buildid
+24449119) or to
 the shipped game scripts in that snapshot.
 
 ---
