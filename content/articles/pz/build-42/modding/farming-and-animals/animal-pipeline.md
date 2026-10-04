@@ -16,13 +16,13 @@ excerpt: >-
   What the engine requires of a new animal type, measured from the B42 decompile
   and the installed game files (PZ
   42.19...
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # How Build 42 loads and animates an animal
 
 > Source: 09-pz-b42-animal-pipeline.md (compiled 2026-09-11, verified against Project Zomboid 42.19). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
-What the engine requires of a new animal type, measured from the B42 decompile and the installed game files (PZ 42.19, the `media` folder in your Steam library's `ProjectZomboid` folder).
+What the engine requires of a new animal type, measured from the B42 decompile and the installed game files (PZ 42.19, the `media` folder in your Steam library's `ProjectZomboid` folder). The engine citations in sections 1, 3 and 4 were re-checked on Build 42.21 (revision 4a0e9546ec), and their line numbers point into that build.
 
 Tags: `[VERIFIED]` read in code or shipped data, with the citation. `[DERIVED]` computed from verified values. `[GAP]` not established. `[INFERENCE]` reasoned but not proven.
 
@@ -43,8 +43,10 @@ Tags: `[VERIFIED]` read in code or shipped data, with the citation. `[DERIVED]` 
 | `MAX_BONES = 64` is declared and **never read**. A grep for it across `zombie/*` returns only the declaration. | `zombie\core\skinnedmodel\shader\Shader.java:96` `[VERIFIED]` |
 | Skinning uses a shader storage buffer with a runtime-length array and a `boneCount`, so bone count is a data value, not a compile-time bound. | `media\shaders\util\skinning.glsl:7-15`, `skinning.h:6` `[VERIFIED]` |
 | Exactly **4 influences per vertex**: the weights and indices are `vec4`, and the skin matrix sums four terms. | `media\shaders\util\skinning.glsl:5-6,18-24` `[VERIFIED]` |
-| Bone arrays are allocated per model from `skinningData.numBones()`, with no clamp. | `zombie\core\skinnedmodel\animation\AnimationPlayer.java:187-189` `[VERIFIED]` |
-| No "too many bones" check exists. A regex sweep for bone-count comparisons across `zombie` found nothing. | `[VERIFIED]` (absence of evidence, not proof) |
+| Bone arrays are allocated per model from `skinningData.numBones()`, with no clamp. | `zombie\core\skinnedmodel\animation\AnimationPlayer.java:191-193` `[VERIFIED]` |
+| No "too many bones" check exists. A regex sweep for bone-count comparisons across `zombie` found nothing in 42.20. Build 42.21 adds one comparison, `AnimationPlayer#isBoneCountMismatched`: it checks that a corpse's saved pose has as many bones as its model before the corpse is drawn with that pose. It is an equality check, not a maximum. | `[VERIFIED]` (absence of evidence, not proof) |
+
+> **Proof:** Code. `zombie.core.skinnedmodel.animation.AnimationPlayer#isBoneCountMismatched`, called only from `zombie.core.skinnedmodel.DeadBodyAtlas` and `zombie.iso.fboRenderChunk.FBORenderCorpses`. Build 42.21.0 (revision 4a0e9546ec).
 
 **CompanionCat's claim that it "pruned to 56 bones to fit the engine limit" is unsupported by the code.** Either it hit a different limit (an exporter or importer, not the engine), or the constraint was assumed. Do not treat 56 or 64 as a budget, but stay near vanilla until a high-bone-count rig is proven in game `[GAP]`.
 
@@ -88,9 +90,9 @@ Note what vanilla spends its bones on: **one spine bone, one neck, one toe per f
 | Fact | Evidence |
 |---|---|
 | Animals render at `1.5 * getAnimalSize()`. | `IsoAnimal.java:2634` `[VERIFIED]` |
-| The 1.5 is a global model-view factor applied to everything, humans included. | `Core.java:2615`, `ModelCamera.java:43` `[VERIFIED]` |
+| The 1.5 is a global model-view factor applied to everything, humans included. | `Core.java:2591`, `ModelCamera.java:43` `[VERIFIED]` |
 | So relative to a human, an animal is drawn at `animalSize` times its mesh units. | `[DERIVED]` |
-| `getAnimalSize()` is `AnimalData.size`, which starts at `minSize` and grows with age toward `getMaxSize()` (gene-modified). | `IsoAnimal.java:1609-1610`, `AnimalData.java:234-241,1754+` `[VERIFIED]` |
+| `getAnimalSize()` is `AnimalData.size`, which starts at `minSize` and grows with age toward `getMaxSize()` (gene-modified). | `IsoAnimal.java:1608-1609`, `AnimalData.java:234-241,1754+` `[VERIFIED]` |
 | The human mesh is 0.9857 BU for about 1.75 m, so **1 unit is about 1.775-1.8 m** for skinned characters. | `PZ_3D_Assets\README.md` section 1; `pz-animation` skill section 7 `[VERIFIED]` |
 | Real cat withers 0.247 m therefore equals **about 0.139 mesh units** at `animalSize = 1.0`. | `[DERIVED]` |
 | Vanilla enlarges small animals: the raccoon mesh is 0.622 units nose-to-tail at size 0.9-1.2, which is about 1.0-1.3 m, well above a real raccoon. | `[DERIVED]` from `Raccoon_Body.x` bounds and `RaccoonDefinitions.lua` |
@@ -102,9 +104,9 @@ Note what vanilla spends its bones on: **one spine bone, one neck, one toe per f
 | Step | Evidence |
 |---|---|
 | `AnimalDefinitions` parses an `animset` field from the Lua definition. | `AnimalDefinitions.java:43,272-273` `[VERIFIED]` |
-| The animal's animation set is `AnimationSet.GetAnimationSet(GetAnimSetName())`. | `IsoAnimal.java:1515` `[VERIFIED]` |
-| `GetAnimSetName()` returns `adef.animset`, defaulting to `"cow"` when there is no definition. | `IsoAnimal.java:375-376` `[VERIFIED]` |
-| The same name selects the action group (the state machine). | `IsoAnimal.java:1669`, `AnimalManagerMain.java:107` `[VERIFIED]` |
+| The animal's animation set is `AnimationSet.GetAnimationSet(GetAnimSetName())`. | `IsoAnimal.java:1514` `[VERIFIED]` |
+| `GetAnimSetName()` returns `adef.animset`, defaulting to `"cow"` when there is no definition. | `IsoAnimal.java:372-373` `[VERIFIED]` |
+| The same name selects the action group (the state machine). | `IsoAnimal.java:1668`, `AnimalManagerMain.java:108` `[VERIFIED]` |
 | Mods can ship both trees: the loader maps `<mod>/common/media/{actiongroups,AnimSets,anims_X}` and the `<mod>/42/media/...` equivalents. | `ChooseGameInfo.java:512-515` `[VERIFIED]` |
 
 So a new type named `cat` needs `AnimSets/cat/`, `actiongroups/cat/` and its clips, and sets `animset = "cat"` in its definition.
@@ -205,3 +207,5 @@ model Male_Skeleton { mesh = Skinned/Male_Skeleton, static = false, animationsMe
 None of these block starting the rig and the mesh; they block shipping.
 
 *Compiled 2026-09-11 from the B42 decompile and installed game files (PZ 42.19). An earlier research agent for this document failed on a session rate limit; this is the direct investigation that replaced it.*
+
+*Updated 2026-10-04 for Build 42.21: engine line numbers re-anchored to 42.21; Build 42.21 adds a bone-count equality check for corpse poses (`AnimationPlayer#isBoneCountMismatched`), which is not a bone limit.*
