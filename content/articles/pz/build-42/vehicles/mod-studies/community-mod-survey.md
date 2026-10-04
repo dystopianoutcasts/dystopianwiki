@@ -76,7 +76,7 @@ Numpad 8 damages the Engine part directly. Textbook §1 of
 `22-lessons-and-guards.md`: the test exercised the half of the surface that was
 never the real path.
 
-The signal that always moves is `currentFrontEndDurability` --
+The Java signal that always moves is `currentFrontEndDurability` --
 `BaseVehicle.java:305` a public int defaulting to 100, reset to
 `frontEndDurability` on repair (`:1563`), and serialised both ways (`:2644`,
 `:2750`). Gores reads it defensively:
@@ -85,12 +85,20 @@ The signal that always moves is `currentFrontEndDurability` --
 local ok, v = pcall(function() return vehicle.currentFrontEndDurability end)
 ```
 
-Field access, no getter, no reflection -- so it survives the 42.15 reflection
-ban. `LuaManager.java:8350` already exposes it to the debug vehicle table.
+We first took that as a working read. It is not: **Lua cannot read a public Java
+field.** The game exposes Java *methods* to Lua, plus public *static* fields; an
+instance field such as this one has no getter, so `vehicle.currentFrontEndDurability`
+reads as nil, silently. The `pcall` hides that.
 
-**Action:** absorption should key on `currentFrontEndDurability` delta, with
-Engine-condition delta kept as a secondary signal for the hood-destroyed case.
-This is the first thing to change before the real-crash test is worth running.
+> **Proof:** Code. `se.krka.kahlua.integration.expose.LuaJavaClassExposer` binds methods, and `exposeStatics` only public static fields; `zombie.vehicles.BaseVehicle.currentFrontEndDurability` is a public instance field with no getter. Build 42.21.0 for the exposer (bytecode of the installed jar), 42.20 (revision a2947723ca) for `BaseVehicle`.
+
+**Action:** absorption should key on the **hood's condition drop** (the
+`EngineDoor` part), which a frontal crash damages first and which Lua can read
+through `getCondition()`, with Engine-condition delta kept as a secondary signal
+for the hood-destroyed case. This is the first thing to change before the
+real-crash test is worth running.
+
+> **Proof:** Code. `zombie.vehicles.BaseVehicle#addDamageFront` (damages `EngineDoor` first, `Engine` only when the hood is missing or under 25). Build 42.20 (revision a2947723ca).
 
 ## 2 · The UI mod does not need to replace the mechanics window
 
@@ -340,7 +348,8 @@ deliberately not adopted.
 
 ## What to change in OutcastMotors, ranked
 
-1. **Absorption keys on `currentFrontEndDurability`**, not Engine condition (§1).
+1. **Absorption keys on the hood's condition drop**, not Engine condition (§1);
+   `currentFrontEndDurability` cannot be read from Lua.
    Everything else is additive; this one is a correctness bug that all our
    testing missed.
 2. **Add `restoreVehicle` and a `DATA_VERSION`** to the modData contract (§5).
@@ -367,3 +376,5 @@ bespoke panel.
 *Corrected 2026-10-04: vanilla records and rate-limits both install and uninstall (keys ending 1 and 0), and pays 2 to 13 XP on success once per part, per car, per game day.*
 
 *Corrected 2026-10-04: in Build 42 multiplayer a vehicle action's complete() runs on the server; the advice to avoid complete() in favour of OnMechanicActionDone is withdrawn.*
+
+*Corrected 2026-10-04: Lua cannot read currentFrontEndDurability (a public Java field reads as nil); crash absorption keys on the hood's condition drop.*

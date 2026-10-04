@@ -13,7 +13,7 @@ tags:
   - assessment
   - roadmap
 excerpt: Ordered by what unblocks or invalidates the most downstream work.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - the-inventory
   - what-each-source-is-authoritative-for
@@ -31,9 +31,14 @@ Ordered by what unblocks or invalidates the most downstream work.
 
 ### Now -- correctness, before any new feature
 
-1. **Re-signal crash absorption onto `currentFrontEndDurability`**, Engine-
-   condition delta retained for the hood-destroyed case. The current mechanic is
-   confirmed non-functional against real collisions.
+1. **Re-signal crash absorption onto the hood's condition drop** (the
+   `EngineDoor` part, which a frontal crash damages first), Engine-condition
+   delta retained for the hood-destroyed case. Not `currentFrontEndDurability`:
+   it is a public Java field with no getter, and Lua reads it as nil. The current
+   mechanic is confirmed non-functional against real collisions.
+
+> **Proof:** Code. `zombie.vehicles.BaseVehicle#addDamageFront`; `se.krka.kahlua.integration.expose.LuaJavaClassExposer` binds methods and public static fields only. Build 42.20 (revision a2947723ca) for `BaseVehicle`, 42.21.0 for the exposer (bytecode of the installed jar).
+
 2. **Give the mirror a heartbeat.** A periodic line stating that it ran, what it
    compared, and that it found nothing. A null result must be reported, not
    inferred from silence.
@@ -74,3 +79,7 @@ Ordered by what unblocks or invalidates the most downstream work.
 10. **Reopen the OutcastMotorsUI handoff** for virtual-row injection (`23-` §2).
 11. **Narrow the Java overlay scope** to gear control and tire pressure; engine
     force is reachable from Lua, with the per-script caveat.
+
+---
+
+*Corrected 2026-10-04: Lua cannot read currentFrontEndDurability (a public Java field reads as nil); crash absorption keys on the hood's condition drop.*
