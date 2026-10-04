@@ -77,7 +77,7 @@ From then on, each tick sets the `ZOMBIE_INFECTION` stat to the share of the dur
 
 With Infection Mortality set to **Never**, an infection is turned into a fake one as it happens: the part gets `IsFakeInfected` instead of `IsInfected`, the `ZOMBIE_FEVER` stat climbs to its maximum and then falls back, and when it reaches zero the parts are cleared. That sandbox setting is the only place in the 42.21 code that makes a fake infection.
 
-The chances (how likely a bite, laceration or scratch is to infect, what clothing does) and the actual durations are a gameplay question; we answer them on the gameplay pages, not here.
+The chances (how likely a bite, laceration or scratch is to infect, what clothing does) and the actual durations are a gameplay question, answered on [how infection works](/pz/build-42/gameplay/the-real-numbers/how-infection-works).
 
 > **Proof:** Code. `zombie.characters.BodyDamage.BodyPart#SetBitten(boolean)` (`transmission != 4` sets `isInfected`; mortality 7 turns it into `isFakeInfected`), `#generateZombieInfection`, `#setCut`, `#setScratched`; `zombie.characters.BodyDamage.BodyDamage#Update` (body-level `setInfected(true)`, `setInfectionTime(getCurrentTimeForInfection())`, `pickMortalityDuration()`; `ZOMBIE_INFECTION` set to `share * 100`; ceiling `(1 - share^4) * 100`; `ReduceGeneralHealth(110.0F)` at share 1 or when mortality is 1; the `ZOMBIE_FEVER` rise and fall), `#getCurrentTimeForInfection` (`getHoursSurvived` for a player), `#pickMortalityDuration` (Resilient 1.25, Prone to Illness 0.75). The only writes of `isFakeInfected = true` are in `BodyPart`, each under `mortality == 7`. Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
 

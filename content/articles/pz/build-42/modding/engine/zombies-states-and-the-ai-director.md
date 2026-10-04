@@ -94,7 +94,7 @@ When anything asks a zombie to go somewhere (`pathToLocation`, `pathToCharacter`
 
 The update also carries a few small habits worth knowing: a zombie standing on a farm plant has a chance each tick to destroy it, a moving zombie on a lit campfire has a small chance to put it out, a zombie with no target next to a car with its siren on bangs on the car, and a zombie next to an alarmed car that nobody has entered has a tiny chance to set the alarm off.
 
-The numbers (how far, how long, what traits and sneaking change) are a gameplay question; we answer them on the gameplay pages, not here.
+The numbers (how far, how long, what traits and sneaking change) are a gameplay question, answered on [how far zombies see and hear you](/pz/build-42/gameplay/the-real-numbers/how-zombies-see-and-hear-you) and [how long a zombie remembers you](/pz/build-42/gameplay/the-real-numbers/how-long-zombies-remember-you).
 
 > **Proof:** Code. `zombie.characters.IsoPlayer#TestZombieSpotPlayer`; `zombie.characters.IsoZombie#spotted` (`lore.spottedLogic` picks `spottedNew` or `spottedOld`), `#updateInternal` (target cleared when `timeSinceSeenFlesh > memory`; `RespondToSound` only when `timeSinceSeenFlesh > 240` and `timeSinceRespondToSound > 5`; `ZombieGroupManager.instance.update` only when both exceed 2000; farm plant, campfire, siren and alarm checks), `#RespondToSound` (`WorldSoundManager#getSoundZomb`, `#getBiggestSoundZomb`); `zombie.ai.states.ZombieIdleState#execute` and `#pickRandomWanderInterval` (`Rand.Next(400, 1000)`, times 1.5 when `!RainManager.isRaining()`; target within `Rand.Next(8) - 4`); `zombie.ai.ZombieGroupManager#shouldBeInGroup` and `#update`. Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
 
@@ -174,3 +174,4 @@ We have not watched a nightmare happen with Sleeping Event set to Never, nor sle
 - [Pathfinding and the native library](/pz/build-42/modding/engine/pathfinding-and-the-native-library): what happens after `bPathfind` is set.
 - [The Events system](/pz/build-42/modding/lua-api/the-events-system) and [the events reference](/pz/build-42/modding/reference/lua-events).
 - [How Build 42 loads and animates an animal](/pz/build-42/modding/farming-and-animals/animal-pipeline): the same action group machinery, for animals.
+- [Fatigue, sleep and endurance](/pz/build-42/gameplay/the-real-numbers/fatigue-sleep-and-endurance): what the sleep delay and the bed do to your rest.
