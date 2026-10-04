@@ -201,14 +201,19 @@ no per-part art.
 
 ## 5 · Multi-mod hook ordering
 
-Mods load alphabetically, so two mods wrapping the same UI function end up nested
-in name order and the **outermost decides first**.
+Mods load in the order of the mod list, not by name (each mod's `require=` mods
+go just ahead of it), so two mods wrapping the same UI function end up nested
+in load order and the **outermost decides first**.
 
-**Do not rely on that.** It is alphabetical accident, inverts if either mod is
-renamed, and "two panels race for one click" is not a state to leave to chance.
+> **Proof:** Code. `zombie.Lua.LuaManager#LoadDirBase(String, boolean)` (vanilla files sorted by path, then each mod in `zombie.ZomboidFileSystem#getModIDs` order, its files sorted only within that mod) and `zombie.ZomboidFileSystem#loadMods(ArrayList)` with `#loadModAndRequired` (the mod list in its own order, each mod's `require=` mods added just ahead of it). Build 42.20 (revision a2947723ca).
+
+**Do not rely on that.** It is an accident of how each player or server ordered
+the list, inverts when the list is reordered, and "two panels race for one click" is not a state to leave to chance.
 Have the lower-priority mod check for the higher one and stand down explicitly.
 
 `OutcastLib.Compat.has` refuses to answer at file scope and says so -- the mod
 list is not built during load, and returning false for "I could not check" is
 indistinguishable from "not installed". Ask at first use instead; a click is
 always well after `OnGameStart`.
+
+*Corrected 2026-10-04: mods do not load alphabetically. They load in mod-list order, each mod's `require=` mods first; only the files inside one mod are sorted by name.*

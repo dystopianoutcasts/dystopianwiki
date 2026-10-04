@@ -42,11 +42,14 @@ neither has to exist for the other to work.
 ### Why it is here and not in the UI mod
 
 The obvious design -- the UI mod exposes `OutcastMotorsUI.register(...)` --
-breaks on **load order**. Mods load alphabetically, so `OutcastMotors` sorts
-before `OutcastMotorsUI` and the UI global does not exist yet when the producer
-wants to register. Deferring to `OnGameStart` works until a producer has
+breaks on **load order**. Mods load in the order of the mod list, not by name,
+and neither mod requires the other, so nothing stops `OutcastMotors` from loading
+before `OutcastMotorsUI`; when it does, the UI global does not exist yet when the
+producer wants to register. Deferring to `OnGameStart` works until a producer has
 something to say earlier, or is installed *without* the UI and must guard every
 call site.
+
+> **Proof:** Code. `zombie.Lua.LuaManager#LoadDirBase(String, boolean)` (vanilla files sorted by path, then each mod in `zombie.ZomboidFileSystem#getModIDs` order, its files sorted only within that mod) and `zombie.ZomboidFileSystem#loadMods(ArrayList)` with `#loadModAndRequired` (the mod list in its own order, each mod's `require=` mods added just ahead of it). Build 42.20 (revision a2947723ca).
 
 `require=OutcastLib` guarantees the library loads first
 (`ZomboidFileSystem.loadModAndRequired:815-843`), so the registry is always
@@ -316,3 +319,5 @@ would run producer code with nobody looking at the result.
 
 It arrived with **two named consumers on the day it landed**, which is the bar
 rule 3 sets and the bar Cluster B failed.
+
+*Corrected 2026-10-04: mods do not load alphabetically. They load in mod-list order, each mod's `require=` mods first; only the files inside one mod are sorted by name.*

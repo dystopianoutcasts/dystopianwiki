@@ -397,9 +397,12 @@ local Debug = OutcastLib.Debug
 local function lib() return OutcastLib and OutcastLib.Debug or nil end
 ```
 
-Mods load alphabetically. `require=OutcastLib` guarantees the library loads
-first, but a file of yours that is executed during load may still run before you
-expect. Resolving on use costs one table lookup and removes the question.
+Mods load in the order of the mod list, not by name. `require=OutcastLib`
+guarantees the library loads first, but a file of yours that is executed during
+load may still run before you expect. Resolving on use costs one table lookup and
+removes the question.
+
+> **Proof:** Code. `zombie.Lua.LuaManager#LoadDirBase(String, boolean)` (vanilla files sorted by path, then each mod in `zombie.ZomboidFileSystem#getModIDs` order, its files sorted only within that mod) and `zombie.ZomboidFileSystem#loadMods(ArrayList)` with `#loadModAndRequired` (the mod list in its own order, each mod's `require=` mods added just ahead of it). Build 42.20 (revision a2947723ca).
 
 ### Feature-detect. Do not version-check
 
@@ -606,3 +609,5 @@ structured error format, a helper this guide does not describe -- ask rather tha
 working around it. A change made once inside the library is better than four mods
 each solving it differently, which is the situation the library exists to
 prevent.
+
+*Corrected 2026-10-04: mods do not load alphabetically. They load in mod-list order, each mod's `require=` mods first; only the files inside one mod are sorted by name.*
