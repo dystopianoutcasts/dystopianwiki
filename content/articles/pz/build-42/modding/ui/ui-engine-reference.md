@@ -176,6 +176,46 @@ a vanilla window, handle at least what it handled. Of the 23 vanilla files that
 set this flag, most are debug UIs and editors -- panels that genuinely read the
 keyboard.
 
+### Two key traps around it
+
+- **A focused text box eats every key release.** While a text entry box has
+  focus, the engine skips `UIManager.onKeyRelease` and `Events.OnKeyPressed` for
+  every key, so your window's `onKeyRelease` (Escape included) never runs. Give
+  the box an `onOtherKey` that unfocuses it on Escape, and unfocus it when your
+  window closes.
+- **Escape needs `isKeyConsumed`.** After your `onKeyRelease`, the engine asks
+  `isKeyConsumed(key)`. Without one the key counts as not consumed and is passed
+  on: in our replacement mechanics window, Escape closed the window and then
+  opened the pause menu too. Vanilla's mechanics window has one
+  (`ISVehicleMechanics.lua:1537`); copy it.
+
+Both, with the rest of what we learned replacing a vanilla window, are in
+[Replacing or extending a vanilla window](/pz/build-42/modding/ui/replacing-a-vanilla-window).
+
+> **Proof:** Code. `zombie.input.GameKeyboard#update` (while `Core.currentTextEntryBox` is doing text entry, `UIManager.onKeyRelease` and the `OnKeyPressed` event are skipped); `zombie.ui.UIElement#onConsumeKeyRelease` (calls `onKeyRelease`, then returns `isKeyConsumed(key)`, false when the Lua table has none); `media/lua/client/Vehicles/ISUI/ISVehicleMechanics.lua`, `ISVehicleMechanics:isKeyConsumed`. Build 42.21.0 (revision 4a0e9546ec).
+
+> **Proof:** Game test. Escape opened the pause menu behind our replacement mechanics window until it gained `isKeyConsumed`. Build 42.20, engine revision a2947723ca.
+
+## 4c · Two calls that switch coordinate systems
+
+Almost every draw call takes coordinates relative to your element. Two do not:
+
+- **`drawLine2` draws in screen coordinates.** It hands its points straight to
+  the eight-point `DrawTexture`, which does not add the element's position, while
+  `drawLine`, `drawRect` and `drawText` do. Element-local points put the line off
+  by exactly your window's position. Use `drawLine`, or add `getAbsoluteX()` and
+  `getAbsoluteY()` to every point yourself.
+- **`ISScrollingListBox:rowAt(x, y)` takes content coordinates**: positions in
+  the whole list as if it were not scrolled. The list's own `getMouseY()` already
+  allows for the scroll, which is why vanilla's hover works. A parent panel that
+  works out a row from its own mouse position must subtract the list's `getY()`
+  and then its `getYScroll()`, or it names the wrong row once the list scrolls.
+
+The code and the fixes are in
+[UI coordinate traps](/pz/build-42/modding/ui/ui-coordinate-traps).
+
+> **Proof:** Code. `media/lua/client/ISUI/ISUIElement.lua`, `ISUIElement:drawLine2` (`self.javaObject:DrawTexture(nil, x, y, x2, y2, ...)`) and `ISUIElement:drawLine` (`DrawLine`, which adds the absolute position); `media/lua/client/ISUI/ISScrollingListBox.lua`, `ISScrollingListBox:rowAt` (walks the rows from `y0 = 0`). Build 42.21.0 (revision 4a0e9546ec).
+
 ## 5 · `getText` returns the key when there is no translation
 
 So a missing entry renders as `IGUI_VehiclePartCatbodywork` on screen rather than
@@ -335,6 +375,10 @@ thing a log can say about a UI mod.
 - [ ] `doDrawItem` returns the next y, and treats `self` as the listbox
 - [ ] refresh on a timer, never in `render()`
 - [ ] hook chained, not replaced, with a re-entry guard and an idempotence marker
+- [ ] `isKeyConsumed` on any window that closes on Escape; text boxes unfocused on close
+- [ ] `drawLine` for element-local lines (`drawLine2` is screen coordinates); `rowAt` fed content coordinates
 - [ ] tested at two UI scales -- most of these bugs are scale-dependent
 
 *Updated 2026-10-04 for Build 42.21: the quoted `onKeyRelease` now reads `KeybindId.VEHICLE_MECHANICS`, as vanilla does; the string form still works. The hood route moved to `Vehicles.lua:829`; every other line number here is unchanged in 42.21. `ISVehicleMenu.lua` builds the open-mechanics action in three places, not four (three in 42.20 as well).*
+
+*Updated 2026-10-04: added the text-box focus and `isKeyConsumed` key traps and the `drawLine2` and `rowAt` coordinate traps, with links to the articles that cover them in full.*

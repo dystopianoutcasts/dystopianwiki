@@ -74,14 +74,16 @@ To grey out a button and stop it taking clicks, call the button's own `setEnable
 `ISContextMenu.get(player, x, y)` does not make a new menu. It returns the player's single context menu, hides it, and **clears every option already in it**. So:
 
 - Two pieces of code that each call `get` for the same click do not build two menus; the second wipes the first.
-- A fresh menu starts with `numOptions = 1`, not 0.
+- A fresh menu starts with `numOptions = 1`, not 0. So "nothing was added" is `numOptions == 1`, and vanilla's part menu ends with `if self.context.numOptions == 1 then self.context:setVisible(false) end`. Do the same, or an empty menu opens, which looks exactly like a right-click that did nothing.
 - To remove another mod's or vanilla's entry, use `removeOptionByName`, not edits to the `options` table.
 
-> **Proof:** Code. `media/lua/client/ISUI/ISContextMenu.lua`: `ISContextMenu.get` (`getPlayerContextMenu(player)`, `hideAndChildren`, `clear`), `self.numOptions = 1` in `clear` and `new`, `ISContextMenu:removeOptionByName`. Build 42.21, Steam build 25485521.
+> **Proof:** Code. `media/lua/client/ISUI/ISContextMenu.lua`: `ISContextMenu.get` (`getPlayerContextMenu(player)`, `hideAndChildren`, `clear`), `self.numOptions = 1` in `clear` and `new`, `ISContextMenu:removeOptionByName`; `media/lua/client/Vehicles/ISUI/ISVehicleMechanics.lua`, the end of `ISVehicleMechanics:doPartContextMenu` (`numOptions == 1` hides the menu). Build 42.21.0 (revision 4a0e9546ec).
 
 ## Vanilla's part menu can return before it sets `self.context`
 
 `ISVehicleMechanics:doPartContextMenu` returns at the top when the game is paused, or when the player is sitting in a vehicle (unless they are an admin or in debug mode). It returns **before** assigning `self.context`. If you wrap it and then add your own options to `self.context`, you are adding them to the menu from the previous click. Set `self.context = nil` before calling the original, and check it afterwards.
+
+If you build a menu of your own for a part vanilla does not handle, apply the same two gates (paused, and sitting in a vehicle). Otherwise your part offers a menu while every part beside it correctly refuses.
 
 > **Proof:** Code. `media/lua/client/Vehicles/ISUI/ISVehicleMechanics.lua`, `ISVehicleMechanics:doPartContextMenu` (two early `return`s before `self.context = ISContextMenu.get(...)`). Build 42.21, Steam build 25485521.
 
@@ -95,7 +97,13 @@ Vanilla does not find "the mechanics window" by looking at the screen. It asks `
 
 So a replacement window must put itself in that field when it opens (and restore the old value when it closes), and must answer `isReallyVisible`, `startFlashGreen` and `startFlashRed`. If it does not, pressing the mechanics key at an open hood keeps queuing new open actions, and the success and failure flashes go nowhere.
 
-> **Proof:** Code. `media/lua/client/ISUI/PlayerData/ISPlayerData.lua`, `getPlayerMechanicsUI` (`return data and data.mechanicsUI`); callers in `media/lua/client/Vehicles/TimedActions/ISOpenMechanicsUIAction.lua`, `media/lua/client/Vehicles/ISUI/ISVehicleMenu.lua`, `ISVehicleMechanics.lua`, and `media/lua/server/Vehicles/Vehicles.lua` (`ui:isReallyVisible()`, `ui:startFlashRed()`, `ui:startFlashGreen()`). Build 42.21, Steam build 25485521.
+What that contract costs you, method by method:
+
+- `isReallyVisible` comes free: every `ISUIElement` has it, so anything derived from `ISPanel` or `ISCollapsableWindow` answers it.
+- `startFlashRed` and `startFlashGreen` are only defined on vanilla's own `ISVehicleMechanics`. Vanilla calls them without checking that they exist, so a window in the slot without them raises "attempt to call nil" on the first finished install or uninstall. Empty stubs stop the error but throw away the only feedback the base game gives for a failed install, so make them do something.
+- You hold the slot only while your window is open. An install that finishes after the player closed your window reaches whatever you restored, `isReallyVisible()` answers false, and nothing flashes. No crash, just no feedback.
+
+> **Proof:** Code. `media/lua/client/ISUI/ISUIElement.lua`, `ISUIElement:isReallyVisible`; `media/lua/client/Vehicles/ISUI/ISVehicleMechanics.lua`, `ISVehicleMechanics:startFlashRed` and `:startFlashGreen` (the only definitions) and `ISVehicleMechanics.OnMechanicActionDone`; `media/lua/client/ISUI/PlayerData/ISPlayerData.lua`, `getPlayerMechanicsUI` (`return data and data.mechanicsUI`); callers in `media/lua/client/Vehicles/TimedActions/ISOpenMechanicsUIAction.lua`, `media/lua/client/Vehicles/ISUI/ISVehicleMenu.lua`, `ISVehicleMechanics.lua`, and `media/lua/server/Vehicles/Vehicles.lua` (`ui:isReallyVisible()`, `ui:startFlashRed()`, `ui:startFlashGreen()`). Build 42.21, Steam build 25485521.
 
 > **Proof:** Game test. With the slot claimed, our window received the vanilla flashes after installs and uninstalls, in single player and in a two-player session. Build 42.20, engine revision a2947723ca.
 
@@ -105,7 +113,27 @@ Methods you assign onto an `ISScrollingListBox` itself (`doDrawItem`, `onMouseMo
 
 > **Proof:** Code. `media/lua/client/ISUI/ISScrollingListBox.lua`: its own methods take `self` as the list; `ISScrollingListBox:invokeOnMouseDownFunction` calls `self.onmousedown(self.target, item)`. Build 42.21, Steam build 25485521.
 
+## If you rebuild the part menu, copy vanilla's gates
+
+Vanilla's part menu gates every action, and some gates are easy to miss when you write your own:
+
+- **The Engine part is special.** "Take Engine Parts" and "Repair Engine" only appear when the car's key requirement is met (`VehicleUtils.RequiredKeyNotFound` is false), so the Engine's key flag matters even though the part has no install or uninstall table of its own.
+- **A refused action is still shown.** Vanilla adds the option, sets `option.notAvailable = true` and hangs the reason on a tooltip. The menu then draws its text in the "bad" highlight colour and will not run it, and the player can see why. Hiding the option instead leaves them guessing.
+
+> **Proof:** Code. `media/lua/client/Vehicles/ISUI/ISVehicleMechanics.lua`, `ISVehicleMechanics:doPartContextMenu` (`if part:getId() == "Engine" and not VehicleUtils.RequiredKeyNotFound(part, self.chr)`, then `IGUI_TakeEngineParts` and `IGUI_RepairEngine`, each with `option.notAvailable = true` when the skill, tool or condition test fails, and `doMenuTooltip`); `media/lua/client/ISUI/ISContextMenu.lua` (an option with `notAvailable` is never selected and is drawn in `getCore():getBadHighlitedColor()`; its `toolTip` is shown on hover). Build 42.21.0 (revision 4a0e9546ec).
+
+## The car diagram's hit boxes are in vanilla's window coordinates
+
+The mechanics window's car diagram comes from `ISCarMechanicsOverlay`, which holds one rectangle per part (with variants per body type). Two things worth knowing before you lay out your own window:
+
+- There are rectangles for exactly two parts above the car body: `Engine` and `Battery`. Vanilla has always drawn the engine as an inset separate from the hood, so if you want to split "the hood" from "the engine", the art already supports it.
+- Vanilla compares the mouse position in its window directly with those rectangles, so they only line up where vanilla draws the image. If your window draws the overlay anywhere else, or at another scale, move every rectangle by the same offset and scale, or clicks land one part away.
+
+> **Proof:** Code. `media/lua/client/Vehicles/ISUI/ISCarMechanicsOverlay.lua`, `ISCarMechanicsOverlay.PartList` (`Engine` at y 48 to 106 and `Battery` at y 64 to 99, every hood rectangle from y 143 down); `media/lua/client/Vehicles/ISUI/ISVehicleMechanics.lua`, `ISVehicleMechanics:isMouseOverPart` (tests the mouse against the raw rectangle) and the overlay drawing (`drawTextureScaledUniform` at the overlay's own `x`, `y` and scale). Build 42.21.0 (revision 4a0e9546ec).
+
 ## Where to go next
 
 - [UI engine reference](/pz/build-42/modding/ui/ui-engine-reference)
 - [Vehicle UI reference](/pz/build-42/vehicles/reference/vehicle-ui-reference)
+
+*Updated 2026-10-04: merged the remaining facts from our mechanics-window notes, each re-read in 42.21: what claiming the slot costs, hiding an empty menu, gating your own menus, vanilla's Engine key gate and refused options, and the diagram hit boxes.*

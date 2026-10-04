@@ -68,11 +68,12 @@ This is the part that decides your design. The scene's car is built from a **veh
 - **Paint:** a fixed colour vector, `(0, 0.5, 0.5)`.
 - **Damage, rust, blood, removed parts and lights:** all switched off. A car with its doors, hood and windows removed still draws them fitted.
 - **Parts:** every part model in the script is drawn, and every wheel. There is no per-part visibility.
+- **Parts with several `model` blocks:** each block is placed at its own offset and rotation, but every one of them draws the mesh of the part's **first** model block. A part built from two different meshes shows the first mesh twice.
 - **Ground slab:** fixed 50% grey, 10 by 10.
 
 So treat it as a showroom model. Show condition with your own 2D markers on top (that is what `sceneToUIX`/`sceneToUIY` are for), and never promise real paint or real damage.
 
-> **Proof:** Code. `zombie.vehicles.UI3DScene`: `SceneVehicle#setScriptName` (`ScriptManager.instance.getVehicle(scriptName)`), skin and mask from `getSkin(0)` only, `VehicleDrawer` (`paintColor = new Vector3f(0.0F, 0.5F, 0.5F)`; uninstall, damage, blood and light enables zero-filled; rust 0), `initPartModels` and `initWheelModel` (every part model, every wheel), the grid plane drawer (grey `0.5F`). Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+> **Proof:** Code. `zombie.vehicles.UI3DScene`: `SceneVehicle#setScriptName` (`ScriptManager.instance.getVehicle(scriptName)`), skin and mask from `getSkin(0)` only, `VehicleDrawer` (`paintColor = new Vector3f(0.0F, 0.5F, 0.5F)`; uninstall, damage, blood and light enables zero-filled; rust 0), `initPartModels` and `initWheelModel` (every part model, every wheel), `initPartModel` (offset and rotation from each block, but the model from `getModelInfoForPart(partId)`, which returns the first model registered for that part), the grid plane drawer (grey `0.5F`). Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
 
 ## Things we have not tested
 
@@ -81,3 +82,5 @@ So treat it as a showroom model. Show condition with your own 2D markers on top 
 - The scene's placement of part models does not flip axes the way the world renderer does (see [Vehicle model and texture traps](/pz/build-42/vehicles/animation/vehicle-model-and-texture-traps)). Matching the in-world view of a car exactly takes care; we have worked out the transforms on paper and not yet confirmed the result on screen.
 
 > **Proof:** Unknown. Read `UI3DScene` (`createModel` path) and `zombie.scripting.ScriptManager#ParseScript` (takes a `ScriptLoadMode`); none of the three tried in game. Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+
+*Updated 2026-10-04: a part with several model blocks draws its first block's mesh for every block in the scene.*

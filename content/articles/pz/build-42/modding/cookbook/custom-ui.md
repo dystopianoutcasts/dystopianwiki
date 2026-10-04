@@ -13,7 +13,7 @@ tags:
   - from-scratch
   - skeletons
 excerpt: 'What you build: a custom on-screen panel/HUD via the ISUI Lua framework.'
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - project-skeleton
   - new-item
@@ -110,6 +110,10 @@ end)
 | `backgroundColor` / `borderColor` | `{r,g,b,a}` (defaults `{0,0,0,0.5}` / `{0.4,0.4,0.4,1}`). |
 | `getCore():getScreenWidth()/getScreenHeight()`, `getMouseX/Y()`, `isShiftKeyDown()` | Layout/input utilities. |
 
+**Two exceptions to "relative to your element", Outcast.** Every draw call in the table takes coordinates relative to your panel's top-left corner except `drawLine2`, which draws in **screen** coordinates: give it panel-local points and the line lands off by your panel's position. Use `drawLine` instead, or add `self:getAbsoluteX()` and `self:getAbsoluteY()` yourself. And if your panel holds a scrolling list, `ISScrollingListBox:rowAt(x, y)` wants the list's **content** coordinates, which include the scroll. Both are explained in [UI coordinate traps](/pz/build-42/modding/ui/ui-coordinate-traps).
+
+> **Proof:** Code. `media/lua/client/ISUI/ISUIElement.lua`, `ISUIElement:drawLine2` (passes its points to the eight-point `DrawTexture`, which does not add the element's position) and `ISUIElement:drawLine`; `media/lua/client/ISUI/ISScrollingListBox.lua`, `ISScrollingListBox:rowAt`. Build 42.21.0 (revision 4a0e9546ec).
+
 **Gotchas.** UI is client-only (`lua/client/`). The wiki uses `initialise` (British spelling) for child creation -- there is no `createChildren` in the shown pattern. In MP, any state a HUD reflects must come from server-authoritative data (sec 16). All of this is wiki-sourced (v42.14.1), not ScriptsDocs -- LIKELY/CONFIRMED-per-wiki.
 
 **Deep reference:** `_raw_pzwiki_sources/08_creation_toolkit/User_Interface.wiki.txt`; `_raw_scriptsdocs/component__component-uiconfig.txt` (entity UI); doc 03.
@@ -117,3 +121,5 @@ end)
 ---
 
 <a name="18-custom-moodle"></a>
+
+*Updated 2026-10-04: `drawLine2` draws in screen coordinates and `rowAt` takes content coordinates; linked UI coordinate traps.*
