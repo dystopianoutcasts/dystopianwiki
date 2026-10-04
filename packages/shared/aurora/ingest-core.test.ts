@@ -591,12 +591,16 @@ Deno.test('a heartbeat reporting 0 players, newer than every position, marks eve
   assert(plan.patches[0].filter.includes(`server_id=eq.${SERVER}`), 'scoped to the server');
 });
 
-Deno.test('a 0-player heartbeat older than a position does not override it', () => {
+Deno.test('T75 a 0-player heartbeat older than a position exempts that player only', () => {
   const recs: AuroraRecord[] = [
     { k: 'hb', t: NOW - 1000, players: 0, src: 'tick' },
     { k: 'pos', t: NOW, u: 'a', x: 1, y: 1 },
   ];
-  assertEquals(buildPlan(recs, SERVER).patches.length, 0);
+  const plan = buildPlan(recs, SERVER);
+  assertEquals(plan.patches.length, 1);
+  assertEquals(plan.patches[0].body, { online: false });
+  assertEquals(decodeURIComponent(plan.patches[0].filter), `server_id=eq.${SERVER}&online=is.true&username=not.in.("a")`);
+  assert(plan.patches[0].why.includes('reports 0 players'), 'the zero rule');
 });
 
 Deno.test('a heartbeat with players online produces no patch', () => {
@@ -652,17 +656,107 @@ Deno.test('T60 an empty roster marks everyone offline, with no not.in part', () 
   assertEquals(plan.patches[0].filter, `server_id=eq.${SERVER}&online=is.true`);
 });
 
-Deno.test('T60 a roster older than the newest position changes nothing', () => {
+const offOf = (plan: ReturnType<typeof buildPlan>) => plan.patches.find((p) => p.body.online === false);
+const onOf = (plan: ReturnType<typeof buildPlan>) => plan.patches.find((p) => p.body.online === true);
+
+Deno.test('T75 a roster older than the newest position still applies, exempting the later player', () => {
   const recs: AuroraRecord[] = [
     { k: 'hb', t: NOW - 1000, players: 1, src: 'tick', ol: ['a'] },
     { k: 'pos', t: NOW, u: 'b', x: 1, y: 1 },
   ];
-  assertEquals(buildPlan(recs, SERVER).patches, []);
-  const empty: AuroraRecord[] = [
-    { k: 'hb', t: NOW - 1000, players: 0, src: 'tick', ol: [] },
+  const plan = buildPlan(recs, SERVER);
+  assertEquals(plan.patches.length, 2);
+  assertEquals(decodeURIComponent(offOf(plan)!.filter), `server_id=eq.${SERVER}&online=is.true&username=not.in.("a","b")`);
+  assertEquals(
+    decodeURIComponent(onOf(plan)!.filter),
+    `server_id=eq.${SERVER}&online=is.false&username=in.("a")`,
+    'the online patch lists the roster only',
+  );
+  assert(plan.patches[0].body.online === false, 'offline patch first, as before');
+});
+
+Deno.test('T75 the live failure: a leaver is cleared though a pos of another player follows the heartbeat', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'pos', t: NOW - 6000, u: 'stayer', x: 1, y: 1 },
+    { k: 'hb', t: NOW - 3000, players: 1, src: 'tick', ol: ['stayer'] },
+    { k: 'pos', t: NOW, u: 'stayer', x: 2, y: 1 },
+  ];
+  const plan = buildPlan(recs, SERVER);
+  const off = offOf(plan);
+  assert(off !== undefined, 'the offline patch is sent');
+  assertEquals(decodeURIComponent(off!.filter), `server_id=eq.${SERVER}&online=is.true&username=not.in.("stayer")`);
+});
+
+Deno.test('T75 a joiner with a pos after the heartbeat stays online though absent from the roster', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'hb', t: NOW - 3000, players: 1, src: 'tick', ol: ['old'] },
+    { k: 'pos', t: NOW, u: 'joiner', x: 1, y: 1 },
+  ];
+  const plan = buildPlan(recs, SERVER);
+  assertEquals(table(plan.upserts, 'players')?.rows.find((r) => r.username === 'joiner')?.online, true);
+  const filter = decodeURIComponent(offOf(plan)!.filter);
+  assert(filter.includes('"joiner"'), `joiner is exempt: ${filter}`);
+  assert(plan.patches.every((p) => p.body.online === true || decodeURIComponent(p.filter).includes('not.in.')), 'no unfiltered offline patch');
+});
+
+Deno.test('T75 a pos before the heartbeat and absent from the roster ends offline', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'pos', t: NOW - 5000, u: 'leaver', x: 1, y: 1 },
+    { k: 'hb', t: NOW - 3000, players: 1, src: 'tick', ol: ['stayer'] },
+    { k: 'pos', t: NOW, u: 'stayer', x: 1, y: 1 },
+  ];
+  const plan = buildPlan(recs, SERVER);
+  assertEquals(
+    table(plan.upserts, 'players')?.rows.find((r) => r.username === 'leaver')?.online,
+    true,
+    'the upsert alone would leave the leaver online',
+  );
+  const filter = decodeURIComponent(offOf(plan)!.filter);
+  assertEquals(filter, `server_id=eq.${SERVER}&online=is.true&username=not.in.("stayer")`);
+  assert(!filter.includes('leaver'), 'the leaver is not exempt, so the patch after the upsert clears them');
+});
+
+Deno.test('T75 a pos at the same millisecond as the heartbeat is not later: the roster decides', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'pos', t: NOW, u: 'same', x: 1, y: 1 },
+    { k: 'hb', t: NOW, players: 1, src: 'tick', ol: ['other'] },
+  ];
+  assertEquals(decodeURIComponent(offOf(buildPlan(recs, SERVER))!.filter), `server_id=eq.${SERVER}&online=is.true&username=not.in.("other")`);
+});
+
+Deno.test('T75 an empty roster with a later pos marks everyone offline except that player', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'pos', t: NOW - 5000, u: 'a', x: 1, y: 1 },
+    { k: 'hb', t: NOW - 3000, players: 0, src: 'tick', ol: [] },
     { k: 'pos', t: NOW, u: 'b', x: 1, y: 1 },
   ];
-  assertEquals(buildPlan(empty, SERVER).patches, [], 'an empty stale roster does not mark b offline');
+  const plan = buildPlan(recs, SERVER);
+  assertEquals(plan.patches.length, 1, 'no online patch for an empty roster, no zero rule on top');
+  assertEquals(decodeURIComponent(plan.patches[0].filter), `server_id=eq.${SERVER}&online=is.true&username=not.in.("b")`);
+  assertEquals(plan.patches[0].body, { online: false });
+});
+
+Deno.test('T75 the combined not.in list quotes roster and later names alike, each once', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'hb', t: NOW - 3000, players: 2, src: 'tick', ol: [LEMUR, AWKWARD] },
+    { k: 'pos', t: NOW - 1000, u: 'x y,"z"', x: 1, y: 1 },
+    { k: 'pos', t: NOW, u: LEMUR, x: 1, y: 1 },
+  ];
+  const off = offOf(buildPlan(recs, SERVER))!;
+  assertEquals(
+    decodeURIComponent(off.filter),
+    `server_id=eq.${SERVER}&online=is.true&username=not.in.("Hey Look The Great Lemur","a\\"b,c","x y,\\"z\\"")`,
+  );
+  assert(!off.filter.includes(' ') && !off.filter.includes('"'), 'URL-encoded');
+});
+
+Deno.test('T75 a batch with no heartbeat patches nothing, and a count of -1 never triggers the zero rule', () => {
+  assertEquals(buildPlan([{ k: 'pos', t: NOW, u: 'a', x: 1, y: 1 }], SERVER).patches, []);
+  const unknown: AuroraRecord[] = [
+    { k: 'pos', t: NOW - 5000, u: 'a', x: 1, y: 1 },
+    { k: 'hb', t: NOW, players: -1, src: 'tick' },
+  ];
+  assertEquals(buildPlan(unknown, SERVER).patches, []);
 });
 
 Deno.test('T60 only the newest heartbeat speaks: an older roster in the same batch is ignored', () => {

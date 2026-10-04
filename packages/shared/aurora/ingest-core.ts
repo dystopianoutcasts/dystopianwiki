@@ -395,49 +395,59 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
     if (rows.length > 0) upserts.push({ table: 'players', onConflict: 'server_id,username', rows });
   }
 
-  // When the newest heartbeat says nobody is online AND it is the latest word
-  // in the batch (no position is newer than it), everyone on the server is
-  // offline, including players this batch never saw. Applied after the upserts
-  // so the heartbeat overrides positions older than itself.
+  // The newest heartbeat in the batch decides who is offline, on every batch that
+  // has one. Applied after the upserts so the heartbeat overrides positions older
+  // than itself.
   //
-  // Exporter 0.7.1 puts the roster on the heartbeat (`ol`, the usernames online).
-  // When the newest heartbeat carries one and is the latest word, it replaces the
-  // guess: everyone online who is not on it goes offline, everyone on it who is
-  // stored offline comes online. The position window alone left a player who
-  // logged off while others stayed on marked online until a 0-player heartbeat
-  // (17 online for 2 real players, 2026-10-03). last_seen is not touched: it means
-  // "last position seen". Without a roster (exporter 0.2.2) the zero rule below
-  // is the whole story, as before.
+  // Exporter 0.7.1 puts the roster on the heartbeat (`ol`, the usernames online):
+  // everyone online who is not on it goes offline, everyone on it who is stored
+  // offline comes online. Without a roster (exporter 0.2.2) a heartbeat counting
+  // exactly 0 players marks everyone offline. last_seen is not touched: it means
+  // "last position seen".
+  //
+  // T75: heartbeats (10 s) and position scans (5 s) run on separate timers, so a
+  // `pos` usually follows the last heartbeat of a batch. Skipping the whole rule
+  // then (the T60 guard) left leavers online for hours (21 shown, 7 real,
+  // 2026-10-04). The exemption is per player instead: anyone with a `pos` NEWER
+  // than the heartbeat was seen online after it (a joiner the roster cannot list
+  // yet) and is left alone. A player whose only `pos` is older than the heartbeat
+  // and who is not on the roster ends offline. The not.in list is at most the
+  // roster plus this batch's players.
   const newestHb = newestOf(heartbeats);
-  const newestPosT = newestOf(positions)?.t ?? -Infinity;
-  const roster = newestHb !== undefined ? rosterOf(newestHb) : undefined;
-  if (newestHb !== undefined && roster !== undefined && newestHb.t >= newestPosT) {
+  if (newestHb !== undefined) {
     const server = `server_id=eq.${encodeURIComponent(serverId)}`;
-    const names = [...new Set(roster)];
     const at = toIso(newestHb.t);
-    patches.push({
-      table: 'players',
-      filter: names.length > 0
-        ? `${server}&online=is.true&username=not.in.${encodeURIComponent(inList(names))}`
-        : `${server}&online=is.true`,
-      body: { online: false },
-      why: `heartbeat at ${at} roster lists ${names.length} player(s) online: everyone else is offline`,
-    });
-    if (names.length > 0) {
+    const later = [...new Set(newestPositions.filter((p) => p.t > newestHb.t).map((p) => p.u))];
+    const laterNote = later.length > 0 ? `; ${later.length} player(s) seen after it are exempt` : '';
+    const offFilter = (keep: string[]) =>
+      keep.length > 0
+        ? `${server}&online=is.true&username=not.in.${encodeURIComponent(inList(keep))}`
+        : `${server}&online=is.true`;
+    const roster = rosterOf(newestHb);
+    if (roster !== undefined) {
+      const names = [...new Set(roster)];
       patches.push({
         table: 'players',
-        filter: `${server}&online=is.false&username=in.${encodeURIComponent(inList(names))}`,
-        body: { online: true },
-        why: `heartbeat at ${at} roster lists ${names.length} player(s) online`,
+        filter: offFilter([...new Set([...names, ...later])]),
+        body: { online: false },
+        why: `heartbeat at ${at} roster lists ${names.length} player(s) online: everyone else is offline${laterNote}`,
+      });
+      if (names.length > 0) {
+        patches.push({
+          table: 'players',
+          filter: `${server}&online=is.false&username=in.${encodeURIComponent(inList(names))}`,
+          body: { online: true },
+          why: `heartbeat at ${at} roster lists ${names.length} player(s) online`,
+        });
+      }
+    } else if (onlineCount(newestHb) === 0) {
+      patches.push({
+        table: 'players',
+        filter: offFilter(later),
+        body: { online: false },
+        why: `heartbeat at ${at} reports 0 players online${laterNote}`,
       });
     }
-  } else if (newestHb !== undefined && onlineCount(newestHb) === 0 && newestHb.t >= newestPosT) {
-    patches.push({
-      table: 'players',
-      filter: `server_id=eq.${encodeURIComponent(serverId)}&online=is.true`,
-      body: { online: false },
-      why: `heartbeat at ${toIso(newestHb.t)} reports 0 players online`,
-    });
   }
 
   // --- player_positions ----------------------------------------------------

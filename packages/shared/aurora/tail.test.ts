@@ -310,6 +310,33 @@ Deno.test('a zero-zombie tick heartbeat batch calls db.delete on zombie_grid and
   assertEquals(totals.deletes, 1);
 });
 
+Deno.test('T75 a batch whose last line is a pos after the roster heartbeat still sends the roster patches', async () => {
+  const file = new FakeFile();
+  const t = 1790636586629;
+  file.append(
+    `[29-09-26 05:00:00.000] A1 {"k":"pos","t":${t},"u":"leaver","x":1,"y":1,"z":0}.\n` +
+      `[29-09-26 05:00:02.000] A1 {"k":"hb","t":${t + 2_000},"src":"tick","players":1,"ol":["admin"]}.\n` +
+      `[29-09-26 05:00:05.000] A1 {"k":"pos","t":${t + 5_000},"u":"admin","x":2,"y":1,"z":0}.\n`,
+  );
+  const session = fakeSession(file);
+  const db = fakeDb();
+  const patches: { path: string; body: Row }[] = [];
+  db.patch = (path: string, body: Row) => {
+    patches.push({ path, body });
+    return Promise.resolve();
+  };
+  const target = (await findTarget(session, db, CFG))!;
+  await tailStep(session, db, CFG, target, emptyTotals());
+  assertEquals(
+    patches.map((p) => [decodeURIComponent(p.path), p.body.online]),
+    [
+      ['players?server_id=eq.test-aurora&online=is.true&username=not.in.("admin")', false],
+      ['players?server_id=eq.test-aurora&online=is.false&username=in.("admin")', true],
+    ],
+  );
+  assert((db.tables['players'] ?? []).some((r) => r.username === 'leaver'), 'the leaver was upserted before the patch');
+});
+
 Deno.test('each batch records its log-to-row lag against the newest record in it', async () => {
   const file = new FakeFile();
   file.append(posLine(0) + posLine(1)); // t of line 1 = base + 5 s
