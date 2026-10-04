@@ -13,9 +13,9 @@ tags:
   - fbx
   - silent-failures
 excerpt: >-
-  BaseVehicle.playPartAnim, BaseVehicle.java:2016. All of these must hold, and
+  BaseVehicle.playPartAnim, BaseVehicle.java:2019. All of these must hold, and
   every one of them fails silently:
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - the-headline-corrected
   - what-vanilla-ships
@@ -31,7 +31,7 @@ related_articles:
 
 > Source: 17-vehicle-animation-reference.md (compiled 2026-08-09, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
-`BaseVehicle.playPartAnim`, `BaseVehicle.java:2016`. All of these must hold, and
+`BaseVehicle.playPartAnim`, `BaseVehicle.java:2019`. All of these must hold, and
 **every one of them fails silently**:
 
 1. `getModelInfoForPart(part)` returns non-null
@@ -155,3 +155,5 @@ One caveat if you read the source: its `doorStatus` handler calls
 `part:getDoor():setOpen(true)` in BOTH branches, so the close path sets the door
 open on remote clients. The animation plays correctly; the boolean it writes is
 wrong. Worth knowing before relying on its state handling.
+
+*Re-checked 2026-10-04 for Build 42.21: `playPartAnim` and the mesh-load error are unchanged; line numbers updated; the code claims we re-checked still hold.*

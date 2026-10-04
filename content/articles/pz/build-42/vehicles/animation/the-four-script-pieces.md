@@ -16,7 +16,7 @@ excerpt: >-
   | is a sub-object selector, not a path separator. Everything left of it is the
   file under media/models_X/; everything right is a mesh name inside it.
   FileTask_LoadMesh.java:49,55. static = FALSE...
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - the-headline-corrected
   - what-vanilla-ships
@@ -104,3 +104,5 @@ TIS solves this by shipping the de-panelled body as another sub-object in the
 same FBX (`ModernCarWithDoors_Martin|Vehicles_ModernCar_mesh`), `static = true`.
 KI5 does the same (`Vehicles_70dodge_Body|challengerRT_body`). VVA ships a
 per-family `static.fbx`.
+
+*Re-checked 2026-10-04 for Build 42.21: the model script and vehicle script parsers are unchanged, so the line numbers and the code claims we re-checked still hold.*

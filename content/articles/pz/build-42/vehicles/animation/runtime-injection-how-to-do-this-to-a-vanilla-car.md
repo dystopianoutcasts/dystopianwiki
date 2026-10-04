@@ -16,7 +16,7 @@ excerpt: >-
   template vehicle X is winner-take-all: overriding one replaces the entire part
   definition. To attach a model to a vanilla car from a script file you would
   have to redeclare the whole family template.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - the-headline-corrected
   - what-vanilla-ships
@@ -69,7 +69,7 @@ Two things about that text are load-bearing:
 parse result, so the payload must sit inside one anonymous wrapper block.
 
 **The bare `model` block replaces the car's body.** A vehicle's body model block
-has no id; `ScriptParser.java:27` gives such a block `id = null`, and
+has no id; `ScriptParser.java:28` gives such a block `id = null`, and
 `getModelById` has an explicit branch for it (`VehicleScript.java:1546`):
 
 ```java
@@ -94,3 +94,5 @@ also unavoidable -- a hood cannot open away from a shell that still has one.
 
 Mods that ship their own vehicles (KI5) are untouched, because their script ids
 are never named.
+
+*Re-checked 2026-10-04 for Build 42.21: line numbers updated; the script loading code is unchanged, so the code claims we re-checked still hold.*

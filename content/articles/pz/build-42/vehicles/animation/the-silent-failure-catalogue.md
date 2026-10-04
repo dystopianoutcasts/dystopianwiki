@@ -16,7 +16,7 @@ excerpt: >-
   This is the section worth reading twice. Every one of these renders as
   "nothing happens" with no error from the mod or the engine, and several are
   indistinguishable from each other.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - the-headline-corrected
   - what-vanilla-ships
@@ -38,7 +38,7 @@ indistinguishable from each other.
 
 | Cause | Symptom | How to tell |
 |---|---|---|
-| `//` line comment in a script file | whole file fails to parse, nothing in it registers | grep for `//`; see 8.1 |
+| `//` line comment in a script file | the whole file (above `module`), the block below it, or the property after it is skipped | grep for `//`; see 8.1 |
 | model declaration not registered | part renders nothing, no mesh error | `ScriptManager.getModelScript(id)` returns nil |
 | mesh sub-object name wrong | part renders nothing | this one DOES log `No such mesh` |
 | node `Lcl Scaling` not 1 | car ~100x, invisible, shadow correct | read `Lcl Scaling` vs `UnitScaleFactor` |
@@ -50,13 +50,19 @@ indistinguishable from each other.
 
 ### 8.1 PZ script files have no `//` comment
 
-**`ScriptParser.stripComments` (`ScriptParser.java:58`) handles `/* */` and
+**`ScriptParser.stripComments` (`ScriptParser.java:59`) handles `/* */` and
 nothing else.** There is no `//` handling anywhere in the parser.
 
-A single `//` line makes the **entire file** fail to parse. Nothing in it
-registers. And because no model declaration exists, no mesh load is ever
-attempted, so `findMesh` never logs `No such mesh` either -- the one error the
-engine would have given you is suppressed by the earlier failure.
+A `//` is ordinary text that sticks to whatever follows it, up to the next
+comma or brace. Above `module` it makes the **entire file** skip, so nothing in
+it registers. Above a `model` or `vehicle` block it drops **that block**, so a
+note above every declaration looks exactly like a dead file. Between two
+properties it loses the **next** property. When the declarations are gone, no
+mesh load is ever attempted, so `findMesh` never logs `No such mesh` either --
+the one error the engine would have given you is suppressed by the earlier
+failure. The full table: [Script comments: what // really does](/pz/build-42/modding/gotchas/script-comments-what-slashes-do).
+
+> **Proof:** Code. `zombie.scripting.ScriptParser#stripComments` (removes `/*`...`*/` only) and `#readBlock`; `zombie.scripting.ScriptManager#CreateFromToken` (keeps a chunk only if it starts with `module`); `zombie.scripting.objects.ScriptModule#CreateFromTokenPP`. Build 42.21.0 (revision 4a0e9546ec).
 
 This cost three in-game sessions on OutcastMotorsAnimated. 26 annotation
 comments in a generated script meant every car pointed its body model at a name
@@ -84,3 +90,5 @@ ScriptManager.instance:getModelScript("OMA_Vehicles_CarNormal_Body")
 -- is the mesh a plausible size?
 raw_extent * nodeScale * modelScale * vehicleScale  -- expect ~1.9 x 4.8 x 1.2 m
 ```
+
+*Updated 2026-10-04 for Build 42.21: a `//` in a script file does not always kill the whole file; where it sits decides whether the file, one block or one property is lost (section 8.1). The parser is unchanged in 42.21.*

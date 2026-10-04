@@ -199,7 +199,7 @@ sessions here. Write notes as `/* */`. The full table, read from the parser:
 
 > **Proof:** Code. `zombie.scripting.ScriptManager#CreateFromToken`,
 > `zombie.scripting.objects.ScriptModule#CreateFromTokenPP`,
-> `zombie.scripting.ScriptParser#readBlock`. Build 42, engine revision a2947723ca (Steam build 24449119).
+> `zombie.scripting.ScriptParser#readBlock`. Build 42.21.0 (revision 4a0e9546ec, Steam build 25485521).
 
 ## 2. What the rig has to do -- and what it does not
 
@@ -411,3 +411,5 @@ problem, and the problem was one line in a script.
 > only true when the `//` sits above `module`. Read from the script parser, a
 > `//` elsewhere drops the block below it or the property after it instead.
 > Details in [Script comments: what // really does](/pz/build-42/modding/gotchas/script-comments-what-slashes-do).
+
+*Re-checked 2026-10-04 for Build 42.21: the script parser, the model script defaults and the mesh-load error are unchanged; the code claims we re-checked still hold.*
