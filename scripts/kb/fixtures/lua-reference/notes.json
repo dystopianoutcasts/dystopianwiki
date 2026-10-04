@@ -1,0 +1,13 @@
+{
+ "$comment": "Invented notes for the fixture surface. Not game data.",
+ "events": {
+  "OnFixtureTick": { "when": "Fired every fixture tick.", "source": "zombie.characters.FixtureCharacter#update" }
+ },
+ "globals": {
+  "isFixture": { "note": "True for fixture objects.", "source": "zombie.Lua.LuaManager$GlobalObject#isFixture" }
+ },
+ "index": {
+  "changes": ["**Fixture change:** something moved."],
+  "reflectionHistory": "Fixture history sentence."
+ }
+}

@@ -1,0 +1,97 @@
+{
+ "$comment": "Invented fixture for scripts/kb/fixtures/lua-reference/run.ts. Not game data: every class, method, event and location here is made up.",
+ "build": "9.99",
+ "revision": "0f0f0f0f0f",
+ "steamBuild": "1",
+ "jarSha256": "fixture",
+ "capture": "FIXTURE",
+ "captureSealed": "2000-01-02",
+ "sources": {},
+ "sideRules": [
+  "Fixture rule one.",
+  "Fixture rule two."
+ ],
+ "counts": {
+  "exposedClasses": 5
+ },
+ "changesSincePreviousBuild": {
+  "global function": { "added": ["newThing"], "removed": ["oldThing"] },
+  "event": { "added": ["OnFixtureLua"], "removed": [] },
+  "exposed class": { "added": ["FixtureWidget"], "removed": [] }
+ },
+ "previousBuild": { "build": "9.98", "revision": "0e0e0e0e0e" },
+ "hooks": ["FixtureHook"],
+ "dynamicTriggerSites": [
+  {"where":"zombie.Lua.LuaManager$GlobalObject","in":"triggerEvent","line":10}
+ ],
+ "events": [
+  {
+   "name": "OnFixtureLua",
+   "registered": false,
+   "addedByLua": [{"where":"client/Fixture/FixtureUI.lua","line":3}],
+   "side": "client",
+   "partial": false,
+   "sites": [
+    {"lang":"lua","where":"client/Fixture/FixtureUI.lua","in":"FixtureUI:open","line":20,"side":"client","singlePlayer":true,"basis":["folder: media/lua/client, which the dedicated server loads for its checksum only"],"args":[{"type":null,"name":"self"}]}
+   ]
+  },
+  {
+   "name": "OnFixtureNever",
+   "registered": true,
+   "side": "not fired",
+   "partial": false,
+   "sites": []
+  },
+  {
+   "name": "OnFixtureTick",
+   "registered": true,
+   "side": "server",
+   "partial": true,
+   "sites": [
+    {"lang":"java","where":"zombie.characters.FixtureCharacter","in":"update","line":42,"side":"unknown","singlePlayer":null,"basis":[],"args":[{"type":"FixtureCharacter"},{"type":"double","name":"delta"}]},
+    {"lang":"java","where":"zombie.network.GameServer","in":"mainLoop","line":7,"side":"server","singlePlayer":false,"basis":["class: server-side network class"],"args":[{"type":null},{"type":"double","name":"delta"}]}
+   ]
+  }
+ ],
+ "globals": [
+  {"name":"getFixture","overloads":[
+   {"params":[],"returns":"zombie.characters.FixtureCharacter","javaName":"getFixture"},
+   {"params":[["int","index"]],"returns":"zombie.characters.FixtureCharacter","javaName":"getFixture"}
+  ]},
+  {"name":"isFixture","overloads":[
+   {"params":[["java.lang.Object"]],"returns":"boolean","javaName":"isFixture"}
+  ]},
+  {"name":"newThing","overloads":[
+   {"params":[["java.util.ArrayList<java.lang.String>","names"]],"returns":"void","javaName":"newThing"}
+  ]}
+ ],
+ "classes": [
+  {"name":"java.util.ArrayList","kind":"class","debugOnly":false,"disallowed":false,"exposedBy":"LuaManager.Exposer#exposeAll","superclass":"java.util.AbstractList","interfaces":["java.util.List"],"exposedAncestors":[],"methodCount":3,"objectMethods":1,"hiddenMethods":0,"bridgeMethodsSkipped":0,"inheritedFromExposed":{},
+   "methods":[
+    {"name":"add","params":[["E","e"]],"returns":"boolean"},
+    {"name":"size","params":[],"returns":"int"}
+   ],
+   "staticFields":[],
+   "constructors":[{"params":[]},{"params":[["int"]]}]},
+  {"name":"se.krka.kahlua.vm.Coroutine","kind":"class","debugOnly":true,"disallowed":false,"exposedBy":"LuaManager.Exposer#exposeAll","superclass":"java.lang.Object","interfaces":[],"exposedAncestors":[],"methodCount":1,"objectMethods":0,"hiddenMethods":0,"bridgeMethodsSkipped":0,"inheritedFromExposed":{},
+   "methods":[{"name":"getStatus","params":[],"returns":"java.lang.String"}],
+   "staticFields":[],
+   "constructors":[]},
+  {"name":"zombie.characters.FixtureCharacter","kind":"class","debugOnly":false,"disallowed":false,"exposedBy":"LuaManager.Exposer#exposeAll","superclass":"zombie.iso.FixtureObject","interfaces":["zombie.characters.IFixtureVisual"],"exposedAncestors":["zombie.iso.FixtureObject"],"methodCount":4,"objectMethods":1,"hiddenMethods":1,"bridgeMethodsSkipped":0,"inheritedFromExposed":{"zombie.iso.FixtureObject":1},
+   "methods":[
+    {"name":"getVisual","params":[],"returns":"zombie.characters.FixtureVisual","from":"zombie.characters.IFixtureVisual"},
+    {"name":"setHealth","params":[["float","health"]],"returns":"void"},
+    {"name":"getInstance","static":true,"params":[],"returns":"zombie.characters.FixtureCharacter"}
+   ],
+   "staticFields":[{"name":"MAX_HEALTH","type":"float","enumConstant":false}],
+   "constructors":[]},
+  {"name":"zombie.characters.FixtureMood","kind":"enum","debugOnly":false,"disallowed":false,"exposedBy":"LuaManager.Exposer#exposeAll","superclass":"java.lang.Enum","interfaces":[],"exposedAncestors":[],"methodCount":0,"objectMethods":0,"hiddenMethods":0,"bridgeMethodsSkipped":0,"inheritedFromExposed":{},
+   "methods":[],
+   "staticFields":[{"name":"Calm","type":"zombie.characters.FixtureMood","enumConstant":true},{"name":"Angry","type":"zombie.characters.FixtureMood","enumConstant":true}],
+   "constructors":[]},
+  {"name":"zombie.iso.FixtureObject","kind":"abstract class","debugOnly":false,"disallowed":false,"exposedBy":"LuaManager.Exposer#exposeAll","superclass":"java.lang.Object","interfaces":[],"exposedAncestors":[],"methodCount":1,"objectMethods":0,"hiddenMethods":0,"bridgeMethodsSkipped":0,"inheritedFromExposed":{},
+   "methods":[{"name":"getSquare","params":[],"returns":"zombie.iso.IsoGridSquare"}],
+   "staticFields":[],
+   "constructors":[]}
+ ]
+}

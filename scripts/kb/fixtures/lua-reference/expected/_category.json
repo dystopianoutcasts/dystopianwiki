@@ -1,0 +1,6 @@
+{
+  "name": "Lua Reference",
+  "description": "Generated from the Build 9.99 code: every Lua event, global function and exposed class, with types and call sites.",
+  "icon": "book",
+  "displayOrder": 15
+}

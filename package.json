@@ -24,6 +24,8 @@
     "import:b42": "tsx scripts/import/import-b42.ts",
     "import:check-links": "tsx scripts/import/check-links.ts",
     "kb:lint": "tsx scripts/kb/lint-articles.ts",
+    "kb:gen-ref": "tsx scripts/kb/gen-lua-reference.ts",
+    "kb:gen-ref:test": "tsx scripts/kb/fixtures/lua-reference/run.ts",
     "install:all": "npm install && npm install --workspaces",
     "clean": "rm -rf node_modules packages/*/node_modules packages/*/dist"
   },
