@@ -16,7 +16,7 @@ excerpt: >-
   Read this before writing any Outcast vehicle mod. Every entry was read out of
   the shipped game or the Build 42 decompile and, where possible, confirmed in
   game. Citations are given so you can...
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Vehicle engine reference
 
@@ -258,12 +258,21 @@ Installing or uninstalling records a per-item-per-vehicle key
 chr:addMechanicsItem(item:getID() .. vehicle:getMechanicalID() .. "1", part, timeMillis)
 ```
 
-While that key exists, repeating the same job on the same part of the same car
-awards **no XP**. It **expires after 24 real-time hours** --
-`IsoPlayer.java:4172` removes entries older than `86400000L`.
+A successful install records the key ending `"1"`; a successful uninstall records
+the key ending `"0"`. `addMechanicsItem` pays XP only when the key is new, so
+repeating the same job on the same part of the same car awards **no XP** while
+the key exists. It **expires after one in-game day**: the timestamp is the game
+calendar's clock, and `IsoPlayer.updateMechanicsItems` removes entries older than
+`86400000L` milliseconds of game time.
 
-XP scales with the part's declared skill: 3-7 for skill 6+, 3-5 for 4+, less
-below (`IsoPlayer.java:7584`).
+On success, XP comes from the Mechanics level in the part's **uninstall** table
+`skills`, doubled: level 6 and up pays 6 to 13, level 4 and up 6 to 9, level 2
+and up 4 to 7, below that 4 (one time in three) or 2. A part with no Mechanics
+skill listed pays 1. A failed attempt pays 1 XP through `addXp`, every time.
+Repairing pays separately: `FixingManager` grants 3 to 5 XP per listed skill on a
+successful fix.
+
+> **Proof:** Code. `zombie.characters.IsoPlayer#addMechanicsItem` and `#updateMechanicsItems`; `media/lua/shared/Vehicles/TimedActions/ISInstallVehiclePart.lua` and `ISUninstallVehiclePart.lua`, `complete()`; `zombie.inventory.FixingManager#addXp`. Build 42.20 (revision a2947723ca).
 
 **Any mod adding installable parts must respect this flag**, or it multiplies the
 grind surface. Nineteen engine parts is nineteen times vanilla's.
@@ -292,3 +301,7 @@ sandbox-escape incident. `LuaManager.validateReflectionAccess()` throws
 
 Do not design around reflection. Where a value looks unreachable, check for a
 direct getter first -- TIS added `getThrottle()` for exactly this reason.
+
+---
+
+*Corrected 2026-10-04: the XP key expires after one in-game day, not 24 real-time hours; success XP is 2 to 13 (the uninstall skill level doubled), failure pays 1.*

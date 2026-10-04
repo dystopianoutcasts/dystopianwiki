@@ -16,7 +16,7 @@ excerpt: >-
   Fourteen Workshop mods read from the local install
   (R:\Games\Steam\steamapps\workshop\content\108600\), for technique only.
   Nothing here is copied. Where a finding contradicts something we...
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Community B42 vehicle mods -- survey
 
@@ -149,9 +149,14 @@ returns non-nil once a part has been worked, and the key is:
 part:getInventoryItem():getID() .. vehicle:getMechanicalID() .. "1"
 ```
 
-Note `"1"` -- vanilla only ever records **uninstalls**. Install is action type 2
-and `RecordXPAction` returns early for it. So install grants XP every time; only
-uninstall is rate-limited.
+Note `"1"`: that is the **install** key. Vanilla records both jobs. A successful
+install calls `addMechanicsItem` with the key ending `"1"`, a successful uninstall
+with the key ending `"0"`, and each pays 2 to 13 XP only the first time that part
+is done on that car in a game day. A failed attempt pays 1 XP every time. So
+neither install nor uninstall grants success XP more than once per part, per car,
+per game day.
+
+> **Proof:** Code. `media/lua/shared/Vehicles/TimedActions/ISInstallVehiclePart.lua` and `ISUninstallVehiclePart.lua`, `complete()`; `zombie.characters.IsoPlayer#addMechanicsItem` and `#updateMechanicsItems`. Build 42.20 (revision a2947723ca).
 
 **`getMechanicsItem` does not work in multiplayer.** BAM replaces it with a
 24-hour cooldown in `player:getModData().BAM_History`, keyed the same way but
@@ -346,3 +351,7 @@ code, better compatibility, and it inherits the layout and accessibility work we
 were about to redo. The layered inspection design (hood/gauge/jack gating)
 survives intact; it becomes a filter on which rows are injected rather than a
 bespoke panel.
+
+---
+
+*Corrected 2026-10-04: vanilla records and rate-limits both install and uninstall (keys ending 1 and 0), and pays 2 to 13 XP on success once per part, per car, per game day.*

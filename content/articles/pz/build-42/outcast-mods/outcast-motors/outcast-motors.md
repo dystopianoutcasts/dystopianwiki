@@ -13,7 +13,7 @@ tags:
   - engine-bay
   - overview
 excerpt: 'Engines are built, not repaired.'
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Outcast Motors
 
@@ -128,14 +128,19 @@ Access to the bay is gated — `OMO_Access` decides who may open it.
 ### Train Mechanics
 
 Queue up work on a car and the character walks through it part by part, earning
-mechanics XP. It **refuses to start when there is nothing to learn**, and it
-tells the difference between three outcomes that look identical from the
-inventory: a failed skill roll (the training worked, the part stayed fitted), an
-interruption, and a failed refit.
+mechanics XP. It tells the difference between three outcomes that look identical
+from the inventory: a failed skill roll (the training worked, the part stayed
+fitted), an interruption, and a failed refit.
 
-> Vanilla pays Mechanics XP only on the **failure** branch of install/uninstall,
-> and success is 100% at your level — so a mod using vanilla's own tables pays
-> exactly what vanilla pays.
+> Vanilla pays Mechanics XP on both branches of install and uninstall. A
+> **failed** attempt pays 1 XP, every time. A **successful** one pays through the
+> Java method `addMechanicsItem`: 2 to 13 XP, scaled by the Mechanics level the
+> part's uninstall table asks for, and only the first time that part is done on
+> that car in a game day. So a part you have mastered still teaches you, once per
+> car per game day. A mod using vanilla's own tables pays exactly what vanilla
+> pays.
+>
+> **Proof:** Code. `media/lua/shared/Vehicles/TimedActions/ISInstallVehiclePart.lua` and `ISUninstallVehiclePart.lua`, `complete()`; `zombie.characters.IsoPlayer#addMechanicsItem` and `#updateMechanicsItems`. Build 42.20 (revision a2947723ca).
 
 ### Smaller things
 
@@ -348,3 +353,7 @@ wrong data into saves; one that declines and says why costs a session.
 **Every validator check has been proved by deliberately breaking it.** A check
 nobody has seen fail is not known to work — that rule has caught real defects in
 this project more than once, including a guard that passed on an empty read.
+
+---
+
+*Corrected 2026-10-04: vanilla pays Mechanics XP on a successful install or uninstall too, not only on failure; Train Mechanics no longer refuses a car of mastered parts.*
