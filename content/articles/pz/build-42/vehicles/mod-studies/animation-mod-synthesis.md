@@ -13,8 +13,8 @@ tags:
   - community-mods
   - workshop-survey
 excerpt: >-
-  Compiled 2026-08-10 from the 1117 Workshop mods in
-  R:\Games\Steam\steamapps\workshop\content\108600\, read for technique only.
+  Compiled 2026-08-10 from the 1117 Workshop mods in a Steam library's
+  steamapps/workshop/content/108600 folder, read for technique only.
   Nothing here is copied. Supplements 17-vehicle-animation-reference.md...
 last_updated: '2026-09-29'
 ---
@@ -22,8 +22,8 @@ last_updated: '2026-09-29'
 
 > Source: 25-animation-mod-synthesis.md (compiled 2026-08-10, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
-Compiled 2026-08-10 from the 1117 Workshop mods in
-`R:\Games\Steam\steamapps\workshop\content\108600\`, read for technique only.
+Compiled 2026-08-10 from the 1117 Workshop mods in a Steam library's
+`steamapps/workshop/content/108600` folder, read for technique only.
 Nothing here is copied. Supplements `17-vehicle-animation-reference.md` and
 corrects two of its claims.
 

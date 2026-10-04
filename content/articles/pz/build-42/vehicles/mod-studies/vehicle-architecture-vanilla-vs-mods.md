@@ -24,7 +24,7 @@ last_updated: '2026-09-29'
 
 Everything here was read off real files on this machine, not from wikis or memory.
 
-- **Vanilla B42**: `R:\Games\Steam\steamapps\common\ProjectZomboid` (build 42 stable, rev `a2947723ca`)
+- **Vanilla B42**: the installed game, your Steam library's `ProjectZomboid` folder (build 42 stable, rev `a2947723ca`)
 - **KI5trailers**: workshop `3330403100`
 - **damnlib** ("that DAMN Library 0.9868b"): workshop `3171167894`
 

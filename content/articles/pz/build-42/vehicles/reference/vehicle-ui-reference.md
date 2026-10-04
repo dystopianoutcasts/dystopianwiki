@@ -23,7 +23,7 @@ last_updated: '2026-09-29'
 How vanilla presents vehicles, where to hook it, and the traps that only appear
 at some UI scales. Companion to `20-vehicle-engine-reference.md`.
 
-Design *judgement* lives in `~/.claude/references/pz-ui-design-lens.md`. This is
+Design *judgement* lives in our UI design lens (not published yet). This is
 the factual half.
 
 ---

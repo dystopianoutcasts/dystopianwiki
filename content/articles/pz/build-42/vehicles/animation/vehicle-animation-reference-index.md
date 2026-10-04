@@ -45,7 +45,8 @@ value of this document: the previous version's confident claims were all true,
 and the mod still did not work for three sessions, because the failures were in
 places nobody had thought to look.
 
-Decompile paths are relative to `R:\ZOMBOID\PZ_Engine_Records\B42\src\`.
+Decompile paths are relative to the root of our decompile of the Build 42 engine (the Java package
+folders, `zombie/...`).
 
 1. [The headline, corrected](/pz/build-42/vehicles/animation/the-headline-corrected)
 2. [What vanilla ships](/pz/build-42/vehicles/animation/what-vanilla-ships)

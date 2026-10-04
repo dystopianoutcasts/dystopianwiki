@@ -26,8 +26,7 @@ last_updated: '2026-10-04'
 the shipped game or the Build 42 decompile and, where possible, confirmed in
 game. Citations are given so you can re-check rather than trust.
 
-Sources: `R:\Games\Steam\steamapps\common\ProjectZomboid\media\`, decompile at
-`R:\ZOMBOID\PZ_Engine_Records\B42\src`.
+Sources: the installed game's `media/` folder, and our decompile of the Build 42 engine.
 
 This is **reference**, not planning. Outcast Motors' own plan is `12`; the study
 of other mods is `01`-`06`.

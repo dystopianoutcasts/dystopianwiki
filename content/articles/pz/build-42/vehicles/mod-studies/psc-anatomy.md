@@ -13,16 +13,14 @@ tags:
   - mod-study
   - template-vehicle
 excerpt: >-
-  Source:
-  R:\Games\Steam\steamapps\workshop\content\108600\3564950449\mods\Project
-  Summer Car\42.15\
+  Source: Workshop item 3564950449, folder mods/Project Summer Car/42.15/
 last_updated: '2026-09-29'
 ---
 # Project Summer Car -- architecture
 
 > Source: 01-project-summer-car-anatomy.md (compiled 2026-08-05, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
-Source: `R:\Games\Steam\steamapps\workshop\content\108600\3564950449\mods\Project Summer Car\42.15\`
+Source: Workshop item 3564950449, folder `mods/Project Summer Car/42.15/` (in the Steam library, `steamapps/workshop/content/108600/3564950449/`)
 
 ~9,000 lines across Lua + script files. 345 files total including 25 FBX world
 models and 7 language packs.

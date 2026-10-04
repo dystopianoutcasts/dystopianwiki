@@ -93,7 +93,7 @@ with no changelog entry at all.
 
 Not from documentation. Read directly out of the installed game.
 
-Installed build: `R:\Games\Steam\steamapps\common\ProjectZomboid\projectzomboid.jar`,
+Installed build: `projectzomboid.jar` in your Steam library's `ProjectZomboid` folder,
 dated 2026-07-29 (Build 42.20.0 Stable), Steam buildid 24449119.
 
 The seven functions are **not removed.** They still exist in
@@ -127,7 +127,7 @@ launch flag -- and throws when it's false.
 
 ### A/B against a pre-incident build
 
-`R:\ZOMBOID\ProjectZomboid_B41_01312026\zombie\Lua\LuaManager$GlobalObject.class`
+`zombie/Lua/LuaManager$GlobalObject.class` in a copy of the game install
 (snapshot taken 2026-01-31, before the March incident):
 
 | Symbol | B41 snapshot (Jan 2026) | B42.20 (Jul 2026) |

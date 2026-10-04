@@ -21,10 +21,10 @@ last_updated: '2026-10-04'
 
 Everything here was read out of the shipped game on 2026-08-05, not from docs.
 
-- Bytecode: `R:\Games\Steam\steamapps\common\ProjectZomboid\projectzomboid.jar`
+- Bytecode: `projectzomboid.jar` in your Steam library's `ProjectZomboid` folder
   (dated 2026-07-29, Steam buildid 24449119)
 - Lua: `media/lua/server/Vehicles/Vehicles.lua` in the same install
-- Comparison snapshot: `R:\ZOMBOID\ProjectZomboid_B41_01312026\`
+- Comparison snapshot: a copy of the game install taken 2026-01-31
 
 ## 1. Method: how to check "does this API exist"
 

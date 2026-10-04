@@ -14,7 +14,7 @@ tags:
   - workshop
 excerpt: >-
   Fourteen Workshop mods read from the local install
-  (R:\Games\Steam\steamapps\workshop\content\108600\), for technique only.
+  (steamapps/workshop/content/108600), for technique only.
   Nothing here is copied. Where a finding contradicts something we...
 last_updated: '2026-10-04'
 ---
@@ -23,7 +23,7 @@ last_updated: '2026-10-04'
 > Source: 23-community-mod-survey.md (compiled 2026-08-10, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
 Fourteen Workshop mods read from the local install
-(`R:\Games\Steam\steamapps\workshop\content\108600\<id>`), for technique only.
+(`steamapps/workshop/content/108600/<id>` in the Steam library), for technique only.
 Nothing here is copied. Where a finding contradicts something we believed, the
 decompile was consulted and is cited.
 

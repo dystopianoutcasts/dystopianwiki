@@ -33,8 +33,9 @@ last_updated: '2026-09-29'
 
 Study of **Vanilla Vehicles Animated** (Workshop `3774077235`) against a B42
 install, 2026-08-07. Every claim below was measured against files on disk, not
-recalled. Game tree: `R:\Games\Steam\steamapps\common\ProjectZomboid`
-(B42 stable). Mod: `R:\Games\Steam\steamapps\workshop\content\108600\3774077235`.
+recalled. Game tree: your Steam library's `ProjectZomboid` folder
+(B42 stable). Mod: `steamapps/workshop/content/108600/3774077235` in the same
+Steam library.
 
 ---
 
