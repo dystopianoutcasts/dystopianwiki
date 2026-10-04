@@ -2246,7 +2246,7 @@
       "provenance",
       "link-index"
     ],
-    "excerpt": "Installed game -- R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid Build 42 STABLE, git revision a2947723ca, Steam buildid 24449119, last updated 2026-07-29. Sealed snapshot and manifest at...",
+    "excerpt": "Installed game -- Build 42 STABLE, git revision a2947723ca, Steam buildid 24449119, last updated 2026-07-29. Sealed snapshot and manifest at...",
     "difficulty": "intermediate"
   },
   {
@@ -2362,7 +2362,7 @@
       "mod-packaging",
       "biomemap-placement"
     ],
-    "excerpt": "Mods live in %USERPROFILE%\\Zomboid\\mods (i.e. C:\\Users\\\\Zomboid\\mods).",
+    "excerpt": "Mods live in %UserProfile%\\Zomboid\\mods (on Linux and macOS, ~/Zomboid/mods).",
     "difficulty": "intermediate"
   },
   {
@@ -2978,6 +2978,24 @@
     "difficulty": "intermediate"
   },
   {
+    "id": "build-42-handcraft-from-lua-what-the-server-does",
+    "title": "Crafting and timed actions from Lua: what the server really does",
+    "slug": "handcraft-from-lua-what-the-server-does",
+    "url": "/pz/build-42/modding/crafting/handcraft-from-lua-what-the-server-does",
+    "version": "build-42",
+    "section": "modding",
+    "category": "crafting",
+    "tags": [
+      "crafting",
+      "timed-actions",
+      "multiplayer",
+      "lua",
+      "silent-failure"
+    ],
+    "excerpt": "Starting a vanilla craft from your own Lua: where its inputs may come from, how to pin the exact item, what happens on the client and on the server, why a failure on the server is silent, and the one field name that destroys every timed action you queue. Read from the 42.21 code.",
+    "difficulty": "advanced"
+  },
+  {
     "id": "build-42-the-new-craftrecipe-block",
     "title": "The new craftRecipe block",
     "slug": "the-new-craftrecipe-block",
@@ -3044,7 +3062,7 @@
       "animation",
       "animsets"
     ],
-    "excerpt": "What the engine requires of a new animal type, measured from the B42 decompile (R:\\ZOMBOID\\PZ_Engine_Records\\B42\\src) and the installed game files (PZ 42.19...",
+    "excerpt": "What the engine requires of a new animal type, measured from the B42 decompile and the installed game files (PZ 42.19...",
     "difficulty": "advanced"
   },
   {
@@ -3264,6 +3282,57 @@
     "difficulty": "intermediate"
   },
   {
+    "id": "build-42-defining-a-fluid-names-poison-properties",
+    "title": "Defining a fluid: names, Poison and Properties",
+    "slug": "defining-a-fluid-names-poison-properties",
+    "url": "/pz/build-42/modding/fluids/defining-a-fluid-names-poison-properties",
+    "version": "build-42",
+    "section": "modding",
+    "category": "fluids",
+    "tags": [
+      "fluids",
+      "scripts",
+      "poison",
+      "silent-failure"
+    ],
+    "excerpt": "A fluid named like a vanilla one replaces it, mod fluids share one flat namespace, a Poison block poisons nobody without a Properties block, and minAmount and diluteRatio are never read. What a fluid script really does, read from the 42.21 code.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-drinking-tainted-water-and-boiling",
+    "title": "Drinking, tainted water and boiling: what the game really checks",
+    "slug": "drinking-tainted-water-and-boiling",
+    "url": "/pz/build-42/modding/fluids/drinking-tainted-water-and-boiling",
+    "version": "build-42",
+    "section": "modding",
+    "category": "fluids",
+    "tags": [
+      "fluids",
+      "drinking",
+      "tainted-water",
+      "cooking"
+    ],
+    "excerpt": "When the game offers Drink, when a double-click drinks a bottle without asking, why nobody drinks from a bucket, what boiling does to a mixture, why the item name can hide a poison, and why a recipe that wants Water refuses your bottle. Read from the 42.21 code.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-fluid-container-calls-that-lie",
+    "title": "FluidContainer calls that do not do what their names say",
+    "slug": "fluid-container-calls-that-lie",
+    "url": "/pz/build-42/modding/fluids/fluid-container-calls-that-lie",
+    "version": "build-42",
+    "section": "modding",
+    "category": "fluids",
+    "tags": [
+      "fluids",
+      "fluidcontainer",
+      "lua",
+      "silent-failure"
+    ],
+    "excerpt": "adjustSpecificFluidAmount cannot create a fluid, addFluid does nothing within 1 mL of full, tiny amounts are deleted, getAmount rounds up to full, and a transfer can destroy fluid. One of these destroyed the oil in every game of our car mod for six weeks. Here is each trap, read from the 42.21 code.",
+    "difficulty": "intermediate"
+  },
+  {
     "id": "build-42-fluid-system-reference",
     "title": "The fluid system",
     "slug": "fluid-system-reference",
@@ -3293,7 +3362,40 @@
       "outcast-motors",
       "containers"
     ],
-    "excerpt": "Written 2026-08-22. Answers the dive scoped in 05-state-and-next-build.md section 6. Every claim below is cited to the B42 decompile at R:/ZOMBOID/PZ_Engine_Records/B42 (revision a2947723ca...",
+    "excerpt": "Written 2026-08-22. Answers the dive scoped in 05-state-and-next-build.md section 6. Every claim below is cited to our B42 decompile (revision a2947723ca...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-fluids-for-modders-start-here",
+    "title": "Fluids for modders: start here",
+    "slug": "fluids-for-modders-start-here",
+    "url": "/pz/build-42/modding/fluids/fluids-for-modders-start-here",
+    "version": "build-42",
+    "section": "modding",
+    "category": "fluids",
+    "tags": [
+      "fluids",
+      "fluidcontainer",
+      "overview"
+    ],
+    "excerpt": "The five things to know before you mod Build 42 fluids, where each trap is explained, and which of our older fluid pages said something wrong. The front door to the fluids section.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-fluids-in-multiplayer",
+    "title": "Fluids in multiplayer: what syncs, and the call for each place",
+    "slug": "fluids-in-multiplayer",
+    "url": "/pz/build-42/modding/fluids/fluids-in-multiplayer",
+    "version": "build-42",
+    "section": "modding",
+    "category": "fluids",
+    "tags": [
+      "fluids",
+      "multiplayer",
+      "server",
+      "sync"
+    ],
+    "excerpt": "The vanilla pour and transfer actions DO work in multiplayer: their complete() runs on the server. What decides whether a fluid change reaches the players is where the container sits. The sync call for each place, and the mistake we published for six weeks.",
     "difficulty": "advanced"
   },
   {
@@ -3310,6 +3412,23 @@
       "liquids"
     ],
     "excerpt": "[CONFIRMED — NEW in B42, BREAKING vs B41.] B41 modeled liquids as many item variants (empty/half/full bottles, hairdye split items, etc.). B42 has one real fluid system.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-what-a-mod-fluid-can-plug-into",
+    "title": "What a mod fluid can plug into, and what is hardcoded to petrol",
+    "slug": "what-a-mod-fluid-can-plug-into",
+    "url": "/pz/build-42/modding/fluids/what-a-mod-fluid-can-plug-into",
+    "version": "build-42",
+    "section": "modding",
+    "category": "fluids",
+    "tags": [
+      "fluids",
+      "fire",
+      "recipes",
+      "vehicles"
+    ],
+    "excerpt": "Your new fluid will not fuel a generator, light a campfire or fill a Molotov, however you categorise it: those paths name petrol. What a mod fluid gets for free, what it needs a recipe for, and which vanilla vessels can carry it. Read from the 42.21 scripts and Lua.",
     "difficulty": "intermediate"
   },
   {
@@ -3673,6 +3792,24 @@
     "difficulty": "beginner"
   },
   {
+    "id": "build-42-workshop-upload-what-the-uploader-checks",
+    "title": "Workshop upload and server deployment: what the game checks",
+    "slug": "workshop-upload-what-the-uploader-checks",
+    "url": "/pz/build-42/modding/foundations/workshop-upload-what-the-uploader-checks",
+    "version": "build-42",
+    "section": "modding",
+    "category": "foundations",
+    "tags": [
+      "workshop",
+      "publishing",
+      "multiplayer",
+      "server",
+      "mod-info"
+    ],
+    "excerpt": "Every rule the in-game uploader enforces, the Steam limits that make an upload send nothing without an error, what is actually uploaded, how the game names your mod, and what a server and a joining client check. Read from the 42.21 code, with the mistakes that taught us each one.",
+    "difficulty": "intermediate"
+  },
+  {
     "id": "build-42-start-here",
     "title": "Start here: what changed in Build 42",
     "slug": "start-here",
@@ -3688,6 +3825,23 @@
       "build-42"
     ],
     "excerpt": "Build 42 is stable now. It is NOT save-compatible or mod-compatible with Build 41:",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-script-comments-what-slashes-do",
+    "title": "Script comments: what // really does",
+    "slug": "script-comments-what-slashes-do",
+    "url": "/pz/build-42/modding/gotchas/script-comments-what-slashes-do",
+    "version": "build-42",
+    "section": "modding",
+    "category": "gotchas",
+    "tags": [
+      "scripts",
+      "comments",
+      "silent-failure",
+      "parser"
+    ],
+    "excerpt": "A script file has exactly one kind of comment, /* */. A // is ordinary text, and it sticks to whatever follows it up to the next comma or brace. Here is what that breaks in each place you might put one, read from the game's script parser.",
     "difficulty": "beginner"
   },
   {
@@ -3737,7 +3891,24 @@
       "resource-weights",
       "item-blocks"
     ],
-    "excerpt": "Build: B42 stable, Steam buildid 24449119 Source of truth: R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\scripts\\generated\\items\\*.txt Scope agreed: all raw crafting materials (wood + metal...",
+    "excerpt": "Build: B42 stable, Steam buildid 24449119 Source of truth: media/scripts/generated/items/*.txt in the installed game Scope agreed: all raw crafting materials (wood + metal...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-item-tags-from-lua",
+    "title": "Item tags from Lua: looking one up, and why register is not a lookup",
+    "slug": "item-tags-from-lua",
+    "url": "/pz/build-42/modding/items-and-scripting/item-tags-from-lua",
+    "version": "build-42",
+    "section": "modding",
+    "category": "items-and-scripting",
+    "tags": [
+      "tags",
+      "itemtag",
+      "lua-api",
+      "items"
+    ],
+    "excerpt": "In Build 42 an item tag is an ItemTag object, not a string. Here is how to get one from Lua, why ItemTag.register is the wrong tool for that, why there is no hasTag(String), and why tags beat DisplayCategory when you sort items. Read from the 42.21 code.",
     "difficulty": "intermediate"
   },
   {
@@ -3773,7 +3944,7 @@
       "tech-tiers",
       "timedaction"
     ],
-    "excerpt": "Real vanilla B42 item (from entities/blacksmith/items/items_blacksmith_i.txt) [CONFIRMED]:",
+    "excerpt": "A real vanilla Build 42 item, from media/scripts/generated/items/normal.txt, and why Build 42 writes ItemType = base:normal where Build 41 wrote Type = Normal.",
     "difficulty": "intermediate"
   },
   {
@@ -4047,6 +4218,24 @@
     "difficulty": "intermediate"
   },
   {
+    "id": "build-42-kahlua-what-project-zomboid-lua-does-not-have",
+    "title": "Kahlua: what Project Zomboid's Lua does not have",
+    "slug": "kahlua-what-project-zomboid-lua-does-not-have",
+    "url": "/pz/build-42/modding/lua-api/kahlua-what-project-zomboid-lua-does-not-have",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua",
+      "kahlua",
+      "stdlib",
+      "testing",
+      "files"
+    ],
+    "excerpt": "Project Zomboid runs Kahlua, a smaller Lua than the one on your computer. No next, no io, no table.pack, no math.random, no shutdown event, no file flush. The full list read from the 42.21 game, and the test-harness trap that let us ship code the game cannot run.",
+    "difficulty": "intermediate"
+  },
+  {
     "id": "build-42-key-globals-and-classes",
     "title": "Key globals and classes",
     "slug": "key-globals-and-classes",
@@ -4099,6 +4288,24 @@
     ],
     "excerpt": "Which folders load in which mode (canonical table from the wiki):",
     "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-mod-file-traps-load-order-split-files-bom-xml",
+    "title": "Mod file traps: load order, split files, BOM and XML comments",
+    "slug": "mod-file-traps-load-order-split-files-bom-xml",
+    "url": "/pz/build-42/modding/lua-api/mod-file-traps-load-order-split-files-bom-xml",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua",
+      "load-order",
+      "encoding",
+      "xml",
+      "silent-failure"
+    ],
+    "excerpt": "Your Lua files run in alphabetical order, not dependency order. Splitting a file can turn its constants into nil globals. An invisible byte at the start of a file makes the game skip it without saying which. And XML comments may not contain a double hyphen. Checked against the 42.21 game.",
+    "difficulty": "beginner"
   },
   {
     "id": "build-42-moddata",
@@ -4263,6 +4470,59 @@
     "difficulty": "intermediate"
   },
   {
+    "id": "build-42-when-lua-reloads-leaving-a-game-and-resets",
+    "title": "When your Lua reloads: leaving a game, resets, and the missing exit event",
+    "slug": "when-lua-reloads-leaving-a-game-and-resets",
+    "url": "/pz/build-42/modding/lua-api/when-lua-reloads-leaving-a-game-and-resets",
+    "version": "build-42",
+    "section": "modding",
+    "category": "lua-api",
+    "tags": [
+      "lua",
+      "events",
+      "lifecycle",
+      "logging"
+    ],
+    "excerpt": "Leaving a game wipes and reloads every Lua file and fires OnGameBoot, not OnResetLua. Your event handlers are removed before that happens, so there is no \"game is ending\" event to flush a file on. What actually fires, and where to save your state instead. Read from the 42.21 code.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-hot-items-in-multiplayer",
+    "title": "Hot items in multiplayer: the server owns the heat",
+    "slug": "hot-items-in-multiplayer",
+    "url": "/pz/build-42/modding/multiplayer/hot-items-in-multiplayer",
+    "version": "build-42",
+    "section": "modding",
+    "category": "multiplayer",
+    "tags": [
+      "multiplayer",
+      "cooking",
+      "fluids",
+      "crafting",
+      "silent-failure"
+    ],
+    "excerpt": "In Build 42 multiplayer only the server simulates item heat, every five seconds. A pot cools on the server the moment it leaves the stove while the client still shows it hot, and a craft that needs hot water then plays its whole animation and makes nothing. How heat works, how hot each heat source gets, and how to build around it.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-missing-minimap-check-the-sandbox-first",
+    "title": "Missing minimap? Check the sandbox first",
+    "slug": "missing-minimap-check-the-sandbox-first",
+    "url": "/pz/build-42/modding/multiplayer/missing-minimap-check-the-sandbox-first",
+    "version": "build-42",
+    "section": "modding",
+    "category": "multiplayer",
+    "tags": [
+      "minimap",
+      "sandbox",
+      "server",
+      "ui",
+      "layout"
+    ],
+    "excerpt": "No minimap in Build 42 is usually a sandbox setting, not a bug: three of the five vanilla presets switch it off. If the sandbox allows it, the next suspect is layout.ini, which keeps one UI layout per screen resolution.",
+    "difficulty": "beginner"
+  },
+  {
     "id": "build-42-outcast-logging-integration",
     "title": "Outcast Lib -- logging integration",
     "slug": "outcast-logging-integration",
@@ -4276,6 +4536,482 @@
       "multiplayer"
     ],
     "excerpt": "A shared, timestamped, downloadable log for Project Zomboid Build 42 mods.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-reading-server-performance-numbers-honestly",
+    "title": "Reading server performance numbers honestly",
+    "slug": "reading-server-performance-numbers-honestly",
+    "url": "/pz/build-42/modding/multiplayer/reading-server-performance-numbers-honestly",
+    "version": "build-42",
+    "section": "modding",
+    "category": "multiplayer",
+    "tags": [
+      "server",
+      "performance",
+      "statistics",
+      "admin"
+    ],
+    "excerpt": "The server's own statistics are named after what they are not. The \"FPS\" is the last tick's length in milliseconds, the \"average\" is not an average, and getServerFPS() always says 10. Here is what each number really is, and the one to trust. Read from the 42.21 code.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-what-runs-on-the-server-in-build-42-multiplayer",
+    "title": "What runs on the server in Build 42 multiplayer",
+    "slug": "what-runs-on-the-server-in-build-42-multiplayer",
+    "url": "/pz/build-42/modding/multiplayer/what-runs-on-the-server-in-build-42-multiplayer",
+    "version": "build-42",
+    "section": "modding",
+    "category": "multiplayer",
+    "tags": [
+      "multiplayer",
+      "server",
+      "timed-actions",
+      "vehicles",
+      "sync"
+    ],
+    "excerpt": "In Build 42 multiplayer a timed action's complete() runs on the server, the server folder loads on clients too, and a vehicle change reaches the client after the action says it is done. The facts that decide where your multiplayer code goes, read from the 42.21 code.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-lua-class-directory",
+    "title": "Lua Class Directory (Build 42.21)",
+    "slug": "lua-class-directory",
+    "url": "/pz/build-42/modding/reference/lua-class-directory",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "All 1,017 classes Build 42.21 exposes to Lua, A to Z, each linked to its entry.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-lua-classes-ai-and-combat-1",
+    "title": "Lua Classes: AI states and combat, part 1 of 2 (Build 42.21)",
+    "slug": "lua-classes-ai-and-combat-1",
+    "url": "/pz/build-42/modding/reference/lua-classes-ai-and-combat-1",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed ai states and combat classes of Build 42.21 (part 1 of 2): every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-ai-and-combat-2",
+    "title": "Lua Classes: AI states and combat, part 2 of 2 (Build 42.21)",
+    "slug": "lua-classes-ai-and-combat-2",
+    "url": "/pz/build-42/modding/reference/lua-classes-ai-and-combat-2",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed ai states and combat classes of Build 42.21 (part 2 of 2): every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-characters-1",
+    "title": "Lua Classes: Characters, players, zombies and animals, part 1 of 3 (Build 42.21)",
+    "slug": "lua-classes-characters-1",
+    "url": "/pz/build-42/modding/reference/lua-classes-characters-1",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed characters, players, zombies and animals classes of Build 42.21 (part 1 of 3): every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-characters-2",
+    "title": "Lua Classes: Characters, players, zombies and animals, part 2 of 3 (Build 42.21)",
+    "slug": "lua-classes-characters-2",
+    "url": "/pz/build-42/modding/reference/lua-classes-characters-2",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed characters, players, zombies and animals classes of Build 42.21 (part 2 of 3): every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-characters-3",
+    "title": "Lua Classes: Characters, players, zombies and animals, part 3 of 3 (Build 42.21)",
+    "slug": "lua-classes-characters-3",
+    "url": "/pz/build-42/modding/reference/lua-classes-characters-3",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed characters, players, zombies and animals classes of Build 42.21 (part 3 of 3): every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-entities",
+    "title": "Lua Classes: Entities, components and crafting (Build 42.21)",
+    "slug": "lua-classes-entities",
+    "url": "/pz/build-42/modding/reference/lua-classes-entities",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed entities, components and crafting classes of Build 42.21: every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-game-and-core-1",
+    "title": "Lua Classes: Game, core and utilities, part 1 of 2 (Build 42.21)",
+    "slug": "lua-classes-game-and-core-1",
+    "url": "/pz/build-42/modding/reference/lua-classes-game-and-core-1",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed game, core and utilities classes of Build 42.21 (part 1 of 2): every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-game-and-core-2",
+    "title": "Lua Classes: Game, core and utilities, part 2 of 2 (Build 42.21)",
+    "slug": "lua-classes-game-and-core-2",
+    "url": "/pz/build-42/modding/reference/lua-classes-game-and-core-2",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed game, core and utilities classes of Build 42.21 (part 2 of 2): every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-items",
+    "title": "Lua Classes: Items and inventory (Build 42.21)",
+    "slug": "lua-classes-items",
+    "url": "/pz/build-42/modding/reference/lua-classes-items",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed items and inventory classes of Build 42.21: every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-java-and-libraries",
+    "title": "Lua Classes: Java and library classes (Build 42.21)",
+    "slug": "lua-classes-java-and-libraries",
+    "url": "/pz/build-42/modding/reference/lua-classes-java-and-libraries",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed java and library classes classes of Build 42.21: every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-network",
+    "title": "Lua Classes: Multiplayer, network and chat (Build 42.21)",
+    "slug": "lua-classes-network",
+    "url": "/pz/build-42/modding/reference/lua-classes-network",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed multiplayer, network and chat classes of Build 42.21: every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-scripts-1",
+    "title": "Lua Classes: Script objects, part 1 of 4 (Build 42.21)",
+    "slug": "lua-classes-scripts-1",
+    "url": "/pz/build-42/modding/reference/lua-classes-scripts-1",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed script objects classes of Build 42.21 (part 1 of 4): every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-scripts-2",
+    "title": "Lua Classes: Script objects, part 2 of 4 (Build 42.21)",
+    "slug": "lua-classes-scripts-2",
+    "url": "/pz/build-42/modding/reference/lua-classes-scripts-2",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed script objects classes of Build 42.21 (part 2 of 4): every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-scripts-3",
+    "title": "Lua Classes: Script objects, part 3 of 4 (Build 42.21)",
+    "slug": "lua-classes-scripts-3",
+    "url": "/pz/build-42/modding/reference/lua-classes-scripts-3",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed script objects classes of Build 42.21 (part 3 of 4): every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-scripts-4",
+    "title": "Lua Classes: Script objects, part 4 of 4 (Build 42.21)",
+    "slug": "lua-classes-scripts-4",
+    "url": "/pz/build-42/modding/reference/lua-classes-scripts-4",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed script objects classes of Build 42.21 (part 4 of 4): every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-sound-and-radio",
+    "title": "Lua Classes: Sound and radio (Build 42.21)",
+    "slug": "lua-classes-sound-and-radio",
+    "url": "/pz/build-42/modding/reference/lua-classes-sound-and-radio",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed sound and radio classes of Build 42.21: every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-ui-and-input",
+    "title": "Lua Classes: UI and input (Build 42.21)",
+    "slug": "lua-classes-ui-and-input",
+    "url": "/pz/build-42/modding/reference/lua-classes-ui-and-input",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed ui and input classes of Build 42.21: every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-vehicles",
+    "title": "Lua Classes: Vehicles (Build 42.21)",
+    "slug": "lua-classes-vehicles",
+    "url": "/pz/build-42/modding/reference/lua-classes-vehicles",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed vehicles classes of Build 42.21: every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-world-1",
+    "title": "Lua Classes: The world: squares, objects, map and weather, part 1 of 4 (Build 42.21)",
+    "slug": "lua-classes-world-1",
+    "url": "/pz/build-42/modding/reference/lua-classes-world-1",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed the world: squares, objects, map and weather classes of Build 42.21 (part 1 of 4): every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-world-2",
+    "title": "Lua Classes: The world: squares, objects, map and weather, part 2 of 4 (Build 42.21)",
+    "slug": "lua-classes-world-2",
+    "url": "/pz/build-42/modding/reference/lua-classes-world-2",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed the world: squares, objects, map and weather classes of Build 42.21 (part 2 of 4): every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-world-3",
+    "title": "Lua Classes: The world: squares, objects, map and weather, part 3 of 4 (Build 42.21)",
+    "slug": "lua-classes-world-3",
+    "url": "/pz/build-42/modding/reference/lua-classes-world-3",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed the world: squares, objects, map and weather classes of Build 42.21 (part 3 of 4): every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-classes-world-4",
+    "title": "Lua Classes: The world: squares, objects, map and weather, part 4 of 4 (Build 42.21)",
+    "slug": "lua-classes-world-4",
+    "url": "/pz/build-42/modding/reference/lua-classes-world-4",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated",
+      "classes"
+    ],
+    "excerpt": "The exposed the world: squares, objects, map and weather classes of Build 42.21 (part 4 of 4): every method Lua can call, with parameter and return types, generated from the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-lua-events",
+    "title": "Lua Events (Build 42.21)",
+    "slug": "lua-events",
+    "url": "/pz/build-42/modding/reference/lua-events",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "events",
+      "reference",
+      "generated"
+    ],
+    "excerpt": "Every Lua event in Build 42.21, generated from the code: where each one is fired, on which side, and with which arguments.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-lua-global-functions",
+    "title": "Lua Global Functions (Build 42.21)",
+    "slug": "lua-global-functions",
+    "url": "/pz/build-42/modding/reference/lua-global-functions",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "generated"
+    ],
+    "excerpt": "All 728 global Lua functions of Build 42.21, with their parameter and return types, generated from the code.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-lua-reference",
+    "title": "The Build 42.21 Lua Reference",
+    "slug": "lua-reference",
+    "url": "/pz/build-42/modding/reference/lua-reference",
+    "version": "build-42",
+    "section": "modding",
+    "category": "reference",
+    "tags": [
+      "lua-api",
+      "reference",
+      "events",
+      "generated"
+    ],
+    "excerpt": "How Lua reaches the Java engine in Build 42.21, and the complete generated reference: 1,017 classes, 728 global functions, 262 events.",
     "difficulty": "intermediate"
   },
   {
@@ -4402,6 +5138,23 @@
       "craftrecipe-gating"
     ],
     "excerpt": "Design shift (official). Occupations were reworked to give higher starting skills and adjusted point costs, so you \"feel like a professional from day one instead of an apprentice.\" Combined with...",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-professions-reading-them-and-what-they-unlock",
+    "title": "Professions: reading them from Lua, and what they really unlock",
+    "slug": "professions-reading-them-and-what-they-unlock",
+    "url": "/pz/build-42/modding/skills-and-traits/professions-reading-them-and-what-they-unlock",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "professions",
+      "recipes",
+      "mechanics",
+      "gating"
+    ],
+    "excerpt": "How to read a character's profession in Build 42 Lua, and why gating on the recipes a profession grants is only a delay: the same recipe names come from magazines. Read from the 42.21 scripts and code.",
     "difficulty": "intermediate"
   },
   {
@@ -4563,6 +5316,22 @@
       "craftrecipe-gating"
     ],
     "excerpt": "Verified against \"More Traits\" (ToadTraits), which defines ~90 B42 traits -- analysis in ../13_WORKSHOP_ANALYSIS/libraries/more_traits.md. Fixes to the trait-modding guidance above:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-trait-mods-in-build-42",
+    "title": "Dynamic trait mods in Build 42: a survey before you build one",
+    "slug": "trait-mods-in-build-42",
+    "url": "/pz/build-42/modding/skills-and-traits/trait-mods-in-build-42",
+    "version": "build-42",
+    "section": "modding",
+    "category": "skills-and-traits",
+    "tags": [
+      "traits",
+      "mod-study",
+      "dynamic-traits"
+    ],
+    "excerpt": "Want traits you earn and lose by playing? Several mods already do it. A survey of the dynamic-trait and trait-content mods we found, how the best of them are built, and the design ideas worth learning from before you write your own.",
     "difficulty": "intermediate"
   },
   {
@@ -4754,6 +5523,41 @@
     "difficulty": "intermediate"
   },
   {
+    "id": "build-42-replacing-a-vanilla-window",
+    "title": "Replacing or extending a vanilla window: the traps in the UI code",
+    "slug": "replacing-a-vanilla-window",
+    "url": "/pz/build-42/modding/ui/replacing-a-vanilla-window",
+    "version": "build-42",
+    "section": "modding",
+    "category": "ui",
+    "tags": [
+      "ui",
+      "context-menu",
+      "keyboard",
+      "vehicles",
+      "silent-failure"
+    ],
+    "excerpt": "A hidden window never prerenders, instantiate already builds your children, a focused text box swallows every key release, the context menu is one shared object that clears itself, and vanilla actions talk to whatever sits in the mechanics-window slot. What we learned replacing the vehicle mechanics window, read from the 42.21 code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-ui-coordinate-traps",
+    "title": "UI coordinate traps: drawLine2 and scrolling lists",
+    "slug": "ui-coordinate-traps",
+    "url": "/pz/build-42/modding/ui/ui-coordinate-traps",
+    "version": "build-42",
+    "section": "modding",
+    "category": "ui",
+    "tags": [
+      "ui",
+      "drawing",
+      "coordinates",
+      "scrolling"
+    ],
+    "excerpt": "Two places where Build 42's UI code silently switches coordinate systems on you: ISUIElement:drawLine2 draws in screen coordinates while its neighbours draw in the element's own, and ISScrollingListBox finds rows in content coordinates. Read from the 42.21 code.",
+    "difficulty": "intermediate"
+  },
+  {
     "id": "build-42-ui-engine-reference",
     "title": "UI engine reference and gotchas",
     "slug": "ui-engine-reference",
@@ -4767,7 +5571,7 @@
       "iscollapsablewindow",
       "engine-reference"
     ],
-    "excerpt": "Machine-checked against the installed game, not recalled. Every line number below was read out of R:\\Games\\Steam\\steamapps\\common\\ProjectZomboid\\media\\lua\\client\\ on 2026-08-09.",
+    "excerpt": "Machine-checked against the installed game, not recalled. Every line number below was read out of the installed game's media/lua/client/ on 2026-08-09.",
     "difficulty": "intermediate"
   },
   {
@@ -4785,6 +5589,40 @@
       "engine-traps"
     ],
     "excerpt": "Everything learned about Project Zomboid's Build 42 UI layer while building Outcast Motors UI, the vehicle mechanics window replacement.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-ui3dscene-a-car-in-a-mod-window",
+    "title": "UI3DScene: a 3D car in your mod window",
+    "slug": "ui3dscene-a-car-in-a-mod-window",
+    "url": "/pz/build-42/modding/ui/ui3dscene-a-car-in-a-mod-window",
+    "version": "build-42",
+    "section": "modding",
+    "category": "ui",
+    "tags": [
+      "ui",
+      "3d",
+      "vehicles",
+      "ui3dscene"
+    ],
+    "excerpt": "Build 42 can draw a 3D car inside an ordinary mod window, outside debug mode, with the camera and placement under your control. But the car is always the stock model: first skin, one fixed paint, no damage, every part fitted. What Lua controls and what the Java hard-codes, read from the 42.21 code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-barricades-and-locks-in-vanilla",
+    "title": "Barricades and locks in vanilla: what the code really does",
+    "slug": "barricades-and-locks-in-vanilla",
+    "url": "/pz/build-42/modding/world-and-tiles/barricades-and-locks-in-vanilla",
+    "version": "build-42",
+    "section": "modding",
+    "category": "world-and-tiles",
+    "tags": [
+      "barricades",
+      "doors",
+      "locks",
+      "multiplayer"
+    ],
+    "excerpt": "A barricade is its own object on one face of a door or window, with plank, metal and metal-bar health. Any barricade, even one with no planks left standing, stops a door opening from either side, and anyone can take any barricade down. How barricades take damage, and the lock hardware the game already has. Read from the 42.21 code.",
     "difficulty": "intermediate"
   },
   {
@@ -5098,7 +5936,7 @@
       "multiplayer",
       "animals"
     ],
-    "excerpt": "Engine citations refer to R:/ZOMBOID/PZ_Engine_Records/B42/src/, revision a2947723ca.",
+    "excerpt": "Engine citations refer to our decompile of the Build 42 engine, revision 4a0e9546ec (42.21).",
     "difficulty": "intermediate"
   },
   {
@@ -5341,7 +6179,7 @@
       "ol-init",
       "containers"
     ],
-    "excerpt": "Changed 2026-09-08 on the owner's instruction, and it supersedes the section below, which correctly diagnosed the problem and then only documented it.",
+    "excerpt": "Changed 2026-09-08 by our decision, and it supersedes the section below, which correctly diagnosed the problem and then only documented it.",
     "difficulty": "advanced"
   },
   {
@@ -5358,7 +6196,7 @@
       "ol-init",
       "containers"
     ],
-    "excerpt": "Established 2026-08-26 by the owner, and it corrects an assumption this module was built on.",
+    "excerpt": "Established 2026-08-26 by us, and it corrects an assumption this module was built on.",
     "difficulty": "advanced"
   },
   {
@@ -5708,7 +6546,7 @@
       "engine",
       "context-menu"
     ],
-    "excerpt": "Every claim here was read out of the B42 engine records at R:\\ZOMBOID\\PZ_Engine_Records\\B42 (revision a2947723ca, steam buildid 24449119). The api/ index layer of that base is not built yet, so...",
+    "excerpt": "Every claim here was read out of our B42 engine records (revision a2947723ca, steam buildid 24449119). The api/ index layer of that base is not built yet, so...",
     "difficulty": "advanced"
   },
   {
@@ -5740,7 +6578,7 @@
       "engine",
       "context-menu"
     ],
-    "excerpt": "Every claim here was read out of the B42 engine records at R:\\ZOMBOID\\PZ_Engine_Records\\B42. Line numbers are precise -- the jar retains its LineNumberTable.",
+    "excerpt": "Every claim here was read out of our B42 engine records (revision a2947723ca). Line numbers are precise -- the jar retains its LineNumberTable.",
     "difficulty": "advanced"
   },
   {
@@ -5806,6 +6644,23 @@
       "animated-parts"
     ],
     "excerpt": "The recipe, derived from mods that demonstrably animate in a running B42 game: VanillaVehiclesAnimated and its B42 Orphanage (which animate the same vanilla cars this is usually wanted for), KI5's...",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-how-vehicle-paint-and-culling-work",
+    "title": "How vehicle paint and back-face culling really work",
+    "slug": "how-vehicle-paint-and-culling-work",
+    "url": "/pz/build-42/vehicles/animation/how-vehicle-paint-and-culling-work",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "animation",
+    "tags": [
+      "vehicles",
+      "shaders",
+      "textures",
+      "rendering"
+    ],
+    "excerpt": "A car's random paint lives in the skin's alpha channel, the norandom shader has no paint at all, a part model on a vehicle shader borrows its whole car's textures, and vehicles in the world are always back-face culled: cullFace in the model script is ignored there. Read from the 42.21 shaders and code.",
     "difficulty": "advanced"
   },
   {
@@ -5962,6 +6817,24 @@
     "difficulty": "advanced"
   },
   {
+    "id": "build-42-vehicle-model-and-texture-traps",
+    "title": "Vehicle model and texture traps",
+    "slug": "vehicle-model-and-texture-traps",
+    "url": "/pz/build-42/vehicles/animation/vehicle-model-and-texture-traps",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "animation",
+    "tags": [
+      "vehicles",
+      "models",
+      "textures",
+      "shaders",
+      "fbx"
+    ],
+    "excerpt": "A vehicle part model ignores its own texture under the car shaders; the wheel shader is the way out. Where to put parts that have no art, why a texture authored too dark can never be lit back up, what the FBX unit field really says in vanilla, and two animation keys the game reads and never uses.",
+    "difficulty": "advanced"
+  },
+  {
     "id": "build-42-what-the-engine-requires-to-actually-animate",
     "title": "What the engine requires to actually animate",
     "slug": "what-the-engine-requires-to-actually-animate",
@@ -5975,7 +6848,7 @@
       "fbx",
       "silent-failures"
     ],
-    "excerpt": "BaseVehicle.playPartAnim, BaseVehicle.java:2016. All of these must hold, and every one of them fails silently:",
+    "excerpt": "BaseVehicle.playPartAnim, BaseVehicle.java:2019. All of these must hold, and every one of them fails silently:",
     "difficulty": "advanced"
   },
   {
@@ -6009,7 +6882,7 @@
       "community-mods",
       "workshop-survey"
     ],
-    "excerpt": "Compiled 2026-08-10 from the 1117 Workshop mods in R:\\Games\\Steam\\steamapps\\workshop\\content\\108600\\, read for technique only. Nothing here is copied. Supplements 17-vehicle-animation-reference.md...",
+    "excerpt": "Compiled 2026-08-10 from the 1117 Workshop mods in a Steam library's steamapps/workshop/content/108600 folder, read for technique only. Nothing here is copied. Supplements 17-vehicle-animation-reference.md...",
     "difficulty": "intermediate"
   },
   {
@@ -6061,7 +6934,7 @@
       "survey",
       "workshop"
     ],
-    "excerpt": "Fourteen Workshop mods read from the local install (R:\\Games\\Steam\\steamapps\\workshop\\content\\108600\\), for technique only. Nothing here is copied. Where a finding contradicts something we...",
+    "excerpt": "Fourteen Workshop mods read from the local install (steamapps/workshop/content/108600), for technique only. Nothing here is copied. Where a finding contradicts something we...",
     "difficulty": "intermediate"
   },
   {
@@ -6167,7 +7040,7 @@
       "mod-study",
       "template-vehicle"
     ],
-    "excerpt": "Source: R:\\Games\\Steam\\steamapps\\workshop\\content\\108600\\3564950449\\mods\\Project Summer Car\\42.15\\",
+    "excerpt": "Source: Workshop item 3564950449, folder mods/Project Summer Car/42.15/",
     "difficulty": "intermediate"
   },
   {
@@ -6430,7 +7303,7 @@
       "assessment",
       "roadmap"
     ],
-    "excerpt": "We test single-player and ship multiplayer. Three MP-only failures surfaced this week from reading other people's code, not from our own testing: ISInstallVehiclePart:complete never fires on an MP...",
+    "excerpt": "We test single-player and ship multiplayer. Three MP-only questions surfaced this week from reading other people's code, not from our own testing. The first, whether ISInstallVehiclePart:complete runs in multiplayer, came out the other way: it runs on the server...",
     "difficulty": "advanced"
   },
   {
@@ -6503,6 +7376,24 @@
     "difficulty": "advanced"
   },
   {
+    "id": "build-42-invented-vehicle-parts-and-areas",
+    "title": "Adding parts to a vehicle: the traps in order, copies and doors",
+    "slug": "invented-vehicle-parts-and-areas",
+    "url": "/pz/build-42/vehicles/reference/invented-vehicle-parts-and-areas",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "reference",
+    "tags": [
+      "vehicles",
+      "scripts",
+      "parts",
+      "multiplayer",
+      "silent-failure"
+    ],
+    "excerpt": "A part you invent has no door, no window and no tables until you give it some, and vanilla code that assumes a door can crash a multiplayer client. A vehicle script is applied top to bottom, so a template line can wipe the part you just wrote. What we learned adding parts to vanilla cars, read from the 42.21 code.",
+    "difficulty": "advanced"
+  },
+  {
     "id": "build-42-lessons-and-guards",
     "title": "Lessons and guards",
     "slug": "lessons-and-guards",
@@ -6517,6 +7408,41 @@
       "guards"
     ],
     "excerpt": "Every bug that cost real time on the vehicle mods, what CLASS it belonged to, and the mechanical guard that now catches it.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-vanilla-mechanics-code-what-it-really-checks",
+    "title": "The vanilla mechanics code: what it really checks",
+    "slug": "vanilla-mechanics-code-what-it-really-checks",
+    "url": "/pz/build-42/vehicles/reference/vanilla-mechanics-code-what-it-really-checks",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "reference",
+    "tags": [
+      "vehicles",
+      "mechanics",
+      "parts",
+      "multiplayer"
+    ],
+    "excerpt": "Skill never blocks a part job, it only sets the risk, and six levels short means certain failure. Recipes, professions and traits do block. A repair written to the item is not a repair of the part. A car needs more than 12.5% battery to start. Trunks spawn locked, hoods never. What the vanilla mechanics code does, read from 42.21.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-vehicle-engine-numbers-mods-must-know",
+    "title": "Engine numbers a vehicle mod must know",
+    "slug": "vehicle-engine-numbers-mods-must-know",
+    "url": "/pz/build-42/vehicles/reference/vehicle-engine-numbers-mods-must-know",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "reference",
+    "tags": [
+      "vehicles",
+      "engine",
+      "crash-damage",
+      "temperature",
+      "mechanics-xp"
+    ],
+    "excerpt": "How vanilla turns engine quality into power, why the curve is flat above 62.5, what really resets quality to 100, where the engine temperature ceiling comes from, which part a crash hurts, and what Mechanics XP a job really pays. Read from the 42.21 code.",
     "difficulty": "intermediate"
   },
   {
@@ -6535,6 +7461,41 @@
     ],
     "excerpt": "Read this before writing any Outcast vehicle mod. Every entry was read out of the shipped game or the Build 42 decompile and, where possible, confirmed in game. Citations are given so you can...",
     "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-vehicle-lua-hook-traps",
+    "title": "Vehicle Lua hook traps",
+    "slug": "vehicle-lua-hook-traps",
+    "url": "/pz/build-42/vehicles/reference/vehicle-lua-hook-traps",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "reference",
+    "tags": [
+      "vehicles",
+      "hooks",
+      "lua",
+      "condition",
+      "silent-failure"
+    ],
+    "excerpt": "When the game remembers your hook and when it looks it up again, why the use key cannot close a hood, the stand-in vehicle that has no modData, and why slow wear written as fractions never lands. Checked against the 42.21 code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-vehicle-script-traps",
+    "title": "Vehicle script traps",
+    "slug": "vehicle-script-traps",
+    "url": "/pz/build-42/vehicles/reference/vehicle-script-traps",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "reference",
+    "tags": [
+      "vehicles",
+      "scripts",
+      "templates",
+      "silent-failure"
+    ],
+    "excerpt": "One character decides whether a vehicle template replaces a part or merges into it. Parts are assembled from wildcard blocks, so grepping by part name lies. A Lua name in a script that does not resolve shuts every engine down. The vehicle script traps we hit, checked against the 42.21 code.",
+    "difficulty": "intermediate"
   },
   {
     "id": "build-42-vehicle-ui-reference",
@@ -6583,6 +7544,23 @@
     ],
     "excerpt": "Vehicle systems (from the readiness track), in 1 parts: Vehicles.",
     "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-vehicles-from-lua-what-needs-java",
+    "title": "Car physics from Lua: what works, what does nothing, what needs Java",
+    "slug": "vehicles-from-lua-what-needs-java",
+    "url": "/pz/build-42/vehicles/reference/vehicles-from-lua-what-needs-java",
+    "version": "build-42",
+    "section": "vehicles",
+    "category": "reference",
+    "tags": [
+      "vehicles",
+      "physics",
+      "lua",
+      "java"
+    ],
+    "excerpt": "We drove a probe car and measured which BaseVehicle calls really change a car from Lua. Engine force writes are smooth, weight works through setInitialMass, tyre pressure changes nothing in a straight line, and gears and RPM cannot be controlled. The results table, and the list that still needs Java.",
+    "difficulty": "advanced"
   },
   {
     "id": "build-42-verified-api-reference",
