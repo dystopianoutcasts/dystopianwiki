@@ -13,7 +13,7 @@ tags:
   - animals
 excerpt: >-
   Engine citations refer to our decompile of the Build 42 engine, revision
-  a2947723ca.
+  4a0e9546ec (42.21).
 last_updated: '2026-10-04'
 ---
 # Outcast Husbandry -- multiplayer
@@ -21,7 +21,8 @@ last_updated: '2026-10-04'
 > Source: OutcastHusbandry/docs/MULTIPLAYER.md (compiled 2026-09-24, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
 Engine citations refer to our decompile of the Build 42 engine, revision
-`a2947723ca`.
+`4a0e9546ec` (42.21). They were first written against `a2947723ca` (42.20) and
+re-checked on 42.21.
 
 ## Where the code runs
 
@@ -31,7 +32,7 @@ load. The folder sets *when* code loads, not which side runs it (see
 [Lua load order and the three lua folders](/pz/build-42/modding/lua-api/lua-load-order-and-the-three-lua-folders)).
 The server owns the animal simulation and is the only party that writes anything.
 
-> **Proof:** Code. `zombie.gameStates.GameLoadingState` calls `LuaManager.LoadDirBase("server")` with no `GameClient.client` guard. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.gameStates.GameLoadingState` calls `LuaManager.LoadDirBase("server")` with no `GameClient.client` guard. Build 42.21.0 (revision 4a0e9546ec).
 
 What keeps the simulation off a client is `OH_Main.ownsSimulation()`, which
 refuses to run when `isClient()` is true. That is false in singleplayer and false
@@ -47,22 +48,22 @@ failure on the exact deployment it was written for.
 
 | Event | Triggered from | Fires on |
 |---|---|---|
-| `OnGameStart` | `IngameState.java:768` | singleplayer, co-op host |
-| `OnServerStarted` | `GameServer.java:1522` | dedicated server only |
+| `OnGameStart` | `IngameState.java:775` | singleplayer, co-op host |
+| `OnServerStarted` | `GameServer.java:1541` | dedicated server only |
 
 A dedicated server never enters `IngameState`, so **`OnGameStart` never fires
 there**. A mod registering only `OnGameStart` boots clean, logs nothing, and does
 nothing. Both are registered, behind a `booted` latch for the host that raises
 both.
 
-`EveryTenMinutes` is driven by `GameTime.java:656`, which ticks on a dedicated
+`EveryTenMinutes` is driven by `GameTime.java:644`, which ticks on a dedicated
 server as well as a client, so the recurring pass needs no special handling.
 
 ## What replicates, and what does not
 
 **Health does.** `AnimalPacket` carries `health` as a byte (`:72`, written `:175`,
 read `:251`), and `IsoAnimal.setHealth` pushes an extra update to relevant
-connections when an animal hits zero (`:1190`). The floor is therefore
+connections when an animal hits zero (`:1189`). The floor is therefore
 authoritative and visible to clients.
 
 **Hunger and thirst do not.** There is no `CharacterStat.HUNGER` or `THIRST` field
@@ -70,9 +71,14 @@ in any animal packet. A client's `IsoAnimal` is a slave copy whose hunger the
 server never sends.
 
 This is **vanilla behaviour, not something this mod introduces**, and it matters
-only for display: the animal info tooltip is rendered Java-side from
-`getHungerTxt` / `getThirstTxt` (`IsoAnimal.java:2095-2117`), which have no Lua
-callers at all. A client may therefore show a stale hunger word.
+only for display: the hunger and thirst words a player reads come from
+`IsoAnimal.getAppearanceText` (`IsoAnimal.java:2094-2116`), called by the animal
+window (`ISAnimalUI.lua:97`) and by the carried-animal item. We used to name
+two methods here, `getHungerTxt` and `getThirstTxt`, and say nothing in Lua
+calls them; neither method exists, in 42.20 or 42.21. Whoever calls it, on a
+client it reads the slave copy, so a client may show a stale hunger word.
+
+> **Proof:** Code. `zombie.characters.animals.IsoAnimal#getAppearanceText(boolean)`; `media/lua/client/ISUI/Animal/ISAnimalUI.lua` (`drawText(self.animal:getAppearanceText(...))`); `zombie.inventory.types.AnimalInventoryItem`. Build 42.21.0 (revision 4a0e9546ec).
 
 Nothing about the mod's correctness depends on it. Death, health, production and
 every decision this mod makes are evaluated on the server against the server's
@@ -134,3 +140,5 @@ Removing the mod restores vanilla rates on the next start.
 ---
 
 *Corrected 2026-10-04: media/lua/server/ loads on a multiplayer client too, at world load; the folder sets when code loads, not which side runs it.*
+
+*Updated 2026-10-04 for Build 42.21: line numbers re-pointed; the stale hunger word comes from IsoAnimal.getAppearanceText, which the animal window calls from Lua (the two method names given before do not exist).*

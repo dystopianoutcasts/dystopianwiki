@@ -31,7 +31,7 @@ at world load (see [Lua load order and the three lua folders](/pz/build-42/moddi
 but the mod checks `isClient()` and does nothing there. No vanilla file is
 replaced.
 
-> **Proof:** Code. `zombie.gameStates.GameLoadingState` calls `LuaManager.LoadDirBase("server")` with no `GameClient.client` guard. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.gameStates.GameLoadingState` calls `LuaManager.LoadDirBase("server")` with no `GameClient.client` guard. Build 42.21.0 (revision 4a0e9546ec).
 
 See [docs/MULTIPLAYER.md](/pz/build-42/outcast-mods/outcast-husbandry/outcast-husbandry-multiplayer).
 
