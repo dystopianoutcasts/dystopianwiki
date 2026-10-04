@@ -1,0 +1,6 @@
+{
+  "name": "Admin Commands",
+  "description": "Generated from the Build 42.21 code: every server command, its forms and the capability it needs.",
+  "icon": "wrench",
+  "displayOrder": 4
+}
