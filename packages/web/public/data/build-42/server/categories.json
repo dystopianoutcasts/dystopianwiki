@@ -1,0 +1,44 @@
+{
+  "categories": [
+    {
+      "id": "getting-started",
+      "name": "Start Here",
+      "description": "Running a server as an Outcast: your server's files, what surprised us in the code, and how to read the server's numbers.",
+      "icon": "book",
+      "articleCount": 2,
+      "displayOrder": 1
+    },
+    {
+      "id": "server-options",
+      "name": "Server Options",
+      "description": "Generated from the Build 42.21 code: all 144 server ini options with default, range and where the game reads each.",
+      "icon": "settings",
+      "articleCount": 6,
+      "displayOrder": 2
+    },
+    {
+      "id": "sandbox-options",
+      "name": "Sandbox Options",
+      "description": "Generated from the Build 42.21 code: all 269 sandbox options with defaults, presets and where the game reads each.",
+      "icon": "globe",
+      "articleCount": 9,
+      "displayOrder": 3
+    },
+    {
+      "id": "admin-commands",
+      "name": "Admin Commands",
+      "description": "Generated from the Build 42.21 code: every server command, its forms and the capability it needs.",
+      "icon": "wrench",
+      "articleCount": 1,
+      "displayOrder": 4
+    },
+    {
+      "id": "roles-and-access",
+      "name": "Roles and Access",
+      "description": "Generated from the Build 42.21 code: the built-in roles and every capability, with where each is checked.",
+      "icon": "scroll",
+      "articleCount": 2,
+      "displayOrder": 5
+    }
+  ]
+}

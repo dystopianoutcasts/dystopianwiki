@@ -686,6 +686,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/engine</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/mapping</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -819,6 +824,96 @@
     <loc>https://dystopianoutcasts.online/pz/build-42/outcast-mods/outcast-upright</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/gameplay</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/gameplay/the-real-numbers</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/getting-started</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/server-options</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/sandbox-options</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/admin-commands</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/roles-and-access</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/gameplay/the-real-numbers/fatigue-sleep-and-endurance</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/gameplay/the-real-numbers/firearm-accuracy-and-damage</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/gameplay/the-real-numbers/how-fast-skills-level</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/gameplay/the-real-numbers/how-infection-works</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/gameplay/the-real-numbers/how-long-zombies-remember-you</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/gameplay/the-real-numbers/how-loot-is-rolled-and-respawns</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/gameplay/the-real-numbers/how-zombies-see-and-hear-you</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/gameplay/the-real-numbers/melee-damage-and-critical-hits</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/gameplay/the-real-numbers/the-helicopter-event</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/gameplay/the-real-numbers/weight-encumbrance-and-strength</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/mapping/buildings-and-tiles/buildings-and-buildinged</loc>
@@ -1152,6 +1247,61 @@
   </url>
   <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/modding/crafting/the-new-craftrecipe-block</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/engine/body-damage-wounds-and-infection</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/engine/body-temperature-and-the-thermoregulator</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/engine/chat-channels-and-the-chat-server</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/engine/erosion</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/engine/pathfinding-and-the-native-library</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/engine/procedural-world-generation</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/engine/radio-and-television</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/engine/randomized-stories</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/engine/the-entity-component-system</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/engine/the-world-map</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/engine/zombies-states-and-the-ai-director</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2197,6 +2347,106 @@
   </url>
   <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/outcast-mods/outcast-upright/outcast-upright-engine</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/admin-commands/admin-commands</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/getting-started/reading-the-servers-numbers</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/getting-started/running-a-server</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/roles-and-access/server-roles-and-capabilities</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/roles-and-access/where-each-capability-is-checked</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/sandbox-options/sandbox-options-character</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/sandbox-options/sandbox-options-directory</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/sandbox-options/sandbox-options-loot</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/sandbox-options/sandbox-options-meta-events</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/sandbox-options/sandbox-options-nature-and-livestock</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/sandbox-options/sandbox-options-not-on-the-settings-screen</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/sandbox-options/sandbox-options-time-and-world</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/sandbox-options/sandbox-options-vehicles</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/sandbox-options/sandbox-options-zombies</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/server-options/server-options-chat-voice-and-connections</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/server-options/server-options-details-steam-and-backups</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/server-options/server-options-directory</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/server-options/server-options-only-in-the-ini-file</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/server-options/server-options-players-and-admins</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/server/server-options/server-options-pvp-safehouses-and-factions</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
