@@ -16,7 +16,7 @@ excerpt: >-
   The recipe, derived from mods that demonstrably animate in a running B42 game:
   VanillaVehiclesAnimated and its B42 Orphanage (which animate the same vanilla
   cars this is usually wanted for), KI5's...
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # How to animate a vehicle part
 
@@ -182,10 +182,24 @@ every police, fire and ambulance panel gets a colour its body does not have.
 
 ### 1.6 Scripts have no `//` comment
 
-`ScriptParser.stripComments` (`ScriptParser.java:58`) handles `/* */` and
-nothing else. One `//` line makes the **entire file** fail to parse, so nothing
-in it registers, so no mesh load is attempted, so you do not even get the
-`No such mesh` error that would have told you. Cost three sessions here.
+`ScriptParser#stripComments` removes `/* */` and nothing else, so `//` is
+ordinary text that sticks to whatever follows it, up to the next comma or
+brace. Where it sits decides what you lose, and usually nothing is logged:
+
+- above `module`: the **whole file** is skipped;
+- above a `model` or `vehicle` block: **that block** is skipped (a note above
+  every declaration looks exactly like a dead file);
+- between two properties, or after one on the same line: the **next**
+  property is lost, while the one you annotated works.
+
+Any of these means no model declaration, so no mesh load is attempted, so you
+do not even get the `No such mesh` error that would have told you. Cost three
+sessions here. Write notes as `/* */`. The full table, read from the parser:
+[Script comments: what // really does](/pz/build-42/modding/gotchas/script-comments-what-slashes-do).
+
+> **Proof:** Code. `zombie.scripting.ScriptManager#CreateFromToken`,
+> `zombie.scripting.objects.ScriptModule#CreateFromTokenPP`,
+> `zombie.scripting.ScriptParser#readBlock`. Build 42, engine revision a2947723ca (Steam build 24449119).
 
 ## 2. What the rig has to do -- and what it does not
 
@@ -349,7 +363,7 @@ error from the mod or the engine. Several are indistinguishable by eye.
 
 | Cause | Symptom |
 |---|---|
-| `//` in a script file | whole file fails to parse, nothing registers |
+| `//` in a script file | the file, the next block or the next property silently missing, by where it sits (1.6) |
 | shader has no skinned `.vert` | panel never drawn, no mesh error |
 | vert does not write a varying the frag consumes | panel drawn, shading garbage |
 | shader substituted for a drawable one | panel drawn, wrong tint or gloss |
@@ -391,3 +405,9 @@ mod that had every other piece right and a hood that worked.
 
 Three rig theories were briefed to an artist before this. None of them was the
 problem, and the problem was one line in a script.
+
+> **Correction, 2026-10-04:** section 1.6 and the matching row of section 6
+> used to say that one `//` line makes the whole script file fail. That is
+> only true when the `//` sits above `module`. Read from the script parser, a
+> `//` elsewhere drops the block below it or the property after it instead.
+> Details in [Script comments: what // really does](/pz/build-42/modding/gotchas/script-comments-what-slashes-do).
