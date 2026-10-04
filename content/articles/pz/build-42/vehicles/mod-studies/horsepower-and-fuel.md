@@ -51,6 +51,27 @@ Note the hack: **`MaxItemSize` is repurposed as the performance rating.** Stock
 parts are 1.0, larger values mean sport/racing. It's not a size at all -- it's a
 free float field on every item that the engine doesn't otherwise use for these.
 
+### What it replaces: vanilla's power curve is flat at the top
+
+Why bother? Because vanilla barely ties power to anything. When a car is created,
+`Vehicles.Create.Engine` rolls an engine quality (the script's base quality with
+some randomness, kept between 0 and 100) and sets power to the script's
+`engineForce` times `max(0.6, min(quality x 1.6, 100) / 100)`. Work that through:
+
+- quality 62.5 and above gives full power, so most of the range feels the same;
+- between 37.5 and 62.5, power climbs from 60% to 100%;
+- 37.5 and below sits on the floor, 60%.
+
+That is set once, at creation. Nothing in vanilla's Lua recomputes it as the
+engine wears; the only other writer is the full repair that admin and debug tools
+use, which puts quality back to 100 and power back to the script's figure. So in
+vanilla a worn engine does not feel worn. PSC's formula above is a direct answer
+to that: power follows the condition of the parts, every time it is recomputed.
+The numbers are in
+[Vehicle engine numbers mods must know](/pz/build-42/vehicles/reference/vehicle-engine-numbers-mods-must-know).
+
+> **Proof:** Code. `media/lua/server/Vehicles/Vehicles.lua`, `Vehicles.Create.Engine` (`qualityBoosted = engineQuality * 1.6`, capped at 100; `qualityModifier = math.max(0.6, qualityBoosted / 100)`) and the only two Lua calls to `setEngineFeature`, both in that function; `zombie.vehicles.VehiclePart#repair` (`setEngineFeature(100, loudness, power)` for the `Engine` part). Build 42.21.0 (revision 4a0e9546ec).
+
 ### Loudness scales inversely with condition
 ```lua
 engineLoudness = script:getEngineLoudness()
@@ -89,3 +110,5 @@ end
 ```
 
 *Re-checked 2026-10-04 for Build 42.21: the `BaseVehicle` methods this page uses (`setEngineFeature`, `getEnginePower`, `getThrottle`, `getFakeSpeedModifier`) have the same signatures, so the claims here still hold.*
+
+*Updated 2026-10-04: added what vanilla's own power formula does (full power from quality 62.5, a 60% floor at 37.5, set once at creation), which is the gap PSC's formula fills.*

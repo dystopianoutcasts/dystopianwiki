@@ -347,7 +347,11 @@ called for exactly this.
 |---|---|
 | Does a Blender panel cut from a vanilla body want `vehicle` or `vehicle_multiuv`? | **Answered.** It wants the body's own shader; the reason it failed is the missing skinned `.vert`, not the wrong choice. Ship the file, keep the shader. |
 | Does part animation replicate in MP? | Answered previously: no. Now confirmed by TIS's own `-- TODO` at the call site. |
-| Does `anim Opened { animate = FALSE }` restore a saved-open state on load? | **Still unverified.** VVA ships it, which shows it does not fail catastrophically -- not that it behaves correctly. One save/reload settles it. |
+| Does `anim Opened { animate = FALSE }` restore a saved-open state on load? | **Answered: yes, for the saved state.** On a taxi with our animated panels, an open door, trunk and hood were all still open after quitting and reloading (game test, 2026-08-23, proof below). Whether the opening movement visibly replays as chunks load was not recorded. |
 | Does a rig without `Vehicle_bone` animate? | Still unverified. KI5 binds their body to `body_bone` and it works, so a root bone exists in every working example. |
 
+> **Proof:** Game test. Door, trunk and hood left open on a CarTaxi with the Outcast Motors Animated panels, game quit and reloaded, all three still open, recorded in the mod's notes on 2026-08-23. Build 42.20.
+
 *Re-checked 2026-10-04 for Build 42.21: vanilla still has no client `Commands.vehicle` handler; line numbers updated; the code claims we re-checked still hold.*
+
+*Updated 2026-10-04: the saved-open question in section 8 is answered by a game test; an open panel survives a save and reload.*

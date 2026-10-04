@@ -15,7 +15,7 @@ tags:
 excerpt: >-
   Marked honestly, because the previous version of this document was confidently
   wrong by omission.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - the-headline-corrected
   - what-vanilla-ships
@@ -49,12 +49,22 @@ wrong by omission.
   the wrong place.** THE open question as of 2026-08-10. It is the one
   declaration separating our file from VVA's working one (5.4), the evidence is
   strong, and the test has not been run.
-- **Whether `anim Opened { animate = FALSE }` restores a saved-open state on
-  chunk load**, or replays the transition. Untested. If it replays, every car in
-  the world flips its hood open as chunks load, which is worse than no animation.
+- ~~**Whether `anim Opened { animate = FALSE }` restores a saved-open state on
+  chunk load.**~~ **ANSWERED for the saved state: it does.** On a taxi with our
+  animated panels, a door, the trunk and the hood were left open, the game was
+  quit and reloaded, and all three were still open. That was a real question,
+  because the panel injection runs again on every load and `animate = FALSE`
+  holds a frame of the clip rather than a yes/no. Whether the opening movement
+  visibly replays as chunks load was not recorded; watch for it on a crowded car
+  park.
+
+> **Proof:** Game test. Door, trunk and hood left open on a CarTaxi with the Outcast Motors Animated panels, game quit and reloaded, all three still open, recorded in the mod's notes on 2026-08-23. Build 42.20.
+
 - ~~Whether part animation replicates in multiplayer.~~ **ANSWERED: it does
   not.** See section 5.5.
 - **Whether a part model override survives a car being damaged** into its
   `SMASH_`/`CRASH_` variant, which swaps the whole shell.
 - **Performance at density.** A car park of skinned vehicle meshes is more draw
   calls than vanilla ever renders.
+
+*Updated 2026-10-04: an open door, trunk and hood came back open after a save and reload (game test, 2026-08-23); whether the opening replays visibly on chunk load is still open.*
