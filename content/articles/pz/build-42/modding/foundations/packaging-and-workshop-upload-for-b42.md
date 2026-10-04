@@ -64,6 +64,14 @@ related_articles:
 - Ship the **versioned layout** (`common/` + `42/`) so B42 clients find the `42/` build folder + `mod.info`. Uploading a flat B41-shaped mod is what causes the silent-install/world-load failure for B42 subscribers (Section 2). **[CONFIRMED]**
 - To support both builds from one item, keep the flat B41 `media/` alongside `common/` + `42/` (Section 3/4). **[CONFIRMED]**
 - The **Mod ID** (`id` in `mod.info`) is what consumers put in server configs; the **Workshop ID** is assigned by Steam. Document both. **[CONFIRMED]**
+- **Name the version folder `42` (or a version such as `42.13`), never `B42` or `4.2`.** The uploader reads each folder beside `common/` as a game version and only looks inside the ones from 42.0 up to the running game. `B42` reads as 0 and `4.2` as 4.2, so neither is looked at, and if that is where your `mod.info` sits, the upload fails with `MissingModDotInfo` for a file that is right there.
+- **`require=` loads a dependency that is installed, even if `Mods=` leaves it out.** On a server, `Mods=` lists what is active, but each `require=` entry is looked up among the installed mods, not in `Mods=`. An installed library missing from `Mods=` is still loaded, just ahead of the mod that needs it. If it is not installed at all, the mod that requires it does not load and the log says `required mod "<id>" not found`.
+
+> **Proof:** Code. `zombie.core.znet.SteamWorkshopItem#validateModFolder` (`common` always; any other folder only when `ZomboidFileSystem#getGameVersionIntFromName` gives a value from `ChooseGameInfo.getMinRequiredVersion()`, 42.0, up to the running game; `MissingModDotInfo` when no `mod.info` was found); `zombie.ZomboidFileSystem#getGameVersionIntFromName` (`B42` parses as 0, `4.2` as 4002 against 42000). Build 42.21.0 (revision 4a0e9546ec).
+
+> **Proof:** Code. `zombie.ZomboidFileSystem#loadModAndRequired` (each `require=` entry through `ChooseGameInfo.getAvailableModDetails`, an installed-mods lookup, added to the order before the mod itself; a missing one logs `required mod "..." not found` and stops that mod) and `#loadMods`. Build 42.21.0 (revision 4a0e9546ec).
+
+For everything the uploader checks before it sends anything, and Steam's own limits, see [Workshop upload and server deployment: what the game checks](/pz/build-42/modding/foundations/workshop-upload-what-the-uploader-checks).
 
 ---
 
@@ -74,3 +82,5 @@ related_articles:
 *Corrected 2026-10-04: the Workshop preview may be 256x256 or 512x512, square, up to 1000 KB; 256x256 is not the only size accepted.*
 
 *Corrected 2026-10-04: `visibility` in `workshop.txt` takes the words public, friendsOnly, private or unlisted, not the numbers 0-3; a number publishes the item public.*
+
+*Updated 2026-10-04: the version folder name is checked by the uploader (`B42` or `4.2` gives `MissingModDotInfo`); `require=` loads an installed dependency even when `Mods=` omits it.*

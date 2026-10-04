@@ -196,6 +196,13 @@ the first.
 (`:2938`) -- **no `:get(i)`**. The `:get(i)`/`:size()` idiom throughout vanilla
 Lua is `recipe:getTags()`, a different type. Use `hasTag(ItemTag)` (`:2946`).
 `ItemTag` is a registry class, not an enum, with a public `register(String)`.
+That `register` **creates** a tag and is not a lookup: it throws for any id in
+the `base` namespace, so it can never hand back a base-game tag. To turn a tag
+id string into the object, use `ItemTag.get(ResourceLocation.of(id))` (no colon
+means `base`), or read a base-game tag's static field such as `ItemTag.SMOKABLE`.
+See [Item tags from Lua](/pz/build-42/modding/items-and-scripting/item-tags-from-lua).
+
+> **Proof:** Code. `zombie.scripting.objects.ItemTag#get(ResourceLocation)` and `#register(String)` (through `RegistryReset#createLocation`, which throws `Default namespace ... is not allowed` for `base`); `zombie.scripting.objects.ResourceLocation#of`. Build 42.21.0 (revision 4a0e9546ec).
 
 **`getInventory()` is declared on `InventoryContainer` (`:56`), not
 `InventoryItem`.** Calling it on a plain garment lying on the ground is a hard
@@ -313,3 +320,5 @@ correctly divergent.
 ---
 
 *Corrected 2026-10-04: OutcastLib is a published, unlisted Workshop item (3778987608), not private-server only.*
+
+*Updated 2026-10-04: `ItemTag.register` creates a tag and is not a lookup; look a tag up with `ItemTag.get(ResourceLocation.of(id))`.*

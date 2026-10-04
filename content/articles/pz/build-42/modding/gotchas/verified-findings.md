@@ -66,7 +66,10 @@ public void registerECSComponents() {
 ### The important caveat
 
 Only **14 files engine-wide** reference `ECSComponent` / `registerECSComponents`.
-Against 3,335 total classes, that is a very narrow footprint.
+Against 3,335 total classes on 42.20 (3,352 on 42.21, still 14 files), that is a
+very narrow footprint.
+
+> **Proof:** Code. Counted the decompiled `.java` files (3,335 in the 42.20 capture, revision a2947723ca; 3,352 in the 42.21 capture) and the files naming `ECSComponent` or `registerECSComponents` (14 in each). Build 42.21.0 (revision 4a0e9546ec).
 
 **Preliminary interpretation:** B42 runs the ECS *in parallel with* the legacy
 `IsoObject` / `IsoGameCharacter` inheritance hierarchy rather than replacing it.
@@ -163,7 +166,8 @@ W1.4 must cross-check against `LuaManager` and `media/lua/`.
 **Confidence: CONFIRMED**
 
 Vineflower 1.11.1 emitted **3,335 `.java` from 3,335 top-level classes** --
-100% coverage, zero failures, zero error lines, in 98.7 seconds.
+100% coverage, zero failures, zero error lines, in 98.7 seconds. That was the
+42.20 build; the 42.21 re-capture has 3,352.
 
 In-scope packages: `zombie` (3,076), `generation` (145), `fmod` (102),
 `astar` (11), `N3D` (1).
@@ -1158,8 +1162,12 @@ far more skill-gated than the declared item numbers suggest, and a mod applying
 damage directly is not comparable to those numbers without this correction.
 
 **Sandbox difficulty still applies through zombie health**
-(`IsoZombie.java:4443-4455`: 3.5 tough / 1.8 normal / 0.5 fragile, each
-`+ Rand(0, 0.3)`), which any direct-damage approach gets for free.
+(`IsoZombie.java:4442-4456`: 3.5 tough / 1.8 normal / 0.5 fragile / a random
+0.5 to 3.5, each `+ Rand(0, 0.3)`), which any direct-damage approach gets for
+free. The sandbox option is `ZombieLore.Toughness` (values 1 to 4, default 2,
+normal).
+
+> **Proof:** Code. `zombie.characters.IsoZombie` (health set from `SandboxOptions.instance.lore.toughness`, values 1 to 4); `zombie.SandboxOptions` (`newEnumOption("ZombieLore.Toughness", 4, 2)`). Build 42.21.0 (revision 4a0e9546ec).
 
 ---
 
@@ -1327,3 +1335,5 @@ junctions the mod folder may never trigger it** -- the watcher holds the real
 path while watching the linked one.
 
 *Updated 2026-10-04 for Build 42.21: engine line numbers moved to 42.21; F-008 corrected (Java does fire `OnFillContainer` and `OnContainerUpdate`); F-015 route C marked unchecked in multiplayer on 42.21.*
+
+*Updated 2026-10-04: F-001 and F-006 give the class count for both builds (3,335 on 42.20, 3,352 on 42.21); F-015 names the toughness option, `ZombieLore.Toughness`, and its random setting.*

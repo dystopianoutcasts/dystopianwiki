@@ -65,6 +65,10 @@ hard way: such an item can be looked up by name and still never be created.
 
 > **Proof:** Game test. Nineteen Outcast Motors items written with `Type = Normal` were found by `getScriptManager():getItem()`, but `InventoryItemFactory.CreateItem` returned nil for each. Build 42.20.
 
+On 42.21 the game at least says so, if you look in debug mode: an unknown item key, `Type` included, is logged as a warning that starts `adding unknown item param "Type" = "Normal"` and names the script and file. Outside debug mode that log channel is off by default, so do not count on seeing it. We read this in the code and have not re-run the test on 42.21.
+
+> **Proof:** Code. `zombie.scripting.objects.Item#DoParam` (falls through to `DebugType.DetailedInfo.warn("adding unknown item param ...")`); `zombie.debug.DebugType` (every channel starts at `LogSeverity.Off`); `zombie.debug.DebugLog#setDefaultLogSeverity` (the default severity is applied to `DetailedInfo` only when `Core.debug`). Build 42.21.0 (revision 4a0e9546ec).
+
 ### Fields that matter in B42 (new / changed emphasis)
 
 | Field | Notes | Flag |
@@ -105,3 +109,5 @@ item IronOre
 ---
 
 *Corrected 2026-10-04: Build 42 items use ItemType = base:normal; B41's Type = Normal is not read, and the vanilla examples now quote a file that exists.*
+
+*Updated 2026-10-04: on 42.21 a `Type = Normal` line logs an `adding unknown item param` warning, in debug mode only (read in the code, not re-tested).*
