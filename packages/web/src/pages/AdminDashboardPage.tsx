@@ -15,6 +15,7 @@ import { SEOHead } from '../components/seo/SEOHead'
 import { MascotDialog } from '../components/mascot/MascotDialog'
 import { ArtImage } from '../components/mascot/ArtImage'
 import { RoundTable } from '../components/mascot/RoundTable'
+import { BallotsTable, MembersTable, TilesTable, WorldsTable, formatWhen, nameOfMember } from '../components/admin/AdminTables'
 import { useAuth } from '../context/AuthContext'
 import { MASCOT_ENTRIES, getMascotEntry } from '../data/mascotEntries'
 import { loginUrlFor } from '../utils/loginNext'
@@ -29,7 +30,6 @@ import {
   filterBallots,
   filterMembers,
   fromLocalInput,
-  memberRole,
   toLocalInput,
   type AdminBallot,
   type Member,
@@ -52,7 +52,6 @@ import { mapRebuildApi } from '../lib/mapRebuildClient'
 import type { MapRebuildResult, RebuildRequest } from '../lib/mapRebuildApi'
 import {
   MAP_MISSING_TEXT,
-  TILE_STATE_TEXT,
   classifyMaps,
   isOpen,
   parseTilesInfo,
@@ -66,9 +65,7 @@ import {
   MISSING_TEXT,
   canUndo,
   currentWorld,
-  formatDate,
   leftoversText,
-  originText,
   pendingText,
   statusLine,
   worldCountText,
@@ -82,12 +79,6 @@ const ENTRY_IDS = MASCOT_ENTRIES.map((e) => e.id)
 
 /** On the dashboard entries go by their file id (art_00N), as asked; the public page says "Entry N". */
 const idOf = (id: string) => id
-
-function formatWhen(iso: string | null): string {
-  if (!iso) return 'Never'
-  const d = new Date(iso)
-  return Number.isNaN(d.getTime()) ? iso : d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
-}
 
 type Load<T> = { state: 'loading' } | { state: 'error'; text: string } | { state: 'ready'; value: T }
 
@@ -482,32 +473,7 @@ function WorldSection() {
             )}
           </div>
 
-          <div className="mascot-vote__table-wrap" role="region" aria-labelledby="ad-world" tabIndex={0}>
-            <table className="mascot-vote__table admin__table">
-              <thead>
-                <tr>
-                  <th scope="col">World</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Detected by</th>
-                  <th scope="col">Started</th>
-                  <th scope="col">Ended</th>
-                  <th scope="col">Note</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ready.worlds.map((w) => (
-                  <tr key={w.worldId}>
-                    <th scope="row">{w.seq}</th>
-                    <td>{w.status}</td>
-                    <td>{originText(w.detectedBy)}</td>
-                    <td>{formatDate(w.startedAt)}</td>
-                    <td>{formatDate(w.endedAt)}</td>
-                    <td>{w.note ?? '-'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <WorldsTable worlds={ready.worlds} labelledBy="ad-world" />
         </>
       )}
 
@@ -699,24 +665,7 @@ function MapSection() {
           {classified.rows.length === 0 ? (
             <p>The server has not reported its map list yet.</p>
           ) : (
-            <div className="mascot-vote__table-wrap" role="region" aria-labelledby="ad-tiles" tabIndex={0}>
-              <table className="mascot-vote__table admin__table">
-                <thead>
-                  <tr>
-                    <th scope="col">Map</th>
-                    <th scope="col">Tiles</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {classified.rows.map((row) => (
-                    <tr key={row.name}>
-                      <th scope="row">{row.name}</th>
-                      <td>{ready.tiles ? TILE_STATE_TEXT[row.state] : '-'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <TilesTable rows={classified.rows} tilesKnown={Boolean(ready.tiles)} labelledBy="ad-tiles" />
           )}
           {classified.hidden.length > 0 && (
             <p className="mascot-vote__meta">Hidden; tiles kept (the server no longer runs): {classified.hidden.join(', ')}</p>
@@ -802,7 +751,6 @@ function MembersSection({ selfId }: { selfId: string }) {
 
   const action = useConfirmedAction<Member>((m) => setAdmin(m.userId, !m.isAdmin), () => setKey((k) => k + 1))
   const shown = members.state === 'ready' ? filterMembers(members.value, query) : []
-  const nameOfMember = (m: Member) => m.discordUsername ?? m.email ?? 'this account'
 
   return (
     <section className="mascot-vote__panel" aria-labelledby="ad-members">
@@ -828,43 +776,7 @@ function MembersSection({ selfId }: { selfId: string }) {
           <p className="mascot-vote__meta" role="status">
             {shown.length} of {members.value.length} {members.value.length === 1 ? 'account' : 'accounts'}
           </p>
-          <div className="mascot-vote__table-wrap" role="region" aria-labelledby="ad-members" tabIndex={0}>
-            <table className="mascot-vote__table admin__table">
-              <thead>
-                <tr>
-                  <th scope="col">Discord username</th>
-                  <th scope="col">Email</th>
-                  <th scope="col">Signs in with</th>
-                  <th scope="col">Joined</th>
-                  <th scope="col">Last sign-in</th>
-                  <th scope="col">Role</th>
-                  <th scope="col">Change</th>
-                </tr>
-              </thead>
-              <tbody>
-                {shown.map((m) => (
-                  <tr key={m.userId}>
-                    <th scope="row">{m.discordUsername ?? <span className="admin__none">No Discord</span>}</th>
-                    <td>{m.email ?? '-'}</td>
-                    <td>{m.providers.length ? m.providers.join(', ') : '-'}</td>
-                    <td>{formatWhen(m.joinedAt)}</td>
-                    <td>{formatWhen(m.lastSignInAt)}</td>
-                    <td>{memberRole(m)}</td>
-                    <td>
-                      {m.userId === selfId || m.isSuperadmin ? (
-                        <span className="admin__none">-</span>
-                      ) : (
-                        <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary admin__row-btn" onClick={() => action.ask(m)}>
-                          {m.isAdmin ? 'Remove admin' : 'Make admin'}
-                          <span className="sr-only"> ({nameOfMember(m)})</span>
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <MembersTable members={shown} selfId={selfId} onAsk={action.ask} labelledBy="ad-members" />
         </>
       )}
       <Confirm
@@ -1076,6 +988,7 @@ function VoteResults({ election, ballots }: { election: Election; ballots: Admin
             labelledBy="ad-rounds"
             nameOf={idOf}
             winnerLabel={status === 'published' || status === 'closed' ? 'Winner' : 'Leading'}
+            fit
           />
         </>
       )}
@@ -1204,53 +1117,7 @@ function BallotsSection({ election, ballots, onChanged }: { election: Election; 
       {ballots.length === 0 ? (
         <p>No ballots yet.</p>
       ) : (
-        <div className="mascot-vote__table-wrap" role="region" aria-labelledby="ad-ballots" tabIndex={0}>
-          <table className="mascot-vote__table admin__table">
-            <thead>
-              <tr>
-                <th scope="col">Discord username</th>
-                <th scope="col">Ranking, 1st to last</th>
-                <th scope="col">Cast</th>
-                <th scope="col">Counted</th>
-              </tr>
-            </thead>
-            <tbody>
-              {shown.map((b) => {
-                const who = b.discordUsername ?? `Discord id ${b.discordId}`
-                return (
-                  <tr key={b.ballotId} className={b.counted ? undefined : 'admin__row--excluded'}>
-                    <th scope="row">
-                      {b.discordUsername ?? <span className="admin__none">Unknown ({b.discordId})</span>}
-                      {!b.counted && <span className="mascot-vote__tag">Excluded</span>}
-                    </th>
-                    <td>
-                      <ol className="admin__ranking">
-                        {b.rankings.map((id, i) => (
-                          <li key={id}>
-                            <span className="admin__rank">{i + 1}.</span> {id}
-                          </li>
-                        ))}
-                      </ol>
-                    </td>
-                    <td>{formatWhen(b.createdAt)}</td>
-                    <td>
-                      <label className="admin__check">
-                        <input
-                          type="checkbox"
-                          checked={b.counted}
-                          disabled={frozen}
-                          aria-busy={pending === b.ballotId || undefined}
-                          onChange={() => void toggle(b)}
-                        />
-                        <span className="sr-only">Count the ballot from {who}</span>
-                      </label>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
+        <BallotsTable ballots={shown} frozen={frozen} pending={pending} onToggle={(b) => void toggle(b)} labelledBy="ad-ballots" />
       )}
     </section>
   )

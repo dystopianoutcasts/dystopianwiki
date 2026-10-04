@@ -77,9 +77,69 @@
   margin: var(--spacing-3) 0;
 }
 
-.admin__table td,
-.admin__table th {
+/* ---- Admin tables (T78): never wider than their panel ----
+   components/admin/FitTable.tsx. Cells wrap, so the table's minimum width is the sum of
+   its longest WORDS, not its longest cells; padding is tighter than the vote page's. No
+   sticky first column and no focusable scroll region: nothing scrolls sideways. The wrap
+   is a size container, so each table stacks by the width its panel actually gives it. */
+
+.admin__table-wrap {
+  overflow: visible;
+  container-type: inline-size;
+}
+
+/* The global table rule's bottom margin would sit inside the wrap's border as an empty strip. */
+.admin__table {
+  margin: 0;
+}
+
+.admin__table th,
+.admin__table td {
+  padding: var(--spacing-2);
   vertical-align: middle;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.admin__table thead th {
+  vertical-align: bottom;
+}
+
+/* The wrap no longer clips, so the header's corners follow its rounded border. */
+.admin__table thead th:first-child {
+  border-top-left-radius: calc(var(--border-radius-md) - 1px);
+}
+
+.admin__table thead th:last-child {
+  border-top-right-radius: calc(var(--border-radius-md) - 1px);
+}
+
+.admin__table th[scope='row'],
+.admin__table thead th:first-child {
+  position: static;
+}
+
+.admin__caption {
+  position: static;
+  width: auto;
+}
+
+.admin__table .admin__col--break {
+  overflow-wrap: anywhere;
+}
+
+.admin__table .admin__col--short,
+.admin__table .admin__col--num,
+.admin__table .admin__col--action {
+  white-space: nowrap;
+}
+
+.admin__table .admin__col--num {
+  text-align: right;
+}
+
+.admin__ranking li {
   white-space: nowrap;
 }
 
@@ -87,6 +147,135 @@
   min-height: 44px;
   padding: 0 var(--spacing-3);
   font-size: var(--font-size-sm);
+  white-space: nowrap;
+}
+
+/* Stacked: one block per row, one "label: value" line per column. The table parts keep
+   their roles from the markup (FitTable), and the column headers stay in the
+   accessibility tree, visually hidden. The label is generated text from data-label with
+   empty alternative text, so a screen reader announces the header once, not twice. */
+@container (max-width: 739.98px) {
+  .admin__table--stack-wide,
+  .admin__table--stack-wide tbody,
+  .admin__table--stack-wide tr {
+    display: block;
+  }
+
+  .admin__table--stack-wide thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .admin__table--stack-wide tbody tr {
+    padding: var(--spacing-2) var(--spacing-3);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .admin__table--stack-wide tbody tr:last-child {
+    border-bottom: 0;
+  }
+
+  .admin__table--stack-wide th[scope='row'],
+  .admin__table--stack-wide td {
+    display: grid;
+    grid-template-columns: minmax(6.5rem, 34%) minmax(0, 1fr);
+    gap: var(--spacing-3);
+    padding: var(--spacing-1) 0;
+    border: 0;
+    text-align: left;
+    white-space: normal;
+    background: none;
+  }
+
+  /* Beats the right alignment of numeric columns: label and value read left to right. */
+  .admin__table--stack-wide .admin__col {
+    text-align: left;
+  }
+
+  .admin__table--stack-wide th[scope='row']::before,
+  .admin__table--stack-wide td::before {
+    content: attr(data-label) ':';
+    content: attr(data-label) ':' / '';
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+  }
+
+  .admin__table--stack-wide .admin__col--action {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacing-1);
+  }
+
+  .admin__table--stack-wide .admin__col--action .admin__row-btn {
+    width: 100%;
+  }
+}
+
+/* The same stacked layout for tables of a few short columns, at a narrower panel. */
+@container (max-width: 479.98px) {
+  .admin__table--stack-narrow,
+  .admin__table--stack-narrow tbody,
+  .admin__table--stack-narrow tr {
+    display: block;
+  }
+
+  .admin__table--stack-narrow {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .admin__table--stack-narrow caption {
+    display: block;
+    order: 1;
+  }
+
+  .admin__table--stack-narrow thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .admin__table--stack-narrow tbody tr {
+    padding: var(--spacing-2) var(--spacing-3);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .admin__table--stack-narrow th[scope='row'],
+  .admin__table--stack-narrow td {
+    display: grid;
+    grid-template-columns: minmax(6.5rem, 34%) minmax(0, 1fr);
+    gap: var(--spacing-3);
+    padding: var(--spacing-1) 0;
+    border: 0;
+    text-align: left;
+    white-space: normal;
+    background: none;
+  }
+
+  /* The leading entry keeps its accent rules, on the block instead of the cells. */
+  .admin__table--stack-narrow tbody tr.mascot-vote__row--winner {
+    border-top: 2px solid var(--color-accent-400);
+    border-bottom: 2px solid var(--color-accent-400);
+  }
+
+  /* Beats the right alignment of numeric columns: label and value read left to right. */
+  .admin__table--stack-narrow .admin__col {
+    text-align: left;
+  }
+
+  .admin__table--stack-narrow th[scope='row']::before,
+  .admin__table--stack-narrow td::before {
+    content: attr(data-label) ':';
+    content: attr(data-label) ':' / '';
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+  }
 }
 
 .admin__row--excluded th,
