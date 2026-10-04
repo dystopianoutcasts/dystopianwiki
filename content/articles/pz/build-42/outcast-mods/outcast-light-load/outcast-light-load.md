@@ -14,7 +14,7 @@ tags:
 excerpt: >-
   Halves the weight of raw crafting resources in Project Zomboid B42, so hauling
   timber, ore and metal stock is not the whole afternoon.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Outcast Light Load
 
@@ -183,7 +183,7 @@ v1 shipped with a UTF-8 BOM on both generated files and **did nothing at all**,
 with no error anywhere. Recorded here because the failure is invisible:
 
 `CreateFromToken` requires `token.indexOf("module") == 0`
-(`ScriptManager.java:1359`), and Java's `String.trim()` only strips chars
+(`ScriptManager.java:1360`), and Java's `String.trim()` only strips chars
 `<= U+0020` -- it does **not** strip `U+FEFF`. A BOM shifts `module` to index 1,
 so the block never matches and all 110 overrides are skipped silently. The mod
 still loads and still appears in the in-game mod list, so it looks fine.
@@ -193,7 +193,7 @@ now uses `[System.IO.File]::WriteAllText` with `UTF8Encoding($false)`, and the
 validator byte-checks every shipped file for `EF BB BF`.
 
 A leading `/* */` comment is safe -- `stripComments` runs at
-`ScriptManager.java:1334`, before the `module` check.
+`ScriptManager.java:1335`, before the `module` check.
 
 ### The trap this avoids
 
@@ -302,9 +302,15 @@ The mod is item script data with no client-only logic, so it works in MP -- but 
 Project Zomboid checksums script files (`ScriptManager.Load` feeds every script
 into `NetChecksum`). A client whose scripts differ from the server's is dropped:
 `AntiCheat.REASON_INCORRECT_CHECKSUM`, and `AntiCheatChecksumUpdate` times the
-connection out after ~8 seconds. So server and clients must run **byte-identical**
-files -- which is exactly why everyone should get it from the same Workshop item
-rather than side-loading.
+connection out after about 60 seconds (it was about 8 seconds before Build 42.21).
+So server and clients must run **byte-identical** files -- which is exactly why
+everyone should get it from the same Workshop item rather than side-loading. The
+one difference the checksum forgives is line endings: since 42.21 it drops every
+carriage return before hashing, in every checksummed file (42.20 converted CRLF
+pairs, and only for script files), so a file saved with Windows line endings
+matches the same file saved with Unix ones.
+
+> **Proof:** Code. `zombie.network.anticheats.AntiCheatChecksumUpdate#isDifferentChecksumTimeoutExpired` (`DIFFERENT_CHECKSUM_STATE_TIMEOUT = IsoWorld.LUA_CHECKSUM_TIMEOUT_MS`, 60 seconds); `zombie.network.NetChecksum$Checksummer#addFile` (skips byte 13). Build 42.21.0 (revision 4a0e9546ec).
 
 Server `.ini`:
 
@@ -319,7 +325,7 @@ checksum, so a server on the old build will refuse clients on the new one.
 ### Confirming the server picked it up
 
 The self-check runs on the dedicated server too -- `OnGameBoot` is triggered at
-`GameServer.java:1485`, and `media/lua/shared` loads on both sides. Output is
+`GameServer.java:1504`, and `media/lua/shared` loads on both sides. Output is
 tagged by context:
 
 ```
@@ -397,3 +403,5 @@ tools/install_workshop_junction.ps1  -- wire up the Workshop uploader
 - No `icon.png` / `poster.png` yet -- both needed before a Workshop upload.
 - Multiplayer untested (script-only mods normally need no server-side logic, as
   item scripts load on both sides, but this is unconfirmed).
+
+*Updated 2026-10-04 for Build 42.21: the checksum-mismatch timeout is now about 60 seconds, and the checksum ignores carriage returns; line numbers re-pointed.*

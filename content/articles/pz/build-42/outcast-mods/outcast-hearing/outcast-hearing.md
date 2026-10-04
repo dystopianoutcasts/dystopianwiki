@@ -212,7 +212,8 @@ Two behaviours worth knowing at the call site:
 ## Engine facts this depends on
 
 Verified against the installed build **42.20.0**, revision `a2947723ca`, and the
-sealed decompile of that build.
+sealed decompile of that build. Re-checked on **42.21.0** (revision `4a0e9546ec`):
+nothing below changed meaning.
 
 **`UITransition.setFadeIn()` ignores your fade duration.** It hardcodes
 `init(100, false)` in and `init(200, true)` out (`UITransition.java:59-67`). It is
@@ -380,8 +381,8 @@ The shared files were audited for engine calls specifically because they load in
 the server Lua state. `OH_Support` degrades to `OH.DEFAULTS` when `PZAPI` is
 absent rather than raising, and `OH_Log` registers **both** lifecycle events:
 
-> `OnGameStart` is raised only from `IngameState.java:768`, which a dedicated
-> server never enters. `OnServerStarted` (`GameServer.java:1522`) is its
+> `OnGameStart` is raised only from `IngameState.java:775`, which a dedicated
+> server never enters. `OnServerStarted` (`GameServer.java:1541`) is its
 > server-side counterpart and fires nowhere else. Registering only the first
 > means a dedicated server writes **no boot line at all** -- the log an operator
 > goes looking for after a failed session is simply absent. Vanilla pairs them
