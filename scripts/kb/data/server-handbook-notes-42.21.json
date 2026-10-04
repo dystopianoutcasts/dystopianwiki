@@ -1,0 +1,142 @@
+{
+  "$comment": "Hand-written notes for scripts/kb/gen-server-handbook.ts, Build 42.21 (revision 4a0e9546ec). Each note says what the code does with an option or command, in one line, and names the site it was read from (<class or Lua file>#<method or function>, one of the item's sites in server-surface-42.21.json, or 'declaration'). The generator refuses a note whose site is not one of the item's sites.",
+  "serverOptions": {
+    "MaxPlayers": {
+      "effect": "`ServerOptions#getMaxPlayers` returns the smaller of this value and 254, a cap written into the code.",
+      "site": "zombie.network.ServerOptions#getMaxPlayers"
+    },
+    "PingLimit": {
+      "effect": "0 turns it off. Above 0, a player whose ping is higher than this value is kicked while loading, unless their role has `CantBeKickedIfTooLaggy`.",
+      "site": "zombie.network.statistics.PingManager#doKickWhileLoading"
+    },
+    "SaveWorldEveryMinutes": {
+      "effect": "0 turns it off. Above 0, once this many real minutes have passed since the last save the server queues a full save, and runs it when no backup is in progress.",
+      "site": "zombie.network.ServerMap#preupdate"
+    },
+    "PauseEmpty": {
+      "effect": "On the server, the game counts as paused while no player is connected and this is true.",
+      "site": "zombie.GameTime#isGamePaused"
+    },
+    "SpeedLimit": {
+      "effect": "On a multiplayer client the engine stops pushing a car forward once it reaches this speed in km/h. The speed anti-cheat also uses it as the limit for a player in a vehicle (`AntiCheatSpeed#validate`, 20 for a player on foot).",
+      "site": "zombie.core.physics.CarController#control_Forward"
+    },
+    "CarEngineAttractionModifier": {
+      "effect": "On the server, the loudness of the world sound a running engine makes is multiplied by this value.",
+      "site": "zombie.vehicles.VehicleEngine#updateWorldSounds"
+    },
+    "PVPMeleeDamageModifier": {
+      "effect": "On the server, the damage of a melee weapon hit on a character's body is multiplied by this value. Before that, the damage is the weapon's random damage times 15 (times 4 more on the head or neck, 2 on the upper torso).",
+      "site": "zombie.characters.BodyDamage.BodyDamage#DamageFromWeapon"
+    },
+    "PVPFirearmDamageModifier": {
+      "effect": "On the server, the damage of a ranged weapon hit on a character's body is multiplied by this value. Before that, the damage is the weapon's random damage times 15 (times 4 more on the head or neck, 2 on the upper torso).",
+      "site": "zombie.characters.BodyDamage.BodyDamage#DamageFromWeapon"
+    },
+    "BadWordPolicy": {
+      "effect": "When the word filter flags a chat message, the server bans (1), kicks (2) or logs (3) the sender. The range is 1 to 3, so the \"4 - mute\" in the description cannot be set: a 4 in the file is refused and the value stays where it was.",
+      "site": "zombie.network.chat.ChatServer#processMessageFromPlayerPacket"
+    },
+    "WebhookAddress": {
+      "effect": "When it is not empty, the server starts a `StackBot` with this address at start-up. It is not one of the options kept off the public list, so its value is written to every joining player along with the other public options.",
+      "site": "zombie.network.GameServer#startServer"
+    },
+    "ItemNumbersLimitPerContainer": {
+      "effect": "0 turns it off. Above 0, a multiplayer client shows the item count against the limit under a container, and the transfer action counts the destination's items against it (`ISInventoryTransferAction:isValid`); containers on a character are left out. All its read sites are client Lua.",
+      "site": "client/ISUI/ISInventoryPage.lua#ISInventoryPage:prerender"
+    },
+    "FastForwardMultiplier": {
+      "effect": "While the server is fast-forwarding, `GameTime#getMultiplier` uses this value divided by the length of a day in minutes.",
+      "site": "zombie.GameTime#getMultiplier"
+    },
+    "SafehouseDaySurvivedToClaim": {
+      "effect": "0 turns it off. Above 0, a player who has survived fewer than this many days (hours survived below the value times 24) cannot claim a safehouse.",
+      "site": "zombie.iso.areas.SafeHouse#allowSafeHouse"
+    },
+    "FactionDaySurvivedToCreate": {
+      "effect": "0 turns it off. Otherwise a player needs at least this many days survived (hours survived of at least the value times 24) to create a faction.",
+      "site": "zombie.characters.Faction#canCreateFaction"
+    },
+    "MaxAccountsPerUser": {
+      "effect": "0 or less turns it off, and so does a server not running in Steam mode. Otherwise the server counts the other accounts that use the same SteamID before it allows a new one.",
+      "site": "zombie.network.ServerWorldDatabase#isNewAccountAllowed"
+    },
+    "SafeHouseRemovalTime": {
+      "effect": "A number of hours: the code multiplies it by 3,600,000 milliseconds. 0 turns removal off; otherwise `SafeHouse#update` releases every safehouse that `isSafeHouseExpired` reports as expired and tells every player.",
+      "site": "zombie.iso.areas.SafeHouse#update"
+    },
+    "BloodSplatLifespanDays": {
+      "effect": "This server option is read nowhere. The sandbox option with the same name, `BloodSplatLifespanDays`, is the one `IsoChunk` and `IsoObject` read.",
+      "site": "declaration"
+    }
+  },
+  "sandboxOptions": {
+    "ZombieRespawn": {
+      "effect": "No game code reads it. Choosing a value on the server settings screen fills in three advanced values: `ZombieConfig.RespawnHours` 16, 72, 216 or 0, `ZombieConfig.RespawnUnseenHours` 6, 16, 48 or 0, and `ZombieConfig.RespawnMultiplier` 0.5, 0.1, 0.05 or 0 (for High, Normal, Low and None). Those three are what the game reads.",
+      "site": "client/OptionScreens/ServerSettingsScreen.lua#Page3:onComboBoxSelected"
+    },
+    "ZombieMigrate": {
+      "effect": "No game code reads it. Ticking it on the server settings screen sets `ZombieConfig.RedistributeHours` to 12.0, unticking it sets 0.0; the game reads that value.",
+      "site": "client/OptionScreens/ServerSettingsScreen.lua#Page3:onTickBoxSelected"
+    },
+    "DayLength": {
+      "effect": "Real minutes per in-game day: choice 1 is 15, 2 is 30, 3 is 60, 4 is 90, and from 5 up it is (choice minus 3) times 60.",
+      "site": "zombie.SandboxOptions#getDayLengthMinutes"
+    },
+    "RuralLooted": {
+      "effect": "On a square outside every town region, the looted chance is multiplied by this value after it is cut to a whole number: anything below 1.0 gives 0 (the chance then becomes its floor of 1), 1.0 to 1.99 leaves it unchanged, 2.0 doubles it. The diminished-loot percentage (`getCurrentDiminishedLootPercentage`) is cut the same way, and there below 1.0 means none.",
+      "site": "zombie.SandboxOptions#getCurrentLootedChance"
+    },
+    "MaximumLooted": {
+      "effect": "The looted chance grows with the days since the world began: this value times the days, divided by `DaysUntilMaximumLooted`, with the days capped at that number. 0 turns it off, and a `DaysUntilMaximumLooted` of 0 gives the full value from the first day. A \"Rich\" square gets 1.5 times, and the result is at least 1.",
+      "site": "zombie.SandboxOptions#getCurrentLootedChance"
+    },
+    "MultiplierConfig.GlobalToggle": {
+      "effect": "In `IsoGameCharacter.XP#AddXP`, when this is true the XP gain is multiplied by `MultiplierConfig.Global`; when it is false, by the skill's own `MultiplierConfig.<skill>` value.",
+      "site": "zombie.characters.IsoGameCharacter$XP#AddXP"
+    },
+    "MultiplierConfig.Global": {
+      "effect": "Multiplies the XP gain in `IsoGameCharacter.XP#AddXP` while `MultiplierConfig.GlobalToggle` is true. The per-skill values are used only when it is false.",
+      "site": "zombie.characters.IsoGameCharacter$XP#AddXP"
+    },
+    "HoursForCorpseRemoval": {
+      "effect": "0 or less: the corpse pass does nothing. Otherwise each rot stage of a human corpse lasts a third of this many hours, and of an animal corpse a quarter. The pass runs everywhere except on a multiplayer client.",
+      "site": "zombie.iso.objects.IsoDeadBody#updateBodies"
+    },
+    "DaysForRottenFoodRemoval": {
+      "effect": "-1 turns it off. From 0 up, rotten food is destroyed once its age passes the age at which it rots (`OffAgeMax`) by this many days, unless it sits in a compost bin.",
+      "site": "zombie.inventory.types.Food#updateRotting"
+    },
+    "NatureAbundance": {
+      "effect": "Foraging reads it through a variable: `forageSystem.getRefillBonus` looks up `SandboxVars[abundanceSetting]`, and the forage zones and definitions set `abundanceSetting` to \"NatureAbundance\" (it is also the fallback). The refill bonus is 1 plus one hundredth of the matching entry in `forageSystem.abundanceSettings`.",
+      "site": "shared/Foraging/forageSystem.lua#forageSystem.getRefillBonus"
+    },
+    "Farming": {
+      "effect": "Not read: the only `SandboxVars.Farming` lines, in `media/lua/server/Farming/farming_vegetableconf.lua`, are commented out. Every \"Farming\" listed above is the skill, a loot type or a crafting category, not this option.",
+      "site": "declaration"
+    },
+    "Map.AllowMiniMap": {
+      "effect": "The minimap is allowed only when the world map is allowed and this is true. The default is false, so a server that keeps the defaults has no minimap: see [the missing minimap](/pz/build-42/modding/multiplayer/missing-minimap-check-the-sandbox-first).",
+      "site": "client/ISUI/Maps/ISMiniMap.lua#ISMiniMap.IsAllowed"
+    }
+  },
+  "commands": {
+    "additem": {
+      "effect": "A count above 100 is lowered to 100 (the server prints \"Cannot spawn over 100 items at a time\").",
+      "site": "zombie.commands.serverCommands.AddItemCommand#Command"
+    },
+    "createhorde": {
+      "effect": "The count is capped at 500. Each zombie is placed on a random square up to 10 tiles from the player on each axis, on the player's floor, and the horde is written to the admin log.",
+      "site": "zombie.commands.serverCommands.CreateHordeCommand#Command"
+    },
+    "changeoption": {
+      "effect": "Saves the ini file at once. Changing `Password` also sets the server's password, changing `ClientCommandFilter` reloads the filter, and on a Steam server the Steam settings are applied again. Every change is written to the admin log.",
+      "site": "zombie.commands.serverCommands.ChangeOptionCommand#Command"
+    },
+    "stats": {
+      "effect": "`/stats list` lists the statistics, `/stats version` prints the game version, `/stats <statistic> list` lists its counters, `/stats <statistic> all` prints every value and `/stats <statistic> <counter>` one value. Anything else, `/stats help` included, prints the help text again.",
+      "site": "zombie.commands.serverCommands.StatisticsCommand#Command"
+    }
+  },
+  "capabilities": {}
+}
