@@ -13,7 +13,7 @@ tags:
   - combat
   - animation
 excerpt: 'Every engine fact this mod depends on, with the citation that proves it.'
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Outcast Punch -- engine notes
 
@@ -22,7 +22,8 @@ last_updated: '2026-09-29'
 Every engine fact this mod depends on, with the citation that proves it.
 
 Verified against **B42 revision `a2947723ca`** (Steam buildid 24449119). Line
-numbers are from the decompiled source in `PZ_Engine_Records`. If a game update
+numbers are from the decompiled source in `PZ_Engine_Records`, re-pointed to
+**42.21.0** (revision `4a0e9546ec`) when this page was re-checked on that build. If a game update
 breaks something, start here: the boot contract in `OCP_Contract.lua` checks the
 symbols, this file explains what they were for.
 
@@ -35,14 +36,14 @@ symbols, this file explains what they were for.
 Vanilla forces an unarmed attack down the shove branch, then suppresses damage on
 it. Three gates, in order:
 
-**1. Bare hands are forced down the shove branch** (`CombatManager.java:1342`).
+**1. Bare hands are forced down the shove branch** (`CombatManager.java:1362`).
 If the attack weapon is `owner.bareHands`, `vars.doShove = true`. The only escape
 is `AttackType.CHARGE`, which `WeaponType.UNARMED` can never produce
 (`WeaponType.java:19` gives it `AttackType.NONE` as its sole possible attack) —
-and which is re-rolled at `CombatManager.java:3158`, seven lines before it is
-read at `:3165`.
+and which is re-rolled at `CombatManager.java:3173`, seven lines before it is
+read at `:3180`.
 
-**2. A shoving player has damage suppressed** (`IsoGameCharacter.java:6079`):
+**2. A shoving player has damage suppressed** (`IsoGameCharacter.java:6086`):
 
 ```java
 if (wielder instanceof IsoPlayer player && player.isDoShove() && !wielder.isAimAtFloor()) {
@@ -52,7 +53,7 @@ if (wielder instanceof IsoPlayer player && player.isDoShove() && !wielder.isAimA
 ```
 
 **3. Health is only reduced when that flag is false**
-(`IsoGameCharacter.java:6211`, in `hitConsequences`):
+(`IsoGameCharacter.java:6218`, in `hitConsequences`):
 
 ```java
 if (!bIgnoreDamage) {
@@ -68,22 +69,22 @@ kills it but punching a standing one never will.
 (`media/scripts/generated/items/weapon.txt:14257`). Those numbers are unreachable
 on the player attack path.
 
-> I originally read `CombatManager.java:1126` and concluded bare hands *did* deal
+> I originally read `CombatManager.java:1161` and concluded bare hands *did* deal
 > damage. They do not — the gate is one level deeper, inside `Hit()`.
 
 ### The window we use
 
-`Hit()` still fires `OnWeaponHitCharacter` at `IsoGameCharacter.java:6084`. That
+`Hit()` still fires `OnWeaponHitCharacter` at `IsoGameCharacter.java:6091`. That
 is **after** `bIgnoreDamage` is set and **before** both `processHitDamage`
-(`:6105`) and `hitConsequences` (`:6106`). So the event hands us a real target,
+(`:6112`) and `hitConsequences` (`:6113`). So the event hands us a real target,
 already resolved, at a point where vanilla has decided not to hurt it.
 
-We call `target:applyDamage()` (`IsoGameCharacter.java:16065`) there and let the
+We call `target:applyDamage()` (`IsoGameCharacter.java:16152`) there and let the
 rest of the pipeline run untouched.
 
 ### Why we never handle the kill
 
-`isDead()` is health-based (`IsoGameCharacter.java:4913`). A zombie we take to
+`isDead()` is health-based (`IsoGameCharacter.java:4920`). A zombie we take to
 zero is *already dead* by the time `hitConsequences` runs, so the engine performs
 the death, the kill credit and the death animation on its own. We never call
 anything death-related.
@@ -92,11 +93,11 @@ anything death-related.
 
 ```
 Hit()
-  :6079   bIgnoreDamage = true          (damage is now suppressed)
-  :6084   OnWeaponHitCharacter fires    <-- WE ARE HERE
-  :6105   processHitDamage              (skipped for us)
-  :6106   hitConsequences               (reads isCriticalHit, ZombieHitReaction)
-  :6211   applyDamage                   (skipped for us)
+  :6086   bIgnoreDamage = true          (damage is now suppressed)
+  :6091   OnWeaponHitCharacter fires    <-- WE ARE HERE
+  :6112   processHitDamage              (skipped for us)
+  :6113   hitConsequences               (reads isCriticalHit, ZombieHitReaction)
+  :6218   applyDamage                   (skipped for us)
 ```
 
 Everything we want to influence downstream — knockdown, hit reaction — is read
@@ -112,7 +113,7 @@ Everything we want to influence downstream — knockdown, hit reaction — is re
 reading this section.**
 
 `hitConsequences` calls `applyGlobalDamageReductionMultipliers()` before
-`applyDamage()` (`IsoGameCharacter.java:6212`), and we skip it. That looks like a
+`applyDamage()` (`IsoGameCharacter.java:6219`), and we skip it. That looks like a
 bug. It is not worth fixing:
 
 1. **It is not a sandbox setting.** `CombatConfig` is constructed purely from
@@ -122,7 +123,7 @@ bug. It is not worth fixing:
    panel. Routing through it buys no player-facing tunability.
 
 2. **Unarmed can never earn weapon skill.** `getWeaponLevel()` guards on
-   `weaponType != WeaponType.UNARMED` (`IsoGameCharacter.java:11106`), and the
+   `weaponType != WeaponType.UNARMED` (`IsoGameCharacter.java:11136`), and the
    lookup reads `WeaponCategory` off the primary hand item. A bare-handed
    character is locked at weapon level 0 permanently, and **no custom perk can
    feed it.**
@@ -228,7 +229,7 @@ silently — which is why `validate-anims.ps1` exists.
 
 ### Don't condition on the engine's `Weapon` variable
 
-It is callback-backed (`IsoPlayer.java:743`):
+It is callback-backed (`IsoPlayer.java:750`):
 
 ```java
 this.setVariable("Weapon", this::getWeaponType, this::setWeaponType, ...)
@@ -250,8 +251,8 @@ is not reachable from Lua, so the idea is dead regardless.
 | event | fires from | meaning |
 |-------|-----------|---------|
 | `OnWeaponSwing` | `SwipeStatePlayer.java:206` | the swing state was entered |
-| `OnWeaponSwingHitPoint` | `CombatManager.java:643` | the clip reached `AttackCollisionCheck`; the engine is about to build the hit list |
-| `OnWeaponHitCharacter` | `IsoGameCharacter.java:6084` | a character was actually struck |
+| `OnWeaponSwingHitPoint` | `CombatManager.java:677` | the clip reached `AttackCollisionCheck`; the engine is about to build the hit list |
+| `OnWeaponHitCharacter` | `IsoGameCharacter.java:6091` | a character was actually struck |
 
 This is the SWING -> COLLIDE -> HIT probe chain in `OCP_Diagnostics.lua`, and
 each gap means something specific:
@@ -283,30 +284,30 @@ A shove rolls a critical hit at 35% base plus 2% per Strength level
 45% at default Strength 5. On a zombie, a critical shove means a knockdown:
 
 ```java
-// IsoZombie.java:4240, inside hitConsequences
+// IsoZombie.java:4244, inside hitConsequences
 this.setKnockedDown(wielder.isCriticalHit() || this.isOnFloor() || this.isAlwaysKnockedDown());
 ```
 
-The roll happens at swing time (`CombatManager.java:3287`) and is read at
-`IsoGameCharacter.java:6106`, both around our event at `:6084`, so
+The roll happens at swing time (`CombatManager.java:3306`) and is read at
+`IsoGameCharacter.java:6113`, both around our event at `:6091`, so
 `setCriticalHit(false)` from Lua lands in between.
 
 Nothing else is lost by clearing it: the critical *damage* multiplier lives in
-`processHitDamage` (`:6202`), which our direct `applyDamage` already bypasses.
+`processHitDamage` (`:6209`), which our direct `applyDamage` already bypasses.
 
 A zombie already on the floor stays down regardless — that clause is
 `isOnFloor()`, not ours.
 
 ### Knockback — the hit reaction
 
-Displacement comes from `calcHitDir` (`IsoGameCharacter.java:14818`) as
+Displacement comes from `calcHitDir` (`IsoGameCharacter.java:14905`) as
 `hitForce * 0.1 * weapon.PushBackMod`, and stagger duration from
-`StaggerBackState.java:62` as `35 * hitForce * staggerTimeMod`. Both are set
+`StaggerBackState.java:70` as `35 * hitForce * staggerTimeMod`. Both are set
 inside `Hit()` **after** `OnWeaponHitCharacter` fires, so Lua cannot pre-empt
 them.
 
 The engine's own lever is the `ZombieHitReaction` variable, read off the
-**wielder** in `CombatManager.processHit` (`:2911`) to choose the target's
+**wielder** in `CombatManager.processHit` (`:2926`) to choose the target's
 reaction. `HitReaction` (`zombie/combat/HitReaction.java`) offers `HeadLeft`,
 `HeadRight`, `HeadTop` and `Uppercut` — the punch-shaped ones.
 
@@ -328,7 +329,7 @@ Fist skill's pushback is granted.
 **Every melee hit displaces the target.** Confirmed in play 2026-08-01 — a punch
 at Fist 0 does move a zombie back, and that is correct behaviour, not a leak.
 
-`processHitDamage` (`IsoGameCharacter.java:6148-6180`) treats the shove path
+`processHitDamage` (`IsoGameCharacter.java:6155-6187`) treats the shove path
 differently, and both differences reduce our force:
 
 ```java
@@ -350,8 +351,8 @@ if (wielder instanceof IsoPlayer && !bIgnoreDamage) hitForce *= 2.0F;   // we ar
 Roughly an order of magnitude apart, at the same `PushBackMod`. A punch is
 already the lightest melee impact available.
 
-**There is no lever on our side.** `getPushBackMod` (`:6135`, `:14823`) reads the
-weapon the *engine* is swinging, and `CombatManager.java:1345` substitutes
+**There is no lever on our side.** `getPushBackMod` (`:6142`, `:14910`) reads the
+weapon the *engine* is swinging, and `CombatManager.java:1365` substitutes
 `owner.bareHands` for the whole swing. The `PushBackMod = 0.3` on our `Fist`
 script item is **dead config** — nothing reads it. The only real knob is vanilla
 `BareHands`' own `0.5`, and changing that would move the plain shove too.
@@ -369,10 +370,10 @@ Declared in `media/perks.txt`, parsed by `CustomPerks.java`.
 
 ### Lookup order and registration
 
-`CustomPerks.init` (`:38-42`) checks `<mod>/<version>/media/perks.txt` **first**,
+`CustomPerks.init` (`:39-43`) checks `<mod>/<version>/media/perks.txt` **first**,
 then falls back to `<mod>/common/media/perks.txt`. Ours lives under `42/`.
 
-`initLua` (`:71`) does `perks.rawset(perk.getId(), perk)`, which is what puts the
+`initLua` (`:72`) does `perks.rawset(perk.getId(), perk)`, which is what puts the
 block id on the `Perks` table — so `perk Fist` becomes `Perks.Fist`.
 
 `PerkFactory.AddPerk` also puts it in `PerkFactory.PerkList`, which the skills
@@ -383,17 +384,17 @@ server command. There is no reason for a mod to wrap any of them.
 ### File format
 
 Recognised keys are exactly `parent`, `translation`, `passive`, `xp1`..`xp10`
-(`CustomPerks.parsePerk`, `:136-170`). Anything else is ignored **silently** —
+(`CustomPerks.parsePerk`, `:137-171`). Anything else is ignored **silently** —
 Fists of Survival ships a `name` key that does nothing.
 
-`VERSION` must be `1` or the whole file throws (`:118-128`).
+`VERSION` must be `1` or the whole file throws (`:119-129`).
 
 `parent` resolves through `PerkFactory.Perks.FromString`, falling back to `None`.
 `Combat` is the melee category (`PerkFactory.java:370`).
 
 ### NEVER use a `//` comment in perks.txt
 
-`readFile` (`:90-93`) joins lines with `stringBuilder.append(str)` and **no
+`readFile` (`:91-94`) joins lines with `stringBuilder.append(str)` and **no
 newline separator**, so the file is one long line by the time
 `ScriptParser.stripComments` sees it. A `//` comment would swallow everything
 after it — including the perk block — and the only symptom would be a perk that
@@ -403,8 +404,8 @@ Block comments terminate explicitly and are safe.
 
 ### Initialisation timing
 
-`CustomPerks.instance.initLua()` runs at `GameWindow.java:204` during startup,
-before scripts load, and again at `IngameState.java:1039` on entering a game.
+`CustomPerks.instance.initLua()` runs at `GameWindow.java:205` during startup,
+before scripts load, and again at `IngameState.java:1051` on entering a game.
 Both are well before `OnGameStart`, so checking `Perks.Fist` in the boot contract
 is safe.
 
@@ -425,7 +426,7 @@ string is displayed to the player.
 | format | `IGUI_EN = { KEY = "value", }` | **flat JSON object** |
 | comments | `/* */` allowed | **none — JSON has no comments** |
 
-`Translator.tryFillMapFromFile` (`Translator.java:255`):
+`Translator.tryFillMapFromFile` (`Translator.java:365`):
 
 ```java
 File file = new File("%s/media/lua/shared/Translate/%s/%s.json".formatted(rootDir, language, fileName));
@@ -434,10 +435,10 @@ new JSONObject(content, new JSONParserConfiguration().withStrictMode(Core.IS_DEV
 ```
 
 The language is now **only** in the directory name. `fileName` comes from the
-`BY_NAME` registry (`Translator.java:132-163`): `IG_UI`, `Tooltip`, `UI`,
+`BY_NAME` registry (`Translator.java:142-173`): `IG_UI`, `Tooltip`, `UI`,
 `ItemName`, `Recipes`, `ContextMenu`, `Sandbox`, `Attributes`, and ~22 others.
 
-`tryFillMapFromMods` (`:277`) scans **both** `getCommonDir()` and
+`tryFillMapFromMods` (`:384`) scans **both** `getCommonDir()` and
 `getVersionDir()` for every enabled mod, common first, so a version-dir file
 overrides a common one.
 
@@ -551,7 +552,7 @@ Declared total 21,850 -> **actual 32,775 XP to level 10.**
 ### `instanceItem`, not `InventoryItemFactory`
 
 `InventoryItemFactory` is **not exposed to Lua in B42**. The registered entry
-point is `instanceItem()` (`LuaManager.java:5602`, `@LuaMethod global = true`).
+point is `instanceItem()` (`LuaManager.java:5615`, `@LuaMethod global = true`).
 This cost a boot failure to discover; the one vanilla reference to
 `InventoryItemFactory` is commented out.
 
@@ -559,7 +560,7 @@ This cost a boot failure to discover; the one vanilla reference to
 
 <a id="addxp"></a>
 
-`addXp(IsoPlayer, Perk, float)` at `LuaManager.java:11893`. It takes `IsoPlayer`
+`addXp(IsoPlayer, Perk, float)` at `LuaManager.java:11859`. It takes `IsoPlayer`
 specifically, not `IsoGameCharacter`. **Do not call it from client-side Lua:**
 
 ```java
@@ -582,15 +583,21 @@ A hosted game hides this completely: the host process *is* the server, so it
 takes the first branch. That is exactly what happened here — hosted MP showed
 `+0.88 xp` per punch, and the dedicated server awarded none, with identical code.
 
-**Use `character:getXp():AddXP(perk, amount)` instead.** That is what vanilla's
-own client-side Lua does (`client/Farming/CFarmingSystem.lua:47`,
-`client/Fishing/ISFishingAction.lua:148`). It guards on `isLocalPlayer`
-(`IsoGameCharacter.java:17313`) and forwards to
+**Use `character:getXp():AddXP(perk, amount)` instead.** We used to say this is
+what vanilla's own client-side Lua does, citing `CFarmingSystem.lua` and an
+`ISFishingAction.lua`; neither does, in 42.20 or 42.21. The vanilla Lua callers
+of `getXp():AddXP` are the admin player-stats window (`ISPlayerStatsUI.lua`) and
+scrapping a moveable (`ISMoveableSpriteProps.lua`).
+
+> **Proof:** Code. `media/lua/client/ISUI/PlayerStats/ISPlayerStatsUI.lua` (`self.char:getXp():AddXP(...)`) and `media/lua/shared/Moveables/ISMoveableSpriteProps.lua` (`_character:getXp():AddXP(scrapDef.perk, ...)`), the only live calls in vanilla Lua. Build 42.21.0 (revision 4a0e9546ec).
+
+`AddXP(perk, amount)` guards on `isLocalPlayer`
+(`IsoGameCharacter.java:17415`) and forwards to
 `AddXP(type, amount, callLua=true, doXPBoost=true, remote=false)`, so the trait
 and profession multipliers still apply — the same ones `addXp` would have used.
 
 Keep `addXp` for genuinely server-side callers, where the first branch is the
-right one. `addXpNoMultiplier` (`:11876`) has the identical structure and the
+right one. `addXpNoMultiplier` (`:11842`) has the identical structure and the
 identical hole.
 
 **The advice above is only half the story — see the next section.** Switching to
@@ -607,9 +614,9 @@ only**, and the client's copy is replaced wholesale rather than merged:
 | step | where | what |
 |---|---|---|
 | `NetworkPlayerManager.update():43` | server | calls `syncXp()` per player on the stats timer |
-| `NetworkPlayerAI.syncXp():704` | server | wrapped in `if (GameServer.server)` — sends down only |
+| `NetworkPlayerAI.syncXp():710` | server | wrapped in `if (GameServer.server)` — sends down only |
 | `PlayerXpPacket.parse` | client | calls `getXp().load()` |
-| `IsoGameCharacter.XP.load():17560` | client | **`this.xpMap.clear()`**, then repopulate |
+| `IsoGameCharacter.XP.load():17662` | client | **`this.xpMap.clear()`**, then repopulate |
 
 There is no client -> server XP sync in normal play. `PlayerXpPacket` requires the
 admin capability `CanModifyPlayerStatsInThePlayerStatsUI`, and `ConnectedPacket`
@@ -617,12 +624,12 @@ carries XP only at connect time. `PlayerDB` persists the **server's** copy, so a
 client-side award is never saved either.
 
 **Vanilla melee XP is server-side and does not look it.** The handler is in
-`server/XpSystem/XpUpdate.lua:385` on `OnWeaponHitXp`, and that event is raised
+`server/XpSystem/XpUpdate.lua:379` on `OnWeaponHitXp`, and that event is raised
 from two places with complementary guards:
 
 ```java
-CombatManager.java:1134   !GameClient.client && !GameServer.server   // single player
-WeaponHit.java:106        GameServer.server                          // a client's hit, on the server
+CombatManager.java:1169   !GameClient.client && !GameServer.server   // single player
+WeaponHit.java:132        GameServer.server                          // a client's hit, on the server
 ```
 
 So do not hook `OnWeaponHitXp` as a shortcut: on a **hosted** game
@@ -631,7 +638,7 @@ only for *remote* clients — the host's own hits would raise it nowhere.
 
 **The route that works in all three modes** is `sendClientCommand` into a
 `server/` handler, because it has a single-player loopback
-(`LuaManager.java:8980` -> `SinglePlayerClient` -> `SinglePlayerServer.java:204`
+(`LuaManager.java:8938` -> `SinglePlayerClient` -> `SinglePlayerServer.java:204`
 raises `OnClientCommand`) and its 4-arg overload raises the event in-process when
 `GameServer.server`.
 
@@ -639,21 +646,21 @@ Which Lua folders execute where, since the whole design rests on it:
 
 | folder | dedicated server | MP client | single player |
 |---|---|---|---|
-| `shared/` | yes (`GameServer:1458`) | yes | yes |
-| `client/` | **checksum only** (`GameServer:1459`, `onlyChecksum=true`) | yes | yes |
-| `server/` | yes (`GameServer:1460`) | loaded, never triggered | yes (`GameLoadingState:157`) |
+| `shared/` | yes (`GameServer:1477`) | yes | yes |
+| `client/` | **checksum only** (`GameServer:1478`, `onlyChecksum=true`) | yes | yes |
+| `server/` | yes (`GameServer:1479`) | loaded, never triggered | yes (`GameLoadingState:155`) |
 
 Inside a `server/` handler the global `addXp()` is the correct call, and
 `getXp():AddXP` is not — the latter's 2-arg overload is gated on `isLocalPlayer`
-(`:17313`), and a remote player on a dedicated server is not local. `addXp` also
+(`:17415`), and a remote player on a dedicated server is not local. `addXp` also
 calls `updateXpChecker()`, which keeps `AntiCheatXPUpdate` from counting the award
 against the player.
 
 One more trap on the same path: perk identity crosses the wire as an **id string**
-(`savePerk`/`loadPerk`, `:17545`), and `FromString` is
+(`savePerk`/`loadPerk`, `:17647`), and `FromString` is
 `PerkById.getOrDefault(id, MAX)` -> null -> the entry is **silently dropped**. A
 custom perk therefore also needs the mod in the server's own `Mods=` list, because
-`CustomPerks.init()` (`GameServer.java:1407`) builds the registry from
+`CustomPerks.init()` (`GameServer.java:1427`) builds the registry from
 `ServerMods`.
 
 **This affects every mod that grants XP, not just this one.**
@@ -667,8 +674,8 @@ travel the same way, on their own timers:
 
 | what | packet | carries |
 |---|---|---|
-| `syncStats()` (`NetworkPlayerAI:693`) | `PlayerStats` | `getStats().save()` -- **every** `CharacterStat`, endurance included -- plus nutrition and `BodyDamage.saveMainFields` |
-| `syncDamage()` (`NetworkPlayerAI:680`) | `PlayerInjuries` + `PlayerDamage` | `getBodyDamage().save()` -- the whole body: every fracture, wound and stiffness value |
+| `syncStats()` (`NetworkPlayerAI:699`) | `PlayerStats` | `getStats().save()` -- **every** `CharacterStat`, endurance included -- plus nutrition and `BodyDamage.saveMainFields` |
+| `syncDamage()` (`NetworkPlayerAI:686`) | `PlayerInjuries` + `PlayerDamage` | `getBodyDamage().save()` -- the whole body: every fracture, wound and stiffness value |
 
 Both are wrapped in `if (GameServer.server)`, and both send with
 `INetworkPacket.send(IsoPlayer, ...)`, which resolves the connection **from that
@@ -685,7 +692,7 @@ So the split for a combat mod is:
 | damage to a zombie | the client | zombies are client-authoritative (`NetworkZombieComponent.authOwner`), which is why our `applyDamage` carries -- see [MULTIPLAYER.md](/pz/build-42/outcast-mods/outcast-punch/outcast-punch-multiplayer#zombie-authority) |
 | anything on the PLAYER | the server | it is replaced wholesale on the next sync |
 
-Vanilla agrees, and says so structurally: `CombatManager:686` calls
+Vanilla agrees, and says so structurally: `CombatManager:721` calls
 `addCombatMuscleStrain` and `processWeaponEndurance` only in the `else` of
 `if (GameClient.client)`.
 
@@ -693,7 +700,7 @@ Vanilla agrees, and says so structurally: `CombatManager:686` calls
 
 <a id="endurance"></a>
 
-`CombatManager.applyMeleeEnduranceLoss` (`:3835`):
+`CombatManager.applyMeleeEnduranceLoss` (`:3867`):
 
 ```java
 enduranceLoss = weight * ENDURANCE_LOSS_BASE_SCALE      // 0.28
@@ -714,7 +721,7 @@ no endurance at all until we priced it ourselves.
 
 <a id="strain"></a>
 
-`IsoGameCharacter.addCombatMuscleStrain` (`:16220`) branches on stance before it
+`IsoGameCharacter.addCombatMuscleStrain` (`:16307`) branches on stance before it
 looks at the weapon, and our punch is a shove:
 
 ```java
@@ -726,7 +733,7 @@ looks at the weapon, and our punch is a shove:
 ```
 
 `addArmMuscleStrain` then multiplies by 2.5 and by the sandbox
-`muscleStrainFactor`, and **does nothing when that factor is 0** (`:16334`). So a
+`muscleStrainFactor`, and **does nothing when that factor is 0** (`:16421`). So a
 server with strain disabled keeps it disabled, including ours.
 
 That branch is level-blind, which is why the mod adds a second, Fist-scaled term
@@ -757,7 +764,7 @@ calls are preferred even where `setCut(cut)` would be safe.
 by name — an absence assertion, because an edit could add an infecting call
 without removing the safe one.
 
-Vanilla's own fracture is `Rand.Next(30, 50)` (`BodyDamage.java:3018`), which is
+Vanilla's own fracture is `Rand.Next(30, 50)` (`BodyDamage.java:3017`), which is
 what `HAND_FRACTURE_TIME_MIN/MAX` copy.
 
 ### Zombie health is built from the sandbox, and there is no getMaxHealth
@@ -765,7 +772,7 @@ what `HAND_FRACTURE_TIME_MIN/MAX` copy.
 <a id="zombie-health"></a>
 
 `IsoZombie` sets health in its constructor from `ZombieLore.Toughness`
-(`:4436-4451`), and exposes only `getHealth()` — the **current** value:
+(`:4442-4457`), and exposes only `getHealth()` — the **current** value:
 
 | toughness | health |
 |---|---|
@@ -784,7 +791,7 @@ top of its range.
 <a id="xp-multiplier"></a>
 
 **Good news first: our perk is scaled by the global XP setting exactly like every
-vanilla perk.** Same line, no special casing (`IsoGameCharacter.java:17437`):
+vanilla perk.** Same line, no special casing (`IsoGameCharacter.java:17539`):
 
 ```java
 if (SandboxOptions.instance.multipliersConfig.xpMultiplierGlobalToggle.getValue()) {
@@ -863,7 +870,7 @@ construction instead of by our Lua agreeing with the engine. `OCP_Damage.lua`
 carries the matching rejection, because `OnWeaponHitCharacter` fires long after
 `enter()` and would otherwise stack punch damage on top of the stomp's.
 
-`AimFloorAnim` is networked (`network/fields/hit/Player.java:115` reads it out of
+`AimFloorAnim` is networked (`network/fields/hit/Player.java:131` reads it out of
 `playerFlags` bit 0), so the condition holds on a dedicated server and for remote
 players, which `isAimAtFloor()` on a client would not have.
 
@@ -879,7 +886,7 @@ accessor that looks equivalent may be written at a different point in the frame.
 and is the push key. `Attack` is the separate binding, mouse by default.
 
 Bare-handed, **both** end up as a shove, so `isDoShove()` cannot tell them apart —
-`CombatManager.java:1342` forces it:
+`CombatManager.java:1362` forces it:
 
 ```java
 } else if ((vars.getWeapon(owner) == owner.bareHands || vars.doShove) && !isAttackType(CHARGE)) {
@@ -897,8 +904,8 @@ if (this.isMeleeButtonDown() && this.isAuthorizedHandToHandAction()) {
 ```
 
 They are mutually exclusive and the push key takes priority. That result is
-latched onto the player as `meleePressed` (`:2491`, `:4488`) and **registered as
-an animation variable** at `:740`:
+latched onto the player as `meleePressed` (`:2498`, `:4488`) and **registered as
+an animation variable** at `:747`:
 
 ```java
 this.setVariable("meleePressed", () -> this.meleePressed,
@@ -916,15 +923,15 @@ Usually current, because of the update order. For a non-animal player
 second:
 
 ```java
-:2069   boolean updateBaseAndSend = this.updateInternal2();   // input, incl. :2357 and :4488
-:2075   super.update();                                       // state machine -> SwipeStatePlayer.enter
+:2076   boolean updateBaseAndSend = this.updateInternal2();   // input, incl. :2364 and :4488
+:2082   super.update();                                       // state machine -> SwipeStatePlayer.enter
 ```
 
 So a press at `:4488` is visible to the swing it initiates, later in the very same
 tick.
 
 Not always, because pressing attack does not enter the swing state synchronously.
-`DoAttack` -> `pressedAttack` (`CombatManager:3132`) only *latches*:
+`DoAttack` -> `pressedAttack` (`CombatManager:3147`) only *latches*:
 
 ```java
 isoPlayer.setInitiateAttack(true);
@@ -963,8 +970,8 @@ bugs were that question answered wrongly, in opposite directions.
 
 ### `getHittingMod` — the Strength curve
 
-`IsoGameCharacter.java:4554`. This is what vanilla multiplies melee damage by at
-`CombatManager.java:932`:
+`IsoGameCharacter.java:4559`. This is what vanilla multiplies melee damage by at
+`CombatManager.java:968`:
 
 ```java
 damage *= weapon.getDamageMod(owner) * owner.getHittingMod();
@@ -982,7 +989,7 @@ character and swing +/-25% at the extremes.
 ### Checking whether a clip loaded
 
 `ModelManager.instance` is a public static (`ModelManager.java:111`) and
-`getAnimationClip` is a direct map lookup (`ModelManager.java:1605`), so
+`getAnimationClip` is a direct map lookup (`ModelManager.java:1613`), so
 `ModelManager.instance:getAnimationClip(name)` answers "did this clip load"
 straight from Lua. A nil means the node can be selected all day and still play
 nothing. `OutcastPunch.dump()` reports it per clip.
@@ -994,7 +1001,7 @@ DESIGN.md (not yet published).
 
 ### Damage rolls
 
-`Rand.Next(minimumWeaponDamage, maximumWeaponDamage)` at `CombatManager.java:930`
+`Rand.Next(minimumWeaponDamage, maximumWeaponDamage)` at `CombatManager.java:966`
 — uniform over `[min, max]`. Roll the **delta**, not the full max:
 `min + rand(0, max)` yields `[min, min+max)` and silently inflates every hit by
 the whole minimum. Brutal Handwork computes the delta and then does not use it,
@@ -1002,7 +1009,7 @@ which is where that bug lives in the wild.
 
 ### `SetMeleeDelay` drains at 0.625 per tick
 
-`IsoGameCharacter.java:8862`. So a delay of 8 is roughly 0.43 s of dead time
+`IsoGameCharacter.java:8889`. So a delay of 8 is roughly 0.43 s of dead time
 after the clip ends, and 4 is roughly 0.21 s.
 
 ### Body parts
@@ -1011,7 +1018,7 @@ after the clip ends, and 4 is roughly 0.21 s.
 `getPain()` (`:1001`), `getFractureTime()` (`:1159`), `isSplint()` (`:1175`),
 `getSplintFactor()` (`:1151`), `isDeepWounded()` (`:1273`), `isBurnt()`
 (`:1853`). `BodyPartType` has `Hand_L` (`:20`) and `Hand_R` (`:36`), and is
-exposed to Lua at `LuaManager.java:1789`. Reached as
+exposed to Lua at `LuaManager.java:1792`. Reached as
 `character:getBodyDamage():getBodyPart(BodyPartType.Hand_L)`.
 
 Health is **0 to 100**, clamped at `:520` and `:524`, and set to 100 at `:597`.
@@ -1023,7 +1030,7 @@ flag a condition (bleeding, deep wound, fracture). Check the state you actually
 mean.
 
 Vanilla's own "can this hand be used" predicate, from
-`ISInventoryPaneContextMenu.lua:4136` where it gates two-handed weapons:
+`ISInventoryPaneContextMenu.lua:4131` where it gates two-handed weapons:
 
 ```lua
 not bp:isDeepWounded() and (bp:getFractureTime() == 0 or bp:getSplintFactor() > 0)
@@ -1072,7 +1079,7 @@ that call — so a hand with a bullet in it punches at full strength.
 
 That was initially read as a gap worth closing. It is not. **Vanilla lets you
 equip any weapon, including two-handed, with a bullet in your hand**: the gate at
-`ISInventoryPaneContextMenu.lua:4136` tests `isDeepWounded`, `getFractureTime`
+`ISInventoryPaneContextMenu.lua:4131` tests `isDeepWounded`, `getFractureTime`
 and `getSplintFactor`, and nothing else. Matching vanilla was the whole basis for
 the deep-wound rule, so it decides this one too.
 
@@ -1081,17 +1088,17 @@ What a bullet does instead:
 | effect | where |
 |--------|-------|
 | **+50 pain**, the largest single contributor (glass is +10) | `BodyPart.java:1039` |
-| zeroes the arm speed modifier — `calculateInjurySpeed` returns `1.0F` at once | `IsoGameCharacter.java:9714` |
-| ...but `calculateCombatSpeed` clamps the result to a 0.8 floor | `:9634` |
-| a limp, if the bullet is in a foot | `getFootInjuryType`, `:12407` |
+| zeroes the arm speed modifier — `calculateInjurySpeed` returns `1.0F` at once | `IsoGameCharacter.java:9741` |
+| ...but `calculateCombatSpeed` clamps the result to a 0.8 floor | `:9661` |
+| a limp, if the bullet is in a foot | `getFootInjuryType`, `:12437` |
 | counts toward the "is injured" aggregate | `BodyPart.java:536` |
 
 ### Combat speed never reaches a shove
 
 <a id="combat-speed"></a>
 
-`CombatSpeed` is published as an animation variable (`IsoPlayer.java:702`) and
-`calculateCombatSpeed` (`:9601`) folds in endurance, heavy load, Fitness, weapon
+`CombatSpeed` is published as an animation variable (`IsoPlayer.java:709`) and
+`calculateCombatSpeed` (`:9628`) folds in endurance, heavy load, Fitness, weapon
 level, thermoregulation and `getArmsInjurySpeedModifier`.
 
 **None of it touches a shove.** All 14 vanilla AnimSet nodes that read
@@ -1103,7 +1110,7 @@ So arm injuries have never slowed a shove, and substituting our own
 "fixes" the punch to respect combat speed: that would make it behave unlike the
 shove it rides on.
 
-Quirk: `getArmsInjurySpeedModifier` (`:9642`) reads only `Hand_R`, `ForeArm_R`
+Quirk: `getArmsInjurySpeedModifier` (`:9669`) reads only `Hand_R`, `ForeArm_R`
 and `UpperArm_R`. A left-arm injury has no combat-speed effect in vanilla at all.
 
 **Bleeding is deliberately ignored.** Confirmed in play: a bleeding hand sat at
@@ -1123,7 +1130,7 @@ same reason the zombie-health one did.
 
 ### Zombie health is a sandbox setting, not a constant
 
-`IsoZombie.java:4436-4449`, keyed on `SandboxOptions.instance.lore.toughness`:
+`IsoZombie.java:4442-4455`, keyed on `SandboxOptions.instance.lore.toughness`:
 
 | value | tier | health |
 |-------|------|--------|
@@ -1143,7 +1150,7 @@ bypassing the multiplier chain, because we reduce health directly. See
 
 ### Vanilla XP shape
 
-`XpUpdate.lua:57` — `exp = damage * 0.9`, capped at 3. About 1.7 XP a hit for a
+`XpUpdate.lua:59` — `exp = damage * 0.9`, capped at 3. About 1.7 XP a hit for a
 baseball bat.
 
 ### Hot-reloading AnimSets
@@ -1165,26 +1172,28 @@ LuaManager.GlobalObject.refreshAnimSets(true);
 
 `refreshAnimSets` resets `AnimationSet`, reloads every `AnimNodeAsset`, re-reads
 the player states and pushes the change into live characters
-(`LuaManager.java:6066-6090`). `OutcastPunch.reloadAnims()` calls it.
+(`LuaManager.java:6079-6103`). `OutcastPunch.reloadAnims()` calls it.
 
 > **UNVERIFIED.** No vanilla Lua calls `refreshAnimSets`, so its exposure is not
 > proven. If it reports unavailable, restart.
 
 ### Mod layout and asset discovery
 
-`ZomboidFileSystem.java:493` accepts **either** `common/mod.info` or
+`ZomboidFileSystem.java:498` accepts **either** `common/mod.info` or
 `<version>/mod.info`. `AnimSets` and `anims_X` are scanned from **both** roots
 (`ChooseGameInfo.java:514-515`).
 
 Animations live under `common/` because they are build-agnostic art; everything
 else is B42-only and stays under `42/`.
 
-`ModelManager.loadModAnimations()` (`ModelManager.java:1657-1690`) walks every
+`ModelManager.loadModAnimations()` (`ModelManager.java:1665-1698`) walks every
 mod and, for each `animationDirectory` declared by an `animationsMesh` script,
 scans that same subfolder inside the mod. Vanilla's `Base.Human` already declares
 `animationDirectory = Bob`, so **dropping a clip at `common/media/anims_X/Bob/`
 is enough — no script needed.**
 
 Clip file names are resolved by path, lowercased and extension-stripped
-(`ZomboidFileSystem.java:924-938`). That governs which files are *scanned*; the
+(`ZomboidFileSystem.java:936-950`). That governs which files are *scanned*; the
 lookup key is still the name declared inside the asset (see above).
+
+*Updated 2026-10-04 for Build 42.21: line numbers re-pointed; the vanilla callers of getXp():AddXP are named correctly (the two files cited before do not call it).*

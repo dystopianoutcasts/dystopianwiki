@@ -12,7 +12,7 @@ tags:
   - multiplayer
   - combat
 excerpt: 'What is proven, what is not, and what to do if the untested part fails.'
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Outcast Punch -- multiplayer
 
@@ -48,7 +48,7 @@ Two other things broke instead, and neither was on this document's risk list:
 
 | symptom | cause | fix |
 |---------|-------|-----|
-| no XP from punches | `addXp` is a silent no-op on an MP client — `LuaManager.java:11893` runs `GameServer.addXp` only when `GameServer.server`, and `getXp().AddXP` only when **not** `GameClient.client`. A dedicated-server client is neither. | ~~`OCP_Skill.awardXp` now calls `character:getXp():AddXP` directly~~ **This fix was also wrong** — see [No XP, take two](#mp-xp) below. [ENGINE.md#addxp](/pz/build-42/outcast-mods/outcast-punch/outcast-punch-engine#addxp) |
+| no XP from punches | `addXp` is a silent no-op on an MP client — `LuaManager.java:11859` runs `GameServer.addXp` only when `GameServer.server`, and `getXp().AddXP` only when **not** `GameClient.client`. A dedicated-server client is neither. | ~~`OCP_Skill.awardXp` now calls `character:getXp():AddXP` directly~~ **This fix was also wrong** — see [No XP, take two](#mp-xp) below. [ENGINE.md#addxp](/pz/build-42/outcast-mods/outcast-punch/outcast-punch-engine#addxp) |
 | stomping replaced by a punch | `isAimAtFloor()` is one swing stale inside `OnWeaponSwing` — `SwipeStatePlayer.enter` fires the event at `:206` and writes the accessor at `:217`. | `AimFloorAnim = false` condition on both punch nodes, plus a matching rejection in `OCP_Damage.lua`. [ENGINE.md#stomp](/pz/build-42/outcast-mods/outcast-punch/outcast-punch-engine#stomp) |
 
 **Both were invisible in a hosted game**, for the same underlying reason the
@@ -77,13 +77,13 @@ XP in B42 multiplayer moves in **one direction only**:
 
 - `NetworkPlayerManager.update():43` calls `syncXp()` for every connected player
   on the server's stats timer.
-- `NetworkPlayerAI.syncXp():704` is wrapped in `if (GameServer.server)`. It only
+- `NetworkPlayerAI.syncXp():710` is wrapped in `if (GameServer.server)`. It only
   ever sends **server -> client**. There is no client -> server XP sync in normal
   play: `PlayerXpPacket` needs the admin capability
   `CanModifyPlayerStatsInThePlayerStatsUI`, and `ConnectedPacket` carries XP only
   at connect time.
 - The receiving client runs `getXp().load()`, and `IsoGameCharacter.XP.load()`
-  at `:17560` calls **`this.xpMap.clear()`** before repopulating from the server's
+  at `:17662` calls **`this.xpMap.clear()`** before repopulating from the server's
   bytes. A client-side award is not merged or rejected — it is erased.
 - `PlayerDB` persists the **server's** copy (`player.save(bb)`), so the award
   never reaches the save either.
@@ -97,11 +97,11 @@ Finding one of them broken made the other look like the fix.
 Farming and Fishing call `getXp():AddXP` from `client/` Lua, which is what made
 the second fix look justified. Melee is not built that way:
 
-- `CombatManager.java:1134` raises `OnWeaponHitXp` only when
+- `CombatManager.java:1169` raises `OnWeaponHitXp` only when
   `!GameClient.client && !GameServer.server` — **single player only**.
-- `WeaponHit.java:106` raises the same event `if (GameServer.server)`, when the
+- `WeaponHit.java:132` raises the same event `if (GameServer.server)`, when the
   attacking client's hit packet lands.
-- The handler is `server/XpSystem/XpUpdate.lua:385`, and it calls the global
+- The handler is `server/XpSystem/XpUpdate.lua:379`, and it calls the global
   `addXp()` — which is correct there, because it is running as the server.
 
 Hooking `OnWeaponHitXp` ourselves is **not** a safe shortcut: on a hosted game
@@ -111,7 +111,7 @@ fires for *remote* clients. The host's own punches would raise it nowhere.
 ### What the mod does now
 
 One path for every mode, because `sendClientCommand` has a single-player
-loopback (`LuaManager.java:8980` -> `SinglePlayerClient` ->
+loopback (`LuaManager.java:8938` -> `SinglePlayerClient` ->
 `SinglePlayerServer.java:204` raises `OnClientCommand`) and its 4-arg overload
 raises the event in-process when `GameServer.server`:
 
@@ -129,7 +129,7 @@ so `AntiCheatXPUpdate` does not flag the award); in single player both
 branch.
 
 `getXp():AddXP` must **not** be used server-side — its 2-arg overload is gated on
-`isLocalPlayer` (`:17313`), and a remote player on a dedicated server is not
+`isLocalPlayer` (`:17415`), and a remote player on a dedicated server is not
 local, so it would silently do nothing.
 
 The client sends **damage, never an xp number**. The server clamps it to
@@ -146,7 +146,7 @@ side. The authority logs what it actually granted.
 `OutcastPunch.dumpServerXp()` on the server console reports granted / clamped /
 refused counts and whether the perk registered. If the perk is missing there, the
 mod is not in the **server's** `Mods=` list — and note the perk id crosses the
-wire as a string (`savePerk`/`loadPerk`, `:17545`), where `FromString` returns
+wire as a string (`savePerk`/`loadPerk`, `:17647`), where `FromString` returns
 `MAX` -> null and the entry is **silently dropped**. XP would not persist no
 matter how it was awarded.
 
@@ -158,7 +158,7 @@ matter how it was awarded.
 
 Four facts, each verified against the engine:
 
-**1. `applyDamage` does not network.** `IsoGameCharacter.java:16065` is a bare
+**1. `applyDamage` does not network.** `IsoGameCharacter.java:16152` is a bare
 field mutation:
 
 ```java
@@ -171,20 +171,30 @@ public void applyDamage(float damageAmount) {
 Nothing is sent. Whatever we do with it is local to the machine that ran it.
 
 **2. PZ networks combat by sending the damage number.** `WeaponHit.process`
-(`zombie/network/fields/hit/WeaponHit.java`) ends with:
+(`zombie/network/fields/hit/WeaponHit.java`) calls:
 
 ```java
-target.Hit(weapon, wielder, this.damage, ignore, this.range, true);
+target.Hit(weapon, wielder, this.damage, this.ignoreDamage, this.range, true);
 ```
+
+(In 42.20 the flag was a method argument, `ignore`; since 42.21 it travels in
+the `WeaponHit` itself.)
 
 The attacking client computes damage and transmits it; the receiver replays
 `Hit()` with that value.
 
-**3. A shove transmits `ignore = true`.** That is `bIgnoreDamage`, set for a
-shoving player at `IsoGameCharacter.java:6079`. So the packet describing our
-punch explicitly tells the far side **not** to apply damage — which is correct
-for a vanilla shove, and is exactly the flag our whole mod is built around
-working past locally.
+**3. The far side re-runs the shove check itself.** We used to write here that a
+shove transmits `ignore = true`, the attacker's `bIgnoreDamage`. The code does
+not do that, in 42.20 or 42.21: for a character it hits, the attacking client
+sends `ignoreHitCountDamage`, which is true only for a firearm shot that missed
+its chance roll, so a punch goes out with the flag false. But `Hit()` sets
+`bIgnoreDamage` for a shoving wielder on whichever machine runs it
+(`IsoGameCharacter.java:6086`), so the receiver can still suppress the damage
+if its copy of our character reports `isDoShove()`. Whether it does on a
+dedicated server is not something the code settles; it is what the test below
+is for.
+
+> **Proof:** Code. `zombie.CombatManager` (the per-target `processClientHit(..., ignoreHitCountDamage, ...)` call; `GameClient.sendPlayerHit(..., ignoreHitCountDamage, ...)` in 42.20), `#processClientHit` -> `zombie.network.fields.hit.WeaponHit#set`, `#process`; `zombie.characters.IsoGameCharacter#Hit(HandWeapon, IsoGameCharacter, float, boolean, float, boolean)`. Build 42.21.0 (revision 4a0e9546ec).
 
 **4. `OCP_Damage.lua` lives in `lua/client/`.** A dedicated server never loads
 it, so nothing on the server side is compensating.
@@ -320,7 +330,7 @@ So the split is now explicit, and it is the useful one to remember:
 | XP | server | `OCP_ServerXp.lua` |
 | endurance, strain, hand injury | server | `OCP_ServerBody.lua` |
 
-Vanilla says the same thing structurally: `CombatManager:686` calls
+Vanilla says the same thing structurally: `CombatManager:721` calls
 `addCombatMuscleStrain` and `processWeaponEndurance` only in the `else` of
 `if (GameClient.client)`.
 
@@ -351,7 +361,9 @@ infection roll, and the test suite asserts the infecting ones are never reached
 - **Knockdown and pushback.** Both are set on the *attacker* and read during
   `hitConsequences`. Confirm they replicate rather than only playing locally.
 - **The perk.** `CustomPerks.init` runs on `GameServer` too
-  (`GameServer.java:1407`), so `media/perks.txt` must be present in the server's
+  (`GameServer.java:1427`), so `media/perks.txt` must be present in the server's
   copy of the mod, not just the client's.
 - **Sandbox settings.** Zombie toughness and `injurySeverity` are server-side and
   will differ from your test world.
+
+*Updated 2026-10-04 for Build 42.21: line numbers re-pointed; the WeaponHit quote follows 42.21, and fact 3 is corrected (a punch is not sent with the ignore flag set; the receiver re-runs the shove check).*
