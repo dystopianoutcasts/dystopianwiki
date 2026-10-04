@@ -13,9 +13,10 @@ tags:
   - assessment
   - roadmap
 excerpt: >-
-  We test single-player and ship multiplayer. Three MP-only failures surfaced
-  this week from reading other people's code, not from our own testing:
-  ISInstallVehiclePart:complete never fires on an MP...
+  We test single-player and ship multiplayer. Three MP-only questions surfaced
+  this week from reading other people's code, not from our own testing. The
+  first, whether ISInstallVehiclePart:complete runs in multiplayer, came out
+  the other way: it runs on the server...
 last_updated: '2026-10-04'
 related_articles:
   - the-inventory

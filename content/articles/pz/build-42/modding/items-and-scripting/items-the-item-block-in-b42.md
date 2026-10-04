@@ -14,8 +14,9 @@ tags:
   - tech-tiers
   - timedaction
 excerpt: >-
-  Real vanilla B42 item (from entities/blacksmith/items/items_blacksmith_i.txt)
-  [CONFIRMED]:
+  A real vanilla Build 42 item, from media/scripts/generated/items/normal.txt,
+  and why Build 42 writes ItemType = base:normal where Build 41 wrote
+  Type = Normal.
 last_updated: '2026-10-04'
 related_articles:
   - the-big-picture
