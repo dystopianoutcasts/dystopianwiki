@@ -201,8 +201,10 @@ ISTimedActionQueue.add(ISOpenMechanicsUIAction:new(character, vehicle, part))
 ```
 
 So **`ISOpenMechanicsUIAction:perform()` is a single interception point** covering
-every route. `ISVehicleMenu.lua` alone builds that action in four places, so
-patching entry points individually is four chances to miss one.
+every route. `ISVehicleMenu.lua` alone builds that action in three places, so
+patching entry points individually is three chances to miss one.
+
+> **Proof:** Code. `media/lua/client/Vehicles/ISUI/ISVehicleMenu.lua`, three `ISOpenMechanicsUIAction:new` calls (lines 970, 1004, 1234); the same three in 42.20. Build 42.21.0 (revision 4a0e9546ec).
 
 **Chain, do not replace.** Project Summer Car assigns straight over
 `ISVehicleMechanics:doPartContextMenu`, and two mods doing that silently fight.
@@ -335,4 +337,4 @@ thing a log can say about a UI mod.
 - [ ] hook chained, not replaced, with a re-entry guard and an idempotence marker
 - [ ] tested at two UI scales -- most of these bugs are scale-dependent
 
-*Updated 2026-10-04 for Build 42.21: the quoted `onKeyRelease` now reads `KeybindId.VEHICLE_MECHANICS`, as vanilla does; the string form still works. The hood route moved to `Vehicles.lua:829`; every other line number here is unchanged in 42.21.*
+*Updated 2026-10-04 for Build 42.21: the quoted `onKeyRelease` now reads `KeybindId.VEHICLE_MECHANICS`, as vanilla does; the string form still works. The hood route moved to `Vehicles.lua:829`; every other line number here is unchanged in 42.21. `ISVehicleMenu.lua` builds the open-mechanics action in three places, not four (three in 42.20 as well).*
