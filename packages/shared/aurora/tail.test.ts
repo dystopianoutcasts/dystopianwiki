@@ -795,3 +795,100 @@ Deno.test('T54 season records: with 034 not applied, the three writes are skippe
   assertEquals(db.tables['ingest_cursor'][0].byte_offset, file.bytes.length, 'cursor advanced');
   assert((db.tables['players'] ?? []).length === 1, 'the rest of the batch was written');
 });
+
+// ---------------------------------------------------------------------------
+// Safehouse and zone passes (040, T79): apply_world_pass through the real step
+// ---------------------------------------------------------------------------
+
+const PASS_T = 1790640000000;
+
+function passFileLines(t: number, shIds: string[], zoneTitles: string[]): string[] {
+  return [
+    ...shIds.map((id, i) => `[04-10-26 12:00:00.000] A1 {"k":"sh","t":${t},"id":"${id}","x":${i},"y":0,"w":5,"h":5}.\n`),
+    ...zoneTitles.map((ti, i) => `[04-10-26 12:00:00.000] A1 {"k":"zone","t":${t},"kind":"nonpvp","ti":"${ti}","x1":${i},"y1":0}.\n`),
+    `[04-10-26 12:00:00.000] A1 {"k":"wpass","t":${t},"sh":${shIds.length},"zn":${zoneTitles.length},"ok":true}.\n`,
+  ];
+}
+
+/** A db that keeps safehouses and zones by key and runs a model of 040's apply_world_pass. */
+function passDb() {
+  const db = fakeDb();
+  const order: string[] = [];
+  const safehouses = new Map<string, Row>();
+  const zones = new Map<string, Row>();
+  const upsert = db.upsert;
+  db.upsert = (table, rows, onConflict) => {
+    order.push(table);
+    if (table === 'safehouses') for (const r of rows) safehouses.set(String(r.id), r);
+    if (table === 'zones') for (const r of rows) zones.set(`${r.kind}|${r.title}|${r.x1}|${r.y1}`, r);
+    return upsert(table, rows, onConflict);
+  };
+  db.rpc = (fn, args) => {
+    order.push(`rpc:${fn}`);
+    if (fn === 'apply_world_pass') {
+      const at = String(args.p_seen_at);
+      for (const m of [safehouses, zones]) {
+        for (const [k, r] of m) if (r.seen_at == null || String(r.seen_at) < at) m.delete(k);
+      }
+    }
+    return Promise.resolve(null);
+  };
+  return { db, order, safehouses, zones };
+}
+
+Deno.test('T79 a tail batch runs apply_world_pass after its safehouse and zone upserts, before the cursor', async () => {
+  const file = new FakeFile();
+  for (const l of passFileLines(PASS_T, ['s1'], ['Town'])) file.append(l);
+  const { db, order, safehouses, zones } = passDb();
+  safehouses.set('gone', { id: 'gone', seen_at: new Date(PASS_T - 600_000).toISOString() });
+  const session = fakeSession(file);
+  const target = (await findTarget(session, db, CFG))!;
+  await tailStep(session, db, CFG, target, emptyTotals());
+  const call = order.indexOf('rpc:apply_world_pass');
+  assert(call >= 0, 'called');
+  assert(order.indexOf('safehouses') >= 0 && order.indexOf('safehouses') < call, 'safehouses upserted first');
+  assert(order.indexOf('zones') >= 0 && order.indexOf('zones') < call, 'zones upserted first');
+  assert(call < order.indexOf('ingest_cursor'), 'before the cursor');
+  assertEquals([...safehouses.keys()], ['s1'], 'the listed safehouse stays, the unlisted one goes');
+  assertEquals(zones.size, 1);
+});
+
+Deno.test('T79 the tail splits one pass across two batches: the first deletes nothing, the second the unlisted rows', async () => {
+  const file = new FakeFile();
+  const lines = passFileLines(PASS_T, ['s1', 's2', 's3'], ['Town']);
+  for (const l of lines) file.append(l);
+  // The first read ends inside the third line, so batch one is s1 and s2 only.
+  const cfg: TailConfig = { ...CFG, maxReadBytes: enc.encode(lines[0] + lines[1]).length + 10 };
+  const { db, order, safehouses, zones } = passDb();
+  safehouses.set('gone', { id: 'gone', seen_at: new Date(PASS_T - 600_000).toISOString() });
+  safehouses.set('pre040', { id: 'pre040' });
+  zones.set('old', { title: 'Old', seen_at: new Date(PASS_T - 600_000).toISOString() });
+  const session = fakeSession(file);
+  const target = (await findTarget(session, db, cfg))!;
+
+  await tailStep(session, db, cfg, target, emptyTotals());
+  assertEquals(order.includes('rpc:apply_world_pass'), false, 'no marker in the first batch');
+  assertEquals([...safehouses.keys()].sort(), ['gone', 'pre040', 's1', 's2'], 'nothing deleted yet');
+  assertEquals(db.tables['ingest_cursor'][0].byte_offset, enc.encode(lines[0] + lines[1]).length, 'the cut is after line two');
+
+  // The next run reads the rest (the full window).
+  await tailStep(session, db, CFG, target, emptyTotals());
+  assertEquals(order.filter((o) => o === 'rpc:apply_world_pass').length, 1, 'the marker arrives with the second batch');
+  assertEquals([...safehouses.keys()].sort(), ['s1', 's2', 's3'], 'rows of both halves stay; unlisted and NULL rows go');
+  assertEquals([...zones.values()].map((z) => z.title), ['Town']);
+});
+
+Deno.test('T79 with 040 not applied, apply_world_pass is skipped and counted, the rows written, the cursor advanced', async () => {
+  const file = new FakeFile();
+  for (const l of passFileLines(PASS_T, ['s1'], [])) file.append(l);
+  const db = fakeDb();
+  db.rpc = (fn) => Promise.reject(new Error(`rpc ${fn}: 404 {"code":"PGRST202","message":"Could not find the function aurora.${fn}"}`));
+  const session = fakeSession(file);
+  const target = (await findTarget(session, db, CFG))!;
+  const totals = emptyTotals();
+  await tailStep(session, db, CFG, target, totals);
+  assertEquals(totals.skippedOptional, 1);
+  assertEquals(totals.optionalErrors[0].what, 'apply_world_pass');
+  assertEquals((db.tables['safehouses'] ?? []).length, 1, 'the safehouse row was written');
+  assertEquals(db.tables['ingest_cursor'][0].byte_offset, file.bytes.length, 'cursor advanced');
+});

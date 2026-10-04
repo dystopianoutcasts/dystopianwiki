@@ -93,6 +93,14 @@
 //            (bad-shape); an entry that is not a non-empty string of at most 120
 //            characters is dropped, the rest kept. It feeds aurora.vehicle_scripts
 //            (038); seen_at is the record's t.
+//   wpass    sh n safehouses emitted, zn n zones emitted, ok true when the pass read
+//            the whole safehouse and zone lists (exporter 0.7.4, T79). Written ONCE
+//            per slow-world pass, AFTER that pass's `sh` and `zone` records and with
+//            the same t; written with 0 counts too (the last safehouse was released).
+//            No marker, or ok false, means the lists could not be read: the importer
+//            deletes nothing. `ok` must be a boolean or the record is dropped
+//            (bad-shape); `sh` / `zn` are optional and dropped when not numbers. It
+//            maps to no table: the importer hands t to aurora.apply_world_pass (040).
 //
 // `boot.gv` (exporter 0.5.0) is the game version; it becomes servers.game_version.
 // `hb.st.game` also carries zombies-killed, world-age-hours, oa-ev-zombie-dead and
@@ -128,6 +136,7 @@ export const KINDS = [
   'facs',
   'lb',
   'vscr',
+  'wpass',
   // Diagnostic kinds: known so they are not reported as unknown, but they map
   // to no table - buildPlan produces no rows for them.
   'probe',
@@ -447,6 +456,19 @@ export interface VscrRecord extends BaseRecord {
   n: string[];
 }
 
+/**
+ * The end of one slow-world pass (exporter 0.7.4, T79): every `sh` and `zone` record
+ * of the pass precedes it in the log and carries the same `t`. `ok` false means the
+ * lists were not readable and the pass proves nothing. `sh` and `zn` are the counts
+ * the pass emitted (informational; the parser drops them when not numbers).
+ */
+export interface WpassRecord extends BaseRecord {
+  k: 'wpass';
+  ok: boolean;
+  sh?: number;
+  zn?: number;
+}
+
 /** Longest vehicle script name kept, in characters (038's CHECK). */
 export const VEHICLE_SCRIPT_MAX = 120;
 
@@ -482,7 +504,8 @@ export type AuroraRecord =
   | KillRecord
   | FacsRecord
   | LbRecord
-  | VscrRecord;
+  | VscrRecord
+  | WpassRecord;
 
 export type ParseFailure =
   | 'not-aurora' // no A1 marker: someone else's log line
@@ -613,6 +636,10 @@ function checkShape(o: Record<string, unknown>): boolean {
     case 'vscr':
       // The list must be an array; a bad ENTRY is dropped after the check.
       return Array.isArray(o.n);
+    case 'wpass':
+      // Lenient: only `ok` decides what the marker means, so only `ok` is required.
+      // A bad count is dropped after the check, never a shape failure.
+      return typeof o.ok === 'boolean';
     case 'npcgone':
     case 'npcogone':
       return isStr(o.id) && o.id !== '';
@@ -653,6 +680,11 @@ export function parseLineDetailed(line: string): ParseResult {
   }
   // The script list: entries that are not usable script names dropped, the rest kept.
   if (o.k === 'vscr') o.n = (o.n as unknown[]).filter(isVehicleScriptName);
+  // The pass marker: counts that are not numbers are dropped, the marker kept.
+  if (o.k === 'wpass') {
+    if (o.sh !== undefined && !isNum(o.sh)) delete o.sh;
+    if (o.zn !== undefined && !isNum(o.zn)) delete o.zn;
+  }
 
   return { ok: true, record: o as unknown as AuroraRecord };
 }

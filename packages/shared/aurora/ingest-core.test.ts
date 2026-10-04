@@ -1743,3 +1743,160 @@ Deno.test('T48 contract: tagRows sends no key for null, undefined or an empty id
     assertEquals(tagRows(rows, worldId).some((r) => 'world_id' in r), false, `tagRows ${JSON.stringify(worldId)}`);
   }
 });
+
+// ---------------------------------------------------------------------------
+// Safehouse and zone passes (040, T79): seen_at and apply_world_pass
+// ---------------------------------------------------------------------------
+
+const PASS_T = 1790640000000;
+
+/** One exporter 0.7.4 slow-world pass: its sh and zone lines, then the marker, all at t. */
+function passLines(t: number, shIds: string[], zoneTitles: string[], ok = true): string[] {
+  return [
+    ...shIds.map((id, i) => `A1 {"k":"sh","t":${t},"id":"${id}","x":${i},"y":0,"w":5,"h":5,"o":"kitten"}`),
+    ...zoneTitles.map((ti, i) => `A1 {"k":"zone","t":${t},"kind":"nonpvp","ti":"${ti}","x1":${i},"y1":0,"x2":9,"y2":9}`),
+    `A1 {"k":"wpass","t":${t},"sh":${shIds.length},"zn":${zoneTitles.length},"ok":${ok}}`,
+  ];
+}
+
+function passCalls(plan: IngestPlan) {
+  return plan.rpcs.filter((r) => r.fn === 'apply_world_pass');
+}
+
+Deno.test('T79 seen_at: safehouse and zone rows carry the t of the newest record that listed them', () => {
+  const recs = parsedLines([
+    'A1 {"k":"sh","t":1000,"id":"s1","x":0,"y":0,"w":5,"h":5}',
+    'A1 {"k":"sh","t":3000,"id":"s1","x":0,"y":0,"w":5,"h":5}',
+    'A1 {"k":"sh","t":2000,"id":"s2","x":9,"y":9,"w":5,"h":5}',
+    'A1 {"k":"zone","t":1500,"kind":"nonpvp","ti":"Town","x1":0,"y1":0}',
+    'A1 {"k":"zone","t":4000,"kind":"nonpvp","ti":"Town","x1":0,"y1":0}',
+  ]);
+  const plan = buildPlan(recs, SERVER, { seenAt: '2030-01-01T00:00:00.000Z' });
+  const sh = table(plan.upserts, 'safehouses')!.rows;
+  assertEquals(sh.map((r) => [r.id, r.seen_at]), [['s1', toIsoOf(3000)], ['s2', toIsoOf(2000)]], 'record t, newest per id, never the ingest clock');
+  const zn = table(plan.upserts, 'zones')!.rows;
+  assertEquals(zn.map((r) => [r.title, r.seen_at]), [['Town', toIsoOf(4000)]]);
+  // Every row the same keys (PostgREST bulk upsert rule).
+  assert(sh.every((r) => Object.keys(r).join() === Object.keys(sh[0]).join()), 'uniform safehouse keys');
+});
+
+Deno.test('T79 apply_world_pass: planned with the newest ok marker, optional, liveOnly, after the upserts', () => {
+  const recs = parsedLines(passLines(PASS_T, ['s1', 's2'], ['Town']));
+  const plan = buildPlan(recs, SERVER, { worldId: 'w1', seenAt: '2030-01-01T00:00:00.000Z' });
+  const calls = passCalls(plan);
+  assertEquals(calls.length, 1, 'one call per batch');
+  assertEquals(calls[0].args, { p_server: SERVER, p_seen_at: toIsoOf(PASS_T) }, 'the marker t, not the ingest clock; no world argument');
+  assertEquals(calls[0].optional, true, 'optional: a missing 040 never holds the cursor');
+  assertEquals(calls[0].liveOnly, true, 'liveOnly: the backfill never replays a pass');
+  // The call is an rpc (every rpc runs after every upsert) and the pass's own rows are
+  // upserts of the same plan, stamped with the same t.
+  assertEquals(plan.upserts.some((u) => (u as { fn?: string }).fn === 'apply_world_pass'), false);
+  assertEquals(table(plan.upserts, 'safehouses')!.rows.map((r) => r.seen_at), [toIsoOf(PASS_T), toIsoOf(PASS_T)]);
+  assertEquals(table(plan.upserts, 'zones')!.rows.map((r) => r.seen_at), [toIsoOf(PASS_T)]);
+});
+
+Deno.test('T79 apply_world_pass: an empty pass (0 listed) is still a call, so the last released safehouse goes', () => {
+  const plan = buildPlan(parsedLines(passLines(PASS_T, [], [])), SERVER, {});
+  assertEquals(passCalls(plan).map((c) => c.args.p_seen_at), [toIsoOf(PASS_T)]);
+  assertEquals(table(plan.upserts, 'safehouses'), undefined);
+});
+
+Deno.test('T79 apply_world_pass: ok false plans nothing, and no marker plans nothing', () => {
+  const unreadable = buildPlan(parsedLines(passLines(PASS_T, [], [], false)), SERVER, {});
+  assertEquals(passCalls(unreadable).length, 0, 'ok false: an unreadable list is not an empty one');
+  const rowsOnly = parsedLines(passLines(PASS_T, ['s1'], ['Town']).slice(0, 2));
+  const none = buildPlan(rowsOnly, SERVER, {});
+  assertEquals(passCalls(none).length, 0, 'rows with no marker delete nothing');
+  assertEquals(table(none.upserts, 'safehouses')!.rows.length, 1, 'but the rows are still stored');
+  // A newer ok false never cancels an older complete pass in the same batch, and is never the one used.
+  const mixed = buildPlan(
+    parsedLines([...passLines(PASS_T, ['s1'], []), ...passLines(PASS_T + 600_000, [], [], false)]),
+    SERVER,
+    {},
+  );
+  assertEquals(passCalls(mixed).map((c) => c.args.p_seen_at), [toIsoOf(PASS_T)]);
+});
+
+Deno.test('T79 apply_world_pass: two markers in one batch, the newest is used, whatever the line order', () => {
+  const lines = [
+    ...passLines(PASS_T + 600_000, ['s1'], []),
+    ...passLines(PASS_T, ['s1', 's2'], []),
+    ...passLines(PASS_T + 300_000, ['s1'], []),
+  ];
+  const plan = buildPlan(parsedLines(lines), SERVER, {});
+  assertEquals(passCalls(plan).map((c) => c.args.p_seen_at), [toIsoOf(PASS_T + 600_000)]);
+});
+
+/**
+ * The executors' order (tail.ts, backfill-core.ts): every upsert, then every rpc. A
+ * model of 040: an upsert replaces by key; apply_world_pass ignores a pass older than
+ * the newest stored one and deletes rows whose seen_at is NULL or older than the pass.
+ */
+interface PassStore {
+  safehouses: Map<string, Row>;
+  zones: Map<string, Row>;
+  newest: string | null;
+  calls: string[];
+}
+
+function runPlanOnStore(store: PassStore, plan: IngestPlan): void {
+  for (const u of plan.upserts) {
+    if (u.table === 'safehouses') for (const r of u.rows) store.safehouses.set(String(r.id), r);
+    if (u.table === 'zones') for (const r of u.rows) store.zones.set(`${r.kind}|${r.title}|${r.x1}|${r.y1}`, r);
+  }
+  for (const c of plan.rpcs) {
+    if (c.fn !== 'apply_world_pass') continue;
+    const at = String(c.args.p_seen_at);
+    store.calls.push(at);
+    if (store.newest !== null && at < store.newest) continue;
+    for (const m of [store.safehouses, store.zones]) {
+      for (const [k, r] of m) if (r.seen_at === null || r.seen_at === undefined || String(r.seen_at) < at) m.delete(k);
+    }
+    store.newest = at;
+  }
+}
+
+Deno.test('T79 a pass split across two batches deletes nothing in the first and the unlisted rows in the second', () => {
+  const store: PassStore = { safehouses: new Map(), zones: new Map(), newest: null, calls: [] };
+  // Before: an older pass stored s1, sGone and zone Old; a pre-040 row has no seen_at.
+  runPlanOnStore(store, buildPlan(parsedLines(passLines(PASS_T - 600_000, ['s1', 'sGone'], ['Old'])), SERVER, {}));
+  store.safehouses.set('sPre', { id: 'sPre', seen_at: null });
+  assertEquals([...store.safehouses.keys()].sort(), ['s1', 'sGone', 'sPre']);
+
+  // This pass lists s1, s2, s3 and zone Town; the tail cut it after the second line.
+  const lines = passLines(PASS_T, ['s1', 's2', 's3'], ['Town']);
+  const first = buildPlan(parsedLines(lines.slice(0, 2)), SERVER, {});
+  runPlanOnStore(store, first);
+  assertEquals(passCalls(first).length, 0, 'the first half has no marker');
+  assertEquals([...store.safehouses.keys()].sort(), ['s1', 's2', 'sGone', 'sPre'], 'nothing deleted by the first batch');
+  assertEquals([...store.zones.keys()].length, 1);
+
+  const second = buildPlan(parsedLines(lines.slice(2)), SERVER, {});
+  runPlanOnStore(store, second);
+  assertEquals(store.calls[store.calls.length - 1], toIsoOf(PASS_T), 'the second batch carries the marker');
+  assertEquals([...store.safehouses.keys()].sort(), ['s1', 's2', 's3'], 'the first batch rows (same t) stay; unlisted and NULL rows go');
+  assertEquals([...store.zones.values()].map((z) => z.title), ['Town']);
+
+  // An older marker replayed after it deletes nothing (040's guard; the importer only passes t).
+  runPlanOnStore(store, buildPlan(parsedLines(passLines(PASS_T - 300_000, [], [])), SERVER, {}));
+  assertEquals([...store.safehouses.keys()].sort(), ['s1', 's2', 's3']);
+});
+
+Deno.test('T79 apply_world_pass: a missing function (040 not applied) is an optional error, noted, never thrown', async () => {
+  const call = passCalls(buildPlan(parsedLines(passLines(PASS_T, ['s1'], [])), SERVER, {}))[0];
+  const missing = new Error(
+    'rpc apply_world_pass: 404 {"code":"PGRST202","message":"Could not find the function aurora.apply_world_pass(p_seen_at, p_server) in the schema cache"}',
+  );
+  const notes: OptionalError[] = [];
+  const wrote = await runPlanStep(call.optional, () => Promise.reject(missing), (e) => noteOptionalError(notes, call.fn, e));
+  assertEquals(wrote, false, 'skipped');
+  assertEquals([notes.length, notes[0].what, notes[0].code], [1, 'apply_world_pass', 'PGRST202']);
+  // A 5xx still throws (the cursor holds and the next run retries).
+  let threw = false;
+  try {
+    await runPlanStep(call.optional, () => Promise.reject(new Error('rpc apply_world_pass: 503 upstream')), () => {});
+  } catch {
+    threw = true;
+  }
+  assert(threw, 'a 5xx is not skipped');
+});

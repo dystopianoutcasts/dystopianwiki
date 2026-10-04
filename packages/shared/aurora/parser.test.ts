@@ -582,3 +582,42 @@ Deno.test('T65 lb: {} reads as the empty table; a missing or other e is bad-shap
     assert(!b.ok && b.reason === 'bad-shape', `${body} is bad-shape`);
   }
 });
+
+// The pass-end marker (exporter 0.7.4, T79): wpass
+Deno.test('T79 wpass: an ok marker parses with its counts; a 0-count and an ok false marker parse too', () => {
+  const r = parseLineDetailed(`${P1} A1 {"k":"wpass","t":1759000000000,"sh":2,"zn":1,"ok":true}.`);
+  assert(r.ok, 'parsed');
+  if (!r.ok || r.record.k !== 'wpass') throw new Error('not wpass');
+  assertEquals([r.record.t, r.record.ok, r.record.sh, r.record.zn], [1759000000000, true, 2, 1]);
+  const empty = parseLineDetailed(`${P1} A1 {"k":"wpass","t":1,"sh":0,"zn":0,"ok":true}.`);
+  assert(empty.ok && empty.record.k === 'wpass' && empty.record.ok === true, 'an empty world is still a marker');
+  const bad = parseLineDetailed(`${P1} A1 {"k":"wpass","t":1,"ok":false}.`);
+  assert(bad.ok && bad.record.k === 'wpass' && bad.record.ok === false, 'ok false parses (and is kept as false)');
+});
+
+Deno.test('T79 wpass: ok missing or not a boolean, or t missing, is bad-shape', () => {
+  for (const body of [
+    '{"k":"wpass","t":1,"sh":1,"zn":0}',
+    '{"k":"wpass","t":1,"ok":"true"}',
+    '{"k":"wpass","t":1,"ok":1}',
+    '{"k":"wpass","t":1,"ok":null}',
+    '{"k":"wpass","ok":true}',
+    '{"k":"wpass","t":"1","ok":true}',
+  ]) {
+    const b = parseLineDetailed(`${P1} A1 ${body}.`);
+    assert(!b.ok && b.reason === 'bad-shape', `${body} is bad-shape`);
+  }
+});
+
+Deno.test('T79 wpass: counts are optional; a count that is not a number is dropped, the marker kept', () => {
+  const bare = parseLineDetailed(`${P1} A1 {"k":"wpass","t":5,"ok":true}.`);
+  assert(bare.ok && bare.record.k === 'wpass', 'no counts is fine');
+  const r = parseLineDetailed(`${P1} A1 {"k":"wpass","t":5,"sh":"2","zn":null,"ok":true}.`);
+  assert(r.ok, 'parsed');
+  if (!r.ok || r.record.k !== 'wpass') throw new Error('not wpass');
+  assert(!('sh' in r.record) && !('zn' in r.record), 'bad counts dropped');
+  assertEquals(r.record.ok, true);
+  // splitLines counts it as parsed, not unknown.
+  const s = splitLines(`${P1} A1 {"k":"wpass","t":5,"sh":0,"zn":0,"ok":true}.\n`);
+  assertEquals([s.records.length, s.stats.parsed, Object.keys(s.stats.unknownKind).length], [1, 1, 0]);
+});

@@ -517,6 +517,9 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
     players: Array.isArray(s.p) ? s.p.map(String) : [],
     last_visited: s.lv === undefined ? null : toIso(s.lv),
     created_at: s.cr === undefined ? null : toIso(s.cr),
+    // 040 (T79): the t of the newest pass that listed this safehouse. apply_world_pass
+    // removes the rows a complete pass did not list (seen_at older than the pass).
+    seen_at: toIso(s.t),
   }));
   if (safehouseRows.length > 0) {
     upserts.push({ table: 'safehouses', onConflict: 'server_id,id', rows: safehouseRows });
@@ -535,6 +538,8 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
     y1: z.y1,
     x2: z.x2 ?? null,
     y2: z.y2 ?? null,
+    // 040 (T79): as safehouses, the t of the newest pass that listed this zone.
+    seen_at: toIso(z.t),
   }));
   if (zoneRows.length > 0) {
     upserts.push({
@@ -728,6 +733,39 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
       args: { p_server: serverId, p_world: pWorld, p_rows: lbRows, p_seen_at: opts.seenAt ?? new Date().toISOString() },
       rows: lbRows.length,
       why: `${lbRows.length} leaderboard rows (the in-game table)`,
+      optional: true,
+      liveOnly: true,
+    });
+  }
+
+  // --- safehouse and zone passes (040, T79) -----------------------------------------
+  // The exporter ends every slow-world pass with ONE `wpass` marker carrying the
+  // pass's t, after that pass's `sh` and `zone` records (same t). The newest marker
+  // with ok === true says "the game lists exactly these": apply_world_pass deletes
+  // the server's current-world safehouses and zones whose seen_at is NULL or older
+  // than the marker's t. ok false (the lists were unreadable) or no marker: nothing
+  // is deleted, because an unreadable list must never look like an empty one.
+  //
+  // Order: every rpc runs after every upsert (tail.ts, backfill-core.ts), so this
+  // pass's rows are stored with seen_at = t before the call compares against t.
+  // A pass split across two batches: the tail reads the log in byte order and the
+  // marker is the LAST line of its pass, so a batch that holds the marker also holds,
+  // or follows, every `sh` and `zone` line of that pass. The first batch has rows
+  // and no marker (nothing deleted); the second has the rest and the marker, and the
+  // first batch's rows are already stored with seen_at = t, which is not older than
+  // t, so they stay. A marker never reaches the database ahead of its own rows.
+  //
+  // optional: 040 may not be applied yet, and a missing function is skipped, never
+  // holds the cursor. liveOnly, as replace_leaderboard: the backfill never replays a
+  // pass (an old log's marker must not delete what the live ingest has since written;
+  // the function also ignores a pass older than the newest it stored).
+  const pass = newestOf(byKind(records, 'wpass').filter((w) => w.ok === true));
+  if (pass !== undefined) {
+    rpcs.push({
+      fn: 'apply_world_pass',
+      args: { p_server: serverId, p_seen_at: toIso(pass.t) },
+      rows: 0,
+      why: `world pass at ${toIso(pass.t)} (${pass.sh ?? '?'} safehouses, ${pass.zn ?? '?'} zones listed)`,
       optional: true,
       liveOnly: true,
     });
