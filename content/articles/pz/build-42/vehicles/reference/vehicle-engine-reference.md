@@ -143,12 +143,14 @@ return part:getCondition() > 0
 
 So writing 0 to the Engine part stops the car starting. Nothing else required.
 
-### Crash damage lands on the Engine part
+### Crash damage lands on the hood first, the Engine part only after
 
 `BaseVehicle.crash(float delta, boolean front)` (`BaseVehicle.java:4611`) is Java
 with **no Lua hook**. It calls `addDamageFront`, and
 `addDamageFrontHitAChr` (`:4668`) damages the `EngineDoor` first, then the
 `Engine` part -- but only once the hood is destroyed, and only on a 1-in-4 roll.
+
+> **Proof:** Code. `zombie.vehicles.BaseVehicle#addDamageFront` (damages `EngineDoor`; `Engine` only when the hood is missing or under 25 condition). Build 42.20 (revision a2947723ca).
 
 Sandbox `carDamageOnImpact` scales the delta (modifier 0.9 to 1.9).
 
@@ -315,3 +317,5 @@ direct getter first -- TIS added `getThrottle()` for exactly this reason.
 *Corrected 2026-10-04: the XP key expires after one in-game day, not 24 real-time hours; success XP is 2 to 13 (the uninstall skill level doubled), failure pays 1.*
 
 *Corrected 2026-10-04: hooks called from Java (update, checkEngine, test) are cached on first use, so a later reassignment is ignored; chain once, early.*
+
+*Corrected 2026-10-04: the section 2 crash heading now says the hood takes the damage first, as its body always did.*
