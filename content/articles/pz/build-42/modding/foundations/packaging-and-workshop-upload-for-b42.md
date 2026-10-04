@@ -54,7 +54,9 @@ related_articles:
 | `title` | Steam Workshop page title. |
 | `description` | Steam Workshop page description. Each new line needs the parameter again (awkward -- the in-game description editor is easier). |
 | `tags` | Workshop tags (predefined by the PZ Workshop). |
-| `visibility` | `0` public (default), `1` friends-only, `2` private/hidden, `3` unlisted. |
+| `visibility` | One of the exact words `public`, `friendsOnly`, `private` or `unlisted` (case matters). Anything else, a number such as `2` included, or no `visibility` line at all, publishes the item **public**. The numbers 0-3 exist only inside the game's code. |
+
+> **Proof:** Code. `zombie.core.znet.SteamWorkshopItem#readWorkshopTxt` (stores the text after `visibility=` as is), `SteamWorkshopItem#getVisibilityInteger` (returns 1, 2 or 3 only for `friendsOnly`, `private`, `unlisted`; 0, public, for anything else) and `zombie.core.znet.SteamWorkshop#SubmitWorkshopItem` (sends that integer to Steam). Build 42.20 (revision a2947723ca).
 
 > **Description overwrite warning [CONFIRMED]:** the in-game uploader **overwrites the entire Workshop description** with whatever is in `workshop.txt` / the uploader field. Copy your Steam description before uploading, and when re-copying it back, strip the trailing `Workshop ID:` / `Mod ID:` lines or you will duplicate them. (pzwiki *Workshop.txt*, *Uploading mods*.)
 
@@ -70,3 +72,5 @@ related_articles:
 ---
 
 *Corrected 2026-10-04: the Workshop preview may be 256x256 or 512x512, square, up to 1000 KB; 256x256 is not the only size accepted.*
+
+*Corrected 2026-10-04: `visibility` in `workshop.txt` takes the words public, friendsOnly, private or unlisted, not the numbers 0-3; a number publishes the item public.*

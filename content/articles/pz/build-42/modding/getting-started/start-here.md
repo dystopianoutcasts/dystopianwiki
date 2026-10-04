@@ -106,9 +106,11 @@ Ordered roughly by how early it bites. Each item points to the track doc with th
 1. **Convert to the versioned project layout.** B42 mods use `common/` (shared assets, mandatory even if you keep most content here) plus a `42/` folder containing the B42 `mod.info`. B41 fallback is the *old flat `media/` folder* alongside them -- there is **no `41/` build folder** (a common misconception; corrected in doc 01). The closest version folder overwrites `common/`; minor version is stripped (`42.1.5` resolves as `42.1`).
 2. **mod.info fields are all-lowercase**: `id name description poster icon author require` (singular `author`, not `authors`). `versionMin`/`versionMax` control which game builds the manager shows the mod for.
 3. **Add `media/registries.lua`** (new in 42.13). It registers custom identifiers and loads before ALL Lua and scripts. Registerable types (11): CharacterTrait, CharacterProfession, ItemTag, Brochure, Flier, ItemBodyLocation, ItemType, MoodleType, WeaponCategory, Newspaper, AmmoType. Any custom trait/profession/moodle/tag/ammo the Outcast mods add must be registered here. In scripts you then reference the string ID, not the Lua registry variable.
-4. **workshop.txt** keys (confirmed): version/id/title/description/tags/visibility(0-3). Upload via the in-game Workshop "Create and update items" flow (or SteamCMD). preview.png must be a square PNG, 256x256 or 512x512, at most 1000 KB (the uploader checks this; its error text wrongly says only 256x256).
+4. **workshop.txt** keys (confirmed): version/id/title/description/tags/visibility (exactly `public`, `friendsOnly`, `private` or `unlisted`; anything else, a number included, publishes the item public). Upload via the in-game Workshop "Create and update items" flow (or SteamCMD). preview.png must be a square PNG, 256x256 or 512x512, at most 1000 KB (the uploader checks this; its error text wrongly says only 256x256).
 
 > **Proof:** Code. `zombie.core.znet.SteamWorkshopItem#validatePreviewImage` (square, width 256 or 512, at most 1,024,000 bytes, readable PNG). Build 42.20 (revision a2947723ca).
+
+> **Proof:** Code. `zombie.core.znet.SteamWorkshopItem#readWorkshopTxt` and `#getVisibilityInteger` (only `friendsOnly`, `private` and `unlisted` map to a non-public value; anything else maps to 0, public), sent by `zombie.core.znet.SteamWorkshop#SubmitWorkshopItem`. Build 42.20 (revision a2947723ca).
 
 ### B. Crafting -- the biggest scripting break (doc 02)
 5. **Rewrite every `recipe` block as a `craftRecipe` block.** Legacy B41 `recipe` scripts silently fail. craftRecipe lives inside `module { }` (item recipes) or `entity { }` (build recipes), with `inputs`/`outputs`/`itemMapper` children. Full confirmed schema is in doc 02's craftRecipe addendum (inputs item-line syntax, tags, skill/learning params, timing, fluids).
@@ -205,3 +207,5 @@ Official / secondary (per-track docs carry the full URL lists):
 ---
 
 *Corrected 2026-10-04: the Workshop preview may be 256x256 or 512x512, square, up to 1000 KB; 256x256 is not the only size accepted.*
+
+*Corrected 2026-10-04: `visibility` in `workshop.txt` takes the words public, friendsOnly, private or unlisted, not the numbers 0-3; a number publishes the item public.*
