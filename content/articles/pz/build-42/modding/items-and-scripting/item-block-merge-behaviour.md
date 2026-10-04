@@ -16,13 +16,14 @@ excerpt: >-
   Build: B42 stable, Steam buildid 24449119 Source of truth:
   media/scripts/generated/items/*.txt in the installed game
   Scope agreed: all raw crafting materials (wood + metal...
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # B42 resource weight reduction -- candidate item audit
 
 > Source: CANDIDATE_ITEMS.md (compiled 2026-08-03, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
 **Build:** B42 stable, Steam buildid `24449119`
+**Re-checked:** Build 42.21 (revision `4a0e9546ec`, Steam buildid `25485521`). The merge path below is unchanged, the vanilla item count is still 5,105, and the only `Weight` that 42.21 changed in any item script is `Mov_Brazier` (0.5 to 10.0).
 **Source of truth:** `media/scripts/generated/items/*.txt` in the installed game
 **Scope agreed:** all raw crafting materials (wood + metal core, plus fasteners, cordage, fiber, earth, glass, leather, fuel)
 **Method:** all 5,105 vanilla item blocks parsed to CSV, then filtered by `DisplayCategory` and ID keyword sweep. Every ID below was resolved against the live scripts -- 218/218 matched, zero invented IDs.
