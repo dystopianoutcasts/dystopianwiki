@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "file": "articles/pz/build-42/modding/gotchas/verified-findings.md",
+    "rule": "private-detail",
+    "line": " <35ff44e0-6c7c-11cf-8f52-0040333594a3>",
+    "reason": "The public GUID of the DirectX .X ColorRGBA template, quoted from the head of the game's own MaleBody.x; a format constant every .X file carries, not a session id or secret."
+  }
+]
