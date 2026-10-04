@@ -12,7 +12,7 @@ tags:
   - multiplayer
   - animals
 excerpt: >-
-  Engine citations refer to R:/ZOMBOID/PZ_Engine_Records/B42/src/, revision
+  Engine citations refer to our decompile of the Build 42 engine, revision
   a2947723ca.
 last_updated: '2026-10-04'
 ---
@@ -20,7 +20,7 @@ last_updated: '2026-10-04'
 
 > Source: OutcastHusbandry/docs/MULTIPLAYER.md (compiled 2026-09-24, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
-Engine citations refer to `R:/ZOMBOID/PZ_Engine_Records/B42/src/`, revision
+Engine citations refer to our decompile of the Build 42 engine, revision
 `a2947723ca`.
 
 ## Where the code runs

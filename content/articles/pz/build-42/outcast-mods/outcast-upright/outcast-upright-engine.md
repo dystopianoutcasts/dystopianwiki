@@ -20,8 +20,8 @@ last_updated: '2026-09-29'
 
 Everything this mod depends on, with the line it was read from. Sources:
 
-- Decompile: `R:\ZOMBOID\PZ_Engine_Records\B42\src` (revision `a2947723ca`)
-- Vanilla Lua: `R:\games\steam\steamapps\common\ProjectZomboid\media\lua`
+- Decompile: our decompile of the Build 42 engine (revision `a2947723ca`)
+- Vanilla Lua: `media/lua` in the installed game
 - Vanilla scripts: `...\media\scripts\generated\vehicles`
 - Game version at time of writing: **42.20.0**
 
@@ -267,7 +267,7 @@ any of them. damnlib does expose a sanctioned extension point,
 is ever wanted.
 
 **Real wrecker script names** (verified in
-`R:\games\steam\steamapps\workshop\content\108600`):
+the Steam library's `steamapps/workshop/content/108600` folder):
 `76chevyC30CCwrecker`, `76chevyC30SCwrecker`, `76chevyK30CCwrecker`,
 `76chevyK30SCwrecker`, `Chevalier_Rhino_TowTruck`, and **`78amgeneralM62`** —
 which contains neither "wrecker" nor "tow", and is why the token list is

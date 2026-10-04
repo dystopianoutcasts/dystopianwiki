@@ -1151,7 +1151,8 @@ baseball bat.
 There is a watcher (`AdvancedAnimator.java:73`), but its predicate compares paths
 against `mod.animSetsFile.*.canonicalFile` (`:92`, `:100`), and **Java resolves a
 directory junction to its real target**. With our dev deploy the watcher is
-looking at `R:\` paths while watching the Zomboid mods folder, so it may never
+looking at the junction's target paths (our repo, on another drive) while watching the
+Zomboid mods folder, so it may never
 match.
 
 What it eventually calls is reachable directly

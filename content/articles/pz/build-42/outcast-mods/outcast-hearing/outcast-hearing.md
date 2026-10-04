@@ -73,7 +73,7 @@ metrics are hardcoded pixels and this is the assumption most likely to be wrong.
 The probe prints its state to the console on every press, so the numbers on
 screen can be checked against the numbers in the log.
 
-The design and the research behind it are in `R:\ZOMBOID\_dev\B42_Traits\` --
+The design and the research behind it are in our Build 42 trait notes --
 `05-p0-hearing-design.md` for this mod, `03-b42-trait-api.md` for the engine
 facts, `01-b42-trait-reference.md` for the trait data.
 
@@ -212,7 +212,7 @@ Two behaviours worth knowing at the call site:
 ## Engine facts this depends on
 
 Verified against the installed build **42.20.0**, revision `a2947723ca`, and the
-sealed decompile at `R:\ZOMBOID\PZ_Engine_Records\B42\src`.
+sealed decompile of that build.
 
 **`UITransition.setFadeIn()` ignores your fade duration.** It hardcodes
 `init(100, false)` in and `init(200, true)` out (`UITransition.java:59-67`). It is

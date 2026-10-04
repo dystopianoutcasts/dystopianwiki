@@ -77,8 +77,9 @@ tests/                              stubbed-engine tests for the count logic
 # link the working tree into the game, no copy step
 .\scripts\install-junctions.ps1
 
-# check translation keys, recipe names and item types before shipping
-.\scripts\validate-data.ps1 -GameMedia 'R:\ZOMBOID\PZ_Engine_Records\B42\game_snapshot\media'
+# check translation keys, recipe names and item types before shipping;
+# -GameMedia is the game's media folder (or a saved copy of it)
+.\scripts\validate-data.ps1 -GameMedia '<ProjectZomboid folder>\media'
 
 # the number on the button, against a stubbed engine
 cd tests; lua test_counting.lua

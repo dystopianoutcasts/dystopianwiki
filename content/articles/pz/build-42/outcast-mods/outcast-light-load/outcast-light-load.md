@@ -234,11 +234,12 @@ Check the console once after adding the mod to a load order.
 Both shipped files are generated. Do not hand-edit them.
 
 ```powershell
-# 1. re-parse vanilla items (after a game update)
-& R:\ZOMBOID\_dev\B42_ResourceWeights\parse_items.ps1
+# 1. re-parse vanilla items (after a game update); parse_items.ps1 lives in our
+#    resource-weight research notes, not in the mod
+& <research folder>\parse_items.ps1
 
 # 2. regenerate the mod
-& R:\ZOMBOID\OutcastLightLoad\tools\generate_weights.ps1
+& .\tools\generate_weights.ps1
 ```
 
 The generator **aborts without writing** if any item ID is missing from the
@@ -253,9 +254,9 @@ To change the strength of the effect, edit `$Multiplier` in
 ## Testing locally
 
 ```powershell
-& R:\ZOMBOID\OutcastLightLoad\tools\deploy_local.ps1           # deploy
-& R:\ZOMBOID\OutcastLightLoad\tools\deploy_local.ps1 -WhatIf   # dry run
-& R:\ZOMBOID\OutcastLightLoad\tools\deploy_local.ps1 -Remove   # uninstall
+& .\tools\deploy_local.ps1           # deploy
+& .\tools\deploy_local.ps1 -WhatIf   # dry run
+& .\tools\deploy_local.ps1 -Remove   # uninstall
 ```
 
 Deploys `Contents/mods/OutcastLightLoad/` to `%USERPROFILE%\Zomboid\mods\OutcastLightLoad\`.
@@ -339,7 +340,7 @@ you need it), and the self-check must branch on `isServer()`.
 ## Publishing to the Workshop
 
 ```powershell
-& R:\ZOMBOID\OutcastLightLoad\tools\install_workshop_junction.ps1
+& .\tools\install_workshop_junction.ps1
 ```
 
 Junctions `%USERPROFILE%\Zomboid\Workshop\OutcastLightLoad` to the repo root --

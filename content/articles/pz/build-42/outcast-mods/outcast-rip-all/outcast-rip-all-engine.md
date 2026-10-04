@@ -12,8 +12,8 @@ tags:
   - engine
   - context-menu
 excerpt: >-
-  Every claim here was read out of the B42 engine records at
-  R:\ZOMBOID\PZ_Engine_Records\B42 (revision a2947723ca, steam buildid
+  Every claim here was read out of our B42 engine records (revision
+  a2947723ca, steam buildid
   24449119). The api/ index layer of that base is not built yet, so...
 last_updated: '2026-09-29'
 ---
@@ -21,8 +21,8 @@ last_updated: '2026-09-29'
 
 > Source: OutcastRipAll/docs/ENGINE.md (compiled 2026-08-04, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
-Every claim here was read out of the B42 engine records at
-`R:\ZOMBOID\PZ_Engine_Records\B42` (revision `a2947723ca`, steam buildid
+Every claim here was read out of our B42 engine records (revision
+`a2947723ca`, steam buildid
 `24449119`). The `api/` index layer of that base is not built yet, so these came
 from reading `src/` and `game_snapshot/media` directly rather than from a
 generated index. Line numbers are precise -- the jar retains its

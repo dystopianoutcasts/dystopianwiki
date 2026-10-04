@@ -62,18 +62,18 @@ what the car actually looks like. Regenerate them in two steps — Blender's
 bundled Python has no Pillow:
 
 ```powershell
-& "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b --python `
-  R:\ZOMBOID\PZ_3D_Assets\models_X\vehicles\porsche_911_992\scripts\render_workshop_art.py
-python R:\ZOMBOID\PZ_3D_Assets\models_X\vehicles\porsche_911_992\scripts\render_workshop_art.py --downsample
+# run from the model source folder (below); <blender.exe> is your Blender 5.2 install
+& <blender.exe> -b --python .\scripts\render_workshop_art.py
+python .\scripts\render_workshop_art.py --downsample
 ```
 
-Source of truth for the model:
-`R:\ZOMBOID\PZ_3D_Assets\models_X\vehicles\porsche_911_992\` — regenerate the
+Source of truth for the model: the `porsche_911_992` folder in our 3D assets
+library (outside the mod; not published) — regenerate the
 whole thing with `blender -b --python scripts/build_911_parts.py`, then export
 with `export_911_fbx.py`.
 
-Reference and research: `R:\ZOMBOID\_dev\Porsche911_992_2_Ref\` and
-`R:\ZOMBOID\PZ_3D_Assets\_study\vehicle_architecture\`.
+Reference and research: our 911 reference notes and our vehicle architecture
+study (neither published yet).
 
 ## Publishing to the Workshop
 

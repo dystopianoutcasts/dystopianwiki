@@ -42,7 +42,7 @@ but it is a real Workshop item.
 >
 > Spikes S1 and S2 are **resolved from the sealed decompile**; S3 is partly
 > resolved. See the status table in [`docs/API.md`](/pz/build-42/outcast-mods/outcast-lib/outcast-lib-api). The reasoning
-> behind every decision is in `R:\ZOMBOID\_dev\OutcastLib\PLAN.md`.
+> behind every decision is in our planning notes for the library (not published).
 >
 > **Verified in game 2026-08-04** via `OutcastLibProbe` (a throwaway consumer,
 > sibling repo, delete when done): `require=` delivers the library ahead of the
@@ -174,7 +174,7 @@ could not do that." Every cap or truncation reports what it dropped.
 ## Engine facts this depends on
 
 Verified against the installed build **42.20.0**, revision `a2947723ca`, and the
-sealed decompile at `R:\ZOMBOID\PZ_Engine_Records\B42\src`.
+sealed decompile of that build.
 
 **`require=` drives load order.** `ZomboidFileSystem.loadModAndRequired`
 (`:815-843`) recurses into `info.getRequire()` and appends dependencies to

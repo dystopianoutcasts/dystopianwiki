@@ -12,8 +12,8 @@ tags:
   - engine
   - context-menu
 excerpt: >-
-  Every claim here was read out of the B42 engine records at
-  R:\ZOMBOID\PZ_Engine_Records\B42. Line numbers are precise -- the jar retains
+  Every claim here was read out of our B42 engine records (revision
+  a2947723ca). Line numbers are precise -- the jar retains
   its LineNumberTable.
 last_updated: '2026-09-29'
 ---
@@ -21,8 +21,8 @@ last_updated: '2026-09-29'
 
 > Source: OutcastSawAll/docs/ENGINE.md (compiled 2026-08-04, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
-Every claim here was read out of the B42 engine records at
-`R:\ZOMBOID\PZ_Engine_Records\B42`. Line numbers are precise -- the jar retains
+Every claim here was read out of our B42 engine records (revision
+`a2947723ca`). Line numbers are precise -- the jar retains
 its `LineNumberTable`.
 
 ## Sawing is a craftRecipe, and it is one exact item type

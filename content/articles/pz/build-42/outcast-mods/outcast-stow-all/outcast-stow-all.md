@@ -52,8 +52,8 @@ Project Zomboid **B42 only** (`versionMin=42.20.0`).
 > handling `OST_Plan` would get wrong.
 >
 > Revive it as a small tag-matching mod that **composes with** the vanilla
-> button, not as a replacement for it. Full record:
-> `R:\ZOMBOID\_dev\OutcastStowAll\PLAN.md`.
+> button, not as a replacement for it. The full record is in our planning
+> notes for the mod (not published).
 >
 > `OutcastLib` is unaffected -- separate mod, separate life, already used by
 > `OutcastSawAll`.

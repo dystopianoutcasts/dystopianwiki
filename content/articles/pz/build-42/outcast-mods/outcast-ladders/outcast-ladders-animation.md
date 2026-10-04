@@ -38,10 +38,10 @@ not edit the `.glb` here.
 
 | role | location |
 |------|----------|
-| editable source | `R:\ZOMBOID\PZ_3D_Assets\anims_X\Bob\ladder_climb\blend\ladder_climb.blend`, action `Bob_NF_LadderClimb`, frames 0-30 |
+| editable source | `anims_X\Bob\ladder_climb\blend\ladder_climb.blend` in our 3D assets library (not published), action `Bob_NF_LadderClimb`, frames 0-30 |
 | canonical export | `...\ladder_climb\export\Bob_NF_LadderClimb.X` |
 | rig traps, read first | `...\ladder_climb\NOTES.md` |
-| motion spec | `R:\ZOMBOID\PZ_3D_Assets\anims_X\LADDER_CLIMB_REFERENCE.md` |
+| motion spec | `anims_X\LADDER_CLIMB_REFERENCE.md` in the same library |
 | deployment copy | `Contents/mods/OutcastLadders/common/media/anims_X/Bob/` |
 
 400,557 bytes, sha256 `3424f151…`, verified byte-identical to the library export.

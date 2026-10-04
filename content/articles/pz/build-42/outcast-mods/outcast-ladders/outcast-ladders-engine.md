@@ -21,7 +21,7 @@ last_updated: '2026-09-29'
 Every engine fact this mod depends on, with the citation that proves it.
 
 Verified against **B42 revision `a2947723ca`** (Steam buildid 24449119), against
-the decompiled source in `R:\ZOMBOID\PZ_Engine_Records\B42\src`.
+our decompile of that build.
 
 ---
 
