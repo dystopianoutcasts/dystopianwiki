@@ -15,7 +15,7 @@ excerpt: >-
   Every claim here was read out of our B42 engine records (revision
   a2947723ca, steam buildid
   24449119). The api/ index layer of that base is not built yet, so...
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Outcast Rip All -- engine notes
 
@@ -26,7 +26,8 @@ Every claim here was read out of our B42 engine records (revision
 `24449119`). The `api/` index layer of that base is not built yet, so these came
 from reading `src/` and `game_snapshot/media` directly rather than from a
 generated index. Line numbers are precise -- the jar retains its
-`LineNumberTable`.
+`LineNumberTable`. Re-checked on **42.21.0** (revision `4a0e9546ec`): the line
+numbers now point into 42.21, and the one behaviour change is marked below.
 
 ## Ripping is a craftRecipe in B42, not a timed action
 
@@ -83,7 +84,7 @@ wearing reports `isWorn() == true`** and no recipe will accept it directly.
 ## Taking clothing off a corpse is an ordinary transfer
 
 Nothing bespoke is needed to undress a body.
-`ItemContainer.DoRemoveItem` (line 2077) ends with:
+`ItemContainer.DoRemoveItem` (line 2081) ends with:
 
 ```java
 this.items.remove(item);
@@ -93,7 +94,7 @@ if (this.parent instanceof IsoDeadBody isoDeadBody) {
 }
 ```
 
-and `IsoDeadBody.checkClothing` (`zombie/iso/objects/IsoDeadBody.java:1471`)
+and `IsoDeadBody.checkClothing` (`zombie/iso/objects/IsoDeadBody.java:1479`)
 drops from `wornItems` anything that is no longer in the container, nulls
 `atlasTex` and invalidates the render chunk. So a plain
 `ISInventoryTransferAction` off the corpse both clears the worn flag and updates
@@ -164,7 +165,7 @@ by inspection.
 **On a multiplayer client that branch is skipped**: the server performs the move
 and syncs it back, and the action holds itself open through
 `self.action:setWaitForFinished(false)` at line 540.
-`removeItemTransaction(id, false)` (`TransactionManager.java:451`) only drops the
+`removeItemTransaction(id, false)` (`TransactionManager.java:458`) only drops the
 local transaction record; it does not apply anything. So the strip-then-rip
 handoff on a client depends on the server's sync having landed before `perform()`
 runs. That is what `setWaitForFinished` is for and it is very likely correct, but
@@ -192,12 +193,12 @@ the floor, because most things on the ground are not bags. Vanilla puts the type
 test first (`ISInventoryPage.lua:1698`, gated on `getCategory() == "Container"`);
 this mod uses `instanceof(item, "InventoryContainer")`, which is the exact
 condition under which the method exists. That spelling is what vanilla passes to
-`instanceof` elsewhere -- `ISHotbar.lua:599`, `ISInventoryPane.lua:967`.
+`instanceof` elsewhere -- `ISHotbar.lua:599`, `ISInventoryPane.lua:971`.
 
 Everything else this mod calls on an item -- `getContainer`, `hasTag`,
 `isEquipped`, `isFavorite`, `isWorn` -- is declared on `InventoryItem` itself and
-is safe on any item. Likewise `getContainer` (`IsoObject.java:1907`),
-`getContainerCount` and `getContainerByIndex` (`IsoObject.java:5180`, `5186`) are
+is safe on any item. Likewise `getContainer` (`IsoObject.java:1946`),
+`getContainerCount` and `getContainerByIndex` (`IsoObject.java:5242`, `5186`) are
 on `IsoObject`, so they are safe on every object and static mover a square
 returns.
 
@@ -216,7 +217,7 @@ never touches from Lua is a member nobody has proven reachable.
 `public static final ColorRGB COLOR_RED` (line 21) and
 `public static ColorRGB getColorRed()` (line 34). Vanilla Lua calls the accessors
 and never reads the fields -- `ISRadioInteractions.lua:313-332`,
-`XpSystem/XpUpdate.lua:197`. This mod calls the accessors for the same reason.
+`XpSystem/XpUpdate.lua:191`. This mod calls the accessors for the same reason.
 
 Two more details from those same live call sites, both easy to get wrong from the
 Java alone:
@@ -248,7 +249,7 @@ if (outer.getVehiclePart() == null && outer.getSquare() != null
 ```
 
 `DistToProper` is Euclidean, square centre to the player's exact position
-(`IsoGridSquare.java:1222`), so 2.5 is a true radius.
+(`IsoGridSquare.java:1162`), so 2.5 is a true radius.
 
 Two things make this vicious:
 
@@ -271,23 +272,27 @@ where it stands.
 
 `luautils.walkToContainer` is the obvious way to walk to a container and is wrong
 here twice over. It returns early for any `IsoDeadBody` without walking at all
-(`luautils.lua:343`), and its general branch opens with
-`ISTimedActionQueue.clear(playerObj)` (line 354), which would destroy a queue this
+(`luautils.lua:345`), and its general branch opens with
+`ISTimedActionQueue.clear(playerObj)` (line 356), which would destroy a queue this
 mod had already filled.
 
 `luautils.walkAdj(playerObj, square, keepActions, excludeList)` clears the queue
 too (line 121) *unless* `keepActions` is true. With that flag it is safe: it
 returns true immediately when already within reach, otherwise queues one
 `ISWalkToTimedAction` and returns true, and returns false when no adjacent
-standable tile exists.
+standable tile exists. Since 42.21 the walk is queued only when the call is not
+running on the server (`if not isServer()`); called from server Lua it still
+returns true but queues nothing.
+
+> **Proof:** Code. `media/lua/shared/luautils.lua`, `luautils.walkAdj` (`if not isServer() then ISTimedActionQueue.add(ISWalkToTimedAction:new(...)) end`). Build 42.21.0 (revision 4a0e9546ec).
 
 ## Reachability past one tile
 
-`IsoGridSquare.canReachTo` (line 848) hard-returns `false` when
+`IsoGridSquare.canReachTo` (line 946) hard-returns `false` when
 `|dx| > 1 || |dy| > 1`, so it cannot express a radius sweep. Inside one tile it is
 the right answer -- it understands walls, windows, doors and stair tops -- and the
 loot window uses it. Past one tile this mod substitutes `isCanSee(playerNum)`
-(line 9527).
+(line 9137).
 
 ## The no-items context menu event is unregistered
 
@@ -301,11 +306,13 @@ therefore nil until something calls `LuaEventManager.AddEvent` for it.
 
 ## Mod load order
 
-`LuaManager.LoadDirBase` (line 1139) sorts all base-game files, then appends all
-mod files (lines 1196-1197). Every vanilla Lua file -- including
+`LuaManager.LoadDirBase` (line 1142) sorts all base-game files, then appends all
+mod files (lines 1199-1200). Every vanilla Lua file -- including
 `client/PZAPI/ModOptions.lua` -- is guaranteed loaded before any mod's client
 Lua, so `PZAPI.ModOptions:create` may be called at mod file scope.
 
 Within one mod, files are sorted case-insensitively, which is why
 `ORA_ContextMenu.lua` registers its handlers as closures: it runs before
 `ORA_Rip.lua` has defined `ORA.ripAll`.
+
+*Updated 2026-10-04 for Build 42.21: line numbers re-pointed; luautils.walkAdj no longer queues the walk when called on the server.*

@@ -15,7 +15,7 @@ excerpt: >-
   Every claim here was read out of our B42 engine records (revision
   a2947723ca). Line numbers are precise -- the jar retains
   its LineNumberTable.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Outcast Saw All -- engine notes
 
@@ -23,7 +23,9 @@ last_updated: '2026-09-29'
 
 Every claim here was read out of our B42 engine records (revision
 `a2947723ca`). Line numbers are precise -- the jar retains
-its `LineNumberTable`.
+its `LineNumberTable`. Re-checked on **42.21.0** (revision `4a0e9546ec`): the
+line numbers now point into 42.21, and the one engine change that touches this
+page is marked below.
 
 ## Sawing is a craftRecipe, and it is one exact item type
 
@@ -96,7 +98,7 @@ if (outer.getVehiclePart() == null && outer.getSquare() != null
 ```
 
 `DistToProper(IsoMovingObject)` is plain 2D Euclidean from the square's centre to
-the player's position, ignoring z (`IsoGridSquare.java:1222`).
+the player's position, ignoring z (`IsoGridSquare.java:1162`).
 
 This fails the **whole craft** if **any one** container in the list is too far,
 not just the craft that would have used it. It is the single most important fact
@@ -130,10 +132,14 @@ A world item is a first-class craft input without any of that, though:
   does not require list membership;
 * `ItemUser.RemoveItem` consumes it through
   `worldObj.getSquare().transmitRemoveItemFromSquare(worldObj)`, so the sprite
-  goes with it.
+  goes with it. That holds where the craft runs: in single player, and on the
+  server in multiplayer. Since 42.21 the same call made on a multiplayer client
+  no longer sends anything to the server; it only removes the client's copy.
+
+  > **Proof:** Code. `zombie.iso.IsoGridSquare#transmitRemoveItemFromSquare(IsoObject, boolean)` (the `GameClient.client` branch that sent `RemoveItemFromSquarePacket` is gone; off the server it calls `RemoveTileObject`, on the server `GameServer.RemoveItemFromMap`); `zombie.inventory.ItemUser`. Build 42.21.0 (revision 4a0e9546ec).
 
 And vanilla's own single-item path proves the intent. `OnNewCraft`
-(`ISInventoryPaneContextMenu.lua:3456`) only hauls inputs into the player's
+(`ISInventoryPaneContextMenu.lua:3451`) only hauls inputs into the player's
 inventory when the recipe is **not** `CanBeDoneFromFloor`:
 
 ```lua
@@ -144,7 +150,7 @@ if not recipe:isCanBeDoneFromFloor() then
 
 `SawLogs` is `CanBeDoneFromFloor`, so vanilla saws a floor log in place. This mod
 does the same and never transfers anything. That matters more here than it would
-elsewhere: `Base.Log` is `Weight = 9.0` (`generated/items/normal.txt:9283`), and
+elsewhere: `Base.Log` is `Weight = 9.0` (`generated/items/normal.txt:9301`), and
 a queue of twenty of them hauled into the player's bag would leave them unable to
 move.
 
@@ -182,3 +188,5 @@ tiles, to every `HandcraftLogic` it creates. Given
 `isContainersAccessible` above, any swept container past 2.5 tiles should fail
 every rip in that run rather than just its own. Worth checking there separately;
 it is not a problem in this mod because of the per-stop rebuild.
+
+*Updated 2026-10-04 for Build 42.21: line numbers re-pointed; transmitRemoveItemFromSquare no longer reaches the server when called on a multiplayer client.*
