@@ -74,7 +74,7 @@ function Counter({ value, label }: { value: number | null | undefined; label: st
 }
 
 export function ServerNow() {
-  const dots = useServerNow();
+  const { dots, online } = useServerNow();
   const { summary } = useHomeSummary();
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<{ x: number; y: number; scrollLeft: number; scrollTop: number } | null>(null);
@@ -210,8 +210,8 @@ export function ServerNow() {
 
   // A name under "Who is on now": centre the map on that player, bring the map into view
   // if it is off screen, ring their marker for a moment, and say so politely. Focus stays
-  // on the button. A dot with no usable position (the list is built from positions, so
-  // this should not happen) does nothing.
+  // on the button. Only a player with a dot gets a button (T77); a dot with no usable
+  // position (buildDots drops those, so this should not happen) does nothing.
   const showOnMap = useCallback(
     (dot: MapDot) => {
       const el = viewportRef.current;
@@ -266,7 +266,7 @@ export function ServerNow() {
 
         <div className="home-onnow">
           <WhoIsOnNow
-            dots={dots}
+            players={online}
             mode={nameMode}
             onModeChange={changeNameMode}
             onShow={showOnMap}

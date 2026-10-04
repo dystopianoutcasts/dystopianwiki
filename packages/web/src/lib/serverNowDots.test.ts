@@ -5,7 +5,7 @@
  */
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { buildDots } from './serverNowDots'
+import { buildDots, buildOnlineList } from './serverNowDots'
 
 test('each dot carries the username, the survivor name and the survivor-name label', () => {
   const dots = buildDots(
@@ -42,4 +42,42 @@ test('dead players, players without a player row and non-finite positions get no
     ],
   )
   assert.deepEqual(dots, [{ id: 'ok', username: 'ok', displayName: null, name: 'ok', x: 4, y: 4 }])
+})
+
+test('an offline player gets no dot even with a position row (T77)', () => {
+  const dots = buildDots(
+    [{ username: 'gone', display_name: 'G', online: false, is_dead: false }],
+    [{ username: 'gone', x: 1, y: 1 }],
+  )
+  assert.deepEqual(dots, [])
+})
+
+test('the online list: every online player, dead or without a position; offline ones left out (T77)', () => {
+  const players = [
+    { username: 'alive', display_name: 'Al Ive', online: true, is_dead: false },
+    { username: 'dead', display_name: 'De Ad', online: true, is_dead: true },
+    { username: 'nopos', display_name: '', online: true, is_dead: null },
+    { username: 'off', display_name: 'Of F', online: false, is_dead: false },
+    { username: 'alive', display_name: 'Al Ive', online: true, is_dead: false },
+  ]
+  const positions = [
+    { username: 'alive', x: 5, y: 6 },
+    { username: 'dead', x: 7, y: 8 },
+    { username: 'off', x: 9, y: 9 },
+  ]
+  const dots = buildDots(players, positions)
+  const list = buildOnlineList(players, dots)
+  assert.deepEqual(
+    list.map((p) => [p.username, p.displayName, p.dot ? `${p.dot.x},${p.dot.y}` : null, p.noDot]),
+    [
+      ['alive', 'Al Ive', '5,6', null],
+      ['dead', 'De Ad', null, 'dead'],
+      ['nopos', null, null, 'no-position'],
+    ],
+  )
+  // The dead player is listed but has no dot; the offline one is in neither.
+  assert.deepEqual(
+    dots.map((d) => d.username),
+    ['alive'],
+  )
 })

@@ -10,18 +10,35 @@
  * setting says. Zero rows is a normal answer, not an error.
  *
  * The join to online, living players is lib/serverNowDots.ts (buildDots), which
- * mirrors playerFeatures in packages/aurora/src/layers/transform.ts. Each dot carries
+ * mirrors playerFeatures in packages/aurora/src/layers/transform.ts. The "Who is on
+ * now" list is every online player (buildOnlineList, T77), dead or without a
+ * position included, so it counts what the counter and the map's roster count. Each dot carries
  * the username and the survivor's name (T62); components/landing/ServerNow.tsx picks
  * which one to show from the Survivor name / Username toggle (lib/nameMode.ts).
  */
 import { useQuery } from '@tanstack/react-query'
 import { auroraClient, AURORA_SERVER_ID } from '../lib/aurora'
-import { buildDots, type MapDot, type PlayerRow, type PositionRow } from '../lib/serverNowDots'
+import {
+  buildDots,
+  buildOnlineList,
+  type MapDot,
+  type OnlinePlayer,
+  type PlayerRow,
+  type PositionRow,
+} from '../lib/serverNowDots'
 
-export type { MapDot }
+export type { MapDot, OnlinePlayer }
 
-async function fetchDots(): Promise<MapDot[]> {
-  if (!auroraClient) return []
+/** The map's dots and the "Who is on now" list, from the same two requests. */
+export interface ServerNowData {
+  dots: MapDot[]
+  online: OnlinePlayer[]
+}
+
+const EMPTY: ServerNowData = { dots: [], online: [] }
+
+async function fetchServerNow(): Promise<ServerNowData> {
+  if (!auroraClient) return EMPTY
 
   try {
     const [playersRes, positionsRes] = await Promise.all([
@@ -33,25 +50,29 @@ async function fetchDots(): Promise<MapDot[]> {
       auroraClient.from('player_positions_visible').select('username,x,y').eq('server_id', AURORA_SERVER_ID),
     ])
 
-    if (playersRes.error || positionsRes.error) return []
+    if (playersRes.error) return EMPTY
 
     const players = (playersRes.data ?? []) as PlayerRow[]
-    const positions = (positionsRes.data ?? []) as PositionRow[]
+    // A failed positions request costs the dots, not the list: everyone is still listed,
+    // without a map position.
+    const positions = positionsRes.error ? [] : ((positionsRes.data ?? []) as PositionRow[])
 
-    return buildDots(players, positions)
+    const dots = buildDots(players, positions)
+    return { dots, online: buildOnlineList(players, dots) }
   } catch {
-    return []
+    return EMPTY
   }
 }
 
-/** Dots to draw. Empty while loading, when nobody is online, or when positions are hidden. */
-export function useServerNow(): MapDot[] {
+/** Dots to draw and players to list. Both empty while loading or when nobody is online;
+ * dots also empty when positions are hidden. */
+export function useServerNow(): ServerNowData {
   const query = useQuery({
-    queryKey: ['server-now', 'dots', AURORA_SERVER_ID],
-    queryFn: fetchDots,
+    queryKey: ['server-now', 'online', AURORA_SERVER_ID],
+    queryFn: fetchServerNow,
     refetchInterval: 60_000,
     refetchOnWindowFocus: true,
   })
 
-  return query.data ?? []
+  return query.data ?? EMPTY
 }

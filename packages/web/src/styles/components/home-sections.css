@@ -274,6 +274,25 @@
   outline-offset: 2px;
 }
 
+/* A listed player with no dot on the map (dead, or no visible position; T77): the
+   same pill, dashed and not clickable, with the reason in words after the name, so
+   it is not told apart by colour or border alone. Long names wrap at 320 px. */
+.home-onnow__plain {
+  display: inline-block;
+  max-width: 100%;
+  min-height: 24px;
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--border-radius-full);
+  border: 1px dashed var(--color-border);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.home-onnow__note {
+  color: var(--color-text-secondary);
+}
+
 .home-onnow__empty {
   color: var(--color-text-secondary);
   margin: 0;
