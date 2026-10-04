@@ -359,6 +359,19 @@ not change the decision in section 0. It should be settled by reading
 `ItemContainer`'s own sync path before any fluid code is written, not discovered
 on a server.
 
+**Answered from the code, 2026-10-04 (not yet watched on a server).** Nothing
+sends a changed fluid on its own: a `FluidContainer` that changes only marks a
+player's inventory for redraw, and the one network send inside it is on
+unsealing. So the server must re-send, and the call for an item in a crate or a
+vehicle part's container is `sendItemStats(item)`. Its packet carries the item's
+whole fluid container, and it goes to the players near the container's square, or
+near its parent object. The table of which call fits which place is in
+[Fluids in multiplayer](/pz/build-42/modding/fluids/fluids-in-multiplayer); the
+vehicle-part case is the one route we have read but not yet seen in a dedicated
+server's log.
+
+> **Proof:** Code. `zombie.entity.components.fluids.FluidContainer` (on a change, only `setDrawDirty` and `setDirty` on a player-inventory container; `sendSyncEntity` only in `unseal`); `zombie.network.GameServer#sendItemStats` (owner, world item, source grid, then the parent object's position); `zombie.network.packets.ItemStatsPacket` (copies the item's `FluidContainer` and writes it with `save`). Build 42.21.0 (revision 4a0e9546ec).
+
 ---
 
 ## 9. Standing facts, so they are not rediscovered
@@ -383,3 +396,5 @@ on a server.
 ---
 
 *Corrected 2026-10-04: vanilla's fluid transfer and empty actions work in multiplayer for items in a player's inventory; Poison minAmount and diluteRatio are never read; a fluid named like a vanilla one overwrites it.*
+
+*Updated 2026-10-04: the section 8 question is answered from the code (the server re-sends with `sendItemStats`, whose packet carries the fluid); linked Fluids in multiplayer.*

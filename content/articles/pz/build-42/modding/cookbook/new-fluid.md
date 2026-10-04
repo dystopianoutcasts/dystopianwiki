@@ -93,11 +93,15 @@ module YourModule
 | `Categories{}` | Grouping tags (`Beverage`, `Industrial`, ...). | block CONFIRMED / values LIKELY |
 | `BlendWhiteList` / `BlendBlackList` | Blend rules; either a scalar `BlendWhiteList = MyFilter,` or a block with `whitelist=true/false`, `fluids{}`, `categories{}`. | BlendWhiteList CONFIRMED / usage LIKELY |
 
-> **Proof:** Code. `zombie.entity.components.fluids.PoisonInfo#getPoisonEffect` (returns `maxEffect`); `zombie.entity.components.fluids.Fluid#setScript` (properties, with the poison dose, only when the script has a `Properties` block). Build 42.21.0 (revision 4a0e9546ec).
+Vanilla shows the Poison trap itself: `Petrol`, `Acid`, `CleaningLiquid`, `Dye`, `HairDye` and even `PoisonPotent` have a `Poison` block and no `Properties`, so drinking them adds nothing to the poison stat. If your fluid is meant to poison, give it at least one property set to something other than its default (Bleach uses `ThirstChange = -20.0`).
 
-Name your fluid something new. A fluid named like a vanilla one (`Water`, `Petrol`, ...) is bound to the vanilla fluid and overwrites its definition, in any module.
+> **Proof:** Code. `zombie.entity.components.fluids.PoisonInfo#getPoisonEffect` (returns `maxEffect`); `zombie.entity.components.fluids.Fluid#setScript` (properties, with the poison dose, only when the script has a `Properties` block); `media/scripts/generated/fluids.txt` (the six fluids above: `Poison`, no `Properties`). Build 42.21.0 (revision 4a0e9546ec).
 
-> **Proof:** Code. `zombie.scripting.objects.FluidDefinitionScript#Load` and `zombie.entity.components.fluids.Fluid#Init`. Build 42.21.0 (revision 4a0e9546ec).
+Name your fluid something new. A fluid named like a vanilla one (`Water`, `Petrol`, ...) is bound to the vanilla fluid and overwrites its definition, in any module. The match ignores case: `fluid water` is `Water`.
+
+> **Proof:** Code. `zombie.scripting.objects.FluidDefinitionScript#Load` (looks the name up with `FluidType.containsNameLowercase` and `FromNameLower`) and `zombie.entity.components.fluids.Fluid#Init`. Build 42.21.0 (revision 4a0e9546ec).
+
+For the rest of the fluid system (what syncs in multiplayer, which container calls lie, tainted water and boiling), start at [Fluids for modders: start here](/pz/build-42/modding/fluids/fluids-for-modders-start-here).
 
 There is **no `boredomChange` field** in any source -- use `unhappyChange`/`stressChange`. (UNCERTAIN if it exists.)
 
@@ -160,3 +164,5 @@ There is no `initialFluid`, `rgb`, or `fluid amount` field on the container -- i
 *Corrected 2026-10-04: Poison minAmount and diluteRatio are never read, Poison needs a Properties block to reach the drinker, and a vanilla-named fluid overwrites vanilla's.*
 
 *Corrected 2026-10-04: the item skeleton uses ItemType = base:normal; Build 42 does not read Type = Normal.*
+
+*Updated 2026-10-04: the six vanilla fluids whose Poison never reaches the drinker; fluid names match vanilla ignoring case; linked Fluids for modders: start here.*
