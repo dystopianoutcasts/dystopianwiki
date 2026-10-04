@@ -16,7 +16,7 @@ excerpt: >-
   A registry where a mod that owns vehicle parts meets a mod that draws them.
   Producers register; UI mods enumerate. The library holds it so that neither
   has to exist for the other to work.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - implementation-status
   - ol-init
@@ -49,10 +49,10 @@ producer wants to register. Deferring to `OnGameStart` works until a producer ha
 something to say earlier, or is installed *without* the UI and must guard every
 call site.
 
-> **Proof:** Code. `zombie.Lua.LuaManager#LoadDirBase(String, boolean)` (vanilla files sorted by path, then each mod in `zombie.ZomboidFileSystem#getModIDs` order, its files sorted only within that mod) and `zombie.ZomboidFileSystem#loadMods(ArrayList)` with `#loadModAndRequired` (the mod list in its own order, each mod's `require=` mods added just ahead of it). Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.Lua.LuaManager#LoadDirBase(String, boolean)` (vanilla files sorted by path, then each mod in `zombie.ZomboidFileSystem#getModIDs` order, its files sorted only within that mod) and `zombie.ZomboidFileSystem#loadMods(List)` with `#loadModAndRequired` (the mod list in its own order, each mod's `require=` mods added just ahead of it). Build 42.21.0 (revision 4a0e9546ec).
 
 `require=OutcastLib` guarantees the library loads first
-(`ZomboidFileSystem.loadModAndRequired:815-843`), so the registry is always
+(`ZomboidFileSystem.loadModAndRequired:827-855`), so the registry is always
 there. Two consequences that are the point of the design:
 
 - a **producer works with no UI mod** installed -- registration never depends on
@@ -162,8 +162,8 @@ the Lua state it was made in. Verified in the decompile rather than assumed:
 
 | | |
 |---|---|
-| `sendClientCommand` falls through to `SinglePlayerClient` in SP, so **client -> server works solo** | `LuaManager.java:8972` |
-| every `sendServerCommand` overload is `if (GameServer.server)` with **no else**, so **server -> client is dead solo** | `:9008`, `:9018`, `:9028` |
+| `sendClientCommand` falls through to `SinglePlayerClient` in SP, so **client -> server works solo** | `LuaManager.java:8930` |
+| every `sendServerCommand` overload is `if (GameServer.server)` with **no else**, so **server -> client is dead solo** | `:8966`, `:8976`, `:8986` |
 
 Outcast Motors' resolution, which this is shaped to support: the server decides,
 then **calls this directly** (effective in SP, where server and client Lua share
@@ -173,7 +173,7 @@ configuration and they cannot double-fire, both being switched by
 `GameServer.server`.
 
 That holds for a co-op host too: `GameServer.server` is written in only two
-places (`GameServer.java:415`, `GameWindow.java:579`) and the second reads the
+places (`GameServer.java:419`, `GameWindow.java:579`) and the second reads the
 `-Dserver=true` system property, so a server is always its own process and never
 shares a VM with a panel.
 

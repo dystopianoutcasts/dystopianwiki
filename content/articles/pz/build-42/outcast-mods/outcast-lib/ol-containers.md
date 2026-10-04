@@ -13,7 +13,7 @@ tags:
   - ol-init
   - containers
 excerpt: True when the container is not a player-locked IsoThumpable.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - implementation-status
   - ol-init
@@ -97,11 +97,11 @@ this" want different numbers from the same call. Clamp at the call site.
 container:getEffectiveCapacity(playerObj) - container:getCapacityWeight()
 ```
 
-- `getEffectiveCapacity` (`ItemContainer.java:202`) is `getCapacity()` adjusted
+- `getEffectiveCapacity` (`ItemContainer.java:206`) is `getCapacity()` adjusted
   for the Organized / Disorganized traits. It does **not** net out contents, so
   the subtraction is required -- this is not a single call.
-- The subtrahend is `getCapacityWeight()` (`:2258`), **not** `getContentsWeight()`
-  (`:2243`) as the spike proposed. `getContentsWeight` naively sums
+- The subtrahend is `getCapacityWeight()` (`:2263`), **not** `getContentsWeight()`
+  (`:2248`) as the spike proposed. `getContentsWeight` naively sums
   `getUnequippedWeight()` over the items. `getCapacityWeight` additionally
   handles the three cases that matter here: a player parent returns
   `chr.getInventoryWeight()`, a corpse parent returns

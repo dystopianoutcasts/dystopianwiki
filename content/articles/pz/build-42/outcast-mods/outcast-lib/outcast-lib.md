@@ -174,26 +174,27 @@ could not do that." Every cap or truncation reports what it dropped.
 ## Engine facts this depends on
 
 Verified against the installed build **42.20.0**, revision `a2947723ca`, and the
-sealed decompile of that build.
+sealed decompile of that build. Re-checked on **42.21.0** (revision `4a0e9546ec`):
+nothing below changed meaning; the line numbers now point into 42.21.
 
 **`require=` drives load order.** `ZomboidFileSystem.loadModAndRequired`
-(`:815-843`) recurses into `info.getRequire()` and appends dependencies to
-`ordered` *before* the mod itself; `loadMods` (`:855`) loads in that order.
+(`:827-855`) recurses into `info.getRequire()` and appends dependencies to
+`ordered` *before* the mod itself; `loadMods` (`:868`) loads in that order.
 `ordered.contains(modId)` makes it cycle-safe. The library is guaranteed to load
 first.
 
 **A missing dependency fails visibly.** `DebugType.Mod.warn("required mod ... not
-found")` (`:829`), removal from `GameServer.ServerMods` on a server, and
+found")` (`:841`), removal from `GameServer.ServerMods` on a server, and
 `ChooseGameInfo.Mod.isAvailableRequired` (`:656-680`) marking the consumer
 unavailable in the mod list.
 
-**`InventoryItem` exclusion pair:** `isFavorite()` (`:3629`) and
-`isUnwanted(IsoPlayer)` (`:5318`). Both are needed; Easy Drop'n'Loot checks only
+**`InventoryItem` exclusion pair:** `isFavorite()` (`:3632`) and
+`isUnwanted(IsoPlayer)` (`:5321`). Both are needed; Easy Drop'n'Loot checks only
 the first.
 
 **Item tags are not strings.** `InventoryItem:getTags()` returns `Set<ItemTag>`
-(`:2935`) -- **no `:get(i)`**. The `:get(i)`/`:size()` idiom throughout vanilla
-Lua is `recipe:getTags()`, a different type. Use `hasTag(ItemTag)` (`:2943`).
+(`:2938`) -- **no `:get(i)`**. The `:get(i)`/`:size()` idiom throughout vanilla
+Lua is `recipe:getTags()`, a different type. Use `hasTag(ItemTag)` (`:2946`).
 `ItemTag` is a registry class, not an enum, with a public `register(String)`.
 
 **`getInventory()` is declared on `InventoryContainer` (`:56`), not
@@ -276,13 +277,13 @@ sorts it.
 
 **It must be *installed*, which is not the same as *listed*.** An earlier draft
 of this section said "present" and meant the `Mods=` line; that is wrong.
-`ZomboidFileSystem.loadModsAux` (`:815-843`) resolves a `require=` entry with
+`ZomboidFileSystem.loadModsAux` (`:827-855`) resolves a `require=` entry with
 `ChooseGameInfo.getAvailableModDetails(modId)` -- `getModDetails` filtered by
 `isAvailable()` -- which is a lookup over **installed** mods and never consults
 the `Mods=` line. An installed-but-unlisted library is therefore appended to
 `ordered` and loads anyway.
 
-The `required mod "OutcastLib" not found` warn (`:829`) and
+The `required mod "OutcastLib" not found` warn (`:841`) and
 `isAvailableRequired` (`:656-680`) marking consumers unavailable fire only when
 the library is genuinely not installed, or not available for this game version.
 

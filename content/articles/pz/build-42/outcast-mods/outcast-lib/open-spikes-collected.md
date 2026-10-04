@@ -16,7 +16,7 @@ excerpt: >-
   S1 and S2 are resolved from the sealed decompile alone -- no running game was
   needed for either, and S1's recorded answer was wrong in the original spike.
   Neither OL_Containers nor anything...
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - implementation-status
   - ol-init
@@ -49,7 +49,7 @@ Neither `OL_Containers` nor anything downstream of it is blocked any longer.
 
 ### S3, as far as source can settle it
 
-Reading `ISInventoryPane:transferItemsByWeight` (`ISInventoryPane.lua:632-654`),
+Reading `ISInventoryPane:transferItemsByWeight` (`ISInventoryPane.lua:632-658`),
 the method touches exactly two things on `self`: `self.player` (the player
 number) and `self:sortItemsByTypeAndWeight`. It reads no UI state, no selection,
 no geometry. That strongly implies the pane instance is safe to use outside a
@@ -62,6 +62,13 @@ lifecycle question about the UI, and the decompile cannot answer it.
 **And a hazard the original spike did not mention.** The corpse branch does
 `ISTimedActionQueue.add(ISGrabCorpseItem:new(...))` followed by **`break`** --
 so hitting one corpse item silently abandons every remaining item in that group.
+Since Build 42.21 the same branch first checks whether the player is in a
+vehicle, and if so it returns at once without queueing even the corpse grab:
+everything from that item on is dropped, still without a word.
+
+> **Proof:** Code. `media/lua/client/ISUI/ISInventoryPane.lua`, `ISInventoryPane:transferItemsByWeight` (the `corpseStorageCheck.isPlayerGrabbingCorpseItem` branch: `if playerObj:getVehicle() then return end`, then `ISGrabCorpseItem` and `break`). Build 42.21.0 (revision 4a0e9546ec).
 `OL_Transfer` must detect this and report it in `report.skipped` /
 `report.byReason`, or a run that transfers 3 of 20 items will cheerfully claim
 20. This is rule 4 applied to somebody else's control flow.
+
+*Updated 2026-10-04 for Build 42.21: transferItemsByWeight now also returns early on a corpse item when the player is in a vehicle.*
