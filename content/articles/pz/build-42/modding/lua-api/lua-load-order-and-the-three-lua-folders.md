@@ -60,7 +60,7 @@ The `server/` subfolder is loaded **only when a save is actually launched** (not
 
 Within each stage the order **is alphabetical**, and we have the crash to prove it. The engine collects vanilla's files and sorts them by path, ignoring case; then, for each mod in turn, it collects that mod's files and sorts them the same way. So inside your mod, `shared/MyMod/A_Thing.lua` runs before `shared/MyMod/B_Thing.lua`, whatever depends on what. A file-scope call into a module whose file sorts later finds `nil`: one of our mods failed to load for every player because `OCP_Contract.lua` called into `OCP_Log` at file scope, and `OCP_Contract` sorts first. Never call into another file at file scope; resolve the dependency inside an event handler, or `require` it explicitly.
 
-> **Proof:** Code. `zombie.Lua.LuaManager#LoadDirBase(String, boolean)` sorts each list with `Collections.sort(..., String.CASE_INSENSITIVE_ORDER)`, vanilla first, then each mod. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.Lua.LuaManager#LoadDirBase(String, boolean)` sorts each list with `Collections.sort(..., String.CASE_INSENSITIVE_ORDER)`, vanilla first, then each mod. Build 42.21.0 (revision 4a0e9546ec).
 
 **Cross-mod load order** is controlled by the order of ids in `Mods=` (and the workshop load-order tools). If mod B depends on mod A's shared tables, A must load first. **[CONFIRMED]**
 

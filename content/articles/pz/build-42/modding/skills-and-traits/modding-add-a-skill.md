@@ -113,7 +113,7 @@ Load order: `lua/shared` -> `lua/client` -> `lua/server`, alphabetical within ea
 into another of your files at file scope: the one you need may not have loaded
 yet. See [Lua load order and the three lua folders](/pz/build-42/modding/lua-api/lua-load-order-and-the-three-lua-folders).
 
-> **Proof:** Code. `zombie.Lua.LuaManager#LoadDirBase(String, boolean)` sorts each list with `Collections.sort(..., String.CASE_INSENSITIVE_ORDER)`. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.Lua.LuaManager#LoadDirBase(String, boolean)` sorts each list with `Collections.sort(..., String.CASE_INSENSITIVE_ORDER)`. Build 42.21.0 (revision 4a0e9546ec).
 
 ### 8d. Reference it
 

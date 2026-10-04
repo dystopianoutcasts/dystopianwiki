@@ -50,7 +50,7 @@ loaded or reloaded outside a save, server files are unloaded. Its order is:
 The `server` folder loads on a multiplayer client too: the name sets *when* it
 loads, not which side runs it. See [Lua load order and the three lua folders](/pz/build-42/modding/lua-api/lua-load-order-and-the-three-lua-folders).
 
-> **Proof:** Code. `zombie.gameStates.GameLoadingState` calls `LuaManager.LoadDirBase("server")` with no `GameClient.client` guard. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.gameStates.GameLoadingState` calls `LuaManager.LoadDirBase("server")` with no `GameClient.client` guard. Build 42.21.0 (revision 4a0e9546ec).
 
 The practical consequence for mappers: **vanilla shared files always load before
 your shared files**, so globals like `VehicleZoneDistribution` and

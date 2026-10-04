@@ -41,7 +41,7 @@ Within `media/lua/` the three subfolders load in a defined order. The three fold
 2. **`lua/client/`** -- loaded after shared. UI, context menus, timed actions, anything client-side/visual. **[CONFIRMED folder]**
 3. **`lua/server/`** -- loaded **only when a game/world actually starts** (not at main menu). In multiplayer it loads on the server **and on every connected client**: the folder name sets *when* the code loads, not which side runs it. Code that must run only on the server says so itself, typically with `if isClient() then return end` at the top of the file. See [Lua load order and the three lua folders](/pz/build-42/modding/lua-api/lua-load-order-and-the-three-lua-folders).
 
-> **Proof:** Code. `zombie.gameStates.GameLoadingState` calls `LuaManager.LoadDirBase("server")` with no `GameClient.client` guard; `zombie.network.GameServer` calls it on a dedicated server. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.gameStates.GameLoadingState` calls `LuaManager.LoadDirBase("server")` with no `GameClient.client` guard; `zombie.network.GameServer` calls it on a dedicated server. Build 42.21.0 (revision 4a0e9546ec).
 
 Consequences for structure:
 - Put shared helpers in `shared/` so both sides see them.
