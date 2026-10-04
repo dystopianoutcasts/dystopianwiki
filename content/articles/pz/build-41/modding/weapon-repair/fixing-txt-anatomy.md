@@ -71,8 +71,8 @@ Here's the good news: once you understand fixing.txt anatomy, creating repair de
 ## File Location
 
 ```
-R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\fixing.txt
-R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\vehiclesfixing.txt
+media/scripts/fixing.txt
+media/scripts/vehiclesfixing.txt
 ```
 
 ## Basic Structure

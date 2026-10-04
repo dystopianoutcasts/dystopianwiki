@@ -1262,8 +1262,8 @@ When creating items, verify:
 ## Source Files
 
 **Vanilla Reference Files:**
-- `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\items.txt` - Main vanilla items
-- `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\newitems.txt` - Newer vanilla items
+- `media/scripts/items.txt` - Main vanilla items
+- `media/scripts/newitems.txt` - Newer vanilla items
 
 **Workshop Mod Reference:**
 - Workshop ID: 2680473910 (Advanced Crafting mod with good examples)

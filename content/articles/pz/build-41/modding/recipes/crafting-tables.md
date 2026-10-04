@@ -121,7 +121,7 @@ From the Enhanced Crafting Core (More Builds) mod:
 | `Mechanic Table`   | Vehicle parts, mechanical work |
 | `Tailoring Table`  | Clothing, fabric work, repairs |
 
-**Source:** `C:\Users\YourName\Desktop\DystopeanOutcasts\Crafting-Enhanced-Core\README.md`
+**Source:** the README of the Crafting-Enhanced-Core project (not published)
 
 ### Syntax Format
 Use the exact string name in quotes or without quotes:
@@ -319,6 +319,6 @@ require=MoreBuilds
 **Mod ID:** `MoreBuilds` (Steam Workshop ID: 515555911)
 
 ## Source Files
-- **Enhanced Crafting README:** `C:\Users\YourName\Desktop\DystopeanOutcasts\Crafting-Enhanced-Core\README.md`
+- **Enhanced Crafting README:** the README of the Crafting-Enhanced-Core project (not published)
 - **Mod Steam Workshop:** Workshop ID 515555911
 - **Research Date:** 2025-11-06

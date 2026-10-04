@@ -371,6 +371,6 @@ When creating recipes, verify:
 - [ ] Players keep expected tools after crafting
 
 ## Source Files
-- **Vanilla Recipes:** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\recipes.txt`
-- **Scrap Guns Recipes:** `R:\Games\Steam\steamapps\workshop\content\108600\2125659488\mods\Scrap Guns (New Version)\media\scripts\module_SGuns_recipes.txt`
+- **Vanilla Recipes:** `media/scripts/recipes.txt`
+- **Scrap Guns Recipes:** `<your Steam library>\steamapps\workshop\content\108600\2125659488\mods\Scrap Guns (New Version)\media\scripts\module_SGuns_recipes.txt`
 - **Research Date:** 2025-11-06

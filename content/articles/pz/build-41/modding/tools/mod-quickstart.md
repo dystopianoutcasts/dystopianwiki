@@ -112,7 +112,7 @@ OutcastAdvancedCrafts/
 ### Documentation Location
 **Outcast Testing Docs:**
 ```
-C:\Users\YourName\Desktop\DystopeanOutcasts\OutcastTESTING_DOCS\
+<your notes folder>\OutcastTESTING_DOCS\
 ```
 
 **What to store here:**
@@ -130,7 +130,7 @@ C:\Users\YourName\Desktop\DystopeanOutcasts\OutcastTESTING_DOCS\
 ### Installation Directory
 **Game Files:**
 ```
-R:\Games\Steam\steamapps\common\ProjectZomboid\
+<your Steam library>\steamapps\common\ProjectZomboid\
 ```
 
 **Key Vanilla Directories:**
@@ -152,21 +152,21 @@ ProjectZomboid/
 
 **Perks System:**
 ```
-R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\newitems.txt
+media/scripts/newitems.txt
 ```
 - Contains vanilla perk definitions (Mechanics, MetalWelding, Cooking, etc.)
 
 **Recipe Examples:**
 ```
-R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\recipes.txt
-R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\recipes_metalwork.txt
+media/scripts/recipes.txt
+media/scripts/recipes_metalwork.txt
 ```
 - Study vanilla recipe syntax
 - OnCreate and OnGiveXP patterns
 
 **Lua Recipe Functions:**
 ```
-R:\Games\Steam\steamapps\common\ProjectZomboid\media\lua\shared\recipecode.lua
+media/lua/shared/recipecode.lua
 ```
 - Contains Recipe.OnGiveXP.* functions (Mechanics5, Cooking2, etc.)
 - Shows how vanilla awards XP
@@ -177,10 +177,10 @@ R:\Games\Steam\steamapps\common\ProjectZomboid\media\lua\shared\recipecode.lua
 Use Windows Explorer search or `grep` from terminal:
 ```bash
 # Search for recipe patterns
-grep -r "OnGiveXP" "R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\"
+grep -r "OnGiveXP" "<your Steam library>\steamapps\common\ProjectZomboid\media\scripts\"
 
 # Search Lua functions
-grep -r "function Recipe.OnGiveXP" "R:\Games\Steam\steamapps\common\ProjectZomboid\media\lua\"
+grep -r "function Recipe.OnGiveXP" "<your Steam library>\steamapps\common\ProjectZomboid\media\lua\"
 ```
 
 **Method 2: IDE/Text Editor**
@@ -200,7 +200,7 @@ grep -r "function Recipe.OnGiveXP" "R:\Games\Steam\steamapps\common\ProjectZombo
 ### Workshop Directory
 **Location:**
 ```
-R:\Games\Steam\steamapps\workshop\content\108600\
+<your Steam library>\steamapps\workshop\content\108600\
 ```
 
 **What is 108600?**
@@ -229,16 +229,16 @@ R:\Games\Steam\steamapps\workshop\content\108600\
 **Method 1: Search by Mod Name**
 ```bash
 # Find mod folder by searching mod.info files
-grep -r "name=Vehicle Repair" "R:\Games\Steam\steamapps\workshop\content\108600\"
+grep -r "name=Vehicle Repair" "<your Steam library>\steamapps\workshop\content\108600\"
 ```
 
 **Method 2: Search by File Pattern**
 ```bash
 # Find all mods with custom skills (perks.txt)
-find "R:\Games\Steam\steamapps\workshop\content\108600" -name "perks.txt"
+find "<your Steam library>\steamapps\workshop\content\108600" -name "perks.txt"
 
 # Find all recipe OnCreate callbacks
-grep -r "OnCreate:" "R:\Games\Steam\steamapps\workshop\content\108600\*/Contents/mods/*/media/scripts/"
+grep -r "OnCreate:" "<your Steam library>\steamapps\workshop\content\108600\*/Contents/mods/*/media/scripts/"
 ```
 
 **Method 3: Browse Installed Mods in Game**
@@ -250,7 +250,7 @@ grep -r "OnCreate:" "R:\Games\Steam\steamapps\workshop\content\108600\*/Contents
 **Method 4: Steam Workshop URL to Local Files**
 ```
 Workshop ID: 2599752664
-Local Path: R:\Games\Steam\steamapps\workshop\content\108600\2599752664\
+Local Path: <your Steam library>\steamapps\workshop\content\108600\2599752664\
 ```
 
 ---
@@ -332,10 +332,10 @@ grep -r "AddXP" "%UserProfile%\Zomboid\Workshop\OutcastAdvancedCrafts\Contents\m
 ### Compare with Vanilla
 ```bash
 # Find vanilla recipe examples for MetalWelding
-grep -r "SkillRequired:MetalWelding" "R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\"
+grep -r "SkillRequired:MetalWelding" "<your Steam library>\steamapps\common\ProjectZomboid\media\scripts\"
 
 # Find vanilla OnGiveXP functions
-grep -r "function Recipe.OnGiveXP" "R:\Games\Steam\steamapps\common\ProjectZomboid\media\lua\shared\"
+grep -r "function Recipe.OnGiveXP" "<your Steam library>\steamapps\common\ProjectZomboid\media\lua\shared\"
 ```
 
 ---
@@ -388,8 +388,8 @@ Current status:
 - All recipes tested and functional
 
 Vanilla files reference:
-- Game install: R:\Games\Steam\steamapps\common\ProjectZomboid\
-- Workshop mods: R:\Games\Steam\steamapps\workshop\content\108600\
+- Game install: <your Steam library>\steamapps\common\ProjectZomboid\
+- Workshop mods: <your Steam library>\steamapps\workshop\content\108600\
 
 Question: [Your specific question here]
 ```
@@ -410,18 +410,18 @@ Question: [Your specific question here]
 
 | Mod Name | Workshop ID | Local Path | Notes |
 |----------|-------------|------------|-------|
-| **Vehicle Repair Overhaul** | 2757712197 | `R:\Games\Steam\steamapps\workshop\content\108600\2757712197\` | Multi-skill recipe research |
-| **Gunsmith** | 3105394500 | `R:\Games\Steam\steamapps\workshop\content\108600\3105394500\` | Custom skill implementation pattern |
-| **Driving Skill** | 2721945297 | `R:\Games\Steam\steamapps\workshop\content\108600\2721945297\` | Custom skill implementation pattern |
-| **Scavenging** | 2903135820 | `R:\Games\Steam\steamapps\workshop\content\108600\2903135820\` | Custom skill implementation pattern |
+| **Vehicle Repair Overhaul** | 2757712197 | `<your Steam library>\steamapps\workshop\content\108600\2757712197\` | Multi-skill recipe research |
+| **Gunsmith** | 3105394500 | `<your Steam library>\steamapps\workshop\content\108600\3105394500\` | Custom skill implementation pattern |
+| **Driving Skill** | 2721945297 | `<your Steam library>\steamapps\workshop\content\108600\2721945297\` | Custom skill implementation pattern |
+| **Scavenging** | 2903135820 | `<your Steam library>\steamapps\workshop\content\108600\2903135820\` | Custom skill implementation pattern |
 
 **How to Access:**
 ```bash
 # View Gunsmith skill definition
-cat "R:\Games\Steam\steamapps\workshop\content\108600\3105394500\mods\weapongunsmith\media\perks.txt"
+cat "<your Steam library>\steamapps\workshop\content\108600\3105394500\mods\weapongunsmith\media\perks.txt"
 
 # Search for OnCreate functions in Driving Skill mod
-grep -r "OnCreate" "R:\Games\Steam\steamapps\workshop\content\108600\2721945297\"
+grep -r "OnCreate" "<your Steam library>\steamapps\workshop\content\108600\2721945297\"
 ```
 
 ---

@@ -81,7 +81,7 @@ Here's the good news: once you understand the core workflow (UI detection → me
 ## Core Files
 
 ```
-R:\Games\Steam\steamapps\common\ProjectZomboid\media\lua\client\
+media/lua/client/
 ├── TimedActions\
 │   ├── ISFixAction.lua           # Main repair action (calls FixingManager)
 │   ├── ISRepairClothing.lua      # Clothing-specific repairs
@@ -91,7 +91,7 @@ R:\Games\Steam\steamapps\common\ProjectZomboid\media\lua\client\
 └── Vehicles\TimedActions\
     └── ISRepairEngine.lua        # Engine repair action
 
-R:\Games\Steam\steamapps\common\ProjectZomboid\media\lua\server\
+media/lua/server/
 ├── Vehicles\
 │   └── VehicleCommands.lua       # Server-side repair logic
 └── recipecode.lua                # Item type definitions

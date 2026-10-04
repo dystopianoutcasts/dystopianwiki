@@ -55,11 +55,11 @@ last_updated: 2026-01-09
 ## HOW VANILLA FORAGING WORKS
 
 ### **Core Files:**
-- `R:\Games\Steam\steamapps\common\ProjectZomboid\media\lua\shared\Foraging\forageDefinitions.lua`
+- `media/lua/shared/Foraging/forageDefinitions.lua`
   - Contains all foraging item definitions
   - Uses global `forageDefs` table
 
-- `R:\Games\Steam\steamapps\common\ProjectZomboid\media\lua\shared\Foraging\forageSystem.lua`
+- `media/lua/shared/Foraging/forageSystem.lua`
   - Core foraging logic/system
 
 ---

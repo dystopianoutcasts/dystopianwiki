@@ -271,7 +271,7 @@ To fully understand the weapon model system, you'd want to research these Java c
 ### Where to Find Java Source
 
 PZ's Java classes can be decompiled from:
-- `R:\Games\Steam\steamapps\common\ProjectZomboid\zombie\` (class files)
+- `<your Steam library>\steamapps\common\ProjectZomboid\zombie\` (class files)
 - Use a Java decompiler (JD-GUI, Fernflower, CFR) on `zombie.jar` or class files
 
 ### Specific Methods to Research

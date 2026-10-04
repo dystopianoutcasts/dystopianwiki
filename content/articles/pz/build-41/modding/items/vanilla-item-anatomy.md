@@ -678,7 +678,7 @@ item Pliers {
 | HungerChange | ✗ | ✗ | ✓ | ✗ | ✗ |
 
 ## Source Files
-- **Vanilla Items:** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\items.txt`
-- **Vanilla New Items:** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\newitems.txt`
-- **Vanilla Weapons:** `R:\Games\Steam\steamapps\common\ProjectZomboid\media\scripts\items_weapons.txt`
+- **Vanilla Items:** `media/scripts/items.txt`
+- **Vanilla New Items:** `media/scripts/newitems.txt`
+- **Vanilla Weapons:** `media/scripts/items_weapons.txt`
 - **Research Date:** 2025-11-06
