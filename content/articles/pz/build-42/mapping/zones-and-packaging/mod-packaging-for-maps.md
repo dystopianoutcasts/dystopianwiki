@@ -12,7 +12,7 @@ tags:
   - mod-packaging
   - biomemap-placement
 excerpt: 'Mods live in %USERPROFILE%\Zomboid\mods (i.e. C:\Users\\Zomboid\mods).'
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Mod packaging for maps
 
@@ -77,7 +77,7 @@ Two folders are recognized, both in the cache folder (`%UserProfile%\Zomboid`):
 %UserProfile%/Zomboid/Workshop/
   MyModWorkshop/
     workshop.txt        generated when uploading
-    preview.png         256x256, enforced
+    preview.png         square PNG, 256x256 or 512x512, at most 1000 KB
     Contents/
       mods/
         MyMod1/
@@ -371,3 +371,7 @@ From Erika's checklist -- the packaging half. `[COMMUNITY]`
 - [ ] Biomemap tiles exported for every overlapping 256x256 tile that needs
       non-vanilla data
 - [ ] Lots regenerated **after** the last heatmap or zone edit
+
+---
+
+*Corrected 2026-10-04: the Workshop preview may be 256x256 or 512x512, square, up to 1000 KB; 256x256 is not the only size accepted.*
