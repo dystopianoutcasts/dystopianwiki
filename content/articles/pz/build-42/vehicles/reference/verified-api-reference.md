@@ -113,10 +113,13 @@ calls it, and we first got this wrong:
   engine resolves the name with `LuaManager.getFunctionObject`, which **caches**
   the function it found the first time the lookup succeeds. After that, Java
   keeps calling the cached function. Reassigning `Vehicles.Update.Engine` later
-  in the session is silently ignored. The cache is cleared only when Lua is
-  reset or a file is reloaded.
+  in the session is silently ignored. The cache is emptied whenever a Lua file
+  runs for the first time (and when Lua is reset), so during loading a
+  reassignment can still land; after loading, only a late `require` of a new
+  file or a reload empties it, which can make an ignored reassignment start
+  working at an unrelated moment.
 
-> **Proof:** Code. `zombie.Lua.LuaManager#getFunctionObject` (stores successful lookups in `luaFunctionMap`); `zombie.vehicles.VehicleParts` and `zombie.vehicles.BaseVehicle`, `callLuaVoid` and `callLuaBoolean`; `media/lua/server/Vehicles/Vehicles.lua`, `VehicleUtils.callLua` and `VehicleUtils.OnUseVehicle`. Build 42.21.0 (revision 4a0e9546ec).
+> **Proof:** Code. `zombie.Lua.LuaManager#getFunctionObject` (stores successful lookups in `luaFunctionMap`), `#RunLuaInternal` and `#init` (both call `luaFunctionMap.clear()`); `zombie.vehicles.VehicleParts` and `zombie.vehicles.BaseVehicle`, `callLuaVoid` and `callLuaBoolean`; `media/lua/server/Vehicles/Vehicles.lua`, `VehicleUtils.callLua` and `VehicleUtils.OnUseVehicle`. Build 42.21.0 (revision 4a0e9546ec).
 
 Consequences:
 
@@ -161,6 +164,16 @@ Families in `Vehicles.lua`, with the handlers vanilla defines:
 | `Vehicles.ContainerAccess.*` | TruckBed, TruckBedOpen, TruckBedOpenInside, Seat, GloveBox, GasTank |
 | `Vehicles.LowerCondition` | single global wear function |
 
+**`Vehicles.CheckEngine.*` changed its first argument in Build 42.21.** Java now
+calls it as `(vehicle, part)`, and that first argument is the car (a `BaseVehicle`, or the
+`VirtualVehicle` stand-in for a car in an unloaded area). On 42.20 it passed the
+`VehicleParts` object. Vanilla's `Vehicles.CheckEngine.GasTank` now relies on it:
+it calls `vehicle:hasEnoughGasToRun()`. See
+[Vehicle engine reference](/pz/build-42/vehicles/reference/vehicle-engine-reference)
+section 2 for what that means for starting.
+
+> **Proof:** Code. `zombie.vehicles.VehicleParts#isEngineWorking` (`callLuaBoolean(functionName, this.getOwner(), part)` on 42.21; `this` on 42.20); `media/lua/server/Vehicles/Vehicles.lua`, `Vehicles.CheckEngine.GasTank`. Build 42.21.0 (revision 4a0e9546ec).
+
 ### Suspension and Muffler are empty extension points
 
 Verbatim from vanilla:
@@ -176,7 +189,8 @@ end
 ```
 
 They do nothing but wear down. `Vehicles.Update.Brakes` is barely more -- it
-decays brake condition proportional to `getBrakeSpeedBetweenUpdate()`. These are
+decays brake condition proportional to `getBrakeSpeedBetweenUpdate()`, which we
+only ever read as 0 on a dedicated server (section 4). These are
 the "gap in the ecosystem" from `05-takeaways.md`, and they are one-line stubs
 waiting for a mod.
 
@@ -236,13 +250,25 @@ So the engine already models up to 8 gears -- matching PSC's 8-speed gearbox ite
 | Method | Signature | Note |
 |---|---|---|
 | `setBrakingForce` / `getBrakingForce` | `(F)V` / `()F` | |
-| `getBrakeSpeedBetweenUpdate` | `()F` | used by vanilla brake wear |
+| `getBrakeSpeedBetweenUpdate` | `()F` | used by vanilla brake wear; **read 0 on a dedicated server** (below) |
+| `isBraking` | `()Z` | **read false on a dedicated server** (below) |
 | `setCurrentSteering` / `getCurrentSteering` | `(F)V` / `()F` | |
 | `getMaxWheelSteering` | `()F` | |
 | `setTireInflation` | `(IF)V` | **write-only -- there is no `getTireInflation`** |
 | `setTireRemoved` | `(IZ)V` | |
 | `isAnyTireMissing` | `()Z` | |
 | `getMinWheelSkid` | `()F` | |
+
+**Two brake readings are dead on a dedicated server.** We logged them on a
+server while a player drove and braked: `isBraking()` was false and
+`getBrakeSpeedBetweenUpdate()` was 0 in every sample, while `getBrakingForce()`
+and `getCurrentSpeedKmHour()` carried real values. That fits the code: the only
+thing that sets either value is `BaseVehicle#setBraking`, and its only caller is
+the car's physics controller (`zombie.core.physics.CarController`). Do not build
+server-side logic on those two. More readings are in
+[Vanilla mechanics code: what it really checks](/pz/build-42/vehicles/reference/vanilla-mechanics-code-what-it-really-checks).
+
+> **Proof:** Server test. Eight logged samples of each accessor while a player drove and braked, read from the dedicated server's log; the single caller of `BaseVehicle#setBraking` (`CarController`) found in the 42.21 code. Build 42.20, engine revision a2947723ca.
 
 ### Surface and cruise
 | Method | Signature |
@@ -303,3 +329,5 @@ Note `getId()` returns a **short**, not an int.
 *Corrected 2026-10-04: vehicle getId() is recycled between cars in one session and is not a safe key; use getSqlId().*
 
 *Updated 2026-10-04 for Build 42.21: BaseVehicle method count is now 705 (587 public); the signatures listed are unchanged, and the other claims were re-checked with line numbers updated.*
+
+*Updated 2026-10-04: `isBraking` and `getBrakeSpeedBetweenUpdate` read dead on a dedicated server; `Vehicles.CheckEngine.*` receives the car as its first argument on 42.21; when the Java hook cache is emptied.*

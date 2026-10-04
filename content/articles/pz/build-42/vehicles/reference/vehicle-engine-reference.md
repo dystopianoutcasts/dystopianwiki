@@ -41,13 +41,17 @@ Vehicle scripts name these hooks as strings, so several mods can wrap the same
 hook and chain through each other. But the name is not looked up fresh on every
 call. `Vehicles.Update.*`, `Vehicles.CheckEngine.*` and container `test =`
 functions are called from Java, which resolves the name once and **caches the
-function** (`LuaManager.getFunctionObject`, `luaFunctionMap`). A reassignment
-after the first call is silently ignored. Only the hooks vanilla calls from Lua
-through `VehicleUtils.callLua`, such as `Vehicles.Use.*`, are looked up on every
-call. So chain once, early: from a file in `server/`, or at `OnGameStart` at the
-latest, and never reassign later.
+function** (`LuaManager.getFunctionObject`, `luaFunctionMap`). The cache is
+emptied every time a Lua file runs for the first time, so while the game is still
+loading files a reassignment can still be picked up. Once loading is over, only a
+file loading late (a `require` of a file not yet loaded, or a reload) empties it.
+So a reassignment after the first call is ignored, and it may suddenly start
+working later, at a moment that has nothing to do with your code. Only the hooks
+vanilla calls from Lua through `VehicleUtils.callLua`, such as `Vehicles.Use.*`,
+are looked up on every call. So chain once, early: from a file in `server/`, or
+at `OnGameStart` at the latest, and never reassign later.
 
-> **Proof:** Code. `zombie.Lua.LuaManager#getFunctionObject` (stores successful lookups in `luaFunctionMap`); `zombie.vehicles.VehicleParts`, `callLuaVoid` and `callLuaBoolean`; `media/lua/server/Vehicles/Vehicles.lua`, `VehicleUtils.callLua`. Build 42.21.0 (revision 4a0e9546ec).
+> **Proof:** Code. `zombie.Lua.LuaManager#getFunctionObject` (stores successful lookups in `luaFunctionMap`) and `#RunLuaInternal` (`luaFunctionMap.clear()` before each file that has not run yet); `zombie.vehicles.VehicleParts`, `callLuaVoid` and `callLuaBoolean`; `media/lua/server/Vehicles/Vehicles.lua`, `VehicleUtils.callLua`. Build 42.21.0 (revision 4a0e9546ec).
 
 ```lua
 local previous = Vehicles.Update.Engine
@@ -140,16 +144,44 @@ never calls it** -- it decrements condition inline on its own roll.
 return part:getCondition() > 0
 ```
 
-So writing 0 to the Engine part stops the car starting. Nothing else required.
+So writing 0 to the Engine part stops the car starting. Nothing else required:
+Java checks the same thing again when the key turns (`BaseVehicle#tryStartEngine`
+needs the `Engine` part above 0 condition), and vanilla's radial menu only offers
+Start while every part's `checkEngine` hook passes.
+
+Build 42.21 changed two things here.
+
+- **The hook's first argument.** `VehicleParts#isEngineWorking` now calls each
+  `checkEngine` hook as `(vehicle, part)`, and that first argument is the car: a
+  `BaseVehicle`, or the `VirtualVehicle` stand-in the game uses for a car in an
+  area nobody has loaded (see
+  [Vehicle Lua hook traps](/pz/build-42/vehicles/reference/vehicle-lua-hook-traps)).
+  On 42.20 the first argument was the `VehicleParts` object itself. Vanilla's own
+  `Vehicles.CheckEngine.GasTank` now calls `vehicle:hasEnoughGasToRun()` on it, so
+  a 42.20 hook that treated its first argument as the parts list needs a look.
+- **Fuel.** "No fuel" is now `hasEnoughGasToRun()`: the tank's contents rounded to
+  three decimals, compared with zero. A start with an empty tank fails with the
+  reason `EngineNotWorking` (it was `OutOfFuel` on 42.20), so the out-of-gas sound
+  no longer plays on a failed start; you hear the plain ignition failure. A
+  running engine that runs dry still stalls with the out-of-gas sound.
+
+> **Proof:** Code. `zombie.vehicles.VehicleParts#isEngineWorking` (`callLuaBoolean(functionName, this.getOwner(), part)` on 42.21, `(functionName, this, part)` on 42.20); `zombie.vehicles.VehiclePartOwner#hasEnoughGasToRun` (`roundToPrecision(getGasRemaining(), 3) > 0.0`); `zombie.vehicles.VehicleEngine#updateStarting` (`doStartingFailed(EngineNotWorking)` when there is no gas; 42.20 passed `OutOfFuel`), `#shutOff` (stalls when there is no gas); `zombie.vehicles.BaseVehicle#tryStartEngine` and the `StartingFailed` and `Stalling` sound cases; `media/lua/server/Vehicles/Vehicles.lua`, `Vehicles.CheckEngine.GasTank`; `media/lua/client/Vehicles/ISUI/ISVehicleMenu.lua` (Start offered only when `vehicle:isEngineWorking()`). Build 42.21.0 (revision 4a0e9546ec).
 
 ### Crash damage lands on the hood first, the Engine part only after
 
 `BaseVehicle.crash(float delta, boolean front)` (`BaseVehicle.java:4654`) is Java
-with **no Lua hook**. It calls `addDamageFront`, and
-`addDamageFrontHitAChr` (`:4711`) damages the `EngineDoor` first, then the
-`Engine` part -- but only once the hood is destroyed, and only on a 1-in-4 roll.
+with **no Lua hook**. A front crash calls `addDamageFront`, which damages the
+`EngineDoor` (the hood) first, then the `Engine` part whenever the hood is missing
+or below 25 condition. It also damages the windshield and, on 1-in-4 rolls each,
+the front doors and front windows.
 
-> **Proof:** Code. `zombie.vehicles.BaseVehicle#addDamageFront` (damages `EngineDoor`; `Engine` only when the hood is missing or under 25 condition). Build 42.21.0 (revision 4a0e9546ec).
+Running down a zombie, or anyone else on foot, is a different function with its own rule:
+`addDamageFrontHitAChr` (`:4711`) also damages the hood first, but touches the
+`Engine` part only once the hood is gone or at 0 condition, and then only on a
+1-in-4 roll. See
+[Vehicle engine numbers mods must know](/pz/build-42/vehicles/reference/vehicle-engine-numbers-mods-must-know).
+
+> **Proof:** Code. `zombie.vehicles.BaseVehicle#crash` (calls `addDamageFront` for a front crash), `#addDamageFront` (damages `EngineDoor`; `Engine` when the hood is missing or under 25 condition; doors and windows on `Rand.Next(4) == 0`), `#addDamageFrontHitAChr` (reached from `#damageFromHitChr` for character hits; `Engine` only when the hood is at 0 or missing and `Rand.NextBool(4)`). Build 42.21.0 (revision 4a0e9546ec).
 
 Sandbox `carDamageOnImpact` scales the delta (modifier 0.9 to 1.9).
 
@@ -258,6 +290,22 @@ covers rivals you knew about when you shipped. Resolve a real part at runtime an
 confirm your own addition is present; if not, stand down with a named message
 rather than nil-indexing for the rest of the session.
 
+### Using a template is a different question: `template =` replaces, `template! =` merges
+
+Overriding a template's definition is the winner-take-all case above. Pulling a
+template into a vehicle script is a separate choice, and the one character
+matters. `template = X` copies X's parts in and replaces any part with the same id
+whole. `template! = X` reads X's body as if it were written inside your vehicle:
+the part is found or created, its single values are overwritten one by one, and
+its `table` and `container` blocks merge into what is already there. Three blocks
+inside a part never merge, even under `template!`: `lua`, `door` and `window` are
+built fresh from the block, so the last one read replaces the whole block. `anim`
+and `model` blocks are added to the part's list, and `physics` shapes are appended
+(up to ten). The full story, and the bug the plain form causes, is in
+[Vehicle script traps](/pz/build-42/vehicles/reference/vehicle-script-traps).
+
+> **Proof:** Code. `zombie.scripting.objects.VehicleScript#Load` (`template` calls `LoadTemplate`; `template!` re-runs `Load` on the template's body; `physics` adds a shape while there are fewer than 10), `#LoadPart` (gets or creates the part; `table` and `container` are loaded on top of the existing value; `lua`, `door` and `window` are assigned new objects from `LoadLuaFunctions`, `LoadDoor`, `LoadWindow`). Build 42.21.0 (revision 4a0e9546ec).
+
 ## 7 · Mechanics XP and the anti-grind flag
 
 Installing or uninstalling records a per-item-per-vehicle key
@@ -270,9 +318,13 @@ chr:addMechanicsItem(item:getID() .. vehicle:getMechanicalID() .. "1", part, tim
 A successful install records the key ending `"1"`; a successful uninstall records
 the key ending `"0"`. `addMechanicsItem` pays XP only when the key is new, so
 repeating the same job on the same part of the same car awards **no XP** while
-the key exists. It **expires after one in-game day**: the timestamp is the game
-calendar's clock, and `IsoPlayer.updateMechanicsItems` removes entries older than
-`86400000L` milliseconds of game time.
+the key exists. It **expires one in-game day after its last use**: the timestamp
+is the game calendar's clock, and `IsoPlayer.updateMechanicsItems` removes entries
+older than `86400000L` milliseconds of game time. But `addMechanicsItem` writes a
+fresh timestamp on **every** call, paid or not, so each repeat of the same job
+pushes the expiry another day out. Install and uninstall the same part over and
+over and it stays at zero XP for as long as you keep going; it only pays again
+after a full in-game day without touching that part on that car.
 
 On success, XP comes from the Mechanics level in the part's **uninstall** table
 `skills`, doubled: level 6 and up pays 6 to 13, level 4 and up 6 to 9, level 2
@@ -281,7 +333,7 @@ skill listed pays 1. A failed attempt pays 1 XP through `addXp`, every time.
 Repairing pays separately: `FixingManager` grants 3 to 5 XP per listed skill on a
 successful fix.
 
-> **Proof:** Code. `zombie.characters.IsoPlayer#addMechanicsItem` and `#updateMechanicsItems`; `media/lua/shared/Vehicles/TimedActions/ISInstallVehiclePart.lua` and `ISUninstallVehiclePart.lua`, `complete()`; `zombie.inventory.FixingManager#addXp`. Build 42.21.0 (revision 4a0e9546ec).
+> **Proof:** Code. `zombie.characters.IsoPlayer#addMechanicsItem` (XP only when the key is absent; `mechanicsItem.put(..., milli)` after the check, on every call) and `#updateMechanicsItems`; `media/lua/shared/Vehicles/TimedActions/ISInstallVehiclePart.lua` and `ISUninstallVehiclePart.lua`, `complete()`; `zombie.inventory.FixingManager#addXp`. Build 42.21.0 (revision 4a0e9546ec).
 
 **Any mod adding installable parts must respect this flag**, or it multiplies the
 grind surface. Nineteen engine parts is nineteen times vanilla's.
@@ -320,3 +372,5 @@ direct getter first -- TIS added `getThrottle()` for exactly this reason.
 *Corrected 2026-10-04: the section 2 crash heading now says the hood takes the damage first, as its body always did.*
 
 *Re-checked 2026-10-04 for Build 42.21: line numbers updated; the code claims we re-checked still hold.*
+
+*Updated 2026-10-04: the XP key's day restarts on every use; the crash paragraph no longer mixes in the rule for hitting a zombie; the hook cache is emptied whenever a Lua file loads for the first time; `template!` merges a part except its `lua`, `door` and `window` blocks; the 42.21 `checkEngine` first argument and the empty-tank start failure.*

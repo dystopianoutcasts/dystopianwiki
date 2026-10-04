@@ -112,8 +112,10 @@ ISTimedActionQueue.add(ISOpenMechanicsUIAction:new(character, vehicle, part))
 
 So **`ISOpenMechanicsUIAction:perform()` is a single interception point**,
 including for routes vanilla might add later. `ISVehicleMenu.lua` alone builds
-that action in four places, so patching entry points individually is four chances
-to miss one.
+that action in three places (and `Vehicles.lua` in three more), so patching entry
+points individually is six chances to miss one.
+
+> **Proof:** Code. `media/lua/client/Vehicles/ISUI/ISVehicleMenu.lua`, three `ISOpenMechanicsUIAction:new` calls (lines 970, 1004, 1234; three in 42.20 as well); `media/lua/server/Vehicles/Vehicles.lua`, three more (lines 836, 846, 855). Build 42.21.0 (revision 4a0e9546ec).
 
 **Chain it, never assign over it.** Project Summer Car assigns straight over
 `ISVehicleMechanics:doPartContextMenu`, and two mods doing that silently fight.
@@ -187,6 +189,35 @@ Assign it onto the listbox and set `listbox.parent`, per
 `ISVehicleMechanics.lua:161`. Inside it, `self` is the **listbox**, not your
 panel.
 
+### Two calls that use a different coordinate system
+
+- **`drawLine2` draws in screen coordinates**, while `drawLine`, `drawRect` and
+  `drawText` draw relative to your element. Pass element-local points to
+  `drawLine2` and the line lands off by exactly your window's position. Use
+  `drawLine`, or add `getAbsoluteX()` and `getAbsoluteY()` yourself.
+- **`ISScrollingListBox:rowAt(x, y)` takes content coordinates**: positions in
+  the whole list as if it were not scrolled. A parent panel that works out a row
+  from its own mouse position must take the list's `getYScroll()` off first, or
+  it names the wrong row once the list scrolls.
+
+Both, with the code and the fix, are in
+[UI coordinate traps](/pz/build-42/modding/ui/ui-coordinate-traps).
+
+> **Proof:** Code. `media/lua/client/ISUI/ISUIElement.lua`, `ISUIElement:drawLine2` (hands its points straight to the eight-point `DrawTexture`) and `ISUIElement:drawLine`; `media/lua/client/ISUI/ISScrollingListBox.lua`, `ISScrollingListBox:rowAt` (walks the rows from y = 0). Build 42.21.0 (revision 4a0e9546ec).
+
+### Keys: a focused text box eats them, and Escape needs `isKeyConsumed`
+
+A text box that still has focus swallows every key release, your window's
+`onKeyRelease` and Escape included. And a window that closes on Escape must also
+answer `isKeyConsumed(key)`: without it the key counts as not consumed and is
+passed on, and in our replacement window the same Escape also opened the pause
+menu. Vanilla's mechanics window has one. Details in
+[Replacing or extending a vanilla window](/pz/build-42/modding/ui/replacing-a-vanilla-window).
+
+> **Proof:** Code. `zombie.input.GameKeyboard#update` (while a text box is doing text entry, `UIManager.onKeyRelease` is skipped); `zombie.ui.UIElement#onConsumeKeyRelease` (returns `isKeyConsumed(key)`, false when the Lua table has none); `media/lua/client/Vehicles/ISUI/ISVehicleMechanics.lua`, `ISVehicleMechanics:isKeyConsumed`. Build 42.21.0 (revision 4a0e9546ec).
+
+> **Proof:** Game test. Escape opened the pause menu behind our replacement mechanics window until it gained `isKeyConsumed`. Build 42.20, engine revision a2947723ca.
+
 ### `render()` and `prerender()` run every frame
 
 ~60 times a second. A container scan there runs sixty times a second forever.
@@ -219,3 +250,5 @@ always well after `OnGameStart`.
 *Corrected 2026-10-04: mods do not load alphabetically. They load in mod-list order, each mod's `require=` mods first; only the files inside one mod are sorted by name.*
 
 *Re-checked 2026-10-04 for Build 42.21: the mod-order code now takes a `List` instead of an `ArrayList` and orders mods exactly as before; line numbers updated; the code claims we re-checked still hold.*
+
+*Updated 2026-10-04: `ISVehicleMenu.lua` builds the open-mechanics action in three places, not four (the same in 42.20); added the `drawLine2` and `rowAt` coordinate warnings and the text-box and `isKeyConsumed` key traps.*
