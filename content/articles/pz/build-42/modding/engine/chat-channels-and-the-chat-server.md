@@ -50,7 +50,7 @@ The nine channel types are `general`, `whisper`, `say`, `shout`, `faction`, `saf
 ## A message, from keyboard to screen
 
 1. You press Enter in the chat window (whose text box is already capped at the character limit). `ISChat` checks the slow-mode timer, strips line breaks unless your role allows them, works out the channel from the prefix (`/s`, `/y`, `/all` and so on), and calls a global Lua function: `processSayMessage`, `processShoutMessage`, `processGeneralMessage`, `proceedFactionMessage`, `processSafehouseMessage`, `processAdminChatMessage` or `proceedPM` for a whisper. Any other line starting with `/` goes to the server as a command.
-2. The global calls `ChatManager#sendMessageToChat`. It **shows your message to you straight away**, then sends it to the server. If a two-way radio you carry or stand near is on, unmuted and able to transmit, a say or shout is also sent out on its channel (radio transmission itself belongs to the radio system).
+2. The global calls `ChatManager#sendMessageToChat`. It **shows your message to you straight away**, then sends it to the server. If a two-way radio you carry or stand near is on, unmuted and able to transmit, a say or shout is also sent out on its channel; how it travels from there is in [radio and television](/pz/build-42/modding/engine/radio-and-television).
 3. On the server, `ChatServer#processMessageFromPlayerPacket` drops the message if that channel is switched off, runs the bad-word filter (below), replaces bad words, and sends it to the chat's members.
 4. Say and shout go only to members within range: **30 tiles for say, 60 for shout**, measured flat on the map, so floors do not block them. Every other channel goes to all its members. The sender is always skipped, because they already saw it in step 2.
 5. Each receiving client shows it in its tab and fires the Lua event `OnAddMessage`, and for say and shout puts it in a speech bubble over the speaker.
@@ -114,3 +114,4 @@ We have read this, not measured it. The test: a dedicated server, a zombie stand
 
 - [The Events system](/pz/build-42/modding/lua-api/the-events-system) for hooking `OnAddMessage`.
 - [The chat classes on the network reference page](/pz/build-42/modding/reference/lua-classes-network).
+- [Radio and television](/pz/build-42/modding/engine/radio-and-television): where a say or shout goes once a two-way radio picks it up.
