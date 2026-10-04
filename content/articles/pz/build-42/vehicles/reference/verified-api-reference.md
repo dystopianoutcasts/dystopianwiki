@@ -102,13 +102,29 @@ end
 ```
 
 Vehicle scripts store the handler as a **string** (`part:getLuaFunction("update")`
-returns `"Vehicles.Update.Brakes"`), and `callLua` **re-walks `_G` on every single
-call**. Binding is by name, at call time, late.
+returns `"Vehicles.Update.Brakes"`). What happens to that string depends on who
+calls it, and we first got this wrong:
+
+- **Called from Lua** through `VehicleUtils.callLua` (vanilla does this for the
+  part `use` handler and for the install and uninstall `complete` functions), the
+  name is looked up in `_G` on every call. Late binding.
+- **Called from Java** -- `update`, `checkEngine`, `create`, `init`,
+  `checkOperate`, a container's `test`, the install and uninstall `test` -- the
+  engine resolves the name with `LuaManager.getFunctionObject`, which **caches**
+  the function it found the first time the lookup succeeds. After that, Java
+  keeps calling the cached function. Reassigning `Vehicles.Update.Engine` later
+  in the session is silently ignored. The cache is cleared only when Lua is
+  reset or a file is reloaded.
+
+> **Proof:** Code. `zombie.Lua.LuaManager#getFunctionObject` (stores successful lookups in `luaFunctionMap`); `zombie.vehicles.VehicleParts` and `zombie.vehicles.BaseVehicle`, `callLuaVoid` and `callLuaBoolean`; `media/lua/server/Vehicles/Vehicles.lua`, `VehicleUtils.callLua` and `VehicleUtils.OnUseVehicle`. Build 42.20 (revision a2947723ca).
 
 Consequences:
 
-- Assigning `Vehicles.Update.Engine = myFunc` anywhere in your mod takes effect
-  immediately, for every vehicle, with **no script edit and no template override**.
+- Assign your wrapper **once, early**, and never reassign it: from a file in
+  `server/` (mod files there load after vanilla's `Vehicles.lua`), or at
+  `OnGameStart` at the latest. A wrapper installed lazily, on first use or from a
+  menu toggle, will look installed and may never run. Done that way, it applies to every vehicle with **no
+  script edit and no template override**.
 - It also means **you can chain**. Capture the previous value and call through:
   ```lua
   local prev = Vehicles.Update.Engine
@@ -253,8 +269,9 @@ Note `getId()` returns a **short**, not an int.
    `(100 - vehicle:getEngineQuality()) / 100` is integer-derived -- fine, but
    don't assume sub-1 resolution.
 4. **`getId()` is a short.** Fine as a table key; don't assume int range.
-5. **Late binding cuts both ways.** Anything you assign to `Vehicles.Update.X` is
-   global and unconditional. Chain, don't clobber.
+5. **Hooks are global, and Java caches them.** Anything you assign to
+   `Vehicles.Update.X` is global and unconditional, and once Java has called it,
+   a later reassignment is ignored (§2). Chain once, early; don't clobber.
 6. **`Vehicles.lua` lives in `server/`.** That does not keep it off an MP
    client: `server/` loads on every machine, clients included, but at world load,
    after `shared/` and `client/`. So the globals do exist on a client once a world
@@ -269,3 +286,5 @@ Note `getId()` returns a **short**, not an int.
 ---
 
 *Corrected 2026-10-04: media/lua/server/ loads on a multiplayer client too, at world load; the folder sets when code loads, not which side runs it.*
+
+*Corrected 2026-10-04: hooks called from Java (update, checkEngine, test) are cached on first use, so a later reassignment is ignored; chain once, early.*

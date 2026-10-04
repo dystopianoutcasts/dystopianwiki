@@ -36,11 +36,19 @@ of other mods is `01`-`06`.
 
 ## 1 · The vehicle update hooks
 
-### They are late-bound, therefore chainable
+### They are named, therefore chainable, but Java caches them
 
-`Vehicles.Update.*`, `Vehicles.Use.*`, `Vehicles.CheckEngine.*` and container
-`test =` functions are all resolved **by name at call time**, not captured at
-load. So several mods can wrap the same hook and chain through each other.
+Vehicle scripts name these hooks as strings, so several mods can wrap the same
+hook and chain through each other. But the name is not looked up fresh on every
+call. `Vehicles.Update.*`, `Vehicles.CheckEngine.*` and container `test =`
+functions are called from Java, which resolves the name once and **caches the
+function** (`LuaManager.getFunctionObject`, `luaFunctionMap`). A reassignment
+after the first call is silently ignored. Only the hooks vanilla calls from Lua
+through `VehicleUtils.callLua`, such as `Vehicles.Use.*`, are looked up on every
+call. So chain once, early: from a file in `server/`, or at `OnGameStart` at the
+latest, and never reassign later.
+
+> **Proof:** Code. `zombie.Lua.LuaManager#getFunctionObject` (stores successful lookups in `luaFunctionMap`); `zombie.vehicles.VehicleParts`, `callLuaVoid` and `callLuaBoolean`; `media/lua/server/Vehicles/Vehicles.lua`, `VehicleUtils.callLua`. Build 42.20 (revision a2947723ca).
 
 ```lua
 local previous = Vehicles.Update.Engine
@@ -305,3 +313,5 @@ direct getter first -- TIS added `getThrottle()` for exactly this reason.
 ---
 
 *Corrected 2026-10-04: the XP key expires after one in-game day, not 24 real-time hours; success XP is 2 to 13 (the uninstall skill level doubled), failure pays 1.*
+
+*Corrected 2026-10-04: hooks called from Java (update, checkEngine, test) are cached on first use, so a later reassignment is ignored; chain once, early.*
