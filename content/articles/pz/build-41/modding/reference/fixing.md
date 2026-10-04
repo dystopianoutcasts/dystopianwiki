@@ -446,7 +446,7 @@ module MyMod                                /* Your mod's module */
 
 **Problem:** Mixing up semicolons (separators) and commas (terminators).
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 fixing Fix Custom Weapon
 {
@@ -455,7 +455,7 @@ fixing Fix Custom Weapon
 }
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 fixing Fix Custom Weapon
 {
@@ -470,7 +470,7 @@ fixing Fix Custom Weapon
 
 **Problem:** Custom mod can't reference vanilla repair materials.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 module MyMod
 {
@@ -484,7 +484,7 @@ module MyMod
 }
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 module MyMod
 {
@@ -504,7 +504,7 @@ module MyMod
 
 **Problem:** Repair requires too many or too few materials.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 fixing Fix Wooden Spoon
 {
@@ -513,7 +513,7 @@ fixing Fix Wooden Spoon
 }
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 fixing Fix Wooden Spoon
 {
@@ -533,7 +533,7 @@ fixing Fix Wooden Spoon
 
 **Problem:** Only one repair option (too restrictive).
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 fixing Fix Custom Tool
 {
@@ -542,7 +542,7 @@ fixing Fix Custom Tool
 }
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 fixing Fix Custom Tool
 {
@@ -559,7 +559,7 @@ fixing Fix Custom Tool
 
 **Problem:** Firearms repairable without Aiming skill.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 fixing Fix Custom Pistol
 {
@@ -568,7 +568,7 @@ fixing Fix Custom Pistol
 }
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 fixing Fix Custom Pistol
 {

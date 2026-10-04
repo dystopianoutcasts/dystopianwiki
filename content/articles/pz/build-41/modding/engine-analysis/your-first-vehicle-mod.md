@@ -160,12 +160,12 @@ Our mod shows a message on YOUR screen when YOU enter a vehicle. That's client-s
 ### 2. Error: "Attempt to Index Nil Value"
 
 ```lua
--- ❌ WRONG: Forgot to check if vehicle exists
+-- WRONG: Forgot to check if vehicle exists
 local function onEnterVehicle(player)
     local name = player:getVehicle():getScriptName()    -- Crashes if getVehicle() returns nil!
 end
 
--- ✅ RIGHT: Always check first
+-- RIGHT: Always check first
 local function onEnterVehicle(player)
     local vehicle = player:getVehicle()                 -- Store it in a variable
     if vehicle then                                     -- Check if it exists
@@ -181,7 +181,7 @@ end
 ### 3. I See the Message Twice (Multiplayer/Split-Screen)
 
 ```lua
--- ❌ WRONG: Runs for all players
+-- WRONG: Runs for all players
 local function onEnterVehicle(player)
     local vehicle = player:getVehicle()                 -- Any player entering triggers this!
     if vehicle then
@@ -189,7 +189,7 @@ local function onEnterVehicle(player)
     end
 end
 
--- ✅ RIGHT: Only run for YOUR player
+-- RIGHT: Only run for YOUR player
 local function onEnterVehicle(player)
     if player ~= getPlayer() then return end            -- Exit early if it's not the local player
 
@@ -207,13 +207,13 @@ end
 ### 4. Wrong Folder Location
 
 ```
-❌ WRONG:
+WRONG:
 YourModName/
 └── media/
     └── lua/
         └── VehicleGreeter.lua              ← Not in any subfolder - won't load!
 
-✅ RIGHT:
+RIGHT:
 YourModName/
 └── media/
     └── lua/
@@ -242,7 +242,7 @@ local function checkVehicleSpeed(player)
         local name = vehicle:getScriptName()            -- Get its name
 
         if maxSpeed < 60 then                           -- If it's slow
-            print("⚠️ WARNING: " .. name .. " is slow! Max speed: " .. maxSpeed .. " km/h")
+            print("WARNING: " .. name .. " is slow! Max speed: " .. maxSpeed .. " km/h")
         else                                            -- If it's fast enough
             print("✓ " .. name .. " - Max speed: " .. maxSpeed .. " km/h")
         end
@@ -262,7 +262,7 @@ Events.OnEnterVehicle.Add(checkVehicleSpeed)            -- Hook it up to the eve
 **What you'll see:**
 
 - Get in a police car (fast): `✓ Base.CarLuxury - Max speed: 120 km/h`
-- Get in a van (slow): `⚠️ WARNING: Base.Van - Max speed: 50 km/h`
+- Get in a van (slow): `WARNING: Base.Van - Max speed: 50 km/h`
 
 **Bonus challenge:** Modify the mod to also warn if the vehicle has less than 25% fuel. Hint: Use `vehicle:getFuelAmount()` and `vehicle:getFuelCapacity()`.
 

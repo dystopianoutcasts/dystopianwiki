@@ -145,11 +145,11 @@ module MyMod {
 - **Unique** - No two items in the same module can have the same ID
 
 **Examples:**
-- ✅ `item MyKnife`
-- ✅ `item SuperAxe`
-- ✅ `item Energy_Bar`
-- ❌ `item My Knife` (space)
-- ❌ `item Super-Axe` (hyphen not allowed)
+- [YES] `item MyKnife`
+- [YES] `item SuperAxe`
+- [YES] `item Energy_Bar`
+- [NO] `item My Knife` (space)
+- [NO] `item Super-Axe` (hyphen not allowed)
 
 ---
 
@@ -199,8 +199,8 @@ module MyMod {
 
 | Property | Can Have Spaces? | Example |
 |----------|------------------|---------|
-| Item ID | ❌ No | `item MyItem` |
-| DisplayName | ✅ Yes | `DisplayName = My Item` |
+| Item ID | No | `item MyItem` |
+| DisplayName | Yes | `DisplayName = My Item` |
 
 **Examples:**
 - `DisplayName = Baseball Bat` ← Shows "Baseball Bat" in inventory
@@ -296,7 +296,7 @@ module Base {         ← Opens module
 
 Items use `=` for assignments:
 
-❌ **Wrong (uses colon):**
+**Wrong (uses colon):**
 ```
 item MyItem {
     Type: Normal,      // WRONG
@@ -304,7 +304,7 @@ item MyItem {
 }
 ```
 
-✅ **Correct (uses equals):**
+**Correct (uses equals):**
 ```
 item MyItem {
     Type = Normal,     // CORRECT
@@ -325,7 +325,7 @@ item MyItem {
 
 Every property line ends with a comma:
 
-❌ **Wrong (missing comma):**
+**Wrong (missing comma):**
 ```
 item MyItem {
     Type = Normal      // MISSING comma
@@ -333,7 +333,7 @@ item MyItem {
 }
 ```
 
-✅ **Correct (has comma):**
+**Correct (has comma):**
 ```
 item MyItem {
     Type = Normal,     // Has comma
@@ -349,7 +349,7 @@ item MyItem {
 
 Most property values don't need quotes:
 
-❌ **Wrong (unnecessary quotes):**
+**Wrong (unnecessary quotes):**
 ```
 item MyItem {
     DisplayName = "My Item",    // Don't need quotes
@@ -357,7 +357,7 @@ item MyItem {
 }
 ```
 
-✅ **Correct (no quotes):**
+**Correct (no quotes):**
 ```
 item MyItem {
     DisplayName = My Item,      // No quotes
@@ -373,7 +373,7 @@ item MyItem {
 
 Everything is case-sensitive:
 
-❌ **Wrong (wrong capitalization):**
+**Wrong (wrong capitalization):**
 ```
 item myitem {              // Wrong: should be MyItem
     type = normal,         // Wrong: should be Type = Normal
@@ -381,7 +381,7 @@ item myitem {              // Wrong: should be MyItem
 }
 ```
 
-✅ **Correct (proper capitalization):**
+**Correct (proper capitalization):**
 ```
 item MyItem {              // Correct
     Type = Normal,         // Correct
@@ -397,7 +397,7 @@ item MyItem {              // Correct
 
 Indentation makes code readable:
 
-❌ **Hard to read (no indentation):**
+**Hard to read (no indentation):**
 ```
 module Base {
 item MyItem {
@@ -407,7 +407,7 @@ Weight = 1.0,
 }
 ```
 
-✅ **Easy to read (proper indentation):**
+**Easy to read (proper indentation):**
 ```
 module Base {
     item MyItem {
@@ -643,7 +643,7 @@ item Schoolbag
 
 ### Mistake 1: Using Colon Instead of Equals
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 item MyItem
 {
@@ -654,7 +654,7 @@ item MyItem
 
 **What happens:** Parser error. Game can't read the file.
 
-✅ **Works:**
+**Works:**
 ```
 item MyItem
 {
@@ -669,7 +669,7 @@ item MyItem
 
 ### Mistake 2: Spaces in Item ID
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 module Base
 {
@@ -682,7 +682,7 @@ module Base
 
 **What happens:** Parser error or item doesn't spawn.
 
-✅ **Works:**
+**Works:**
 ```
 module Base
 {
@@ -700,7 +700,7 @@ module Base
 
 ### Mistake 3: Missing Comma
 
-❌ **Syntax error:**
+**Syntax error:**
 ```
 item MyItem
 {
@@ -712,7 +712,7 @@ item MyItem
 
 **What happens:** Parser error. Game stops reading after Weight.
 
-✅ **Works:**
+**Works:**
 ```
 item MyItem
 {
@@ -728,7 +728,7 @@ item MyItem
 
 ### Mistake 4: Wrong Capitalization
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 item myitem            // Wrong: should be MyItem
 {
@@ -738,7 +738,7 @@ item myitem            // Wrong: should be MyItem
 
 **What happens:** Item might not load or properties won't work.
 
-✅ **Works:**
+**Works:**
 ```
 item MyItem            // Correct capitalization
 {
@@ -752,7 +752,7 @@ item MyItem            // Correct capitalization
 
 ### Mistake 5: Including .png in Icon Property
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 item MyItem
 {
@@ -762,7 +762,7 @@ item MyItem
 
 **What happens:** Game looks for `MyItem.png.png` (double extension) and can't find it.
 
-✅ **Works:**
+**Works:**
 ```
 item MyItem
 {

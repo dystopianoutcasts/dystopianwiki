@@ -106,7 +106,7 @@ Choose values that match the vanilla pattern:
 
 ## Common Mistakes
 
-### ❌ Wrong: Walkie Talkie with Ham Radio Weight
+### Wrong: Walkie Talkie with Ham Radio Weight
 
 ```
 item MyCustomWalkieTalkie
@@ -120,7 +120,7 @@ item MyCustomWalkieTalkie
 
 **Why it's wrong:** Looking at vanilla walkie talkies (Toys-R-Mine, ValuTech, Premium Tech, etc.), they all weigh 1.0-1.5. Your custom walkie talkie at 20.0 weight is as heavy as a ham radio - you couldn't carry it in your pocket!
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomWalkieTalkie
@@ -134,7 +134,7 @@ item MyCustomWalkieTalkie
 }
 ```
 
-### ❌ Wrong: Ham Radio with Walkie Talkie Weight
+### Wrong: Ham Radio with Walkie Talkie Weight
 
 ```
 item MyCustomHamRadio
@@ -148,7 +148,7 @@ item MyCustomHamRadio
 
 **Why it's wrong:** Looking at vanilla ham radios (Makeshift, Premium Technologies, US ARMY COMM.), ALL ham radios weigh 20.0. Ham radios are large, heavy equipment for long-distance communication. Your custom ham radio at 1.5 weight would be as light as a standard radio.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomHamRadio
@@ -163,7 +163,7 @@ item MyCustomHamRadio
 }
 ```
 
-### ❌ Wrong: Radio Components with Wrong Weight
+### Wrong: Radio Components with Wrong Weight
 
 ```
 item MyCustomRadioReceiver
@@ -176,7 +176,7 @@ item MyCustomRadioReceiver
 
 **Why it's wrong:** Looking at vanilla radio components (Electric Wire, Radio Receiver, Radio Transmitter, Scanner Module), ALL components weigh 0.1. These are small electronic parts, not full devices. Your custom receiver at 1.0 weight is 10x heavier than vanilla components.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomRadioReceiver

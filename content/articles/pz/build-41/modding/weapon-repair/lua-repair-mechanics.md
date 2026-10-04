@@ -454,7 +454,7 @@ player:getInventory():getNumberOfItem(type, checkChildren, includeContainers)
 
 ## Common Mistakes
 
-### ❌ Wrong: Calling FixingManager.fixItem Without Validation
+### Wrong: Calling FixingManager.fixItem Without Validation
 
 ```lua
 -- Custom repair action
@@ -468,7 +468,7 @@ end
 
 **Why it's wrong:** If the item no longer exists (dropped, moved to container, destroyed by zombie), or the fixer materials were consumed by another action, `FixingManager.fixItem()` will error or fail silently. Always validate before calling Java APIs.
 
-✅ **Right:**
+**Right:**
 
 ```lua
 function MyCustomRepair:perform()
@@ -498,7 +498,7 @@ function MyCustomRepair:isValid()
 end
 ```
 
-### ❌ Wrong: Setting Condition Above Max
+### Wrong: Setting Condition Above Max
 
 ```lua
 -- Custom repair logic
@@ -513,7 +513,7 @@ end
 
 **Why it's wrong:** While `setCondition()` internally clamps to max, you're not handling the logic correctly. If an item has 80 condition and you add 50, you're attempting to set it to 130. The game clamps it to 100, but your repair logic may grant XP or consume materials based on the full 50 points, which is incorrect.
 
-✅ **Right:**
+**Right:**
 
 ```lua
 function repairMyItem(item, player)
@@ -534,7 +534,7 @@ function repairMyItem(item, player)
 end
 ```
 
-### ❌ Wrong: Not Handling Repair Failure
+### Wrong: Not Handling Repair Failure
 
 ```lua
 -- Custom repair UI
@@ -552,7 +552,7 @@ end
 
 **Why it's wrong:** The vanilla repair system has a failure chance based on Maintenance skill and item condition. Your custom repair always succeeds, making it overpowered and ignoring game balance. Materials should only be consumed if repair succeeds (or partially consumed on failure).
 
-✅ **Right:**
+**Right:**
 
 ```lua
 function onCustomRepair(item, player, fixer)
@@ -584,7 +584,7 @@ function onCustomRepair(item, player, fixer)
 end
 ```
 
-### ❌ Wrong: Not Syncing Vehicle Repairs to Server
+### Wrong: Not Syncing Vehicle Repairs to Server
 
 ```lua
 -- Custom vehicle part repair
@@ -601,7 +601,7 @@ end
 
 **Why it's wrong:** Vehicle state is managed by the server in multiplayer. If you only update the client, the condition change won't persist and other players won't see it. You must send a command to the server to sync the repair.
 
-✅ **Right:**
+**Right:**
 
 ```lua
 function MyVehicleRepair:perform()

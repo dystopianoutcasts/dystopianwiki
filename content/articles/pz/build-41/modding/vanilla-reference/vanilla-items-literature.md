@@ -121,7 +121,7 @@ Choose values that match the vanilla pattern:
 
 ## Common Mistakes
 
-### ❌ Wrong: Wrong Weight for Skill Books
+### Wrong: Wrong Weight for Skill Books
 
 ```
 item MyCustomWoodworkBook
@@ -135,7 +135,7 @@ item MyCustomWoodworkBook
 
 **Why it's wrong:** Looking at vanilla skill books (Carpentry, Cooking, Farming, etc.), ALL skill book volumes weigh 0.8. Your custom skill book at 0.1 weight would be lighter than a magazine, which doesn't match the pattern.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomWoodworkBook
@@ -149,7 +149,7 @@ item MyCustomWoodworkBook
 }
 ```
 
-### ❌ Wrong: Magazine with Book Weight
+### Wrong: Magazine with Book Weight
 
 ```
 item MyCustomGardenMagazine
@@ -163,7 +163,7 @@ item MyCustomGardenMagazine
 
 **Why it's wrong:** Looking at vanilla magazines (Angler USA, Electronics Magazine, Engineer Magazine), ALL magazines weigh 0.1. Your custom magazine at 0.8 weight would weigh as much as a full skill book, which is unrealistic.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomGardenMagazine
@@ -176,7 +176,7 @@ item MyCustomGardenMagazine
 }
 ```
 
-### ❌ Wrong: Inconsistent Series Weights
+### Wrong: Inconsistent Series Weights
 
 ```
 item MyMechanicsVol1
@@ -196,7 +196,7 @@ item MyMechanicsVol2
 
 **Why it's wrong:** Looking at vanilla skill book series, ALL volumes in a series have the same weight. Carpentry Vol. 1-5 all weigh 0.8. Cooking Vol. 1-5 all weigh 0.8. Your series with varying weights (0.5, 0.8) breaks this pattern.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyMechanicsVol1

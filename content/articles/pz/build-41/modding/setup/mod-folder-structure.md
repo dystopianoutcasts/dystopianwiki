@@ -200,7 +200,7 @@ module Base {                          /* Use Base module for vanilla items */
 
 ### 1. Wrong Folder Capitalization
 
-❌ **Wrong:**
+**Wrong:**
 ```
 MyMod/
 └── media/
@@ -208,7 +208,7 @@ MyMod/
     └── Lua/            <- Capital 'L' - game won't find this
 ```
 
-✅ **Right:**
+**Right:**
 ```
 MyMod/
 └── media/
@@ -224,7 +224,7 @@ MyMod/
 
 ### 2. Missing media Folder
 
-❌ **Wrong:**
+**Wrong:**
 ```
 MyMod/
 ├── mod.info
@@ -232,7 +232,7 @@ MyMod/
     └── items.txt
 ```
 
-✅ **Right:**
+**Right:**
 ```
 MyMod/
 ├── mod.info
@@ -247,7 +247,7 @@ MyMod/
 
 ### 3. Files in Wrong Subfolder
 
-❌ **Wrong:**
+**Wrong:**
 ```
 media/
 ├── my_recipes.txt      <- Recipe file directly in media/ - game won't find it
@@ -255,7 +255,7 @@ media/
     └── (empty)
 ```
 
-✅ **Right:**
+**Right:**
 ```
 media/
 └── scripts/
@@ -273,14 +273,14 @@ media/
 
 ### 4. Spaces in Folder Names
 
-❌ **Wrong:**
+**Wrong:**
 ```
 My Cool Mod/            <- Spaces can cause loading issues
 ├── mod.info
 └── media/
 ```
 
-✅ **Right:**
+**Right:**
 ```
 MyCoolMod/              <- No spaces - always safe
 ├── mod.info
@@ -301,7 +301,7 @@ My_Cool_Mod/            <- Underscores instead of spaces - also safe
 
 ### 5. Wrong textures/Item Capitalization
 
-❌ **Wrong:**
+**Wrong:**
 ```
 media/
 └── textures/
@@ -309,7 +309,7 @@ media/
         └── axe.png
 ```
 
-✅ **Right:**
+**Right:**
 ```
 media/
 └── textures/
@@ -415,26 +415,26 @@ My First Mod/
 
 **Error 1: Spaces in mod folder name**
 ```
-❌ My First Mod/
-✅ MyFirstMod/
+Wrong: My First Mod/
+Right: MyFirstMod/
 ```
 
 **Error 2: Scripts folder outside media**
 ```
-❌ Scripts/
+Wrong: Scripts/
     └── items.txt
 
-✅ media/
+Right: media/
     └── scripts/
         └── items.txt
 ```
 
 **Error 3: Capital 'L' in Lua folder**
 ```
-❌ media/
+Wrong: media/
     └── Lua/
 
-✅ media/
+Right: media/
     └── lua/
 ```
 

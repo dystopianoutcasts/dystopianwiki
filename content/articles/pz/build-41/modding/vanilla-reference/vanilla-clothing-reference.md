@@ -1223,7 +1223,7 @@ PZ uses a layered clothing system. Common body locations:
 
 ## Common Mistakes
 
-### ❌ Wrong: Assuming All Protective Clothing Has High Defense
+### Wrong: Assuming All Protective Clothing Has High Defense
 
 ```
 // Someone thinks: "It's a leather jacket, so it must have protection"
@@ -1238,7 +1238,7 @@ item MyLeatherJacket
 
 **Why it's wrong:** Looking at the vanilla reference, most leather jackets have **20 bite defense and 40 scratch defense**, not 100. Only full helmets and boots get 100 defense.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyLeatherJacket
@@ -1252,7 +1252,7 @@ item MyLeatherJacket
 
 ---
 
-### ❌ Wrong: Not Checking If Defense Values Make Sense Together
+### Wrong: Not Checking If Defense Values Make Sense Together
 
 ```
 item MyVest
@@ -1266,7 +1266,7 @@ item MyVest
 
 **Why it's wrong:** In vanilla, scratch defense is **always equal to or higher than bite defense**. This makes sense - if something protects against bites, it definitely protects against scratches (which are less severe).
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyVest
@@ -1280,7 +1280,7 @@ item MyVest
 
 ---
 
-### ❌ Wrong: Using Unrealistic Insulation Values
+### Wrong: Using Unrealistic Insulation Values
 
 ```
 item MyTShirt
@@ -1294,7 +1294,7 @@ item MyTShirt
 
 **Why it's wrong:** Looking at vanilla T-shirts, they have insulation around **0.15-0.3**, not 0.9. A value of 0.9 is for thick winter coats and padded jackets.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyTShirt
@@ -1314,7 +1314,7 @@ item MyTShirt
 
 ---
 
-### ❌ Wrong: Not Using Fabric Type
+### Wrong: Not Using Fabric Type
 
 ```
 item MyDenimJeans
@@ -1327,7 +1327,7 @@ item MyDenimJeans
 
 **Why it's wrong:** Vanilla denim items always specify `FabricType = Denim`. This affects how the clothing behaves (staining, wear, etc.).
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyDenimJeans

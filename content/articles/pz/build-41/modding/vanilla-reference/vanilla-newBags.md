@@ -92,7 +92,7 @@ Choose values that match the vanilla pattern:
 
 ## Common Mistakes
 
-### ❌ Wrong: Custom Backpack with Middle-Ground Weight
+### Wrong: Custom Backpack with Middle-Ground Weight
 
 ```
 item MyCustomBackpack
@@ -106,7 +106,7 @@ item MyCustomBackpack
 
 **Why it's wrong:** Looking at vanilla bags, there are only TWO weight categories: 1.0 for substantial bags (duffel bags, gun cases, medical bags) and 0.1 for lightweight disposable bags (plastic bags, sacks). There are NO bags at 0.5 weight.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomBackpack
@@ -120,7 +120,7 @@ item MyCustomBackpack
 }
 ```
 
-### ❌ Wrong: Gun Case with Lightweight Weight
+### Wrong: Gun Case with Lightweight Weight
 
 ```
 item MyCustomGunCase
@@ -134,7 +134,7 @@ item MyCustomGunCase
 
 **Why it's wrong:** Looking at vanilla gun cases (ShotgunCase1, ShotgunCase2, RifleCase1, RifleCase2, RifleCase3), ALL gun cases weigh 1.0. Gun cases are protective hard cases, not flimsy plastic bags. Your custom gun case at 0.1 weight is as light as a plastic grocery bag.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomGunCase
@@ -148,7 +148,7 @@ item MyCustomGunCase
 }
 ```
 
-### ❌ Wrong: Plastic Bag with Heavy Weight
+### Wrong: Plastic Bag with Heavy Weight
 
 ```
 item MyCustomPlasticBag
@@ -162,7 +162,7 @@ item MyCustomPlasticBag
 
 **Why it's wrong:** Looking at vanilla plastic bags (GroceryBag1-5) and sacks (Cabbages, Carrots, Potatoes, Onions), ALL lightweight/disposable bags weigh 0.1. Your custom plastic bag at 1.0 weight is as heavy as a duffel bag or gun case!
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomPlasticBag

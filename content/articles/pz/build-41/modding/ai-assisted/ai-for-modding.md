@@ -493,14 +493,14 @@ Let's look at the most common mistakes beginners make when using AI for modding 
 
 ### Mistake 1: Not Specifying "Project Zomboid Build 41"
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 How do I create an item?
 ```
 
 **What you'll get:** Generic programming advice that might not apply to PZ at all. AI doesn't know what game you're talking about.
 
-✅ **Works:**
+**Works:**
 ```
 How do I create a custom item in Project Zomboid Build 41?
 Show me the .txt script format.
@@ -512,7 +512,7 @@ Show me the .txt script format.
 
 ### Mistake 2: Trusting AI Without Testing
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 [Ask AI for code]
 [Copy AI's code]
@@ -522,7 +522,7 @@ Show me the .txt script format.
 
 **What you'll get:** Code that looks right but doesn't work in PZ.
 
-✅ **Works:**
+**Works:**
 ```
 [Ask AI for code]
 [Copy AI's code]
@@ -536,14 +536,14 @@ Show me the .txt script format.
 
 ### Mistake 3: Asking for "Everything at Once"
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 Create a complete mod for Project Zomboid with custom items, recipes, skills, and a new menu system.
 ```
 
 **What you'll get:** Either AI says "that's too broad" or it gives you incomplete/broken code because it's trying to do too much at once.
 
-✅ **Works:**
+**Works:**
 ```
 First question: "Create a custom item definition for a red backpack in PZ Build 41."
 [Get that working]
@@ -561,14 +561,14 @@ Third question: "How do I add a custom skill in PZ Build 41?"
 
 ### Mistake 4: Not Giving AI Context When Debugging
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 My mod doesn't work. Fix it.
 ```
 
 **What you'll get:** AI asks you for more information because it has no idea what's wrong.
 
-✅ **Works:**
+**Works:**
 ```
 My Project Zomboid Build 41 mod gives this error:
 
@@ -587,7 +587,7 @@ What's causing this and how do I fix it?
 
 ### Mistake 5: Copy-Pasting Without Understanding
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 [AI gives code]
 [Copy entire thing without reading it]
@@ -597,7 +597,7 @@ What's causing this and how do I fix it?
 
 **What you'll get:** A working mod, but you learned nothing. Next time you'll need AI's help for the same thing.
 
-✅ **Works:**
+**Works:**
 ```
 [AI gives code]
 [Read through it]

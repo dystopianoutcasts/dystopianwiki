@@ -583,7 +583,7 @@ Let's look at the mistakes beginners make and how to fix them.
 
 ### Mistake 1: Missing Commas
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 item WickedKatana
 {
@@ -595,7 +595,7 @@ item WickedKatana
 
 **What you'll see:** Parsing error. The game can't tell where one property ends and the next begins.
 
-✅ **Works:**
+**Works:**
 ```
 item WickedKatana
 {
@@ -611,7 +611,7 @@ item WickedKatana
 
 ### Mistake 2: Mismatched Braces
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 module WickedWeapons
 {
@@ -624,7 +624,7 @@ module WickedWeapons
 
 **What you'll see:** Parsing error. The game expects a closing `}` for the module.
 
-✅ **Works:**
+**Works:**
 ```
 module WickedWeapons
 {
@@ -641,7 +641,7 @@ module WickedWeapons
 
 ### Mistake 3: Misspelled Property Names
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 item WickedKatana
 {
@@ -652,7 +652,7 @@ item WickedKatana
 
 **What you'll see:** The item loads, but those properties are ignored (treated as unknown properties). Your weapon will have default damage values, not your custom ones.
 
-✅ **Works:**
+**Works:**
 ```
 item WickedKatana
 {
@@ -667,7 +667,7 @@ item WickedKatana
 
 ### Mistake 4: Spaces in Names
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 module Wicked Weapons  // Space in module name!
 {
@@ -680,7 +680,7 @@ module Wicked Weapons  // Space in module name!
 
 **What you'll see:** Parsing error. The game gets confused by the spaces.
 
-✅ **Works:**
+**Works:**
 ```
 module WickedWeapons  // No spaces
 {
@@ -702,7 +702,7 @@ DisplayName = Wicked Katana,  // This is fine!
 
 ### Mistake 5: Forgetting to Import Base
 
-❌ **Doesn't work (if you need vanilla items):**
+**Doesn't work (if you need vanilla items):**
 ```
 module WickedWeapons
 {
@@ -718,7 +718,7 @@ module WickedWeapons
 
 **What you'll see:** Recipe won't work. The game doesn't know what `Base.Plank` is.
 
-✅ **Works:**
+**Works:**
 ```
 module WickedWeapons
 {

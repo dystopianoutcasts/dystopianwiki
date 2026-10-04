@@ -398,7 +398,7 @@ return ZombieAttributes
 
 Let me show you the mistakes everyone makes when starting with IsoZombie fields.
 
-### ❌ Wrong: Setting After Every Frame
+### Wrong: Setting After Every Frame
 
 ```lua
 -- Runs EVERY frame! Sets speedType 60 times per second!
@@ -409,7 +409,7 @@ end
 
 **Why it fails:** You're setting the same value repeatedly, wasting CPU every single frame.
 
-✅ **Right: Check if Already Processed**
+**Right: Check if Already Processed**
 ```lua
 -- Sets speedType once, then skips
 function OnZombieUpdate(zombie)
@@ -421,7 +421,7 @@ function OnZombieUpdate(zombie)
 end
 ```
 
-### ❌ Wrong: Forgetting -1 Means Uninitialized
+### Wrong: Forgetting -1 Means Uninitialized
 
 ```lua
 -- Assumes speedType is set
@@ -432,7 +432,7 @@ end
 
 **Why it fails:** New zombies have `-1` (uninitialized) until `DoZombieStats()` runs. Your check misses them.
 
-✅ **Right: Check for -1 First**
+**Right: Check for -1 First**
 ```lua
 -- Handle uninitialized state
 if zombie.speedType == -1 then
@@ -444,7 +444,7 @@ if zombie.speedType == 2 then
 end
 ```
 
-### ❌ Wrong: Using Random Without Deterministic Pattern
+### Wrong: Using Random Without Deterministic Pattern
 
 ```lua
 -- Different on each client!
@@ -455,7 +455,7 @@ end
 
 **Why it fails:** In multiplayer, server and client get different random results. Zombie attributes desync.
 
-✅ **Right: Use Deterministic Hash**
+**Right: Use Deterministic Hash**
 ```lua
 -- Same result on all clients
 local hash = zombie:getOnlineID() * 2654435769 % 4294967296
@@ -464,7 +464,7 @@ if hash < (0.3 * 10000) then
 end
 ```
 
-### ❌ Wrong: Assuming Changes Persist Through Pooling
+### Wrong: Assuming Changes Persist Through Pooling
 
 ```lua
 -- Set zombie to sprinter
@@ -476,7 +476,7 @@ zombie.speedType = 1
 
 **Why it fails:** Zombies are pooled. When one despawns, its object gets reused. The "new" zombie might have a different ID.
 
-✅ **Right: Track Processing with Hash**
+**Right: Track Processing with Hash**
 ```lua
 -- Store the hash we used
 local modData = zombie:getModData()

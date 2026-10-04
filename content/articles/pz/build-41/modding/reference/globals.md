@@ -919,13 +919,13 @@ end
 
 **Problem:** Calling methods on nil objects crashes your mod.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 local player = getPlayer()
 print(player:getUsername())                 -- CRASH if player is nil!
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 local player = getPlayer()
 if player then                              -- Always check for nil first
@@ -941,12 +941,12 @@ end
 
 **Problem:** Misunderstanding that max is exclusive.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 local damage = ZombRand(10)                 -- Gives 0-9, not 1-10!
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 local damage = ZombRand(10) + 1             -- Gives 1-10
 -- Or use two-parameter form:
@@ -961,14 +961,14 @@ local damage = ZombRand(1, 11)              -- Gives 1-10 (max is exclusive)
 
 **Problem:** Using wrong class names or not storing result.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 if instanceof(item, "Apple") then           -- Wrong! "Apple" is not a class name
     -- This will never be true
 end
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 if instanceof(item, "Food") then            -- Right! "Food" is a class name
     print("This is food")
@@ -988,12 +988,12 @@ end
 
 **Problem:** Not using full item ID with module prefix.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 local script = getScriptManager():getItem("Hammer")  -- Returns nil!
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 local script = getScriptManager():getItem("Base.Hammer")  -- Works!
 ```
@@ -1006,13 +1006,13 @@ local script = getScriptManager():getItem("Base.Hammer")  -- Works!
 
 **Problem:** Assuming all translation keys exist.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 local text = getText("MyMod_CustomKey")
 -- If key doesn't exist, text = "MyMod_CustomKey" (not helpful!)
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 local text = getTextOrNull("MyMod_CustomKey")  -- Returns nil if not found
 if text then
@@ -1169,7 +1169,7 @@ local health = player:getBodyDamage():getOverallBodyHealth()
 
 **Instead of deep nesting, return early:**
 
-❌ **Avoid:**
+**Avoid:**
 ```lua
 function doSomething()
     local player = getPlayer()
@@ -1185,7 +1185,7 @@ function doSomething()
 end
 ```
 
-✅ **Better:**
+**Better:**
 ```lua
 function doSomething()
     local player = getPlayer()

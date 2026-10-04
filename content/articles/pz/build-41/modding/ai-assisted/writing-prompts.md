@@ -444,14 +444,14 @@ Let's look at the most common prompt mistakes and how to fix them.
 
 ### Mistake 1: Being Too Vague
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 Make a mod
 ```
 
 **What happens:** AI says "What kind of mod? What should it do?" You waste time going back and forth.
 
-✅ **Works:**
+**Works:**
 ```
 Create a script file that adds a crowbar weapon item to Project Zomboid Build 41.
 
@@ -470,14 +470,14 @@ Output as a .txt script file using module Base.
 
 ### Mistake 2: No Version Specified
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 How do PZ recipes work?
 ```
 
 **What happens:** AI might give Build 40 syntax which doesn't work in Build 41, or mix versions.
 
-✅ **Works:**
+**Works:**
 ```
 How do recipes work in Project Zomboid Build 41 specifically?
 
@@ -493,14 +493,14 @@ I want to understand:
 
 ### Mistake 3: No Format Specified
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 Create an item
 ```
 
 **What happens:** AI might give you Lua code when you wanted a script file, or vice versa.
 
-✅ **Works:**
+**Works:**
 ```
 Create a weapon item definition in script file format (.txt) for Project Zomboid Build 41.
 
@@ -513,14 +513,14 @@ I need the item { } definition only, no Lua code.
 
 ### Mistake 4: Asking Multiple Things at Once
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 Make an item, a recipe for crafting it, distribution for where it spawns, and Lua code for special effects when used.
 ```
 
 **What happens:** AI gets overwhelmed, gives incomplete answers, or produces code that doesn't integrate well.
 
-✅ **Works:**
+**Works:**
 ```
 First request: "Create the weapon item definition"
 [Get that working]
@@ -538,14 +538,14 @@ Third request: "Now add distribution so it spawns in tool stores"
 
 ### Mistake 5: Not Including Error Messages
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 It doesn't work
 ```
 
 **What happens:** AI asks "What error did you get?" and you have to paste it in a follow-up message, wasting time.
 
-✅ **Works:**
+**Works:**
 ```
 When I load this item in PZ Build 41, I get this console error:
 

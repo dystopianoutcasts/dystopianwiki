@@ -507,7 +507,7 @@ end
 
 ## Common Mistakes
 
-### ❌ Wrong: Fixing Definition Without Matching Item
+### Wrong: Fixing Definition Without Matching Item
 
 ```
 fixing Fix MyCustomAxe
@@ -530,7 +530,7 @@ module MyMod
 
 **Why it's wrong:** The `Require : MyCustomAxe` in fixing.txt must EXACTLY match the item name in your item script. Here, fixing.txt says `MyCustomAxe` but the item is named `CustomAxe` - this mismatch means the repair won't be found.
 
-✅ **Right:**
+**Right:**
 
 ```
 // Option 1: Match fixing.txt to item name
@@ -558,7 +558,7 @@ fixing Fix MyMod.CustomAxe
 
 **Rule:** The `Require` value must match the item's full name (with module prefix if item is in a custom module).
 
-### ❌ Wrong: Calling FixingManager Without Validation
+### Wrong: Calling FixingManager Without Validation
 
 ```lua
 function MyRepair:perform()
@@ -573,7 +573,7 @@ end
 - Repairing items no longer in inventory (duplication exploit)
 - Consuming materials that don't exist (negative item counts)
 
-✅ **Right:**
+**Right:**
 
 ```lua
 function MyRepair:perform()
@@ -607,7 +607,7 @@ end
 - Character still has required skill level
 - Fixing and fixer objects are not nil
 
-### ❌ Wrong: Assuming Repairs Always Succeed
+### Wrong: Assuming Repairs Always Succeed
 
 ```lua
 function MyRepair:perform()
@@ -620,7 +620,7 @@ end
 
 **Why it's wrong:** Repairs have a success chance based on skill level. Lower skill = higher failure chance. The repair might fail, consuming materials but NOT restoring condition.
 
-✅ **Right:**
+**Right:**
 
 ```lua
 function MyRepair:perform()
@@ -648,7 +648,7 @@ end
 - If condition increased, repair succeeded
 - If condition unchanged, repair failed (materials still consumed)
 
-### ❌ Wrong: Not Handling GlobalItem Tools
+### Wrong: Not Handling GlobalItem Tools
 
 ```lua
 fixing Fix MyMetalWeapon
@@ -667,7 +667,7 @@ end
 
 **Why it's wrong:** If the repair has a `GlobalItem` requirement (like BlowTorch), you must check that the player has it before allowing the repair. Vanilla ISFixAction checks for both fixer AND global item.
 
-✅ **Right:**
+**Right:**
 
 ```lua
 function MyRepair:isValid()

@@ -495,7 +495,7 @@ Engineer recipes.
 
 ## Common Mistakes
 
-### ❌ Wrong: Using Equals Instead of Colon
+### Wrong: Using Equals Instead of Colon
 
 ```
 recipe Make Custom Stake
@@ -511,7 +511,7 @@ recipe Make Custom Stake
 
 **Why it's wrong:** Recipe properties use colon (`:`) syntax, NOT equals (`=`) syntax. Items use equals, but recipes are different. This will cause parse errors when loading your mod.
 
-✅ **Right:**
+**Right:**
 
 ```
 recipe Make Custom Stake
@@ -526,7 +526,7 @@ recipe Make Custom Stake
 }
 ```
 
-### ❌ Wrong: Unrealistic Crafting Time
+### Wrong: Unrealistic Crafting Time
 
 ```
 recipe Make Custom Weapon
@@ -543,7 +543,7 @@ recipe Make Custom Weapon
 
 **Why it's wrong:** Looking at vanilla smithing recipes, metal weapons take 150-250 ticks to craft. Your custom sword at 10 ticks would craft in 1 second, which is unrealistic for a complex metal item.
 
-✅ **Right:**
+**Right:**
 
 ```
 recipe Make Custom Weapon
@@ -559,7 +559,7 @@ recipe Make Custom Weapon
 }
 ```
 
-### ❌ Wrong: Forgetting to Keep Tools
+### Wrong: Forgetting to Keep Tools
 
 ```
 recipe Make Custom Table
@@ -577,7 +577,7 @@ recipe Make Custom Table
 
 **Why it's wrong:** Looking at vanilla carpentry recipes, tools like Hammer and Saw are ALWAYS marked with `keep` - they're reusable tools, not consumable ingredients. Your recipe will eat the hammer and saw, forcing players to have multiple tools.
 
-✅ **Right:**
+**Right:**
 
 ```
 recipe Make Custom Table

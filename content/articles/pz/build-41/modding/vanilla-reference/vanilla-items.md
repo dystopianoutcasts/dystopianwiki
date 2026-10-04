@@ -177,7 +177,7 @@ Choose values that match the vanilla pattern:
 
 ## Common Mistakes
 
-### ❌ Wrong: Custom Paint Color with Wrong Weight
+### Wrong: Custom Paint Color with Wrong Weight
 
 ```
 item MyCustomGoldPaint
@@ -191,7 +191,7 @@ item MyCustomGoldPaint
 
 **Why it's wrong:** Looking at vanilla paint colors (Black, Blue, Brown, Cyan, Green, etc.), ALL paint cans weigh 5.0. Your custom gold paint at 1.0 weight would be 5x lighter than every other paint can in the game.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomGoldPaint
@@ -205,7 +205,7 @@ item MyCustomGoldPaint
 }
 ```
 
-### ❌ Wrong: Full Bucket Lighter Than Empty Bucket
+### Wrong: Full Bucket Lighter Than Empty Bucket
 
 ```
 item MyCustomWaterBucket
@@ -219,7 +219,7 @@ item MyCustomWaterBucket
 
 **Why it's wrong:** Looking at vanilla buckets, an Empty Bucket weighs 1.0, Bucket of Water weighs 4.0, and Bucket of Concrete weighs 10.0. Your full bucket at 0.5 weight is lighter than an empty bucket, which violates physics!
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomWaterBucket
@@ -233,7 +233,7 @@ item MyCustomWaterBucket
 }
 ```
 
-### ❌ Wrong: Drainable Item Without UseDelta
+### Wrong: Drainable Item Without UseDelta
 
 ```
 item MyCustomBattery
@@ -247,7 +247,7 @@ item MyCustomBattery
 
 **Why it's wrong:** Looking at vanilla drainable items (Battery, Lighter, Matches, Candle, Paint), ALL drainable items have a `UseDelta` property that controls how fast they drain. Without it, your item won't actually drain when used.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomBattery
@@ -260,7 +260,7 @@ item MyCustomBattery
 }
 ```
 
-### ❌ Wrong: Inconsistent Empty Container Weight
+### Wrong: Inconsistent Empty Container Weight
 
 ```
 item MyCustomFullContainer
@@ -282,7 +282,7 @@ item MyCustomEmptyContainer
 
 **Why it's wrong:** Looking at vanilla containers, empty versions are ALWAYS lighter than full versions. Empty Bucket (1.0) vs Water Bucket (4.0). Your empty container at 3.5 is heavier than the full container at 3.0!
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomFullContainer

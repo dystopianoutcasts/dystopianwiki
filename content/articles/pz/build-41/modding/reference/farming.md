@@ -684,7 +684,7 @@ These tags give items special behaviors in the farming system:
 
 **Problem:** Custom vegetable doesn't work in any recipes.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 item CustomVegetable
 {
@@ -694,7 +694,7 @@ item CustomVegetable
 }
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 item CustomVegetable
 {
@@ -711,7 +711,7 @@ item CustomVegetable
 
 **Problem:** Seed packet produces wrong number of seeds or references wrong items.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 item CustomVegSeed { /* ... */ }
 item CustomVegBagSeed { /* ... */ }
@@ -723,7 +723,7 @@ recipe Open Packet of Custom Seeds
 }
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 item CustomVegSeed { /* ... */ }
 item CustomVegBagSeed { /* ... */ }
@@ -744,7 +744,7 @@ recipe Open Packet of Custom Seeds
 
 **Problem:** Empty container can't be filled with water.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 item CustomCanEmpty
 {
@@ -753,7 +753,7 @@ item CustomCanEmpty
 }
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 item CustomCanEmpty
 {
@@ -776,7 +776,7 @@ item CustomCanFull
 
 **Problem:** Trowel or shovel doesn't work for gardening actions.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 item CustomTrowel
 {
@@ -785,7 +785,7 @@ item CustomTrowel
 }
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 item CustomTrowel
 {
@@ -804,7 +804,7 @@ item CustomTrowel
 
 **Problem:** Crop freshness doesn't match its type.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 item CustomTomato
 {
@@ -814,7 +814,7 @@ item CustomTomato
 }
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 item CustomTomato
 {

@@ -401,7 +401,7 @@ item Crowbar {
 
 ## Common Mistakes
 
-### ❌ Wrong: Misunderstanding ConditionLowerChanceOneIn
+### Wrong: Misunderstanding ConditionLowerChanceOneIn
 
 ```
 item MyCustomKnife
@@ -419,7 +419,7 @@ item MyCustomKnife
 
 Looking at vanilla weapons, durable tools use values of 20-50, not low numbers like 5.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomKnife
@@ -440,7 +440,7 @@ item MyCustomKnife
 
 **Why this works:** `ConditionLowerChanceOneIn = 40` means only 2.5% chance to lose durability per hit. With `ConditionMax = 15`, this knife will last approximately 600 hits (40 hits/durability × 15 max), making it genuinely durable.
 
-### ❌ Wrong: Categories Doesn't Train Skill
+### Wrong: Categories Doesn't Train Skill
 
 ```
 item MyCustomAxe
@@ -457,7 +457,7 @@ item MyCustomAxe
 
 **Why it's wrong:** This actually looks correct! But if the skill isn't training, the issue is likely in your mod's module name or script syntax. The game is **case-sensitive** and picky about module imports.
 
-✅ **Right:**
+**Right:**
 
 ```
 module MyMod                                 // Your mod's module name
@@ -492,7 +492,7 @@ module MyMod                                 // Your mod's module name
 - `Categories` is case-sensitive: `Axe` not `axe`, `SmallBlade` not `smallblade`
 - Module name should match your mod's name
 
-### ❌ Wrong: Thinking 1.0 Damage Is Weak
+### Wrong: Thinking 1.0 Damage Is Weak
 
 ```
 item MyCustomSuperKnife
@@ -509,7 +509,7 @@ item MyCustomSuperKnife
 
 In practice, 1.0+ damage typically one-shots zombies. Knives should be in the 0.6-1.2 range.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomSuperKnife
@@ -532,7 +532,7 @@ item MyCustomSuperKnife
 
 **Why this works:** Moderate damage (0.8-1.3) with 50% crit chance and 2x multiplier makes this knife deadly without being unrealistic. The high crit rate gives it the "super" feel while maintaining balance.
 
-### ❌ Wrong: MaxHitCount Doesn't Match Weapon Type
+### Wrong: MaxHitCount Doesn't Match Weapon Type
 
 ```
 item MyCustomSpear
@@ -549,7 +549,7 @@ item MyCustomSpear
 
 **Why it's wrong:** Looking at vanilla weapons, long-reaching weapons like spears typically have `MaxHitCount = 2` or higher because their reach allows them to hit multiple zombies in a line. A spear with `MaxHitCount = 1` wastes its range advantage and feels wrong for the weapon type.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomSpear

@@ -442,12 +442,12 @@ ERROR: ScriptParser: Expected ',' or '}'
 
 **Fix:** Add `keep` before the tool:
 
-❌ **Wrong:**
+**Wrong:**
 ```
 Hammer,              /* Hammer will be consumed */
 ```
 
-✅ **Correct:**
+**Correct:**
 ```
 keep Hammer,         /* Hammer stays in inventory */
 ```

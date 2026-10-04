@@ -479,14 +479,14 @@ The AI now creates your mod with:
 
 ### Mistake 1: Skipping Research Phase
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 User: "Create a custom vehicle for PZ Build 41"
 AI: [Generates vehicle with guessed properties]
 User: [Spends an hour fixing wrong properties]
 ```
 
-✅ **Works:**
+**Works:**
 ```
 User: "First, research how vehicles work in PZ Build 41. Document the BaseVehicle properties, templates, and script structure."
 AI: [Produces detailed vehicle documentation]
@@ -500,14 +500,14 @@ AI: [Generates correct vehicle using documented patterns]
 
 ### Mistake 2: Research Request Too Broad
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 "Research everything about PZ modding"
 ```
 
 **What happens:** AI produces generic, shallow information because the request is unfocused.
 
-✅ **Works:**
+**Works:**
 ```
 "Research how the ISTimedAction system works in PZ Build 41, specifically the perform() and start() methods and how to create custom timed actions."
 ```
@@ -518,14 +518,14 @@ AI: [Generates correct vehicle using documented patterns]
 
 ### Mistake 3: Not Specifying Build Version
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 "How do recipes work in Project Zomboid?"
 ```
 
 **What happens:** AI might give Build 40 information, or mix versions, leading to incompatible code.
 
-✅ **Works:**
+**Works:**
 ```
 "How do recipes work in Project Zomboid Build 41 specifically? Include evolved recipes if they exist in Build 41."
 ```
@@ -536,7 +536,7 @@ AI: [Generates correct vehicle using documented patterns]
 
 ### Mistake 4: Not Referencing the Documentation
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 [Gets detailed documentation]
 [Starts new conversation]
@@ -544,7 +544,7 @@ AI: [Generates correct vehicle using documented patterns]
 [AI has no context, guesses again]
 ```
 
-✅ **Works:**
+**Works:**
 ```
 [Gets detailed documentation]
 "Based on the fishing system documentation above, create a fishing rod with these properties..."
@@ -557,7 +557,7 @@ AI: [Generates correct vehicle using documented patterns]
 
 ### Mistake 5: Accepting First Draft Without Verification
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 [AI researches and documents]
 [User assumes it's all correct]
@@ -565,7 +565,7 @@ AI: [Generates correct vehicle using documented patterns]
 [Code has errors because AI's research had mistakes]
 ```
 
-✅ **Works:**
+**Works:**
 ```
 [AI researches and documents]
 [User checks a few facts against vanilla files]

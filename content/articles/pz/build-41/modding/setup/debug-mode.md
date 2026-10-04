@@ -311,12 +311,12 @@ end
 
 ### 1. Forgetting to Enable Debug Mode
 
-❌ **Wrong:**
+**Wrong:**
 ```
 Launch game normally, press ~ key, nothing happens
 ```
 
-✅ **Right:**
+**Right:**
 ```
 1. Add -debug to Steam launch options
 2. Restart the game
@@ -330,14 +330,14 @@ Launch game normally, press ~ key, nothing happens
 
 ### 2. Using Wrong Path in reloadLuaFile()
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 -- Using absolute path or including "media/lua/"
 reloadLuaFile("C:/MyMod/media/lua/client/MyMod/MyScript.lua")
 reloadLuaFile("media/lua/client/MyMod/MyScript.lua")
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 -- Path relative to media/lua/ folder
 reloadLuaFile("client/MyMod/MyScript.lua")
@@ -349,13 +349,13 @@ reloadLuaFile("client/MyMod/MyScript.lua")
 
 ### 3. Trying to Hot Reload Script Files (.txt)
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 -- Trying to reload item script
 reloadLuaFile("scripts/items.txt")
 ```
 
-✅ **Right:**
+**Right:**
 ```
 1. Make changes to .txt script file
 2. Quit to main menu
@@ -368,13 +368,13 @@ reloadLuaFile("scripts/items.txt")
 
 ### 4. Not Using tostring() When Printing Objects
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 local item = getPlayer():getPrimaryHandItem()
 print("Item: " .. item)  -- CRASHES if item is nil!
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 local item = getPlayer():getPrimaryHandItem()
 print("Item: " .. tostring(item))  -- Safely prints "nil" if no item
@@ -386,13 +386,13 @@ print("Item: " .. tostring(item))  -- Safely prints "nil" if no item
 
 ### 5. Missing the Error Location in Console
 
-❌ **Wrong:**
+**Wrong:**
 ```
 "There's an error somewhere in my mod, but I don't know where"
 (Didn't read the stack trace)
 ```
 
-✅ **Right:**
+**Right:**
 ```
 ERROR: MyMod/MyScript.lua:45
        ^ This tells you exactly: file name and line number

@@ -375,16 +375,16 @@ Here's where vehicle modding gets tricky. Not everything has a "set" method:
 
 | What You Want | Can You Do It? |
 |---------------|----------------|
-| Repair a part | ✅ Yes - `setCondition()` |
-| Change engine quality | ✅ Yes - `setEngineQuality()` |
-| Fill the tank | ✅ Yes - `container:setUsedDelta()` |
-| Hotwire the car | ✅ Yes - `setHotwired()` |
-| Turn lights on/off | ✅ Yes - `setHeadlightsOn()` |
-| Change engine loudness | ❌ No - no setter exists |
-| Change engine power | ❌ No - no setter exists |
-| Set current speed | ❌ No - physics controls this |
-| Change max speed | ❌ No - defined in vehicle script |
-| Modify trunk capacity | ❌ No - defined in vehicle script |
+| Repair a part | Yes - `setCondition()` |
+| Change engine quality | Yes - `setEngineQuality()` |
+| Fill the tank | Yes - `container:setUsedDelta()` |
+| Hotwire the car | Yes - `setHotwired()` |
+| Turn lights on/off | Yes - `setHeadlightsOn()` |
+| Change engine loudness | No - no setter exists |
+| Change engine power | No - no setter exists |
+| Set current speed | No - physics controls this |
+| Change max speed | No - defined in vehicle script |
+| Modify trunk capacity | No - defined in vehicle script |
 
 **Why can't I change some things?**
 
@@ -407,7 +407,7 @@ Reflection is powerful but complex. If you need to change things without setters
 
 ### Mistake 1: Forgetting to Call updatePartStats()
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```lua
 -- Repair all parts
 for i = 0, parts:size() - 1 do
@@ -419,7 +419,7 @@ end
 
 **What happens:** The parts show as repaired in the mechanics menu, but the car still drives like it's damaged - slow, poor handling, etc.
 
-✅ **Works:**
+**Works:**
 ```lua
 -- Repair all parts
 for i = 0, parts:size() - 1 do
@@ -436,7 +436,7 @@ vehicle:updatePartStats()  -- Now it knows everything changed!
 
 ### Mistake 2: Setting Condition on Missing Parts
 
-❌ **Doesn't work (crashes):**
+**Doesn't work (crashes):**
 ```lua
 -- Get tire (might not be installed)
 local tire = vehicle:getPartById("TireFrontLeft")
@@ -447,7 +447,7 @@ tire:setCondition(100)  -- CRASH if tire is nil!
 
 **What happens:** If the tire isn't installed, `getPartById()` returns `nil`. Calling methods on `nil` crashes.
 
-✅ **Works:**
+**Works:**
 ```lua
 -- Get tire
 local tire = vehicle:getPartById("TireFrontLeft")
@@ -466,7 +466,7 @@ end
 
 ### Mistake 3: Setting Fuel Without Checking Container
 
-❌ **Doesn't work (crashes):**
+**Doesn't work (crashes):**
 ```lua
 local tank = vehicle:getPartById("GasTank")
 local container = tank:getItemContainer()
@@ -475,7 +475,7 @@ container:setUsedDelta(1.0)  -- Crash if tank or container is nil!
 
 **What happens:** If the gas tank is missing or has no container, this crashes.
 
-✅ **Works:**
+**Works:**
 ```lua
 local tank = vehicle:getPartById("GasTank")
 if not tank then
@@ -499,7 +499,7 @@ container:setUsedDelta(1.0)
 
 ### Mistake 4: Using Wrong Value Range
 
-❌ **Doesn't work (weird results):**
+**Doesn't work (weird results):**
 ```lua
 -- Trying to set rust to "half rusted"
 vehicle:setRust(50)     -- Wrong! Rust is 0.0-1.0, not 0-100
@@ -510,7 +510,7 @@ container:setUsedDelta(50)  -- Wrong! Fuel is 0.0-1.0, not 0-100
 
 **What happens:** Rust and fuel use decimals (0.0 to 1.0), not integers (0 to 100). Setting them to 50 means "5000%", which either gets clamped or causes weird behavior.
 
-✅ **Works:**
+**Works:**
 ```lua
 -- Half rusted (0.5 = 50%)
 vehicle:setRust(0.5)

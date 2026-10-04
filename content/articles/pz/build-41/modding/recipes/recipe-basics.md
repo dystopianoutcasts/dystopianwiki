@@ -518,7 +518,7 @@ Let's look at the mistakes beginners make most often, and how to fix them.
 
 ### Mistake 1: Using Equals Instead of Colon for Properties
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 ```
 recipe Example {
@@ -533,7 +533,7 @@ recipe Example {
 
 **Why it breaks:** Properties (`Result`, `Time`, `Category`, etc.) MUST use colons `:`, not equals signs `=`.
 
-✅ **Works:**
+**Works:**
 
 ```
 recipe Example {
@@ -552,7 +552,7 @@ This is THE #1 source of recipe errors. Get this right and half your problems di
 
 ### Mistake 2: Putting Properties Before Inputs
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 ```
 recipe Example {
@@ -567,7 +567,7 @@ recipe Example {
 
 **Why it breaks:** Inputs must come before properties. That's the recipe structure.
 
-✅ **Works:**
+**Works:**
 
 ```
 recipe Example {
@@ -582,7 +582,7 @@ recipe Example {
 
 ### Mistake 3: Forgetting `keep` for Tools
 
-❌ **Doesn't work (probably):**
+**Doesn't work (probably):**
 
 ```
 recipe Saw Logs {
@@ -598,7 +598,7 @@ recipe Saw Logs {
 
 **Why it breaks:** Without `keep`, items are consumed. The saw gets destroyed.
 
-✅ **Works:**
+**Works:**
 
 ```
 recipe Saw Logs {
@@ -614,7 +614,7 @@ recipe Saw Logs {
 
 ### Mistake 4: Missing Commas
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 ```
 recipe Example {
@@ -630,7 +630,7 @@ recipe Example {
 
 **Why it breaks:** Every line inside the recipe needs a comma at the end.
 
-✅ **Works:**
+**Works:**
 
 ```
 recipe Example {
@@ -646,7 +646,7 @@ recipe Example {
 
 ### Mistake 5: Wrong Module or Missing Imports
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 ```
 module Base {
@@ -665,7 +665,7 @@ module Base {
 
 **Why it breaks:** The imports block tells the game where to look for items.
 
-✅ **Works:**
+**Works:**
 
 ```
 module Base {

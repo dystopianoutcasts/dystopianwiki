@@ -453,7 +453,7 @@ Every step involves at least two layers working together. The data layer defines
 
 ### Mistake 1: Putting Lua Code in the Data Layer
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 // In media/scripts/items.txt
 item MyItem {
@@ -466,7 +466,7 @@ item MyItem {
 
 **What you'll see:** Syntax error. The game expects data properties, not code.
 
-✅ **Works:**
+**Works:**
 
 **File 1** (`media/scripts/items.txt`):
 ```
@@ -490,7 +490,7 @@ end)
 
 ### Mistake 2: Calling a Lua Function That Doesn't Exist
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 recipe Make Something {
     Material,
@@ -501,7 +501,7 @@ recipe Make Something {
 
 **What you'll see:** Silent failure. The recipe works, but no XP is awarded. No error message.
 
-✅ **Works:**
+**Works:**
 
 **File 1** (recipe):
 ```
@@ -528,7 +528,7 @@ end
 
 ### Mistake 3: Putting World-Changing Code in Client Lua
 
-❌ **Doesn't work (in multiplayer):**
+**Doesn't work (in multiplayer):**
 ```lua
 // In media/lua/client/MyMod.lua
 function givePlayerItem()
@@ -539,7 +539,7 @@ end
 
 **What you'll see:** In singleplayer, it might work. In multiplayer, other players won't see the item. Desync chaos.
 
-✅ **Works:**
+**Works:**
 ```lua
 // In media/lua/server/MyMod.lua
 function givePlayerItem(player)
@@ -553,7 +553,7 @@ end
 
 ### Mistake 4: Trying to Modify Java
 
-❌ **Cannot do:**
+**Cannot do:**
 ```
 "How do I change the rendering engine?"
 "How do I modify the save system?"
@@ -562,7 +562,7 @@ end
 
 **What you'll see:** Impossible. Java source is not available.
 
-✅ **What you CAN do:**
+**What you CAN do:**
 - Override Lua behavior (many systems are implemented in Lua, not Java)
 - Use Lua hooks to add logic before/after Java systems
 - Modify data to change balance/behavior indirectly

@@ -146,7 +146,7 @@ TileZed buildings are placed into the game world using WorldEd:
 
 ### 1. Not Defining Room Boundaries
 
-❌ **Wrong:**
+**Wrong:**
 ```
 Create building with furniture
 No room definitions
@@ -154,7 +154,7 @@ Export and place in WorldEd
 → No loot spawns in building
 ```
 
-✅ **Right:**
+**Right:**
 ```
 Create building with furniture
 Define rooms (bedroom, kitchen, bathroom)
@@ -171,14 +171,14 @@ Export and place in WorldEd
 
 ### 2. Forgetting to Load Required Tilesets
 
-❌ **Wrong:**
+**Wrong:**
 ```
 Open TileZed
 Try to place vanilla furniture tiles
 "Tile not found" errors everywhere
 ```
 
-✅ **Right:**
+**Right:**
 ```
 Open TileZed
 File → Project → Open Project
@@ -195,7 +195,7 @@ Now vanilla tiles appear in palette
 
 ### 3. Wrong Layer Order (Roof Before Walls)
 
-❌ **Wrong:**
+**Wrong:**
 ```
 Layer 0: Ground (floor tiles)
 Layer 1: Roof tiles
@@ -204,7 +204,7 @@ Layer 3: Furniture
 → Walls appear on top of roof in-game (looks broken)
 ```
 
-✅ **Right:**
+**Right:**
 ```
 Layer 0: Ground (floor tiles)
 Layer 1: Walls
@@ -224,7 +224,7 @@ Layer 3: Roof tiles
 
 ### 4. Not Testing in Debug Mode Before Publishing
 
-❌ **Wrong:**
+**Wrong:**
 ```
 Build complex building in TileZed
 Export as TMX
@@ -234,7 +234,7 @@ Upload to Workshop
 → Users report bugs: walls missing, loot not spawning, can't enter doors
 ```
 
-✅ **Right:**
+**Right:**
 ```
 Build complex building in TileZed
 Export as TMX
@@ -260,14 +260,14 @@ Fix issues, regenerate, test again
 
 ### 5. Using Wrong Build (Old TileZed for Build 41)
 
-❌ **Wrong:**
+**Wrong:**
 ```
 Download TileZed from old official source
 Open Build 41 tileset
 Crashes or compatibility errors
 ```
 
-✅ **Right:**
+**Right:**
 ```
 Download TileZed from Unjammer fork
 https://github.com/Unjammer/TileZed

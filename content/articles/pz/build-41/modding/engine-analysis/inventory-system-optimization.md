@@ -502,7 +502,7 @@ end
 
 Let me show you the mistakes that will crash your mod or kill performance. I've made all of these myself!
 
-### ❌ Wrong: Not Caching Inventory References
+### Wrong: Not Caching Inventory References
 
 ```lua
 -- Calls getInventory() 100 times! Super slow.
@@ -513,7 +513,7 @@ end
 
 **Why it fails:** Every `getInventory()` call has overhead. In a loop, this multiplies.
 
-✅ **Right: Cache the Reference**
+**Right: Cache the Reference**
 ```lua
 -- Calls getInventory() once. Fast!
 local inv = player:getInventory()
@@ -522,7 +522,7 @@ for i = 1, 100 do
 end
 ```
 
-### ❌ Wrong: Modifying During Forward Iteration
+### Wrong: Modifying During Forward Iteration
 
 ```lua
 -- Can skip items or crash!
@@ -536,7 +536,7 @@ end
 
 **Why it fails:** Removing item at index 2 shifts item 3 to index 2. Your loop moves to index 3 and misses the shifted item.
 
-✅ **Right: Iterate Backwards When Removing**
+**Right: Iterate Backwards When Removing**
 ```lua
 -- Safe: earlier indices unchanged when you remove later ones
 for i = items:size() - 1, 0, -1 do
@@ -547,7 +547,7 @@ for i = items:size() - 1, 0, -1 do
 end
 ```
 
-### ❌ Wrong: Missing Module Prefix
+### Wrong: Missing Module Prefix
 
 ```lua
 -- Item name without module prefix
@@ -556,13 +556,13 @@ player:getInventory():AddItem("Hammer")  -- Fails silently or errors!
 
 **Why it fails:** PZ needs the full item name with module: `Module.ItemName`
 
-✅ **Right: Include Module Prefix**
+**Right: Include Module Prefix**
 ```lua
 -- Full item name with "Base." prefix
 player:getInventory():AddItem("Base.Hammer")  -- Works!
 ```
 
-### ❌ Wrong: Forgetting Nil Checks
+### Wrong: Forgetting Nil Checks
 
 ```lua
 -- Assumes item exists
@@ -572,7 +572,7 @@ print(item:getCondition())  -- CRASH if no hammer in inventory!
 
 **Why it fails:** `getFirstType()` returns `nil` if item not found. Calling methods on `nil` crashes.
 
-✅ **Right: Always Check for Nil**
+**Right: Always Check for Nil**
 ```lua
 -- Check before using
 local item = player:getInventory():getFirstType("Base.Hammer")
@@ -583,7 +583,7 @@ else
 end
 ```
 
-### ❌ Wrong: Using Wrong Method Names
+### Wrong: Using Wrong Method Names
 
 ```lua
 -- Using shortened method name that doesn't exist
@@ -592,14 +592,14 @@ local critChance = weapon:getCritChance()  -- ERROR! No such method!
 
 **Why it fails:** The actual method is `getCriticalChance()`, not `getCritChance()`. Must use full name.
 
-✅ **Right: Use Full Method Names**
+**Right: Use Full Method Names**
 ```lua
 -- Use the correct full method name
 local critChance = weapon:getCriticalChance()  -- Works!
 local critDmg = weapon:getCritDmgMultiplier()  -- Also correct
 ```
 
-### ❌ Wrong: Repeated Property Access
+### Wrong: Repeated Property Access
 
 ```lua
 -- Calls getCondition() twice unnecessarily
@@ -613,7 +613,7 @@ end
 
 **Why it fails:** Not technically broken, but wasteful. Each method call has cost.
 
-✅ **Right: Cache Property Values**
+**Right: Cache Property Values**
 ```lua
 -- Call getCondition() once, reuse the value
 for i = 0, items:size() - 1 do

@@ -429,7 +429,7 @@ Vehicle parts don't use the fixing system. You must:
 
 ## Common Mistakes
 
-### ❌ Wrong: Using Module Prefix in Require
+### Wrong: Using Module Prefix in Require
 
 ```
 fixing Fix Custom Bat
@@ -441,7 +441,7 @@ fixing Fix Custom Bat
 
 **Why it's wrong:** The `Require` field expects just the item name, not the full `Module.ItemName` format. This will fail silently - no error, but repair won't work.
 
-✅ **Right:**
+**Right:**
 
 ```
 fixing Fix Custom Bat
@@ -453,7 +453,7 @@ fixing Fix Custom Bat
 
 ---
 
-### ❌ Wrong: Forgetting ConditionMax on Item
+### Wrong: Forgetting ConditionMax on Item
 
 ```
 item CustomBat
@@ -467,7 +467,7 @@ item CustomBat
 
 **Why it's wrong:** Without `ConditionMax`, the item can't be damaged, so it can never need repair. The repair option will never appear.
 
-✅ **Right:**
+**Right:**
 
 ```
 item CustomBat
@@ -481,7 +481,7 @@ item CustomBat
 
 ---
 
-### ❌ Wrong: Thinking Multiple Fixer Lines Are Required Together
+### Wrong: Thinking Multiple Fixer Lines Are Required Together
 
 ```
 // Player sees this and thinks they need BOTH Woodglue AND DuctTape
@@ -495,7 +495,7 @@ fixing Fix Baseball Bat
 
 **Why it's confusing:** Multiple `Fixer` lines create **alternative options**, not a combined requirement. The player chooses ONE.
 
-✅ **Right (with clarification):**
+**Right (with clarification):**
 
 ```
 fixing Fix Baseball Bat
@@ -509,7 +509,7 @@ fixing Fix Baseball Bat
 
 ---
 
-### ❌ Wrong: Misspelling Skill Names
+### Wrong: Misspelling Skill Names
 
 ```
 fixing Fix Custom Bat
@@ -521,7 +521,7 @@ fixing Fix Custom Bat
 
 **Why it's wrong:** Skill names must be spelled exactly as the game expects. `Woodworking` won't match the skill `Woodwork`, so the repair will work (no error) but won't give any skill bonus or check for the skill requirement.
 
-✅ **Right:**
+**Right:**
 
 ```
 fixing Fix Custom Bat

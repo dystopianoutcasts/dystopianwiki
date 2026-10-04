@@ -252,14 +252,14 @@ Let's explicitly state the rules that recipes must follow. These are non-negotia
 
 Recipe properties (Result, Time, Category, etc.) use colons `:`, not equals signs `=`.
 
-✅ **Correct:**
+**Correct:**
 ```
 Result:Plank,
 Time:50,
 Category:Carpentry,
 ```
 
-❌ **Wrong:**
+**Wrong:**
 ```
 Result=Plank,              /* Won't work! */
 Time=50,                   /* Won't work! */
@@ -271,7 +271,7 @@ Time=50,                   /* Won't work! */
 
 Every line inside a recipe block must end with a comma.
 
-✅ **Correct:**
+**Correct:**
 ```
 recipe Make Crate {
     Plank,
@@ -282,7 +282,7 @@ recipe Make Crate {
 }
 ```
 
-❌ **Wrong:**
+**Wrong:**
 ```
 recipe Make Crate {
     Plank,
@@ -299,13 +299,13 @@ recipe Make Crate {
 
 `TreeBranch` and `Treebranch` are different things. Capitalization matters.
 
-✅ **Correct:**
+**Correct:**
 ```
 TreeBranch,            /* This exists in the game */
 SharpedStick,          /* This exists in the game */
 ```
 
-❌ **Wrong:**
+**Wrong:**
 ```
 Treebranch,            /* Doesn't exist - wrong capitalization */
 SharpedSTick,          /* Doesn't exist - wrong capitalization */
@@ -317,13 +317,13 @@ SharpedSTick,          /* Doesn't exist - wrong capitalization */
 
 Recipes use **item IDs** (internal code names), not display names (what players see).
 
-✅ **Correct:**
+**Correct:**
 ```
 TinOpener,             /* Item ID (code name) */
 CannedBeans,           /* Item ID (code name) */
 ```
 
-❌ **Wrong:**
+**Wrong:**
 ```
 Tin Opener,            /* Display name - won't work */
 Canned Beans,          /* Display name - won't work */
@@ -339,7 +339,7 @@ Let's look at the most common errors people make when writing recipes, and how t
 
 ### Mistake 1: Using Equals for Properties
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 ```
 recipe Saw Logs {
@@ -354,7 +354,7 @@ recipe Saw Logs {
 
 **Why it breaks:** Properties must use colons `:`, not equals signs `=`. That's the syntax rule.
 
-✅ **Works:**
+**Works:**
 
 ```
 recipe Saw Logs {
@@ -369,7 +369,7 @@ recipe Saw Logs {
 
 ### Mistake 2: Forgetting the Comma
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 ```
 recipe Open Beans {
@@ -385,7 +385,7 @@ recipe Open Beans {
 
 **Why it breaks:** Without commas, the parser doesn't know where one line ends and the next begins.
 
-✅ **Works:**
+**Works:**
 
 ```
 recipe Open Beans {
@@ -401,7 +401,7 @@ recipe Open Beans {
 
 ### Mistake 3: Wrong Item ID Capitalization
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 ```
 recipe Sharpen Stick {
@@ -416,7 +416,7 @@ recipe Sharpen Stick {
 
 **Why it breaks:** Item IDs are case-sensitive. `TreeBranch` exists, but `Treebranch` doesn't.
 
-✅ **Works:**
+**Works:**
 
 ```
 recipe Sharpen Stick {
@@ -431,7 +431,7 @@ recipe Sharpen Stick {
 
 ### Mistake 4: Using Display Names Instead of Item IDs
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 ```
 recipe Open Beans {
@@ -447,7 +447,7 @@ recipe Open Beans {
 
 **Why it breaks:** Recipes need item IDs (code names), not display names (player-facing text).
 
-✅ **Works:**
+**Works:**
 
 ```
 recipe Open Beans {
@@ -463,7 +463,7 @@ recipe Open Beans {
 
 ### Mistake 5: Missing Closing Brace
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 ```
 module Base {
@@ -481,7 +481,7 @@ module Base {
 
 **Why it breaks:** Every `{` needs a matching `}`. Without it, the game doesn't know where the module ends.
 
-✅ **Works:**
+**Works:**
 
 ```
 module Base {

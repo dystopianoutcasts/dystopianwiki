@@ -1592,7 +1592,7 @@ OnSteamFriendStatusChanged, OnSteamGameJoin, OnSteamRefreshInternetServers, OnSt
 
 ### Mistake 1: Heavy Work in OnTick/OnPlayerUpdate
 
-❌ **Wrong - Performance Killer:**
+**Wrong - Performance Killer:**
 
 ```lua
 Events.OnTick.Add(function()
@@ -1604,7 +1604,7 @@ Events.OnTick.Add(function()
 end)
 ```
 
-✅ **Correct - Use Appropriate Timing:**
+**Correct - Use Appropriate Timing:**
 
 ```lua
 Events.EveryTenMinutes.Add(function()
@@ -1620,7 +1620,7 @@ end)
 
 ### Mistake 2: Not Checking for Nil
 
-❌ **Wrong - Will Crash:**
+**Wrong - Will Crash:**
 
 ```lua
 Events.OnEquipPrimary.Add(function(player, item)
@@ -1628,7 +1628,7 @@ Events.OnEquipPrimary.Add(function(player, item)
 end)
 ```
 
-✅ **Correct - Always Check:**
+**Correct - Always Check:**
 
 ```lua
 Events.OnEquipPrimary.Add(function(player, item)
@@ -1644,7 +1644,7 @@ end)
 
 ### Mistake 3: Not Using Guard Clauses
 
-❌ **Wrong - Wastes Performance:**
+**Wrong - Wastes Performance:**
 
 ```lua
 Events.OnPlayerUpdate.Add(function(player)
@@ -1655,7 +1655,7 @@ Events.OnPlayerUpdate.Add(function(player)
 end)
 ```
 
-✅ **Correct - Exit Early:**
+**Correct - Exit Early:**
 
 ```lua
 Events.OnPlayerUpdate.Add(function(player)
@@ -1671,7 +1671,7 @@ end)
 
 ### Mistake 4: Forgetting to Remove Event Handlers
 
-❌ **Wrong - Memory Leak:**
+**Wrong - Memory Leak:**
 
 ```lua
 -- Add handler but never remove it
@@ -1683,7 +1683,7 @@ Events.OnGameStart.Add(myHandler)
 -- Handler stays forever, even if you don't need it
 ```
 
-✅ **Correct - Remove When Done:**
+**Correct - Remove When Done:**
 
 ```lua
 local function myHandler()
@@ -1700,7 +1700,7 @@ Events.OnGameStart.Add(myHandler)
 
 ### Mistake 5: Wrong Event for Context Menus
 
-❌ **Wrong - Won't Work:**
+**Wrong - Won't Work:**
 
 ```lua
 Events.OnGameStart.Add(function()
@@ -1709,7 +1709,7 @@ Events.OnGameStart.Add(function()
 end)
 ```
 
-✅ **Correct - Use Appropriate Event:**
+**Correct - Use Appropriate Event:**
 
 ```lua
 Events.OnFillInventoryObjectContextMenu.Add(function(playerIndex, context, items)
@@ -1824,12 +1824,12 @@ end)
 ### Performance - Choose the Right Timing Event
 
 ```lua
--- ❌ BAD: Heavy work every tick
+-- BAD: Heavy work every tick
 Events.OnTick.Add(function()
     expensiveCalculation()                         -- Runs 60+ times per second
 end)
 
--- ✅ GOOD: Use appropriate interval
+-- GOOD: Use appropriate interval
 Events.EveryTenMinutes.Add(function()
     expensiveCalculation()                         -- Runs every 10 minutes
 end)

@@ -234,7 +234,7 @@ Background music tracks and ambient music.
 
 ### Mistake 1: Sound Name Doesn't Exist
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 recipe Craft Something
 {
@@ -247,7 +247,7 @@ recipe Craft Something
 
 **What happens:** Silent crafting. The game can't find `HammeringNails`, so it plays nothing.
 
-✅ **Works:**
+**Works:**
 ```
 recipe Craft Something
 {
@@ -264,7 +264,7 @@ recipe Craft Something
 
 ### Mistake 2: Wrong Sound for Action
 
-❌ **Sounds weird:**
+**Sounds weird:**
 ```
 recipe Saw Plank
 {
@@ -278,7 +278,7 @@ recipe Saw Plank
 
 **What happens:** It works, but sounds wrong. Players hear meat slicing while sawing wood.
 
-✅ **Sounds right:**
+**Sounds right:**
 ```
 recipe Saw Plank
 {
@@ -296,7 +296,7 @@ recipe Saw Plank
 
 ### Mistake 3: Case Sensitivity Errors
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 recipe Make Something
 {
@@ -309,7 +309,7 @@ recipe Make Something
 
 **What happens:** Silent crafting. The game looks for `sawing` but the actual sound is `Sawing` (capital S).
 
-✅ **Works:**
+**Works:**
 ```
 recipe Make Something
 {
@@ -326,7 +326,7 @@ recipe Make Something
 
 ### Mistake 4: Using Multiple Sounds
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 recipe Craft Complex Item
 {
@@ -340,7 +340,7 @@ recipe Craft Complex Item
 
 **What happens:** Only the last `Sound:` property is used. In this case, only `Hammering` plays.
 
-✅ **Pick one sound:**
+**Pick one sound:**
 ```
 recipe Craft Complex Item
 {
@@ -357,7 +357,7 @@ recipe Craft Complex Item
 
 ### Mistake 5: Forgetting the Comma
 
-❌ **Syntax error:**
+**Syntax error:**
 ```
 recipe Craft Item
 {
@@ -371,7 +371,7 @@ recipe Craft Item
 
 **What happens:** Recipe doesn't load. Parser error.
 
-✅ **Works:**
+**Works:**
 ```
 recipe Craft Item
 {
@@ -1716,9 +1716,9 @@ recipe Open Can of Soup
 
 1. **Case Sensitivity**
    Sound names are case-sensitive. Use exact capitalization as shown in this reference.
-   - ✅ `Sawing` (correct)
-   - ❌ `sawing` (wrong)
-   - ❌ `SAWING` (wrong)
+   - `Sawing` (correct)
+   - `sawing` (wrong)
+   - `SAWING` (wrong)
 
 2. **Sound Parameter**
    Use `Sound:SoundName,` in recipe definitions.
@@ -1772,21 +1772,21 @@ To test sounds in your recipes:
 ### Common Issues
 
 #### Issue: Sound doesn't play
-- ✅ Check sound name spelling and capitalization
-- ✅ Verify sound exists in vanilla sound files
-- ✅ Ensure sound category is appropriate for recipe context
-- ✅ Check for typos in the `Sound:` property
+- Check sound name spelling and capitalization
+- Verify sound exists in vanilla sound files
+- Ensure sound category is appropriate for recipe context
+- Check for typos in the `Sound:` property
 
 #### Issue: Wrong sound plays
-- ✅ Double-check sound name matches intended sound
-- ✅ Review sound descriptions in this document
-- ✅ Test with vanilla recipes that use the same sound
-- ✅ Make sure you're not confusing similar sound names
+- Double-check sound name matches intended sound
+- Review sound descriptions in this document
+- Test with vanilla recipes that use the same sound
+- Make sure you're not confusing similar sound names
 
 #### Issue: Sound cuts off early
-- ✅ Increase the `Time:` value in your recipe
-- ✅ Some sounds are designed to loop for long actions
-- ✅ Very short Time values may not play the full sound
+- Increase the `Time:` value in your recipe
+- Some sounds are designed to loop for long actions
+- Very short Time values may not play the full sound
 
 ---
 

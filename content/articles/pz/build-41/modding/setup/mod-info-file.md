@@ -291,14 +291,14 @@ Save the file (Ctrl+S). No need to restart PZ if it's not running.
 
 ### 1. Spaces in ID Field
 
-❌ **Wrong:**
+**Wrong:**
 ```
 name=My Awesome Mod
 id=My Awesome Mod        # SPACES IN ID - MOD WON'T LOAD PROPERLY
 description=A cool mod
 ```
 
-✅ **Right:**
+**Right:**
 ```
 name=My Awesome Mod      # Display name can have spaces
 id=MyAwesomeMod          # ID must be one word, no spaces
@@ -313,14 +313,14 @@ description=A cool mod
 
 ### 2. Wrong File Extension (mod.info.txt)
 
-❌ **Wrong:**
+**Wrong:**
 ```
 YourMod/
 ├── mod.info.txt        # File Explorer is hiding the .txt extension!
 └── media/
 ```
 
-✅ **Right:**
+**Right:**
 ```
 YourMod/
 ├── mod.info            # No extension - just "mod.info"
@@ -341,14 +341,14 @@ YourMod/
 
 ### 3. Missing Equals Signs
 
-❌ **Wrong:**
+**Wrong:**
 ```
 name My First Mod       # Missing = between key and value
 id MyFirstMod
 description A test mod
 ```
 
-✅ **Right:**
+**Right:**
 ```
 name=My First Mod       # Key=Value format (no spaces around =)
 id=MyFirstMod
@@ -363,14 +363,14 @@ description=A test mod
 
 ### 4. Adding Unnecessary Quotes
 
-❌ **Wrong:**
+**Wrong:**
 ```
 name="My Mod Name"      # Quotes aren't needed and will be included in the name!
 id="MyModID"
 description="This is my mod"
 ```
 
-✅ **Right:**
+**Right:**
 ```
 name=My Mod Name        # No quotes - just the text directly
 id=MyModID
@@ -385,7 +385,7 @@ description=This is my mod
 
 ### 5. Using Hyphens or Special Characters in ID
 
-❌ **Wrong:**
+**Wrong:**
 ```
 name=Better Weapons
 id=better-weapons       # Hyphen not allowed
@@ -398,7 +398,7 @@ name=Cool Mod
 id=my_cool_mod!         # Exclamation mark not allowed
 ```
 
-✅ **Right:**
+**Right:**
 ```
 name=Better Weapons
 id=BetterWeapons        # Letters and numbers only (underscores are OK)
@@ -488,26 +488,26 @@ poster poster.png
 
 **Error 1: Quotes around name**
 ```
-❌ name="My Weapon Mod"
-✅ name=My Weapon Mod
+Wrong: name="My Weapon Mod"
+Right: name=My Weapon Mod
 ```
 
 **Error 2: Missing equals sign for id**
 ```
-❌ id My Weapon Mod
-✅ id=MyWeaponMod
+Wrong: id My Weapon Mod
+Right: id=MyWeaponMod
 ```
 
 **Error 3: Spaces in id**
 ```
-❌ id=My Weapon Mod
-✅ id=MyWeaponMod
+Wrong: id=My Weapon Mod
+Right: id=MyWeaponMod
 ```
 
 **Error 4: Missing equals sign for poster**
 ```
-❌ poster poster.png
-✅ poster=poster.png
+Wrong: poster poster.png
+Right: poster=poster.png
 ```
 
 **Corrected file:**

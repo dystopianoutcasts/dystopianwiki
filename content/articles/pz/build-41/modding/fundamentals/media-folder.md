@@ -539,14 +539,14 @@ Let's look at the mistakes beginners make when setting up the `media` folder—a
 
 ### Mistake 1: Wrong Folder Depth
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 MyMod/media/scripts/items.txt
 ```
 
 **What you'll see:** The game doesn't recognize your mod. When you check the mod list in-game, your mod doesn't appear.
 
-✅ **Works:**
+**Works:**
 ```
 MyMod/Contents/mods/MyModName/media/scripts/items.txt
 ```
@@ -557,7 +557,7 @@ MyMod/Contents/mods/MyModName/media/scripts/items.txt
 
 ### Mistake 2: Icon Filename Doesn't Match Property
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 // In items.txt:
 item MyKnife
@@ -571,7 +571,7 @@ MyKnifeIcon.png          ← Filename is MyKnifeIcon, not MyKnife
 
 **What you'll see:** Your item appears with a white placeholder box instead of your icon.
 
-✅ **Works (Option 1):**
+**Works (Option 1):**
 ```
 // In items.txt:
 item MyKnife
@@ -583,7 +583,7 @@ item MyKnife
 MyKnifeIcon.png
 ```
 
-✅ **Works (Option 2):**
+**Works (Option 2):**
 ```
 // In items.txt:
 item MyKnife
@@ -601,14 +601,14 @@ MyKnife.png               ← Renamed to match the property
 
 ### Mistake 3: UI Code in the Wrong Folder
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 media/ui/MyButtonMod.lua  ← Lua code in the ui/ folder
 ```
 
 **What you'll see:** Your code never runs. The button doesn't appear. No error messages—just silence.
 
-✅ **Works:**
+**Works:**
 ```
 media/lua/client/ISUI/MyButtonMod.lua  ← Lua code in the lua/ folder
 media/ui/MyButtonBackground.png        ← Image in the ui/ folder
@@ -620,7 +620,7 @@ media/ui/MyButtonBackground.png        ← Image in the ui/ folder
 
 ### Mistake 4: Missing mod.info File
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 MyMod/Contents/mods/MyModName/media/scripts/items.txt
 (No mod.info file anywhere)
@@ -628,7 +628,7 @@ MyMod/Contents/mods/MyModName/media/scripts/items.txt
 
 **What you'll see:** The game doesn't recognize your mod. It won't appear in the mod list.
 
-✅ **Works:**
+**Works:**
 ```
 MyMod/mod.info                                     ← Required file
 MyMod/Contents/mods/MyModName/media/scripts/items.txt
@@ -647,7 +647,7 @@ description=Adds a custom knife to the game.
 
 ### Mistake 5: Using Spaces in Filenames
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 media/scripts/my items.txt
 media/textures/My Knife Icon.png
@@ -655,7 +655,7 @@ media/textures/My Knife Icon.png
 
 **What you'll see:** The game might fail to load the files, or you'll see errors in the console.
 
-✅ **Works:**
+**Works:**
 ```
 media/scripts/my_items.txt
 media/textures/MyKnifeIcon.png

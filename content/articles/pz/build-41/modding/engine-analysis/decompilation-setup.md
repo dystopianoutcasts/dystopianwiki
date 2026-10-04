@@ -523,7 +523,7 @@ Share your findings in Discord, on forums, or in this wiki. Every documented dis
 
 Let me show you the mistakes everyone makes when starting with decompilation. I made all of these myself!
 
-### ❌ Wrong: Forgetting Quotes in Paths
+### Wrong: Forgetting Quotes in Paths
 ```bash
 java -jar vineflower.jar -d ./output C:\Program Files (x86)\Steam\...\zombie
 # Error: "C:\Program" is not recognized
@@ -531,13 +531,13 @@ java -jar vineflower.jar -d ./output C:\Program Files (x86)\Steam\...\zombie
 
 **Why it fails:** The space in "Program Files" breaks the command.
 
-✅ **Right: Use Quotes for Paths with Spaces**
+**Right: Use Quotes for Paths with Spaces**
 ```bash
 java -jar vineflower.jar -d ./output "C:\Program Files (x86)\Steam\...\zombie"
 # Works! Quotes treat the whole path as one argument
 ```
 
-### ❌ Wrong: Not Enough Memory
+### Wrong: Not Enough Memory
 ```bash
 java -jar vineflower.jar -d ./output "...\ProjectZomboid\zombie"
 # Error: java.lang.OutOfMemoryError
@@ -545,13 +545,13 @@ java -jar vineflower.jar -d ./output "...\ProjectZomboid\zombie"
 
 **Why it fails:** PZ has 1,200+ classes. Default Java memory (512MB) isn't enough.
 
-✅ **Right: Allocate Enough Memory**
+**Right: Allocate Enough Memory**
 ```bash
 java -Xmx4g -jar vineflower.jar -d ./output "...\ProjectZomboid\zombie"
 # -Xmx4g = Give Java 4GB of memory (4 gigabytes)
 ```
 
-### ❌ Wrong: Getting Lost in Code
+### Wrong: Getting Lost in Code
 ```java
 // Opening a 7,000-line file and trying to read it all
 // IsoPlayer.java has 7,585 lines - where do I even start?
@@ -559,7 +559,7 @@ java -Xmx4g -jar vineflower.jar -d ./output "...\ProjectZomboid\zombie"
 
 **Why it fails:** These files are HUGE. Reading linearly is overwhelming.
 
-✅ **Right: Use Search (Ctrl+F)**
+**Right: Use Search (Ctrl+F)**
 ```
 Open the file → Press Ctrl+F → Search for what you need
 Looking for health? Search "health"
@@ -567,7 +567,7 @@ Looking for speed? Search "speed"
 Looking for public fields? Search "public int" or "public boolean"
 ```
 
-### ❌ Wrong: Assuming Private Fields are Accessible
+### Wrong: Assuming Private Fields are Accessible
 ```java
 private int health = 100;        // "private" means Lua CANNOT access this
 ```
@@ -578,7 +578,7 @@ zombie.health = 50  -- Won't work! Field is private
 
 **Why it fails:** Only `public` fields are accessible from Lua. `private` means "Java only."
 
-✅ **Right: Look for Public Fields or Setter Methods**
+**Right: Look for Public Fields or Setter Methods**
 ```java
 public int health = 100;         // Public field - Lua can access
 // OR
@@ -592,7 +592,7 @@ zombie.health = 50        -- Works if field is public
 zombie:setHealth(50)      -- Works if setter method exists
 ```
 
-### ❌ Wrong: Trying to Access Every Discovery
+### Wrong: Trying to Access Every Discovery
 ```java
 // You found 500 public fields!
 // Let me try to use all of them in my mod...
@@ -600,7 +600,7 @@ zombie:setHealth(50)      -- Works if setter method exists
 
 **Why it fails:** Most fields are for internal engine use. Many will have no effect or will break things.
 
-✅ **Right: Test Small, Document Results**
+**Right: Test Small, Document Results**
 ```lua
 -- Test ONE field at a time
 zombie.speedType = 0

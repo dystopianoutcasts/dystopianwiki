@@ -317,7 +317,7 @@ Choose values that match the vanilla pattern:
 
 ## Common Mistakes
 
-### ❌ Wrong: Custom Map with Wrong Weight
+### Wrong: Custom Map with Wrong Weight
 
 ```
 item MyCustomCityMap
@@ -330,7 +330,7 @@ item MyCustomCityMap
 
 **Why it's wrong:** Looking at vanilla maps (Louisville, Muldraugh, Riverside, Rosewood, Westpoint, March Ridge), EVERY SINGLE MAP weighs 0.1. Maps are folded paper - they're very light. Your custom map at 0.5 weight is 5x heavier than any vanilla map.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomCityMap
@@ -343,7 +343,7 @@ item MyCustomCityMap
 }
 ```
 
-### ❌ Wrong: Custom Trap with Inconsistent Weight
+### Wrong: Custom Trap with Inconsistent Weight
 
 ```
 item MyCustomTrap
@@ -356,7 +356,7 @@ item MyCustomTrap
 
 **Why it's wrong:** Looking at vanilla traps and bombs (Aerosol Bomb, Pipe Bomb, Smoke Bomb, Flame Trap, Noise Maker), ALL traps and bombs weigh 1.5. Your custom trap at 3.0 weight is 2x heavier than any vanilla trap.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomNoiseTrap
@@ -370,7 +370,7 @@ item MyCustomNoiseTrap
 }
 ```
 
-### ❌ Wrong: Hair Dye with Wrong Weight
+### Wrong: Hair Dye with Wrong Weight
 
 ```
 item MyCustomPurpleHairDye
@@ -384,7 +384,7 @@ item MyCustomPurpleHairDye
 
 **Why it's wrong:** Looking at vanilla hair dyes (Black, Blonde, Blue, Green, Light Brown, Pink, Red, White, Yellow, Ginger), ALL hair dyes weigh 1.0. Hair dye comes in bottles - they're heavier than small items. Your custom hair dye at 0.3 weight is 3x lighter than vanilla hair dyes.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomPurpleHairDye

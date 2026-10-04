@@ -264,7 +264,7 @@ ISFixAction:new(player, item, 60, fixing, fixer)
 
 ## Common Mistakes
 
-### ❌ Wrong: Using Equals Instead of Colon
+### Wrong: Using Equals Instead of Colon
 
 ```
 fixing Fix MyWeapon
@@ -274,7 +274,7 @@ fixing Fix MyWeapon
 }
 ```
 
-✅ **Right:**
+**Right:**
 ```
 fixing Fix MyWeapon
 {
@@ -283,7 +283,7 @@ fixing Fix MyWeapon
 }
 ```
 
-### ❌ Wrong: Comma Instead of Semicolon
+### Wrong: Comma Instead of Semicolon
 
 ```
 fixing Fix MyWeapon
@@ -293,7 +293,7 @@ fixing Fix MyWeapon
 }
 ```
 
-✅ **Right:**
+**Right:**
 ```
 fixing Fix MyWeapon
 {
@@ -302,7 +302,7 @@ fixing Fix MyWeapon
 }
 ```
 
-### ❌ Wrong: No Validation Before FixingManager Call
+### Wrong: No Validation Before FixingManager Call
 
 ```lua
 function MyRepair:perform()
@@ -311,7 +311,7 @@ function MyRepair:perform()
 end
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 function MyRepair:perform()
     // Validate before calling Java API
@@ -323,13 +323,13 @@ function MyRepair:perform()
 end
 ```
 
-### ❌ Wrong: Setting Condition Without Clamping
+### Wrong: Setting Condition Without Clamping
 
 ```lua
 item:setCondition(item:getCondition() + 50)  // WRONG! Might exceed max
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 local newCond = math.min(item:getCondition() + 50, item:getConditionMax())
 item:setCondition(newCond)  // Clamped to max

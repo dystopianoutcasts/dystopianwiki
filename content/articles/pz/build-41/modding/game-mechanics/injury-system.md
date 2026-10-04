@@ -366,7 +366,7 @@ end
 
 ### Mistake 1: Using ReduceGeneralHealth() For Injuries
 
-❌ **Dangerous:**
+**Dangerous:**
 ```lua
 // DON'T DO THIS!
 player:getBodyDamage():ReduceGeneralHealth(8)  -- Directly removes 8% HP
@@ -374,7 +374,7 @@ player:getBodyDamage():ReduceGeneralHealth(8)  -- Directly removes 8% HP
 
 **Why this is wrong:** This bypasses the entire injury system and directly damages the player's HP pool. It's extremely harsh—8 HP is massive (zombies don't do this much direct damage). It doesn't create visible injuries, doesn't allow treatment, and can easily kill players.
 
-✅ **Do this instead:**
+**Do this instead:**
 ```lua
 // Apply actual injury that players can see and treat
 local hand = player:getBodyDamage():getBodyPart(BodyPartType.Hand_L)
@@ -388,7 +388,7 @@ hand:setBleedingTime(0.2)  // Minimal bleeding
 
 ### Mistake 2: Forgetting to Set Injury Time
 
-❌ **Doesn't work right:**
+**Doesn't work right:**
 ```lua
 hand:setCut(true)  // Cut is set but has no duration
 // No setCutTime() call!
@@ -396,7 +396,7 @@ hand:setCut(true)  // Cut is set but has no duration
 
 **What happens:** The injury exists but may not display correctly or heal properly.
 
-✅ **Works:**
+**Works:**
 ```lua
 hand:setCut(true)  // Mark as cut
 hand:setCutTime(0)  // 0 = fresh cut
@@ -408,14 +408,14 @@ hand:setCutTime(0)  // 0 = fresh cut
 
 ### Mistake 3: Excessive Bleeding Values
 
-❌ **Too harsh:**
+**Too harsh:**
 ```lua
 hand:setBleedingTime(50)  // 50 is EXTREME bleeding
 ```
 
 **What happens:** Player bleeds out and dies rapidly.
 
-✅ **Reasonable values:**
+**Reasonable values:**
 ```lua
 // Light scratch
 hand:setBleedingTime(0.2)  // Tiny bleed, optional bandage
@@ -436,14 +436,14 @@ hand:setBleedingTime(20)  // Critical, can be fatal
 
 ### Mistake 4: Wrong Body Part Type Format
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```lua
 local hand = bodyDamage:getBodyPart("Hand_L")  // String - WRONG!
 ```
 
 **What happens:** Error or nil return - no body part found.
 
-✅ **Works:**
+**Works:**
 ```lua
 local hand = bodyDamage:getBodyPart(BodyPartType.Hand_L)  // Enum - correct!
 ```
@@ -454,14 +454,14 @@ local hand = bodyDamage:getBodyPart(BodyPartType.Hand_L)  // Enum - correct!
 
 ### Mistake 5: Applying Bites Casually
 
-❌ **Kills the player:**
+**Kills the player:**
 ```lua
 hand:SetBitten(true)  // This starts infection = death
 ```
 
 **What happens:** Player is infected and will die (unless sandbox settings disable zombie infection).
 
-✅ **Only use bites for zombie attacks:**
+**Only use bites for zombie attacks:**
 ```lua
 // Regular injury:
 hand:SetScratchedWeapon(true)  // Just a scratch, not a bite

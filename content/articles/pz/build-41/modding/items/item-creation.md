@@ -223,8 +223,8 @@ recipe Example {
 **Common Error Example:**
 ```
 item BrokenItem {
-    Weight: 1.0,  // ❌ WRONG - This will cause a parse error
-    Type: Normal, // ❌ WRONG
+    Weight: 1.0,  // WRONG - This will cause a parse error
+    Type: Normal, // WRONG
 }
 ```
 
@@ -703,11 +703,11 @@ module OutcastAdvCrft {
 ```
 
 **What This Does:**
-- ✅ Appears in game
-- ✅ Can be eaten
-- ❌ No nutrition values (won't affect hunger)
-- ❌ No category (appears in unsorted items)
-- ❌ No 3D model (generic placeholder on ground)
+- [YES] Appears in game
+- [YES] Can be eaten
+- [NO] No nutrition values (won't affect hunger)
+- [NO] No category (appears in unsorted items)
+- [NO] No 3D model (generic placeholder on ground)
 
 ### Version 2: Enhanced with Nutrition
 
@@ -740,11 +740,11 @@ module OutcastAdvCrft {
 ```
 
 **What Changed:**
-- ✅ Now reduces hunger when eaten
-- ✅ Adds calories and nutrition
-- ✅ Spoils over time (realistic food behavior)
-- ❌ Still no inventory category
-- ❌ Still no 3D model
+- [YES] Now reduces hunger when eaten
+- [YES] Adds calories and nutrition
+- [YES] Spoils over time (realistic food behavior)
+- [NO] Still no inventory category
+- [NO] Still no 3D model
 
 ### Version 3: Complete with Category & Model
 
@@ -787,11 +787,11 @@ module OutcastAdvCrft {
 ```
 
 **Final Features:**
-- ✅ Complete nutrition system
-- ✅ Organized in Food category
-- ✅ 3D model when dropped
-- ✅ Affects mood and thirst
-- ✅ Ready for release
+- [YES] Complete nutrition system
+- [YES] Organized in Food category
+- [YES] 3D model when dropped
+- [YES] Affects mood and thirst
+- [YES] Ready for release
 
 > **Progressive Learning**: Start with Version 1 to test basic functionality, then add features one version at a time. This makes debugging easier when something breaks.
 
@@ -927,7 +927,7 @@ module OutcastAdvCrft {
 
 ### Mistake 1: Using Colons Instead of Equals
 
-**❌ WRONG:**
+**WRONG:**
 ```
 item BrokenItem {
     Weight: 1.0,      // Colon causes parse error
@@ -936,7 +936,7 @@ item BrokenItem {
 }
 ```
 
-**✅ CORRECT:**
+**CORRECT:**
 ```
 item WorkingItem {
     Weight = 1.0,     // Equals sign (=)
@@ -954,7 +954,7 @@ ERROR: Script error in items.txt line 15: Expected '=' but found ':'
 
 ### Mistake 2: Missing Required Properties
 
-**❌ WRONG:**
+**WRONG:**
 ```
 item IncompleteItem {
     DisplayName = My Cool Item,
@@ -962,7 +962,7 @@ item IncompleteItem {
 }
 ```
 
-**✅ CORRECT:**
+**CORRECT:**
 ```
 item CompleteItem {
     DisplayName = My Cool Item,
@@ -982,14 +982,14 @@ ERROR: Item 'IncompleteItem' missing required property 'Type'
 
 ### Mistake 3: Wrong Module Reference
 
-**❌ WRONG:**
+**WRONG:**
 ```
 recipe BrokenRecipe {
     WrongModule.ItemName,   // Module doesn't exist - recipe fails
 }
 ```
 
-**✅ CORRECT:**
+**CORRECT:**
 ```
 recipe WorkingRecipe {
     OutcastAdvCrft.ItemName,  // Your actual module name
@@ -1011,7 +1011,7 @@ ERROR: Unknown item 'WrongModule.ItemName' in recipe 'BrokenRecipe'
 
 ### Mistake 4: Incorrect Weight Values
 
-**❌ WRONG:**
+**WRONG:**
 ```
 item UnrealisticItem {
     Weight = 0,       // Zero weight breaks encumbrance calculations
@@ -1026,7 +1026,7 @@ item RidiculousItem {
 }
 ```
 
-**✅ CORRECT:**
+**CORRECT:**
 ```
 item RealisticItem {
     Weight = 0.5,     // Reasonable weight for a tool
@@ -1047,7 +1047,7 @@ item RealisticItem {
 
 ### Mistake 5: Forgetting to Import Base Module
 
-**❌ WRONG:**
+**WRONG:**
 ```
 module OutcastAdvCrft {
     // Missing imports block
@@ -1058,7 +1058,7 @@ module OutcastAdvCrft {
 }
 ```
 
-**✅ CORRECT:**
+**CORRECT:**
 ```
 module OutcastAdvCrft {
     imports {

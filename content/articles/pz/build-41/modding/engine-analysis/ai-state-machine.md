@@ -561,7 +561,7 @@ end)
 
 ### Mistake 1: Assuming You Can Add Custom States
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```lua
 -- Trying to create custom AI state
 local CustomChaseState = {}
@@ -570,7 +570,7 @@ zombie:setState(CustomChaseState)  -- Not possible
 
 **Why:** States are engine code (Java). Lua can't add new ones.
 
-✅ **Works:**
+**Works:**
 ```lua
 -- Instead, modify behavior through attributes
 zombie.speedType = 1  -- Fast zombie = aggressive chase behavior
@@ -583,7 +583,7 @@ zombie.cognition = 1  -- Smart = better at tracking
 
 ### Mistake 2: Modifying Every Zombie Every Frame
 
-❌ **Doesn't work (performance killer):**
+**Doesn't work (performance killer):**
 ```lua
 Events.OnTick.Add(function()
     local zombies = getCell():getZombieList()
@@ -597,7 +597,7 @@ end)
 
 **What happens:** With 1000 zombies, this runs 60,000 times per second (60 FPS × 1000 zombies). Game freezes.
 
-✅ **Works (batched processing):**
+**Works (batched processing):**
 ```lua
 local processIndex = 0
 local BATCH_SIZE = 10  -- Process 10 zombies per frame
@@ -624,7 +624,7 @@ end)
 
 ### Mistake 3: Not Understanding State Priority
 
-❌ **Wrong expectation:**
+**Wrong expectation:**
 ```lua
 -- Player thinks: "I'll make noise to distract zombie from my friend"
 createSound(distraction_x, distraction_y, 50)
@@ -632,7 +632,7 @@ createSound(distraction_x, distraction_y, 50)
 
 **What actually happens:** Zombie in `AttackState` (actively attacking friend) doesn't switch to investigate sound. Attack has higher priority than sounds.
 
-✅ **Correct understanding:**
+**Correct understanding:**
 ```lua
 -- Zombies only investigate sounds when in Idle or low-priority states
 -- To distract from attack, need to break line of sight / target lock

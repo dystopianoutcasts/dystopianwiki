@@ -463,7 +463,7 @@ Compare fixer effectiveness for making informed modding decisions:
 
 ## Common Mistakes
 
-### ❌ Wrong: Using Tape/Glue for Firearms
+### Wrong: Using Tape/Glue for Firearms
 
 ```
 fixing Fix Pistol
@@ -476,7 +476,7 @@ fixing Fix Pistol
 
 **Why it's wrong:** Looking at vanilla `fixing.txt`, firearms NEVER use DuctTape or Glue. They exclusively use same weapon type for parts. Tape on a pistol makes no mechanical sense - firearms need internal components (springs, firing pins, extractors) from matching weapons.
 
-✅ **Right:**
+**Right:**
 
 ```
 fixing Fix Pistol
@@ -488,7 +488,7 @@ fixing Fix Pistol
 
 **Rule:** Firearms must use `Fixer : [SameWeaponType]; Aiming=[Level]` pattern.
 
-### ❌ Wrong: Using GlobalItem for Materials
+### Wrong: Using GlobalItem for Materials
 
 ```
 fixing Fix BaseballBat
@@ -500,7 +500,7 @@ fixing Fix BaseballBat
 
 **Why it's wrong:** `GlobalItem` is for **tools that lose durability** (BlowTorch, Wrench), not materials that get consumed. DuctTape should be completely removed from inventory after repair (Fixer), not just lose 2 uses.
 
-✅ **Right:**
+**Right:**
 
 ```
 fixing Fix BaseballBat
@@ -520,7 +520,7 @@ fixing Fix CarGasTank
 
 **Rule:** Use `GlobalItem` for tools, `Fixer` for materials.
 
-### ❌ Wrong: Inconsistent Uses Amounts
+### Wrong: Inconsistent Uses Amounts
 
 ```
 fixing Fix MyCustomAxe
@@ -533,7 +533,7 @@ fixing Fix MyCustomAxe
 
 **Why it's wrong:** Vanilla fixing.txt uses consistent patterns: skilled fixers (Woodglue) = 2 uses, no-skill fixers (DuctTape, Glue) = 2 uses, emergency fixers (Scotchtape) = 4 uses. Deviating breaks player expectations and balance.
 
-✅ **Right:**
+**Right:**
 
 ```
 fixing Fix MyCustomAxe
@@ -550,7 +550,7 @@ fixing Fix MyCustomAxe
 - General materials: 2 uses
 - Emergency materials: 4 uses
 
-### ❌ Wrong: Missing Skill Requirement for Skilled Fixer
+### Wrong: Missing Skill Requirement for Skilled Fixer
 
 ```
 fixing Fix Axe
@@ -562,7 +562,7 @@ fixing Fix Axe
 
 **Why it's wrong:** Vanilla `fixing.txt` **always pairs Woodglue with Woodwork skill** (`Woodglue=2; Woodwork=2`). Woodglue without skill requirement contradicts the design - skilled fixers are meant to reward trained characters with better repairs.
 
-✅ **Right:**
+**Right:**
 
 ```
 fixing Fix Axe
@@ -652,10 +652,10 @@ module MyMod
 **What You Should See:**
 
 **Repair Menu Shows:**
-- ✅ "Use Metal File" (if you have Maintenance 3 skill)
-- ✅ "Use Duct Tape" (always available)
-- ✅ "Use Glue" (always available)
-- ✅ "Use Scotch Tape" (always available, but requires 4 uses)
+- "Use Metal File" (if you have Maintenance 3 skill)
+- "Use Duct Tape" (always available)
+- "Use Glue" (always available)
+- "Use Scotch Tape" (always available, but requires 4 uses)
 
 **After Repair:**
 - Metal File: **1 use consumed** from Metal File item (check inventory)

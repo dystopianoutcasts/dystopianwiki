@@ -146,7 +146,7 @@ The number after the colon is the **hunger value** contributed when added. Same 
 
 ## Common Mistakes
 
-### ❌ Wrong: Trying to List Ingredients in the Evolved Recipe
+### Wrong: Trying to List Ingredients in the Evolved Recipe
 
 ```
 evolvedrecipe MyCustomSoup
@@ -160,7 +160,7 @@ evolvedrecipe MyCustomSoup
 
 **Why it's wrong:** Evolved recipes don't list ingredients! The ingredients are determined by what food items have `EvolvedRecipe = MyCustomSoup:X` in their definitions.
 
-✅ **Right:**
+**Right:**
 
 ```
 // File: evolvedrecipes.txt
@@ -184,7 +184,7 @@ item Tomato
 
 ---
 
-### ❌ Wrong: Forgetting to Make the Result Item
+### Wrong: Forgetting to Make the Result Item
 
 ```
 evolvedrecipe MyPizza
@@ -200,7 +200,7 @@ evolvedrecipe MyPizza
 
 **Why it's wrong:** The `ResultItem` must exist as an actual item definition. If `MyPizzaRecipe` doesn't exist, the recipe won't work.
 
-✅ **Right:**
+**Right:**
 
 ```
 // File: evolvedrecipes.txt
@@ -231,7 +231,7 @@ item Pizza                                  // The cooked version
 
 ---
 
-### ❌ Wrong: Using Wrong Syntax for EvolvedRecipe Property
+### Wrong: Using Wrong Syntax for EvolvedRecipe Property
 
 ```
 item Carrot
@@ -243,7 +243,7 @@ item Carrot
 
 **Why it's wrong:** The `EvolvedRecipe` property requires the format `RecipeName:HungerValue`. Just writing `Soup` doesn't work.
 
-✅ **Right:**
+**Right:**
 
 ```
 item Carrot
@@ -255,7 +255,7 @@ item Carrot
 
 ---
 
-### ❌ Wrong: Setting MaxItems Too Low
+### Wrong: Setting MaxItems Too Low
 
 ```
 evolvedrecipe TinySalad
@@ -268,7 +268,7 @@ evolvedrecipe TinySalad
 
 **Why it's wrong:** Real salads have 5-6 ingredients. A `MaxItems:2` salad feels restrictive and doesn't match vanilla patterns.
 
-✅ **Right:**
+**Right:**
 
 ```
 evolvedrecipe ProperSalad

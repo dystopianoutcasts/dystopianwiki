@@ -111,7 +111,7 @@ All these items are defined in `media/scripts/farming.txt` rather than the main 
 
 ## Common Mistakes
 
-### ❌ Wrong: Not Using farming Module for Farming Items
+### Wrong: Not Using farming Module for Farming Items
 
 ```
 module MyMod
@@ -128,7 +128,7 @@ module MyMod
 
 **Why it's wrong:** If you want your vegetable to work with the farming system (plant, grow, harvest), you should extend the `farming` module, not create items in your own module.
 
-✅ **Right:**
+**Right:**
 
 ```
 module farming                              // Use the farming module
@@ -144,7 +144,7 @@ module farming                              // Use the farming module
 
 ---
 
-### ❌ Wrong: Wrong Weight for Seeds
+### Wrong: Wrong Weight for Seeds
 
 ```
 module farming
@@ -160,7 +160,7 @@ module farming
 
 **Why it's wrong:** Looking at vanilla seeds, they ALL weigh exactly **0.009** (very light - they're tiny seeds!). A weight of 0.5 is 55 times heavier than vanilla seeds.
 
-✅ **Right:**
+**Right:**
 
 ```
 module farming
@@ -183,7 +183,7 @@ module farming
 
 ---
 
-### ❌ Wrong: Not Creating Both Seed and Crop
+### Wrong: Not Creating Both Seed and Crop
 
 ```
 module farming
@@ -199,7 +199,7 @@ module farming
 
 **Why it's wrong:** The farming system needs both the seed item (to plant) AND the crop item (to harvest). If you only create one, the farming cycle won't work.
 
-✅ **Right:**
+**Right:**
 
 ```
 module farming

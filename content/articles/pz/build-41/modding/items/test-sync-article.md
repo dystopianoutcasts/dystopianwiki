@@ -28,10 +28,10 @@ This article was created to test the new sync script (`npm run sync`).
 ## Purpose
 
 The sync script should:
-- ✅ Parse this YAML frontmatter
-- ✅ Extract the markdown content
-- ✅ Upload to Supabase database
-- ✅ Make it appear on the website
+- Parse this YAML frontmatter
+- Extract the markdown content
+- Upload to Supabase database
+- Make it appear on the website
 
 ## Code Example
 

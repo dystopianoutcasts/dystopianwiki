@@ -337,7 +337,7 @@ Use these for ammunition and weapon maintenance recipes.
 
 ### Mistake 1: Wrong Capitalization
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 recipe Make Planks
 {
@@ -352,7 +352,7 @@ recipe Make Planks
 
 **What you'll see:** No animation plays. Your character just stands there.
 
-✅ **Works:**
+**Works:**
 ```
 recipe Make Planks
 {
@@ -371,7 +371,7 @@ recipe Make Planks
 
 ### Mistake 2: Using Non-Existent AnimNode
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 recipe Hammer Something
 {
@@ -386,7 +386,7 @@ recipe Hammer Something
 
 **What you'll see:** No animation, character stands idle.
 
-✅ **Works:**
+**Works:**
 ```
 recipe Hammer Something
 {
@@ -405,7 +405,7 @@ recipe Hammer Something
 
 ### Mistake 3: AnimNode Doesn't Match Recipe Context
 
-❌ **Looks weird:**
+**Looks weird:**
 ```
 recipe Drink Water
 {
@@ -419,7 +419,7 @@ recipe Drink Water
 
 **What you'll see:** Your character makes chewing motions while drinking. It works, but looks wrong.
 
-✅ **Looks right:**
+**Looks right:**
 ```
 recipe Drink Water
 {
@@ -437,7 +437,7 @@ recipe Drink Water
 
 ### Mistake 4: Time Too Short for Animation
 
-❌ **Animation cuts off:**
+**Animation cuts off:**
 ```
 recipe Build Wall
 {
@@ -452,7 +452,7 @@ recipe Build Wall
 
 **What you'll see:** The animation starts but immediately stops. Looks janky.
 
-✅ **Good timing:**
+**Good timing:**
 ```
 recipe Build Wall
 {
@@ -471,7 +471,7 @@ recipe Build Wall
 
 ### Mistake 5: Forgetting the Comma
 
-❌ **Syntax error:**
+**Syntax error:**
 ```
 recipe Craft Item
 {
@@ -485,7 +485,7 @@ recipe Craft Item
 
 **What you'll see:** Recipe won't load. The game's parser fails.
 
-✅ **Correct:**
+**Correct:**
 ```
 recipe Craft Item
 {

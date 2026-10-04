@@ -306,7 +306,7 @@ Uncategorized weapons.
 
 ## Common Mistakes
 
-### ❌ Wrong: Knife with Axe-Level Damage
+### Wrong: Knife with Axe-Level Damage
 
 ```
 item MyCustomKnife
@@ -321,7 +321,7 @@ item MyCustomKnife
 
 **Why it's wrong:** Looking at vanilla SmallBlade weapons, knives have damage ranges of 0.1-1.2 (Hunting Knife is 0.6-1.2, Kitchen Knife is 0.3-0.7). Your custom knife at 1.3-3.0 damage would hit as hard as a wood axe, which is unrealistic for a small blade.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomKnife
@@ -342,7 +342,7 @@ item MyCustomKnife
 }
 ```
 
-### ❌ Wrong: Missing Critical Hit Chance
+### Wrong: Missing Critical Hit Chance
 
 ```
 item MyCustomBaseballBat
@@ -358,7 +358,7 @@ item MyCustomBaseballBat
 
 **Why it's wrong:** Looking at vanilla Blunt weapons, ALL weapons have a critical hit chance defined. Baseball Bat has 30%, Crowbar has 10%, even sledgehammers have 0%. Your weapon without CriticalChance will have unpredictable critical hit behavior.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomBaseballBat
@@ -378,7 +378,7 @@ item MyCustomBaseballBat
 }
 ```
 
-### ❌ Wrong: Unrealistic Durability
+### Wrong: Unrealistic Durability
 
 ```
 item MyCustomMachete
@@ -395,7 +395,7 @@ item MyCustomMachete
 
 **Why it's wrong:** Looking at vanilla LongBlade weapons, machete has ConditionMax = 13 and ConditionLowerChanceOneIn = 5. Your custom machete with ConditionMax = 100 would last 7x longer than vanilla, breaking game balance. Also, ConditionLowerChanceOneIn = 5 means it takes damage every 5 hits, which is correct for machetes but your comments suggest confusion.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomMachete
@@ -416,7 +416,7 @@ item MyCustomMachete
 }
 ```
 
-### ❌ Wrong: Wrong Weight for Weapon Type
+### Wrong: Wrong Weight for Weapon Type
 
 ```
 item MyCustomSledgehammer
@@ -432,7 +432,7 @@ item MyCustomSledgehammer
 
 **Why it's wrong:** Looking at vanilla Blunt weapons, sledgehammers weigh 6.0 (heavy two-handed weapon). Your custom sledgehammer at 0.5 weight would be lighter than a knife (0.5-1.0), which is unrealistic for a heavy demolition tool.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomSledgehammer

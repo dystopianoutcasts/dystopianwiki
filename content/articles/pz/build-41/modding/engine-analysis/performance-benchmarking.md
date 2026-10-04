@@ -282,7 +282,7 @@ benchmarkBulk(
 
 Let me show you the mistakes that will give you misleading benchmark results. I've made all of these!
 
-### ❌ Wrong: Not Warming Up First
+### Wrong: Not Warming Up First
 
 ```lua
 -- Measures JIT compilation + actual work
@@ -293,7 +293,7 @@ local elapsed = getTimestampMs() - start                 -- Includes JIT compile
 
 **Why it fails:** Lua uses JIT (Just-In-Time) compilation. The first run compiles the code, making it slower than subsequent runs.
 
-✅ **Right: Warm Up Before Measuring**
+**Right: Warm Up Before Measuring**
 ```lua
 -- Run it once to compile
 for i = 1, 100 do myFunction() end                       -- Warm up (compiles code)
@@ -304,7 +304,7 @@ for i = 1, 1000 do myFunction() end
 local elapsed = getTimestampMs() - start                 -- Pure execution time
 ```
 
-### ❌ Wrong: Too Few Iterations
+### Wrong: Too Few Iterations
 
 ```lua
 -- Single run, 0 or 1ms result
@@ -315,7 +315,7 @@ local elapsed = getTimestampMs() - start                 -- Result: 0ms or 1ms (
 
 **Why it fails:** `getTimestampMs()` has millisecond precision. Fast operations complete in under 1ms, giving you 0 or 1.
 
-✅ **Right: Many Iterations for Average**
+**Right: Many Iterations for Average**
 ```lua
 -- Run many times for accurate average
 local start = getTimestampMs()
@@ -324,7 +324,7 @@ local elapsed = getTimestampMs() - start                 -- Total time
 local avg = elapsed / 10000                              -- Average per call: 0.0045ms (useful!)
 ```
 
-### ❌ Wrong: Including Setup in Measurement
+### Wrong: Including Setup in Measurement
 
 ```lua
 -- Measures setup + work
@@ -338,7 +338,7 @@ local elapsed = getTimestampMs() - start                 -- Includes getting zom
 
 **Why it fails:** You're measuring both the setup (getting zombies) and the work (processing them). That's two things, not one.
 
-✅ **Right: Setup Outside Timing**
+**Right: Setup Outside Timing**
 ```lua
 -- Setup first
 local zombies = getCell():getZombieList()                -- Setup (not timed)
@@ -351,7 +351,7 @@ end
 local elapsed = getTimestampMs() - start                 -- Pure processing time
 ```
 
-### ❌ Wrong: Ignoring Garbage Collection
+### Wrong: Ignoring Garbage Collection
 
 ```lua
 -- GC might pause during test
@@ -365,7 +365,7 @@ local elapsed = getTimestampMs() - start                 -- Includes GC pauses!
 
 **Why it fails:** Lua's garbage collector can pause execution to clean up memory. Your benchmark might measure GC time instead of your code.
 
-✅ **Right: Force GC Before Benchmark**
+**Right: Force GC Before Benchmark**
 ```lua
 -- Clear garbage first
 collectgarbage("collect")                                -- Run GC now, not during test
@@ -379,7 +379,7 @@ end
 local elapsed = getTimestampMs() - start                 -- More consistent results
 ```
 
-### ❌ Wrong: Testing in Debug Mode
+### Wrong: Testing in Debug Mode
 
 ```lua
 -- Debug mode enabled (slower)
@@ -390,7 +390,7 @@ local elapsed = getTimestampMs() - start                 -- 2x-10x slower than p
 
 **Why it fails:** Debug mode adds overhead for logging, error checking, and debugging features. Production runs faster.
 
-✅ **Right: Test in Release Mode**
+**Right: Test in Release Mode**
 ```lua
 -- Check if debug mode is affecting results
 if isDebugEnabled() then

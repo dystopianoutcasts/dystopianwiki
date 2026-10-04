@@ -562,7 +562,7 @@ getSoundManager():PlayWorldSoundImpl("ZombieThumpGeneric", nil, x, y, z, 1.0, 60
 
 ## Common Mistakes
 
-### ❌ Wrong: Using Non-Existent FMOD Event Path
+### Wrong: Using Non-Existent FMOD Event Path
 
 ```
 sound MyCustomFootstep
@@ -577,7 +577,7 @@ sound MyCustomFootstep
 
 **Why it's wrong:** FMOD event paths must exist in the FMOD project. Looking at vanilla footstep sounds, they use paths like `Character/Movement/Footsteps/Grass`. Your custom event path `MyCustomFolder/Footstep/Walk` doesn't exist in the FMOD bank, so the sound won't play.
 
-✅ **Right:**
+**Right:**
 
 ```
 sound MyCustomFootstep
@@ -592,7 +592,7 @@ sound MyCustomFootstep
 
 **Note:** To use custom sounds, you need to either modify the FMOD project or reuse existing vanilla FMOD events.
 
-### ❌ Wrong: Wrong Category for Sound
+### Wrong: Wrong Category for Sound
 
 ```
 sound MyCustomDoorOpen
@@ -607,7 +607,7 @@ sound MyCustomDoorOpen
 
 **Why it's wrong:** Looking at vanilla door sounds, ALL door sounds use `category = Object`. Doors are world objects, not items. Using `category = Item` will cause issues with sound management and may not play at the right volume/priority.
 
-✅ **Right:**
+**Right:**
 
 ```
 sound MyCustomDoorOpen
@@ -622,7 +622,7 @@ sound MyCustomDoorOpen
 }
 ```
 
-### ❌ Wrong: Forgetting 3D Flag for Positional Sounds
+### Wrong: Forgetting 3D Flag for Positional Sounds
 
 ```
 sound MyCustomGunshot
@@ -639,7 +639,7 @@ sound MyCustomGunshot
 
 **Why it's wrong:** Looking at vanilla gunshot and combat sounds, they ALL use `is3D = true` because players need to hear WHERE the sound is coming from. Without `is3D = true`, the sound will play at full volume everywhere, making it impossible to locate gunshots.
 
-✅ **Right:**
+**Right:**
 
 ```
 sound MyCustomGunshot

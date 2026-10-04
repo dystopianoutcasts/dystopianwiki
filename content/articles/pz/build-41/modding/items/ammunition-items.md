@@ -178,7 +178,7 @@ recipe Craft 9mm Bullets
 
 ### Mistake 1: Wrong Item ID for Ammunition
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 recipe Craft 9mm Bullets
 {
@@ -192,7 +192,7 @@ recipe Craft 9mm Bullets
 
 **What happens:** Recipe loads but creates nothing. The item ID doesn't exist.
 
-✅ **Works:**
+**Works:**
 ```
 recipe Craft 9mm Bullets
 {
@@ -210,7 +210,7 @@ recipe Craft 9mm Bullets
 
 ### Mistake 2: Not Using `keep` for Molds
 
-❌ **Doesn't work well:**
+**Doesn't work well:**
 ```
 recipe Craft 9mm Bullets
 {
@@ -224,7 +224,7 @@ recipe Craft 9mm Bullets
 
 **What happens:** Works, but the mold is consumed after one use. Player needs a new mold every time they craft bullets (unrealistic and annoying).
 
-✅ **Works properly:**
+**Works properly:**
 ```
 recipe Craft 9mm Bullets
 {
@@ -242,7 +242,7 @@ recipe Craft 9mm Bullets
 
 ### Mistake 3: Wrong Gunpowder Amount
 
-❌ **Unbalanced:**
+**Unbalanced:**
 ```
 recipe Craft 9mm Bullets
 {
@@ -256,7 +256,7 @@ recipe Craft 9mm Bullets
 
 **What happens:** Works, but wildly unbalanced. 1 gunpowder unit for 50 bullets is way too cheap. Players will have unlimited ammo.
 
-✅ **Balanced:**
+**Balanced:**
 ```
 recipe Craft 9mm Bullets
 {
@@ -274,7 +274,7 @@ recipe Craft 9mm Bullets
 
 ### Mistake 4: Missing Bullet Mold Item
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 recipe Craft 9mm Bullets
 {
@@ -288,7 +288,7 @@ recipe Craft 9mm Bullets
 
 **What happens:** Recipe works but is unrealistic. Players can craft bullets without any tools, which breaks immersion.
 
-✅ **Works properly:**
+**Works properly:**
 ```
 recipe Craft 9mm Bullets
 {
@@ -307,7 +307,7 @@ recipe Craft 9mm Bullets
 
 ### Mistake 5: Using Boxes Instead of Individual Rounds
 
-❌ **Confusing:**
+**Confusing:**
 ```
 recipe Craft 9mm Ammo Box
 {
@@ -321,7 +321,7 @@ recipe Craft 9mm Ammo Box
 
 **What happens:** Works, but confusing. You used enough materials for 10 bullets but got a box with 30 bullets inside. Unbalanced.
 
-✅ **Works properly:**
+**Works properly:**
 ```
 recipe Craft 9mm Bullets
 {

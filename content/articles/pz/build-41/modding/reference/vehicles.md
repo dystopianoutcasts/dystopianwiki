@@ -723,13 +723,13 @@ module Base                                 /* Module declaration */
 
 **Problem:** Wheels positioned incorrectly, causing floating or clipping.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 wheel FrontLeft { offset = 0.36 -0.30 0.85, }
 wheel FrontRight { offset = 0.36 -0.30 0.85, }  /* Same X! Should be mirrored */
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 wheel FrontLeft { offset = 0.36 -0.30 0.85, }
 wheel FrontRight { offset = -0.36 -0.30 0.85, } /* Negative X for right side */
@@ -743,7 +743,7 @@ wheel FrontRight { offset = -0.36 -0.30 0.85, } /* Negative X for right side */
 
 **Problem:** Seats don't have linked areas, can't interact with seat.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 passenger FrontLeft
 {
@@ -752,7 +752,7 @@ passenger FrontLeft
 /* Missing area definition! */
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 passenger FrontLeft
 {
@@ -770,13 +770,13 @@ area SeatFrontLeft { xywh = 0.68 0.12 0.47 0.47, }  /* Define the area */
 
 **Problem:** Setting all wheels to front = true causes weird steering.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 wheel RearLeft { front = true, }           /* Rear wheels shouldn't steer! */
 wheel RearRight { front = true, }
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 wheel RearLeft { front = false, }          /* Only front wheels steer */
 wheel RearRight { front = false, }
@@ -790,14 +790,14 @@ wheel RearRight { front = false, }
 
 **Problem:** Vehicle handles unrealistically.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 mass = 100,                                /* Too light! */
 engineForce = 50000,                       /* Too powerful! */
 maxSpeed = 500f,                           /* Too fast! */
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 mass = 800,                                /* Realistic car weight */
 engineForce = 4000,                        /* Standard engine power */
@@ -815,7 +815,7 @@ maxSpeed = 90f,                            /* Realistic top speed */
 
 **Problem:** Defining more gears than gearRatioCount.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 gearRatioCount = 3,                        /* Says 3 gears */
 gearRatio1 = 3.6,
@@ -824,7 +824,7 @@ gearRatio3 = 1.3,
 gearRatio4 = 1.0,                          /* But defines 4! */
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 gearRatioCount = 4,                        /* Matches number of gear ratios */
 gearRatio1 = 3.6,

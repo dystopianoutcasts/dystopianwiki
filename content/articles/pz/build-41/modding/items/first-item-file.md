@@ -581,7 +581,7 @@ Press Enter.
 
 ### Mistake 1: Using Colon Instead of Equals
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 item EnergyBar
 {
@@ -592,7 +592,7 @@ item EnergyBar
 
 **What happens:** Parser error. The game can't read the file and your mod won't load.
 
-✅ **Works:**
+**Works:**
 ```
 item EnergyBar
 {
@@ -607,7 +607,7 @@ item EnergyBar
 
 ### Mistake 2: Missing Comma After Property
 
-❌ **Syntax error:**
+**Syntax error:**
 ```
 item EnergyBar
 {
@@ -619,7 +619,7 @@ item EnergyBar
 
 **What happens:** Parser error. The game stops reading after `DisplayName` because it expects a comma.
 
-✅ **Works:**
+**Works:**
 ```
 item EnergyBar
 {
@@ -637,7 +637,7 @@ item EnergyBar
 
 ### Mistake 3: Spaces in Item ID
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 module Base
 {
@@ -650,7 +650,7 @@ module Base
 
 **What happens:** Parser error or the item won't spawn correctly.
 
-✅ **Works:**
+**Works:**
 ```
 module Base
 {
@@ -671,7 +671,7 @@ module Base
 
 ### Mistake 4: Wrong Module Reference When Spawning
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```lua
 -- In debug console:
 getPlayer():getInventory():AddItem("EnergyBar")  // MISSING module!
@@ -679,7 +679,7 @@ getPlayer():getInventory():AddItem("EnergyBar")  // MISSING module!
 
 **What happens:** Nothing spawns. Console shows "item not found" error.
 
-✅ **Works:**
+**Works:**
 ```lua
 -- In debug console:
 getPlayer():getInventory():AddItem("Base.EnergyBar")  // Includes module
@@ -696,7 +696,7 @@ getPlayer():getInventory():AddItem("Base.EnergyBar")  // Includes module
 
 ### Mistake 5: Wrong File Extension
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 media/scripts/my_items.txt.txt  // Double extension
 media/scripts/my_items.doc       // Word document
@@ -705,7 +705,7 @@ media/scripts/my_items           // No extension
 
 **What happens:** Game doesn't load the file because it's not `.txt`.
 
-✅ **Works:**
+**Works:**
 ```
 media/scripts/my_items.txt  // Correct extension
 ```

@@ -474,7 +474,7 @@ XP gained: 5 XP (1 per part, first repair only)
 
 ## Common Mistakes
 
-### ❌ Wrong: Ignoring Skill Bonuses in Calculations
+### Wrong: Ignoring Skill Bonuses in Calculations
 
 ```lua
 -- Custom repair calculator
@@ -490,7 +490,7 @@ end
 
 **Why it's wrong:** Skill level above requirement provides significant bonuses (10% per level). Ignoring this makes your calculations inaccurate and can mislead mod users.
 
-✅ **Right:**
+**Right:**
 
 ```lua
 function calculateRepair(item, player, fixer, baseRestoration)
@@ -508,7 +508,7 @@ function calculateRepair(item, player, fixer, baseRestoration)
 end
 ```
 
-### ❌ Wrong: Not Capping Engine Repair Per Part
+### Wrong: Not Capping Engine Repair Per Part
 
 ```lua
 // Custom engine repair
@@ -525,7 +525,7 @@ end
 
 **Why it's wrong:** The engine repair formula has a hard cap of 5 condition per part. Without this cap, high-skill players would repair engines instantly.
 
-✅ **Right:**
+**Right:**
 
 ```lua
 function repairEngine(skillAboveReq, parts)
@@ -540,7 +540,7 @@ function repairEngine(skillAboveReq, parts)
 end
 ```
 
-### ❌ Wrong: Calculating Degradation Chance Backwards
+### Wrong: Calculating Degradation Chance Backwards
 
 ```lua
 // Trying to calculate degradation chance
@@ -557,7 +557,7 @@ end
 
 **Why it's wrong:** The degradation formula includes BOTH `ConditionLowerChance * 2` AND `MaintenanceMod * 2`. Ignoring the Maintenance multiplier and the *2 factors makes calculations wildly inaccurate.
 
-✅ **Right:**
+**Right:**
 
 ```lua
 function getDegradationChance(weapon, player)

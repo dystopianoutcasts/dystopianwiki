@@ -21,56 +21,56 @@ excerpt: "---"
 table_of_contents:
   - text: "Outcast Advanced Crafts - Development Environment"
     link: "#outcast-advanced-crafts-development-environment"
-  - text: "📁 FILE STRUCTURE & LOCATIONS"
-    link: "#-file-structure-locations"
+  - text: "FILE STRUCTURE & LOCATIONS"
+    link: "#file-structure-locations"
   - text: "Your Mod Files"
     link: "#your-mod-files"
   - text: "Documentation Location"
     link: "#documentation-location"
-  - text: "🎮 VANILLA PROJECT ZOMBOID FILES"
-    link: "#-vanilla-project-zomboid-files"
+  - text: "VANILLA PROJECT ZOMBOID FILES"
+    link: "#vanilla-project-zomboid-files"
   - text: "Installation Directory"
     link: "#installation-directory"
   - text: "Important Vanilla Files for Reference"
     link: "#important-vanilla-files-for-reference"
   - text: "Best Way to Navigate Vanilla Files"
     link: "#best-way-to-navigate-vanilla-files"
-  - text: "🛠️ STEAM WORKSHOP CONTENT (108600)"
-    link: "#-steam-workshop-content-108600"
+  - text: "STEAM WORKSHOP CONTENT (108600)"
+    link: "#steam-workshop-content-108600"
   - text: "Workshop Directory"
     link: "#workshop-directory"
   - text: "Workshop Mods Referenced in Development"
     link: "#workshop-mods-referenced-in-development"
   - text: "Best Way to Search & Navigate Workshop Mods"
     link: "#best-way-to-search-navigate-workshop-mods"
-  - text: "🧠 CRITICAL TECHNICAL LEARNINGS"
-    link: "#-critical-technical-learnings"
+  - text: "CRITICAL TECHNICAL LEARNINGS"
+    link: "#critical-technical-learnings"
   - text: "Multi-Skill XP Pattern (PROVEN)"
     link: "#multi-skill-xp-pattern-proven"
   - text: "Skill Naming Convention"
     link: "#skill-naming-convention"
-  - text: "🚀 QUICK REFERENCE COMMANDS"
-    link: "#-quick-reference-commands"
+  - text: "QUICK REFERENCE COMMANDS"
+    link: "#quick-reference-commands"
   - text: "Search for Recipe Patterns"
     link: "#search-for-recipe-patterns"
   - text: "Validate Recipe Syntax"
     link: "#validate-recipe-syntax"
   - text: "Compare with Vanilla"
     link: "#compare-with-vanilla"
-  - text: "📝 CURRENT MOD STATUS (Last Updated)"
-    link: "#-current-mod-status-last-updated"
+  - text: "CURRENT MOD STATUS (Last Updated)"
+    link: "#current-mod-status-last-updated"
   - text: "Implemented Features"
     link: "#implemented-features"
   - text: "XP Award Pattern"
     link: "#xp-award-pattern"
   - text: "Known Issues"
     link: "#known-issues"
-  - text: "💡 TIPS FOR LLM CONTEXT"
-    link: "#-tips-for-llm-context"
-  - text: "🔗 USEFUL LINKS"
-    link: "#-useful-links"
-  - text: "📋 WORKSHOP MOD IDs TO REFERENCE"
-    link: "#-workshop-mod-ids-to-reference"
+  - text: "TIPS FOR LLM CONTEXT"
+    link: "#tips-for-llm-context"
+  - text: "USEFUL LINKS"
+    link: "#useful-links"
+  - text: "WORKSHOP MOD IDs TO REFERENCE"
+    link: "#workshop-mod-ids-to-reference"
 last_updated: 2026-01-09
 ---
 
@@ -79,7 +79,7 @@ last_updated: 2026-01-09
 
 ---
 
-## 📁 FILE STRUCTURE & LOCATIONS
+## FILE STRUCTURE & LOCATIONS
 
 ### Your Mod Files
 **Primary Location:**
@@ -125,7 +125,7 @@ OutcastAdvancedCrafts/
 
 ---
 
-## 🎮 VANILLA PROJECT ZOMBOID FILES
+## VANILLA PROJECT ZOMBOID FILES
 
 ### Installation Directory
 **Game Files:**
@@ -195,7 +195,7 @@ grep -r "function Recipe.OnGiveXP" "<your Steam library>\steamapps\common\Projec
 
 ---
 
-## 🛠️ STEAM WORKSHOP CONTENT (108600)
+## STEAM WORKSHOP CONTENT (108600)
 
 ### Workshop Directory
 **Location:**
@@ -255,11 +255,11 @@ Local Path: <your Steam library>\steamapps\workshop\content\108600\2599752664\
 
 ---
 
-## 🧠 CRITICAL TECHNICAL LEARNINGS
+## CRITICAL TECHNICAL LEARNINGS
 
 ### Multi-Skill XP Pattern (PROVEN)
 
-**✅ WORKING PATTERN (Custom Skills):**
+**WORKING PATTERN (Custom Skills):**
 ```lua
 -- In lua/client/YourMod_Functions.lua
 function YourMod.OnCreate.CraftItem(items, result, player, selectedItem)
@@ -277,7 +277,7 @@ recipe Craft Item
 }
 ```
 
-**❌ NOT WORKING (Custom Skills):**
+**NOT WORKING (Custom Skills):**
 ```lua
 -- Recipe.OnGiveXP functions DO NOT work with custom skills
 function Recipe.OnGiveXP.YourMod_Function(recipe, ingredients, result, player)
@@ -288,7 +288,7 @@ end
 **Why?**
 - Recipe.OnGiveXP functions are parsed BEFORE custom perks load
 - Custom skills (defined in perks.txt) aren't available yet
-- OnCreate callbacks run AFTER perks load ✅
+- OnCreate callbacks run AFTER perks load [YES]
 
 ### Skill Naming Convention
 
@@ -310,7 +310,7 @@ player:getXp():AddXP(Perks.Blacksmith, 10)  -- Use perk name, not translation
 
 ---
 
-## 🚀 QUICK REFERENCE COMMANDS
+## QUICK REFERENCE COMMANDS
 
 ### Search for Recipe Patterns
 ```bash
@@ -340,16 +340,16 @@ grep -r "function Recipe.OnGiveXP" "<your Steam library>\steamapps\common\Projec
 
 ---
 
-## 📝 CURRENT MOD STATUS (Last Updated)
+## CURRENT MOD STATUS (Last Updated)
 
 ### Implemented Features
-- ✅ Custom Blacksmithing skill (Crafting category)
-- ✅ 8 Bullet casting recipes (9mm → .44 Magnum)
-- ✅ 11 Smelting recipes (scrap → iron)
-- ✅ 3 Slag processing recipes (slag → construction materials)
-- ✅ Multi-skill XP awards (Blacksmithing + MetalWelding + Mechanics/Cooking)
-- ✅ Skill-based tiered smelting (Novice/Advanced/Master)
-- ✅ Custom items: Iron, Slag, bullet molds
+- [YES] Custom Blacksmithing skill (Crafting category)
+- [YES] 8 Bullet casting recipes (9mm → .44 Magnum)
+- [YES] 11 Smelting recipes (scrap → iron)
+- [YES] 3 Slag processing recipes (slag → construction materials)
+- [YES] Multi-skill XP awards (Blacksmithing + MetalWelding + Mechanics/Cooking)
+- [YES] Skill-based tiered smelting (Novice/Advanced/Master)
+- [YES] Custom items: Iron, Slag, bullet molds
 
 ### XP Award Pattern
 **All 22 recipes use OnCreate callbacks:**
@@ -359,12 +359,12 @@ grep -r "function Recipe.OnGiveXP" "<your Steam library>\steamapps\common\Projec
 - Cooking XP (vanilla skill - slag recipes only)
 
 ### Known Issues
-- ❌ Recipe.OnGiveXP functions don't work with custom skills (abandoned approach)
-- ⚠️ Skill display name now fixed: "Blacksmithing" (was "Blacksmith")
+- [NO] Recipe.OnGiveXP functions don't work with custom skills (abandoned approach)
+- Note: Skill display name now fixed: "Blacksmithing" (was "Blacksmith")
 
 ---
 
-## 💡 TIPS FOR LLM CONTEXT
+## TIPS FOR LLM CONTEXT
 
 When starting a new chat session with an LLM about this mod, provide:
 
@@ -396,7 +396,7 @@ Question: [Your specific question here]
 
 ---
 
-## 🔗 USEFUL LINKS
+## USEFUL LINKS
 
 - **PZ Modding Wiki:** https://pzwiki.net/wiki/Modding
 - **Discord:** https://discord.gg/KgNBWyfcvZ (Dystopian Outcasts)
@@ -404,7 +404,7 @@ Question: [Your specific question here]
 
 ---
 
-## 📋 WORKSHOP MOD IDs TO REFERENCE
+## WORKSHOP MOD IDs TO REFERENCE
 
 **Referenced Mods with Workshop IDs:**
 

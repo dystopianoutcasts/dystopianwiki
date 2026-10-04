@@ -312,7 +312,7 @@ OutcastAdvancedCrafts/
 
 ## Next Steps After TileZed
 
-1. ✅ Create tiles in TileZed (this guide)
+1. Done: create tiles in TileZed (this guide)
 2. Test spawning oven in debug mode
 3. Test fueling and lighting
 4. Test smelting recipes appear when lit

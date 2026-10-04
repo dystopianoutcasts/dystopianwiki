@@ -209,7 +209,7 @@ Vehicle parts in PZ use a quality tier system:
 
 ## Common Mistakes
 
-### ❌ Wrong: Creating Only One Vehicle Type Variant
+### Wrong: Creating Only One Vehicle Type Variant
 
 ```
 item MyCustomTire
@@ -223,7 +223,7 @@ item MyCustomTire
 
 **Why it's wrong:** Looking at vanilla tires (Valu-Tire, Regular Tire, Performance Tire), EVERY tire type has 3 variants for VehicleType 1, 2, and 3. Players need tires for all vehicle classes. Your custom tire only works on standard cars (Type 1), not heavy duty (Type 2) or sport (Type 3) vehicles.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomTire1
@@ -257,7 +257,7 @@ item MyCustomTire3
 }
 ```
 
-### ❌ Wrong: Inconsistent Part Weight
+### Wrong: Inconsistent Part Weight
 
 ```
 item MyCustomDoor1
@@ -271,7 +271,7 @@ item MyCustomDoor1
 
 **Why it's wrong:** Looking at vanilla doors (Front Door, Rear Door), ALL doors weigh 10.0. Doors are large metal pieces - they're heavy. Your custom door at 5.0 weight is half the weight of every vanilla door.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomDoor1
@@ -285,7 +285,7 @@ item MyCustomDoor1
 }
 ```
 
-### ❌ Wrong: Missing Quality Tier Naming
+### Wrong: Missing Quality Tier Naming
 
 ```
 item MyCustomBrake1
@@ -299,7 +299,7 @@ item MyCustomBrake1
 
 **Why it's wrong:** Looking at vanilla brakes, they use quality tier naming: Old Brake (low quality), Regular Brake (standard), Performance Brake (high quality). This helps players identify part quality at a glance. Your "Custom Brake" doesn't indicate quality level.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomRegularBrake1

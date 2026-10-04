@@ -224,13 +224,13 @@ Create a `.vscode/settings.json` in your mod folder:
 
 ### 1. Opening Individual Files Instead of the Folder
 
-❌ **Wrong:**
+**Wrong:**
 ```
 File → Open File → Select main.lua
 (Only one file visible, can't see project structure)
 ```
 
-✅ **Right:**
+**Right:**
 ```
 File → Open Folder → Select your mod folder
 (Entire mod visible in Explorer panel on left)
@@ -244,7 +244,7 @@ File → Open Folder → Select your mod folder
 
 ### 2. Not Installing the Lua Extension
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 function myFunction()
     -- All text is plain white, no syntax highlighting
@@ -252,7 +252,7 @@ function myFunction()
 end
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 function myFunction()
     -- 'function' is highlighted in purple
@@ -269,13 +269,13 @@ end
 
 ### 3. Not Associating .txt Files with Lua
 
-❌ **Wrong:**
+**Wrong:**
 ```
 Open items.txt → Plain text, no highlighting
 (PZ script files use .txt extension but are Lua-like)
 ```
 
-✅ **Right:**
+**Right:**
 ```
 Open items.txt → Lua syntax highlighting
 (Treated as Lua code even though it's .txt)
@@ -295,14 +295,14 @@ Open items.txt → Lua syntax highlighting
 
 ### 4. Ignoring the Problems Panel
 
-❌ **Wrong:**
+**Wrong:**
 ```
 Write code, save, run game, game crashes
 "Why doesn't my code work?"
 (Didn't check the Problems panel)
 ```
 
-✅ **Right:**
+**Right:**
 ```
 Write code, see red squiggle under error
 Open Problems panel (Ctrl+Shift+M)
@@ -318,7 +318,7 @@ Fix it before even running the game
 
 ### 5. Using Tabs Instead of Spaces
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 function test()
 →   if true then          # Tab characters (→) - causes issues
@@ -327,7 +327,7 @@ function test()
 end
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 function test()
     if true then          # Spaces - consistent everywhere

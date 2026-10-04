@@ -534,7 +534,7 @@ Let's look at the most common mistakes when debugging with AI - and how to avoid
 
 ### Mistake 1: Only Copying One Line of the Error
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 I'm getting this error:
 attempted index of nil value
@@ -542,7 +542,7 @@ attempted index of nil value
 
 **What you'll see:** AI will ask you for more information. You're missing the context it needs.
 
-✅ **Works:**
+**Works:**
 ```
 I'm getting this error:
 ERROR: General, 1705234567890> ExceptionLogger.logException> Exception thrown
@@ -558,14 +558,14 @@ java.lang.RuntimeException: attempted index of nil value 'player'
 
 ### Mistake 2: Not Specifying Project Zomboid or Build 41
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 I'm getting an error with getPlayer()
 ```
 
 **What you'll see:** AI might give you generic Lua advice that doesn't apply to PZ, or advice for the wrong PZ version.
 
-✅ **Works:**
+**Works:**
 ```
 I'm getting an error with getPlayer() in Project Zomboid Build 41
 ```
@@ -576,14 +576,14 @@ I'm getting an error with getPlayer() in Project Zomboid Build 41
 
 ### Mistake 3: Not Including Your Code
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 My mod doesn't work. What's wrong?
 ```
 
 **What you'll see:** AI can't help without seeing the code. It's like calling a mechanic and saying "my car doesn't work" without showing them the car.
 
-✅ **Works:**
+**Works:**
 ```
 My Project Zomboid Build 41 mod doesn't work. Here's my code:
 
@@ -598,7 +598,7 @@ I expected X but got Y.
 
 ### Mistake 4: Applying Fixes Without Understanding Them
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 [copies AI's code without reading the explanation]
 [pastes into mod]
@@ -607,7 +607,7 @@ I expected X but got Y.
 
 **What you'll see:** The fix might work, but you haven't learned anything. Next time you'll make the same mistake.
 
-✅ **Works:**
+**Works:**
 ```
 User: "Your fix works, but can you explain why OnCreatePlayer is better than OnGameStart? I want to understand so I don't make this mistake again."
 
@@ -620,7 +620,7 @@ AI: "OnGameStart fires when the save file loads, before any players exist. OnCre
 
 ### Mistake 5: Giving Up After One Failed Fix
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 [AI suggests fix]
 [try it]
@@ -630,7 +630,7 @@ AI: "OnGameStart fires when the save file loads, before any players exist. OnCre
 
 **What you'll see:** You stay stuck on the same problem.
 
-✅ **Works:**
+**Works:**
 ```
 I applied your fix but now I get a different error:
 

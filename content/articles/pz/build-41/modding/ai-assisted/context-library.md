@@ -743,7 +743,7 @@ AI remembers the context from earlier in the conversation, so you don't need to 
 
 ### Mistake 1: Pasting Too Much Context
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 [Pastes 500 lines of examples]
 [Pastes entire conventions document]
@@ -753,7 +753,7 @@ AI remembers the context from earlier in the conversation, so you don't need to 
 
 **What happens:** AI gets overwhelmed. Too much information actually reduces accuracy because AI has to figure out what's relevant.
 
-✅ **Works:**
+**Works:**
 ```
 [Pastes ONE relevant weapon example]
 
@@ -766,7 +766,7 @@ Create a similar weapon with these changes: [specific request]
 
 ### Mistake 2: Using Outdated Examples
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 [Pastes examples from Build 40]
 [Asks AI to create Build 41 item]
@@ -774,7 +774,7 @@ Create a similar weapon with these changes: [specific request]
 
 **What happens:** AI uses deprecated properties or old syntax that doesn't work in Build 41.
 
-✅ **Works:**
+**Works:**
 ```
 [Opens vanilla Build 41 files]
 [Copies current examples]
@@ -787,7 +787,7 @@ Create a similar weapon with these changes: [specific request]
 
 ### Mistake 3: No Comments in Examples
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 item Apple {
     HungerChange = -10,
@@ -798,7 +798,7 @@ item Apple {
 
 **What happens:** AI sees the syntax but doesn't understand *why* `HungerChange` is negative or what `DaysFresh` means.
 
-✅ **Works:**
+**Works:**
 ```
 item Apple {
     HungerChange = -10,      -- Negative values REDUCE hunger (negative = good for player)
@@ -813,7 +813,7 @@ item Apple {
 
 ### Mistake 4: Mixing Different Conventions
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 [Shows vanilla example using module Base]
 [Shows your mod using module MyMod]
@@ -823,7 +823,7 @@ item Apple {
 
 **What happens:** AI picks randomly, leading to inconsistent module names across your mod.
 
-✅ **Works:**
+**Works:**
 ```
 [In conventions.md, clearly state:]
 "Always use module MyMod for custom items"
@@ -837,7 +837,7 @@ item Apple {
 
 ### Mistake 5: Never Updating the Library
 
-❌ **Doesn't work:**
+**Doesn't work:**
 ```
 [Creates context library in January]
 [PZ updates in March with new properties]
@@ -847,7 +847,7 @@ item Apple {
 
 **What happens:** Your reference examples become outdated. AI doesn't know about new features.
 
-✅ **Works:**
+**Works:**
 ```
 [After PZ updates, check patch notes]
 [Update vanilla examples if syntax changed]

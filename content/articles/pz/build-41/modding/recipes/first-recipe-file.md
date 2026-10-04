@@ -403,7 +403,7 @@ Let's look at the most common errors beginners make when creating recipe files. 
 
 This is the #1 mistake everyone makes.
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 ```
 recipe Make Makeshift Torch {
@@ -420,7 +420,7 @@ recipe Make Makeshift Torch {
 
 **Why it breaks:** The recipe parser (the part of the game that reads recipe files) expects a comma after every line. Without commas, the game doesn't know where one instruction ends and the next begins. It tries to read `RippedSheets=2 keep` as one instruction, which makes no sense, so it gives up.
 
-✅ **Works:**
+**Works:**
 
 ```
 recipe Make Makeshift Torch {
@@ -437,7 +437,7 @@ recipe Make Makeshift Torch {
 
 ### Mistake 2: Using Equals Instead of Colon
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 ```
 recipe Make Makeshift Torch {
@@ -454,7 +454,7 @@ recipe Make Makeshift Torch {
 
 **Why it breaks:** For recipe properties (`Result`, `Time`, `Category`, etc.), you must use a colon `:` not an equals sign `=`. That's just the syntax rule for how recipe files work.
 
-✅ **Works:**
+**Works:**
 
 ```
 recipe Make Makeshift Torch {
@@ -475,7 +475,7 @@ recipe Make Makeshift Torch {
 
 ### Mistake 3: Wrong File Location
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 ```
 MyFirstMod/
@@ -496,7 +496,7 @@ MyFirstMod/
 
 **Why it breaks:** Project Zomboid only looks for recipe files in `media/scripts/`. If you put them anywhere else - even just one folder level off - PZ won't find them.
 
-✅ **Works:**
+**Works:**
 
 ```
 MyFirstMod/
@@ -516,7 +516,7 @@ This folder structure is how PZ organizes mods. Always put recipes in `media/scr
 
 ### Mistake 4: Wrong File Extension
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 - `my_recipes.lua` (wrong extension)
 - `my_recipes.txt.txt` (Windows hiding the real extension)
@@ -527,7 +527,7 @@ This folder structure is how PZ organizes mods. Always put recipes in `media/scr
 
 **Why it breaks:** The game filters files by extension. When it scans `media/scripts/`, it only pays attention to `.txt` files. Everything else gets ignored.
 
-✅ **Works:**
+**Works:**
 
 - `my_recipes.txt`
 - `recipes.txt`
@@ -539,7 +539,7 @@ This folder structure is how PZ organizes mods. Always put recipes in `media/scr
 
 ### Mistake 5: Typo in Item Names
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 ```
 recipe Make Makeshift Torch {
@@ -556,7 +556,7 @@ recipe Make Makeshift Torch {
 
 **Why it breaks:** Item names are **case-sensitive** - uppercase and lowercase letters matter. `TreeBranch` and `Treebranch` are completely different things to the game. If you use the wrong capitalization, the game looks for an item that doesn't exist.
 
-✅ **Works:**
+**Works:**
 
 ```
 recipe Make Makeshift Torch {
@@ -579,7 +579,7 @@ Open some of the `.txt` files in there and see how Indie Stone spells and capita
 
 ### Mistake 6: Mismatched Braces
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 ```
 module Base {
@@ -599,7 +599,7 @@ module Base {
 
 **Why it breaks:** Every opening brace `{` needs a matching closing brace `}`. If you forget one, the game doesn't know where the module or recipe ends.
 
-✅ **Works:**
+**Works:**
 
 ```
 module Base {

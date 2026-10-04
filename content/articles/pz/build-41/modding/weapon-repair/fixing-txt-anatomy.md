@@ -254,7 +254,7 @@ When multiple fixers are available:
 
 ## Common Mistakes
 
-### ❌ Wrong: Confusing Semicolon and Comma
+### Wrong: Confusing Semicolon and Comma
 
 ```
 fixing Fix MyCustomKnife
@@ -266,7 +266,7 @@ fixing Fix MyCustomKnife
 
 **Why it's wrong:** The syntax `Fixer : DuctTape=2, Woodwork=2` is incorrect. Commas end the Fixer line - they don't separate skills. The game will interpret this as "Fixer uses DuctTape with 2 uses" and ignore the `Woodwork=2` part entirely, resulting in a no-skill repair option.
 
-✅ **Right:**
+**Right:**
 
 ```
 fixing Fix MyCustomKnife
@@ -279,7 +279,7 @@ fixing Fix MyCustomKnife
 
 **Syntax rule:** Use **semicolon** to separate fixer item from skill requirements. Use **comma** to end the fixer line.
 
-### ❌ Wrong: Wrong Require Syntax
+### Wrong: Wrong Require Syntax
 
 ```
 fixing Fix MyCustomAxe
@@ -291,7 +291,7 @@ fixing Fix MyCustomAxe
 
 **Why it's wrong:** Fixing.txt uses different syntax than item scripts. The `Require` property must use colon `:` not equals `=`. This is unique to fixing.txt - item properties use `=`, but fixing properties use `:`.
 
-✅ **Right:**
+**Right:**
 
 ```
 fixing Fix MyCustomAxe
@@ -304,7 +304,7 @@ fixing Fix MyCustomAxe
 
 **Syntax rule:** `Require` and `Fixer` both use colons `:` after the property name, but fixer items use `=` for the uses count.
 
-### ❌ Wrong: Missing Module Reference
+### Wrong: Missing Module Reference
 
 ```
 // In MyMod/media/scripts/my_fixing.txt
@@ -322,7 +322,7 @@ module MyMod {
 
 **Why it's wrong:** If your weapon is defined in a custom module (like `MyMod.CustomWeapon`), the fixing definition needs to reference the full module path. Without it, the game won't find your item.
 
-✅ **Right:**
+**Right:**
 
 ```
 // Option 1: Reference full module path
@@ -348,7 +348,7 @@ module MyMod
 
 **Module rule:** Reference items from other modules with `ModuleName.ItemName` format.
 
-### ❌ Wrong: GlobalItem as Fixer
+### Wrong: GlobalItem as Fixer
 
 ```
 fixing Fix CarGasTank
@@ -360,7 +360,7 @@ fixing Fix CarGasTank
 
 **Why it's wrong:** Looking at vanilla vehicle part repairs, tools like blowtorches are `GlobalItem` not `Fixer`. The difference: Fixers are consumed (removed from inventory), while GlobalItems just lose durability. A blowtorch as a Fixer would be completely consumed, which doesn't make sense.
 
-✅ **Right:**
+**Right:**
 
 ```
 fixing Fix CarGasTank

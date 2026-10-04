@@ -461,7 +461,7 @@ The following weapon types do NOT have repair definitions in vanilla fixing.txt:
 
 ## Common Mistakes
 
-### ❌ Wrong: Using Woodglue Pattern for All Wooden Weapons
+### Wrong: Using Woodglue Pattern for All Wooden Weapons
 
 ```
 fixing Fix MyCustomGolfClub
@@ -474,7 +474,7 @@ fixing Fix MyCustomGolfClub
 
 **Why it's wrong:** Looking at vanilla fixing.txt, GolfClub (and ALL sports equipment) uses no-skill fixers only. Just because a weapon is wooden doesn't mean it uses Woodglue - only heavy-duty tools (axes, sledgehammers, shovels) follow this pattern.
 
-✅ **Right:**
+**Right:**
 
 ```
 fixing Fix MyCustomGolfClub
@@ -488,7 +488,7 @@ fixing Fix MyCustomGolfClub
 
 **Rule:** Woodglue is for heavy-duty wooden tools ONLY (axes, sledgehammers, shovels, hand scythes). Sports equipment, kitchen items, and garden tools use no-skill fixers even if wooden.
 
-### ❌ Wrong: Making Metal Pipe Repairable Like Hammer
+### Wrong: Making Metal Pipe Repairable Like Hammer
 
 ```
 fixing Fix MetalPipe
@@ -501,7 +501,7 @@ fixing Fix MetalPipe
 
 **Why it's wrong:** Looking at vanilla fixing.txt, MetalPipe, LeadPipe, and Crowbar are NOT repairable despite being similar to Hammer (which IS repairable). The design philosophy: solid metal items without handles or moving parts are disposable.
 
-✅ **Right:**
+**Right:**
 
 ```
 // DON'T create a fixing definition for solid metal items
@@ -524,7 +524,7 @@ fixing Fix MyCustomMetalBatWithHandle
 
 **Rule:** Solid metal items (pipes, bars, crowbars) are typically non-repairable. If you want a repairable metal weapon, give it a handle or grip that can break.
 
-### ❌ Wrong: Cross-Repairing All Firearms
+### Wrong: Cross-Repairing All Firearms
 
 ```
 fixing Fix MyCustomPistol
@@ -541,7 +541,7 @@ fixing Fix MyCustomPistol
 - Shotgun + ShotgunSawnoff (these 2 repair each other)
 - AssaultRifle + AssaultRifle2 (these 2 repair each other)
 
-✅ **Right:**
+**Right:**
 
 ```
 fixing Fix MyCustomPistol
@@ -561,7 +561,7 @@ fixing Fix MyCustomPistol
 
 **Rule:** Firearms repair with same type ONLY, unless you establish a variant relationship (like regular shotgun and sawn-off).
 
-### ❌ Wrong: Using Standard Uses for Crafted Spear
+### Wrong: Using Standard Uses for Crafted Spear
 
 ```
 fixing Fix MyCustomSpear
@@ -574,7 +574,7 @@ fixing Fix MyCustomSpear
 
 **Why it's wrong:** Looking at vanilla fixing.txt, ALL crafted spears use half the normal uses: DuctTape=1 (not 2), Scotchtape=2 (not 4). This reduced material cost reflects that spears are improvised weapons and easier to repair.
 
-✅ **Right:**
+**Right:**
 
 ```
 fixing Fix MyCustomSpear
@@ -598,8 +598,8 @@ Let's create a custom weapon with appropriate repairs based on vanilla patterns.
 Let's say you're creating a **Custom Fire Axe** - a heavy-duty tool with a wooden handle.
 
 **Which vanilla category does this match?**
-- Heavy-duty tool: ✅
-- Wooden handle: ✅
+- Heavy-duty tool: yes
+- Wooden handle: yes
 - Similar to: Axe, Sledgehammer, Shovel
 
 **Pattern to use:** Woodglue + 3 no-skill fixers (Woodwork 2)
@@ -678,10 +678,10 @@ module MyMod
 **What You Should See:**
 
 **Repair Menu Shows:**
-- ✅ "Use Woodglue (Repairs 35%) (95% success)" [if you have Woodwork 2]
-- ✅ "Use Duct Tape (Repairs 25%) (90% success)" [always available]
-- ✅ "Use Glue (Repairs 25%) (90% success)" [always available]
-- ✅ "Use Scotch Tape (Repairs 15%) (85% success)" [less effective, more uses]
+- "Use Woodglue (Repairs 35%) (95% success)" [if you have Woodwork 2]
+- "Use Duct Tape (Repairs 25%) (90% success)" [always available]
+- "Use Glue (Repairs 25%) (90% success)" [always available]
+- "Use Scotch Tape (Repairs 15%) (85% success)" [less effective, more uses]
 
 **After Repair:**
 - Fire Axe condition restored (amount depends on skill and fixer used)

@@ -360,7 +360,7 @@ public int speedType;  // This is the exact field name
 
 Let me show you the mistakes that will crash your mod or destroy performance.
 
-### ❌ Wrong: Forgetting setAccessible
+### Wrong: Forgetting setAccessible
 
 ```lua
 -- Tries to access field without unlocking
@@ -369,14 +369,14 @@ field:setInt(zombie, 3)  -- ERROR on private/protected fields!
 
 **Why it fails:** Java security prevents access to non-public fields. You must explicitly unlock them.
 
-✅ **Right: Always Call setAccessible First**
+**Right: Always Call setAccessible First**
 ```lua
 -- Unlock the field first
 field:setAccessible(true)                                -- Required for private/protected
 field:setInt(zombie, 3)                                  -- Now it works
 ```
 
-### ❌ Wrong: Using Wrong Type Method
+### Wrong: Using Wrong Type Method
 
 ```lua
 -- speedType is 'int' in Java
@@ -385,13 +385,13 @@ field:getFloat(zombie)  -- Returns wrong value or errors!
 
 **Why it fails:** Java types must match exactly. Using `getFloat()` on an `int` field gives garbage data.
 
-✅ **Right: Match the Java Type**
+**Right: Match the Java Type**
 ```lua
 -- Check Java source: 'public int speedType'
 field:getInt(zombie)                                     -- Correct type method
 ```
 
-### ❌ Wrong: Partial Field Name Match
+### Wrong: Partial Field Name Match
 
 ```lua
 -- Searches for any field with "speed" in name
@@ -402,7 +402,7 @@ end
 
 **Why it fails:** Multiple fields might contain your search term. You grab the wrong one.
 
-✅ **Right: Exact Field String Match**
+**Right: Exact Field String Match**
 ```lua
 -- Match the complete field string
 if fieldString == "public int zombie.characters.IsoZombie.speedType" then
@@ -410,7 +410,7 @@ if fieldString == "public int zombie.characters.IsoZombie.speedType" then
 end
 ```
 
-### ❌ Wrong: Not Caching Field Lookups
+### Wrong: Not Caching Field Lookups
 
 ```lua
 -- Searches through ALL fields EVERY frame!
@@ -424,7 +424,7 @@ end)
 
 **Why it fails:** Field lookup is expensive. Doing it every frame causes massive lag.
 
-✅ **Right: Cache Once, Use Forever**
+**Right: Cache Once, Use Forever**
 ```lua
 -- Cache fields on game start (once)
 local cachedSpeedField = nil

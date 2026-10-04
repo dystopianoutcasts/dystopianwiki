@@ -298,11 +298,11 @@ Good recipes have logical input-to-output ratios:
 
 | Input | Output | Feels Right? |
 |-------|--------|--------------|
-| 1 Log | 4 Planks | ✅ Fair |
-| 1 Log | 1 Plank | ❌ Too harsh |
-| 1 Log | 20 Planks | ❌ Too generous |
-| 3 Cloth | 1 Rope | ✅ Fair |
-| 10 Cloth | 1 Rope | ❌ Too expensive |
+| 1 Log | 4 Planks | Fair |
+| 1 Log | 1 Plank | Too harsh |
+| 1 Log | 20 Planks | Too generous |
+| 3 Cloth | 1 Rope | Fair |
+| 10 Cloth | 1 Rope | Too expensive |
 
 **Rule of thumb:** Processed materials should give less output than the effort feels worth. 1 log = 3-4 planks feels right because chopping takes time.
 
@@ -499,7 +499,7 @@ Let's look at errors beginners make with advanced patterns, and how to avoid the
 
 ### Mistake 1: Quantity on Kept Tools
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 ```
 recipe Example {
@@ -515,7 +515,7 @@ recipe Example {
 
 **Why it breaks:** The `keep` keyword doesn't support quantities. You can't require "2 hammers that don't get consumed."
 
-✅ **Works:**
+**Works:**
 
 ```
 recipe Example {
@@ -535,7 +535,7 @@ keep Saw,
 
 ### Mistake 2: Mixing Keep and Alternatives Incorrectly
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 ```
 recipe Example {
@@ -551,7 +551,7 @@ recipe Example {
 
 **Why it breaks:** The recipe parser doesn't handle `keep` with alternatives properly in this syntax.
 
-✅ **Works (use type function instead):**
+**Works (use type function instead):**
 
 ```
 recipe Example {
@@ -581,7 +581,7 @@ Actually, that won't work either. The correct approach is to use item type funct
 
 ### Mistake 3: Result with Alternatives
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 ```
 recipe Example {
@@ -596,7 +596,7 @@ recipe Example {
 
 **Why it breaks:** The `Result` property only accepts one item type. You can't have "produce this OR that."
 
-✅ **Works:**
+**Works:**
 
 ```
 recipe Example {
@@ -611,7 +611,7 @@ recipe Example {
 
 ### Mistake 4: Wrong Alternative Syntax
 
-❌ **Doesn't work:**
+**Doesn't work:**
 
 ```
 recipe Example {
@@ -624,7 +624,7 @@ recipe Example {
 
 **What happens:** Player needs both a knife AND an axe.
 
-✅ **Works:**
+**Works:**
 
 ```
 recipe Example {

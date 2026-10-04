@@ -359,7 +359,7 @@ end
 
 ## Common Mistakes
 
-### ❌ Wrong: Using the makeInactive() Hack
+### Wrong: Using the makeInactive() Hack
 
 ```lua
 -- Old way: slow and buggy
@@ -380,7 +380,7 @@ end
 - **Side effects** - `makeInactive()` does more than just reinit stats
 - **Slow** - ~50ms per 1000 zombies
 
-✅ **Right: Direct Field Access**
+**Right: Direct Field Access**
 ```lua
 -- New way: fast and clean
 function setZombieSpeed_NEW(zombie, speed)
@@ -389,7 +389,7 @@ end
 -- ~5ms per 1000 zombies (10x faster!)
 ```
 
-### ❌ Wrong: Not Tracking Processing
+### Wrong: Not Tracking Processing
 
 ```lua
 -- Sets speed EVERY frame!
@@ -400,7 +400,7 @@ end)
 
 **Why it fails:** You're setting the same value repeatedly, wasting CPU every frame.
 
-✅ **Right: Track What You've Processed**
+**Right: Track What You've Processed**
 ```lua
 -- Set once, skip if already done
 Events.OnZombieUpdate.Add(function(zombie)
@@ -412,7 +412,7 @@ Events.OnZombieUpdate.Add(function(zombie)
 end)
 ```
 
-### ❌ Wrong: Forgetting About Zombie Pooling
+### Wrong: Forgetting About Zombie Pooling
 
 ```lua
 -- Assumes zombie keeps same ID forever
@@ -422,7 +422,7 @@ modData.processed = true                                 -- But zombie might be 
 
 **Why it fails:** Zombies are pooled. When one despawns, its object gets reused with a different ID.
 
-✅ **Right: Track by Hash**
+**Right: Track by Hash**
 ```lua
 -- Store the hash we used
 local modData = zombie:getModData()

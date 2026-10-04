@@ -547,7 +547,7 @@ Choose values that match the vanilla pattern:
 
 ## Common Mistakes
 
-### ❌ Wrong: Making Hunger Reduction Too Extreme
+### Wrong: Making Hunger Reduction Too Extreme
 
 ```
 item MyCustomSuperFood
@@ -561,7 +561,7 @@ item MyCustomSuperFood
 
 **Why it's wrong:** Looking at vanilla food items, even the largest items (watermelon, pizza, can of oats) only give -60 to -150 hunger reduction. A tiny 0.1-weight bar shouldn't give -200.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomEnergyBar
@@ -574,7 +574,7 @@ item MyCustomEnergyBar
 }
 ```
 
-### ❌ Wrong: Mismatched Calories and Hunger
+### Wrong: Mismatched Calories and Hunger
 
 ```
 item MyCustomApple
@@ -589,7 +589,7 @@ item MyCustomApple
 
 **Why it's wrong:** Vanilla apple has HungerChange = -16 and Calories = 95. Your custom apple claims to fill you up 3x more (-50 vs -16) but has the same calories. The hunger reduction and calories should be proportional.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomApple
@@ -602,7 +602,7 @@ item MyCustomApple
 }
 ```
 
-### ❌ Wrong: Fresh Food That Doesn't Spoil
+### Wrong: Fresh Food That Doesn't Spoil
 
 ```
 item MyCustomSteak
@@ -619,7 +619,7 @@ item MyCustomSteak
 
 **Why it's wrong:** Looking at vanilla items, all raw meat (steak, chicken, pork chop) has `DaysFresh = 2` and `DaysTotallyRotten = 6`. Your custom steak with `DaysFresh = 0` means it starts rotten immediately, which doesn't match vanilla patterns.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomSteak
@@ -634,7 +634,7 @@ item MyCustomSteak
 }
 ```
 
-### ❌ Wrong: Unrealistic Weight Values
+### Wrong: Unrealistic Weight Values
 
 ```
 item MyCustomCandyBar
@@ -649,7 +649,7 @@ item MyCustomCandyBar
 
 **Why it's wrong:** Looking at vanilla snacks (chocolate, chips, candy), they weigh 0.1-0.2. A candy bar weighing 2.5 (same as watermelon at 3.0!) is unrealistic.
 
-✅ **Right:**
+**Right:**
 
 ```
 item MyCustomCandyBar

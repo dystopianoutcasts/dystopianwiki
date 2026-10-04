@@ -243,7 +243,7 @@ module MyMod
 
 ## Common Mistakes
 
-### ❌ Wrong: Not Matching Material Counts to Vanilla Patterns
+### Wrong: Not Matching Material Counts to Vanilla Patterns
 
 ```
 fixing Fix Custom Bat
@@ -255,7 +255,7 @@ fixing Fix Custom Bat
 
 **Why it's wrong:** Looking at vanilla, wooden weapons use **DuctTape=2**, not 15. Using 15 makes repair too expensive and breaks game balance.
 
-✅ **Right:**
+**Right:**
 
 ```
 fixing Fix Custom Bat
@@ -276,7 +276,7 @@ fixing Fix Custom Bat
 
 ---
 
-### ❌ Wrong: Firearms Using Regular Repair Materials
+### Wrong: Firearms Using Regular Repair Materials
 
 ```
 fixing Fix Custom Rifle
@@ -289,7 +289,7 @@ fixing Fix Custom Rifle
 
 **Why it's wrong:** Looking at vanilla firearms, they use **the same weapon type + Aiming skill** to repair (cannibalize parts from another gun), NOT duct tape or welding.
 
-✅ **Right:**
+**Right:**
 
 ```
 fixing Fix Custom Rifle
@@ -303,7 +303,7 @@ fixing Fix Custom Rifle
 
 ---
 
-### ❌ Wrong: Using Wrong Skill Names
+### Wrong: Using Wrong Skill Names
 
 ```
 fixing Fix Custom Bat
@@ -315,7 +315,7 @@ fixing Fix Custom Bat
 
 **Why it's wrong:** The skill name must be spelled exactly as the game expects. `Carpentry` doesn't exist as a skill in the fixing system - it's called `Woodwork`.
 
-✅ **Right:**
+**Right:**
 
 ```
 fixing Fix Custom Bat

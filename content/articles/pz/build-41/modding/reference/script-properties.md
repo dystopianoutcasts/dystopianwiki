@@ -625,14 +625,14 @@ module Base {                               /* Module declaration */
 
 **Problem:** Using colon syntax in items (recipe syntax).
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 item Hammer {
     Weight:0.5,                             /* Wrong! Items use = */
 }
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 item Hammer {
     Weight = 0.5,                           /* Right! Items use = */
@@ -647,7 +647,7 @@ item Hammer {
 
 **Problem:** Missing trailing commas causes parse errors.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 item Hammer {
     Weight = 0.5                            /* Missing comma! */
@@ -655,7 +655,7 @@ item Hammer {
 }
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 item Hammer {
     Weight = 0.5,                           /* Has comma */
@@ -671,7 +671,7 @@ item Hammer {
 
 **Problem:** Making food increase hunger instead of reduce it.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 item Apple {
     Type = Food,
@@ -679,7 +679,7 @@ item Apple {
 }
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 item Apple {
     Type = Food,
@@ -695,7 +695,7 @@ item Apple {
 
 **Problem:** Not specifying item type.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 item Hammer {
     DisplayName = Hammer,
@@ -704,7 +704,7 @@ item Hammer {
 }
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 item Hammer {
     Type = Weapon,                          /* Required! */
@@ -721,7 +721,7 @@ item Hammer {
 
 **Problem:** Using non-existent category names.
 
-❌ **Wrong:**
+**Wrong:**
 ```lua
 recipe Make Stuff {
     Ingredient1,
@@ -731,7 +731,7 @@ recipe Make Stuff {
 }
 ```
 
-✅ **Right:**
+**Right:**
 ```lua
 recipe Make Stuff {
     Ingredient1,

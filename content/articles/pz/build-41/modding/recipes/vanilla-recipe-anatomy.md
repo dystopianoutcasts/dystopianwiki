@@ -658,14 +658,14 @@ module Base {
 
 ### Mistake 1: Using Equals Instead of Colon for Parameters
 
-❌ **Wrong:**
+**Wrong:**
 ```
 Result=Plank,                               /* Wrong symbol */
 Time=100,                                   /* Wrong symbol */
 Category=Carpentry,                         /* Wrong symbol */
 ```
 
-✅ **Correct:**
+**Correct:**
 ```
 Result:Plank,                               /* Colon for parameters */
 Time:100,                                   /* Colon for parameters */
@@ -676,12 +676,12 @@ Category:Carpentry,                         /* Colon for parameters */
 
 ### Mistake 2: Quantity on Kept Tools
 
-❌ **Wrong:**
+**Wrong:**
 ```
 keep Hammer=2,                              /* Can't specify quantity with keep */
 ```
 
-✅ **Correct:**
+**Correct:**
 ```
 keep Hammer,                                /* Just the tool */
 ```
@@ -694,13 +694,13 @@ keep Saw,
 
 ### Mistake 3: Multiple Result Lines
 
-❌ **Wrong:**
+**Wrong:**
 ```
 Result:Plank,
 Result:Nails,                               /* Can't have two Result lines */
 ```
 
-✅ **Correct:**
+**Correct:**
 ```
 Result:Plank=3,                             /* One result with quantity */
 ```
@@ -709,13 +709,13 @@ Result:Plank=3,                             /* One result with quantity */
 
 ### Mistake 4: Wrong Animation/Sound Names
 
-❌ **Wrong:**
+**Wrong:**
 ```
 AnimNode:Hammering,                         /* Not a valid AnimNode */
 Sound:SawingWood,                           /* Not a valid Sound */
 ```
 
-✅ **Correct:**
+**Correct:**
 ```
 AnimNode:BuildHigh,                         /* Valid AnimNode */
 Sound:Sawing,                               /* Valid Sound */

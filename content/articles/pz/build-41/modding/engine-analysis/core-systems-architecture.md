@@ -128,7 +128,7 @@ Project Zomboid Engine
 │   ├── GameWindow (main loop, rendering, input)
 │   └── GameTime (time management, multiplayer sync)
 │
-├── Lua Integration ⭐ THE MODDING HEART
+├── Lua Integration <- THE MODDING HEART
 │   └── LuaManager (8,893 lines - this is how mods work)
 │
 ├── Character System
@@ -635,8 +635,8 @@ Understanding the scale helps you appreciate the complexity:
 **Reality:** Lua mods can only access what `LuaManager` exposes through `@LuaMethod` annotations. Most engine internals aren't accessible.
 
 **Example:**
-- ✅ Can access: `IsoZombie.speedType` (exposed)
-- ❌ Can't access: Internal pathfinding cache (not exposed)
+- Can access: `IsoZombie.speedType` (exposed)
+- Can't access: Internal pathfinding cache (not exposed)
 
 **Why this matters:** Understanding what's exposed helps you know what's possible without diving into Java reflection.
 

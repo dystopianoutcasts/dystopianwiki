@@ -250,7 +250,7 @@ Without these checks, your mod would crash. **Always assume something might not 
 
 ## Common Mistakes
 
-### ❌ Wrong: Dividing by Zero
+### Wrong: Dividing by Zero
 
 ```lua
 -- Crashes if maxSpeed is 0!
@@ -259,7 +259,7 @@ local ratio = currentSpeed / maxSpeed
 
 **Why it fails:** Division by zero causes an error. Some vehicles might have maxSpeed of 0.
 
-✅ **Right: Check Before Dividing**
+**Right: Check Before Dividing**
 ```lua
 -- Safe division
 if maxSpeed > 0 then
@@ -267,7 +267,7 @@ if maxSpeed > 0 then
 end
 ```
 
-### ❌ Wrong: Assuming Parts Exist
+### Wrong: Assuming Parts Exist
 
 ```lua
 -- Assumes every vehicle has a gas tank!
@@ -276,7 +276,7 @@ local fuelPercent = vehicle:getPartById("GasTank"):getItemContainer():getUsedDel
 
 **Why it fails:** Some vehicles (bikes, special modded vehicles) might not have gas tanks. This crashes.
 
-✅ **Right: Check Each Step**
+**Right: Check Each Step**
 ```lua
 -- Check every step of the chain
 local tank = vehicle:getPartById("GasTank")           -- Get tank part
@@ -288,7 +288,7 @@ if tank then                                          -- Does tank exist?
 end
 ```
 
-### ❌ Wrong: Not Checking if in Vehicle
+### Wrong: Not Checking if in Vehicle
 
 ```lua
 -- Assumes player is in vehicle!
@@ -297,7 +297,7 @@ local speed = player:getVehicle():getCurrentSpeedKmHour()  -- Crashes if walking
 
 **Why it fails:** `getVehicle()` returns `nil` if player is not in a vehicle. Calling methods on `nil` crashes.
 
-✅ **Right: Check for Vehicle First**
+**Right: Check for Vehicle First**
 ```lua
 -- Always check if vehicle exists
 local vehicle = player:getVehicle()                   -- Get vehicle reference

@@ -510,7 +510,7 @@ if hash < 3000 then ... end
 
 Let me show you the mistakes I made (and you will too) when first learning this pattern.
 
-### ❌ Wrong: Using Math.random() or ZombRand()
+### Wrong: Using Math.random() or ZombRand()
 
 ```lua
 -- Different result every time, every client
@@ -521,7 +521,7 @@ end
 
 **Why it fails:** Random functions give different results each call. Server and client disagree.
 
-✅ **Right: Use Deterministic Hash**
+**Right: Use Deterministic Hash**
 ```lua
 -- Same zombie ID = same result, always
 local hash = getObjectHash(zombie)
@@ -530,7 +530,7 @@ if hash < 3000 then
 end
 ```
 
-### ❌ Wrong: Forgetting Single-Player Fallback
+### Wrong: Forgetting Single-Player Fallback
 
 ```lua
 -- getOnlineID() returns -1 in single-player!
@@ -540,7 +540,7 @@ local hash = (id * 2654435769) % 4294967296  -- Breaks in single-player
 
 **Why it fails:** In single-player, `getOnlineID()` returns -1 (no online ID exists). All zombies get the same hash!
 
-✅ **Right: Check for Negative ID**
+**Right: Check for Negative ID**
 ```lua
 -- Works in both single-player and multiplayer
 local id = zombie:getOnlineID()
@@ -550,7 +550,7 @@ end
 local hash = (id * 2654435769) % 4294967296
 ```
 
-### ❌ Wrong: Recomputing Hash Multiple Times
+### Wrong: Recomputing Hash Multiple Times
 
 ```lua
 -- Computes hash 4 times! Wasteful.
@@ -561,7 +561,7 @@ if getObjectHash(zombie) < 8000 then ... end
 
 **Why it fails:** Not technically broken, but inefficient. Computing the hash 4 times when you only need to do it once.
 
-✅ **Right: Compute Once, Use Many Times**
+**Right: Compute Once, Use Many Times**
 ```lua
 -- Compute hash once, reuse it
 local hash = getObjectHash(zombie)
@@ -570,7 +570,7 @@ if hash < 5000 then ... end
 if hash < 8000 then ... end
 ```
 
-### ❌ Wrong: Assuming Hashes are Unique
+### Wrong: Assuming Hashes are Unique
 
 ```lua
 -- BAD: Treating hash as unique identifier
@@ -581,7 +581,7 @@ assert(getHash(zombie1) ~= getHash(zombie2))  -- Can fail!
 
 **Why it fails:** Hashes can collide. Two different zombies might get the same hash value (rare, but possible).
 
-✅ **Right: Use Hash for Probability, Not Identity**
+**Right: Use Hash for Probability, Not Identity**
 ```lua
 -- GOOD: Use hash for percentage-based decisions
 local hash = getHash(zombie)
@@ -591,7 +591,7 @@ end
 -- Don't rely on hash being unique!
 ```
 
-### ❌ Wrong: Forgetting to Track Processing
+### Wrong: Forgetting to Track Processing
 
 ```lua
 -- Processes same zombie multiple times
@@ -605,7 +605,7 @@ end
 
 **Why it fails:** Runs every frame, setting attributes over and over. Wasteful and can cause issues with zombie pooling.
 
-✅ **Right: Track if Already Processed**
+**Right: Track if Already Processed**
 ```lua
 -- Process once, skip if already done
 function OnZombieUpdate(zombie)
