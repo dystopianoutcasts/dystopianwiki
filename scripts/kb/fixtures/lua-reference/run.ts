@@ -67,7 +67,8 @@ function runGen(args: string[]): { status: number; out: string } {
 
 function filesOf(dir: string): Map<string, string> {
   const m = new Map<string, string>()
-  for (const f of fs.readdirSync(dir).sort()) m.set(f, fs.readFileSync(path.join(dir, f), 'utf-8'))
+  // golden files may be checked out with CRLF on Windows; compare content, not line endings
+  for (const f of fs.readdirSync(dir).sort()) m.set(f, fs.readFileSync(path.join(dir, f), 'utf-8').replace(/\r\n/g, '\n'))
   return m
 }
 

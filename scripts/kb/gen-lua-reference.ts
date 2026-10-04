@@ -1009,7 +1009,8 @@ function main(): void {
     let bad = 0
     for (const [f, content] of files) {
       const p = path.join(outDir, f)
-      if (!fs.existsSync(p) || fs.readFileSync(p, 'utf-8') !== content) {
+      // line endings are not content: a Windows checkout may hold the committed files as CRLF
+      if (!fs.existsSync(p) || fs.readFileSync(p, 'utf-8').replace(/\r\n/g, '\n') !== content) {
         console.log(`[ERROR] out of date: ${f}`)
         bad++
       }
