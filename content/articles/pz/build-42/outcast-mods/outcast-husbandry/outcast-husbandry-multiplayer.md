@@ -14,7 +14,7 @@ tags:
 excerpt: >-
   Engine citations refer to R:/ZOMBOID/PZ_Engine_Records/B42/src/, revision
   a2947723ca.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Outcast Husbandry -- multiplayer
 
@@ -25,14 +25,20 @@ Engine citations refer to `R:/ZOMBOID/PZ_Engine_Records/B42/src/`, revision
 
 ## Where the code runs
 
-Everything lives under `media/lua/server/`, so a connected client never loads it.
+Everything lives under `media/lua/server/`. That folder name does **not** keep the
+code off clients: Build 42 loads `server/` on a connected client too, at world
+load. The folder sets *when* code loads, not which side runs it (see
+[Lua load order and the three lua folders](/pz/build-42/modding/lua-api/lua-load-order-and-the-three-lua-folders)).
 The server owns the animal simulation and is the only party that writes anything.
 
-`OH_Main.ownsSimulation()` additionally refuses to run when `isClient()` is true.
-That is false in singleplayer and false on a dedicated server, and true only on a
-connected client -- exactly the set to exclude. It is redundant given the
-directory, except on a **co-op host**, which runs both halves in one process and
-is the one configuration where an unguarded pass could act on slave copies.
+> **Proof:** Code. `zombie.gameStates.GameLoadingState` calls `LuaManager.LoadDirBase("server")` with no `GameClient.client` guard. Build 42.20 (revision a2947723ca).
+
+What keeps the simulation off a client is `OH_Main.ownsSimulation()`, which
+refuses to run when `isClient()` is true. That is false in singleplayer and false
+on a dedicated server, and true only on a connected client -- exactly the set to
+exclude. It is the guard that matters, both on a connected client and on a
+**co-op host**, which runs both halves in one process and is the one
+configuration where an unguarded pass could act on slave copies.
 
 ## The event trap
 
@@ -124,3 +130,7 @@ Removing the mod restores vanilla rates on the next start.
 4. **Nothing else changed.** Confirm an animal can still be killed by a weapon
    and butchered normally while starving -- the floor must not make a neglected
    animal unkillable.
+
+---
+
+*Corrected 2026-10-04: media/lua/server/ loads on a multiplayer client too, at world load; the folder sets when code loads, not which side runs it.*

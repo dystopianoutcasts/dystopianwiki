@@ -13,7 +13,7 @@ tags:
   - decompile
   - verified
 excerpt: 'Everything here was read out of the shipped game on 2026-08-05, not from docs.'
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Verified vehicle API reference
 
@@ -255,7 +255,17 @@ Note `getId()` returns a **short**, not an int.
 4. **`getId()` is a short.** Fine as a table key; don't assume int range.
 5. **Late binding cuts both ways.** Anything you assign to `Vehicles.Update.X` is
    global and unconditional. Chain, don't clobber.
-6. **`Vehicles.lua` lives in `server/`.** On an MP client those globals may not
-   exist -- guard with `if not Vehicles then return end` in shared code.
+6. **`Vehicles.lua` lives in `server/`.** That does not keep it off an MP
+   client: `server/` loads on every machine, clients included, but at world load,
+   after `shared/` and `client/`. So the globals do exist on a client once a world
+   is loaded. The real constraint is timing: a `shared/` file must look
+   `Vehicles` up inside a function body, never capture it at file load. See
+   [Lua load order and the three lua folders](/pz/build-42/modding/lua-api/lua-load-order-and-the-three-lua-folders).
+
+> **Proof:** Code. `zombie.gameStates.GameLoadingState` calls `LuaManager.LoadDirBase("server")` with no `GameClient.client` guard; `zombie.Lua.LuaManager#LoadDirBase()` loads `shared` and `client` at startup. Build 42.20 (revision a2947723ca).
 7. **Vehicle scripts live in `media/scripts/generated/vehicles/`.** Generated;
    never hand-edit. Override the Lua function or use a `template vehicle`.
+
+---
+
+*Corrected 2026-10-04: media/lua/server/ loads on a multiplayer client too, at world load; the folder sets when code loads, not which side runs it.*

@@ -17,7 +17,7 @@ excerpt: >-
   Within media/lua/ the three subfolders load in a defined order. The three
   folders (shared, client, server) are confirmed present in the B42 structure by
   pzwiki Mod structure (rev 1443271); the...
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - tl-dr-what-a-b41-modder-must-change-first
   - b42-status-versioning-and-the-compatibility-model
@@ -39,7 +39,9 @@ Within `media/lua/` the three subfolders load in a defined order. The three fold
 
 1. **`lua/shared/`** -- loaded **first**. Logic used by both client and server (data tables, utility functions, constants). Translation files live under `lua/shared/Translate`. **[CONFIRMED folder; ordering per general knowledge]**
 2. **`lua/client/`** -- loaded after shared. UI, context menus, timed actions, anything client-side/visual. **[CONFIRMED folder]**
-3. **`lua/server/`** -- loaded **only when a game/world actually starts** (not at main menu). Authoritative game logic; in MP this runs on the server. **[CONFIRMED folder]**
+3. **`lua/server/`** -- loaded **only when a game/world actually starts** (not at main menu). In multiplayer it loads on the server **and on every connected client**: the folder name sets *when* the code loads, not which side runs it. Code that must run only on the server says so itself, typically with `if isClient() then return end` at the top of the file. See [Lua load order and the three lua folders](/pz/build-42/modding/lua-api/lua-load-order-and-the-three-lua-folders).
+
+> **Proof:** Code. `zombie.gameStates.GameLoadingState` calls `LuaManager.LoadDirBase("server")` with no `GameClient.client` guard; `zombie.network.GameServer` calls it on a dedicated server. Build 42.20 (revision a2947723ca).
 
 Consequences for structure:
 - Put shared helpers in `shared/` so both sides see them.
@@ -53,3 +55,7 @@ Consequences for structure:
 ---
 
 <a name="8-debug"></a>
+
+---
+
+*Corrected 2026-10-04: media/lua/server/ loads on a multiplayer client too, at world load; the folder sets when code loads, not which side runs it.*

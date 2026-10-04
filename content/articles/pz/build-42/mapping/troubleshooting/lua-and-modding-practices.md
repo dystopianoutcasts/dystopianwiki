@@ -14,7 +14,7 @@ tags:
 excerpt: >-
   Not mapping-specific, but every map mod ends up shipping Lua. These are the
   rules that cause silent breakage when ignored.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Lua and modding practices for maps
 
@@ -44,8 +44,13 @@ loaded or reloaded outside a save, server files are unloaded. Its order is:
 | Folder | Singleplayer | MP client | MP server |
 |---|---|---|---|
 | `client` | loaded | loaded | not loaded |
-| `server` | loaded | not loaded | loaded |
+| `server` | loaded | loaded (at world load) | loaded |
 | `shared` | loaded | loaded | loaded |
+
+The `server` folder loads on a multiplayer client too: the name sets *when* it
+loads, not which side runs it. See [Lua load order and the three lua folders](/pz/build-42/modding/lua-api/lua-load-order-and-the-three-lua-folders).
+
+> **Proof:** Code. `zombie.gameStates.GameLoadingState` calls `LuaManager.LoadDirBase("server")` with no `GameClient.client` guard. Build 42.20 (revision a2947723ca).
 
 The practical consequence for mappers: **vanilla shared files always load before
 your shared files**, so globals like `VehicleZoneDistribution` and
@@ -167,3 +172,7 @@ If your map mod ships `media/scripts/`:
 
 VSCode extension for syntax highlighting and diagnostics: **ZedScripts**.
 The wiki recommends VSCode or IntelliJ IDEA over Notepad++ for PZ modding.
+
+---
+
+*Corrected 2026-10-04: media/lua/server/ loads on a multiplayer client too, at world load; the folder sets when code loads, not which side runs it.*

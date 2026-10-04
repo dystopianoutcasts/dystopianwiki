@@ -14,7 +14,7 @@ tags:
 excerpt: >-
   Livestock in a designated animal zone get hungry and thirsty far more slowly,
   so a few days away does not come back to a dead herd.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Outcast Husbandry
 
@@ -25,8 +25,15 @@ a few days away does not come back to a dead herd.
 
 Build 42 (`42.20.0`+). Server-side. Safe to add to an existing save.
 
-On a dedicated server only the server needs the mod. Clients never load any of
-it, and no vanilla file is replaced. See [docs/MULTIPLAYER.md](/pz/build-42/outcast-mods/outcast-husbandry/outcast-husbandry-multiplayer).
+On a dedicated server only the server runs the simulation. Connected clients do
+load the mod's files, because Build 42 loads `media/lua/server/` on every machine
+at world load (see [Lua load order and the three lua folders](/pz/build-42/modding/lua-api/lua-load-order-and-the-three-lua-folders)),
+but the mod checks `isClient()` and does nothing there. No vanilla file is
+replaced.
+
+> **Proof:** Code. `zombie.gameStates.GameLoadingState` calls `LuaManager.LoadDirBase("server")` with no `GameClient.client` guard. Build 42.20 (revision a2947723ca).
+
+See [docs/MULTIPLAYER.md](/pz/build-42/outcast-mods/outcast-husbandry/outcast-husbandry-multiplayer).
 
 ## The problem
 
@@ -130,3 +137,7 @@ lua  tests/test_rates.lua              # scaling and survival arithmetic
 ## Credits
 
 By Raxdeg, for the Dystopian Outcasts server.
+
+---
+
+*Corrected 2026-10-04: media/lua/server/ loads on a multiplayer client too, at world load; the folder sets when code loads, not which side runs it.*
