@@ -69,4 +69,14 @@ local perf = getPerformanceLocal()
 for k, v in pairs(perf) do print(k, v) end
 ```
 
+## The Prometheus endpoint shows your players to anyone who can reach it
+
+There is a second way to read these numbers, for server owners who graph them: start the server with the Java system property `-DprometheusPort` set to a port number, and the game opens a Prometheus metrics page on that port. It is off unless you set it.
+
+Before you turn it on, Outcast, know what it publishes. Besides the counters, it lists **every connected player's account name with their X and Y position** (and a made-up longitude and latitude), refreshed every statistics period, plus the server's IP address, name and ports. The game sets up **no password or any other check** on that page. The startup log line says `localhost`, but that is only how the message is written; we have not checked which network address the page actually listens on. Treat it as open to anyone who can reach that port, and keep the port behind your firewall.
+
+> **Proof:** Code. `zombie.network.statistics.StatisticManager` (starts `HTTPServer.builder().port(...)` only when the `prometheusPort` system property is set, with no authenticator; registers the `player_x`, `player_y`, `player_lon` and `player_lat` gauges labelled with the online id and the account name, filled for every fully connected player on each update; the info metric carries the server's IP, name and ports). Build 42.21.0 (revision 4a0e9546ec).
+
 > **Proof:** Code. Tables are wiped and refilled only in `zombie.network.statistics.data.Statistic#update`, once per period; vanilla Lua reads them by literal key (`ISStatisticsUI.lua`). Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+
+*Updated 2026-10-04: added the privacy warning for the Prometheus metrics page (player names and positions, no password).*
