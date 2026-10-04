@@ -12,7 +12,7 @@ tags:
   - engine
   - vehicles
 excerpt: 'Everything this mod depends on, with the line it was read from. Sources:'
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Outcast Upright -- engine notes
 
@@ -23,7 +23,9 @@ Everything this mod depends on, with the line it was read from. Sources:
 - Decompile: our decompile of the Build 42 engine (revision `a2947723ca`)
 - Vanilla Lua: `media/lua` in the installed game
 - Vanilla scripts: `...\media\scripts\generated\vehicles`
-- Game version at time of writing: **42.20.0**
+- Game version at time of writing: **42.20.0**; re-checked on **42.21.0**
+  (revision `4a0e9546ec`), where nothing below changed meaning and the line
+  numbers now point into 42.21
 
 This file exists so a future build can be diffed against it rather than
 re-derived. Several "obvious" APIs do not exist.
@@ -34,22 +36,22 @@ re-derived. Several "obvious" APIs do not exist.
 
 | Fact | Where |
 |---|---|
-| `getUpVectorDot()` — 1.0 upright, 0 on its side, -1 on its roof | `BaseVehicle.java:4260` |
-| `getUpVector` is basis column 1; `getForwardVector` is column 2 | `:4255`, `:4250` |
-| `setAngles(degX, degY, degZ)` | `:4044` |
-| `getAngleX/Y/Z` read `Quaternionf.getEulerAnglesXYZ` | `:4061`, `:4071`, `:4081` |
-| `getWorldTransform` / `setWorldTransform` | `:4008`, `:4013` |
+| `getUpVectorDot()` — 1.0 upright, 0 on its side, -1 on its roof | `BaseVehicle.java:4303` |
+| `getUpVector` is basis column 1; `getForwardVector` is column 2 | `:4298`, `:4293` |
+| `setAngles(degX, degY, degZ)` | `:4087` |
+| `getAngleX/Y/Z` read `Quaternionf.getEulerAnglesXYZ` | `:4104`, `:4114`, `:4124` |
+| `getWorldTransform` / `setWorldTransform` | `:4051`, `:4056` |
 | `Transform` is `@UsedFromLua`, public no-arg ctor, public `basis`/`origin` | `Transform.java:17-22` |
 
 **There is no `isOverturned()`.** `getUpVectorDot() < 0.8` is the test, and 0.8 is
-the engine's own number — `checkTrailerVerticalAlignment` uses it at `:10194`, as
+the engine's own number — `checkTrailerVerticalAlignment` uses it at `:10254`, as
 do `Bullet.java:351` and `VehicleAddTask.java:33`. The comparison is strictly
 `<`, so a vehicle at exactly 0.8 is *not* overturned.
 
 **There is no `getRightVector()`.** Only forward and up are exposed. Derive right
 as `up × forward` (column 0 of a right-handed orthonormal basis).
 
-**`flipUpright()` exists at `:4033` and nothing anywhere calls it.** Public, so
+**`flipUpright()` exists at `:4076` and nothing anywhere calls it.** Public, so
 Lua-callable, and genuinely dead vanilla API. We do **not** use it: it applies
 `rotation.setAngleAxis(0, UNIT_Y)`, which is the identity quaternion, so it wipes
 **heading** along with pitch and roll. A car righted with it faces a fixed
@@ -60,14 +62,14 @@ Euler decomposition, which is degenerate at roughly 180° of roll — precisely 
 on its roof, the case the mod exists for. `OUP.headingOf` uses the forward vector
 instead, and falls back to `up × forward` when forward is near-vertical.
 
-**`setAngles` silently no-ops on sub-degree changes.** `:4045` gates the whole
+**`setAngles` silently no-ops on sub-degree changes.** `:4088` gates the whole
 body on `(int)degreesX != (int)getAngleX() || ...`. Not a problem for a one-shot
 flip, but it is why a per-tick lerp toward zero stalls near the end instead of
 settling. Anything that lerps must stop at a ≥1° epsilon.
 
-**`setWorldTransform` does nothing for physics on a dedicated server.** `:4017`
+**`setWorldTransform` does nothing for physics on a dedicated server.** `:4060`
 guards `Bullet.teleportVehicle` behind `!GameServer.server`; `createPhysics`
-(`:844`) is guarded the same way. Only `jniTransform` is updated server-side.
+(`:846`) is guarded the same way. Only `jniTransform` is updated server-side.
 
 ---
 
@@ -76,20 +78,20 @@ guards `Bullet.teleportVehicle` behind `!GameServer.server`; `createPhysics`
 Three facts combine. All three are needed to explain it.
 
 **1. Attachment validation ignores height entirely.**
-`canAttachTrailer` (`:10228`) checks forward-dot ≥ 0.6, up-dot ≥ 0.8, and a
+`canAttachTrailer` (`:10288`) checks forward-dot ≥ 0.6, up-dot ≥ 0.8, and a
 distance computed in **two dimensions only**:
 
 ```java
-float distSq = IsoUtils.DistanceToSquared(v1.x, v1.y, 0.0F, v2.x, v2.y, 0.0F);   // :10238
+float distSq = IsoUtils.DistanceToSquared(v1.x, v1.y, 0.0F, v2.x, v2.y, 0.0F);   // :10298
 ```
 
 The Z is literally passed as zero. The vertical gap between the two tow points is
 never looked at.
 
 **2. The joint that follows is rigid and near roll-locked.**
-`addPointConstraint` (`:9995`) picks `addRopeConstraint` for car-tows-car, but the
+`addPointConstraint` (`:10055`) picks `addRopeConstraint` for car-tows-car, but the
 moment either script name contains `"Trailer"` it builds a 6DoF constraint
-(`:10020-10041`) with all three linear axes locked to `0.0` and angular limits:
+(`:10080-10101`) with all three linear axes locked to `0.0` and angular limits:
 
 | Axis | Limit |
 |---|---|
@@ -109,8 +111,8 @@ moment either script name contains `"Trailer"` it builds a 6DoF constraint
 
 Hitching a horsebox to a pickup asks a rigid joint to close a 0.28-unit vertical
 gap nobody validated, against loaded suspension, with roll locked to the tow
-vehicle. Both roll. Then `checkTrailerVerticalAlignment` (`:10193`, called each
-update from `:3531`) sees up-dot drop below 0.8 and breaks the hitch with
+vehicle. Both roll. Then `checkTrailerVerticalAlignment` (`:10253`, called each
+update from `:3574`) sees up-dot drop below 0.8 and breaks the hitch with
 `BREAK_METAL_ITEM`.
 
 `Base.Trailer` avoids the worst of it partly by sitting closest to the tow
@@ -119,13 +121,13 @@ vehicles' height and partly by shipping a custom `physics box` set with
 
 ### Vanilla's own mitigations, and their exact windows
 
-- `getFudgedMass()` (`:3633`) returns `mass * 0.2` for a `"Trailer"`-named vehicle
+- `getFudgedMass()` (`:3676`) returns `mass * 0.2` for a `"Trailer"`-named vehicle
   while `vehicleTowedBy.isAttachingTrailer()`. Pushed to Bullet every update via
-  `Bullet.setVehicleMass` (`:3524`).
-- Constraint ERP is `0.02` for the first 2000 ms (`:10044-10048`), then raised to
-  `0.2` by `checkTrailerAttachTime` (`:10204-10216`).
+  `Bullet.setVehicleMass` (`:3567`).
+- Constraint ERP is `0.02` for the first 2000 ms (`:10104-10108`), then raised to
+  `0.2` by `checkTrailerAttachTime` (`:10264-10276`).
 
-Both windows are opened by `beginAttachingTrailer()` (`:10185`), called from
+Both windows are opened by `beginAttachingTrailer()` (`:10245`), called from
 `ISAttachTrailerToVehicle.lua:24` — in **`start()`**, not `perform()`. The
 constraint request is also sent from `start()`, via `attachTrailer()`.
 `perform()` calls `stopAttachingTrailer()`, which closes both windows.
@@ -137,7 +139,7 @@ constraint request is also sent from `start()`, via `attachTrailer()`.
 Recorded so nobody retries them.
 
 **Calling `stopAttachingTrailer()` early to restore full mass.** It zeroes
-`beginAttachTrailerMS`, and `checkTrailerAttachTime` (`:10204`) only runs its ERP
+`beginAttachTrailerMS`, and `checkTrailerAttachTime` (`:10264`) only runs its ERP
 ramp when that field is non-zero. Zeroing it early therefore means the ramp
 **never fires** and the joint stays at ERP 0.02 permanently. Strictly worse than
 doing nothing.
@@ -165,13 +167,13 @@ vanilla vehicle scripts.
 
 | Need | Reality |
 |---|---|
-| the jack | **`Base.Jack`**, `normal.txt:11764`. No `Base.CarJack`. **No tag** — vanilla's own tyre template requires it by full type (`template_tire.txt:55-77`), so `getFirstTypeRecurse` is the only option |
-| animal trailer test | no `isAnimalTrailer()`; `getAnimalTrailerSize() > 0` (`:10549`) is vanilla's own idiom at `ISVehicleMenu.lua:299` |
-| trailer test | the engine uses a substring match on the script name (`:3634`, `:10264`) |
+| the jack | **`Base.Jack`**, `normal.txt:11787`. No `Base.CarJack`. **No tag** — vanilla's own tyre template requires it by full type (`template_tire.txt:55-77`), so `getFirstTypeRecurse` is the only option |
+| animal trailer test | no `isAnimalTrailer()`; `getAnimalTrailerSize() > 0` (`:10609`) is vanilla's own idiom at `ISVehicleMenu.lua:299` |
+| trailer test | the engine uses a substring match on the script name (`:3677`, `:10324`) |
 | strength | `Perks.Strength`, `getPerkLevel(Perks.Strength)` → 0-10 |
-| sandbox types | only `boolean`, `double`, `enum`, `integer`, `string` — `CustomSandboxOptions.java:119-134` |
-| MP command shape | `server/Vehicles/VehicleCommands.lua`, guarded `if isClient() then return end` at line 1, `Events.OnClientCommand.Add` at `:469` |
-| authority handoff | `authorizationChanged(character)` (`:10077`) is Lua-callable |
+| sandbox types | only `boolean`, `double`, `enum`, `integer`, `string` — `CustomSandboxOptions.java:120-135` |
+| MP command shape | `server/Vehicles/VehicleCommands.lua`, guarded `if isClient() then return end` at line 1, `Events.OnClientCommand.Add` at `:482` |
+| authority handoff | `authorizationChanged(character)` (`:10137`) is Lua-callable |
 | walk to a vehicle | `ISPathFindAction:pathToVehicleAdjacent(character, vehicle)` — `ISPathFindAction.lua:162`. `pathToLocationF` exists too but targets the vehicle's own coordinates, which are inside it |
 | context menu pick | `IsoObjectPicker.Instance:PickVehicle(...)` — `ISVehicleMenu.lua:49`; the joypad branch at `:41-46` falls back to squares, which is what we do for overturned vehicles |
 | gated-option UI | tooltip + `option.notAvailable` + `<RGB:1,0,0>` counts — `ISVehicleMenu.lua:617-650` |
@@ -190,19 +192,19 @@ The chain, all four links verified against the B42 decompile:
 | Link | Where | What it does |
 |---|---|---|
 | the sync fires | `NetworkPlayerManager.java:43` | calls `syncXp()` on the server's stats timer, every connected player |
-| it is one-way | `NetworkPlayerAI.syncXp():704` | whole body wrapped in `if (GameServer.server)` — it only ever sends **server -> client** |
-| the client is overwritten | `IsoGameCharacter.java:17560` | `PlayerXpPacket.parse` -> `getXp():load()`, which calls `this.xpMap.clear()` **before** repopulating from the server's bytes. Client-local XP is erased wholesale, not merged |
+| it is one-way | `NetworkPlayerAI.syncXp():710` | whole body wrapped in `if (GameServer.server)` — it only ever sends **server -> client** |
+| the client is overwritten | `IsoGameCharacter.java:17662` | `PlayerXpPacket.parse` -> `getXp():load()`, which calls `this.xpMap.clear()` **before** repopulating from the server's bytes. Client-local XP is erased wholesale, not merged |
 | the save agrees with the server | `PlayerDB` | persists the server's copy, so a client-local award never reaches the save either |
 
 **The two engine calls fail in opposite directions, which is why this is easy to
 get wrong twice.**
 
-`getXp():AddXP(perk, amount)` — `IsoGameCharacter.java:17313` — is gated on
+`getXp():AddXP(perk, amount)` — `IsoGameCharacter.java:17415` — is gated on
 `this.chr instanceof IsoPlayer player && player.isLocalPlayer()`. From a client it
 writes locally and is then wiped by the next sync. From the *server* it does
 nothing at all, because a remote player is not local.
 
-The global `addXp(player, perk, amount)` — `LuaManager.java:11893` — branches:
+The global `addXp(player, perk, amount)` — `LuaManager.java:11859` — branches:
 
 ```java
 if (player.isExistInTheWorld()) {
@@ -256,7 +258,7 @@ same scripts put `centerOfMassOffset` at +0.8 to +1.1.
 
 Read as a ground-contact pivot. Unused in v1. If playtest shows righted vehicles
 ejected from geometry, rotating about `flipNode` via a `Transform` is the fix —
-**not** `setDebugZ`, which is a persistent offset (`:4091`, `getDebugZ` at `:4137`)
+**not** `setDebugZ`, which is a persistent offset (`:4134`, `getDebugZ` at `:4180`)
 with no evidence anything ever clears it.
 
 **KI5 licensing.** `damnlib`, `KI5trailers` and the KI5 wreckers are "On

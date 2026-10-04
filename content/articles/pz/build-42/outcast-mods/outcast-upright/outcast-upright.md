@@ -14,7 +14,7 @@ tags:
 excerpt: >-
   Build 42 only. Requires OutcastLib (require=OutcastLib), which supplies the
   gated logger and the shared Outcast.log sink.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Outcast Upright
 
@@ -163,16 +163,16 @@ downloadable by id, so a dedicated server can pull it with `WorkshopItems=`;
 ### Dedicated servers
 
 A dedicated server never enters `IngameState`, so it never raises `OnGameStart`
-(`IngameState.java:768`). Anything registered only there simply does not run —
+(`IngameState.java:775`). Anything registered only there simply does not run —
 which for this mod would have meant no log sink and no boot report on the one
 host whose sandbox file an operator hand-edited. Everything that has to run at
 startup is registered on **both** `OnGameStart` and `OnServerStarted`
-(`GameServer.java:1522`), matching vanilla's own pairing at
+(`GameServer.java:1541`), matching vanilla's own pairing at
 `CustomTileProps.lua:341-342`.
 
 The server authorises; it never rotates. `BaseVehicle.setWorldTransform` guards
 its `Bullet.teleportVehicle` call behind `!GameServer.server`
-(`BaseVehicle.java:4013`), so a dedicated server has no vehicle physics to move.
+(`BaseVehicle.java:4056`), so a dedicated server has no vehicle physics to move.
 It re-runs `evaluate`, calls `authorizationChanged(player)` to hand physics
 authority to the acting client, and broadcasts. If it refuses, it says so to that
 player rather than letting the action finish silently.
