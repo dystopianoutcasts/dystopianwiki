@@ -633,7 +633,7 @@ Let's create a working mod that filters items efficiently using all the optimiza
 
 ### Step 1: Create the Mod Structure
 
-Create `C:\Users\[YOU]\Zomboid\mods\FastFilter\mod.info`:
+Create `%UserProfile%\Zomboid\mods\FastFilter\mod.info`:
 ```
 name=Fast Item Filter
 id=FastFilter
@@ -642,7 +642,7 @@ description=Efficiently removes damaged items from inventory
 
 ### Step 2: Write the Optimized Filter
 
-Create `C:\Users\[YOU]\Zomboid\mods\FastFilter\media\lua\client\FastFilter.lua`:
+Create `%UserProfile%\Zomboid\mods\FastFilter\media\lua\client\FastFilter.lua`:
 
 ```lua
 -- FastFilter.lua

@@ -69,12 +69,12 @@ Mods can be placed in two locations:
 
 ### Steam Workshop Mods (Downloaded)
 ```
-C:\Program Files (x86)\Steam\steamapps\workshop\content\108600\
+<your Steam library>\steamapps\workshop\content\108600\
 ```
 
 ### Local Development Mods (What You Create)
 ```
-C:\Users\YourName\Zomboid\mods\
+%UserProfile%\Zomboid\mods\
 ```
 
 Always develop in the `Zomboid\mods` folder - it's easier to find and edit.
@@ -388,7 +388,7 @@ New-Item -ItemType Directory -Path "TestStructureMod\media\scripts" -Force
 6. Open media
 7. Right-click → New → Folder → Name it "scripts" (lowercase!)
 
-**Verify:** Your final path should be: `C:\Users\YourName\Zomboid\mods\TestStructureMod\media\scripts\`
+**Verify:** Your final path should be: `%UserProfile%\Zomboid\mods\TestStructureMod\media\scripts\`
 </details>
 
 ---

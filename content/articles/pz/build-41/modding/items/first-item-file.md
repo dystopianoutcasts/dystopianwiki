@@ -737,7 +737,7 @@ media/scripts/my_items.txt  // Correct extension
    - File name can be anything but MUST be `.txt`
 
 3. **Check console.txt for errors**
-   - Location: `C:\Users\[YourName]\Zomboid\console.txt`
+   - Location: `%UserProfile%\Zomboid\console.txt`
    - Look for "ERROR" or "EXCEPTION" messages
    - Common errors: syntax error, missing comma, wrong module
 

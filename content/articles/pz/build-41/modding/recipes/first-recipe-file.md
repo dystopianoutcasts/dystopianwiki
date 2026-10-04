@@ -572,7 +572,7 @@ recipe Make Makeshift Torch {
 **How to avoid this:** Look at vanilla recipe files to see the exact spelling and capitalization of items. You can find vanilla recipes in your game installation folder:
 
 ```
-C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid\media\scripts\
+<your Steam library>\steamapps\common\ProjectZomboid\media\scripts\
 ```
 
 Open some of the `.txt` files in there and see how Indie Stone spells and capitalizes item names. That's your reference guide.

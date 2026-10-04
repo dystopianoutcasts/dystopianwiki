@@ -314,8 +314,10 @@ next generate and then silently vanishes.
 Everything goes to the shared family log:
 
 ```
-C:\Users\<you>\Zomboid\Lua\Outcast.log
+%UserProfile%\Zomboid\Lua\Outcast.log
 ```
+
+(`~/Zomboid/Lua/Outcast.log` on Linux and macOS.)
 
 The boot line is **ungated**, so an empty log means the mod did not load -- as
 distinct from loading and finding nothing to say. Those are different problems

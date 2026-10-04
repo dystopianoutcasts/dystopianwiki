@@ -4,5 +4,77 @@
     "rule": "private-detail",
     "line": " <35ff44e0-6c7c-11cf-8f52-0040333594a3>",
     "reason": "The public GUID of the DirectX .X ColorRGBA template, quoted from the head of the game's own MaleBody.x; a format constant every .X file carries, not a session id or secret."
+  },
+  {
+    "file": "articles/pz/build-41/modding/engine-analysis/decompilation-setup.md",
+    "rule": "local-path",
+    "line": "mkdir C:\\PZ_Decompiled          # Create workspace folder",
+    "reason": "Teaching example: the tutorial has the reader create this workspace folder at the top of the C: drive and cd into it; it is an instruction to the reader, not a path on our machine."
+  },
+  {
+    "file": "articles/pz/build-41/modding/engine-analysis/decompilation-setup.md",
+    "rule": "local-path",
+    "line": "cd C:\\PZ_Decompiled             # Move into it",
+    "reason": "Teaching example: the tutorial has the reader create this workspace folder at the top of the C: drive and cd into it; it is an instruction to the reader, not a path on our machine."
+  },
+  {
+    "file": "articles/pz/build-41/modding/engine-analysis/decompilation-setup.md",
+    "rule": "local-path",
+    "line": "- Put it in `C:\\PZ_Decompiled`",
+    "reason": "Teaching example: the tutorial has the reader create this workspace folder at the top of the C: drive and cd into it; it is an instruction to the reader, not a path on our machine."
+  },
+  {
+    "file": "articles/pz/build-41/modding/engine-analysis/decompilation-setup.md",
+    "rule": "local-path",
+    "line": "Open `C:\\PZ_Decompiled\\output\\zombie\\characters\\IsoZombie.java` in any text editor.",
+    "reason": "Teaching example: the tutorial has the reader create this workspace folder at the top of the C: drive and cd into it; it is an instruction to the reader, not a path on our machine."
+  },
+  {
+    "file": "articles/pz/build-41/modding/engine-analysis/decompilation-setup.md",
+    "rule": "local-path",
+    "line": "cd C:\\PZ_Decompiled                                                           # Move to workspace",
+    "reason": "Teaching example: the tutorial has the reader create this workspace folder at the top of the C: drive and cd into it; it is an instruction to the reader, not a path on our machine."
+  },
+  {
+    "file": "articles/pz/build-41/modding/engine-analysis/decompilation-setup.md",
+    "rule": "local-path",
+    "line": "cd C:\\PZ_Decompiled",
+    "reason": "Teaching example: the tutorial has the reader create this workspace folder at the top of the C: drive and cd into it; it is an instruction to the reader, not a path on our machine."
+  },
+  {
+    "file": "articles/pz/build-41/modding/engine-analysis/decompilation-setup.md",
+    "rule": "local-path",
+    "line": "java -jar vineflower.jar -d ./output C:\\Program Files (x86)\\Steam\\...\\zombie",
+    "reason": "Teaching example: the Forgetting Quotes in Paths mistake needs the real default Steam path with its space to show the error."
+  },
+  {
+    "file": "articles/pz/build-41/modding/engine-analysis/decompilation-setup.md",
+    "rule": "local-path",
+    "line": "# Error: \"C:\\Program\" is not recognized",
+    "reason": "Teaching example: the exact error text the unquoted default Steam path produces."
+  },
+  {
+    "file": "articles/pz/build-41/modding/engine-analysis/decompilation-setup.md",
+    "rule": "local-path",
+    "line": "java -jar vineflower.jar -d ./output \"C:\\Program Files (x86)\\Steam\\...\\zombie\"",
+    "reason": "Teaching example: the corrected, quoted form of the same default Steam path."
+  },
+  {
+    "file": "articles/pz/build-41/modding/engine-analysis/decompilation-setup.md",
+    "rule": "local-path",
+    "line": "- `C:\\Steam\\...` (Steam isn't usually in C:\\)",
+    "reason": "Teaching example: a wrong install path listed as a mistake to avoid."
+  },
+  {
+    "file": "articles/pz/build-41/modding/setup/debug-mode.md",
+    "rule": "local-path",
+    "line": "- `$env:USERPROFILE` expands to your Windows user folder (e.g., `C:\\Users\\YourName`)",
+    "reason": "Teaching example: explains what the USERPROFILE variable expands to, so it has to show the C:\\Users\\<name> shape."
+  },
+  {
+    "file": "articles/pz/build-41/modding/setup/debug-mode.md",
+    "rule": "local-path",
+    "line": "reloadLuaFile(\"C:/MyMod/media/lua/client/MyMod/MyScript.lua\")",
+    "reason": "Teaching example: shown under Wrong as the absolute path reloadLuaFile must not be given."
   }
 ]

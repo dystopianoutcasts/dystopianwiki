@@ -84,7 +84,7 @@ last_updated: 2026-01-09
 ### Your Mod Files
 **Primary Location:**
 ```
-C:\Users\YourName\Zomboid\Workshop\OutcastAdvancedCrafts\
+%UserProfile%\Zomboid\Workshop\OutcastAdvancedCrafts\
 ```
 
 **Structure:**
@@ -315,10 +315,10 @@ player:getXp():AddXP(Perks.Blacksmith, 10)  -- Use perk name, not translation
 ### Search for Recipe Patterns
 ```bash
 # Find all OnCreate callbacks in your mod
-grep -r "OnCreate:" "C:\Users\YourName\Zomboid\Workshop\OutcastAdvancedCrafts\Contents\mods\OutcastAdvCrft\media\scripts\"
+grep -r "OnCreate:" "%UserProfile%\Zomboid\Workshop\OutcastAdvancedCrafts\Contents\mods\OutcastAdvCrft\media\scripts\"
 
 # Find all XP awards in your mod
-grep -r "AddXP" "C:\Users\YourName\Zomboid\Workshop\OutcastAdvancedCrafts\Contents\mods\OutcastAdvCrft\media\lua\"
+grep -r "AddXP" "%UserProfile%\Zomboid\Workshop\OutcastAdvancedCrafts\Contents\mods\OutcastAdvCrft\media\lua\"
 ```
 
 ### Validate Recipe Syntax
@@ -326,7 +326,7 @@ grep -r "AddXP" "C:\Users\YourName\Zomboid\Workshop\OutcastAdvancedCrafts\Conten
 # Check for syntax errors in recipe files
 # (No automated tool - must check game logs)
 # Logs location:
-C:\Users\YourName\Zomboid\Logs\
+%UserProfile%\Zomboid\Logs\
 ```
 
 ### Compare with Vanilla
@@ -378,7 +378,7 @@ When starting a new chat session with an LLM about this mod, provide:
 I'm developing a Project Zomboid mod called Outcast Advanced Crafts.
 
 File structure:
-- Mod location: C:\Users\YourName\Zomboid\Workshop\OutcastAdvancedCrafts\
+- Mod location: %UserProfile%\Zomboid\Workshop\OutcastAdvancedCrafts\
 - OnCreate functions: Contents/mods/OutcastAdvCrft/media/lua/client/OutcastAC_SmeltingFunctions.lua
 - Recipes: Contents/mods/OutcastAdvCrft/media/scripts/outcast_*_recipes.txt
 

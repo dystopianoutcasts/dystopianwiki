@@ -612,7 +612,7 @@ Let's build a real benchmark to answer a real question: Which is faster - string
 
 ### Step 1: Create the Benchmark Mod
 
-Create `C:\Users\[YOU]\Zomboid\mods\BenchmarkTest\mod.info`:
+Create `%UserProfile%\Zomboid\mods\BenchmarkTest\mod.info`:
 ```
 name=Benchmark Test
 id=BenchmarkTest
@@ -621,7 +621,7 @@ description=Testing string building performance
 
 ### Step 2: Write the Comparison
 
-Create `C:\Users\[YOU]\Zomboid\mods\BenchmarkTest\media\lua\client\StringBenchmark.lua`:
+Create `%UserProfile%\Zomboid\mods\BenchmarkTest\media\lua\client\StringBenchmark.lua`:
 
 ```lua
 -- StringBenchmark.lua

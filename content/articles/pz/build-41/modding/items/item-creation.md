@@ -803,7 +803,7 @@ Create `media/scripts/items.txt` in your mod folder:
 
 **Full Path Example:**
 ```
-C:/Users/YourName/Zomboid/mods/MyFirstMod/media/scripts/items.txt
+%UserProfile%\Zomboid\mods\MyFirstMod\media\scripts\items.txt
 ```
 
 **Or Steam Workshop Structure:**

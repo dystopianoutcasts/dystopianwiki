@@ -114,7 +114,7 @@ Let's create the simplest possible context library - just one file with one vani
 
 Navigate to your PZ installation:
 ```
-C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid\media\scripts\items.txt
+<your Steam library>\steamapps\common\ProjectZomboid\media\scripts\items.txt
 ```
 
 Open `items.txt` and find a simple item. Let's use the **BaseballBat**:
@@ -879,7 +879,7 @@ TestMod/
 
 ### Step 2: Find a Vanilla Tool
 
-1. Open `C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid\media\scripts\items.txt`
+1. Open `<your Steam library>\steamapps\common\ProjectZomboid\media\scripts\items.txt`
 2. Search for "item Hammer" (Ctrl+F)
 3. Copy the entire Hammer definition
 

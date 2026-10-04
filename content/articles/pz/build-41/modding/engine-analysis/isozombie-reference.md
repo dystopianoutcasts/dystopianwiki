@@ -497,7 +497,7 @@ Let's build a working mod that uses IsoZombie fields to create a high-difficulty
 
 ### Step 1: Create the Mod
 
-Create `C:\Users\[YOU]\Zomboid\mods\DifficultyZone\mod.info`:
+Create `%UserProfile%\Zomboid\mods\DifficultyZone\mod.info`:
 ```
 name=Difficulty Zone
 id=DifficultyZone
@@ -506,7 +506,7 @@ description=Downtown Westpoint is nightmare difficulty
 
 ### Step 2: Write the Zone Logic
 
-Create `C:\Users\[YOU]\Zomboid\mods\DifficultyZone\media\lua\client\DifficultyZone.lua`:
+Create `%UserProfile%\Zomboid\mods\DifficultyZone\media\lua\client\DifficultyZone.lua`:
 
 ```lua
 -- DifficultyZone.lua

@@ -579,7 +579,7 @@ Let's create a simple three-layer mod from scratch to see how everything connect
 
 Navigate to your Project Zomboid mods folder:
 ```
-C:\Users\[YourName]\Zomboid\mods\
+%UserProfile%\Zomboid\mods\
 ```
 
 Create this structure:

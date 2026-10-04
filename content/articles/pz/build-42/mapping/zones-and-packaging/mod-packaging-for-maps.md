@@ -11,14 +11,14 @@ tags:
   - map-info
   - mod-packaging
   - biomemap-placement
-excerpt: 'Mods live in %USERPROFILE%\Zomboid\mods (i.e. C:\Users\\Zomboid\mods).'
+excerpt: 'Mods live in %UserProfile%\Zomboid\mods (on Linux and macOS, ~/Zomboid/mods).'
 last_updated: '2026-10-04'
 ---
 # Mod packaging for maps
 
 > Source: 06-mod-packaging.md (compiled 2026-08-02, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
-Mods live in `%USERPROFILE%\Zomboid\mods` (i.e. `C:\Users\<you>\Zomboid\mods`).
+Mods live in `%UserProfile%\Zomboid\mods` (on Linux and macOS, `~/Zomboid/mods`).
 
 B42 changed the required structure. Reference: https://pzwiki.net/wiki/Mod_structure
 `[COMMUNITY pointer]`

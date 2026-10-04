@@ -316,7 +316,7 @@ Let's create a simple mod that displays vehicle stats on screen.
 
 ### Step 1: Create the Mod
 
-Create `C:\Users\[YOU]\Zomboid\mods\SimpleDashboard\mod.info`:
+Create `%UserProfile%\Zomboid\mods\SimpleDashboard\mod.info`:
 ```
 name=Simple Vehicle Dashboard
 id=SimpleDashboard
@@ -325,7 +325,7 @@ description=Displays speed, fuel, and engine stats
 
 ### Step 2: Create the Dashboard Code
 
-Create `C:\Users\[YOU]\Zomboid\mods\SimpleDashboard\media\lua\client\Dashboard.lua`:
+Create `%UserProfile%\Zomboid\mods\SimpleDashboard\media\lua\client\Dashboard.lua`:
 
 ```lua
 -- Dashboard.lua

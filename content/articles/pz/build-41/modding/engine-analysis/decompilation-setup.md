@@ -126,18 +126,18 @@ Then navigate to: `zombie\characters\IsoZombie.class`
 
 The full path is usually:
 ```
-C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid\zombie\characters\IsoZombie.class
+<your Steam library>\steamapps\common\ProjectZomboid\zombie\characters\IsoZombie.class
 ```
 
 **Step 4:** Run the decompiler
 ```bash
-java -jar vineflower.jar -d ./output "C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid\zombie\characters\IsoZombie.class"
+java -jar vineflower.jar -d ./output "<your Steam library>\steamapps\common\ProjectZomboid\zombie\characters\IsoZombie.class"
 ```
 
 Let's break down what this command does:
 - `java -jar vineflower.jar` - Run the decompiler tool
 - `-d ./output` - Put results in an "output" folder
-- `"C:\...IsoZombie.class"` - The file to decompile (in quotes because of spaces in path)
+- `"...\IsoZombie.class"` - The file to decompile (in quotes because of spaces in path)
 
 **Step 5:** Look at your results
 
@@ -253,7 +253,7 @@ PZ's Java class files are in the game's installation directory.
 
 **Typical Steam path:**
 ```
-C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid
+<your Steam library>\steamapps\common\ProjectZomboid
 ```
 
 Or right-click PZ in Steam -> Manage -> Browse Local Files.
@@ -313,7 +313,7 @@ The full zombie package has 1,200+ files. We need to give Java more memory:
 ```bash
 cd C:\PZ_Decompiled                                                           # Move to workspace
 
-java -Xmx4g -jar vineflower.jar -d ./output_full "C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid\zombie"
+java -Xmx4g -jar vineflower.jar -d ./output_full "<your Steam library>\steamapps\common\ProjectZomboid\zombie"
 ```
 
 Let's break this down:
@@ -539,7 +539,7 @@ java -jar vineflower.jar -d ./output "C:\Program Files (x86)\Steam\...\zombie"
 
 ### ❌ Wrong: Not Enough Memory
 ```bash
-java -jar vineflower.jar -d ./output "C:\...\zombie"
+java -jar vineflower.jar -d ./output "...\ProjectZomboid\zombie"
 # Error: java.lang.OutOfMemoryError
 ```
 
@@ -547,7 +547,7 @@ java -jar vineflower.jar -d ./output "C:\...\zombie"
 
 ✅ **Right: Allocate Enough Memory**
 ```bash
-java -Xmx4g -jar vineflower.jar -d ./output "C:\...\zombie"
+java -Xmx4g -jar vineflower.jar -d ./output "...\ProjectZomboid\zombie"
 # -Xmx4g = Give Java 4GB of memory (4 gigabytes)
 ```
 
@@ -618,7 +618,7 @@ Let's put everything together with a hands-on exercise. You'll decompile a file,
 
 ```bash
 cd C:\PZ_Decompiled
-java -jar vineflower.jar -d ./output "C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid\zombie\characters\IsoZombie.class"
+java -jar vineflower.jar -d ./output "<your Steam library>\steamapps\common\ProjectZomboid\zombie\characters\IsoZombie.class"
 ```
 
 ### Step 2: Find the speedMod Field
@@ -634,14 +634,14 @@ public float speedMod;           // Speed multiplier for this zombie
 
 ### Step 3: Create a Test Mod
 
-Create `C:\Users\[YOU]\Zomboid\mods\FastZombies\mod.info`:
+Create `%UserProfile%\Zomboid\mods\FastZombies\mod.info`:
 ```
 name=Fast Zombies Test
 id=FastZombiesTest
 description=Testing speedMod field from decompilation
 ```
 
-Create `C:\Users\[YOU]\Zomboid\mods\FastZombies\media\lua\client\fast_zombies.lua`:
+Create `%UserProfile%\Zomboid\mods\FastZombies\media\lua\client\fast_zombies.lua`:
 ```lua
 -- Make all zombies 50% faster using the speedMod field we discovered
 
@@ -716,7 +716,7 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
 
 **Fix:** Give Java more memory with `-Xmx`:
 ```bash
-java -Xmx8g -jar vineflower.jar -d ./output "C:\...\zombie"
+java -Xmx8g -jar vineflower.jar -d ./output "...\ProjectZomboid\zombie"
 # -Xmx8g = 8 gigabytes (double the default 4GB)
 ```
 
@@ -731,10 +731,10 @@ If 8GB still isn't enough (unlikely), try 12GB: `-Xmx12g`
 **Fix:** Try a different decompiler:
 ```bash
 # Try CFR instead
-java -jar cfr.jar --outputdir output "C:\...\zombie"
+java -jar cfr.jar --outputdir output "...\ProjectZomboid\zombie"
 
 # Or try Procyon
-java -jar procyon-decompiler.jar -o output "C:\...\zombie"
+java -jar procyon-decompiler.jar -o output "...\ProjectZomboid\zombie"
 ```
 
 ### Problem: "Cannot find class file" or Empty Output

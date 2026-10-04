@@ -299,7 +299,7 @@ Works with current game version
 
 **Installation path:**
 ```
-C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid\media\maps\
+<your Steam library>\steamapps\common\ProjectZomboid\media\maps\
 ```
 
 **Example vanilla building to examine:**

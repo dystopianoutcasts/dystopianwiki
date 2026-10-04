@@ -443,7 +443,7 @@ Let's build a complete working mod using direct field access.
 
 ### Step 1: Create the Mod
 
-Create `C:\Users\[YOU]\Zomboid\mods\FastZone\mod.info`:
+Create `%UserProfile%\Zomboid\mods\FastZone\mod.info`:
 ```
 name=Fast Sprinter Zone
 id=FastZone
@@ -452,7 +452,7 @@ description=Downtown zombies are sprinters using optimized field access
 
 ### Step 2: Write the Zone Logic
 
-Create `C:\Users\[YOU]\Zomboid\mods\FastZone\media\lua\client\FastZone.lua`:
+Create `%UserProfile%\Zomboid\mods\FastZone\media\lua\client\FastZone.lua`:
 
 ```lua
 -- FastZone.lua

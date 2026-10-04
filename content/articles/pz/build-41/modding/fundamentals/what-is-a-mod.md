@@ -122,7 +122,7 @@ This opens the game folder. Look for the `media` folder (it's alphabetical, so i
 
 The typical path looks like:
 ```
-C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid\media
+<your Steam library>\steamapps\common\ProjectZomboid\media
 ```
 
 **Find the weapons file:**
@@ -234,7 +234,7 @@ Now let's create your mod. You need to make folders in a specific place so the g
 
 On Windows, navigate to:
 ```
-C:\Users\[YourName]\Zomboid\mods\
+%UserProfile%\Zomboid\mods\
 ```
 
 If the `mods` folder doesn't exist, create it.

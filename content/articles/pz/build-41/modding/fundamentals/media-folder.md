@@ -673,7 +673,7 @@ Let's create the absolute minimum mod from scratch and verify it works.
 
 Navigate to your Project Zomboid mods folder. On Windows, it's typically:
 ```
-C:\Users\[YourName]\Zomboid\mods\
+%UserProfile%\Zomboid\mods\
 ```
 
 Create this structure:

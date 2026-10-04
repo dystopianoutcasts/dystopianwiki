@@ -186,7 +186,7 @@ Before AI can help, you need to find the error message. Project Zomboid stores e
 
 **On Windows:**
 ```
-C:\Users\YourName\Zomboid\console.txt
+%UserProfile%\Zomboid\console.txt
 ```
 
 Replace `YourName` with your actual Windows username. If you're not sure what that is, press Windows key + R, type `%UserProfile%\Zomboid`, and hit Enter. You'll see the Zomboid folder open.

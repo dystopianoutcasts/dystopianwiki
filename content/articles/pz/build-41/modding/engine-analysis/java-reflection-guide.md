@@ -497,7 +497,7 @@ Let's build a useful debugging tool that prints all fields on any object. This i
 
 ### Step 1: Create the Mod
 
-Create `C:\Users\[YOU]\Zomboid\mods\FieldDebugger\mod.info`:
+Create `%UserProfile%\Zomboid\mods\FieldDebugger\mod.info`:
 ```
 name=Field Debugger
 id=FieldDebugger
@@ -506,7 +506,7 @@ description=Prints all fields on objects for reflection debugging
 
 ### Step 2: Write the Field Printer
 
-Create `C:\Users\[YOU]\Zomboid\mods\FieldDebugger\media\lua\client\FieldDebugger.lua`:
+Create `%UserProfile%\Zomboid\mods\FieldDebugger\media\lua\client\FieldDebugger.lua`:
 
 ```lua
 -- FieldDebugger.lua

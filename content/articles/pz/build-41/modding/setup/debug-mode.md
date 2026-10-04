@@ -87,7 +87,7 @@ Debug mode unlocks powerful testing tools in Project Zomboid. You can spawn item
 
 **Steam typical path:**
 ```
-C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid\debug
+<your Steam library>\steamapps\common\ProjectZomboid\debug
 ```
 
 ## Confirming Debug Mode

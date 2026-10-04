@@ -629,7 +629,7 @@ Let's build a working mod that makes zombies in one specific area consistently f
 
 ### Step 1: Create the Hash Function
 
-Create `C:\Users\[YOU]\Zomboid\mods\FastZone\media\lua\shared\DeterministicHash.lua`:
+Create `%UserProfile%\Zomboid\mods\FastZone\media\lua\shared\DeterministicHash.lua`:
 
 ```lua
 -- DeterministicHash.lua
@@ -652,7 +652,7 @@ end
 
 ### Step 2: Create the Zone Logic
 
-Create `C:\Users\[YOU]\Zomboid\mods\FastZone\media\lua\client\FastZone.lua`:
+Create `%UserProfile%\Zomboid\mods\FastZone\media\lua\client\FastZone.lua`:
 
 ```lua
 -- FastZone.lua
@@ -706,7 +706,7 @@ Events.OnZombieUpdate.Add(processFastZone)
 
 ### Step 3: Create mod.info
 
-Create `C:\Users\[YOU]\Zomboid\mods\FastZone\mod.info`:
+Create `%UserProfile%\Zomboid\mods\FastZone\mod.info`:
 ```
 name=Fast Zone Test
 id=FastZoneTest

@@ -439,7 +439,7 @@ That's it. You're ready.
 While you're modding, have these tabs open:
 
 - **Your AI tool** - for asking questions
-- **Vanilla PZ files** - to verify what AI tells you (located at `C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid\media\lua` or `media\scripts`)
+- **Vanilla PZ files** - to verify what AI tells you (located at `<your Steam library>\steamapps\common\ProjectZomboid\media\lua` or `media\scripts`)
 - **This wiki** - for PZ-specific information
 - **Notepad or VS Code** - for writing your mod files
 
@@ -679,7 +679,7 @@ distribution ChocolateBar {
 
 ### Step 4: Test in Game
 
-1. Put your mod folder in `C:\Users\YourName\Zomboid\mods\`
+1. Put your mod folder in `%UserProfile%\Zomboid\mods\`
 2. Launch Project Zomboid
 3. Enable your mod
 4. Start a game
@@ -764,7 +764,7 @@ Here are specific strategies that get better answers from AI.
 After AI gives you a function name like `player:addXP()`, search the vanilla PZ files to see if that function actually exists and how it's used.
 
 **How to search vanilla files:**
-1. Open `C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid\media\lua\shared\`
+1. Open `<your Steam library>\steamapps\common\ProjectZomboid\media\lua\shared\`
 2. Use Notepad++'s "Find in Files" or VS Code's search
 3. Search for `addXP`
 4. See how vanilla code uses it
