@@ -268,7 +268,14 @@ Note `getId()` returns a **short**, not an int.
 3. **`getEnginePower` and `getEngineQuality` are ints**, so PSC's
    `(100 - vehicle:getEngineQuality()) / 100` is integer-derived -- fine, but
    don't assume sub-1 resolution.
-4. **`getId()` is a short.** Fine as a table key; don't assume int range.
+4. **`getId()` is a short, and it is recycled.** It is a runtime id handed out
+   from a free list as cars stream in and out, so within one session two
+   different cars can carry the same id. Do not key anything that must outlive
+   the moment on it: use `getSqlId()`, the car's persistent save id. We saw it on
+   a server: one id belonged to two different cars in a single session's log.
+
+> **Proof:** Code. `zombie.vehicles.VehicleIDMap#allocateID` (reuses freed ids); `zombie.vehicles.BaseVehicle#getId` and `#getSqlId`. Build 42.20 (revision a2947723ca).
+
 5. **Hooks are global, and Java caches them.** Anything you assign to
    `Vehicles.Update.X` is global and unconditional, and once Java has called it,
    a later reassignment is ignored (§2). Chain once, early; don't clobber.
@@ -288,3 +295,5 @@ Note `getId()` returns a **short**, not an int.
 *Corrected 2026-10-04: media/lua/server/ loads on a multiplayer client too, at world load; the folder sets when code loads, not which side runs it.*
 
 *Corrected 2026-10-04: hooks called from Java (update, checkEngine, test) are cached on first use, so a later reassignment is ignored; chain once, early.*
+
+*Corrected 2026-10-04: vehicle getId() is recycled between cars in one session and is not a safe key; use getSqlId().*
