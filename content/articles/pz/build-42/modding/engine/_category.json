@@ -1,0 +1,6 @@
+{
+  "name": "The Engine Explained",
+  "description": "What each big Build 42 subsystem does, where it lives in the code, which side runs it, and what a mod can reach.",
+  "icon": "gear",
+  "displayOrder": 16
+}
