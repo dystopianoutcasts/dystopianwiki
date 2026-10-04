@@ -14,7 +14,7 @@ tags:
   - timed-actions
   - multiplayer
 excerpt: This is the section to act on. Ordered by blast radius.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - tl-dr-the-5-things-that-will-break-your-b41-mod
   - b42-status-and-versioning
@@ -59,6 +59,9 @@ This is the section to act on. Ordered by blast radius.
   1. Run the mod with the Lua debugger enabled ([Section 15](/pz/build-42/modding/lua-api/lua-api-and-engine-overview)).
   2. For each `nil` call, find the object's current methods in the B42 JavaDocs/LuaDocs and remap (walk the parent-class chain, [Section 7](/pz/build-42/modding/lua-api/lua-api-and-engine-overview)).
   3. Common suspects: crafting/recipe accessors, fluid/water methods, forage/search API, and old B41 map/basement assumptions.
+- **One rename we checked in the code: tile flags.** On `PropertyContainer` (what `sprite:getProperties()` gives you), Build 41's `Is`, `Set` and `UnSet` are now `has`, `set` and `unset`; only `CreateKeySet` kept its capital. On `IsoGridSquare`, Build 41's `Is` is now `has` (and the square gained `set` and `unset`). A Build 41 ladder mod we studied made 32 such calls, and every one is a call to nil on Build 42.
+
+> **Proof:** Code. `zombie.core.properties.PropertyContainer` (`has`, `set`, `unset`, `CreateKeySet`; no `Is`, `Set` or `UnSet`) and `zombie.iso.IsoGridSquare` (`has`, `set`, `unset`; no `Is`) in the 42.21 decompile, against `Is`, `Set` and `UnSet` on `PropertyContainer` and `Is` on `IsoGridSquare` in our Build 41 decompile (41.78.16). Build 42.21.0 (revision 4a0e9546ec).
 
 ### 13.7 Water -> fluid system  [LIKELY]
 - Water handling moved under the new **FluidContainer** system. Old item water methods may need the fluid-container API. `Events.OnWaterAmountChange` exists for reacting to level changes. **[Section 14.2](/pz/build-42/modding/lua-api/lua-api-and-engine-overview)**
@@ -78,3 +81,5 @@ This is the section to act on. Ordered by blast radius.
 ---
 
 <a name="14-new-systems"></a>
+
+*Updated 2026-10-04: added the tile-flag rename (`Is`/`Set`/`UnSet` to `has`/`set`/`unset`), checked in the code.*

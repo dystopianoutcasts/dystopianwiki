@@ -62,6 +62,10 @@ Within each stage the order **is alphabetical**, and we have the crash to prove 
 
 > **Proof:** Code. `zombie.Lua.LuaManager#LoadDirBase(String, boolean)` sorts each list with `Collections.sort(..., String.CASE_INSENSITIVE_ORDER)`, vanilla first, then each mod. Build 42.21.0 (revision 4a0e9546ec).
 
+**A mod file with the same path as a vanilla file replaces it, and runs in vanilla's place.** The order above is a list of relative paths (`media/lua/client/ISUI/ISInventoryPane.lua`, for example), and each path runs once. When your mod ships a file at a path vanilla also has, the game runs your file instead of vanilla's, at vanilla's turn: early, among the vanilla files, before every other mod file. When your mod's own turn comes, that path has already run and is skipped. So an override file cannot rely on anything from other mods, or from vanilla files that sort after it, at file scope. The same goes for two mods shipping one path: only the copy from the mod loaded last runs, at the turn of the first one that has it.
+
+> **Proof:** Code. `zombie.Lua.LuaManager#LoadDirBase(String, boolean)` (vanilla's relative paths, then each mod's, in one list; a `HashSet` named `done` runs each path once; each path is resolved with `ZomboidFileSystem#getAbsolutePath`); `zombie.ZomboidFileSystem#getAbsolutePath` (looks the path up in `activeFileMap`) and `#loadMod` (puts each mod file into `activeFileMap` over any earlier entry, logging `mod "<id>" overrides <path>`). Build 42.21.0 (revision 4a0e9546ec).
+
 **Cross-mod load order** is controlled by the order of ids in `Mods=` (and the workshop load-order tools). If mod B depends on mod A's shared tables, A must load first. **[CONFIRMED]**
 
 **Client/server/singleplayer guards.** The wiki documents a canonical way to skip a whole file (or block) based on environment — place at the very top of a file:
@@ -90,3 +94,5 @@ if isClient() or isServer() then return end
 ---
 
 *Corrected 2026-10-04: files load alphabetically within each lua folder (LoadDirBase sorts by path, ignoring case); this is confirmed, not uncertain.*
+
+*Updated 2026-10-04: a mod file with the same path as a vanilla file replaces it and runs at vanilla's turn; the mod's own turn skips it.*

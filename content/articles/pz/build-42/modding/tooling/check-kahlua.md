@@ -16,7 +16,7 @@ excerpt: >-
   Flags Lua that stock Lua accepts but PZ's Kahlua2 VM cannot run. Kahlua2 is a
   5.1-era VM that is a smaller language than stock Lua: code that parses cleanly
   and passes an off-game test harness...
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # check-kahlua.py
 
@@ -34,6 +34,27 @@ The inventory of what Kahlua actually registers is read out of
 `projectzomboid.jar`, `se/krka/kahlua/stdlib/*.class`, not remembered or
 guessed -- `BaseLib`, `TableLib` and the rest are enumerated from the shipped
 classes.
+
+## What it flags, checked against Build 42.21
+
+We compared the script's list of absent names with what Kahlua registers in the
+42.21 jar and the install's `stdlib.lua`. Most of the list holds: `next`, `io`,
+`dofile`, `rawlen`, `table.pack`, `table.unpack`, `table.move`, `os.clock`,
+`os.getenv` and `os.exit` really are absent, and a call to any of them fails in
+game. Three entries are out of date, so read its report with them in mind:
+
+- **`loadstring` is flagged, but it exists.** The Lua compiler registers it
+  (along with `loadstream`). A hit on `loadstring` is a false alarm.
+- **`coroutine.wrap` is flagged, but it exists.** The Java coroutine library has
+  only `create`, `resume`, `status`, `running` and `yield`, but the install's
+  `stdlib.lua` defines `coroutine.wrap` on top. Also a false alarm.
+- **`math.random` and `math.randomseed` are not flagged, and they do not exist.**
+  Use `ZombRand` and `ZombRandFloat`. The script will not catch these for you.
+
+The full list, read from the game, is in
+[Kahlua: what Project Zomboid Lua does not have](/pz/build-42/modding/lua-api/kahlua-what-project-zomboid-lua-does-not-have).
+
+> **Proof:** Code. Names registered by `se.krka.kahlua.stdlib.BaseLib` (no `next`, `loadstring`, `dofile`), `TableLib` (`concat`, `insert`, `remove`, `newarray`, `pairs`, `isempty`, `wipe`, `ipairs`), `CoroutineLib` (`create`, `resume`, `status`, `running`, `yield`), `OsLib` (`date`, `difftime`, `time`), `se.krka.kahlua.j2se.MathLib` (no `random` or `randomseed`) and `se.krka.kahlua.luaj.compiler.LuaCompiler` (`loadstring`, `loadstream`), read from the class files' constant pools in the 42.21 jar; the install's `stdlib.lua` (`function assert`, `function coroutine.wrap`); the script's `BANNED` table in the OutcastLib repository. Build 42.21.0 (revision 4a0e9546ec).
 
 ## How to invoke it
 
@@ -60,3 +81,5 @@ Each `<Mod>` argument is a mod repo folder (the one containing `Contents/`).
 - `0`: no faults found across every mod passed in.
 - `1`: at least one call Kahlua cannot run was found.
 - `2`: no mod argument was given (usage is printed instead).
+
+*Updated 2026-10-04: the script's absent list checked against Kahlua in 42.21: `loadstring` and `coroutine.wrap` exist (false alarms), and `math.random` is absent but not flagged.*
