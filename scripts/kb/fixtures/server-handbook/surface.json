@@ -1,0 +1,123 @@
+{
+ "$comment": "Invented fixture for scripts/kb/fixtures/server-handbook/run.ts. Not game data.",
+ "build": "9.99",
+ "revision": "0f0f0f0f0f",
+ "steamBuild": "1",
+ "capture": "FIXTURE",
+ "captureSealed": "2000-01-01",
+ "sources": {},
+ "readRules": ["Fixture rule one.", "Fixture rule two."],
+ "defaultPreset": "Apocalypse",
+ "counts": {},
+ "publicExcluded": ["Password"],
+ "serverPages": [
+  { "key": "Details", "title": "Details", "steamOnly": false, "customUi": null, "options": ["PublicName", "Password"] },
+  { "key": "Mods", "title": "Mods", "steamOnly": false, "customUi": "ServerSettingsScreenModsPanel", "options": [] },
+  { "key": "PVP", "title": "PVP", "steamOnly": true, "customUi": null, "options": ["PVP"] }
+ ],
+ "sandboxPages": [
+  { "key": "Zombie", "title": "Zombie", "options": ["Zombies", "ZombieLore.Speed"] },
+  { "key": "Loot", "title": "Loot", "options": ["LootRate"] }
+ ],
+ "presets": [
+  { "name": "Apocalypse", "title": "Apocalypse", "file": "media/lua/shared/Sandbox/Apocalypse.lua", "keys": 6, "unknownKeys": [], "resolved": [] },
+  { "name": "Rising", "title": "Rising", "file": "media/lua/shared/Sandbox/Rising.lua", "keys": 2, "unknownKeys": ["OldName"], "resolved": ["Zombies = tonumber(Fix.High) = 2"] }
+ ],
+ "argTypes": { "PlayerName": "(.+)", "Value": "(\\d+)", "TrueFalse": "(-true|-false)" },
+ "commandClassesNotRegistered": [],
+ "serverOptions": [
+  { "name": "PVP", "field": "pvp", "type": "boolean", "default": true, "tooltip": "Players can hurt <br> other players", "page": "PVP", "public": true, "declaredLine": 10,
+   "reads": [
+    {"lang":"java","where":"zombie.fixture.Combat","in":"hit","line":5},
+    {"lang":"java","where":"zombie.fixture.Combat","in":"hit","line":9},
+    {"lang":"lua","where":"client/Fixture.lua","in":"Fixture.check","line":3}
+   ],
+   "writes": [], "named": [], "status": "read" },
+  { "name": "PublicName", "field": "publicName", "type": "string", "default": "My Server", "maxLength": 64, "tooltip": "Name shown in the browser", "page": "Details", "public": true, "declaredLine": 11,
+   "reads": [
+    {"lang":"java","where":"zombie.fixture.Browser","in":"announce","line":20}
+   ],
+   "writes": [
+    {"lang":"java","where":"zombie.fixture.Admin","in":"rename","line":2}
+   ], "named": [], "status": "read" },
+  { "name": "Password", "field": "password", "type": "string", "default": "", "maxLength": -1, "tooltip": null, "page": "Details", "public": false, "declaredLine": 12,
+   "reads": [], "writes": [],
+   "named": [
+    {"lang":"lua","where":"client/Login.lua","in":"Login.draw","line":7}
+   ], "status": "named" },
+  { "name": "ResetID", "field": "resetId", "type": "integer", "default": {"computed": "Rand.Next(1000)"}, "min": 0, "max": 2147483647, "tooltip": "Reset marker", "page": null, "public": true, "declaredLine": 13,
+   "reads": [], "writes": [], "named": [], "status": "none" },
+  { "name": "AntiCheatFixture", "field": "antiCheatFixture", "type": "enum", "default": 2, "min": 1, "max": 3, "choices": ["ban", "kick", "log"], "tooltip": "Fixture anti-cheat", "page": null, "public": true, "declaredLine": 14,
+   "reads": [], "writes": [], "named": [], "status": "none" }
+ ],
+ "sandboxOptions": [
+  { "name": "Zombies", "group": null, "short": "Zombies", "field": "zombies", "type": "enum", "default": 4, "javaDefault": 3, "min": 1, "max": 4, "choices": ["Insane", "High", "Normal", "Low"], "label": "Zombie Count", "labelKey": "Sandbox_ZombieCount", "tooltip": "How many", "page": "Zombie", "subgroup": null, "hiddenUnlessDebug": false, "presets": {"Rising": 2}, "declaredLine": 20,
+   "reads": [
+    {"lang":"java","where":"zombie.fixture.Population","in":"count","line":40}
+   ],
+   "writes": [
+    {"lang":"lua","where":"client/DebugUIs/Scenarios/A.lua","in":"A.setSandbox","line":4},
+    {"lang":"lua","where":"client/DebugUIs/Scenarios/B.lua","in":"B.setSandbox","line":5}
+   ], "computed": [], "named": [], "status": "read" },
+  { "name": "ZombieLore.Speed", "group": "ZombieLore", "short": "Speed", "field": "lore.speed", "type": "enum", "default": 2, "javaDefault": 2, "min": 1, "max": 3, "choices": ["Fast", "Medium", "Slow"], "enumConstants": [{"name":"FAST","args":"2.0F"},{"name":"MEDIUM","args":"1.0F"},{"name":"SLOW","args":""}], "label": "Speed", "labelKey": "Sandbox_ZSpeed", "tooltip": null, "page": "Zombie", "subgroup": "Zombie Lore", "hiddenUnlessDebug": false, "presets": {}, "declaredLine": 21,
+   "reads": [
+    {"lang":"lua","where":"shared/Speed.lua","in":"<file>","line":1}
+   ], "writes": [], "computed": [], "named": [], "status": "read" },
+  { "name": "LootRate", "group": null, "short": "LootRate", "field": "lootRate", "type": "double", "default": 0.5, "javaDefault": 0.5, "min": 0, "max": 2, "label": "Loot rate", "labelKey": "Sandbox_LootRate", "tooltip": "More | less", "page": "Loot", "subgroup": null, "hiddenUnlessDebug": false, "presets": {}, "declaredLine": 22,
+   "reads": [
+    {"lang":"java","where":"zombie.fixture.Loot","in":"roll","line":7},
+    {"lang":"java","where":"zombie.fixture.Loot$Inner","in":"roll2","line":70}
+   ], "writes": [], "computed": [], "named": [], "status": "read" },
+  { "name": "MultiplierConfig.Axe", "group": "MultiplierConfig", "short": "Axe", "field": "multipliersConfig.xpMultiplierAxe", "type": "double", "default": 1, "javaDefault": 1, "min": 0, "max": 1000, "label": "Axe", "labelKey": "Sandbox_MultiplierConfig_Axe", "tooltip": null, "page": null, "subgroup": null, "hiddenUnlessDebug": false, "presets": {}, "declaredLine": 23,
+   "reads": [], "writes": [],
+   "computed": [
+    {"lang":"java","where":"zombie.fixture.Xp","in":"add","line":12}
+   ], "named": [], "status": "computed" },
+  { "name": "WaterFixture", "group": null, "short": "WaterFixture", "field": "waterFixture", "type": "integer", "default": 14, "javaDefault": 14, "min": -1, "max": 2147483647, "label": "Water", "labelKey": "Sandbox_WaterFixture", "tooltip": null, "page": null, "subgroup": null, "hiddenUnlessDebug": true, "presets": {}, "declaredLine": 24,
+   "reads": [], "writes": [], "computed": [],
+   "named": [
+    {"lang":"java","where":"zombie.fixture.Upgrade","in":"rename","line":3}
+   ], "status": "named" },
+  { "name": "NightFixture", "group": null, "short": "NightFixture", "field": "nightFixture", "type": "boolean", "default": false, "javaDefault": false, "label": "Night", "labelKey": "Sandbox_NightFixture", "tooltip": "Longer nights", "page": null, "subgroup": null, "hiddenUnlessDebug": false, "presets": {}, "declaredLine": 25,
+   "reads": [], "writes": [], "computed": [], "named": [], "status": "none" }
+ ],
+ "dynamicReads": [],
+ "unknownServerNames": [],
+ "unknownSandboxNames": [
+  { "name": "LootRespawn", "sites": 2, "first": {"lang":"lua","where":"client/DebugUIs/Scenarios/A.lua","in":"A.setSandbox","line":9} }
+ ],
+ "commands": [
+  { "class": "SaveCommand", "names": ["save"], "disabled": false, "variants": [], "helpKey": "UI_Save", "help": "Save the world", "capabilities": [{"capability": "SaveWorld", "argName": null}],
+   "actsIn": {"lang":"java","where":"zombie.commands.serverCommands.SaveCommand","in":"Command","line":30} },
+  { "class": "TeleportCommand", "names": ["teleport", "tp"], "disabled": false,
+   "variants": [
+    {"required": ["(.+)"], "optional": null, "argName": "just port to user", "varArgs": false},
+    {"required": ["(.+)", "(.+)"], "optional": null, "argName": "teleport user1 to user2", "varArgs": false}
+   ],
+   "helpKey": "UI_Teleport", "help": "Teleport to a player. Use /teleport \"name\"",
+   "capabilities": [{"capability": "TeleportToPlayer", "argName": "just port to user"}, {"capability": "SaveWorld", "argName": "teleport user1 to user2"}],
+   "actsIn": {"lang":"java","where":"zombie.commands.serverCommands.TeleportCommand","in":"Command","line":40} },
+  { "class": "ConnectionsCommand", "names": ["connections", "list"], "disabled": true,
+   "variants": [{"required": [], "optional": "(-true|-false)", "argName": null, "varArgs": false}],
+   "helpKey": null, "help": null, "capabilities": [{"capability": "SeePlayers", "argName": null}],
+   "actsIn": {"lang":"java","where":"zombie.commands.serverCommands.ConnectionsCommand","in":"Command","line":20} },
+  { "class": "HordeCommand", "names": ["horde2"], "disabled": false,
+   "variants": [{"required": [], "optional": null, "argName": null, "varArgs": true}],
+   "helpKey": null, "help": null, "capabilities": [{"capability": "SeePlayers", "argName": null}],
+   "actsIn": null }
+ ],
+ "playerCommands": [
+  { "name": "roll", "helpKey": "UI_Roll", "help": "Roll a die. Use: /roll 6" }
+ ],
+ "roles": [
+  { "name": "user", "description": "Have no capabilities.", "color": [0.9, 0.9, 0.9], "position": 2000, "allCapabilities": false, "removed": [], "capabilities": ["LoginOnServer"], "defaultFor": ["defaultForUser", "defaultForNewUser"] },
+  { "name": "gm", "description": "Can teleport.", "color": [1, 0.6, 0], "position": 5000, "allCapabilities": false, "removed": [], "capabilities": ["LoginOnServer", "TeleportToPlayer", "SeePlayers"], "defaultFor": ["defaultForGM", "defaultForOverseer"] },
+  { "name": "admin", "description": "Have all capabilities.", "color": [1, 0.2, 0.2], "position": 7000, "allCapabilities": true, "removed": [], "capabilities": ["LoginOnServer", "TeleportToPlayer", "SeePlayers", "SaveWorld"], "defaultFor": ["defaultForAdmin"] }
+ ],
+ "capabilities": [
+  { "name": "LoginOnServer", "tooltip": "Allows login.", "roles": ["user", "gm", "admin"], "commands": [], "reads": [{"lang":"java","where":"zombie.fixture.Login","in":"check","line":3}] },
+  { "name": "TeleportToPlayer", "tooltip": "Allows teleport.", "roles": ["gm", "admin"], "commands": ["teleport"], "reads": [] },
+  { "name": "SeePlayers", "tooltip": null, "roles": ["gm", "admin"], "commands": ["connections", "horde2"], "reads": [] },
+  { "name": "SaveWorld", "tooltip": "Allows saving.", "roles": ["admin"], "commands": ["save", "teleport"], "reads": [{"lang":"lua","where":"client/Admin.lua","in":"Admin.save","line":8}] }
+ ]
+}

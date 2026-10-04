@@ -1,0 +1,6 @@
+{
+  "name": "Running a Server",
+  "description": "For server owners: every server option, sandbox option, admin command and role in Build 9, generated from the code, with where the game reads each one.",
+  "icon": "database",
+  "displayOrder": 6
+}

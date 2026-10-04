@@ -27,6 +27,8 @@
     "kb:lint": "tsx scripts/kb/lint-articles.ts",
     "kb:gen-ref": "tsx scripts/kb/gen-lua-reference.ts",
     "kb:gen-ref:test": "tsx scripts/kb/fixtures/lua-reference/run.ts",
+    "kb:gen-server": "tsx scripts/kb/gen-server-handbook.ts",
+    "kb:gen-server:test": "tsx scripts/kb/fixtures/server-handbook/run.ts",
     "install:all": "npm install && npm install --workspaces",
     "clean": "rm -rf node_modules packages/*/node_modules packages/*/dist"
   },

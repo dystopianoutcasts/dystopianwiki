@@ -1,0 +1,15 @@
+{
+  "serverOptions": {
+    "PVP": { "effect": "Fixture: players may hurt each other.", "site": "zombie.fixture.Combat#hit" },
+    "ResetID": { "effect": "Fixture: read nowhere.", "site": "declaration" }
+  },
+  "sandboxOptions": {
+    "LootRate": { "effect": "Fixture: loot is multiplied by it.", "site": "zombie.fixture.Loot$Inner#roll2" }
+  },
+  "commands": {
+    "teleport": { "effect": "Fixture: moves you.", "site": "zombie.commands.serverCommands.TeleportCommand#Command" }
+  },
+  "capabilities": {
+    "SaveWorld": { "effect": "Fixture: saving is allowed.", "site": "client/Admin.lua#Admin.save" }
+  }
+}
