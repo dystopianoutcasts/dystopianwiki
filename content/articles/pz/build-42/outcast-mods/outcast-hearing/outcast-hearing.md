@@ -14,7 +14,7 @@ tags:
 excerpt: >-
   Gunfire damages your hearing. Ear protection prevents it, quiet recovers it,
   and enough of it is permanent. Project Zomboid B42 only.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Outcast Hearing
 
@@ -106,10 +106,11 @@ family:
    `OL_Containers`, `OL_Reach`, `OL_Squares`. This mod uses **none** of them. It
    touched only two generic utilities (an options getter and a gated logger)
    which happen to live there rather than belonging there.
-2. **Wrong distribution.** OutcastLib is *"unlisted, private server only -- not a
-   public Workshop item"*. This is a gameplay mod. A hard `require=` on an
-   unlisted private library would block it from ever shipping publicly, and
-   upload time is an expensive place to discover that.
+2. **Wrong distribution.** OutcastLib is published on the Workshop (item
+   `3778987608`) as an **unlisted** item, so it does not show in Workshop search.
+   This is a gameplay mod. A hard `require=` on an unlisted library ties a public
+   mod to a dependency players cannot find by searching, and upload time is an
+   expensive place to discover that.
 3. **The cost was real and the benefit was ~50 lines.** A dependency means the
    library must be installed, adds a version floor to maintain, and adds one more
    thing that breaks on a B42 point release.
@@ -431,3 +432,7 @@ readout has faded. ETW's `CharacterInfoAddTab.lua` is a 40-line precedent.
    trait"? Granting a positive trait for never firing a gun may reward passivity.
 3. Does deafness need a survivability floor in MP, or is `deaf` at -12 accepted
    as intended harshness?
+
+---
+
+*Corrected 2026-10-04: OutcastLib is a published, unlisted Workshop item (3778987608), not private-server only.*

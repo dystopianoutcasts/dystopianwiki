@@ -12,7 +12,7 @@ tags:
   - shared-runtime
   - overview
 excerpt: Shared runtime for the Outcast mod family. Project Zomboid B42 only.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Outcast Lib
 
@@ -21,7 +21,9 @@ last_updated: '2026-09-29'
 Shared runtime for the Outcast mod family. Project Zomboid **B42 only**.
 
 **Mod id:** `OutcastLib` | **Author:** Raxdeg / Dystopian Outcasts
-**Distribution:** unlisted, private server only -- not a public Workshop item.
+**Distribution:** published on the Steam Workshop as item `3778987608`, with
+`visibility=unlisted` in its `workshop.txt`: it does not show in Workshop search,
+but it is a real Workshop item.
 
 > **Status: M0-M4 implemented and unit-tested. SawAll retrofitted and verified
 > in game.**
@@ -306,3 +308,7 @@ variant was needed or written.
 
 `validate-data.ps1` stays per-mod -- 184/130/275 lines across three mods, all
 correctly divergent.
+
+---
+
+*Corrected 2026-10-04: OutcastLib is a published, unlisted Workshop item (3778987608), not private-server only.*
