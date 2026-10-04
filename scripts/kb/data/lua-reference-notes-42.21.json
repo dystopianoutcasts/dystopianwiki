@@ -1,0 +1,159 @@
+{
+ "$comment": "Hand-written notes for the generated Lua reference (scripts/kb/gen-lua-reference.ts). Each note was written after reading the call site or method named in `source` in the Build 42.21 code (revision 4a0e9546ec). Add a note only where the code makes the meaning clear; never describe behaviour the code does not show.",
+ "events": {
+  "AddXP": {
+   "when": "Fired when XP is added to a character, on the multiplayer server and in single player; a multiplayer client never fires it (the call sits inside `if (!GameClient.client)`). Arguments: the character, the perk, the amount.",
+   "source": "zombie.characters.IsoGameCharacter$XP#AddXP"
+  },
+  "EveryDays": {
+   "when": "Fired at the end of GameTime#advanceOneDay, after the calendar has moved to the new day.",
+   "source": "zombie.GameTime#advanceOneDay"
+  },
+  "EveryHours": {
+   "when": "Fired by GameTime#update when the in-game hour has changed since the last update.",
+   "source": "zombie.GameTime#update"
+  },
+  "EveryOneMinute": {
+   "when": "Fired by GameTime#update when the in-game minute has changed since the last update.",
+   "source": "zombie.GameTime#update"
+  },
+  "EveryTenMinutes": {
+   "when": "Fired by GameTime#update when the in-game clock crosses a ten-minute mark, right after the erosion and climate ten-minute updates.",
+   "source": "zombie.GameTime#update"
+  },
+  "LevelPerk": {
+   "when": "Fired when a perk level changes: the last argument is true when the level went up (IsoGameCharacter#LevelPerk) and false when it went down (IsoGameCharacter#LoseLevel). Arguments: the character, the perk, the new level, the up flag.",
+   "source": "zombie.characters.IsoGameCharacter#LevelPerk, #LoseLevel"
+  },
+  "LogLevelPerk": {
+   "when": "New in 42.21. Fired while a character's XP is being loaded, once for each perk whose loaded level differs from the level it had before loading. Arguments: the character, the perk, the level, false.",
+   "source": "zombie.characters.IsoGameCharacter$XP#load"
+  },
+  "OnCharacterDeath": {
+   "when": "Fired from a character's OnDeath, for characters (IsoGameCharacter#OnDeath) and for animals (IsoAnimal#OnDeath), with the character that died.",
+   "source": "zombie.characters.IsoGameCharacter#OnDeath, zombie.characters.animals.IsoAnimal#OnDeath"
+  },
+  "OnClientCommand": {
+   "when": "Fired where client commands are handled: on the multiplayer server when a client's command arrives (GameServer#receiveClientCommand), in single player by the in-process stand-in (SinglePlayerServer#receiveClientCommand), and directly by the global sendClientCommand when it is called on the server. Arguments: module, command, player, arguments table.",
+   "source": "zombie.network.GameServer#receiveClientCommand, zombie.spnetwork.SinglePlayerServer#receiveClientCommand, zombie.Lua.LuaManager$GlobalObject#sendClientCommand"
+  },
+  "OnConnected": {
+   "when": "Fired on a client while it connects to a server, after the world dictionary has arrived from the server.",
+   "source": "zombie.gameStates.ConnectToServerState#receiveWorldDictionary"
+  },
+  "OnCreatePlayer": {
+   "when": "Fired when a player is set up: after the game finishes loading (GameLoadingState#exit, for player 0), from the global initUISystem, and when a split-screen player is added (AddCoopPlayer#update). Arguments: the player index, the player.",
+   "source": "zombie.gameStates.GameLoadingState#exit, zombie.util.AddCoopPlayer#update"
+  },
+  "OnEquipPrimary": {
+   "when": "Fired when a character's primary hand item is set, with the character and the new item.",
+   "source": "zombie.characters.IsoGameCharacter#setPrimaryHandItem"
+  },
+  "OnGameBoot": {
+   "when": "Fired after the Lua files are loaded: while the game starts up (GameWindow#enter), after a Lua reset (Core#ResetLua), when the in-game state is left (IngameState#exit), and on a dedicated server during start-up (GameServer#doMinimumInit).",
+   "source": "zombie.GameWindow#enter, zombie.core.Core#ResetLua, zombie.gameStates.IngameState#exit, zombie.network.GameServer#doMinimumInit"
+  },
+  "OnGameStart": {
+   "when": "Fired when the in-game state is entered (IngameState#enter), immediately before OnLoad.",
+   "source": "zombie.gameStates.IngameState#enter"
+  },
+  "OnHitZombie": {
+   "when": "Fired when a zombie is hit. Arguments: the zombie, the attacker, the body part hit, the weapon.",
+   "source": "zombie.characters.IsoZombie#Hit"
+  },
+  "OnInitGlobalModData": {
+   "when": "Fired after the global mod data has been reset and loaded. The argument is true for a new game.",
+   "source": "zombie.world.moddata.GlobalModData#init"
+  },
+  "OnKeyPressed": {
+   "when": "Mouse buttons fire it too: left as key code 10000, right as 10001, any other button as 10000 plus its number (UIManager#updateMouseButtons).",
+   "source": "zombie.ui.UIManager#updateMouseButtons"
+  },
+  "OnLoad": {
+   "when": "Fired immediately after OnGameStart, from the same place.",
+   "source": "zombie.gameStates.IngameState#enter"
+  },
+  "OnNewGame": {
+   "when": "Fired when a character starts out in the world: from IsoWorld#init, from the global addPlayerToWorld, and on the multiplayer server when a client creates its player (CreatePlayerPacket#processServer, where the square argument is nil). Arguments: the player, the square.",
+   "source": "zombie.iso.IsoWorld#init, zombie.network.packets.character.CreatePlayerPacket#processServer"
+  },
+  "OnPlayerDeath": {
+   "when": "Fired when a local player dies (the call sits inside `if (this.isLocalPlayer())` in IsoPlayer#OnDeath), with that player.",
+   "source": "zombie.characters.IsoPlayer#OnDeath"
+  },
+  "OnPlayerMove": {
+   "when": "Fired from a player's update in single player only (both multiplayer flags false), and on the multiplayer server for a remote player who has just moved.",
+   "source": "zombie.characters.IsoPlayer#updateInternal2, #updateRemotePlayer"
+  },
+  "OnPlayerUpdate": {
+   "when": "Fired during a player's update, with that player.",
+   "source": "zombie.characters.IsoPlayer#updateInternal2"
+  },
+  "OnReceiveGlobalModData": {
+   "when": "Fired when a global mod data packet arrives. Arguments: the tag, then the table, or false when the packet carries no table.",
+   "source": "zombie.network.packets.service.GlobalModDataPacket#parse"
+  },
+  "OnServerCommand": {
+   "when": "Fired on a multiplayer client when a command from the server arrives (GameClient#receiveClientCommand), and in single player by the in-process stand-in (SinglePlayerClient#receiveServerCommand). Arguments: module, command, arguments table.",
+   "source": "zombie.network.GameClient#receiveClientCommand, zombie.spnetwork.SinglePlayerClient#receiveServerCommand"
+  },
+  "OnServerStarted": {
+   "when": "Fired by the dedicated server in GameServer#startServer.",
+   "source": "zombie.network.GameServer#startServer"
+  },
+  "OnTick": {
+   "when": "Fired from IngameState#onTick, which the in-game update calls. The argument is the tick counter as a number.",
+   "source": "zombie.gameStates.IngameState#onTick"
+  },
+  "OnTileObjectAdded": {
+   "when": "New in 42.21. Fired on a multiplayer client when the server reports a tile object added to the map. Arguments: the square, the sprite name.",
+   "source": "zombie.network.packets.AddObjectToMapPacket#processClient"
+  },
+  "OnWeaponHitCharacter": {
+   "when": "Fired when a weapon hit lands on a character, just before OnPlayerGetDamage. Arguments: the attacker, the character hit, the weapon, the damage.",
+   "source": "zombie.characters.IsoGameCharacter#Hit"
+  },
+  "OnWeaponSwing": {
+   "when": "Fired when a character's attack starts (SwipeStatePlayer#enter), just before the WeaponSwing hook is asked. Arguments: the character, the weapon.",
+   "source": "zombie.ai.states.SwipeStatePlayer#enter"
+  },
+  "OnZombieDead": {
+   "when": "Fired when a zombie is killed (IsoZombie#onKilled) and when a burning zombie dies from the fire (IsoGameCharacter#FireCheck, #ReduceHealthWhenBurning), with the zombie.",
+   "source": "zombie.characters.IsoZombie#onKilled, zombie.characters.IsoGameCharacter#FireCheck"
+  },
+  "OnZombieUpdate": {
+   "when": "Fired during a zombie's update, with that zombie.",
+   "source": "zombie.characters.IsoZombie#updateInternal"
+  }
+ },
+ "globals": {
+  "isClient": {
+   "note": "True only on a multiplayer client (it returns GameClient.client); false in single player.",
+   "source": "zombie.Lua.LuaManager$GlobalObject#isClient"
+  },
+  "isServer": {
+   "note": "True only in the multiplayer server process (it returns GameServer.server); false in single player.",
+   "source": "zombie.Lua.LuaManager$GlobalObject#isServer"
+  },
+  "isServerSoftReset": {
+   "note": "True only on the multiplayer server during a soft reset.",
+   "source": "zombie.Lua.LuaManager$GlobalObject#isServerSoftReset"
+  },
+  "sendClientCommand": {
+   "note": "Called on the server, it fires OnClientCommand there directly.",
+   "source": "zombie.Lua.LuaManager$GlobalObject#sendClientCommand"
+  },
+  "triggerEvent": {
+   "note": "Fires an event by name. A name the game has not registered is created on the spot (LuaEventManager#checkEvent).",
+   "source": "zombie.Lua.LuaManager$GlobalObject#triggerEvent, zombie.Lua.LuaEventManager#checkEvent"
+  }
+ },
+ "index": {
+  "changes": [
+   "**Inside the classes:** the engine diff between the two builds counts 61 exposed classes with changed public methods: 184 new method names, 26 changed signatures, 27 removed from the class that declared them. Some moved rather than vanished: `getOppositeSquare()` left the door, window, window frame, thumpable and barricade classes and is now a default method of the new interface `GridSquareEdgeElement`. Because the exposer uses `getMethods()`, it is still callable on all of them (the class pages list it, marked as coming from that interface). Others are gone or renamed: `Core.getOptionFocusloss` and `setOptionFocusloss` are now `getOptionPauseOnFocusloss` and `setOptionPauseOnFocusloss`, and `IsoGridSquare.getDoor` and `getWindow` now take a boolean.",
+   "**Keys:** vanilla Lua moved to the new `KeybindId` class, whose static fields name each binding (`getCore():isKey(KeybindId.TOGGLE_SAFETY, key)`). The string forms are still there: `getCore():isKey(name, key)`, `getCore():getKey(name)` and the global `isKeyDown(name)`.",
+   "**Text:** `getText` and `getTextOrNull` take any number of extra arguments."
+  ],
+  "reflectionHistory": "The patch notes never mentioned it. Our records date the change to 42.15; the oldest Build 42 capture we hold is 42.20, so the code we can show is 42.20 and 42.21, where it is the same."
+ }
+}
