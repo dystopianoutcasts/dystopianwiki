@@ -16,7 +16,7 @@ tags:
 excerpt: >-
   There are two layers: a script perk block (defines the perk + XP curve) and
   Lua/translation wiring so it shows up and can be trained.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - the-mental-model
   - the-build-42-skill-list
@@ -108,7 +108,12 @@ MyMod/
     media/
 ```
 
-Load order: `lua/shared` -> `lua/client` -> `lua/server`, alphabetical within each.
+Load order: `lua/shared` -> `lua/client` -> `lua/server`, alphabetical within each
+(by path, ignoring case; vanilla's files first, then each mod's). So never call
+into another of your files at file scope: the one you need may not have loaded
+yet. See [Lua load order and the three lua folders](/pz/build-42/modding/lua-api/lua-load-order-and-the-three-lua-folders).
+
+> **Proof:** Code. `zombie.Lua.LuaManager#LoadDirBase(String, boolean)` sorts each list with `Collections.sort(..., String.CASE_INSENSITIVE_ORDER)`. Build 42.20 (revision a2947723ca).
 
 ### 8d. Reference it
 
@@ -120,3 +125,7 @@ the API in section 14. Gate recipes with `SkillRequired = MyPerk:3` and reward w
 > most-documented. The exact B42 media path (`common/media` vs `42/media`) and
 > whether perks must live at `media/perks.txt` vs a subfolder should be validated
 > against a live 42.20 load -- flagged in Gaps.
+
+---
+
+*Corrected 2026-10-04: files load alphabetically within each lua folder (LoadDirBase sorts by path, ignoring case); this is confirmed, not uncertain.*
