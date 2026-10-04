@@ -12,7 +12,7 @@ tags:
   - logging
   - multiplayer
 excerpt: 'A shared, timestamped, downloadable log for Project Zomboid Build 42 mods.'
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Outcast Lib -- logging integration
 
@@ -402,7 +402,7 @@ guarantees the library loads first, but a file of yours that is executed during
 load may still run before you expect. Resolving on use costs one table lookup and
 removes the question.
 
-> **Proof:** Code. `zombie.Lua.LuaManager#LoadDirBase(String, boolean)` (vanilla files sorted by path, then each mod in `zombie.ZomboidFileSystem#getModIDs` order, its files sorted only within that mod) and `zombie.ZomboidFileSystem#loadMods(ArrayList)` with `#loadModAndRequired` (the mod list in its own order, each mod's `require=` mods added just ahead of it). Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.Lua.LuaManager#LoadDirBase(String, boolean)` (vanilla files sorted by path, then each mod in `zombie.ZomboidFileSystem#getModIDs` order, its files sorted only within that mod) and `zombie.ZomboidFileSystem#loadMods(List)` with `#loadModAndRequired` (the mod list in its own order, each mod's `require=` mods added just ahead of it). Build 42.21.0 (revision 4a0e9546ec).
 
 ### Feature-detect. Do not version-check
 
@@ -466,9 +466,20 @@ server-side, run it there.
 - The engine truncates and reopens any log file once it passes **10,000 KB**.
   That is engine behaviour, identical for `DebugLog-server.txt`, and not
   something a mod can guard. Do not write per-frame.
-- Allowed log extensions are `ini`, `cfg`, `txt`, `log`. The extension is taken
-  from the **last** dot, so `Outcast.log.1` is rejected while `Outcast.prev.log`
-  is fine.
+- Allowed log extensions are `ini`, `cfg`, `txt`, `log`, and since Build 42.21
+  also `json`. The extension is taken from the **last** dot, so `Outcast.log.1`
+  is rejected while `Outcast.prev.log` is fine.
+
+> **Proof:** Code. `zombie.Lua.LuaManager.GlobalObject#getFileWriter` checks `ALLOWED_FILE_EXTENSIONS` (`ini`, `cfg`, `txt`, `log`, `json`) against `zombie.ZomboidFileSystem#getFileExtension` (text after the last dot). Build 42.21.0 (revision 4a0e9546ec).
+
+- Build 42.21 added two launch options that change the name of every log file,
+  `DebugLog-server.txt` and ours included. `-debugLogFile=<name>` puts `<name>_`
+  in front of the logger's name, and `-useTimeStampedLogFileNames=false` drops
+  the `<launch>_` timestamp. With neither option the names are the ones on this
+  page. If the files on your host are named differently, read the server's
+  launch line before anything else.
+
+> **Proof:** Code. `zombie.core.logger.LoggerManager#getLogFilePath`, `#setLogFilePrefixRaw`, `#setUseTimeStampedLogFileNames`; both options read in `zombie.network.GameServer#main` and `zombie.gameStates.MainScreenState#main`. Build 42.21.0 (revision 4a0e9546ec).
 
 ---
 
@@ -611,3 +622,5 @@ each solving it differently, which is the situation the library exists to
 prevent.
 
 *Corrected 2026-10-04: mods do not load alphabetically. They load in mod-list order, each mod's `require=` mods first; only the files inside one mod are sorted by name.*
+
+*Updated 2026-10-04 for Build 42.21: `json` joins the allowed log extensions; two new launch options can rename log files; the mod load order was re-checked and is unchanged.*
