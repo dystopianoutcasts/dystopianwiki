@@ -15,7 +15,7 @@ tags:
 excerpt: >-
   What you build: a custom drinkable/industrial fluid and an item that can hold
   it.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - project-skeleton
   - new-item
@@ -76,8 +76,8 @@ module YourModule
         Poison                                  -- block CONFIRMED; inner fields LIKELY
         {
             maxEffect   = None,                 -- None | Low | Medium | Extreme | Deadly
-            minAmount   = 0,
-            diluteRatio = 0,
+            minAmount   = 0,                    -- loaded, never read
+            diluteRatio = 0,                    -- loaded, never read
         }
     }
 }
@@ -89,9 +89,15 @@ module YourModule
 | `DisplayName` | In-game name; the value is a translation key in `Fluids.json`. Convention prefix `Fluid_Name_`. | CONFIRMED (fluid.txt) |
 | `Color = R : G : B` | Alternative to `ColorReference`; RGB01 (0.0-1.0 per channel), no alpha. | LIKELY (wiki) |
 | `Properties{}` stat deltas | `thirstChange hungerChange stressChange unhappyChange enduranceChange fatigueChange foodSicknessChange`; nutrition `calories carbohydrates lipids proteins alcohol`; `fluReduction painReduction`. | block CONFIRMED / fields LIKELY |
-| `Poison{}` | `maxEffect` (None/Low/Medium/Extreme/Deadly), `minAmount` (0-1), `diluteRatio`. | block CONFIRMED / fields LIKELY |
+| `Poison{}` | `maxEffect` (None/Low/Medium/Extreme/Deadly) is the only field the game uses. `minAmount` and `diluteRatio` are loaded and never read. The poison only reaches the drinker if the fluid also has a `Properties{}` block. | Code (see the proof line below the table) |
 | `Categories{}` | Grouping tags (`Beverage`, `Industrial`, ...). | block CONFIRMED / values LIKELY |
 | `BlendWhiteList` / `BlendBlackList` | Blend rules; either a scalar `BlendWhiteList = MyFilter,` or a block with `whitelist=true/false`, `fluids{}`, `categories{}`. | BlendWhiteList CONFIRMED / usage LIKELY |
+
+> **Proof:** Code. `zombie.entity.components.fluids.PoisonInfo#getPoisonEffect` (returns `maxEffect`); `zombie.entity.components.fluids.Fluid#setScript` (properties, with the poison dose, only when the script has a `Properties` block). Build 42.20 (revision a2947723ca).
+
+Name your fluid something new. A fluid named like a vanilla one (`Water`, `Petrol`, ...) is bound to the vanilla fluid and overwrites its definition, in any module.
+
+> **Proof:** Code. `zombie.scripting.objects.FluidDefinitionScript#Load` and `zombie.entity.components.fluids.Fluid#Init`. Build 42.20 (revision a2947723ca).
 
 There is **no `boredomChange` field** in any source -- use `unhappyChange`/`stressChange`. (UNCERTAIN if it exists.)
 
@@ -144,3 +150,7 @@ There is no `initialFluid`, `rgb`, or `fluid amount` field on the container -- i
 ---
 
 <a name="9-item-repair-fixing"></a>
+
+---
+
+*Corrected 2026-10-04: Poison minAmount and diluteRatio are never read, Poison needs a Properties block to reach the drinker, and a vanilla-named fluid overwrites vanilla's.*

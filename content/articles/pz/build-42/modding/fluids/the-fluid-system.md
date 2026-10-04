@@ -15,7 +15,7 @@ excerpt: >-
   [CONFIRMED — NEW in B42, BREAKING vs B41.] B41 modeled liquids as many item
   variants (empty/half/full bottles, hairdye split items, etc.). B42 has one
   real fluid system.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # The fluid system
 
@@ -71,10 +71,14 @@ Full field set (from the commented template in `fluids.txt`) `[CONFIRMED]`:
 - `DisplayName` — translation key.
 - `Categories { ... }` — e.g. `Beverage`, `Water`, `Industrial`, `Fuel`, `Hazardous`, `Alcoholic`. Used for blending rules and recipe matching.
 - `Properties { ... }` — nutrition/effect deltas: `thirstChange`, `hungerChange`, `calories`, `carbohydrates`, `lipids`, `proteins`, `alcohol`, `fatigueChange`, `stressChange`, `unhappyChange`, `fluReduction`, `painReduction`, `enduranceChange`, `foodSicknessReduction`.
-- `Poison { maxEffect, minAmount, diluteRatio }` — toxicity.
+- `Poison { maxEffect, minAmount, diluteRatio }` — toxicity. Only `maxEffect` does anything: `minAmount` and `diluteRatio` are loaded and never read, so the full effect applies whatever the amount. And the poison only reaches the drinker when the fluid also has a `Properties` block, because the dose is stored in the properties. Vanilla `Petrol` has `Poison` and no `Properties`, and poisons nobody.
 - `BlendWhiteList` / `BlendBlackList` — reference a filter script or define inline (`whitelist = true, fluids { Water }, categories { Beverage }`) to control what mixes.
 
-**Vanilla fluid identifier rule** `[CONFIRMED, from the template comment]`: for the base game, the fluid identifier must match a `FluidType` enum; if it does NOT match the enum, it is treated as a **modded fluid**. So mod fluids just use a new name and are auto-registered as modded. Vanilla fluids are split across `fluids.txt`, `fluids_Beverages.txt`, `fluids_Alcoholic.txt`.
+> **Proof:** Code. `zombie.entity.components.fluids.PoisonInfo#getPoisonEffect` (returns `maxEffect`); `zombie.entity.components.fluids.Fluid#setScript` (properties, with the poison dose, only when the script has a `Properties` block); `media/scripts/generated/fluids.txt`. Build 42.20 (revision a2947723ca).
+
+**Vanilla fluid identifier rule** `[CONFIRMED, from the template comment]`: for the base game, the fluid identifier must match a `FluidType` enum; if it does NOT match the enum, it is treated as a **modded fluid**. So mod fluids just use a new name and are auto-registered as modded. The reverse matters too: a mod fluid named like a vanilla one, in any module, is bound to the vanilla fluid and **overwrites its definition**. Vanilla fluids are split across `fluids.txt`, `fluids_Beverages.txt`, `fluids_Alcoholic.txt`.
+
+> **Proof:** Code. `zombie.scripting.objects.FluidDefinitionScript#Load` (a name matching a `FluidType` binds to it) and `zombie.entity.components.fluids.Fluid#Init` (sets that script on the vanilla fluid). Build 42.20 (revision a2947723ca).
 
 ### 12.2 Fluid containers (item component)
 
@@ -142,3 +146,7 @@ inputs
 ```
 
 Producing fluid uses `+fluid <amount> [FluidType]` in inputs/outputs against a container. `[CONFIRMED by wiki; exact vanilla `+fluid` line not in files pulled — UNCERTAIN]`
+
+---
+
+*Corrected 2026-10-04: Poison minAmount and diluteRatio are never read, Poison needs a Properties block to reach the drinker, and a vanilla-named fluid overwrites vanilla's.*

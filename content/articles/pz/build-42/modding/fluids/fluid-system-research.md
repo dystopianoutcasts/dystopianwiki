@@ -16,7 +16,7 @@ excerpt: >-
   Written 2026-08-22. Answers the dive scoped in 05-state-and-next-build.md
   section 6. Every claim below is cited to the B42 decompile at
   R:/ZOMBOID/PZ_Engine_Records/B42 (revision a2947723ca...
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Outcast Motors -- fluid systems research
 
@@ -45,10 +45,11 @@ structural decision everything else follows from, and it costs us nothing --
 Outcast Motors already stores its parts as `InventoryItem`s inside the engine
 bay's `ItemContainer`. The fluid rides a part we already have.
 
-One trap, stated here so it is not discovered late: **vanilla's own fluid
-transfer action is unimplemented in multiplayer.** Section 5 covers it. We cannot
-reuse `ISFluidTransferAction`, and the reason it fails is instructive rather than
-merely inconvenient.
+One limit, stated here so it is not discovered late: **vanilla's own fluid
+transfer action works in multiplayer, but only replicates items in a player's
+inventory.** Section 5 covers it. An item fitted to a vehicle part is not
+re-sent to clients by vanilla's sync, so a fitted reservoir needs our own server
+command.
 
 ---
 
@@ -197,9 +198,16 @@ honours a per-*container* whitelist and blacklist. Together these are how we sto
 a player topping up the brake reservoir with coolant -- declaratively, with no
 Lua guard.
 
-Worth noting for the poison work later: vanilla's `TaintedWater` demonstrates the
-`Poison { maxEffect, minAmount, diluteRatio }` block. Motor oil and brake fluid
-are `Hazardous` in our existing declarations but carry no poison profile yet.
+Worth noting for the poison work later: vanilla's `TaintedWater` carries a
+`Poison { maxEffect, minAmount, diluteRatio }` block, but only `maxEffect` does
+anything. `minAmount` and `diluteRatio` are loaded and never read: the poison
+lookup returns the maximum effect whatever the amount. And a `Poison` block only
+reaches the drinker when the fluid also has a `Properties` block, because the
+dose is stored in the properties. Vanilla `Petrol` has a `Poison` block, no
+`Properties`, and poisons nobody. Motor oil and brake fluid are `Hazardous` in
+our existing declarations but carry no poison profile yet.
+
+> **Proof:** Code. `zombie.entity.components.fluids.PoisonInfo#getPoisonEffect` (returns `maxEffect`); `zombie.entity.components.fluids.Fluid#setScript` (properties, with the poison dose, only when the script has a `Properties` block); `zombie.characters.IsoGameCharacter` reads the dose from `FluidConsume#getPoison`; `media/scripts/generated/fluids.txt`. Build 42.20 (revision a2947723ca).
 
 ---
 
@@ -264,26 +272,29 @@ this is the channel.
 
 ---
 
-## 5. The trap: vanilla's transfer action does not work in multiplayer
+## 5. Vanilla's transfer action works in multiplayer, for items in a player's inventory
 
-`ISFluidTransferAction:update()` wraps its entire transfer in
-`if not isClient() then` (`:24-32`). On a multiplayer client the transfer simply
-does not happen.
+We first read this section the other way round, and wrote "do not reuse
+`ISFluidTransferAction`". That was a misreading. `ISFluidTransferAction` defines
+`complete()`, which does the whole transfer with `FluidContainer.Transfer` and
+then syncs both ends. A Lua timed action that defines `complete()` is run through
+the server in multiplayer, and `complete()` is called only where the code is not
+a client. The `if not isClient() then` block in `update()` is only the live
+progress while the action runs, and the `--todo sync mp` comment in `perform()`
+is stale. `ISFluidEmptyAction` (pouring on the ground) has the same shape.
 
-`perform()` is worse -- it carries a commented-out client branch and this:
+> **Proof:** Code. `media/lua/shared/Fluids/ISFluidTransferAction.lua` and `ISFluidEmptyAction.lua`, `complete()`; `zombie.characters.CharacterTimedActions.LuaTimedActionNew` (net action created on a client when `complete` exists; `complete` called only where `!GameClient.client`). Build 42.20 (revision a2947723ca).
 
-```lua
---todo sync mp, may be handled differently depending on if its:
---     InventoryItem, IsoObject or ResourceFluid
-```
-
-And the sync helper it depends on, `ISFluidContainer:sync()` (`:96`),
-early-returns on a client, then for the item case calls `syncItemFields()`. That
-method requires `getOutermostContainer().getParent() instanceof IsoPlayer`
+What does still hold: the sync helper, `ISFluidContainer:sync()` (`:96`), calls
+`syncItemFields()` for an item, and that method only sends when
+`getOutermostContainer().getParent() instanceof IsoPlayer`
 (`InventoryItem.java:4394`) -- **false for an item sitting in a vehicle part's
-container.** Even server-side it would be a no-op for us.
+container.** So vanilla's transfer works for two items in a player's inventory
+and does not replicate an item fitted to a vehicle part.
 
-So: **do not reuse `ISFluidTransferAction`.** Pouring must be a command the
+> **Proof:** Code. `zombie.inventory.InventoryItem#syncItemFields`. Build 42.20 (revision a2947723ca).
+
+So, for a fitted reservoir only, pouring must be a command the
 client sends and the server performs, which is exactly the shape `OMO_Command`
 already has for install / uninstall / repair. `OMO.Actions.can` gains a `pour`
 predicate, `OMO_PartAction` gains a fourth action id, and the handler does the
@@ -351,8 +362,9 @@ on a server.
 ## 9. Standing facts, so they are not rediscovered
 
 - Vanilla `Water` must never be redeclared in our module -- a same-named fluid in
-  `module OutcastMotors` is a second, distinct fluid. Already handled in
-  `OMO_Fluids.txt`; the radiator deliberately uses vanilla's.
+  `module OutcastMotors` is not a second fluid: any fluid named like a vanilla
+  one is bound to the vanilla fluid type and **overwrites vanilla's definition**.
+  Already handled in `OMO_Fluids.txt`; the radiator deliberately uses vanilla's.
 - `FluidUtil.TRANSFER_ACTION_TIME_PER_LITER = 40.0`,
   `MIN_TRANSFER_ACTION_TIME = 20.0` (`FluidUtil.java:31-32`) -- vanilla's timing
   for a pour, worth matching so ours does not feel foreign.
@@ -363,3 +375,9 @@ on a server.
 - `DebugCSVExportFluidContainers` exists and dumps every fluid item's capacity
   and transfer rate. Useful for balancing against vanilla, and it is an export,
   not a command anyone has to run in a session.
+
+> **Proof:** Code. `zombie.scripting.objects.FluidDefinitionScript#Load` (a name matching a `FluidType` binds to it) and `zombie.entity.components.fluids.Fluid#Init` (sets that script on the vanilla fluid). Build 42.20 (revision a2947723ca).
+
+---
+
+*Corrected 2026-10-04: vanilla's fluid transfer and empty actions work in multiplayer for items in a player's inventory; Poison minAmount and diluteRatio are never read; a fluid named like a vanilla one overwrites it.*
