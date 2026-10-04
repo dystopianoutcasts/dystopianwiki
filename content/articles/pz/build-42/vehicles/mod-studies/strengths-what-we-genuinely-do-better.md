@@ -13,7 +13,7 @@ tags:
   - assessment
   - roadmap
 excerpt: Not flattery; these are things no other mod in the survey has.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - the-inventory
   - what-each-source-is-authoritative-for
@@ -56,3 +56,5 @@ one-directional. Ours is the cleanest of the three.
 replacing it, so a car with Outcast Motors installed still reads correctly to
 every other mod. PSC established this and we kept it; several community mods did
 not.
+
+*Re-checked 2026-10-04 for Build 42.21: `IsoCell.getVehicles()` still returns a `Set`, so the claims here still hold.*

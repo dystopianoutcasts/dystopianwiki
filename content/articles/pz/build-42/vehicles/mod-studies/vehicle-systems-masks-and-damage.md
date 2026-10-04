@@ -17,7 +17,7 @@ excerpt: >-
   Companion to PZ_VEHICLE_ARCHITECTURE.md (which covers file layout and the
   vanilla-vs-KI5 comparison). This one covers the runtime systems: how the
   engine decides what to draw, what to darken, and...
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # PZ B42 vehicle systems -- masks, part removal, damage, animation, armour
 
@@ -378,3 +378,5 @@ part/visibility groundwork it needs is the same groundwork V1 lays anyway.
 4. **Animations must be authored and validated in Blender** before any in-game test.
 5. Reuse vanilla `Veh_Damage1/2`, `Veh_Rust`, `Veh_Blood_*`. Only shell / mask / lights are
    bespoke.
+
+*Re-checked 2026-10-04 for Build 42.21 (revision 4a0e9546ec): `VehiclePart` and `VehicleScript` are unchanged, so the cited lines still match, and vanilla still has no armour in its vehicle scripts or vehicle classes; the code claims we re-checked still hold.*

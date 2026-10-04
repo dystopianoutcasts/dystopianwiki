@@ -16,7 +16,7 @@ excerpt: >-
   Compiled 2026-08-10 from the 1117 Workshop mods in a Steam library's
   steamapps/workshop/content/108600 folder, read for technique only.
   Nothing here is copied. Supplements 17-vehicle-animation-reference.md...
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # B42 vehicle animation -- what every installed mod actually does
 
@@ -261,7 +261,7 @@ First-party confirmation of `17-...md` §5.5.
 sendServerCommand(onlinePlayer, "vehicle", "setDoorOpen", args)
 ```
 
-Client dispatch is `client/ServerCommands.lua:201`:
+Client dispatch is `client/ServerCommands.lua:207`:
 
 ```lua
 ServerCommands.OnServerCommand = function(module, command, args)
@@ -273,7 +273,7 @@ ServerCommands.OnServerCommand = function(module, command, args)
 hutch, ui, recipe, forage`. **There is no `Commands.vehicle`**, nothing else in
 vanilla adds one (it is file-local), and neither VVA nor the Orphanage defines
 one. The command is dispatched into nothing. `Commands.setDoorOpen` does exist
--- in `server/Vehicles/VehicleCommands.lua:154`, which is the *client to server*
+-- in `server/Vehicles/VehicleCommands.lua:150`, which is the *client to server*
 direction and irrelevant here.
 
 **VASinked works but carries two defects.** `VAS_CCommands.lua`:
@@ -349,3 +349,5 @@ called for exactly this.
 | Does part animation replicate in MP? | Answered previously: no. Now confirmed by TIS's own `-- TODO` at the call site. |
 | Does `anim Opened { animate = FALSE }` restore a saved-open state on load? | **Still unverified.** VVA ships it, which shows it does not fail catastrophically -- not that it behaves correctly. One save/reload settles it. |
 | Does a rig without `Vehicle_bone` animate? | Still unverified. KI5 binds their body to `body_bone` and it works, so a root bone exists in every working example. |
+
+*Re-checked 2026-10-04 for Build 42.21: vanilla still has no client `Commands.vehicle` handler; line numbers updated; the code claims we re-checked still hold.*

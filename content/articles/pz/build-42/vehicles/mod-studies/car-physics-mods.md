@@ -16,7 +16,7 @@ excerpt: >-
   Neither is installed locally, so this file separates verified evidence (from
   Project Summer Car's source, which talks to RCP directly) from claimed
   features (mod descriptions and the author's guide).
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # The car physics mods -- Better Car Physics to Realistic Car Physics
 
@@ -76,7 +76,7 @@ verbatim as a comment, labelled with its origin:
 
 An earlier comment (`:273`) says *"Setup mod data here for CarController.java"*.
 
-So: **RCP patches `zombie.vehicles.CarController`** and reads vehicle mod data
+So: **RCP patches `zombie.core.physics.CarController`** and reads vehicle mod data
 that PSC writes. Two facts fall out of that curve:
 - Torque peaks at **50% of max RPM** and falls to zero **1000 RPM past redline**.
   Vanilla has no torque curve at all -- power is flat.
@@ -329,3 +329,5 @@ manually for proper functionality."*
 - The exact set of shadowed `.class` files is still unknown; only `CarController`
   is confirmed by name, from PSC's comments.
 - RCP's Workshop item is currently unreachable, so its changelog wasn't retrieved.
+
+*Re-checked 2026-10-04 for Build 42.21: `CarController` changed only in how it reads the driving keys (now through `KeybindId`), so the claims here still hold. Its package is `zombie.core.physics`; this page used to give it as `zombie.vehicles`.*

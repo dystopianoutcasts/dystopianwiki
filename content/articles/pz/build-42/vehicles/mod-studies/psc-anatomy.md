@@ -14,7 +14,7 @@ tags:
   - template-vehicle
 excerpt: >-
   Source: Workshop item 3564950449, folder mods/Project Summer Car/42.15/
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Project Summer Car -- architecture
 
@@ -169,3 +169,5 @@ so throttle is now hardcoded to 0.2 and the mod recommends **Starlit Library** a
 the sanctioned way to get the real value. Everything downstream (fuel burn,
 engine heating) is therefore running on a constant, not real player input,
 unless Starlit is installed. Good cautionary tale about depending on reflection.
+
+*Re-checked 2026-10-04 for Build 42.21: the engine code this page leans on (the vehicle hooks, `BaseVehicle.throttle` and `getThrottle()`, and the reflection gate) is unchanged, so the claims here still hold.*

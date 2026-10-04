@@ -16,7 +16,7 @@ tags:
 excerpt: >-
   Follow-up investigation, 2026-08-05. Triggered by this comment in Project
   Summer Car's source (42.15/media/lua/server/Project_Summer_Car_Server.lua:12):
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Why reflection was disallowed -- the fun police story
 
@@ -255,3 +255,5 @@ replacement and never was a throttle source.
 - Reflection Enabler workshop page `3682136459`.
 - Build 42.15.0 changelog (pzwiki + Steam) -- confirmed to contain **no**
   mention of reflection.
+
+*Re-checked 2026-10-04 for Build 42.21 (revision 4a0e9546ec): the seven reflection functions are still present, `validateReflectionAccess` still throws `"Not in debug"` unless `Core.debug` is set, and `getThrottle()` and `isBrakePedalPressed()` are still on `BaseVehicle`. 42.21 neither lifted nor widened the gate.*

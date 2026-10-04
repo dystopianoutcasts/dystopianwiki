@@ -50,7 +50,7 @@ Not installed: **3708816224 Navigator**.
 
 ## 1 · The correction: our crash absorption watches the wrong part
 
-`BaseVehicle.addDamageFront` (decompile `BaseVehicle.java:4776-4790`):
+`BaseVehicle.addDamageFront` (decompile `BaseVehicle.java:4819-4833`):
 
 ```java
 private void addDamageFront(int dmg) {
@@ -77,9 +77,9 @@ Numpad 8 damages the Engine part directly. Textbook §1 of
 never the real path.
 
 The Java signal that always moves is `currentFrontEndDurability` --
-`BaseVehicle.java:305` a public int defaulting to 100, reset to
-`frontEndDurability` on repair (`:1563`), and serialised both ways (`:2644`,
-`:2750`). Gores reads it defensively:
+`BaseVehicle.java:308` a public int defaulting to 100, reset to
+`frontEndDurability` on repair (`:1565`), and serialised both ways (`:2646`,
+`:2752`). Gores reads it defensively:
 
 ```lua
 local ok, v = pcall(function() return vehicle.currentFrontEndDurability end)
@@ -90,7 +90,7 @@ field.** The game exposes Java *methods* to Lua, plus public *static* fields; an
 instance field such as this one has no getter, so `vehicle.currentFrontEndDurability`
 reads as nil, silently. The `pcall` hides that.
 
-> **Proof:** Code. `se.krka.kahlua.integration.expose.LuaJavaClassExposer` binds methods, and `exposeStatics` only public static fields; `zombie.vehicles.BaseVehicle.currentFrontEndDurability` is a public instance field with no getter. Build 42.21.0 for the exposer (bytecode of the installed jar), 42.20 (revision a2947723ca) for `BaseVehicle`.
+> **Proof:** Code. `se.krka.kahlua.integration.expose.LuaJavaClassExposer` binds methods, and `exposeStatics` only public static fields; `zombie.vehicles.BaseVehicle.currentFrontEndDurability` is a public instance field with no getter. Build 42.21.0 (revision 4a0e9546ec). The exposer was read from the installed jar's bytecode.
 
 **Action:** absorption should key on the **hood's condition drop** (the
 `EngineDoor` part), which a frontal crash damages first and which Lua can read
@@ -98,7 +98,7 @@ through `getCondition()`, with Engine-condition delta kept as a secondary signal
 for the hood-destroyed case. This is the first thing to change before the
 real-crash test is worth running.
 
-> **Proof:** Code. `zombie.vehicles.BaseVehicle#addDamageFront` (damages `EngineDoor` first, `Engine` only when the hood is missing or under 25). Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.vehicles.BaseVehicle#addDamageFront` (damages `EngineDoor` first, `Engine` only when the hood is missing or under 25). Build 42.21.0 (revision 4a0e9546ec).
 
 ## 2 · The UI mod does not need to replace the mechanics window
 
@@ -164,7 +164,7 @@ is done on that car in a game day. A failed attempt pays 1 XP every time. So
 neither install nor uninstall grants success XP more than once per part, per car,
 per game day.
 
-> **Proof:** Code. `media/lua/shared/Vehicles/TimedActions/ISInstallVehiclePart.lua` and `ISUninstallVehiclePart.lua`, `complete()`; `zombie.characters.IsoPlayer#addMechanicsItem` and `#updateMechanicsItems`. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `media/lua/shared/Vehicles/TimedActions/ISInstallVehiclePart.lua` and `ISUninstallVehiclePart.lua`, `complete()`; `zombie.characters.IsoPlayer#addMechanicsItem` and `#updateMechanicsItems`. Build 42.21.0 (revision 4a0e9546ec).
 
 **`getMechanicsItem` does not work in multiplayer.** BAM replaces it with a
 24-hour cooldown in `player:getModData().BAM_History`, keyed the same way but
@@ -172,7 +172,7 @@ stamped with `getGameTime():getWorldAgeHours()`, pruned on write, followed by
 `player:transmitModData()`. It also handles world-age going *backwards* (server
 wipe) by clearing the entry.
 
-`vehicle:getMechanicalID()` (`BaseVehicle.java:9306`) is a stable per-vehicle int
+`vehicle:getMechanicalID()` (`BaseVehicle.java:9366`) is a stable per-vehicle int
 distinct from `getId()` -- a better key for our per-vehicle `lastWritten` than
 what we use now.
 
@@ -191,7 +191,7 @@ is defined in code the server loads (`shared/` or `server/`). What a client sees
 afterwards is the `OnMechanicActionDone` event, which `complete()` triggers by
 sending `MECHANIC_ACTION_DONE` back to the player.
 
-> **Proof:** Code. `zombie.core.NetTimedAction#parse` and `#perform`; `zombie.characters.CharacterTimedActions.LuaTimedActionNew#complete` (calls the Lua `complete` only where `!GameClient.client`); `zombie.characters.IsoGameCharacter` triggers `OnMechanicActionDone` on `MECHANIC_ACTION_DONE`. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.core.NetTimedAction#parse` and `#perform`; `zombie.characters.CharacterTimedActions.LuaTimedActionNew#complete` (calls the Lua `complete` only where `!GameClient.client`); `zombie.characters.IsoGameCharacter` triggers `OnMechanicActionDone` on `MECHANIC_ACTION_DONE`. Build 42.21.0 (revision 4a0e9546ec).
 
 ## 4 · Gate the action, show the information -- confirmed by three mods
 
@@ -331,7 +331,7 @@ deliberately not adopted.
   difficulty tier (`VehicleScript.java:1957`). STA_EngineRebuild scales both
   skill requirement and action time from it. Free per-vehicle balance we are not
   using.
-- **`vehicle:getEngineQuality()`** (`BaseVehicle.java:8077`) is a *second*
+- **`vehicle:getEngineQuality()`** (`BaseVehicle.java:8137`) is a *second*
   engine axis, separate from Engine part condition. Rebuild raises quality;
   wear lowers condition. Our mirror only writes condition -- quality is an
   untouched axis we could own.
@@ -378,3 +378,5 @@ bespoke panel.
 *Corrected 2026-10-04: in Build 42 multiplayer a vehicle action's complete() runs on the server; the advice to avoid complete() in favour of OnMechanicActionDone is withdrawn.*
 
 *Corrected 2026-10-04: Lua cannot read currentFrontEndDurability (a public Java field reads as nil); crash absorption keys on the hood's condition drop.*
+
+*Re-checked 2026-10-04 for Build 42.21: the crash, XP and timed-action code is unchanged (42.21 only added an early return to `ISInstallVehiclePart:isValid` once the action is 90 percent done); line numbers updated; the code claims we re-checked still hold.*

@@ -16,7 +16,7 @@ excerpt: >-
   BaseVehicle.updatePartStats() (:9065) is vanilla's own condition-to-physics
   pipeline, and we have been building a private reimplementation of it without
   noticing it exists.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - the-inventory
   - what-each-source-is-authoritative-for
@@ -81,10 +81,10 @@ have never revisited:
 **Hybrid recommendation SUPERSEDED, 2026-08-10.** Building it turned up a better
 door, and the original advice would have been a lot of work for a worse result.
 
-`BaseVehicle.setEngineFeature(quality, loudness, power)` is **public** (`:8071`)
+`BaseVehicle.setEngineFeature(quality, loudness, power)` is **public** (`:8131`)
 and reachable from Lua. `getVehicleEngine()` is private, so that one method is
 the entire API -- but it is enough, because `power` is not cosmetic
-(`CarController.java:639`):
+(`CarController.java:640`):
 
 ```java
 this.engineForce = (float)(this.vehicleObject.getEnginePower()
@@ -104,7 +104,7 @@ Two traps found on the way, both silent:
   noticing my car", which nobody would trace to an engine mod.
 - **Loudness is genuinely the muffler's**, and vanilla's muffler mechanic works
   (`engineLoudness *= 1.0F + (100.0F - part.getEngineLoudness()) / 100.0F`, and
-  a missing muffler doubles it at `:9122`). We preserve it rather than take it.
+  a missing muffler doubles it at `:9182`). We preserve it rather than take it.
 
 The part-slot route stays available and is still the right answer for **brakes,
 suspension and tyres**, where `updatePartStats` is the only pipeline and there is
@@ -123,3 +123,5 @@ one:** this operates on the *script*, so it is per vehicle model, not per
 individual car. A rebuilt engine cannot out-perform a wreck of the same model
 through this lever. Per-instance output remains unsolved -- but the overlay's
 justification just narrowed to gear control and tire pressure alone.
+
+*Re-checked 2026-10-04 for Build 42.21: `setEngineFeature`, `updatePartStats` and the engine force line in `CarController` are unchanged; line numbers updated; the code claims we re-checked still hold.*

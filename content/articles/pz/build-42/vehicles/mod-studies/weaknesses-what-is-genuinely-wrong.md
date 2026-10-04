@@ -43,7 +43,7 @@ feature, but **MP assumptions are being baked into v0.1 code right now**, and
 every one of them is currently untested and probably wrong. This is a sequencing
 error, not a missing feature.
 
-> **Proof:** Code. `zombie.core.NetTimedAction#parse` and `#perform`; `zombie.characters.CharacterTimedActions.LuaTimedActionNew#complete`. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.core.NetTimedAction#parse` and `#perform`; `zombie.characters.CharacterTimedActions.LuaTimedActionNew#complete`. Build 42.21.0 (revision 4a0e9546ec).
 
 **Our probe kit produces the stimulus and observes it.** Numpad 8 damages the
 Engine part and then checks whether Engine-part damage was absorbed. It cannot
@@ -75,3 +75,5 @@ the unbuilt half.
 ---
 
 *Corrected 2026-10-04: ISInstallVehiclePart:complete does run in multiplayer, on the server; it is not a client-only hook.*
+
+*Re-checked 2026-10-04 for Build 42.21: `complete()` still runs on the server (42.21 only keys the client side of a timed action by player as well as transaction id); the code claims we re-checked still hold.*

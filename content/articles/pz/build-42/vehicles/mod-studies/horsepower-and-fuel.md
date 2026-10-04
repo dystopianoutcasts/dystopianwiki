@@ -14,7 +14,7 @@ tags:
   - thermal-model
   - fuel
 excerpt: '(:230-271)'
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - thermal-model
   - oil-model
@@ -87,3 +87,5 @@ if REALISTICCARPHYSICS_ENABLED then
     end
 end
 ```
+
+*Re-checked 2026-10-04 for Build 42.21: the `BaseVehicle` methods this page uses (`setEngineFeature`, `getEnginePower`, `getThrottle`, `getFakeSpeedModifier`) have the same signatures, so the claims here still hold.*

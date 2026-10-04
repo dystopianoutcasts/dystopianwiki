@@ -16,7 +16,7 @@ excerpt: >-
   The single highest-leverage move in PSC. container { } on a vehicle part turns
   one opaque condition number into an inventory of real items with independent
   condition, mod data, fluids and world...
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Takeaways -- what makes this immersive, and what transfers
 
@@ -106,7 +106,7 @@ broken when it's just uninstalled. Do not build an Outcast mod that needs this.
 function getThrottle(vehicle) return 0.2 end
 --[[ -- Reflection no longer allowed due to fun police.
 ```
-Verified in the installed B42.20 jar: the seven reflection functions still exist,
+Verified in the installed B42.20 jar, and again in 42.21: the seven reflection functions still exist,
 but `LuaManager.validateReflectionAccess()` gates them on `Core.debug` and throws
 `"Not in debug"` otherwise. Added in **42.15** (March 2026) as emergency security
 hardening after two disclosed sandbox-escape vulnerabilities -- and vindicated a
@@ -199,3 +199,5 @@ engine bay completely and RCP owns the drivetrain physics. Nobody has decomposed
 An exhaust system in particular would slot into PSC's existing loudness model
 with almost no new machinery, and loudness is already the mechanic with the most
 survival weight. Worth noting alongside the existing Outcast mod list.
+
+*Re-checked 2026-10-04 for Build 42.21: the reflection gate is unchanged (`LuaManager.validateReflectionAccess`, seven call sites), so the claims here still hold.*

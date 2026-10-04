@@ -16,7 +16,7 @@ excerpt: >-
   STALE ON ONE CENTRAL POINT, 2026-08-10. This study concludes that VVA has no
   B42 branch, which was true of workshop 3774077235 when it was written.
   Workshop 3281755175 is their Build 42 release...
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Animated vanilla vehicles on B42 -- feasibility study and plan
 
@@ -295,3 +295,5 @@ test session, to close.
 - Multiplayer: is the anim state synced, or does each client drive it locally?
 - Damage variants -- rig them, or accept static doors on wrecks?
 - Do we approach the VVA author before rebuilding their art?
+
+*Re-checked 2026-10-04 for Build 42.21: `ScriptManager.getVehicle` and `VehicleScript.Load` are unchanged, and vanilla still has 77 `template vehicle` definitions and 200 `template!` references; the code claims we re-checked still hold.*
