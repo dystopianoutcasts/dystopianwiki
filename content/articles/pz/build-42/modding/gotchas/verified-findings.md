@@ -16,7 +16,7 @@ excerpt: >-
   Running log of verified findings. Each entry states its evidence and its
   confidence level. Preliminary findings are labelled as such -- do not cite
   them as settled.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Verified engine findings
 
@@ -25,6 +25,11 @@ last_updated: '2026-09-29'
 Running log of verified findings. Each entry states its evidence and its
 confidence level. **Preliminary findings are labelled as such** -- do not cite
 them as settled.
+
+On 2026-10-04 every engine citation in this log was re-checked on Build 42.21
+(revision 4a0e9546ec) and its line number moved to that build. A citation written
+`B42/src/...` now means our decompile of 42.21; files that did not change between
+42.20 and 42.21 have the same line numbers in both.
 
 ---
 
@@ -49,7 +54,7 @@ Subpackages: `components/`, `system/`, `network/`, `events/`, `energy/`,
 
 This has no B41 equivalent -- `zombie/entity` did not exist.
 
-**Observed in use** at `B42/src/zombie/characters/IsoZombie.java:602`:
+**Observed in use** at `B42/src/zombie/characters/IsoZombie.java:604`:
 
 ```java
 public void registerECSComponents() {
@@ -187,7 +192,7 @@ substitute a real 3D model for any tile. `IsoObject.render()` attempts the model
 first and falls through to the sprite path when it declines:
 
 ```java
-// B42/src/zombie/iso/IsoObject.java:3536
+// B42/src/zombie/iso/IsoObject.java:3588
 if (this.renderModel(x + 0.5F, y + 0.5F, z, col)) {
    this.updateRenderInfoForObjectPicker(x, y, z, col);
 } else if (!this.isSpriteInvisible()) {
@@ -196,30 +201,30 @@ if (this.renderModel(x + 0.5F, y + 0.5F, z, col)) {
 ```
 
 Three further call sites use the same try-model-then-sprite shape
-(`IsoObject.java:3678`, `:3748`).
+(`IsoObject.java:3730`, `:3800`).
 
 ### The substitution is render-only
 
-`renderModel` (`B42/src/zombie/iso/IsoObject.java:6280`) touches nothing but the
+`renderModel` (`B42/src/zombie/iso/IsoObject.java:6348`) touches nothing but the
 draw. Tile properties -- `container`, `ContainerCapacity`, `PickUpWeight`,
 `IsMoveAble`, health -- are read by unrelated systems and are unaffected. A tile
 whose sprite is model-substituted keeps its exact 2D behaviour.
 
 ### Resolution order for an object's model
 
-`getSpriteModel()` (`B42/src/zombie/iso/IsoObject.java:6261`) checks a per-object
+`getSpriteModel()` (`B42/src/zombie/iso/IsoObject.java:6329`) checks a per-object
 override first, then the sprite's shared assignment:
 
-1. `this.spriteModelName` -> `ScriptManager.getSpriteModel(name)` (`:6262-6267`)
-2. `this.sprite.spriteModel` (`:6268-6274`)
+1. `this.spriteModelName` -> `ScriptManager.getSpriteModel(name)` (`:6330-6335`)
+2. `this.sprite.spriteModel` (`:6336-6342`)
 
-`setSpriteModelName()` (`:6254`) is public and **serialized** with the object
-(`:1343` read, `:1565` write), so a per-instance model override persists across
+`setSpriteModelName()` (`:6322`) is public and **serialized** with the object
+(`:1377` read, `:1599` write), so a per-instance model override persists across
 save/load.
 
 ### Mods have a dedicated loading slot
 
-`SpriteModelManager.init()` (`B42/src/zombie/spriteModel/SpriteModelManager.java:35`)
+`SpriteModelManager.init()` (`B42/src/zombie/spriteModel/SpriteModelManager.java:36`)
 scans every loaded mod for its own `spriteModels.txt`:
 
 ```java
@@ -243,7 +248,7 @@ merges them, keyed by the name convention `<tileset>_<tileIndex>`.
 
 **Conflict rule: game data wins.** `Tileset.initSprites()` assigns only when the
 slot is empty -- `if (sprite != null && sprite.spriteModel == null)`
-(`B42/src/zombie/iso/SpriteModelsFile.java:287`). A mod cannot override a tile
+(`B42/src/zombie/iso/SpriteModelsFile.java:286`). A mod cannot override a tile
 vanilla has already claimed.
 
 ### TIS ships an authoring tool
@@ -258,11 +263,11 @@ exploited seam.
 
 - **Hard dependency on FBO chunk rendering.** `renderModel` opens with
   `if (!PerformanceSettings.fboRenderChunk) return false;`
-  (`B42/src/zombie/iso/IsoObject.java:6282`). Default is `true`
+  (`B42/src/zombie/iso/IsoObject.java:6350`). Default is `true`
   (`B42/src/zombie/core/PerformanceSettings.java:36`) but it is a user graphics
   setting. **Always ship the sprite as a working fallback.**
 - **Mouse picking still uses sprite bounds.** `updateRenderInfoForObjectPicker()`
-  (`B42/src/zombie/iso/IsoObject.java:6390`) reads
+  (`B42/src/zombie/iso/IsoObject.java:6458`) reads
   `this.sprite.getTextureForCurrentFrame(...)`. Hover/click targeting follows the
   2D silhouette even when the model is what's drawn. Keep model and sprite
   silhouettes close.
@@ -271,7 +276,7 @@ exploited seam.
   dispatches on the literals `standard_door` and `pair_door` only.
 - **Per-state models are per-sprite models.** Doors switch model by switching
   sprite; each sprite carries its own `spriteModel`. `setSpriteFromName()`
-  (`B42/src/zombie/iso/IsoObject.java:2029`) is the runtime lever. Same technique
+  (`B42/src/zombie/iso/IsoObject.java:2068`) is the runtime lever. Same technique
   works for any discrete object state.
 - **Tileset+coordinate coupling.** Entries key on `<tilesetName>` plus `xy`; a
   TIS re-layout of that sheet silently retargets the model.
@@ -302,8 +307,8 @@ container.
 
 The one tile property that sounds relevant is not. `ContainerPosition` is
 registered at `B42/src/zombie/core/properties/TilePropertyKey.java:70`, copied to
-the container at `B42/src/zombie/iso/IsoObject.java:5278`, and stored as a plain
-string (`B42/src/zombie/inventory/ItemContainer.java:3389-3394`). Its values are
+the container at `B42/src/zombie/iso/IsoObject.java:5340`, and stored as a plain
+string (`B42/src/zombie/inventory/ItemContainer.java:3418-3423`). Its values are
 `High` / `Low` and its only consumer is reach-animation selection.
 
 **Consequence:** "show the books that are in the bookcase" cannot be switched on.
@@ -312,19 +317,27 @@ Container state must be *mirrored* into a render layer by the mod.
 ### There is no reliable container-mutation event
 
 `OnFillContainer`, `OnContainerUpdate`, and `OnObjectAdded` are registered
-(`B42/src/zombie/Lua/LuaEventManager.java:729`, `:740`, `:741`) but a sweep of
-`zombie/` found **zero Java trigger sites** for the first two. They are fired
-manually from Lua -- e.g. `media/lua/shared/Foraging/forageSystem.lua:1672`,
-`media/lua/shared/Items/OnBreak.lua:47`. `OnContainerUpdate` is a UI-refresh
-signal consumed by `ISInventoryPage.lua:2209`, not a data hook.
+(`B42/src/zombie/Lua/LuaEventManager.java:730`, `:741`, `:742`). We first wrote
+that Java never fires the first two. That was wrong: Java fires
+`OnFillContainer` at 15 places, all of them loot generation (`ItemPickerJava`,
+`ItemSpawner`, `IsoChunk`, `BaseVehicle`, and the dead-body filler in
+`LuaManager`), and `OnContainerUpdate` at 41 places. Lua fires them too -- e.g.
+`media/lua/shared/Foraging/forageSystem.lua:1672`,
+`media/lua/shared/Items/OnBreak.lua:47`. `OnContainerUpdate` is still a
+UI-refresh signal, consumed by `ISInventoryPage.lua:2213`, not a data hook: 35 of
+the 41 Java calls pass no argument, and none of them passes an `ItemContainer`.
 
-**This is the hard part of any such mod**, not the rendering. Coverage of loot
-spawn, corpse drops, server-side transfers, and other mods cannot be guaranteed
-by event subscription. Design for a reconciling refresh (on container open, on
+> **Proof:** Code. `triggerEvent("OnFillContainer"` and `triggerEvent("OnContainerUpdate"` searched across the engine source (15 and 41 calls; the same counts in 42.20); `zombie.inventory.ItemPickerJava`, `zombie.inventory.ItemSpawner`, `zombie.iso.IsoChunk`, `zombie.vehicles.BaseVehicle`, `zombie.Lua.LuaManager`. Build 42.21.0 (revision 4a0e9546ec).
+
+**This is the hard part of any such mod**, not the rendering. Loot spawn has
+`OnFillContainer`, but coverage of corpse drops, server-side transfers, and other
+mods cannot be guaranteed by event subscription. Design for a reconciling refresh (on container open, on
 proximity) rather than trusting events.
 
-**PRELIMINARY** on completeness: the trigger-site sweep was `rg` over `zombie/`
-and should be re-verified against `api/xref.jsonl` once the index layer exists.
+**PRELIMINARY** on completeness: the trigger-site sweep was `rg` over `zombie/`.
+It was re-run on 2026-10-04 (above) and found the Java trigger sites the first
+sweep missed; loot generation is covered by `OnFillContainer`, while player
+transfers and changes made by other mods still are not.
 
 ### What the engine *does* provide
 
@@ -332,11 +345,11 @@ Two independent primitives, both usable today.
 
 **1. Item models render at arbitrary sub-tile positions.**
 `IsoWorldInventoryObject.render()`
-(`B42/src/zombie/iso/objects/IsoWorldInventoryObject.java:557`) draws an
+(`B42/src/zombie/iso/objects/IsoWorldInventoryObject.java:559`) draws an
 `InventoryItem`'s world model at `getX() + xoff, getY() + yoff, getZ() + zoff`.
-Setters at `:855`, `:859`, `:863`; MP sync at `:867`. Spawn via
+Setters at `:869`, `:873`, `:877`; MP sync at `:881`. Spawn via
 `IsoGridSquare.AddWorldInventoryItem(item, x, y, height)`
-(`B42/src/zombie/iso/IsoGridSquare.java:6430`).
+(`B42/src/zombie/iso/IsoGridSquare.java:6035`).
 
 B42 already exposes this to players as **Extended Placement** -- a 3D gizmo UI
 (`media/lua/client/ISUI/ISExtendedPlacementUI.lua`, 511 lines) doing
@@ -878,7 +891,7 @@ a manifest.
 `:43-44`), `keepMeshAnimations` (`:45`), `postProcess` (`:47`).
 
 It is `@UsedFromLua` (`:17`) and registered via `setExposed(AnimationsMesh.class)`
-(`B42/src/zombie/Lua/LuaManager.java:2307`). Lookup is
+(`B42/src/zombie/Lua/LuaManager.java:2313`). Lookup is
 `ScriptManager.instance.getAnimationsMesh(name)`, reached from `ModelScript`
 via its `animationsMesh` field
 (`B42/src/zombie/gameStates/AnimationViewerState.java:219`,
@@ -893,13 +906,13 @@ custom animation does not obviously require a Java patch (L3).
 no script changes.**
 
 `ModelManager.loadModAnimations()`
-(`B42/src/zombie/core/skinnedmodel/ModelManager.java:1657`, called from `:173`)
+(`B42/src/zombie/core/skinnedmodel/ModelManager.java:1665`, called from `:173`)
 walks every loaded mod and, for each `animationsMesh`'s declared
 `animationDirectory`, scans that same subfolder **inside the mod**:
 
 ```java
-// ModelManager.java:1663-1690
-ArrayList<String> modIDs = ZomboidFileSystem.instance.getModIDs();
+// ModelManager.java:1671-1698
+List<String> modIDs = ZomboidFileSystem.instance.getModIDs();
 for (int i = 0; i < modIDs.size(); i++) {
    ChooseGameInfo.Mod mod = ChooseGameInfo.getAvailableModDetails(modIDs.get(i));
    if (mod != null && (mod.animsXFile.common.absoluteFile.isDirectory()
@@ -920,11 +933,11 @@ for `<mod>/media/anims_X/Bob/` for every mod. Dropping a `.X` there is enough.
 ### Mods override vanilla clips by priority
 
 ```java
-// ModelManager.java:1659, :1671, :1674
+// ModelManager.java:1667, :1679, :1682
 modAnimations.setPriority(modAnimations == this.gameAnimations ? 0 : -1);  // game = 0
 modAnimations.setPriority(i + 1);                                          // mods = 1..n
 
-// ModelManager.java:1726 -- the resolution rule
+// ModelManager.java:1734 -- the resolution rule
 if (existing == null || existing == animationAsset
     || existing.modAnimations.priority <= modAnimations.priority) {
    this.animationAssets.put(animationAsset.modelManagerKey, animationAsset);
@@ -1006,7 +1019,7 @@ applies **exactly zero** health damage. Not a small number: zero.
 **1. Bare hands are forced into the shove branch.**
 
 ```java
-// CombatManager.java:1342
+// CombatManager.java:1362
 } else if ((vars.getWeapon(owner) == owner.bareHands || vars.doShove)
            && !((IsoPlayer)owner).isAttackType(AttackType.CHARGE)) {
    vars.doShove = true;
@@ -1015,14 +1028,14 @@ applies **exactly zero** health damage. Not a small number: zero.
 The `AttackType.CHARGE` escape is unreachable for fists.
 `WeaponType.UNARMED` declares `AttackType.NONE` as its **only** possible attack
 (`WeaponType.java:19`), and the attack type is re-rolled from the weapon type at
-`CombatManager.java:3158` -- seven lines before `calculateAttackVars` reads it at
-`:3165`, with no Lua event in between. Vanilla produces `CHARGE` in exactly one
-place, a sprinting spear collision (`IsoMovingObject.java:1200`).
+`CombatManager.java:3173` -- seven lines before `calculateAttackVars` reads it at
+`:3180`, with no Lua event in between. Vanilla produces `CHARGE` in exactly one
+place, a sprinting spear collision (`IsoMovingObject.java:1238`).
 
 **2. A shoving player has damage switched off.**
 
 ```java
-// IsoGameCharacter.java:6079
+// IsoGameCharacter.java:6086
 if (wielder instanceof IsoPlayer player && player.isDoShove() && !wielder.isAimAtFloor()) {
    bIgnoreDamage = true;
    modDelta *= 1.5F;
@@ -1032,7 +1045,7 @@ if (wielder instanceof IsoPlayer player && player.isDoShove() && !wielder.isAimA
 **3. Health is only touched when that flag is false.**
 
 ```java
-// IsoGameCharacter.java:6211, in hitConsequences
+// IsoGameCharacter.java:6218, in hitConsequences
 if (!bIgnoreDamage) {
    damage = CombatManager.getInstance().applyGlobalDamageReductionMultipliers(weapon, damage);
    CombatManager.getInstance().applyDamage(this, damage);
@@ -1041,7 +1054,7 @@ if (!bIgnoreDamage) {
 
 The `!wielder.isAimAtFloor()` in gate 2 is why **stomping a downed zombie kills
 it but punching a standing one never will** -- a stomp is also a shove, but it
-skips the suppression, and `CombatManager.java:1009` then overrides the damage to
+skips the suppression, and `CombatManager.java:1045` then overrides the damage to
 `Rand.Next(0.7, 1.0) + Strength * 0.2` scaled by the shoes' `getStompPower()`.
 
 `Base.BareHands` does declare `MinDamage 0.2 / MaxDamage 0.4`
@@ -1060,12 +1073,19 @@ a B42 regression.
 |-------|-----------|------|
 | A. equip a real `HandWeapon` | satisfies `leftHandItem != this.bareHands` at `IsoLivingCharacter.java:51`, so nothing forces `doShove` | an equipped item not in the inventory can escape: `ISDropWorldItemAction` calls `getInventory():Remove()` (a no-op for a non-member) then `sq:AddWorldInventoryItem()`, materialising a phantom weapon on the floor. `getPrimaryHandItem()` is read all over vanilla and by other mods, so the escape paths cannot be audited |
 | B. call `Hit()` directly | `IsoGameCharacter.Hit(weapon, wielder, dmg, false, delta)` with `bIgnoreDamage = false` runs the full pipeline | needs your own attack trigger, targeting and animation, because of the corollary below. This is what Brutal Handwork (workshop `2934621024`) does |
-| C. hook `OnWeaponHitCharacter` | the event fires at `IsoGameCharacter.java:6084` **during** a shove, after `bIgnoreDamage` is set but before `processHitDamage` (`:6105`) and `hitConsequences` (`:6106`). Call `applyDamage()` (`:16065`) in that window | none structurally. Vanilla keeps doing targeting, arc, range, multi-hit, knockback, melee delay and multiplayer sync |
+| C. hook `OnWeaponHitCharacter` | the event fires at `IsoGameCharacter.java:6091` **during** a shove, after `bIgnoreDamage` is set but before `processHitDamage` (`:6112`) and `hitConsequences` (`:6113`). Call `applyDamage()` (`:16152`) in that window | none structurally. Vanilla keeps doing targeting, arc, range, multi-hit, knockback, melee delay and multiplayer sync |
 
 Route C also gets the kill handling free: `isDead()` is health-based
-(`IsoGameCharacter.java:4913`), so a target taken to zero is already dead when
+(`IsoGameCharacter.java:4920`), so a target taken to zero is already dead when
 `hitConsequences` runs and the engine performs the death, kill credit and
 animation itself.
+
+Route C in multiplayer was written for Build 42.20 and has not been re-checked on
+42.21, because 42.21 changed the client side of a hit: a client now sends its
+hits in one packet per target, and a zombie the client does not own gets
+`hitConsequences` with damage switched off (`IsoZombie#hitConsequences`). Whether
+an `applyDamage()` call made in the event on a client still reaches that zombie
+needs a test on a dedicated server.
 
 ### Corollary 1 -- `Hook.Attack` never fires unarmed
 
@@ -1088,18 +1108,18 @@ choice.
 ### Corollary 2 -- unarmed can never earn weapon skill
 
 ```java
-// IsoGameCharacter.java:11106
+// IsoGameCharacter.java:11136
 if (weaponType != null && weaponType != WeaponType.UNARMED && weapon != null) {
    ... per-WeaponCategory perk lookups ...
 }
 ...
-return level == -1 ? 0 : level;   // :11136
+return level == -1 ? 0 : level;   // :11166
 ```
 
 `WeaponType.UNARMED` is structurally excluded and the lookup reads
 `WeaponCategory` off the primary hand item, so **an unarmed character is weapon
 level 0 permanently** and no custom perk can feed it.
-`applyWeaponLevelDamageModifier` (`CombatManager.java:3801`) therefore always
+`applyWeaponLevelDamageModifier` (`CombatManager.java:3833`) therefore always
 applies `BASE_WEAPON_DAMAGE_MULTIPLIER` alone.
 
 **Consequence for any unarmed-combat mod:** a custom fist skill must apply its
@@ -1132,13 +1152,13 @@ Relevant defaults from `CombatConfigKey.java`:
 | `GLOBAL_MELEE_DAMAGE_REDUCTION_MULTIPLIER` | 0.15 | :64 |
 
 So vanilla melee reaching health is roughly
-`declared x 2 (first-target split, CombatManager.java:973) x 1.5 x (0.3 + level x 0.1) x 0.15`,
+`declared x 2 (first-target split, CombatManager.java:1009) x 1.5 x (0.3 + level x 0.1) x 0.15`,
 i.e. **declared x 0.135 at weapon level 0** and **x 0.585 at level 10**. Melee is
 far more skill-gated than the declared item numbers suggest, and a mod applying
 damage directly is not comparable to those numbers without this correction.
 
 **Sandbox difficulty still applies through zombie health**
-(`IsoZombie.java:4437-4449`: 3.5 tough / 1.8 normal / 0.5 fragile, each
+(`IsoZombie.java:4443-4455`: 3.5 tough / 1.8 normal / 0.5 fragile, each
 `+ Rand(0, 0.3)`), which any direct-damage approach gets for free.
 
 ---
@@ -1169,8 +1189,8 @@ String[] listOfNodeFiles = ZomboidFileSystem.instance.resolveAllFiles(statePath,
 
 Both resolvers use `walkGameAndModFiles`, which walks the base game and then
 **every mod's `common` and `version` directory**
-(`ZomboidFileSystem.java:1197-1208`), deduplicating by **relative** path
-(`:1231`).
+(`ZomboidFileSystem.java:1209-1220`), deduplicating by **relative** path
+(`:1243`).
 
 Two consequences that matter:
 
@@ -1233,7 +1253,7 @@ name. Convention across three shipped mods is to keep them equal (Brutal Handwor
 Blender export can silently leave a name like `_tmp`. The node then never plays,
 with no error anywhere.
 
-`ModelManager.instance:getAnimationClip(name)` (`ModelManager.java:111`, `:1605`)
+`ModelManager.instance:getAnimationClip(name)` (`ModelManager.java:111`, `:1613`)
 is the direct check.
 
 ### `x_extends` does not cross the mod boundary reliably
@@ -1270,7 +1290,7 @@ additionally a 2D blend over `ShoveAimX` / `ShoveAimY`, and its base emits
 overriding.
 
 `AttackCollisionCheck` at `m_TimePc 0.15` is the event that drives the hit, by
-calling `CombatManager.attackCollisionCheck` (`:624`). Dropping it gives an
+calling `CombatManager.attackCollisionCheck` (`:658`). Dropping it gives an
 animation that connects with nothing.
 
 ### `m_SpeedScale` accepts a variable name
@@ -1293,7 +1313,7 @@ give free per-swing variation.
 ### Reloading without a restart
 
 `AnimationSet` caches states in `setMap`, and a Lua reload does not touch them.
-`LuaManager.GlobalObject.refreshAnimSets(true)` (`LuaManager.java:6066`) resets
+`LuaManager.GlobalObject.refreshAnimSets(true)` (`LuaManager.java:6079`) resets
 the set, reloads every `AnimNodeAsset` and pushes the change into live
 characters; it is what `AdvancedAnimator.checkModifiedFiles` (`:151`) calls.
 
@@ -1305,3 +1325,5 @@ compares paths against `mod.animSetsFile.*.canonicalFile` (`:92`, `:100`). Java
 resolves a junction to its real target, so **a dev setup that symlinks or
 junctions the mod folder may never trigger it** -- the watcher holds the real
 path while watching the linked one.
+
+*Updated 2026-10-04 for Build 42.21: engine line numbers moved to 42.21; F-008 corrected (Java does fire `OnFillContainer` and `OnContainerUpdate`); F-015 route C marked unchecked in multiplayer on 42.21.*

@@ -29,7 +29,7 @@ Outcast, if you write scripts for items, vehicles, models or recipes, this one i
 
 **`//` is not a comment.** It is ordinary text. The parser glues it onto whatever comes after it, up to the next comma, `{` or `}`. What breaks depends on what it gets glued to, and most of the time nothing tells you.
 
-> **Proof:** Code. `zombie.scripting.ScriptParser#stripComments` removes `/*`...`*/` spans and contains no other comment handling. Build 42, engine revision a2947723ca (Steam build 24449119).
+> **Proof:** Code. `zombie.scripting.ScriptParser#stripComments` removes `/*`...`*/` spans and contains no other comment handling. Build 42.21.0 (revision 4a0e9546ec, Steam build 25485521).
 
 ## How the game reads a script file
 
@@ -53,7 +53,7 @@ if (s.charAt(i) == ',') {
 
 So a `//` line sitting between two properties becomes the front of the next value. The loader then reads the key as everything before the first `=`, which is now `// your note` plus a newline plus the real key. That key matches nothing.
 
-> **Proof:** Code. `zombie.scripting.ScriptManager#LoadFile`, `#ParseScript`, `#CreateFromToken`; `zombie.scripting.objects.ScriptModule#Load`, `#ParseScriptPP`, `#CreateFromTokenPP`; `zombie.scripting.ScriptBucket#CreateFromTokenPP`, `#LoadScripts`; `zombie.scripting.ScriptParser#parse`, `#readBlock`, `ScriptParser.Value#getKey`. Build 42, engine revision a2947723ca (Steam build 24449119).
+> **Proof:** Code. `zombie.scripting.ScriptManager#LoadFile`, `#ParseScript`, `#CreateFromToken`; `zombie.scripting.objects.ScriptModule#Load`, `#ParseScriptPP`, `#CreateFromTokenPP`; `zombie.scripting.ScriptBucket#CreateFromTokenPP`, `#LoadScripts`; `zombie.scripting.ScriptParser#parse`, `#readBlock`, `ScriptParser.Value#getKey`. Build 42.21.0 (revision 4a0e9546ec, Steam build 25485521).
 
 ## What a `//` breaks, by where you put it
 
@@ -61,7 +61,7 @@ So a `//` line sitting between two properties becomes the front of the next valu
 |---|---|---|
 | Above `module Base {` (top of the file) | The chunk no longer starts with `module`, so the **whole file** is skipped. Nothing in it exists. | No. Nothing is logged. |
 | Between two objects in a module (above `model MyCar {`, `item MyThing {`, ...) | That **one object** is skipped. Its type is read as `//`. Put one above every object and the file looks just as dead as the case above. | Maybe a warning, `unknown script object`. Whether a normal (non-debug) game prints it is still unknown, see below. |
-| On its own line between two properties | It merges with the **next** property. That property's key no longer matches and the property is lost. The one above the comment is fine. | Item, vehicle, model: no. Craft recipe and fluid: an `Unknown key` error is logged, and in debug mode the whole object is dropped. |
+| On its own line between two properties | It merges with the **next** property. That property's key no longer matches and the property is lost. The one above the comment is fine. | Vehicle, model: no. Item: since Build 42.21, a warning `adding unknown item param` in debug mode only; a normal game prints nothing unless its log settings turn that channel on. Craft recipe and fluid: an `Unknown key` error is logged, and in debug mode the whole object is dropped. |
 | After a property, on the same line (`mass = 900, // kg`) | Same as the row above: the **next** property is lost. This is the one that fools everyone, because the line you annotated works. | Same as the row above. |
 | Above a child block (`part Hood {`, `attachment ... {`, `inputs {`) | That child block's type is read as `//`, so the block is ignored. | Vehicle and model: no. Craft recipe: `Unknown block` error. |
 | Above a line in a craft recipe's `inputs` or `outputs` | The line now starts with `//`, which is not `item`, `fluid` or `energy`. The **whole recipe** is dropped. | Yes, an exception: `unknown type in craftrecipe`. |
@@ -70,7 +70,7 @@ So a `//` line sitting between two properties becomes the front of the next valu
 | Last thing before a closing `}`, with no comma after it | Harmless. `readBlock` throws away text after the last comma in a block. | No. |
 | Contains `{` or `}` | The brace counting shifts. What you lose depends on where. | Varies. Just never do it. |
 
-> **Proof:** Code. Object skipped: `zombie.scripting.objects.ScriptModule#GetTokenType` and `#CreateFromTokenPP`. Lost property: `zombie.scripting.objects.VehicleScript#Load` and `ModelScript#Load` ignore unmatched keys; `zombie.scripting.objects.Item#DoParam` stores an unmatched key as unknown item data with only a trace message; `zombie.scripting.entity.components.crafting.CraftRecipe#Load` and `zombie.scripting.objects.FluidDefinitionScript#Load` log `Unknown key` and throw in debug mode. Recipe dropped: `CraftRecipe#LoadIO` and `InputScript#Load`. No-`=` crash: `Item#Load` and `VehicleScript#Load` read `split("=")[1]`. Object removed after any load error: `ScriptBucket#LoadScripts` with the `RemoveLoadError` flag, which `ScriptType` gives every script type. Build 42, engine revision a2947723ca (Steam build 24449119).
+> **Proof:** Code. Object skipped: `zombie.scripting.objects.ScriptModule#GetTokenType` and `#CreateFromTokenPP`. Lost property: `zombie.scripting.objects.VehicleScript#Load` and `ModelScript#Load` ignore unmatched keys; `zombie.scripting.objects.Item#DoParam` stores an unmatched key as unknown item data and writes a warning on the `DetailedInfo` log channel (a trace message before 42.21), and `zombie.debug.DebugLog` turns that channel on only when `Core.debug` is set; `zombie.scripting.entity.components.crafting.CraftRecipe#Load` and `zombie.scripting.objects.FluidDefinitionScript#Load` log `Unknown key` and throw in debug mode. Recipe dropped: `CraftRecipe#LoadIO` and `InputScript#Load`. No-`=` crash: `Item#Load` and `VehicleScript#Load` read `split("=")[1]`. Object removed after any load error: `ScriptBucket#LoadScripts` with the `RemoveLoadError` flag, which `ScriptType` gives every script type. Build 42.21.0 (revision 4a0e9546ec, Steam build 25485521).
 
 ### Both of our earlier stories were true
 
@@ -104,6 +104,8 @@ and `xui/xui_config.txt` line 5 (`/* normal String, no auto translation */`).
 ## What we still do not know
 
 - **Whether a normal game prints the `unknown script object` warning.** It is written through the `Script` debug log channel, and whether that channel is on outside debug mode depends on the game's log settings, which we have not traced. The smallest test: a mod with one script file that has a `// note` line directly above one `model` block, started once without `-debug`, then a search of `console.txt` for `unknown script object`.
-- **Whether the newest game build changed any of this.** The code above was read from a July capture of the engine. The vanilla search was made on the build installed now. We will recheck the parser when the engine records are refreshed.
+- **Whether the newest game build changed any of this.** Settled: we re-read the whole chain above on Build 42.21 (revision 4a0e9546ec). The parser is unchanged. The one difference is the log message for an unknown item key, now a warning in debug mode (the table says so).
 
-> **Proof:** Unknown. Read `zombie.debug.DebugLog#getDefaultLogSeverity` and `DebugType` (each channel starts `Off`), but not the log configuration loading. Build 42, engine revision a2947723ca (Steam build 24449119).
+> **Proof:** Unknown. Read `zombie.debug.DebugLog#getDefaultLogSeverity` and `DebugType` (each channel starts `Off`), but not the log configuration loading. Build 42.21.0 (revision 4a0e9546ec, Steam build 25485521).
+
+*Updated 2026-10-04 for Build 42.21: the parser is unchanged; an unknown item key is now logged as a warning in debug mode (it was a trace message), so the table's item cell and the proof say so.*
