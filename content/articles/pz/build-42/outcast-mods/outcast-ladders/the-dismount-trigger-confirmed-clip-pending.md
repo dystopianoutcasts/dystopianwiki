@@ -15,7 +15,7 @@ excerpt: >-
   Confirmed in play 2026-08-03: climbing works, and the dismount at the top
   plays vanilla's fence vault. That is not a bug to fix — it is the hook we
   want, already firing.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - how-it-is-selected
   - the-clip
@@ -139,7 +139,7 @@ z=2.000 xy=10619.40,9823.70 dir=W - surf=ladder sq.z=2 | fence: started=false fi
 
 | reading | rules out |
 |---------|-----------|
-| `outcome=success` | **not** `Blocked`, and the guards did **not** refuse. Only `ClimbOverFenceState.setParams` (`:106`) writes that value, so the state was entered. |
+| `outcome=success` | **not** `Blocked`, and the guards did **not** refuse. Only `ClimbOverFenceState.setParams` (`:107`) writes that value, so the state was entered. |
 | `dir=W` | not a diagonal, so the slide's N/S/W/E switch would have handled it |
 | `started=false` for every tick | the AnimSet `SetVariable` event **never fired** |
 | `xy` frozen | the direct consequence: no slide |
@@ -220,15 +220,19 @@ Three engine facts appeared to permit it:
    tick rather than following a schedule, and finishes the moment that passes
    `targetClimbHeight` (`:81`). So writing `z` steers the climb, and writing the
    target height ends it when we choose.
-2. `IsoMovingObject.setZ` (`:498`) is a clamp and a field write. It does not
+2. `IsoMovingObject.setZ` (`:536`) is a clamp and a field write. It does not
    touch `current`.
 3. `ClimbOverFenceState` never writes `z` — `execute` only clamps and slides `x`
-   and `y` (`:186`, `:215`).
+   and `y` (`:187`, `:217`). Since 42.21 that holds for the local character
+   only: on a copy of another player (`!owner.isLocal()`), `execute` also slides
+   `z` toward the level captured at `setParams`, at the same `0.05` step.
+
+   > **Proof:** Code. `zombie.ai.states.ClimbOverFenceState#execute` (`if (!owner.isLocal() && ...) this.slideZ(owner, z)`) and `#slideZ`. Build 42.21.0 (revision 4a0e9546ec).
 
 All three are true. It still does not work, because of a fourth:
 
 ```java
-// ClimbOverFenceState.isIgnoreCollide, :386
+// ClimbOverFenceState.isIgnoreCollide, :392
 int z = owner.get(Z);
 if (z == fromZ && z == toZ) {
    ...  // the vault's collision exemption, a box from START to END
@@ -402,14 +406,14 @@ authored root motion — `m_DeferredBoneName`, `m_deferredBoneAxis`,
 **It is two-dimensional.**
 
 ```java
-// IsoGameCharacter.java:1323
+// IsoGameCharacter.java:1326
 public Vector2 getDeferredMovement(Vector2 result) { ... }
 
-// :1648, the only place it is applied
+// :1651, the only place it is applied
 this.moveUnmodded(dMovement.x, dMovement.y);
 ```
 
-`Vector2`. Only the ragdoll path (`doDeferredMovementFromRagdoll`, `:1657`) ever
+`Vector2`. Only the ragdoll path (`doDeferredMovementFromRagdoll`, `:1661`) ever
 adds a `z`. So deferred motion can drive the **forward** travel of a transition
 from the clip, and can never drive the **vertical** one.
 
@@ -471,7 +475,7 @@ animation bookkeeping. Only one of them is.
 
 #### `ClimbFenceStarted` — the slide switch
 
-`ClimbOverFenceState` (`:192`) only calls `slideX`/`slideY` while it is true, and
+`ClimbOverFenceState` (`:193`) only calls `slideX`/`slideY` while it is true, and
 the slide is incremental:
 
 ```java
@@ -499,7 +503,7 @@ Every single transition out of `climbfence` is gated on it
 | `to_idle.xml` | `idle` | **not** `CanClimbDownRope`, not moving |
 
 `CanClimbDownRope` is `canClimbDownSheetRopeInCurrentSquare`
-(`IsoGameCharacter.java:893`). **At the top of a ladder it is true by
+(`IsoGameCharacter.java:892`). **At the top of a ladder it is true by
 definition** — that is the whole point of the square we put the character on.
 And `to_idle` explicitly requires it to be false.
 
@@ -516,7 +520,7 @@ exactly one frame of slide and then a descent:
 ```
 
 `10619.40 -> 10619.38` is `0.05 x thirtyFPSMultiplier` for **one tick**. `outcome`
-clearing on the next line is `exit()` (`:244`) running. Then `z` falls.
+clearing on the next line is `exit()` (`:250`) running. Then `z` falls.
 
 #### The rule
 
@@ -565,7 +569,7 @@ and that schedule has nothing to do with the clip.**
 #### The travel
 
 `ClimbOverFenceState` slides at a flat `0.05 * thirtyFPSMultiplier` per frame
-until it clamps (`:407`). Measured against a 123-frame pull-up:
+until it clamps (`:413`). Measured against a 123-frame pull-up:
 
 | | travel | of the clip |
 |---|---|---|
@@ -607,8 +611,10 @@ the roof instead of down onto the rungs.
 Overriding it is safe, because the slide reads `owner.get(DIR)`, the state
 param, not `getDir()`. Only the render direction changes. The engine does the
 same thing itself for grapple throws: `setDir(dir.Rot180())`
-(`IsoGameCharacter.java:8530`).
+(`IsoGameCharacter.java:8561`).
 
 So a descent now faces the ladder from the first frame — the character turns
 around at the parapet, which is what a person does, and the handover to
 `climbdownrope` needs no flip at all.
+
+*Updated 2026-10-04 for Build 42.21: line numbers re-pointed; ClimbOverFenceState now also slides z for a remote character, so "never writes z" holds for the local player only.*

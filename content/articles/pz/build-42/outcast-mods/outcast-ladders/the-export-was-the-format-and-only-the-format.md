@@ -15,7 +15,7 @@ excerpt: >-
   Symptom, now believed fixed but NOT yet retested in game: the character
   dropped to ground level and climbed from there. Selection was correct and limb
   motion was right; only placement was wrong.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - how-it-is-selected
   - the-clip
@@ -37,7 +37,7 @@ dropped to ground level and climbed from there. Selection was correct and limb
 motion was right; only placement was wrong.
 
 The cause was **shipping a `.glb`**. Vanilla holds 2,209 files under `anims_X` and
-**every one is `.X`**. The engine *scans* `.glb` (`ModelManager.java:1906`), so the
+**every one is `.X`**. The engine *scans* `.glb` (`ModelManager.java:1914`), so the
 clip loaded and its name resolved — but scanning is not correctly interpreting a
 skinned rig, and there is no vanilla precedent for glTF on that path.
 

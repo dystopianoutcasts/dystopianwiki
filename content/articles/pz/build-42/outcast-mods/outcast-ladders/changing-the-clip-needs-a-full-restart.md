@@ -12,7 +12,7 @@ tags:
   - animation
   - clips
 excerpt: A Lua reload does nothing. Neither does refreshAnimSets.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - how-it-is-selected
   - the-clip
@@ -33,10 +33,10 @@ A Lua reload does nothing. Neither does `refreshAnimSets`.
 
 | what it reloads | what it does not |
 |-----------------|------------------|
-| `refreshAnimSets(true)` resets `AnimationSet` and reloads every `AnimNodeAsset` — the **XML nodes** (`LuaManager.java:6066`) | the clip binaries |
+| `refreshAnimSets(true)` resets `AnimationSet` and reloads every `AnimNodeAsset` — the **XML nodes** (`LuaManager.java:6079`) | the clip binaries |
 | a Lua reload reloads Lua | everything else |
 
-Animation clips are read once by `ModelManager.loadModAnimations` (`:1657`) at
+Animation clips are read once by `ModelManager.loadModAnimations` (`:1665`) at
 startup and never re-read. **Editing a `.glb` or `.X` requires quitting and
 relaunching the game.**
 

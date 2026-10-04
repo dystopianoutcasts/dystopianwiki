@@ -12,7 +12,7 @@ tags:
   - engine
   - sheet-rope
 excerpt: 'Every engine fact this mod depends on, with the citation that proves it.'
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Outcast Ladders -- engine notes
 
@@ -21,7 +21,9 @@ last_updated: '2026-09-29'
 Every engine fact this mod depends on, with the citation that proves it.
 
 Verified against **B42 revision `a2947723ca`** (Steam buildid 24449119), against
-our decompile of that build.
+our decompile of that build. Re-checked on **42.21.0** (revision `4a0e9546ec`):
+line numbers now point into 42.21, and the two places where the engine's code
+was reorganised are marked in the text.
 
 ---
 
@@ -78,8 +80,8 @@ blocking question; it is answered, and the answer rules out the simplest design.
 |----------|-------|
 | `ClimbSheetRopeState` | `:235` N, `:242` S, `:249` W, `:256` E |
 | `IsoPlayer` | `:5046` N, `:5049` S, `:5052` W, `:5055` E |
-| `IsoZombie` | `:3617-3620` all four |
-| `IsoWindow` | `:836` all four `climbSheetTop` variants |
+| `IsoZombie` | `:3624-3627` all four |
+| `IsoWindow` | `:821` all four `climbSheetTop` variants |
 
 The vanilla tile definitions likewise use `ladderW`, `ladderN`, `ladderE` **and**
 `ladderS`.
@@ -108,11 +110,15 @@ if (square.getProperties().has(IsoFlagType.climbSheetN)
    || square.getProperties().has(IsoFlagType.climbSheetTopN)) {
 ```
 
-`IsoGridSquare.removeSheetRopeFromBottom` (`:4246`) shows the engine's own model:
+`IsoGridSquare.removeSheetRopeFromBottom` (`:3914`) shows the engine's own model:
 a sheet rope is a column of `climbSheetX` squares topped by one `climbSheetTopX`,
 and removal walks the column clearing both. Vanilla carries the flags on real
-sprites — `crafted_01_3` and `crafted_01_4` are named explicitly at `:4285` and
-`:4266`.
+sprites — `crafted_01_3` and `crafted_01_4` are named explicitly at `:3954` and
+`:3935`. Since 42.21 that method is private and takes no arguments (it was
+public, `removeSheetRopeFromBottom(IsoPlayer, boolean)`, in 42.20), so Lua can no
+longer call it; the model it shows is unchanged.
+
+> **Proof:** Code. `zombie.iso.IsoGridSquare#removeSheetRopeFromBottom()` (private) and `#damageSpriteSheetRopeFromBottom()`. Build 42.21.0 (revision 4a0e9546ec).
 
 ### The top object is REQUIRED. Proven in play.
 
@@ -126,7 +132,7 @@ forever and could not get off.
 Three facts, in order:
 
 **1. A flag written onto a square is erased.** `IsoGridSquare.RecalcProperties`
-(`:5154`) begins:
+(`:7232`) begins:
 
 ```java
 this.properties.Clear();
@@ -176,8 +182,14 @@ So the prior art's design was right, and its comment said so plainly:
 ### What the top object has to carry
 
 `calculateClimbOutcome` (`:142`) needs something to climb *over* at the top. It
-tries a window, a thumpable, a window frame, and finally `getWallHoppableTo` ->
-`getWallHoppable(north)`, which wants `obj:isHoppable()` on the correct side.
+tries a window, a thumpable, a window frame, and finally `getWallHoppableTo`,
+which wants an object whose `HoppableN` or `HoppableW` flag matches the edge
+between the two squares. In 42.20 that last step was `getWallHoppable(north)`;
+42.21 removed that method and routes the same question through
+`getEdgeElementTo` and `getWallHoppable(GridSquareEdgeFacingDirection)`, which
+asks `isHoppable(facingDirection)`. Same answer, new names.
+
+> **Proof:** Code. `zombie.ai.states.ClimbSheetRopeState#calculateClimbOutcome`; `zombie.iso.IsoGridSquare#getWallHoppableTo(IsoGridSquare, GetSquare)`, `#getEdgeElementTo`, `#getEdgeElement`, `#getWallHoppable(GridSquareEdgeFacingDirection)`; `zombie.iso.IsoObject#isHoppable(GridSquareEdgeFacingDirection)`, `#getHoppableDirection`. Build 42.21.0 (revision 4a0e9546ec).
 
 Hence the flag set: `climbSheetTop*` so the climb finds a target, plus
 `Hoppable*`, `collide*`, `transparent*`, `cut*`, `canPath*` and `Wall*Trans` so
@@ -200,7 +212,9 @@ Every wall-side flag exists **only** in N and W forms:
 
 A square stores walls on its north and west edges; an east wall *is* the west
 wall of the square to the east. `getWallHoppableTo` reflects this — for
-`next.x > this.x` it asks **`next`** for its W-hoppable, not `this`.
+`next.x > this.x` it asks **`next`** for its W-hoppable, not `this` (in 42.21
+it then also asks `this` for its east edge, which resolves to the same west
+edge of `next`).
 
 `climbSheetE` and `climbSheetS` are real and we set them, so E/S ladders climb.
 Their top object would have to sit on the neighbouring square carrying the
@@ -227,9 +241,9 @@ That map is generated from **every property name found in every loaded
 tileset**:
 
 ```java
-// IsoWorld.java:1411  — harvest
+// IsoWorld.java:1427  — harvest
 if (PropertyValueMap.containsKey(prop)) { ... }
-// IsoWorld.java:1347  — intern
+// IsoWorld.java:1363  — intern
 TilePropertyAliasMap.instance.Generate(PropertyValueMap);
 ```
 
@@ -287,6 +301,8 @@ which reads like they hit a dedicated-server problem and fixed it by relocating.
 We follow vanilla: `shared/`, registered on both events. Decided up front rather
 than discovered on a live server.
 
-`IsoZombie` reads the same climb flags (`:3617-3620`), so zombies will use
+`IsoZombie` reads the same climb flags (`:3624-3627`), so zombies will use
 whatever we make climbable. That is a gameplay consequence, not a bug — but it
 is a design decision to take deliberately.
+
+*Updated 2026-10-04 for Build 42.21: line numbers re-pointed; getWallHoppable(boolean) is gone and removeSheetRopeFromBottom is now private, so the text names the 42.21 methods. The climb and dismount behaviour is unchanged.*
