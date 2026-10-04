@@ -227,7 +227,7 @@ Three engine facts appeared to permit it:
    only: on a copy of another player (`!owner.isLocal()`), `execute` also slides
    `z` toward the level captured at `setParams`, at the same `0.05` step.
 
-   > **Proof:** Code. `zombie.ai.states.ClimbOverFenceState#execute` (`if (!owner.isLocal() && ...) this.slideZ(owner, z)`) and `#slideZ`. Build 42.21.0 (revision 4a0e9546ec).
+> **Proof:** Code. `zombie.ai.states.ClimbOverFenceState#execute` (`if (!owner.isLocal() && ...) this.slideZ(owner, z)`) and `#slideZ`. Build 42.21.0 (revision 4a0e9546ec).
 
 All three are true. It still does not work, because of a fourth:
 

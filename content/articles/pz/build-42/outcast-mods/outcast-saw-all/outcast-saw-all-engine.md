@@ -136,7 +136,7 @@ A world item is a first-class craft input without any of that, though:
   server in multiplayer. Since 42.21 the same call made on a multiplayer client
   no longer sends anything to the server; it only removes the client's copy.
 
-  > **Proof:** Code. `zombie.iso.IsoGridSquare#transmitRemoveItemFromSquare(IsoObject, boolean)` (the `GameClient.client` branch that sent `RemoveItemFromSquarePacket` is gone; off the server it calls `RemoveTileObject`, on the server `GameServer.RemoveItemFromMap`); `zombie.inventory.ItemUser`. Build 42.21.0 (revision 4a0e9546ec).
+> **Proof:** Code. `zombie.iso.IsoGridSquare#transmitRemoveItemFromSquare(IsoObject, boolean)` (the `GameClient.client` branch that sent `RemoveItemFromSquarePacket` is gone; off the server it calls `RemoveTileObject`, on the server `GameServer.RemoveItemFromMap`); `zombie.inventory.ItemUser`. Build 42.21.0 (revision 4a0e9546ec).
 
 And vanilla's own single-item path proves the intent. `OnNewCraft`
 (`ISInventoryPaneContextMenu.lua:3451`) only hauls inputs into the player's
