@@ -34,6 +34,14 @@
  *                                       # output no longer has (each one printed)
  *   npx tsx scripts/build-nav.ts --db --prune-dry-run
  *                                       # upsert, but only print the rows it would delete
+ *   npx tsx scripts/build-nav.ts --exclude content/articles/pz/build-42/x/y/z.md
+ *                                       # leave one article out of the counts and the
+ *                                       # search index (repeatable). Use it for a file
+ *                                       # that is on disk but not committed, so the
+ *                                       # committed navigation never lists a page that
+ *                                       # is not in git. An exclude that matches no
+ *                                       # article is an error (a typo would otherwise
+ *                                       # let the file through silently).
  *
  * Run from the repository root.
  */
@@ -112,6 +120,30 @@ const GENERATED_TS = path.join(ROOT, 'packages', 'web', 'src', 'config', 'versio
 
 const WITH_DB = process.argv.includes('--db')
 const PRUNE_DRY_RUN = process.argv.includes('--prune-dry-run')
+
+/** Repo-relative, forward-slash form used to compare --exclude paths with files. */
+function normalizeRel(p: string): string {
+  const abs = path.isAbsolute(p) ? p : path.join(ROOT, p)
+  return path.relative(ROOT, abs).split(path.sep).join('/').toLowerCase()
+}
+
+function parseExcludes(argv: string[]): Set<string> {
+  const out = new Set<string>()
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === '--exclude') {
+      const value = argv[i + 1]
+      if (!value || value.startsWith('--')) fail('--exclude needs a path')
+      out.add(normalizeRel(value))
+      i++
+    } else if (argv[i].startsWith('--exclude=')) {
+      out.add(normalizeRel(argv[i].slice('--exclude='.length)))
+    }
+  }
+  return out
+}
+
+const EXCLUDES = parseExcludes(process.argv.slice(2))
+const excludesMatched = new Set<string>()
 
 // Same exclusions as scripts/sync-articles.ts, so counts match what gets synced.
 const IGNORED_MD = new Set(['README.md', 'index.md'])
@@ -212,6 +244,13 @@ function markdownFiles(dir: string): string[] {
     .readdirSync(dir, { withFileTypes: true })
     .filter(d => d.isFile() && d.name.endsWith('.md') && !IGNORED_MD.has(d.name))
     .map(d => path.join(dir, d.name))
+    .filter(file => {
+      const key = normalizeRel(file)
+      if (!EXCLUDES.has(key)) return true
+      excludesMatched.add(key)
+      console.log(`[EXCLUDE] ${rel(file)}`)
+      return false
+    })
     .sort()
 }
 
@@ -593,6 +632,11 @@ async function main(): Promise<void> {
 
   const config = loadConfig()
   const result = build(config)
+
+  const unmatched = [...EXCLUDES].filter(p => !excludesMatched.has(p))
+  if (unmatched.length > 0) {
+    fail(`--exclude matched no article: ${unmatched.join(', ')} (nothing was written)`)
+  }
 
   writeData(config, result)
   writeIfChanged(GENERATED_TS, generatedModule(config, result.versions))

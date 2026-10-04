@@ -19,6 +19,7 @@
     "sync:dry-run": "tsx scripts/sync-articles.ts --dry-run",
     "nav": "tsx scripts/build-nav.ts",
     "nav:db": "tsx scripts/build-nav.ts --db",
+    "nav:test": "tsx --test scripts/build-nav.test.ts",
     "sitemap": "tsx scripts/build-sitemap.ts",
     "our-mods": "tsx scripts/build-our-mods.ts",
     "import:b42": "tsx scripts/import/import-b42.ts",
