@@ -211,7 +211,7 @@ export const VERSIONS: VersionInfo[] = [
             description: 'The Build 42 mod project structure, mod.info, registries.lua, load order, debug mode, and packaging.',
             icon: 'book',
             displayOrder: 2,
-            articleCount: 20,
+            articleCount: 21,
           },
           {
             id: 'items-and-scripting',
@@ -219,7 +219,7 @@ export const VERSIONS: VersionInfo[] = [
             description: 'Item scripts, tags, workstations, tech tiers, and the timedAction block.',
             icon: 'book',
             displayOrder: 3,
-            articleCount: 13,
+            articleCount: 14,
           },
           {
             id: 'crafting',
@@ -227,7 +227,7 @@ export const VERSIONS: VersionInfo[] = [
             description: 'The craftRecipe schema: inputs, outputs, itemMappers, and how it differs from the legacy recipe block.',
             icon: 'wrench',
             displayOrder: 4,
-            articleCount: 6,
+            articleCount: 7,
           },
           {
             id: 'fluids',
@@ -235,7 +235,7 @@ export const VERSIONS: VersionInfo[] = [
             description: 'The Build 42 fluid system and FluidContainer component.',
             icon: 'book',
             displayOrder: 5,
-            articleCount: 3,
+            articleCount: 9,
           },
           {
             id: 'lua-api',
@@ -243,7 +243,7 @@ export const VERSIONS: VersionInfo[] = [
             description: 'Events, ModData, multiplayer command patterns, timed actions, and calling Java from Lua.',
             icon: 'book',
             displayOrder: 6,
-            articleCount: 17,
+            articleCount: 20,
           },
           {
             id: 'farming-and-animals',
@@ -259,7 +259,7 @@ export const VERSIONS: VersionInfo[] = [
             description: 'The Build 42 skill list, XP, traits, professions, and their modding APIs.',
             icon: 'book',
             displayOrder: 8,
-            articleCount: 19,
+            articleCount: 21,
           },
           {
             id: 'world-and-tiles',
@@ -267,7 +267,7 @@ export const VERSIONS: VersionInfo[] = [
             description: 'Multi-Z, basements, the tile and tiledef system, and the map-modding toolchain.',
             icon: 'map',
             displayOrder: 9,
-            articleCount: 13,
+            articleCount: 14,
           },
           {
             id: 'ui',
@@ -275,7 +275,7 @@ export const VERSIONS: VersionInfo[] = [
             description: 'The ISUIElement engine layer and the traps that only show up in a running game.',
             icon: 'book',
             displayOrder: 10,
-            articleCount: 2,
+            articleCount: 5,
           },
           {
             id: 'cookbook',
@@ -291,7 +291,7 @@ export const VERSIONS: VersionInfo[] = [
             description: 'Silent-failure traps and verified engine findings that contradict the plausible guess.',
             icon: 'wrench',
             displayOrder: 12,
-            articleCount: 2,
+            articleCount: 3,
           },
           {
             id: 'tooling',
@@ -307,7 +307,15 @@ export const VERSIONS: VersionInfo[] = [
             description: 'Server-authoritative facts and the traps that only surface in a dedicated-server round.',
             icon: 'plug',
             displayOrder: 14,
-            articleCount: 1,
+            articleCount: 5,
+          },
+          {
+            id: 'reference',
+            name: 'Lua Reference',
+            description: 'Generated from the Build 42.21 code: every Lua event, global function and exposed class, with types and call sites.',
+            icon: 'book',
+            displayOrder: 15,
+            articleCount: 26,
           },
         ],
       },
@@ -373,7 +381,7 @@ export const VERSIONS: VersionInfo[] = [
             description: 'The verified Build 42 vehicle API, engine hooks, UI, and lessons learned building vehicle mods.',
             icon: 'car',
             displayOrder: 1,
-            articleCount: 6,
+            articleCount: 12,
           },
           {
             id: 'animation',
@@ -381,7 +389,7 @@ export const VERSIONS: VersionInfo[] = [
             description: 'How to make a Build 42 vehicle part visibly animate, and the silent-failure catalogue behind it.',
             icon: 'gear',
             displayOrder: 2,
-            articleCount: 12,
+            articleCount: 14,
           },
           {
             id: 'mod-studies',

@@ -681,6 +681,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/mapping</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -1141,6 +1146,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/crafting/handcraft-from-lua-what-the-server-does</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/modding/crafting/the-new-craftrecipe-block</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -1221,6 +1231,21 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/fluids/defining-a-fluid-names-poison-properties</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/fluids/drinking-tainted-water-and-boiling</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/fluids/fluid-container-calls-that-lie</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/modding/fluids/fluid-system-reference</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -1231,7 +1256,22 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/fluids/fluids-for-modders-start-here</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/fluids/fluids-in-multiplayer</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/modding/fluids/the-fluid-system</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/fluids/what-a-mod-fluid-can-plug-into</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1336,7 +1376,17 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/foundations/workshop-upload-what-the-uploader-checks</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/modding/getting-started/start-here</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/gotchas/script-comments-what-slashes-do</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1352,6 +1402,11 @@
   </url>
   <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/modding/items-and-scripting/item-block-merge-behaviour</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/items-and-scripting/item-tags-from-lua</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1441,6 +1496,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/lua-api/kahlua-what-project-zomboid-lua-does-not-have</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/modding/lua-api/key-globals-and-classes</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -1452,6 +1512,11 @@
   </url>
   <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/modding/lua-api/lua-load-order-and-the-three-lua-folders</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/lua-api/mod-file-traps-load-order-split-files-bom-xml</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1501,7 +1566,162 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/lua-api/when-lua-reloads-leaving-a-game-and-resets</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/multiplayer/hot-items-in-multiplayer</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/multiplayer/missing-minimap-check-the-sandbox-first</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/modding/multiplayer/outcast-logging-integration</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/multiplayer/reading-server-performance-numbers-honestly</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/multiplayer/what-runs-on-the-server-in-build-42-multiplayer</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-class-directory</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-ai-and-combat-1</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-ai-and-combat-2</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-characters-1</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-characters-2</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-characters-3</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-entities</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-game-and-core-1</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-game-and-core-2</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-items</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-java-and-libraries</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-network</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-scripts-1</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-scripts-2</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-scripts-3</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-scripts-4</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-sound-and-radio</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-ui-and-input</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-vehicles</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-world-1</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-world-2</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-world-3</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-classes-world-4</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-events</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-global-functions</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/reference/lua-reference</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1537,6 +1757,11 @@
   </url>
   <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/modding/skills-and-traits/professions-occupations</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/skills-and-traits/professions-reading-them-and-what-they-unlock</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1582,6 +1807,11 @@
   </url>
   <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/modding/skills-and-traits/trait-modding-correction</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/skills-and-traits/trait-mods-in-build-42</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1641,12 +1871,32 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/ui/replacing-a-vanilla-window</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/ui/ui-coordinate-traps</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/modding/ui/ui-engine-reference</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/modding/ui/ui-overview</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/ui/ui3dscene-a-car-in-a-mod-window</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/modding/world-and-tiles/barricades-and-locks-in-vanilla</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1956,6 +2206,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/vehicles/animation/how-vehicle-paint-and-culling-work</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/vehicles/animation/prior-art-and-what-to-take</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -1997,6 +2252,11 @@
   </url>
   <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/vehicles/animation/vehicle-animation-reference-index</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/vehicles/animation/vehicle-model-and-texture-traps</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2156,12 +2416,37 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/vehicles/reference/invented-vehicle-parts-and-areas</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/vehicles/reference/lessons-and-guards</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/vehicles/reference/vanilla-mechanics-code-what-it-really-checks</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/vehicles/reference/vehicle-engine-numbers-mods-must-know</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/vehicles/reference/vehicle-engine-reference</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/vehicles/reference/vehicle-lua-hook-traps</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/vehicles/reference/vehicle-script-traps</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2177,6 +2462,11 @@
   </url>
   <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/vehicles/reference/vehicles-and-power-misc-vehicle-systems</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/vehicles/reference/vehicles-from-lua-what-needs-java</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
