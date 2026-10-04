@@ -93,11 +93,11 @@ module YourModule
 | `Categories{}` | Grouping tags (`Beverage`, `Industrial`, ...). | block CONFIRMED / values LIKELY |
 | `BlendWhiteList` / `BlendBlackList` | Blend rules; either a scalar `BlendWhiteList = MyFilter,` or a block with `whitelist=true/false`, `fluids{}`, `categories{}`. | BlendWhiteList CONFIRMED / usage LIKELY |
 
-> **Proof:** Code. `zombie.entity.components.fluids.PoisonInfo#getPoisonEffect` (returns `maxEffect`); `zombie.entity.components.fluids.Fluid#setScript` (properties, with the poison dose, only when the script has a `Properties` block). Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.entity.components.fluids.PoisonInfo#getPoisonEffect` (returns `maxEffect`); `zombie.entity.components.fluids.Fluid#setScript` (properties, with the poison dose, only when the script has a `Properties` block). Build 42.21.0 (revision 4a0e9546ec).
 
 Name your fluid something new. A fluid named like a vanilla one (`Water`, `Petrol`, ...) is bound to the vanilla fluid and overwrites its definition, in any module.
 
-> **Proof:** Code. `zombie.scripting.objects.FluidDefinitionScript#Load` and `zombie.entity.components.fluids.Fluid#Init`. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.scripting.objects.FluidDefinitionScript#Load` and `zombie.entity.components.fluids.Fluid#Init`. Build 42.21.0 (revision 4a0e9546ec).
 
 There is **no `boredomChange` field** in any source -- use `unhappyChange`/`stressChange`. (UNCERTAIN if it exists.)
 
@@ -105,7 +105,7 @@ There is **no `boredomChange` field** in any source -- use `unhappyChange`/`stre
 
 Use `ItemType = base:normal`, not B41's `Type = Normal`: Build 42 does not read `Type`, and an item written with it registers but cannot be created (see [Items: the item block in B42](/pz/build-42/modding/items-and-scripting/items-the-item-block-in-b42)).
 
-> **Proof:** Code. `zombie.scripting.objects.Item#DoParam` (reads `ItemType`, no `Type` key). Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.scripting.objects.Item#DoParam` (reads `ItemType`, no `Type` key). Build 42.21.0 (revision 4a0e9546ec).
 
 ```
 module YourModule

@@ -61,7 +61,7 @@ scripts. The item parser reads `ItemType` and has no `Type` key, so an item
 written with `Type = Normal` registers but gets no type. We learned this the
 hard way: such an item can be looked up by name and still never be created.
 
-> **Proof:** Code. `zombie.scripting.objects.Item#DoParam` (reads `ItemType`, no `Type` key), revision a2947723ca; count of `ItemType = base:normal` and `Type = Normal` in `media/scripts` of the installed game. Build 42.21.0.
+> **Proof:** Code. `zombie.scripting.objects.Item#DoParam` (reads `ItemType`, no `Type` key), revision 4a0e9546ec; count of `ItemType = base:normal` and `Type = Normal` in `media/scripts` of the installed game. Build 42.21.0.
 
 > **Proof:** Game test. Nineteen Outcast Motors items written with `Type = Normal` were found by `getScriptManager():getItem()`, but `InventoryItemFactory.CreateItem` returned nil for each. Build 42.20.
 

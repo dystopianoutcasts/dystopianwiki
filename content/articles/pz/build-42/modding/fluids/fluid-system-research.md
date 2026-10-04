@@ -25,7 +25,9 @@ last_updated: '2026-10-04'
 Written 2026-08-22. Answers the dive scoped in `05-state-and-next-build.md` section 6.
 Every claim below is cited to our B42 decompile (revision a2947723ca, buildid
 24449119) or to
-the shipped game scripts in that snapshot.
+the shipped game scripts in that snapshot. On 2026-10-04 every citation was
+re-checked on Build 42.21 (revision 4a0e9546ec): nothing it describes changed,
+and the line numbers now point into 42.21.
 
 ---
 
@@ -82,7 +84,7 @@ The parts that matter to us:
 ### The script syntax
 
 Declared on an item, exactly as vanilla does it. `PetrolCan`
-(`generated/items/normal.txt:7203`):
+(`generated/items/normal.txt:7216`):
 
 ```
 item PetrolCan
@@ -207,7 +209,7 @@ dose is stored in the properties. Vanilla `Petrol` has a `Poison` block, no
 `Properties`, and poisons nobody. Motor oil and brake fluid are `Hazardous` in
 our existing declarations but carry no poison profile yet.
 
-> **Proof:** Code. `zombie.entity.components.fluids.PoisonInfo#getPoisonEffect` (returns `maxEffect`); `zombie.entity.components.fluids.Fluid#setScript` (properties, with the poison dose, only when the script has a `Properties` block); `zombie.characters.IsoGameCharacter` reads the dose from `FluidConsume#getPoison`; `media/scripts/generated/fluids.txt`. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.entity.components.fluids.PoisonInfo#getPoisonEffect` (returns `maxEffect`); `zombie.entity.components.fluids.Fluid#setScript` (properties, with the poison dose, only when the script has a `Properties` block); `zombie.characters.IsoGameCharacter` reads the dose from `FluidConsume#getPoison`; `media/scripts/generated/fluids.txt`. Build 42.21.0 (revision 4a0e9546ec).
 
 ---
 
@@ -235,11 +237,11 @@ already has.
 `sendRemoveItemFromContainer`. Following those through:
 
 ```
-sendAddItemToContainer                    LuaManager.java:12382
-  -> GameServer.sendAddItemToContainer    GameServer.java:2393
+sendAddItemToContainer                    LuaManager.java:12380
+  -> GameServer.sendAddItemToContainer    GameServer.java:2413
   -> AddInventoryItemToContainerPacket    write, :61
   -> CompressIdenticalItems.save          :182  item.saveWithSize
-  -> InventoryItem.save                   :1826 requiresEntitySave
+  -> InventoryItem.save                   :1829 requiresEntitySave
   -> GameEntity.saveEntity                -> every component, FluidContainer included
 ```
 
@@ -258,7 +260,7 @@ are never merged.
 ### Persistence
 
 `VehiclePart.save` writes its `ItemContainer` (`:559-563`) and `BaseVehicle.save`
-writes every part (`:2658-2661`). Fluids survive a save/load without us doing
+writes every part (`:2660-2663`). Fluids survive a save/load without us doing
 anything.
 
 ### The part's *fitted* item also replicates
@@ -266,7 +268,7 @@ anything.
 Not our storage model, but worth recording: `VehiclePartItem`
 (`zombie/network/fields/vehicle/VehiclePartItem.java`) transmits
 `part.getInventoryItem()` via `saveWithSize` (`:61`), triggered by
-`transmitPartItem` setting flag 128 (`BaseVehicle.java:8153`). That path carries
+`transmitPartItem` setting flag 128 (`BaseVehicle.java:8213`). That path carries
 components too. If we ever need a fluid on a *slot* part rather than a bay part,
 this is the channel.
 
@@ -283,16 +285,16 @@ a client. The `if not isClient() then` block in `update()` is only the live
 progress while the action runs, and the `--todo sync mp` comment in `perform()`
 is stale. `ISFluidEmptyAction` (pouring on the ground) has the same shape.
 
-> **Proof:** Code. `media/lua/shared/Fluids/ISFluidTransferAction.lua` and `ISFluidEmptyAction.lua`, `complete()`; `zombie.characters.CharacterTimedActions.LuaTimedActionNew` (net action created on a client when `complete` exists; `complete` called only where `!GameClient.client`). Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `media/lua/shared/Fluids/ISFluidTransferAction.lua` and `ISFluidEmptyAction.lua`, `complete()`; `zombie.characters.CharacterTimedActions.LuaTimedActionNew` (net action created on a client when `complete` exists; `complete` called only where `!GameClient.client`). Build 42.21.0 (revision 4a0e9546ec).
 
 What does still hold: the sync helper, `ISFluidContainer:sync()` (`:96`), calls
 `syncItemFields()` for an item, and that method only sends when
 `getOutermostContainer().getParent() instanceof IsoPlayer`
-(`InventoryItem.java:4394`) -- **false for an item sitting in a vehicle part's
+(`InventoryItem.java:4397`) -- **false for an item sitting in a vehicle part's
 container.** So vanilla's transfer works for two items in a player's inventory
 and does not replicate an item fitted to a vehicle part.
 
-> **Proof:** Code. `zombie.inventory.InventoryItem#syncItemFields`. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.inventory.InventoryItem#syncItemFields`. Build 42.21.0 (revision 4a0e9546ec).
 
 So, for a fitted reservoir only, pouring must be a command the
 client sends and the server performs, which is exactly the shape `OMO_Command`
@@ -376,7 +378,7 @@ on a server.
   and transfer rate. Useful for balancing against vanilla, and it is an export,
   not a command anyone has to run in a session.
 
-> **Proof:** Code. `zombie.scripting.objects.FluidDefinitionScript#Load` (a name matching a `FluidType` binds to it) and `zombie.entity.components.fluids.Fluid#Init` (sets that script on the vanilla fluid). Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.scripting.objects.FluidDefinitionScript#Load` (a name matching a `FluidType` binds to it) and `zombie.entity.components.fluids.Fluid#Init` (sets that script on the vanilla fluid). Build 42.21.0 (revision 4a0e9546ec).
 
 ---
 

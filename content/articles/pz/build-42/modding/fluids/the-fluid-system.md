@@ -74,11 +74,11 @@ Full field set (from the commented template in `fluids.txt`) `[CONFIRMED]`:
 - `Poison { maxEffect, minAmount, diluteRatio }` — toxicity. Only `maxEffect` does anything: `minAmount` and `diluteRatio` are loaded and never read, so the full effect applies whatever the amount. And the poison only reaches the drinker when the fluid also has a `Properties` block, because the dose is stored in the properties. Vanilla `Petrol` has `Poison` and no `Properties`, and poisons nobody.
 - `BlendWhiteList` / `BlendBlackList` — reference a filter script or define inline (`whitelist = true, fluids { Water }, categories { Beverage }`) to control what mixes.
 
-> **Proof:** Code. `zombie.entity.components.fluids.PoisonInfo#getPoisonEffect` (returns `maxEffect`); `zombie.entity.components.fluids.Fluid#setScript` (properties, with the poison dose, only when the script has a `Properties` block); `media/scripts/generated/fluids.txt`. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.entity.components.fluids.PoisonInfo#getPoisonEffect` (returns `maxEffect`); `zombie.entity.components.fluids.Fluid#setScript` (properties, with the poison dose, only when the script has a `Properties` block); `media/scripts/generated/fluids.txt`. Build 42.21.0 (revision 4a0e9546ec).
 
 **Vanilla fluid identifier rule** `[CONFIRMED, from the template comment]`: for the base game, the fluid identifier must match a `FluidType` enum; if it does NOT match the enum, it is treated as a **modded fluid**. So mod fluids just use a new name and are auto-registered as modded. The reverse matters too: a mod fluid named like a vanilla one, in any module, is bound to the vanilla fluid and **overwrites its definition**. Vanilla fluids are split across `fluids.txt`, `fluids_Beverages.txt`, `fluids_Alcoholic.txt`.
 
-> **Proof:** Code. `zombie.scripting.objects.FluidDefinitionScript#Load` (a name matching a `FluidType` binds to it) and `zombie.entity.components.fluids.Fluid#Init` (sets that script on the vanilla fluid). Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.scripting.objects.FluidDefinitionScript#Load` (a name matching a `FluidType` binds to it) and `zombie.entity.components.fluids.Fluid#Init` (sets that script on the vanilla fluid). Build 42.21.0 (revision 4a0e9546ec).
 
 ### 12.2 Fluid containers (item component)
 
@@ -86,7 +86,7 @@ From `TEMPORARY_TESTING_new_items/TEMPORARY_items_fluidcontainers.txt` `[CONFIRM
 
 The type line below is corrected to Build 42's `ItemType = base:normal`; vanilla's own `Bucket` in `generated/items/normal.txt` uses it, and Build 42 does not read `Type = Normal` (see [Items: the item block in B42](/pz/build-42/modding/items-and-scripting/items-the-item-block-in-b42)).
 
-> **Proof:** Code. `zombie.scripting.objects.Item#DoParam` (reads `ItemType`, no `Type` key), revision a2947723ca; `media/scripts/generated/items/normal.txt`, `item Bucket`. Build 42.21.0.
+> **Proof:** Code. `zombie.scripting.objects.Item#DoParam` (reads `ItemType`, no `Type` key), revision 4a0e9546ec; `media/scripts/generated/items/normal.txt`, `item Bucket`. Build 42.21.0.
 
 ```
 item Bucket
