@@ -65,7 +65,7 @@ Symptom: Tiled crashes when opening a cell. The log in the Tiled folder shows:
 
 ```
 [DEBUG] "Unknown element "tile_entry"
-Line 3, column 32 P:/02_prefabs/.../pq_barn_25_north.tbx"
+Line 3, column 32 <prefab folder>/02_prefabs/.../pq_barn_25_north.tbx"
 ```
 
 Fix:

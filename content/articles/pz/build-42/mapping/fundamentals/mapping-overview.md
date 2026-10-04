@@ -27,9 +27,9 @@ Scope: Build 42 STABLE map modding (world, cells, buildings, tiles, zones, packa
 This is a consolidation of the `#b42-tutorials-and-guides` community channel dump
 (April 2025 -- July 2026), cross-checked against:
 
-- The installed game: `R:\Games\Steam\steamapps\common\ProjectZomboid`
+- The installed game (your Steam library's `ProjectZomboid` folder)
   (B42 stable, git rev `a2947723ca`, Steam buildid `24449119`, updated 2026-07-29)
-- The sealed engine snapshot at `R:\ZOMBOID\PZ_Engine_Records\B42\`
+- Our sealed snapshot of that engine build (decompiled Java and a copy of the game files)
 - The current tool distribution: `Unjammer/PZ_Mapping_Tools`, release
   `42.20STABLE_02c` (build 20260802), plus its shipped `PZToolsGuide.html`,
   `MappingSpawnControl.html` and `README.md`

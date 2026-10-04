@@ -12,7 +12,7 @@ tags:
   - provenance
   - link-index
 excerpt: >-
-  Installed game -- R:\Games\Steam\steamapps\common\ProjectZomboid Build 42
+  Installed game -- Build 42
   STABLE, git revision a2947723ca, Steam buildid 24449119, last updated
   2026-07-29. Sealed snapshot and manifest at...
 last_updated: '2026-09-29'
@@ -23,10 +23,10 @@ last_updated: '2026-09-29'
 
 ## Verification basis
 
-**Installed game** -- `R:\Games\Steam\steamapps\common\ProjectZomboid`
+**Installed game** -- your Steam library's `ProjectZomboid` folder,
 Build 42 STABLE, git revision `a2947723ca`, Steam buildid `24449119`,
-last updated 2026-07-29. Sealed snapshot and manifest at
-`R:\ZOMBOID\PZ_Engine_Records\B42\`.
+last updated 2026-07-29. We keep a sealed snapshot of that build, with a
+manifest, for re-checking.
 
 Files read directly for this compilation:
 
