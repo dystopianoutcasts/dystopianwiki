@@ -103,12 +103,16 @@ There is **no `boredomChange` field** in any source -- use `unhappyChange`/`stre
 
 **Skeleton -- item as a FluidContainer.** Add the `FluidContainer` component to an item. All container fields below are CONFIRMED from `component__component-fluidcontainer.txt` (PascalCase there; script parsing is generally case-insensitive but match the schema to be safe). `Fluids{}` lists which fluids the container may hold. [CONFIRMED -- `fluids.txt`]
 
+Use `ItemType = base:normal`, not B41's `Type = Normal`: Build 42 does not read `Type`, and an item written with it registers but cannot be created (see [Items: the item block in B42](/pz/build-42/modding/items-and-scripting/items-the-item-block-in-b42)).
+
+> **Proof:** Code. `zombie.scripting.objects.Item#DoParam` (reads `ItemType`, no `Type` key). Build 42.20 (revision a2947723ca).
+
 ```
 module YourModule
 {
     item TeaFlask
     {
-        Type        = Normal,
+        ItemType    = base:normal,
         DisplayName = Tea Flask,
         Icon        = TeaFlask,
         Weight      = 0.4,
@@ -154,3 +158,5 @@ There is no `initialFluid`, `rgb`, or `fluid amount` field on the container -- i
 ---
 
 *Corrected 2026-10-04: Poison minAmount and diluteRatio are never read, Poison needs a Properties block to reach the drinker, and a vanilla-named fluid overwrites vanilla's.*
+
+*Corrected 2026-10-04: the item skeleton uses ItemType = base:normal; Build 42 does not read Type = Normal.*

@@ -84,12 +84,16 @@ Full field set (from the commented template in `fluids.txt`) `[CONFIRMED]`:
 
 From `TEMPORARY_TESTING_new_items/TEMPORARY_items_fluidcontainers.txt` `[CONFIRMED]`:
 
+The type line below is corrected to Build 42's `ItemType = base:normal`; vanilla's own `Bucket` in `generated/items/normal.txt` uses it, and Build 42 does not read `Type = Normal` (see [Items: the item block in B42](/pz/build-42/modding/items-and-scripting/items-the-item-block-in-b42)).
+
+> **Proof:** Code. `zombie.scripting.objects.Item#DoParam` (reads `ItemType`, no `Type` key), revision a2947723ca; `media/scripts/generated/items/normal.txt`, `item Bucket`. Build 42.21.0.
+
 ```
 item Bucket
 {
     DisplayCategory = WaterContainer,
     Weight   = 1,
-    Type     = Normal,
+    ItemType = base:normal,
     DisplayName = Bucket,
     EatType  = Bucket,
     PourType = Bucket,
@@ -150,3 +154,5 @@ Producing fluid uses `+fluid <amount> [FluidType]` in inputs/outputs against a c
 ---
 
 *Corrected 2026-10-04: Poison minAmount and diluteRatio are never read, Poison needs a Properties block to reach the drinker, and a vanilla-named fluid overwrites vanilla's.*
+
+*Corrected 2026-10-04: the Bucket example uses ItemType = base:normal; Build 42 does not read Type = Normal.*
