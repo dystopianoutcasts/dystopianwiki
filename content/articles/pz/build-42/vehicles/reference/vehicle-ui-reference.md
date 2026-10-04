@@ -14,7 +14,7 @@ tags:
 excerpt: >-
   How vanilla presents vehicles, where to hook it, and the traps that only
   appear at some UI scales. Companion to 20-vehicle-engine-reference.md.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Vehicle UI reference
 
@@ -101,7 +101,7 @@ flag -- see `20-vehicle-engine-reference.md` §7.
 
 Two ways into the mechanics window:
 
-- the hood -- `Vehicles.Use.EngineDoor` (`Vehicles.lua:831`)
+- the hood -- `Vehicles.Use.EngineDoor` (`Vehicles.lua:829`)
 - the radial -- `ISVehicleMenu.onMechanic` (`ISVehicleMenu.lua:188`, `:297`)
 
 Both end at:
@@ -205,7 +205,7 @@ Mods load in the order of the mod list, not by name (each mod's `require=` mods
 go just ahead of it), so two mods wrapping the same UI function end up nested
 in load order and the **outermost decides first**.
 
-> **Proof:** Code. `zombie.Lua.LuaManager#LoadDirBase(String, boolean)` (vanilla files sorted by path, then each mod in `zombie.ZomboidFileSystem#getModIDs` order, its files sorted only within that mod) and `zombie.ZomboidFileSystem#loadMods(ArrayList)` with `#loadModAndRequired` (the mod list in its own order, each mod's `require=` mods added just ahead of it). Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.Lua.LuaManager#LoadDirBase(String, boolean)` (vanilla files sorted by path, then each mod in `zombie.ZomboidFileSystem#getModIDs` order, its files sorted only within that mod) and `zombie.ZomboidFileSystem#loadMods(List)` with `#loadModAndRequired` (the mod list in its own order, each mod's `require=` mods added just ahead of it). Build 42.21.0 (revision 4a0e9546ec).
 
 **Do not rely on that.** It is an accident of how each player or server ordered
 the list, inverts when the list is reordered, and "two panels race for one click" is not a state to leave to chance.
@@ -217,3 +217,5 @@ indistinguishable from "not installed". Ask at first use instead; a click is
 always well after `OnGameStart`.
 
 *Corrected 2026-10-04: mods do not load alphabetically. They load in mod-list order, each mod's `require=` mods first; only the files inside one mod are sorted by name.*
+
+*Re-checked 2026-10-04 for Build 42.21: the mod-order code now takes a `List` instead of an `ArrayList` and orders mods exactly as before; line numbers updated; the code claims we re-checked still hold.*

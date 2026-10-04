@@ -47,7 +47,7 @@ through `VehicleUtils.callLua`, such as `Vehicles.Use.*`, are looked up on every
 call. So chain once, early: from a file in `server/`, or at `OnGameStart` at the
 latest, and never reassign later.
 
-> **Proof:** Code. `zombie.Lua.LuaManager#getFunctionObject` (stores successful lookups in `luaFunctionMap`); `zombie.vehicles.VehicleParts`, `callLuaVoid` and `callLuaBoolean`; `media/lua/server/Vehicles/Vehicles.lua`, `VehicleUtils.callLua`. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.Lua.LuaManager#getFunctionObject` (stores successful lookups in `luaFunctionMap`); `zombie.vehicles.VehicleParts`, `callLuaVoid` and `callLuaBoolean`; `media/lua/server/Vehicles/Vehicles.lua`, `VehicleUtils.callLua`. Build 42.21.0 (revision 4a0e9546ec).
 
 ```lua
 local previous = Vehicles.Update.Engine
@@ -110,7 +110,7 @@ vanilla's.
 
 ### Wear is a dice roll, so "condition did not drop" proves nothing
 
-`Vehicles.LowerCondition` (`media/lua/server/Vehicles/Vehicles.lua:724`):
+`Vehicles.LowerCondition` (`media/lua/server/Vehicles/Vehicles.lua:722`):
 
 ```lua
 if vehicle:isEngineRunning() and vehicle:getCurrentSpeedKmHour() > 10 and part:getInventoryItem() then
@@ -144,12 +144,12 @@ So writing 0 to the Engine part stops the car starting. Nothing else required.
 
 ### Crash damage lands on the hood first, the Engine part only after
 
-`BaseVehicle.crash(float delta, boolean front)` (`BaseVehicle.java:4611`) is Java
+`BaseVehicle.crash(float delta, boolean front)` (`BaseVehicle.java:4654`) is Java
 with **no Lua hook**. It calls `addDamageFront`, and
-`addDamageFrontHitAChr` (`:4668`) damages the `EngineDoor` first, then the
+`addDamageFrontHitAChr` (`:4711`) damages the `EngineDoor` first, then the
 `Engine` part -- but only once the hood is destroyed, and only on a 1-in-4 roll.
 
-> **Proof:** Code. `zombie.vehicles.BaseVehicle#addDamageFront` (damages `EngineDoor`; `Engine` only when the hood is missing or under 25 condition). Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.vehicles.BaseVehicle#addDamageFront` (damages `EngineDoor`; `Engine` only when the hood is missing or under 25 condition). Build 42.21.0 (revision 4a0e9546ec).
 
 Sandbox `carDamageOnImpact` scales the delta (modifier 0.9 to 1.9).
 
@@ -162,7 +162,7 @@ justifies -- see `22-lessons-and-guards.md` §4.
 
 ### `getVehicles()` returns a Set, not a List
 
-`IsoCell.getVehicles()` returns **`Set<BaseVehicle>`** (`IsoCell.java:2728`). It
+`IsoCell.getVehicles()` returns **`Set<BaseVehicle>`** (`IsoCell.java:2739`). It
 has `size()` but **no `get(int)`**.
 
 Vanilla's own `ISVehicleBloodUI.lua:80-81` indexes it with `vehicles:get(i-1)`
@@ -172,15 +172,15 @@ debug tooling, which is exactly the code a modder is most likely to crib.
 
 ### `getNearVehicle()` filters on VISIBILITY, not just distance
 
-`IsoGameCharacter.java:14072` requires **all four**:
+`IsoGameCharacter.java:14114` requires **all four**:
 
 1. the character is not in a vehicle
 2. same floor -- `fastfloor(Z)` equal
 3. **`vehicle.getTargetAlpha(playerIndex) != 0`**
 4. `DistToSquared(vehicle) < 16.0` -- within 4 tiles
 
-Number 3 is a rendering value. `BaseVehicle.java:6401` only runs the branch that
-sets it to 1.0 when `square.lighting[playerIndex].bSeen()`, and `:3442` forces it
+Number 3 is a rendering value. `BaseVehicle.java:6444` only runs the branch that
+sets it to 1.0 when `square.lighting[playerIndex].bSeen()`, and `:3485` forces it
 to 0 while `couldSeeIntersectedSquare` is false.
 
 **So immediately after a save loads, a car two tiles in front of the player is
@@ -221,11 +221,11 @@ parses `boneWeight`; a `part` can carry its own `model` block
 
 Other dead-but-callable API worth knowing:
 
-- **`BaseVehicle.flipUpright()`** (`:4033`) is public, has zero callers anywhere,
+- **`BaseVehicle.flipUpright()`** (`:4076`) is public, has zero callers anywhere,
   and works. It zeroes yaw as well as roll, so preserve heading yourself.
-- **`setAngles` silently no-ops on sub-degree changes** (`:4045`), so a per-tick
+- **`setAngles` silently no-ops on sub-degree changes** (`:4088`), so a per-tick
   lerp stalls near zero.
-- **`setWorldTransform` is a no-op for physics on a dedicated server** (`:4013`).
+- **`setWorldTransform` is a no-op for physics on a dedicated server** (`:4056`).
 
 ## 5 · Vehicle part categories
 
@@ -261,7 +261,7 @@ rather than nil-indexing for the rest of the session.
 ## 7 · Mechanics XP and the anti-grind flag
 
 Installing or uninstalling records a per-item-per-vehicle key
-(`Vehicles.lua:1415`, `:1445`):
+(`Vehicles.lua:1413`, `:1443`):
 
 ```lua
 chr:addMechanicsItem(item:getID() .. vehicle:getMechanicalID() .. "1", part, timeMillis)
@@ -281,7 +281,7 @@ skill listed pays 1. A failed attempt pays 1 XP through `addXp`, every time.
 Repairing pays separately: `FixingManager` grants 3 to 5 XP per listed skill on a
 successful fix.
 
-> **Proof:** Code. `zombie.characters.IsoPlayer#addMechanicsItem` and `#updateMechanicsItems`; `media/lua/shared/Vehicles/TimedActions/ISInstallVehiclePart.lua` and `ISUninstallVehiclePart.lua`, `complete()`; `zombie.inventory.FixingManager#addXp`. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.characters.IsoPlayer#addMechanicsItem` and `#updateMechanicsItems`; `media/lua/shared/Vehicles/TimedActions/ISInstallVehiclePart.lua` and `ISUninstallVehiclePart.lua`, `complete()`; `zombie.inventory.FixingManager#addXp`. Build 42.21.0 (revision 4a0e9546ec).
 
 **Any mod adding installable parts must respect this flag**, or it multiplies the
 grind surface. Nineteen engine parts is nineteen times vanilla's.
@@ -318,3 +318,5 @@ direct getter first -- TIS added `getThrottle()` for exactly this reason.
 *Corrected 2026-10-04: hooks called from Java (update, checkEngine, test) are cached on first use, so a later reassignment is ignored; chain once, early.*
 
 *Corrected 2026-10-04: the section 2 crash heading now says the hood takes the damage first, as its body always did.*
+
+*Re-checked 2026-10-04 for Build 42.21: line numbers updated; the code claims we re-checked still hold.*

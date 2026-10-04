@@ -15,7 +15,7 @@ tags:
 excerpt: >-
   Every bug that cost real time on the vehicle mods, what CLASS it belonged to,
   and the mechanical guard that now catches it.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # Lessons and guards
 
@@ -233,3 +233,5 @@ open. **Refusing to work is acceptable; confiscating belongings is not.**
 
 Each was proved by deliberately breaking it. **A validator that has never failed
 is not known to work.**
+
+*Re-checked 2026-10-04 for Build 42.21: `ItemContainer.AddItem` still returns null without logging when the item cannot be created, and `getVehicles()` is still a `Set`; the code claims we re-checked still hold.*

@@ -83,7 +83,7 @@ rather than inferred.
 ## 2. The dispatch mechanism -- why overriding works at all
 
 This is the single most important thing in this file. From vanilla
-`Vehicles.lua:1329`:
+`Vehicles.lua:1327`:
 
 ```lua
 function VehicleUtils.callLua(functionName, arg1, arg2, arg3, arg4)
@@ -116,7 +116,7 @@ calls it, and we first got this wrong:
   in the session is silently ignored. The cache is cleared only when Lua is
   reset or a file is reloaded.
 
-> **Proof:** Code. `zombie.Lua.LuaManager#getFunctionObject` (stores successful lookups in `luaFunctionMap`); `zombie.vehicles.VehicleParts` and `zombie.vehicles.BaseVehicle`, `callLuaVoid` and `callLuaBoolean`; `media/lua/server/Vehicles/Vehicles.lua`, `VehicleUtils.callLua` and `VehicleUtils.OnUseVehicle`. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.Lua.LuaManager#getFunctionObject` (stores successful lookups in `luaFunctionMap`); `zombie.vehicles.VehicleParts` and `zombie.vehicles.BaseVehicle`, `callLuaVoid` and `callLuaBoolean`; `media/lua/server/Vehicles/Vehicles.lua`, `VehicleUtils.callLua` and `VehicleUtils.OnUseVehicle`. Build 42.21.0 (revision 4a0e9546ec).
 
 Consequences:
 
@@ -187,7 +187,11 @@ and returns the computed chance so callers can reuse it (`Update.Tire` does).
 ## 4. `BaseVehicle` -- verified signatures
 
 `zombie.vehicles.BaseVehicle extends zombie.iso.IsoMovingObject`. No
-`HiddenFromLua`. 701 methods, 584 public.
+`HiddenFromLua`. 705 methods, 587 public in Build 42.21 (42.20 had 701 and 584;
+42.21 added `saveChange`, `loadChange` and `getAnimalById`). Every signature
+listed below is identical in both builds.
+
+> **Proof:** Code. `javap -p -s zombie.vehicles.BaseVehicle` on the installed 42.21.0 jar and the 42.20 jar, counting every method including the static initializer, and comparing the descriptors of the methods in this section; no `HiddenFromLua` in the 42.21.0 class file. Build 42.21.0 (revision 4a0e9546ec).
 
 ### Input
 | Method | Signature |
@@ -274,7 +278,7 @@ Note `getId()` returns a **short**, not an int.
    the moment on it: use `getSqlId()`, the car's persistent save id. We saw it on
    a server: one id belonged to two different cars in a single session's log.
 
-> **Proof:** Code. `zombie.vehicles.VehicleIDMap#allocateID` (reuses freed ids); `zombie.vehicles.BaseVehicle#getId` and `#getSqlId`. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.vehicles.VehicleIDMap#allocateID` (reuses freed ids); `zombie.vehicles.BaseVehicle#getId` and `#getSqlId`. Build 42.21.0 (revision 4a0e9546ec).
 
 5. **Hooks are global, and Java caches them.** Anything you assign to
    `Vehicles.Update.X` is global and unconditional, and once Java has called it,
@@ -286,7 +290,7 @@ Note `getId()` returns a **short**, not an int.
    `Vehicles` up inside a function body, never capture it at file load. See
    [Lua load order and the three lua folders](/pz/build-42/modding/lua-api/lua-load-order-and-the-three-lua-folders).
 
-> **Proof:** Code. `zombie.gameStates.GameLoadingState` calls `LuaManager.LoadDirBase("server")` with no `GameClient.client` guard; `zombie.Lua.LuaManager#LoadDirBase()` loads `shared` and `client` at startup. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `zombie.gameStates.GameLoadingState` calls `LuaManager.LoadDirBase("server")` with no `GameClient.client` guard; `zombie.Lua.LuaManager#LoadDirBase()` loads `shared` and `client` at startup. Build 42.21.0 (revision 4a0e9546ec).
 7. **Vehicle scripts live in `media/scripts/generated/vehicles/`.** Generated;
    never hand-edit. Override the Lua function or use a `template vehicle`.
 
@@ -297,3 +301,5 @@ Note `getId()` returns a **short**, not an int.
 *Corrected 2026-10-04: hooks called from Java (update, checkEngine, test) are cached on first use, so a later reassignment is ignored; chain once, early.*
 
 *Corrected 2026-10-04: vehicle getId() is recycled between cars in one session and is not a safe key; use getSqlId().*
+
+*Updated 2026-10-04 for Build 42.21: BaseVehicle method count is now 705 (587 public); the signatures listed are unchanged, and the other claims were re-checked with line numbers updated.*
