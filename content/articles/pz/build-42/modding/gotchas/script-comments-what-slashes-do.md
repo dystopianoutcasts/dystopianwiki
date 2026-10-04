@@ -79,7 +79,7 @@ The two things we wrote down before were both real, and the table explains both.
 - **"One `//` killed the whole file."** A generated car script of ours had its notes above the declarations. A note above `module` loses the whole file; notes above each `model` block lose each model. Either way, not one model declaration existed, so no mesh was ever loaded and the game never even said `No such mesh`. We do not know which of the two it was, and the code says the result is the same. What was wrong was the rule we drew from it: it is not true that any `//` anywhere kills the file.
 - **"A `//` ate the next property."** In another car script, `// (EST)` above `shadowExtents` and `// (REAL) DIN kerb weight` above `engineForce` turned those keys into nonsense. The vehicle still loaded, without the two properties, so it ran on the default engine force and nothing complained. That is rows three and four.
 
-> **Proof:** Game test, for the first incident: three single-player sessions with no car model drawn. The second was found by reading the script after the fact; what it did to the car is the code path above, not a separate measurement. Build 42, engine revision a2947723ca (Steam build 24449119).
+> **Proof:** Game test. The first incident: three single-player sessions with no car model drawn; the second was found by reading the script after the fact, and what it did to the car is the code path above, not a separate measurement. Build 42, engine revision a2947723ca (Steam build 24449119).
 
 ## What vanilla does
 
