@@ -8,6 +8,7 @@ import { useArticle as useSupabaseArticle, useArticlesByCategory } from '../hook
 import { useGameContext } from '../hooks/useGameContext';
 import { useLearningPathContext } from '../context/LearningPathContext';
 import { DEFAULT_VERSION } from '../config/versions.generated';
+import { inSection } from '../lib/sectionArticles';
 import type { Article } from '@dystopianwiki/shared';
 import type { WikiArticle as WikiArticleType } from '../types/wiki';
 import '../styles/pages/article-page.css';
@@ -44,7 +45,8 @@ export function ArticlePage() {
 
   const { game } = useParams<{ game?: string }>();
   const { data: article, isLoading: loading, isError: error } = useSupabaseArticle(slug || '', version);
-  const { data: articlesList = [] } = useArticlesByCategory(category, game || 'pz', version);
+  const { data: categoryArticles = [] } = useArticlesByCategory(category, game || 'pz', version);
+  const articlesList = inSection(categoryArticles, section);
 
   // Learning Path integration
   const {

@@ -6,6 +6,7 @@ import { useArticlesByCategory } from '../hooks/useSupabase';
 import { useGameContext } from '../hooks/useGameContext';
 import { DEFAULT_VERSION, getSection } from '../config/versions.generated';
 import { resolveIcon } from '../components/layout/Sidebar';
+import { inSection } from '../lib/sectionArticles';
 import type { Difficulty } from '../types/wiki';
 import '../styles/pages/category-page.css';
 
@@ -24,7 +25,8 @@ export function CategoryPage() {
   }>();
   const { buildPath, gameName } = useGameContext();
 
-  const { data: articles = [], isLoading: loading, isError: error } = useArticlesByCategory(category, game || 'pz', version);
+  const { data: categoryArticles = [], isLoading: loading, isError: error } = useArticlesByCategory(category, game || 'pz', version);
+  const articles = inSection(categoryArticles, section);
 
   // Category display data comes from the generated navigation module (contract C1).
   const categoryInfo = getSection(version, section)?.categories.find((c) => c.id === category);
