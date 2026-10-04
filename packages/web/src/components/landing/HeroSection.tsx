@@ -9,7 +9,7 @@ import {
   TBD,
   type HomeSummary,
 } from '../../lib/homeSummary';
-import { SERVER_ADDRESS } from '../../lib/links';
+import { DISCORD_URL, SERVER_ADDRESS } from '../../lib/links';
 import { ServerDescription } from './ServerDescription';
 import { CopyField } from './CopyField';
 import { homeWorldLine } from '../../lib/worldsPanel';
@@ -99,7 +99,7 @@ export function HeroSection() {
       <div className="hero__content">
         {/* Banner Logo - Links to Discord */}
         <a
-          href="https://discord.gg/KgNBWyfcvZ"
+          href={DISCORD_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="hero__logo-link"
@@ -138,7 +138,7 @@ export function HeroSection() {
         */}
         <div className="hero__actions hero__actions--split">
           <a
-            href="https://discord.gg/KgNBWyfcvZ"
+            href={DISCORD_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="hero__learn-btn"

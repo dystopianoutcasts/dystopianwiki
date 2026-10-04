@@ -4,10 +4,11 @@ import type { WikiArticle as WikiArticleType, Difficulty } from '../../types/wik
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { TableOfContents, extractTOCFromMarkdown } from './TableOfContents';
 import { RelatedArticles } from './RelatedArticles';
-import { ArticleCTA } from './ArticleCTA';
+import { OutcastInvitation } from './OutcastInvitation';
 import { BookmarkButton } from '../article/BookmarkButton';
 import { useArticleContext } from '../../context/ArticleContext';
 import '../../styles/components/wiki-article.css';
+import '../../styles/components/outcast-invitation.css';
 
 interface RelatedArticleData {
   slug: string;
@@ -157,8 +158,8 @@ export function WikiArticle({
 
       {/* Full-width sections below the article body */}
       <div className="wiki-article__below">
-        {/* Discord Community CTA */}
-        <ArticleCTA />
+        {/* The Outcast invitation: after the body, before any navigation (KB05) */}
+        <OutcastInvitation />
 
         {/* Next Steps (only shown when NOT in learning path) */}
         {!learningPath && article.nextSteps && article.nextSteps.length > 0 && (

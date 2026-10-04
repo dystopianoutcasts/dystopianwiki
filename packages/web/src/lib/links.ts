@@ -17,3 +17,10 @@ export const WORKSHOP_COLLECTION_ID = '3812193886'
 export const WORKSHOP_COLLECTION_URL = `https://steamcommunity.com/sharedfiles/filedetails/?id=${WORKSHOP_COLLECTION_ID}`
 /** The same page inside the Steam app, already signed in (owner request, 2026-10-03). Needs Steam installed on this computer. */
 export const WORKSHOP_COLLECTION_STEAM_URL = 'steam://url/CommunityFilePage/' + WORKSHOP_COLLECTION_ID
+
+/** The community Discord invite: the one link every "Join our Discord" on the site uses. */
+export const DISCORD_URL = 'https://discord.gg/KgNBWyfcvZ'
+
+/** The home page's "Join in three steps" section, linkable from anywhere (KB05). */
+export const JOIN_SECTION_ID = 'join'
+export const JOIN_PATH = `/#${JOIN_SECTION_ID}`

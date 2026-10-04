@@ -1,0 +1,81 @@
+/**
+ * The Outcast invitation at the end of every article (components/wiki/OutcastInvitation.tsx).
+ *
+ * Site tokens only (styles/variables.css), so it follows both themes. The frame matches the
+ * article's Next Steps box and the links are the same cards, so it reads as part of the page.
+ * Two columns when there is room, one below about 30rem; each card is far larger than 24x24.
+ */
+
+.outcast-invite {
+  margin-top: var(--spacing-8);
+  padding: var(--spacing-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-link);
+  border-radius: var(--border-radius-lg);
+}
+
+.outcast-invite__title {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-normal);
+  letter-spacing: 0.01em;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-1);
+}
+
+.outcast-invite__lead {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+  margin: 0 0 var(--spacing-4);
+}
+
+.outcast-invite__links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: var(--spacing-3);
+}
+
+.outcast-invite__links li {
+  margin: 0;
+}
+
+.outcast-invite__link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 44px;
+  padding: var(--spacing-4);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  text-decoration: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.outcast-invite__link:hover {
+  border-color: var(--color-link);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+}
+
+.outcast-invite__text {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-link);
+}
+
+.outcast-invite__link:hover .outcast-invite__text {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.outcast-invite__detail {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-1);
+}

@@ -1,15 +1,15 @@
 import { useId } from 'react';
 import { useHomeSummary } from '../../hooks/useHomeSummary';
 import { joiningText } from '../../lib/homeSummary';
-import { SERVER_IP, SERVER_PORT } from '../../lib/links';
+import { DISCORD_URL, JOIN_SECTION_ID, SERVER_IP, SERVER_PORT } from '../../lib/links';
 import { CopyField } from './CopyField';
 import { GetTheModsStep } from './GetTheModsStep';
 
 // "Join in three steps". Step 1 links the Workshop collection (owner, 2026-10-03;
 // GetTheModsStep, ids in lib/links.ts); the address is the owner's (lib/links.ts); the
 // mod count and the joining rules come from the server's own settings (027).
-
-const DISCORD = 'https://discord.gg/KgNBWyfcvZ';
+// The section is linkable as /#join (KB05): App's ScrollToHash scrolls to it after the
+// page renders and moves focus to the heading, which is why the heading takes tabIndex -1.
 
 export function JoinSteps() {
   const { summary } = useHomeSummary();
@@ -19,9 +19,13 @@ export function JoinSteps() {
     : null;
 
   return (
-    <section className="home-section home-section--alt" aria-labelledby={titleId}>
+    <section
+      id={JOIN_SECTION_ID}
+      className="home-section home-section--alt home-section--anchor"
+      aria-labelledby={titleId}
+    >
       <div className="home-section__inner">
-        <h2 className="home-section__title" id={titleId}>
+        <h2 className="home-section__title" id={titleId} tabIndex={-1}>
           Join in three steps
         </h2>
         <ol className="home-steps">
@@ -41,7 +45,7 @@ export function JoinSteps() {
             <h3 className="home-step__title">Say hi on Discord</h3>
             <p>Find people to survive with, ask questions, and hear about events first.</p>
             <p className="home-step__detail">
-              <a href={DISCORD} target="_blank" rel="noopener noreferrer">
+              <a href={DISCORD_URL} target="_blank" rel="noopener noreferrer">
                 Join our Discord
               </a>
             </p>

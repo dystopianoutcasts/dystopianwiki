@@ -20,6 +20,7 @@ import { ArticleProvider } from './context/ArticleContext';
 import { LearningPathProvider } from './context/LearningPathContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Layout } from './components/layout/Layout';
+import { ScrollToHash } from './components/layout/ScrollToHash';
 import { goTo, takeRememberedNext } from './utils/loginNext';
 import { checkForContentUpdates } from './utils/manifestChecker';
 
@@ -56,6 +57,7 @@ function App() {
     <BrowserRouter basename="/">
       <AuthProvider>
       <PendingNextRedirect />
+      <ScrollToHash />
       <LearningPathProvider>
       <ArticleProvider>
       <Routes>

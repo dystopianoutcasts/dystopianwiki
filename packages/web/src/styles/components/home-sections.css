@@ -310,6 +310,12 @@
   background: var(--color-surface);
 }
 
+/* A section other pages link to by its id (Join in three steps is /#join, KB05): the
+   sticky header must not cover its top when the page scrolls to it. */
+.home-section--anchor {
+  scroll-margin-top: var(--header-height);
+}
+
 .home-section__inner {
   max-width: 1100px;
   margin: 0 auto;

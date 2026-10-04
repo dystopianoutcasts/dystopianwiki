@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { SUPPORT_URL } from '../../lib/links';
+import { DISCORD_URL, SUPPORT_URL } from '../../lib/links';
 import '../../styles/components/footer.css';
 
 // Icons
@@ -39,7 +39,7 @@ export function Footer() {
             <span>GitHub</span>
           </a>
           <a
-            href="https://discord.gg/KgNBWyfcvZ"
+            href={DISCORD_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="footer__link"

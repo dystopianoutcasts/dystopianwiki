@@ -1,4 +1,5 @@
 import '../../styles/components/community-banner.css';
+import { DISCORD_URL } from '../../lib/links';
 
 export function CommunityBanner() {
   return (
@@ -18,7 +19,7 @@ export function CommunityBanner() {
           </p>
         </div>
         <a
-          href="https://discord.gg/KgNBWyfcvZ"
+          href={DISCORD_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="community-banner__button"
