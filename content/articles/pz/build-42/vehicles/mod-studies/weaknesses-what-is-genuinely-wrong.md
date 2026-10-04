@@ -16,7 +16,7 @@ excerpt: >-
   We test single-player and ship multiplayer. Three MP-only failures surfaced
   this week from reading other people's code, not from our own testing:
   ISInstallVehiclePart:complete never fires on an MP...
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 related_articles:
   - the-inventory
   - what-each-source-is-authoritative-for
@@ -30,14 +30,19 @@ related_articles:
 
 > Source: 24-synthesis-and-assessment.md (compiled 2026-08-10, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
-**We test single-player and ship multiplayer.** Three MP-only failures surfaced
+**We test single-player and ship multiplayer.** Three MP-only questions surfaced
 this week from *reading other people's code*, not from our own testing:
-`ISInstallVehiclePart:complete` never fires on an MP client; `getMechanicsItem`
+whether `ISInstallVehiclePart:complete` runs in multiplayer; `getMechanicsItem`
 does not work there; PSC needed a bespoke packet because fluid state will not
-ride part modData sync. The epic schedules "Multiplayer Sync" as a v0.2 feature,
-but **MP assumptions are being baked into v0.1 code right now**, and every one of
-them is currently untested and probably wrong. This is a sequencing error, not a
-missing feature.
+ride part modData sync. The first turned out to be the opposite of what that code
+told us: in Build 42 multiplayer, `complete()` runs **on the server**, which
+rebuilds the action from the client's request, so vanilla's part change and XP do
+land on a dedicated server. The epic schedules "Multiplayer Sync" as a v0.2
+feature, but **MP assumptions are being baked into v0.1 code right now**, and
+every one of them is currently untested and probably wrong. This is a sequencing
+error, not a missing feature.
+
+> **Proof:** Code. `zombie.core.NetTimedAction#parse` and `#perform`; `zombie.characters.CharacterTimedActions.LuaTimedActionNew#complete`. Build 42.20 (revision a2947723ca).
 
 **Our probe kit produces the stimulus and observes it.** Numpad 8 damages the
 Engine part and then checks whether Engine-part damage was absorbed. It cannot
@@ -65,3 +70,7 @@ lesson 11 inverted and it cost us the crash test.
 a number. A player cannot install one, remove one, repair one, or observe any
 consequence of any of it. Everything that makes PSC worth 113k subscribers is in
 the unbuilt half.
+
+---
+
+*Corrected 2026-10-04: ISInstallVehiclePart:complete does run in multiplayer, on the server; it is not a client-only hook.*

@@ -173,9 +173,17 @@ what we use now.
 > These 'complete' hooks only work in SP, because in MP they never get called.
 > In MP we use the OnMechanicActionDone event
 
-`ISUninstallVehiclePart:complete` and `ISInstallVehiclePart:complete` **do not
-fire on a multiplayer client.** Our Actions milestone was going to hang its
-completion logic there. The MP path is the `OnMechanicActionDone` event.
+That comment describes older builds, and it misled us. In Build 42 multiplayer,
+`ISUninstallVehiclePart:complete` and `ISInstallVehiclePart:complete` **run on
+the server**, not on the client that started the action. The client sends the
+action to the server, the server rebuilds it from its `new` arguments and calls
+its `complete()` there. So vanilla's part change and its XP do land on a
+dedicated server, and completion logic hung on `complete()` runs, as long as it
+is defined in code the server loads (`shared/` or `server/`). What a client sees
+afterwards is the `OnMechanicActionDone` event, which `complete()` triggers by
+sending `MECHANIC_ACTION_DONE` back to the player.
+
+> **Proof:** Code. `zombie.core.NetTimedAction#parse` and `#perform`; `zombie.characters.CharacterTimedActions.LuaTimedActionNew#complete` (calls the Lua `complete` only where `!GameClient.client`); `zombie.characters.IsoGameCharacter` triggers `OnMechanicActionDone` on `MECHANIC_ACTION_DONE`. Build 42.20 (revision a2947723ca).
 
 ## 4 · Gate the action, show the information -- confirmed by three mods
 
@@ -338,8 +346,10 @@ deliberately not adopted.
 2. **Add `restoreVehicle` and a `DATA_VERSION`** to the modData contract (§5).
 3. **Adopt the `notAvailable` + requirement-tooltip idiom** with `ghs`/`bhs` for
    every action in the Actions milestone (§4).
-4. **Use `OnMechanicActionDone`, not `:complete`**, for MP completion (§3), and
-   reconstruct the vanilla XP key rather than inventing a parallel one.
+4. **Put completion logic in `complete()`, defined where the server loads it**
+   (§3): in Build 42 multiplayer it runs on the server. Use `OnMechanicActionDone`
+   only for what the client should show afterwards, and reconstruct the vanilla
+   XP key rather than inventing a parallel one.
 5. **`setContainerContentAmount`** so a full engine bay does not wreck handling (§5).
 6. **Move wear to distance** (§7).
 
@@ -355,3 +365,5 @@ bespoke panel.
 ---
 
 *Corrected 2026-10-04: vanilla records and rate-limits both install and uninstall (keys ending 1 and 0), and pays 2 to 13 XP on success once per part, per car, per game day.*
+
+*Corrected 2026-10-04: in Build 42 multiplayer a vehicle action's complete() runs on the server; the advice to avoid complete() in favour of OnMechanicActionDone is withdrawn.*
