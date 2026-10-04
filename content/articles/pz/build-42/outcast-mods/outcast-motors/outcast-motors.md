@@ -140,7 +140,7 @@ fitted), an interruption, and a failed refit.
 > car per game day. A mod using vanilla's own tables pays exactly what vanilla
 > pays.
 >
-> **Proof:** Code. `media/lua/shared/Vehicles/TimedActions/ISInstallVehiclePart.lua` and `ISUninstallVehiclePart.lua`, `complete()`; `zombie.characters.IsoPlayer#addMechanicsItem` and `#updateMechanicsItems`. Build 42.20 (revision a2947723ca).
+> **Proof:** Code. `media/lua/shared/Vehicles/TimedActions/ISInstallVehiclePart.lua` and `ISUninstallVehiclePart.lua`, `complete()`; `zombie.characters.IsoPlayer#addMechanicsItem` and `#updateMechanicsItems`. Build 42.21.0 (revision 4a0e9546ec).
 
 ### Smaller things
 
