@@ -15,7 +15,7 @@ tags:
 excerpt: >-
   Machine-checked against the installed game, not recalled. Every line number
   below was read out of the installed game's media/lua/client/ on 2026-08-09.
-last_updated: '2026-09-29'
+last_updated: '2026-10-04'
 ---
 # UI engine reference and gotchas
 
@@ -153,11 +153,18 @@ function ISVehicleMechanics:onKeyRelease(key)
             self:close()
         end
     end
-    if getCore():isKey("VehicleMechanics", key) then
+    if getCore():isKey(KeybindId.VEHICLE_MECHANICS, key) then
         self:close()
     end
 end
 ```
+
+Build 42.21 names keybinds through the new `KeybindId` table, as above. The
+string form vanilla used before, `getCore():isKey("VehicleMechanics", key)`, still
+works: `Core` keeps both overloads, and the `KeybindId` one just looks up the same
+name.
+
+> **Proof:** Code. `media/lua/client/Vehicles/ISUI/ISVehicleMechanics.lua`, `ISVehicleMechanics:onKeyRelease`; `zombie.core.Core#isKey(String, Integer)` and `#isKey(KeybindId, Integer)`; `zombie.input.KeybindId` (`VEHICLE_MECHANICS` is registered as `"VehicleMechanics"`). Build 42.21.0 (revision 4a0e9546ec).
 
 Two behaviours players already have: **Escape closes** -- cancelling an
 in-progress action first, because Escape mid-repair means "stop", not "hide the
@@ -186,7 +193,7 @@ subject and serve a fallback quietly afterwards.
 
 ### One choke point for opening the window
 
-Both routes -- the hood (`Vehicles.lua:831`) and the radial
+Both routes -- the hood (`Vehicles.lua:829`) and the radial
 (`ISVehicleMenu.lua:188, :297`) -- end at:
 
 ```lua
@@ -327,3 +334,5 @@ thing a log can say about a UI mod.
 - [ ] refresh on a timer, never in `render()`
 - [ ] hook chained, not replaced, with a re-entry guard and an idempotence marker
 - [ ] tested at two UI scales -- most of these bugs are scale-dependent
+
+*Updated 2026-10-04 for Build 42.21: the quoted `onKeyRelease` now reads `KeybindId.VEHICLE_MECHANICS`, as vanilla does; the string form still works. The hood route moved to `Vehicles.lua:829`; every other line number here is unchanged in 42.21.*
