@@ -1,0 +1,2608 @@
+---
+slug: lua-classes-characters-2
+title: 'Lua Classes: Characters, players, zombies and animals, part 2 of 3 (Build 42.21)'
+game: pz
+version: build-42
+section: modding
+category: reference
+difficulty: advanced
+tags:
+  - lua-api
+  - reference
+  - generated
+  - classes
+excerpt: 'The exposed characters, players, zombies and animals classes of Build 42.21 (part 2 of 3): every method Lua can call, with parameter and return types, generated from the code.'
+last_updated: '2026-10-04'
+related_articles:
+  - lua-reference
+  - lua-events
+  - lua-global-functions
+  - lua-class-directory
+---
+# Lua Classes: Characters, players, zombies and animals, part 2 of 3
+
+> **Generated from the code.** This page is generated from Build 42.21 (revision 4a0e9546ec) by `npm run kb:gen-ref`, not written by hand. When the game updates we re-extract the data and run it again, so the page always matches one exact build. The method and how to regenerate it are on [the reference index](/pz/build-42/modding/reference/lua-reference).
+
+Everything that walks: players, zombies, animals, their bodies, stats, skills, moodles and traits. If your mod touches a character, the class you want is probably here.
+
+This page holds 8 classes and 2,478 methods, part 2 of 3 of this area (from `IsoGameCharacter` to `Moodle`), from the packages `zombie.characters`, `zombie.characters.Moodles`.
+
+> **Proof:** Code. zombie.Lua.LuaManager$Exposer#exposeAll for the class list; Class#getMethods, #getFields and #getConstructors minus @HiddenFromLua, as se.krka.kahlua.integration.expose.LuaJavaClassExposer#exposeMethods and #exposeStatics read them. Build 42.21 (revision 4a0e9546ec).
+
+## How to read this page
+
+- **Methods** are called on an object with a colon: `player:getInventory()`. A method marked "from" a type comes from a parent class or interface that is not exposed itself, so it is listed here in full.
+- **Also has the methods of** links to exposed parent classes and interfaces: their methods work on this class too, and are listed once, on their own entries.
+- **Static functions** are called on the class table with a dot: `ClassName.name(...)`. Constructors are `ClassName.new(...)`.
+- **Static fields** are copied into Lua once, when the class is exposed: Lua does not see later changes. Instance fields are never visible to Lua; use the getters.
+- Every class also has the methods every Java object has (`equals`, `hashCode`, `toString`, `getClass` and the thread ones); they are not repeated here.
+- Types are shortened to the class name; the full name of each exposed class is under its heading.
+
+## Classes
+
+### IsoGameCharacter
+
+`zombie.characters.IsoGameCharacter`, abstract class. Extends [IsoMovingObject](/pz/build-42/modding/reference/lua-classes-world-1#isomovingobject). Also has the methods of [GameEntity](/pz/build-42/modding/reference/lua-classes-entities#gameentity) (44), [IsoMovingObject](/pz/build-42/modding/reference/lua-classes-world-1#isomovingobject) (172), [IsoObject](/pz/build-42/modding/reference/lua-classes-world-2#isoobject) (386), listed on their own entries.
+
+Methods, called as `obj:name(...)`:
+
+- `AcceptGrapple(IGrappleable grappleAcceptor, String grappleType): void` from `IGrappleableWrapper`
+- `ApplyInBedOffset(boolean apply): void`
+- `BetaAntiDepress(float delta): void`
+- `BetaBlockers(float delta): void`
+- `CacheEquipped(): void`
+- `Callout(): void`
+- `Callout(boolean doAnim): void`
+- `CanAttack(): boolean`
+- `CanSee(IsoMovingObject obj): boolean`
+- `CanSee(IsoObject obj): boolean`
+- `ClearEquippedCache(): void`
+- `ClearVariable(String key): void`
+- `DirectionFromVector(Vector2 vecA): void`
+- `DoDeath(HandWeapon weapon, IsoGameCharacter wielder): void`
+- `DoDeath(HandWeapon weapon, IsoGameCharacter wielder, boolean isGory): void`
+- `DoFloorSplat(IsoGridSquare sq, String id, boolean bFlip, float offZ, float alpha): void`
+- `DoFootstepSound(float volume): void`
+- `DoFootstepSound(String type): void`
+- `DoLand(float impactIsoSpeed): void`
+- `DoSneezeText(): void`
+- `DoSwingCollisionBoneCheck(IsoGameCharacter zombie, int bone, float tempoLengthTest): boolean`
+- `DrawSneezeText(): void`
+- `Dressup(SurvivorDesc desc): void`
+- `DrinkFluid(FluidContainer fluidCont, float percentage): boolean`
+- `DrinkFluid(FluidContainer fluidCont, float percentage, boolean useUtensil): boolean`
+- `DrinkFluid(InventoryItem info): boolean`
+- `DrinkFluid(InventoryItem info, float percentage): boolean`
+- `DrinkFluid(InventoryItem info, float percentage, boolean useUtensil): boolean`
+- `Eat(InventoryItem info): boolean`
+- `Eat(InventoryItem info, float percentage): boolean`
+- `Eat(InventoryItem info, float percentage, boolean useUtensil): boolean`
+- `EatOnClient(InventoryItem info, float percentage): boolean`
+- `FireCheck(): void`
+- `GetAnimSetName(): String`
+- `GetPrimaryEquippedCache(): InventoryItem`
+- `GetSecondaryEquippedCache(): InventoryItem`
+- `GetVariable(String key): String`
+- `Grappled(IGrappleable grappler, HandWeapon weapon, float grappleEffectiveness, String grappleType): void` from `IGrappleableWrapper`
+- `GrapplerLetGo(IGrappleable grappler, String grappleResult): void` from `IGrappleableWrapper`
+- `HasItem(String string): boolean`
+- `Hit(HandWeapon weapon, IsoGameCharacter wielder, float damageSplit, boolean bIgnoreDamage, float modDelta): float`
+- `Hit(HandWeapon weapon, IsoGameCharacter wielder, float damageSplit, boolean bIgnoreDamage, float modDelta, boolean bRemote): float`
+- `Hit(BaseVehicle vehicle, float speed, boolean isHitFromBehind, float hitDirX, float hitDirY, boolean pushedBack, float collisionPosOnVehicleX, float collisionPosOnVehicleY): float`
+- `InitSpriteParts(SurvivorDesc desc): void`
+- `IsAttackRange(float x, float y, float z): boolean`
+- `IsSpeaking(): boolean`
+- `IsSpeakingNPC(): boolean`
+- `Kill(IsoGameCharacter killer): void`
+- `Kill(IsoGameCharacter killer, boolean bGory): void`
+- `Kill(IsoGameCharacter killer, HandWeapon attackingWeapon, boolean isGory, CharacterDiedListener onDiedListener): void`
+- `Kill(HandWeapon handWeapon, IsoGameCharacter killer): void`
+- `LetGoOfGrappled(String grappleResult): void` from `IGrappleableWrapper`
+- `LevelPerk(PerkFactory.Perk perk): void`
+- `LevelPerk(PerkFactory.Perk perk, boolean removePick): void`
+- `LoseLevel(PerkFactory.Perk perk): void`
+- `MoveForward(float dist, float x, float y, float soundDelta): void`
+- `OnAnimEvent(AnimLayer sender, AnimationTrack track, AnimEvent event): void`
+- `OnClothingUpdated(): void`
+- `OnDeath(): void`
+- `OnEquipmentUpdated(): void`
+- `PainMeds(float delta): void`
+- `PlayAnim(String string): void`
+- `PlayAnimUnlooped(String string): void`
+- `PlayAnimWithSpeed(String string, float framesSpeedPerFrame): void`
+- `QueueAction(BaseAction act): void`
+- `ReadLiterature(Literature literature): void`
+- `ReduceHealthWhenBurning(): void`
+- `RejectGrapple(IGrappleable grappleRejector): void` from `IGrappleableWrapper`
+- `Say(String line): void`
+- `Say(String line, float r, float g, float b, UIFont font, float baseRange, String customTag): void`
+- `SayDebug(int n, String text): void`
+- `SayDebug(String text): void`
+- `SayRadio(String line, float r, float g, float b, UIFont font, float baseRange, int channel, String customTag): void`
+- `SayShout(String line): void`
+- `SayWhisper(String line): void`
+- `Seen(Stack<IsoMovingObject> seenList): void`
+- `SetOnFire(): void`
+- `SetVariable(String key, String value): void`
+- `SleepingTablet(float sleepingTabletDelta): void`
+- `SpreadFire(): void`
+- `SpreadFireMP(): void`
+- `StartAction(BaseAction act): void`
+- `StartTimedActionAnim(String event): void`
+- `StartTimedActionAnim(String event, String type): void`
+- `StopAllActionQueue(): void`
+- `StopAllActionQueueAiming(): void`
+- `StopAllActionQueueRunning(): void`
+- `StopAllActionQueueWalking(): void`
+- `StopBurning(): void`
+- `StopTimedActionAnim(): void`
+- `Throw(HandWeapon weapon): void`
+- `Thump(IsoMovingObject isoMovingObject): void` from `Thumpable`
+- `actionStateChanged(ActionContext sender): void`
+- `addAnimEventListener(String animEventName, IAnimEventListenerEnum<E> listener, E defaultValue): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerNoTrackEnum<E> listener, E defaultValue): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListener listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerBoolean listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerFloat listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerNoParam listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerNoTrack listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerNoTrackString listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerString listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(IAnimEventListenerSetVariableString listener): void` from `IAnimEventWrappedBroadcaster`
+- `addArmMuscleStrain(float painfactor): void`
+- `addBackMuscleStrain(float painfactor): void`
+- `addBasicPatch(BloodBodyPartType part): void`
+- `addBlood(BloodBodyPartType part, boolean scratched, boolean bitten, boolean allLayers): void`
+- `addBloodFromVehicleImpact(float speed): void`
+- `addBodyVisualFromItemType(String itemType): ItemVisual`
+- `addBothArmMuscleStrain(float painfactor): void`
+- `addCombatMuscleStrain(InventoryItem weapon): void`
+- `addCombatMuscleStrain(InventoryItem weapon, int hitCount): void`
+- `addCombatMuscleStrain(InventoryItem item, int hitCount, float multiplier): void`
+- `addDirt(BloodBodyPartType part, Integer nbr, boolean allLayers): void`
+- `addHole(BloodBodyPartType part): boolean`
+- `addHole(BloodBodyPartType part, boolean allLayers): boolean`
+- `addHoleFromZombieAttacks(BloodBodyPartType part, boolean scratch): boolean`
+- `addKnownMediaLine(String guid): void`
+- `addLeftArmMuscleStrain(float painfactor): void`
+- `addLineChatElement(String line): void`
+- `addLineChatElement(String line, float r, float g, float b): void`
+- `addLineChatElement(String line, float r, float g, float b, UIFont font, float baseRange, String customTag): void`
+- `addLineChatElement(String line, float r, float g, float b, UIFont font, float baseRange, String customTag, boolean bbcode, boolean img, boolean icons, boolean colors, boolean fonts, boolean equalizeHeights): void`
+- `addLotsOfDirt(BloodBodyPartType part, Integer nbr, boolean allLayers): void`
+- `addNeckMuscleStrain(float painfactor): void`
+- `addOnDiedListener(CharacterDiedListener onDiedListener, boolean autoRemoveOnInvoke): void`
+- `addReadLiterature(String name): void`
+- `addReadLiterature(String name, int day): void`
+- `addReadMap(InventoryItem item): void`
+- `addReadPrintMedia(String mediaId): void`
+- `addRightLegMuscleStrain(float painfactor): void`
+- `addStiffness(BodyPartType partType, float stiffness): void`
+- `addVisualDamage(String itemType): void`
+- `addWorldSoundUnlessInvisible(int radius, int volume, boolean bStressHumans): void`
+- `aimAtFloorTargetDistance(): float`
+- `allowsInvisibleAnimationSkips(): boolean`
+- `allowsTwist(): boolean`
+- `animEvent(IsoGameCharacter owner, AnimLayer layer, AnimationTrack track, AnimEvent event): void` from `IAnimEventWrappedBroadcaster`
+- `applyCharacterTraitsRecipes(): void`
+- `applyDamage(float damageAmount): void`
+- `applyDamageFromVehicleHit(BaseVehicle vehicle, float vehicleSpeed, float damage): void`
+- `applyProfessionRecipes(): void`
+- `applyTraits(List<CharacterTrait> luaTraits): void`
+- `attackFromWindowsLunge(IsoZombie zombie): void`
+- `autoDrink(): void`
+- `avoidDamage(): boolean`
+- `becomeCorpseItem(ItemContainer placeInContainer, IsoGameCharacter chr): InventoryItem`
+- `bodyPartIsSpiked(Integer part): boolean`
+- `bodyPartIsSpikedBehind(Integer part): boolean`
+- `burnCorpse(IsoDeadBody corpse): void`
+- `calcCarForwardVector(): Vector2`
+- `calcCarPositionOffset(boolean movingBackward): Vector2`
+- `calcCarSpeedVector(): Vector2`
+- `calcCarSpeedVector(Vector2 offset): Vector2`
+- `calcCarToPlayerVector(IsoGameCharacter target): Vector2`
+- `calcCarToPlayerVector(IsoGameCharacter target, Vector2 offset): Vector2`
+- `calcConeAngleMultiplier(IsoGameCharacter target, boolean movingBackward): float`
+- `calcConeAngleOffset(IsoGameCharacter target, boolean movingBackward): float`
+- `calcHitDir(IsoGameCharacter wielder, HandWeapon weapon, Vector2 out): void`
+- `calcHitDir(Vector2 out): void`
+- `calcLengthMultiplier(Vector2 carSpeed, boolean movingBackward): float`
+- `calculateBaseSpeed(): float`
+- `calculateCombatSpeed(): float`
+- `calculateGrappleEffectivenessFromTraits(): float`
+- `calculateShadowParams(ShadowParams sp): ShadowParams`
+- `calculateVisibilityData(): VisibilityData`
+- `canAccessContainer(ItemContainer container): boolean`
+- `canBeGrappled(): boolean`
+- `canBeHitByVehicle(BaseVehicle impactingVehicle): boolean` from `IStateCharacter`
+- `canClimbDownSheetRope(IsoGridSquare sq): boolean`
+- `canClimbDownSheetRopeInCurrentSquare(): boolean`
+- `canClimbSheetRope(IsoGridSquare sq): boolean`
+- `canCurrentStateRagdoll(): boolean` from `IStateCharacter`
+- `canRagdoll(): boolean`
+- `canReachTo(IsoGridSquare square): boolean`
+- `canSlowDownVehicleWhenHit(BaseVehicle impactingVehicle): boolean` from `IStateCharacter`
+- `canSprint(): boolean`
+- `canStandAt(float x, float y, float z): boolean`
+- `canTransitionToState(String stateName): boolean` from `IAnimatable`
+- `canUseAsGenericCraftingSurface(IsoObject object): boolean`
+- `canUseCurrentPoseForCorpse(): boolean`
+- `canUseDebugContextMenu(): boolean`
+- `canUseLootLog(): boolean`
+- `canUseLootZed(): boolean`
+- `carMovingBackward(Vector2 carSpeed): boolean`
+- `causesDamageToVehicleWhenHit(BaseVehicle impactingVehicle): boolean`
+- `changeState(State state): void`
+- `checkCurrentAction(Invokers.Params1.Boolean.ICallback<BaseAction> checkPredicate): boolean`
+- `checkIsNearVehicle(): boolean`
+- `checkIsNearWall(): float`
+- `checkUpdateModelTextures(): void`
+- `clear(Class<? extends State> clazz): void`
+- `clear(State state): void`
+- `clearAttachedItems(): void`
+- `clearDiedBody(): void`
+- `clearFallDamage(): void`
+- `clearHitInfo(): void`
+- `clearKnownMediaLines(): void`
+- `clearVariable(String key): void`
+- `clearVariables(): void`
+- `clearWornItems(): void`
+- `climbDownSheetRope(): void`
+- `climbOverFence(IsoDirections dir): void`
+- `climbSheetRope(): void`
+- `climbThroughWindow(IsoObject isoObject): void`
+- `climbThroughWindow(IsoThumpable w): void`
+- `climbThroughWindow(IsoThumpable w, Integer startingFrame): void`
+- `climbThroughWindow(IsoWindow w): void`
+- `climbThroughWindow(IsoWindow w, Integer startingFrame): void`
+- `climbThroughWindowFrame(IsoWindowFrame windowFrame): void`
+- `closeWindow(IsoWindow w): void`
+- `clothingItemChanged(String itemGuid): void`
+- `compareMovePriority(IsoGameCharacter other): int`
+- `containsVariable(String name): boolean` from `IAnimationVariableSourceContainer`
+- `createKeyRing(): InventoryItem`
+- `createKeyRing(ItemKey itemKey): InventoryItem`
+- `dbgGetAnimTrack(int layerIdx, int trackIdx): AnimationTrack`
+- `dbgGetAnimTrackName(int layerIdx, int trackIdx): String`
+- `dbgGetAnimTrackTime(int layerIdx, int trackIdx): float`
+- `dbgGetAnimTrackWeight(int layerIdx, int trackIdx): float`
+- `die(): void`
+- `dieNetwork(IsoGameCharacter killer, HandWeapon attackingWeapon, boolean isGory, CharacterDiedListener onDiedListener): IsoDeadBody`
+- `doDeathSplatterAndSounds(HandWeapon weapon, IsoGameCharacter wielder, boolean isGory): void`
+- `doDeferredMovementFromRagdoll(Vector3 dMovement): void`
+- `doNetworkHitByVehicle(BaseVehicle hitByVehicle, BaseVehicle.HitVars hitVars): void`
+- `drawDebugTextBelow(String text): void`
+- `drawDirectionLine(Vector2 dir, float length, float r, float g, float b): void`
+- `drawDirectionLine(Vector3 dir, float length, float r, float g, float b): void`
+- `drawLine(Vector2 startPos, Vector2 dir, float length, float r, float g, float b): void`
+- `dressInClothingItem(String itemGUID): void`
+- `dressInNamedOutfit(String outfitName): void`
+- `dressInPersistentOutfit(String outfitName): void`
+- `dressInPersistentOutfitID(int outfitID): void`
+- `dressInRandomNonSillyOutfit(): void`
+- `dressInRandomOutfit(): void`
+- `dropHandItems(): void`
+- `dropHeavyItems(): void`
+- `dropHeldItems(int x, int y, int z, boolean heavy, boolean isThrow): void`
+- `endPlaybackGameVariables(AnimationVariableSource playbackVars): void`
+- `ensureExistsBallisticsTarget(IsoGameCharacter isoGameCharacter): BallisticsTarget`
+- `ensureNotInVehicle(): void`
+- `enterVehicle(BaseVehicle v, int seat, Vector3f offset): void`
+- `exert(float f): void`
+- `faceDirection(IsoDirections dir): void`
+- `faceLocation(float x, float y): boolean`
+- `faceLocationF(float x, float y): boolean`
+- `facePosition(int x, int y): void`
+- `faceThisObject(IsoObject object): void`
+- `faceThisObjectAlt(IsoObject object): void`
+- `fallFromRope(): void`
+- `fallenOnKnees(): void`
+- `fallenOnKnees(boolean hardFall): void`
+- `flagForHotSave(): void`
+- `forceAwake(): void`
+- `forgetRecipes(): void`
+- `frameStep(): void` from `ECSEntity`
+- `get(State.Param<T> state): T`
+- `get(State.Param<T> state, T defaultT): T`
+- `getAbsoluteExcessTwist(): float`
+- `getActionContext(): ActionContext`
+- `getActionStateName(): String`
+- `getActiveLightItems(ArrayList<InventoryItem> items): ArrayList<InventoryItem>`
+- `getAdvancedAnimator(): AdvancedAnimator`
+- `getAge(): int`
+- `getAimAtFloorAmount(): float`
+- `getAimOriginPosX(): float`
+- `getAimOriginPosY(): float`
+- `getAimOriginPosZ(): float`
+- `getAimingDelay(): float`
+- `getAimingMode(): AimingMode`
+- `getAlreadyReadPages(String fullType): int`
+- `getAnimAngle(): float`
+- `getAnimAngleRadians(): float`
+- `getAnimAngleStepDelta(): float`
+- `getAnimAngleTwistDelta(): float`
+- `getAnimEventBroadcaster(): AnimEventBroadcaster`
+- `getAnimForwardDirection(Vector2 forwardDirection): Vector2`
+- `getAnimVector(Vector2 animForwardDirection): Vector2`
+- `getAnimatable(): IAnimatable`
+- `getAnimationDebug(): String`
+- `getAnimationPlayer(): AnimationPlayer`
+- `getAnimationStateName(): String`
+- `getAnimationTimeDelta(): float`
+- `getAttachedItem(String location): InventoryItem`
+- `getAttachedItems(): AttachedItems`
+- `getAttachedLocationGroup(): AttachedLocationGroup`
+- `getAttackTargetSquare(): IsoGridSquare`
+- `getAttackVars(): AttackVars`
+- `getAttackedBy(): IsoGameCharacter`
+- `getAttackingWeapon(): HandWeapon`
+- `getAutoWalkDirection(Vector2 out): Vector2`
+- `getBallisticsController(): BallisticsController`
+- `getBallisticsTarget(): BallisticsTarget`
+- `getBarricadeStrengthMod(): float`
+- `getBarricadeTimeMod(): float`
+- `getBearingFromGrappledTarget(): float` from `IGrappleableWrapper`
+- `getBearingToGrappledTarget(): float` from `IGrappleableWrapper`
+- `getBed(): IsoObject`
+- `getBedType(): String`
+- `getBeenMovingFor(): float`
+- `getBeenSprintingFor(): float`
+- `getBetaDelta(): float`
+- `getBetaEffect(): float`
+- `getBloodImpactX(): float`
+- `getBloodImpactY(): float`
+- `getBloodImpactZ(): float`
+- `getBloodSplat(): IsoSprite`
+- `getBlurFactor(): float`
+- `getBodyDamage(): BodyDamage`
+- `getBodyDamageRemote(): BodyDamage`
+- `getBodyLocationGroup(): BodyLocationGroup`
+- `getBodyPartClothingDefense(Integer part, boolean bite, boolean bullet): float`
+- `getBumpFallType(): String`
+- `getBumpType(): String`
+- `getBumpedChr(): IsoGameCharacter`
+- `getCardinalDirection(): IsoDirections`
+- `getCharacterActions(): Stack<BaseAction>`
+- `getCharacterGender(): CharacterGender`
+- `getCharacterInputComponent(): CharacterInputComponent` from `CharacterInputComponentEntity`
+- `getCharacterTraits(): CharacterTraits`
+- `getChatElement(): ChatElement`
+- `getCheats(): PlayerCheats`
+- `getChestHeight(): float`
+- `getChopTreeSpeed(): float`
+- `getClickSound(): String`
+- `getClimbData(): ClimbSheetRopeState.ClimbData`
+- `getClimbRopeSpeed(boolean down): float`
+- `getClimbRopeTime(): float`
+- `getClimbingFailChanceFloat(): float`
+- `getClimbingFailChanceInt(): int`
+- `getClothingDiscomfortModifier(): float`
+- `getClothingItem_Back(): InventoryItem`
+- `getClothingItem_Feet(): InventoryItem`
+- `getClothingItem_Hands(): InventoryItem`
+- `getClothingItem_Head(): InventoryItem`
+- `getClothingItem_Legs(): InventoryItem`
+- `getClothingItem_Torso(): InventoryItem`
+- `getClothingWetness(): ClothingWetness`
+- `getClothingWetnessSync(): ClothingWetnessSync`
+- `getContainerToolTip(ItemContainer container): String`
+- `getContainers(): ArrayList<ItemContainer>`
+- `getContextWorldContainers(T paramToCompare, Invokers.Params2.Boolean.ICallback<T, ItemContainer> isValidPredicate): PZArrayList<ItemContainer>`
+- `getContextWorldContainers(T paramToCompare, Invokers.Params2.Boolean.ICallback<T, ItemContainer> isValidPredicate, PZArrayList<ItemContainer> containerList): PZArrayList<ItemContainer>`
+- `getContextWorldContainersInObjects(IsoObject[] contextObjects, T paramToCompare, Invokers.Params2.Boolean.ICallback<T, ItemContainer> isValidPredicate, PZArrayList<ItemContainer> containerList): PZArrayList<ItemContainer>`
+- `getContextWorldContainersWithHumanCorpse(IsoObject[] contextObjects): PZArrayList<ItemContainer>`
+- `getContextWorldSuitableContainersToDropCorpseInObjects(IsoObject[] contextObjects): PZArrayList<ItemContainer>`
+- `getCorpseSicknessDefense(): float`
+- `getCorpseSicknessDefense(float rate): float`
+- `getCorpseSicknessDefense(float rate, boolean drain): float`
+- `getCorpseSicknessRate(): float`
+- `getCurrentActionContextStateName(): String`
+- `getCurrentAnimationTranslationTarget(Vector3 outTargetPos): Vector3`
+- `getCurrentBuildingDef(): BuildingDef`
+- `getCurrentRoomDef(): RoomDef`
+- `getCurrentState(): State`
+- `getCurrentStateName(): String`
+- `getCurrentVerticalAimAngle(): float`
+- `getDangerLevels(): float`
+- `getDebugMonitor(): AnimatorDebugMonitor`
+- `getDefaultState(): State`
+- `getDeferredAngleDelta(): float`
+- `getDeferredMovement(Vector2 result): Vector2`
+- `getDeferredMovementFromRagdoll(Vector3 result): Vector3`
+- `getDeferredRotationWeight(): float`
+- `getDepressDelta(): float`
+- `getDepressEffect(): float`
+- `getDescription(String separatorStr): String`
+- `getDescriptor(): SurvivorDesc`
+- `getDetectionRange(): float`
+- `getDieCount(): int`
+- `getDirectionAngle(): float`
+- `getDirectionAngleRadians(): float`
+- `getDotWithForwardDirection(float targetX, float targetY): float`
+- `getDotWithForwardDirection(Vector3 bonePos): float`
+- `getECSComponent(Class<ComponentType> componentTypeClass): ComponentType` from `ECSEntity`
+- `getEffectiveFatigue(): float`
+- `getEmitter(): BaseCharacterSoundEmitter`
+- `getEnemyList(): Stack<IsoGameCharacter>`
+- `getEquipedRadio(): Radio`
+- `getExcessTwist(): float`
+- `getFMODParameters(): FMODParameterList`
+- `getFallSpeedSeverity(): FallSeverity`
+- `getFallTime(): float`
+- `getFamiliarBuildings(): Stack<IsoBuilding>`
+- `getFatigueMod(): float`
+- `getFatiqueMultiplier(): double`
+- `getFinder(): AStarPathFinderResult`
+- `getFireKillRate(): float`
+- `getFireMode(): String`
+- `getFireSpreadProbability(): int`
+- `getFollowingTarget(): IsoGameCharacter`
+- `getForceWakeUpTime(): float`
+- `getForwardDirection(): Vector2`
+- `getForwardDirection(Vector2 forwardDirection): Vector2`
+- `getForwardDirectionX(): float`
+- `getForwardDirectionY(): float`
+- `getForwardMovementIsoDirection(): IsoDirections`
+- `getFrameNo(): int` from `ECSEntity`
+- `getFreeInventoryCapacity(): float`
+- `getFullName(): String`
+- `getGameVariables(): Iterable<IAnimationVariableSlot>`
+- `getGameVariablesInternal(): AnimationVariableSource`
+- `getGlobalMovementMod(boolean bDoNoises): float`
+- `getGrappleOffset(Vector3f result): Vector3f` from `IGrappleableWrapper`
+- `getGrappleOffset(Vector3 result): Vector3` from `IGrappleableWrapper`
+- `getGrappleOffsetBehaviour(): GrappleOffsetBehaviour` from `IGrappleableWrapper`
+- `getGrapplePosOffsetForward(): float` from `IGrappleableWrapper`
+- `getGrappleResult(): String` from `IGrappleableWrapper`
+- `getGrappleRotOffsetYaw(): float` from `IGrappleableWrapper`
+- `getGrappleable(): IGrappleable`
+- `getGrappledBy(): IGrappleable` from `IGrappleableWrapper`
+- `getGrappledByString(): String` from `IGrappleableWrapper`
+- `getGrappledByType(): String` from `IGrappleableWrapper`
+- `getGrapplingTarget(): IGrappleable` from `IGrappleableWrapper`
+- `getHaloTimerCount(): float`
+- `getHammerSoundMod(): float`
+- `getHeadLookAngleMax(): float`
+- `getHeadLookHorizontal(): float`
+- `getHeadLookVertical(): float`
+- `getHealth(): float`
+- `getHearDistanceModifier(): float`
+- `getHeightAboveFloor(): float`
+- `getHitChancesMod(): int`
+- `getHitDirEnum(): HitDirEnum`
+- `getHitInfoList(): PZArrayList<HitInfo>`
+- `getHitReaction(): String`
+- `getHitReactionNetworkAI(): HitReactionNetworkAI`
+- `getHittingMod(): float`
+- `getHoursSurvived(): double`
+- `getHungerMultiplier(): double`
+- `getHurtSound(): String`
+- `getHyperthermiaMod(): float`
+- `getIdleSquareTime(): float`
+- `getIgnoreMovement(): boolean`
+- `getImpactIsoSpeed(): float`
+- `getInputMode(): CharacterInputMode` from `CharacterInputComponentEntity`
+- `getInputMoveVector(Vector2 out): Vector2` from `CharacterInputComponentEntity`
+- `getInputMovementRate(): float` from `CharacterInputComponentEntity`
+- `getInventory(): ItemContainer`
+- `getInventoryWeight(): float`
+- `getItemVisuals(ItemVisuals itemVisuals): void`
+- `getItemVisuals(): ItemVisuals`
+- `getJoypadBind(): int` from `CharacterInputComponentEntity`
+- `getKnownRecipes(): List<String>`
+- `getLastBump(): long`
+- `getLastChatMessage(): ChatMessage`
+- `getLastFallSpeed(): float`
+- `getLastHeardSound(): IsoGameCharacter.Location`
+- `getLastHitCharacter(): IsoGameCharacter`
+- `getLastHitCount(): int`
+- `getLastHourSleeped(): int`
+- `getLastKnownLocation(): HashMap<String, IsoGameCharacter.Location>`
+- `getLastKnownLocationOf(String character): IsoGameCharacter.Location`
+- `getLastLocalEnemies(): int`
+- `getLastSpokenLine(): String`
+- `getLastZombieKills(): int`
+- `getLeaveBodyTimedown(): float`
+- `getLegsSprite(): IsoSprite`
+- `getLevelMaxForXp(): int`
+- `getLevelUpLevels(int level): int`
+- `getLevelUpMultiplier(): float`
+- `getLightInfo2(): IsoGameCharacter.LightInfo`
+- `getLightfootMod(): float`
+- `getLlx(): float`
+- `getLly(): float`
+- `getLlz(): float`
+- `getLocalEnemyList(): Stack<IsoGameCharacter>`
+- `getLocalGroupList(): ArrayList<IsoMovingObject>`
+- `getLocalList(): ArrayList<IsoMovingObject>`
+- `getLocalNeutralList(): ArrayList<IsoMovingObject>`
+- `getLocalRelevantEnemyList(): ArrayList<IsoMovingObject>`
+- `getLookAngleRadians(): float`
+- `getLookDirectionX(): float`
+- `getLookDirectionY(): float`
+- `getLookVector(Vector2 vector2): Vector2`
+- `getLowDangerInVicinity(int attempts, int range): IsoGridSquare`
+- `getMaintenanceMod(): int`
+- `getMapKnowledge(): MapKnowledge`
+- `getMass(): float`
+- `getMaxChatLines(): int`
+- `getMaxTwist(): float`
+- `getMaxWeight(): int`
+- `getMaxWeightBase(): int`
+- `getMeleeCombatMod(): int`
+- `getMeleeDelay(): float`
+- `getMetalBarricadeStrengthMod(): float`
+- `getMinimumSimulationLevel(): UpdateSchedulerSimulationLevel`
+- `getModel(): ModelInstance`
+- `getModelInstance(): ModelInstance`
+- `getMomentumScalar(): float`
+- `getMoodles(): Moodles`
+- `getMoveDelta(): float`
+- `getMoveForwardVec(): Vector2`
+- `getMovementSpeed(): float`
+- `getMusicIntensityEventModData(String key): Object`
+- `getNearVehicle(): BaseVehicle`
+- `getNetworkCharacterAI(): NetworkCharacterAI`
+- `getNextAnimationTranslationLength(): Float`
+- `getNextWander(): int`
+- `getNimbleMod(): float`
+- `getNumSurvivorsInVicinity(): int`
+- `getNumTwistBones(): int`
+- `getOnlineID(): short` from `IAnimatable`
+- `getOrCreateSleepingEventData(): SleepingEventData`
+- `getOutfitName(): String`
+- `getOwner(): UdpConnection`
+- `getOwnerPlayer(): IsoPlayer`
+- `getPacingMod(): float`
+- `getPainDelta(): float`
+- `getPainEffect(): float`
+- `getPath2(): Path`
+- `getPathFindBehavior2(): PathFindBehavior2`
+- `getPathIndex(): int`
+- `getPathTargetX(): int`
+- `getPathTargetY(): int`
+- `getPathTargetZ(): int`
+- `getPatience(): int`
+- `getPatienceMax(): int`
+- `getPatienceMin(): int`
+- `getPerkInfo(PerkFactory.Perk perk): IsoGameCharacter.PerkInfo`
+- `getPerkLevel(PerkFactory.Perk perks): int`
+- `getPerkList(): ArrayList<IsoGameCharacter.PerkInfo>`
+- `getPerkToUnit(PerkFactory.Perk perk): float`
+- `getPersistentOutfitID(): int`
+- `getPreviousActionContextStateName(): String`
+- `getPreviousStateName(): String`
+- `getPrimaryHandItem(): InventoryItem`
+- `getPrimaryHandType(): String`
+- `getRagdollController(): RagdollController`
+- `getRandomDefaultOutfit(): Outfit`
+- `getReadLiterature(): HashMap<String, Integer>`
+- `getReadPrintMedia(): HashSet<String>`
+- `getReadyModelData(): ArrayList<ModelInstance>`
+- `getReanimAnimDelay(): int`
+- `getReanimAnimFrame(): int`
+- `getReanimateTimer(): float`
+- `getReanimatedCorpse(): IsoGameCharacter`
+- `getRecoilDelay(): float`
+- `getRecoilVarX(): float`
+- `getRecoilVarY(): float`
+- `getRecoveryMod(): float`
+- `getReduceInfectionPower(): float`
+- `getRemoteID(): int`
+- `getRunSpeedModifier(): float`
+- `getSafety(): Safety`
+- `getSayLine(): String`
+- `getSecondaryHandItem(): InventoryItem`
+- `getSecondaryHandType(): String`
+- `getSharedGrappleAnimFraction(): float` from `IGrappleableWrapper`
+- `getSharedGrappleAnimNode(): String` from `IGrappleableWrapper`
+- `getSharedGrappleAnimTime(): float` from `IGrappleableWrapper`
+- `getSharedGrappleType(): String` from `IGrappleableWrapper`
+- `getShoulderTwist(): float`
+- `getShoulderTwistWeight(): float`
+- `getShoutItemModel(): String`
+- `getShoutType(): String`
+- `getShovingMod(): float`
+- `getSitOnFurnitureDirection(): IsoDirections`
+- `getSitOnFurnitureObject(): IsoObject`
+- `getSleepingTabletDelta(): float`
+- `getSleepingTabletEffect(): float`
+- `getSlowFactor(): float`
+- `getSlowTimer(): float`
+- `getSneakLimpSpeedScale(): float`
+- `getSneakSpotMod(): float`
+- `getSpeakColour(): Color`
+- `getSpeakTime(): float`
+- `getSpeedMod(): float`
+- `getSprintMod(): float`
+- `getSpriteDef(): IsoSpriteInstance`
+- `getStaggerTimeMod(): float`
+- `getStateMachine(): StateMachine`
+- `getStateMachineComponent(): StateMachineComponent`
+- `getStateMachineParams(Class<?> clazz): Map<State.Param<?>, Object>`
+- `getStatisticsDebug(): String`
+- `getStats(): Stats`
+- `getSubVariableSource(String subVariableSourceName): IAnimationVariableSource`
+- `getSuitableContainersToDropCorpse(): PZArrayList<ItemContainer>`
+- `getSuitableContainersToDropCorpse(PZArrayList<ItemContainer> foundContainers): PZArrayList<ItemContainer>`
+- `getSuitableContainersToDropCorpseInSquare(IsoGridSquare square): PZArrayList<ItemContainer>`
+- `getSuitableContainersToDropCorpseInSquare(IsoGridSquare square, PZArrayList<ItemContainer> foundContainers): PZArrayList<ItemContainer>`
+- `getSuitableContainersWithHumanCorpseInSquare(IsoGridSquare square): PZArrayList<ItemContainer>`
+- `getSuitableContainersWithHumanCorpseInSquare(IsoGridSquare square, PZArrayList<ItemContainer> foundContainers): PZArrayList<ItemContainer>`
+- `getSurroundingAttackingZombies(): int`
+- `getSurroundingAttackingZombies(boolean includeCrawlers): int`
+- `getSurvivorKills(): int`
+- `getTalkerType(): String`
+- `getTargetGrapplePos(Vector3f result): Vector3f`
+- `getTargetGrapplePos(Vector3 result): Vector3`
+- `getTargetGrappleRotation(Vector2 result): Vector2`
+- `getTargetTwist(): float`
+- `getTargetVerticalAimAngle(): float`
+- `getTextureCreator(): ModelInstanceTextureCreator`
+- `getThirstMultiplier(): double`
+- `getThreatLevel(): int`
+- `getTimeSinceLastSmoke(): float`
+- `getTimeThumping(): int`
+- `getTimedActionTimeModifier(): float`
+- `getTorchStrength(): float`
+- `getTotalBlood(): float`
+- `getTurnDelta(): float`
+- `getTwist(): float`
+- `getUseHandWeapon(): HandWeapon`
+- `getUsedItemsOn(): Stack<String>`
+- `getUserNameHeight(): int`
+- `getVariable(String key): IAnimationVariableSlot` from `IAnimationVariableSourceContainer`
+- `getVariable(AnimationVariableHandle handle): IAnimationVariableSlot`
+- `getVariableBoolean(AnimationVariableHandle handle): boolean` from `IAnimationVariableSource`
+- `getVariableBoolean(String name): boolean` from `IAnimationVariableSourceContainer`
+- `getVariableBoolean(String key, boolean defaultVal): boolean` from `IAnimationVariableSourceContainer`
+- `getVariableEnum(String key, EnumType defaultVal): EnumType` from `IAnimationVariableSource`
+- `getVariableFloat(String name, float defaultVal): float` from `IAnimationVariableSourceContainer`
+- `getVariableString(String name): String` from `IAnimationVariableSourceContainer`
+- `getVehicle(): BaseVehicle`
+- `getVehicleDiscomfortModifier(): float`
+- `getVeryCloseEnemyList(): ArrayList<IsoMovingObject>`
+- `getVisual(): BaseVisual`
+- `getWaterSource(ArrayList<InventoryItem> items): InventoryItem`
+- `getWeaponLevel(): int`
+- `getWeaponLevel(HandWeapon weapon): int`
+- `getWeatherHearingMultiplier(): float`
+- `getWeightMod(): float`
+- `getWeldingSoundMod(): float`
+- `getWornItem(ItemBodyLocation itemBodyLocation): InventoryItem`
+- `getWornItems(): WornItems`
+- `getWornItemsHearingModifier(): float`
+- `getWornItemsHearingMultiplier(): float`
+- `getWornItemsVisionModifier(): float`
+- `getWornItemsVisionMultiplier(): float`
+- `getWrappedGrappleable(): BaseGrappleable`
+- `getXp(): IsoGameCharacter.XP`
+- `getXpForLevel(int level): int`
+- `getZombieKills(): int`
+- `hasActiveModel(): boolean`
+- `hasAnimationPlayer(): boolean`
+- `hasAwkwardHands(): boolean`
+- `hasBloodyClothing(Integer part): boolean`
+- `hasCurrentState(): boolean` from `IStateCharacter`
+- `hasDirtyClothing(Integer part): boolean`
+- `hasECSComponent(Class<? extends ECSComponent> componentTypeClass): boolean` from `ECSEntity`
+- `hasECSComponent(ECSComponent component): boolean` from `ECSEntity`
+- `hasEquipped(String string): boolean`
+- `hasEquippedTag(ItemTag itemTag): boolean`
+- `hasFootInjury(): boolean`
+- `hasFullInventory(): boolean`
+- `hasHitReaction(): boolean`
+- `hasItems(String type, int count): boolean`
+- `hasPath(): boolean`
+- `hasReadMap(InventoryItem item): boolean`
+- `hasRecipeAtHand(CraftRecipe recipe): boolean`
+- `hasTimedActions(): boolean`
+- `hasTrait(CharacterTrait characterTrait): boolean`
+- `hasTrait(CharacterTrait... characterTrait): boolean`
+- `hasWornTag(ItemTag itemTag): boolean`
+- `helmetFall(boolean hitHead): boolean`
+- `hitConsequences(HandWeapon weapon, IsoGameCharacter wielder, boolean bIgnoreDamage, float damage, boolean bRemote): void`
+- `initAttachedItems(String groupName): void`
+- `initLightInfo2(): IsoGameCharacter.LightInfo`
+- `initSpritePartsEmpty(): void`
+- `initWornItems(String bodyLocationGroupName): void`
+- `isAboveTopOfStairs(): boolean`
+- `isActuallyAttackingWithMeleeWeapon(): boolean`
+- `isAddedToModelManager(): boolean`
+- `isAimAtFloor(): boolean`
+- `isAimKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isAiming(): boolean`
+- `isAimingFirearmEquipped(): boolean`
+- `isAlive(): boolean`
+- `isAllowConversation(): boolean`
+- `isAllowRun(): boolean` from `CharacterInputComponentEntity`
+- `isAllowSprint(): boolean` from `CharacterInputComponentEntity`
+- `isAlwaysDayCheat(): boolean`
+- `isAnimForecasted(): boolean`
+- `isAnimal(): boolean`
+- `isAnimalCheat(): boolean`
+- `isAnimalExtraValuesCheat(): boolean`
+- `isAnimalRunningToDeathPosition(): boolean`
+- `isAnimatingBackwards(): boolean`
+- `isAnimationUpdatingThisFrame(): boolean`
+- `isAnyAimKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isAsleep(): boolean`
+- `isAttachedItem(InventoryItem item): boolean`
+- `isAttackButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isAttacking(): boolean`
+- `isAutoWalk(): boolean`
+- `isBehaviourMoving(): boolean`
+- `isBehind(IsoGameCharacter chr): boolean`
+- `isBeingGrappled(): boolean` from `IGrappleableWrapper`
+- `isBeingGrappledBy(IGrappleable grappledBy): boolean` from `IGrappleableWrapper`
+- `isBeingSteppedOn(): boolean`
+- `isBuildButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isBuildButtonReleased(): boolean` from `CharacterInputComponentEntity`
+- `isBuildCheat(): boolean`
+- `isBumpDone(): boolean`
+- `isBumpFall(): boolean`
+- `isBumpStaggered(): boolean`
+- `isBumped(): boolean`
+- `isCanShout(): boolean`
+- `isCanUseBrushTool(): boolean`
+- `isChangeCharacterKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isCheatSet(CheatType cheat): boolean`
+- `isClimbing(): boolean`
+- `isClimbingRope(): boolean`
+- `isClimbingThroughWindow(IsoWindow window): boolean`
+- `isClosingWindow(IsoWindow window): boolean`
+- `isCriticalHit(): boolean`
+- `isCrouchButtonPressed(): boolean` from `CharacterInputComponentEntity`
+- `isCurrentActionAllowedWhileDraggingCorpses(): boolean`
+- `isCurrentActionPathfinding(): boolean`
+- `isCurrentGameClientState(State state): boolean`
+- `isCurrentState(State state): boolean`
+- `isCurrentStateAttacking(): boolean` from `IStateCharacter`
+- `isCurrentStateMoving(): boolean` from `IStateCharacter`
+- `isCurrentlyBusy(): boolean`
+- `isCurrentlyIdle(): boolean`
+- `isDead(): boolean`
+- `isDeathDragDown(): boolean`
+- `isDeferredMovementEnabled(): boolean`
+- `isDisguised(): boolean`
+- `isDoContinueGrapple(): boolean` from `IGrappleableWrapper`
+- `isDoDeathSound(): boolean`
+- `isDoGrapple(): boolean` from `IGrappleableWrapper`
+- `isDoStomp(): boolean`
+- `isDoingActionThatCanBeCancelled(): boolean`
+- `isDraggingCorpse(): boolean`
+- `isDriving(): boolean`
+- `isEditingRagdoll(): boolean`
+- `isEnduranceSufficientForAction(): boolean`
+- `isEquipped(InventoryItem item): boolean`
+- `isEquippedClothing(InventoryItem item): boolean`
+- `isF12KeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isFacingLocation(float x, float y, float dot): boolean`
+- `isFacingObject(IsoObject object, float dot): boolean`
+- `isFallOnFront(): boolean`
+- `isFalling(): boolean`
+- `isFarmingCheat(): boolean`
+- `isFastMoveCheat(): boolean`
+- `isFemale(): boolean`
+- `isFishingCheat(): boolean`
+- `isForceAim(): boolean` from `CharacterInputComponentEntity`
+- `isForceRun(): boolean` from `CharacterInputComponentEntity`
+- `isForceSprint(): boolean` from `CharacterInputComponentEntity`
+- `isFullyRagdolling(): boolean`
+- `isGodMod(): boolean`
+- `isGrappleThrowIntoContainer(): boolean`
+- `isGrappleThrowOutWindow(): boolean`
+- `isGrappleThrowOverFence(): boolean`
+- `isGrappling(): boolean` from `IGrappleableWrapper`
+- `isGrapplingTarget(IGrappleable grapplingTarget): boolean` from `IGrappleableWrapper`
+- `isHandItem(InventoryItem item): boolean`
+- `isHeadLookAround(): boolean`
+- `isHealthCheat(): boolean`
+- `isHeavyItem(InventoryItem item): boolean`
+- `isHideEquippedHandL(): boolean`
+- `isHideEquippedHandR(): boolean`
+- `isHideWeaponModel(): boolean`
+- `isHitFromBehind(): boolean`
+- `isIgnoreInputsForDirection(): boolean` from `CharacterInputComponentEntity`
+- `isIgnoreMovementForDirection(): boolean`
+- `isIgnoreStaggerBack(): boolean`
+- `isIgnoringAimingInput(): boolean` from `CharacterInputComponentEntity`
+- `isImpactFromBehind(float impactDirX, float impactDirY): boolean`
+- `isImpactFromBehind(Vector2 impactDir): boolean`
+- `isInARoom(): boolean`
+- `isInTrees(): boolean`
+- `isInTrees2(boolean ignoreBush): boolean`
+- `isInTreesNoBush(): boolean`
+- `isInputMoveAxisApplied(): boolean` from `CharacterInputComponentEntity`
+- `isInteractButtonClicked(): boolean` from `CharacterInputComponentEntity`
+- `isInteractButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isInteractButtonPressed(): boolean` from `CharacterInputComponentEntity`
+- `isInventive(): boolean`
+- `isInvincible(): boolean`
+- `isInvisible(): boolean`
+- `isInvulnerable(): boolean`
+- `isItemInBothHands(InventoryItem item): boolean`
+- `isJoypadButtonsActive(): boolean` from `CharacterInputComponentEntity`
+- `isJoypadIgnoreAimUntilCentered(): boolean` from `CharacterInputComponentEntity`
+- `isKilledByFall(): boolean`
+- `isKilledBySlicingWeapon(): boolean`
+- `isKnockedDown(): boolean`
+- `isKnowAllRecipes(): boolean`
+- `isKnownMediaLine(String guid): boolean`
+- `isKnownPoison(InventoryItem item): boolean`
+- `isKnownPoison(Item item): boolean`
+- `isLastCollidedN(): boolean`
+- `isLastCollidedW(): boolean`
+- `isLiteratureRead(String name): boolean`
+- `isLocal(): boolean`
+- `isManualFloorAtkButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isMaskClicked(int x, int y, boolean flip): boolean`
+- `isMechanicsCheat(): boolean`
+- `isMeleeAttackRange(HandWeapon handWeapon, IsoMovingObject isoMovingObject, Vector3 bonePos): boolean`
+- `isMeleeButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isMeleeWeaponEquipped(): boolean`
+- `isMovablesCheat(): boolean`
+- `isMoving(): boolean`
+- `isNearSirenVehicle(): boolean`
+- `isNearWallCrouching(): boolean`
+- `isNetworkVehicleCollisionActive(BaseVehicle testVehicle): boolean`
+- `isNpc(): boolean`
+- `isObjectBehind(IsoObject obj): boolean`
+- `isOnBack(): boolean`
+- `isOnBed(): boolean`
+- `isOnDeathDone(): boolean`
+- `isOnFire(): boolean`
+- `isOnKillDone(): boolean`
+- `isOutside(): boolean`
+- `isOverEncumbered(): boolean`
+- `isPathing(): boolean`
+- `isPerformingAnyGrappleAnimation(): boolean` from `IGrappleableWrapper`
+- `isPerformingAttackAnimation(): boolean`
+- `isPerformingGrappleAnimation(): boolean`
+- `isPerformingGrappleGrabAnimation(): boolean` from `IGrappleableWrapper`
+- `isPerformingHostileAnimation(): boolean`
+- `isPerformingNoAimShortStrafe(): boolean`
+- `isPerformingShoveAnimation(): boolean`
+- `isPerformingStompAnimation(): boolean`
+- `isPersistentOutfitInit(): boolean`
+- `isPlayerMoving(): boolean`
+- `isPlayingDeathSound(): boolean`
+- `isPrecisionAimKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isPrimaryEquipped(String item): boolean`
+- `isPrimaryHandItem(InventoryItem item): boolean`
+- `isPrintMediaRead(String mediaId): boolean`
+- `isProtectedFromToxic(): boolean`
+- `isProtectedFromToxic(boolean drain): boolean`
+- `isPushedByForSeparate(IsoMovingObject other): boolean`
+- `isRagdoll(): boolean`
+- `isRagdollFall(): boolean`
+- `isRagdollSimulationActive(): boolean`
+- `isRangedWeaponEmpty(): boolean`
+- `isRangedWeaponEquipped(): boolean`
+- `isReading(): boolean`
+- `isReanim(): boolean`
+- `isRecipeActuallyKnown(String name): boolean`
+- `isRecipeActuallyKnown(CraftRecipe recipe): boolean`
+- `isRecipeKnown(String name): boolean`
+- `isRecipeKnown(String name, boolean ignoreSandbox): boolean`
+- `isRecipeKnown(CraftRecipe recipe): boolean`
+- `isRecipeKnown(CraftRecipe recipe, boolean ignoreSandbox): boolean`
+- `isRecipeKnown(Recipe recipe): boolean`
+- `isRemote(): boolean`
+- `isResting(): boolean`
+- `isRunButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isRunning(): boolean`
+- `isSeatedInVehicle(): boolean`
+- `isSecondaryHandItem(InventoryItem item): boolean`
+- `isShiftKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isShoveStompAnim(): boolean`
+- `isShoving(): boolean`
+- `isShowAdminTag(): boolean`
+- `isSitOnFurnitureObject(IsoObject object): boolean`
+- `isSitOnGround(): boolean`
+- `isSitting(): boolean`
+- `isSittingOnFurniture(): boolean`
+- `isSkipResolveCollision(): boolean`
+- `isSneaking(): boolean`
+- `isSpeaking(): boolean`
+- `isSprintButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isSprinting(): boolean`
+- `isStaggerBack(): boolean`
+- `isStrafing(): boolean`
+- `isTimedActionInstant(): boolean`
+- `isTimedActionInstantCheat(): boolean`
+- `isTurning(): boolean`
+- `isTurning90(): boolean`
+- `isTurningAround(): boolean`
+- `isTwisting(): boolean`
+- `isUnarmed(): boolean`
+- `isUnderVehicle(): boolean`
+- `isUnderVehicleRadius(float radius): boolean`
+- `isUnlimitedAmmo(): boolean`
+- `isUnlimitedCarry(): boolean`
+- `isUnlimitedEndurance(): boolean`
+- `isUpright(): boolean`
+- `isUsingWornItems(): boolean`
+- `isVariable(String name, String val): boolean` from `IAnimationVariableSourceContainer`
+- `isVehicleCollision(): boolean`
+- `isVisibleToNPCs(): boolean`
+- `isWalkToButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isWeaponReady(): boolean`
+- `isWearingAwkwardGloves(): boolean`
+- `isWearingGlasses(): boolean`
+- `isWearingGloves(): boolean`
+- `isWearingTag(ItemTag itemTag): boolean`
+- `isWearingVisualAid(): boolean`
+- `isZombie(): boolean`
+- `isZombieAttacking(): boolean`
+- `isZombieAttacking(IsoMovingObject other): boolean`
+- `isZombiesDontAttack(): boolean`
+- `isbDoDefer(): boolean`
+- `isbFalling(): boolean`
+- `isbOnBed(): boolean`
+- `isbUseParts(): boolean`
+- `learnRecipe(String name): boolean`
+- `learnRecipe(String name, boolean checkMetaRecipe): boolean`
+- `level0(PerkFactory.Perk perk): void`
+- `load(ByteBuffer input, int worldVersion, boolean isDebugSave): void`
+- `loadChange(IsoObjectChange change, ByteBufferReader bb): void`
+- `modifyTraitXPBoost(CharacterTraitDefinition trait, boolean isRemovingTrait): void`
+- `modifyTraitXPBoost(CharacterTrait characterTrait, boolean isRemovingTrait): void`
+- `nearbyZombieClimbPenalty(): float`
+- `onDeath_ShouldDoSplatterAndSounds(HandWeapon weapon, IsoGameCharacter wielder, boolean isGory): boolean`
+- `onFireLightSourceCheck(): void`
+- `onGameLoadingStateEnter(): void` from `ECSEntity`
+- `onHitByVehicle(BaseVehicle vehicle, float impactSpeed, Vector2 hitDir, Vector2 impactPosOnVehicle): float`
+- `onHitByVehicleApplyDamage(BaseVehicle vehicle, float impactSpeed): float`
+- `onInGameStateEnter(): void` from `ECSEntity`
+- `onKilled(IsoGameCharacter killer, HandWeapon attackingWeapon, boolean isGory): void`
+- `onMouseLeftClick(int x, int y): boolean`
+- `onRagdollSimulationStarted(): void`
+- `onWornItemsChanged(): void`
+- `openWindow(IsoWindow w): void`
+- `pathToCharacter(IsoGameCharacter target): void`
+- `pathToLocation(int x, int y, int z): void`
+- `pathToLocationF(float x, float y, float z): void`
+- `pathToSound(int x, int y, int z): void`
+- `pickUpCorpse(IsoDeadBody body, String dragType): void`
+- `pickUpCorpseItem(InventoryItem item): void`
+- `playBloodSplatterSound(): void`
+- `playDeadSound(): void`
+- `playDropItemSound(InventoryItem item): long`
+- `playEmote(String emote): void`
+- `playHurtSound(): long`
+- `playSound(String file): long`
+- `playSoundLocal(String file): long`
+- `playWeaponHitArmourSound(int partIndex, boolean bullet): long`
+- `playbackRecordCurrentStateSnapshot(): ActionStateSnapshot`
+- `playbackSetCurrentStateSnapshot(ActionStateSnapshot snapshot): void`
+- `postAnimationFinishing(String state): void`
+- `postUpdateEquippedTextures(): void`
+- `postUpdateModelTextures(): void`
+- `postupdate(): void`
+- `preupdate(): void`
+- `processHitDamage(HandWeapon weapon, IsoGameCharacter wielder, float damageSplit, boolean bIgnoreDamage, float modDelta): float`
+- `readInventory(ByteBufferReader b): void`
+- `registerECSComponents(): void`
+- `releaseAnimationPlayer(): void`
+- `releaseBallisticsController(): void`
+- `releaseBallisticsTarget(): void`
+- `releaseRagdollController(): void`
+- `reloadOutfit(): void`
+- `remove(State.Param<T> state): T`
+- `removeAttachedItem(InventoryItem item): void`
+- `removeECSComponent(ComponentType component): void` from `ECSEntity`
+- `removeECSComponent(Class<ComponentType> componentClass): void` from `ECSEntity`
+- `removeFromHands(InventoryItem item): boolean`
+- `removeFromWorld(): void`
+- `removeKnownMediaLine(String guid): void`
+- `removeOnFireLightSource(): void`
+- `removeWornItem(InventoryItem item): void`
+- `removeWornItem(InventoryItem item, boolean forceDropTooHeavy): void`
+- `render(float x, float y, float z, ColorInfo col, boolean bDoChild, boolean bWallLightingPass, Shader shader): void`
+- `renderObjectPicker(float x, float y, float z, ColorInfo lightInfo): void`
+- `renderServerGUI(): void`
+- `renderShadow(float x, float y, float z): void`
+- `renderlast(): void`
+- `reportEvent(String name): void`
+- `resetAimingDelay(): void`
+- `resetBeardGrowingTime(): void`
+- `resetBodyDamageRemote(): void`
+- `resetEquippedHandsModels(): void`
+- `resetGrappleStateToDefault(String grappleResult): void` from `IGrappleableWrapper`
+- `resetHairGrowingTime(): void`
+- `resetModel(): void`
+- `resetModelNextFrame(): void`
+- `save(ByteBuffer output, boolean isDebugSave): void`
+- `saveChange(IsoObjectChange change, KahluaTable tbl, ByteBufferWriter bb): void`
+- `set(State.Param<T> state, T value): void`
+- `setAddedToModelManager(ModelManager modelManager, boolean isAdded): void`
+- `setAge(int age): void`
+- `setAimAtFloor(boolean aimAtFloor): void`
+- `setAimAtFloor(boolean aimAtFloor, float targetDistance): void`
+- `setAimingDelay(float aimingDelay): void`
+- `setAllowConversation(boolean allowConversation): void`
+- `setAllowRun(boolean allowRun): void` from `CharacterInputComponentEntity`
+- `setAllowSprint(boolean allowSprint): void` from `CharacterInputComponentEntity`
+- `setAlreadyReadPages(String fullType, int pages): void`
+- `setAlwaysDayCheat(boolean b): void`
+- `setAnimForecasted(int timeMs): void`
+- `setAnimalCheat(boolean b): void`
+- `setAnimalExtraValuesCheat(boolean b): void`
+- `setAnimated(boolean b): void`
+- `setAnimatingBackwards(boolean isAnimatingBackwards): void`
+- `setAsleep(boolean asleep): void`
+- `setAttachedItem(String location, InventoryItem item): void`
+- `setAttachedItems(AttachedItems other): void`
+- `setAttackTargetSquare(IsoGridSquare attackTargetSquare): void`
+- `setAttackedBy(IsoGameCharacter attackedBy): void`
+- `setAutoWalk(boolean b): void`
+- `setAutoWalkDirection(Vector2 v): void`
+- `setAvoidDamage(boolean avoid): void`
+- `setBed(IsoObject bed): void`
+- `setBedType(String bedType): void`
+- `setBeenMovingFor(float beenMovingFor): void`
+- `setBeenSprintingFor(float beenSprintingFor): void`
+- `setBetaDelta(float betaDelta): void`
+- `setBetaEffect(float betaEffect): void`
+- `setBloodImpactX(float bloodImpactX): void`
+- `setBloodImpactY(float bloodImpactY): void`
+- `setBloodImpactZ(float bloodImpactZ): void`
+- `setBloodSplat(IsoSprite bloodSplat): void`
+- `setBuildCheat(boolean buildCheat): void`
+- `setBumpDone(boolean val): void`
+- `setBumpFall(boolean val): void`
+- `setBumpFallType(String val): void`
+- `setBumpStaggered(boolean val): void`
+- `setBumpType(String bumpType): void`
+- `setBumpedChr(IsoGameCharacter bumpedChr): void`
+- `setCanShout(boolean canShout): void`
+- `setCanUseBrushTool(boolean b): void`
+- `setCanUseDebugContextMenu(boolean b): void`
+- `setCanUseLootLog(boolean b): void`
+- `setCanUseLootZed(boolean b): void`
+- `setCharacterGender(CharacterGender characterGender): void`
+- `setClickSound(String clickSound): void`
+- `setClimbData(ClimbSheetRopeState.ClimbData climbData): void`
+- `setClimbRopeTime(float time): void`
+- `setClothingItem_Back(InventoryItem item): void`
+- `setClothingItem_Feet(InventoryItem item): void`
+- `setClothingItem_Hands(InventoryItem item): void`
+- `setClothingItem_Head(InventoryItem item): void`
+- `setClothingItem_Legs(InventoryItem item): void`
+- `setClothingItem_Torso(InventoryItem item): void`
+- `setCorpseSicknessRate(float rate): void`
+- `setCriticalHit(boolean isCrit): void`
+- `setCurrentVerticalAimAngle(float verticalAimAngleDegrees): void`
+- `setDangerLevels(float dangerLevels): void`
+- `setDeathDragDown(boolean dragDown): void`
+- `setDebugMonitor(AnimatorDebugMonitor monitor): void`
+- `setDefaultState(): void`
+- `setDefaultState(State defaultState): void`
+- `setDeferredMovementEnabled(boolean deferredMovementEnabled): void`
+- `setDelayToSleep(float delay): void`
+- `setDepressDelta(float depressDelta): void`
+- `setDepressEffect(float depressEffect): void`
+- `setDescriptor(SurvivorDesc descriptor): void`
+- `setDieCount(int dieCount): void`
+- `setDir(IsoDirections directions): void` from `ILuaIsoObject`
+- `setDirectionAngle(float angleDegrees): void`
+- `setDoContinueGrapple(boolean doContinueGrapple): void` from `IGrappleableWrapper`
+- `setDoDeathSound(boolean doDeathSound): void`
+- `setDoGrapple(boolean doGrapple): void` from `IGrappleableWrapper`
+- `setDoGrappleLetGo(): void` from `IGrappleable`
+- `setECSComponent(ComponentType component): void` from `ECSEntity`
+- `setEditingRagdoll(boolean value): void`
+- `setFallOnFront(boolean fallOnFront): void`
+- `setFallTime(float fallTime): void`
+- `setFarmingCheat(boolean b): void`
+- `setFastMoveCheat(boolean b): void`
+- `setFemale(boolean isFemale): void`
+- `setFireKillRate(float fireKillRate): void`
+- `setFireMode(String fireMode): void`
+- `setFireSpreadProbability(int fireSpreadProbability): void`
+- `setFishingCheat(boolean b): void`
+- `setFollowingTarget(IsoGameCharacter followingTarget): void`
+- `setForceAim(boolean forceAim): void` from `CharacterInputComponentEntity`
+- `setForceRun(boolean forceRun): void` from `CharacterInputComponentEntity`
+- `setForceSprint(boolean forceSprint): void` from `CharacterInputComponentEntity`
+- `setForceWakeUpTime(float forceWakeUpTime): void`
+- `setForwardDirection(float directionX, float directionY): void`
+- `setForwardDirection(Vector2 dir): void`
+- `setForwardDirectionFromAnimAngle(): void`
+- `setForwardDirectionFromIsoDirection(): void`
+- `setForwardIsoDirection(IsoDirections directions): void`
+- `setGodMod(boolean b): void`
+- `setGodMod(boolean b, boolean isForced): void`
+- `setGrappleDeferredOffset(Vector3f grappleOffset): void` from `IGrappleable`
+- `setGrappleDeferredOffset(Vector3 grappleOffset): void` from `IGrappleable`
+- `setGrappleDeferredOffset(float x, float y, float z): void` from `IGrappleableWrapper`
+- `setGrapplePosOffsetForward(float grappleOffsetForward): void` from `IGrappleableWrapper`
+- `setGrappleResult(String grappleResult): void` from `IGrappleableWrapper`
+- `setGrappleRotOffsetYaw(float grappleOffsetYaw): void` from `IGrappleableWrapper`
+- `setGrappleThrowIntoContainer(boolean newValue): void`
+- `setGrappleThrowOutWindow(boolean newValue): void`
+- `setGrappleThrowOverFence(boolean newValue): void`
+- `setGrappleoffsetBehaviour(GrappleOffsetBehaviour newBehaviour): void` from `IGrappleableWrapper`
+- `setHaloNote(String str): void`
+- `setHaloNote(String str, float dispTime): void`
+- `setHaloNote(String str, int r, int g, int b, float dispTime): void`
+- `setHeadLookAround(boolean b): void`
+- `setHeadLookAroundDirection(float lookHorizontal, float lookVertical): void`
+- `setHealth(float health): void`
+- `setHealthCheat(boolean healthCheat): void`
+- `setHideEquippedHandL(boolean hideEquippedHandL): void`
+- `setHideEquippedHandR(boolean hideEquippedHandR): void`
+- `setHideWeaponModel(boolean hideWeaponModel): void`
+- `setHitDir(Vector2 hitDir): void`
+- `setHitFromBehind(boolean hitFromBehind): void`
+- `setHitReaction(String hitReaction): void`
+- `setHurtSound(String hurtSound): void`
+- `setIgnoreAimingInput(boolean b): void` from `CharacterInputComponentEntity`
+- `setIgnoreInputsForDirection(boolean ignoreInputsForDirection): void` from `CharacterInputComponentEntity`
+- `setIgnoreMovement(boolean ignoreMovement): void`
+- `setIgnoreStaggerBack(boolean ignoreStaggerBack): void`
+- `setInventory(ItemContainer inventory): void`
+- `setInvincible(boolean invincible): void`
+- `setInvisible(boolean b): void`
+- `setInvisible(boolean b, boolean isForced): void`
+- `setInvulnerable(boolean invulnerable): void`
+- `setIsAiming(boolean isAiming): void`
+- `setIsAnimal(boolean v): void`
+- `setIsResting(boolean isResting): void`
+- `setJoypadBind(int joypadBind): void` from `CharacterInputComponentEntity`
+- `setJoypadButtonsActive(boolean joypadMovementActive): void` from `CharacterInputComponentEntity`
+- `setJoypadIgnoreAim(boolean ignore): void` from `CharacterInputComponentEntity`
+- `setJoypadIgnoreAimUntilCentered(boolean ignore): void` from `CharacterInputComponentEntity`
+- `setKilledByFall(boolean killedByFall): void`
+- `setKnockedDown(boolean knockedDown): void`
+- `setKnowAllRecipes(boolean knowAllRecipes): void`
+- `setLastBump(long lastBump): void`
+- `setLastChatMessage(ChatMessage lastChatMessage): void`
+- `setLastCollidedN(boolean lastCollidedN): void`
+- `setLastCollidedW(boolean lastCollidedW): void`
+- `setLastFallSpeed(float lastFallSpeed): void`
+- `setLastHeardSound(int x, int y, int z): void`
+- `setLastHitCharacter(IsoGameCharacter character): void`
+- `setLastHitCount(int hitCount): void`
+- `setLastHourSleeped(int lastHourSleeped): void`
+- `setLastLocalEnemies(int lastLocalEnemies): void`
+- `setLastSpokenLine(String line): void`
+- `setLastZombieKills(int lastZombieKills): void`
+- `setLeaveBodyTimedown(float leaveBodyTimedown): void`
+- `setLegsSprite(IsoSprite legsSprite): void`
+- `setLevelUpMultiplier(float levelUpMultiplier): void`
+- `setLlx(float llx): void`
+- `setLly(float lly): void`
+- `setLlz(float llz): void`
+- `setMaxTwist(float degrees): void`
+- `setMaxWeight(int maxWeight): void`
+- `setMaxWeightBase(int maxWeightBase): void`
+- `setMechanicsCheat(boolean mechanicsCheat): void`
+- `setMeleeDelay(float delay): void`
+- `setMetabolicTarget(float target): void`
+- `setMetabolicTarget(Metabolics m): void`
+- `setMomentumScalar(float val): void`
+- `setMovablesCheat(boolean b): void`
+- `setMoveDelta(float moveDelta): void`
+- `setMoveForwardVec(Vector2 moveForwardVec): void`
+- `setMoving(boolean val): void`
+- `setMusicIntensityEventModData(String key, Object value): void`
+- `setNearWallCrouching(boolean value): void`
+- `setNextWander(int nextWander): void`
+- `setNumSurvivorsInVicinity(int numSurvivorsInVicinity): void`
+- `setOnBed(boolean bOnBed): void`
+- `setOnDeathDone(boolean done): void`
+- `setOnFire(boolean onFire): void`
+- `setOnKillDone(boolean done): void`
+- `setOwner(UdpConnection connection): void`
+- `setOwnerPlayer(IsoPlayer player): void`
+- `setPainDelta(float painDelta): void`
+- `setPainEffect(float painEffect): void`
+- `setPath2(Path path): void`
+- `setPathIndex(int pathIndex): void`
+- `setPathSpeed(float speed): void`
+- `setPathing(boolean pathing): void`
+- `setPatience(int patience): void`
+- `setPatienceMax(int patienceMax): void`
+- `setPatienceMin(int patienceMin): void`
+- `setPerformingAttackAnimation(boolean attackAnim): void`
+- `setPerformingGrappleGrabAnimation(boolean grappleGrabAnim): void` from `IGrappleableWrapper`
+- `setPerformingShoveAnimation(boolean shoveAnim): void`
+- `setPerformingStompAnimation(boolean stompAnim): void`
+- `setPerkLevelDebug(PerkFactory.Perk perks, int level): void`
+- `setPersistentOutfitID(int outfitID): void`
+- `setPersistentOutfitID(int outfitID, boolean init): void`
+- `setPlayingDeathSound(boolean playing): void`
+- `setPosition(Vector3 position): void` from `IGrappleable`
+- `setPrimaryHandItem(InventoryItem leftHandItem): void`
+- `setRagdollFall(boolean value): void`
+- `setRangedWeaponEmpty(boolean val): void`
+- `setReading(boolean isReading): void`
+- `setReanim(boolean reanim): void`
+- `setReanimAnimDelay(int reanimAnimDelay): void`
+- `setReanimAnimFrame(int reanimAnimFrame): void`
+- `setReanimateTimer(float reanimateTimer): void`
+- `setRecoilDelay(float recoilDelay): void`
+- `setRecoilVarX(float recoilVarX): void`
+- `setRecoilVarY(float recoilVarY): void`
+- `setReduceInfectionPower(float reduceInfectionPower): void`
+- `setRemoteID(int remoteId): void`
+- `setRunning(boolean bRunning): void`
+- `setSafety(Safety safety): void`
+- `setSayLine(String sayLine): void`
+- `setSceneCulled(boolean isCulled): void`
+- `setSecondaryHandItem(InventoryItem rightHandItem): void`
+- `setSharedGrappleAnimFraction(float grappleAnimFraction): void` from `IGrappleableWrapper`
+- `setSharedGrappleAnimNode(String sharedGrappleAnimNode): void` from `IGrappleableWrapper`
+- `setSharedGrappleAnimTime(float grappleAnimTime): void` from `IGrappleableWrapper`
+- `setSharedGrappleType(String sharedGrappleType): void` from `IGrappleableWrapper`
+- `setShoveStompAnim(boolean val): void`
+- `setShowAdminTag(boolean showAdminTag): void`
+- `setSitOnFurnitureDirection(IsoDirections dir): void`
+- `setSitOnFurnitureObject(IsoObject object): void`
+- `setSitOnGround(boolean sitOnGround): void`
+- `setSittingOnFurniture(boolean isSittingOnFurniture): void`
+- `setSleepingTabletDelta(float sleepingTabletDelta): void`
+- `setSleepingTabletEffect(float sleepingTabletEffect): void`
+- `setSlowFactor(float slowFactor): void`
+- `setSlowTimer(float slowTimer): void`
+- `setSneakLimpSpeedScale(float sneakLimpSpeedScale): void`
+- `setSneaking(boolean bSneaking): void`
+- `setSpeakColour(Color speakColour): void`
+- `setSpeakColourInfo(ColorInfo info): void`
+- `setSpeakTime(int speakTime): void`
+- `setSpeaking(boolean speaking): void`
+- `setSpeedMod(float speedMod): void`
+- `setSprinting(boolean bSprinting): void`
+- `setStaggerTimeMod(float staggerTimeMod): void`
+- `setStateMachineLocked(boolean val): void`
+- `setSurvivorKills(int survivorKills): void`
+- `setTargetAndCurrentDirection(float directionX, float directionY): void`
+- `setTargetGrapplePos(Vector3f grapplePos): void` from `IGrappleable`
+- `setTargetGrapplePos(Vector3 grapplePos): void` from `IGrappleable`
+- `setTargetGrapplePos(float x, float y, float z): void`
+- `setTargetGrappleRotation(Vector2 forward): void` from `IGrappleable`
+- `setTargetGrappleRotation(float x, float y): void` from `IGrappleableWrapper`
+- `setTargetVerticalAimAngle(float verticalAimAngleDegrees): void`
+- `setTextureCreator(ModelInstanceTextureCreator textureCreator): void`
+- `setTimeOfSleep(float timeOfSleep): void`
+- `setTimeSinceLastSmoke(float timeSinceLastSmoke): void`
+- `setTimeThumping(int timeThumping): void`
+- `setTimedActionInstantCheat(boolean b): void`
+- `setTurnDelta(float turnDelta): void`
+- `setUnlimitedAmmo(boolean unlimitedAmmo): void`
+- `setUnlimitedCarry(boolean unlimitedCarry): void`
+- `setUnlimitedEndurance(boolean unlimitedEndurance): void`
+- `setUseHandWeapon(HandWeapon useHandWeapon): void`
+- `setUsePhysicHitReaction(boolean usePhysicHitReaction): void`
+- `setVariable(String key, Class<EnumType> enumTypeClass, Supplier<EnumType> callbackGet, Consumer<EnumType> callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, Class<EnumType> enumTypeClass, Supplier<EnumType> callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, boolean defaultVal, AnimationVariableSlotCallbackBool.CallbackGetStrongTyped callbackGet, AnimationVariableSlotCallbackBool.CallbackSetStrongTyped callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, boolean defaultVal, AnimationVariableSlotCallbackBool.CallbackGetStrongTyped callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, float defaultVal, AnimationVariableSlotCallbackFloat.PrimitiveFloatSupplier callbackGet, AnimationVariableSlotCallbackFloat.PrimitiveFloatConsumer callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, float defaultVal, AnimationVariableSlotCallbackFloat.PrimitiveFloatSupplier callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, int defaultVal, AnimationVariableSlotCallbackInt.PrimitiveIntSupplier callbackGet, AnimationVariableSlotCallbackInt.PrimitiveIntConsumer callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, int defaultVal, AnimationVariableSlotCallbackInt.PrimitiveIntSupplier callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, String defaultVal, AnimationVariableSlotCallbackString.CallbackGetStrongTyped callbackGet, AnimationVariableSlotCallbackString.CallbackSetStrongTyped callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, String defaultVal, AnimationVariableSlotCallbackString.CallbackGetStrongTyped callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackBool.CallbackGetStrongTyped callbackGet, AnimationVariableSlotCallbackBool.CallbackSetStrongTyped callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackBool.CallbackGetStrongTyped callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackFloat.PrimitiveFloatSupplier callbackGet, AnimationVariableSlotCallbackFloat.PrimitiveFloatConsumer callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackFloat.PrimitiveFloatSupplier callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackInt.PrimitiveIntSupplier callbackGet, AnimationVariableSlotCallbackInt.PrimitiveIntConsumer callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackInt.PrimitiveIntSupplier callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackString.CallbackGetStrongTyped callbackGet, AnimationVariableSlotCallbackString.CallbackSetStrongTyped callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackString.CallbackGetStrongTyped callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(IAnimationVariableSlot var): void`
+- `setVariable(String key, boolean value): IAnimationVariableSlot`
+- `setVariable(String key, float value): IAnimationVariableSlot`
+- `setVariable(String key, String value): IAnimationVariableSlot`
+- `setVariable(AnimationVariableHandle handle, boolean value): IAnimationVariableSlot`
+- `setVariableEnum(String key, EnumType value): IAnimationVariableSlot`
+- `setVehicle(BaseVehicle v): void`
+- `setVehicleCollision(boolean value): void`
+- `setVehicleHitLocation(BaseVehicle vehicle): void`
+- `setVisibleToNPCs(boolean visibleToNpcs): void`
+- `setWornItem(ItemBodyLocation location, InventoryItem item): void`
+- `setWornItem(ItemBodyLocation location, InventoryItem item, boolean forceDropTooHeavy): void`
+- `setWornItems(WornItems other): void`
+- `setXp(IsoGameCharacter.XP xp): void`
+- `setZombieKills(int zombieKills): void`
+- `setZombiesDontAttack(boolean b): void`
+- `setbClimbing(boolean climbing): void`
+- `setbDoDefer(boolean doDefer): void`
+- `setbFalling(boolean falling): void`
+- `setbOnBed(boolean onBed): void`
+- `setbUseParts(boolean useParts): void`
+- `shouldBeFalling(): boolean`
+- `shouldBePushedBackByVehicleHit(): boolean`
+- `shouldBeTurning(): boolean`
+- `shouldBeTurning90(): boolean`
+- `shouldBeTurningAround(): boolean`
+- `shouldBecomeZombieAfterDeath(): boolean`
+- `shouldIgnoreCollisionWithSquare(IsoGridSquare square): boolean`
+- `shouldSnapZToCurrentSquare(): boolean`
+- `shouldWaitToStartTimedAction(): boolean`
+- `smashCarWindow(VehiclePart part): void`
+- `smashWindow(IsoWindow w): void`
+- `spikePart(BodyPartType partType): void`
+- `spikePartIndex(int bodyPartIndex): void`
+- `spinToZeroAllAnimNodes(): void`
+- `splatBlood(int dist, float alpha): void`
+- `splatBloodFloor(): void`
+- `splatBloodFloorBig(): void`
+- `startEvent(long eventInstance, GameSoundClip clip, boolean remote, BitSet parameterSet): void`
+- `startPlaybackGameVariables(): AnimationVariableSource`
+- `stopEvent(long eventInstance, GameSoundClip clip, boolean remote, BitSet parameterSet): void`
+- `stopOrTriggerSound(long eventInstance): void`
+- `teleportTo(float newX, float newY): void`
+- `teleportTo(float newX, float newY, int newZ): void`
+- `teleportTo(int newX, int newY): void`
+- `teleportTo(int newX, int newY, int newZ): void`
+- `testCollideWithVehicles(BaseVehicle vehicle, BaseVehicle.HitVars hitVars): boolean`
+- `testDefense(IsoZombie zomb): boolean`
+- `testDotSide(IsoMovingObject target): String`
+- `testDotSideEnum(IsoMovingObject target): Side`
+- `throwGrappledIntoInventory(ItemContainer targetContainer): void`
+- `throwGrappledOverFence(IsoObject hoppableObject, IsoDirections dir): void`
+- `throwGrappledTargetOutWindow(IsoObject windowObject): void`
+- `toggleForceAim(): boolean` from `CharacterInputComponentEntity`
+- `transmitHaloNote(String str): void`
+- `transmitHaloNote(String str, float dispTime): void`
+- `transmitHaloNote(String str, int r, int g, int b, float dispTime): void`
+- `triggerContextualAction(String action): void`
+- `triggerContextualAction(String action, Object param1): void`
+- `triggerContextualAction(String action, Object param1, Object param2): void`
+- `triggerContextualAction(String action, Object param1, Object param2, Object param3): void`
+- `triggerContextualAction(String action, Object param1, Object param2, Object param3, Object param4): void`
+- `triggerCough(): void`
+- `tryGetAIState(String stateName): State`
+- `tryGetECSComponent(Class<ComponentType> componentTypeClass): ComponentType` from `ECSEntity`
+- `update(): void`
+- `updateAimingDelay(): void`
+- `updateBallistics(): void`
+- `updateDiscomfortModifiers(): void`
+- `updateDisguisedState(): void`
+- `updateEmitter(): void`
+- `updateEquippedItemSounds(): void`
+- `updateEquippedRadioFreq(): void`
+- `updateEvent(long eventInstance, GameSoundClip clip): void`
+- `updateForServerGui(): void`
+- `updateHandEquips(): void`
+- `updateHasTargetFlag(): void`
+- `updateLightInfo(): void`
+- `updateRecoilVar(): void`
+- `updateSpeedModifiers(): void`
+- `updateTextObjects(): void`
+- `updateVisionEffectTargets(): void`
+- `updateVisionEffects(): void`
+- `updateWornItemsHearingModifier(): void`
+- `updateWornItemsVisionModifier(): void`
+- `usePhysicHitReaction(): boolean`
+- `useRagdollVehicleCollision(): boolean`
+- `visitAllComponents(Class<? extends ST> instanceOf, BiConsumer<ST, P1> visitor, P1 param1): void` from `ECSEntity`
+- `visitAllComponents(Class<? extends ST> instanceOf, Consumer<ST> visitor): void` from `ECSEntity`
+- `wasLocal(): boolean`
+- `wasRunButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `zeroForwardDirectionX(): void`
+- `zeroForwardDirectionY(): void`
+
+Static functions, called as `IsoGameCharacter.name(...)`:
+
+- `calculateShadowParams(AnimationPlayer animationPlayer, float animalSize, boolean bRagdoll, ShadowParams sp): ShadowParams`
+- `canDropCorpseInto(IsoGameCharacter chr, ItemContainer container): boolean`
+- `canGrabCorpseFrom(IsoGameCharacter chr, ItemContainer container): boolean`
+- `getInf(): ColorInfo`
+- `getLevelUpLevels(): int[]`
+- `getNameCoords(float x, float y, float z, float offX, float offY, float zoom, Vector2 coord): void`
+- `getSurvivorMap(): HashMap<Integer, SurvivorDesc>`
+- `getTempo(): Vector2`
+- `getTempo2(): Vector2`
+- `getWeightAsCorpse(): int`
+- `isImpactFromBehind(float chrForwardX, float chrForwardY, float impactDirX, float impactDirY): boolean`
+
+Constructors: `IsoGameCharacter.new(IsoCell cell, float x, float y, float z)`.
+
+Static fields (a copy of the value taken when the class is exposed): `AwkwardGlovesStrengthDivisor: int`, `DEFAULT_ENTITY_DISPLAY_NAME: String`, `GlovesStrengthBonus: int`, `HUMANOID_SCREEN_CHEST_HEIGHT: float`, `HUMANOID_WORLD_CHEST_HEIGHT: float`, `MAX_WALL_SPLATS: int`, `MAX_ZOMBIES_EATING: int`, `RENDER_OFFSET_X: int`, `RENDER_OFFSET_Y: int`, `THUMP_STRESS_DEFAULT: float`, `THUMP_STRESS_FENCES: float`, `THUMP_STRESS_THUMPABLE: float`, `THUMP_STRESS_TRANSPARENT_FENCES: float`, `WALK_SPEED_DEFAULT: float`, `WALK_SPEED_SLOW: float`, `bmod: float`, `fireColor: ColorInfo`, `gmod: float`, `lastRendered: IsoObject`, `lastRenderedRendered: IsoObject`, `lowLightingQualityHack: boolean`, `rmod: float`, `s_maxPossibleTwist: float`, `treeSoundMgr: TreeSoundManager`.
+
+### IsoGameCharacter.Location
+
+`zombie.characters.IsoGameCharacter.Location`, class.
+
+Methods, called as `obj:name(...)`:
+
+- `equals(int x, int y, int z): boolean`
+- `equals(Object other): boolean`
+- `getX(): int`
+- `getY(): int`
+- `getZ(): int`
+- `set(int x, int y, int z): IsoGameCharacter.Location`
+
+Constructors: `IsoGameCharacter.Location.new()`, `IsoGameCharacter.Location.new(int x, int y, int z)`.
+
+### IsoGameCharacter.PerkInfo
+
+`zombie.characters.IsoGameCharacter.PerkInfo`, class.
+
+Methods, called as `obj:name(...)`:
+
+- `getLevel(): int`
+
+Constructors: `IsoGameCharacter.PerkInfo.new(IsoGameCharacter)`.
+
+### IsoGameCharacter.XP
+
+`zombie.characters.IsoGameCharacter.XP`, class.
+
+Methods, called as `obj:name(...)`:
+
+- `AddXP(PerkFactory.Perk type, float amount): void`
+- `AddXP(PerkFactory.Perk type, float amount, boolean noMultiplier): void`
+- `AddXP(PerkFactory.Perk type, float amount, boolean noMultiplier, boolean haloText): void`
+- `AddXP(PerkFactory.Perk type, float amount, boolean callLua, boolean doXPBoost, boolean remote): void`
+- `AddXP(PerkFactory.Perk type, float amount, boolean callLua, boolean doXPBoost, boolean remote, boolean haloText): void`
+- `AddXP(HandWeapon weapon, int amount): void`
+- `AddXPHaloText(PerkFactory.Perk type, float amount): void`
+- `AddXPNoMultiplier(PerkFactory.Perk type, float amount): void`
+- `addXpMultiplier(PerkFactory.Perk perks, float multiplier, int minLevel, int maxLevel): void`
+- `getLevel(): int`
+- `getMultiplier(PerkFactory.Perk perk): float`
+- `getMultiplierMap(): HashMap<PerkFactory.Perk, IsoGameCharacter.XPMultiplier>`
+- `getPerkBoost(PerkFactory.Perk type): int`
+- `getTotalXp(): float`
+- `getXP(PerkFactory.Perk type): float`
+- `load(ByteBuffer input, int worldVersion): void`
+- `save(ByteBuffer output): void`
+- `setLevel(int newlevel): void`
+- `setPerkBoost(PerkFactory.Perk perk, int level): void`
+- `setTotalXP(float xp): void`
+- `setXPToLevel(PerkFactory.Perk key, int perkLevel): void`
+
+Constructors: `IsoGameCharacter.XP.new(IsoGameCharacter, IsoGameCharacter)`.
+
+### IsoPlayer
+
+`zombie.characters.IsoPlayer`, class. Extends `IsoLivingCharacter`. Also has the methods of [IsoGameCharacter](#isogamecharacter) (1,139), [GameEntity](/pz/build-42/modding/reference/lua-classes-entities#gameentity) (44), [IsoMovingObject](/pz/build-42/modding/reference/lua-classes-world-1#isomovingobject) (167), [IsoObject](/pz/build-42/modding/reference/lua-classes-world-2#isoobject) (386), listed on their own entries.
+
+Methods, called as `obj:name(...)`:
+
+- `AcceptGrapple(IGrappleable grappleAcceptor, String grappleType): void` from `IGrappleableWrapper`
+- `AttemptAttack(float chargeDelta): boolean` from `IsoLivingCharacter`
+- `AttemptAttack(): boolean`
+- `DoAttack(float chargeDelta): boolean`
+- `DoAttack(float chargeDelta, String clickSound): boolean`
+- `DoFootstepSound(String type): void`
+- `GetAnimSetName(): String`
+- `Grappled(IGrappleable grappler, HandWeapon weapon, float grappleEffectiveness, String grappleType): void` from `IGrappleableWrapper`
+- `GrapplerLetGo(IGrappleable grappler, String grappleResult): void` from `IGrappleableWrapper`
+- `InitSpriteParts(): void`
+- `IsInMeleeAttack(): boolean`
+- `IsRunning(): boolean`
+- `IsUsingAimWeapon(): boolean`
+- `LetGoOfGrappled(String grappleResult): void` from `IGrappleableWrapper`
+- `OnAnimEvent(AnimLayer sender, AnimationTrack track, AnimEvent event): void`
+- `OnDeath(): void`
+- `RejectGrapple(IGrappleable grappleRejector): void` from `IGrappleableWrapper`
+- `TestAnimalSpotPlayer(IsoAnimal chr): void`
+- `TestZombieSpotPlayer(IsoMovingObject chr): void`
+- `Thump(IsoMovingObject isoMovingObject): void` from `Thumpable`
+- `addAnimEventListener(String animEventName, IAnimEventListenerEnum<E> listener, E defaultValue): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerNoTrackEnum<E> listener, E defaultValue): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListener listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerBoolean listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerFloat listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerNoParam listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerNoTrack listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerNoTrackString listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerString listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(IAnimEventListenerSetVariableString listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAttachedAnimal(IsoAnimal anim): void`
+- `addMechanicsItem(String itemid, VehiclePart part, Long milli): void`
+- `addSelectedZoneForHighlight(Double id): void`
+- `addWorldSoundUnlessInvisible(int radius, int volume, boolean bStressHumans): void`
+- `allowsInvisibleAnimationSkips(): boolean`
+- `allowsTwist(): boolean`
+- `animEvent(IsoGameCharacter owner, AnimLayer layer, AnimationTrack track, AnimEvent event): void` from `IAnimEventWrappedBroadcaster`
+- `applyDamageFromVehicleHit(BaseVehicle vehicle, float vehicleSpeed, float damage): void`
+- `calculateContext(): void`
+- `calculateCritChance(IsoGameCharacter target): int`
+- `calculateShowAdminTag(): boolean`
+- `canBeHitByVehicle(BaseVehicle impactingVehicle): boolean` from `IStateCharacter`
+- `canClimbOverWall(IsoDirections dir): boolean`
+- `canCurrentStateRagdoll(): boolean` from `IStateCharacter`
+- `canHearAll(): boolean`
+- `canPerformHandToHandCombat(): boolean`
+- `canPlaceCorpseOnSquare(IsoGridSquare square): boolean`
+- `canSeeAll(): boolean`
+- `canSlowDownVehicleWhenHit(BaseVehicle impactingVehicle): boolean` from `IStateCharacter`
+- `canThrowCorpseOver(IsoDirections dir): boolean`
+- `canThrowCorpseOver(IsoGridSquare fromSq, IsoDirections dir): boolean`
+- `canTransitionToState(String stateName): boolean` from `IAnimatable`
+- `checkActionGroup(): void`
+- `checkAnimalAttachedToRope(InventoryItem newPrimaryItem): void`
+- `checkCanSeeClient(IsoPlayer remoteChr): boolean`
+- `checkCanSeeClient(UdpConnection remoteConnection): boolean`
+- `checkWalkTo(): boolean`
+- `checkZonesInterception(int x1, int x2, int y1, int y2): boolean`
+- `clearHandToHandAttack(): void`
+- `climbOverWall(IsoDirections dir): boolean`
+- `containsVariable(String name): boolean` from `IAnimationVariableSourceContainer`
+- `createPlayerStats(ByteBufferWriter b, String adminUsername): ByteBufferWriter`
+- `doContext(): boolean`
+- `doContextClimbOverWall(IsoDirections dir): boolean`
+- `dressInClothingItem(String itemGUID): void`
+- `dressInNamedOutfit(String outfitName): void`
+- `findClosestCorpseOnGroundToPickup(): IsoDeadBody`
+- `frameStep(): void` from `ECSEntity`
+- `getAccessLevel(): String`
+- `getActiveLightItem(): InventoryItem`
+- `getAimVector(Vector2 vec): Vector2`
+- `getAimingMod(): float`
+- `getAimingRangeMod(): float`
+- `getAlreadyReadBook(): ArrayList<String>`
+- `getAnimalSize(): float`
+- `getAnimalType(): String`
+- `getAnimalVisual(): AnimalVisual`
+- `getAnticheatMask(UdpConnection connection): short`
+- `getAsleepTime(): float`
+- `getAttachedAnimals(): List<IsoAnimal>`
+- `getAttackType(): AttackType`
+- `getAttackingWeapon(): HandWeapon` from `IsoLivingCharacter`
+- `getAutoDrink(): boolean`
+- `getBearingFromGrappledTarget(): float` from `IGrappleableWrapper`
+- `getBearingToGrappledTarget(): float` from `IGrappleableWrapper`
+- `getCharacterInputComponent(): CharacterInputComponent` from `CharacterInputComponentEntity`
+- `getClearSpottedTimer(): int`
+- `getClosestTo(IsoGameCharacter closestTo): IsoGameCharacter`
+- `getCombatSpeed(): float`
+- `getContextDoorOrWindowOrWindowFrame(IsoDirections assumedDir): IsoObject`
+- `getDescription(String separatorStr): String`
+- `getDialogMood(): int`
+- `getDisguisedDisplayName(): String`
+- `getDisplayName(): String`
+- `getDragCharacter(): IsoSurvivor`
+- `getDragObject(): IsoMovingObject`
+- `getECSComponent(Class<ComponentType> componentTypeClass): ComponentType` from `ECSEntity`
+- `getExtraInfoFlags(): byte`
+- `getFitness(): Fitness`
+- `getFollowID(): int`
+- `getFrameNo(): int` from `ECSEntity`
+- `getGlobalMovementMod(boolean bDoNoises): float`
+- `getGrappleOffset(Vector3f result): Vector3f` from `IGrappleableWrapper`
+- `getGrappleOffset(Vector3 result): Vector3` from `IGrappleableWrapper`
+- `getGrappleOffsetBehaviour(): GrappleOffsetBehaviour` from `IGrappleableWrapper`
+- `getGrapplePosOffsetForward(): float` from `IGrappleableWrapper`
+- `getGrappleResult(): String` from `IGrappleableWrapper`
+- `getGrappleRotOffsetYaw(): float` from `IGrappleableWrapper`
+- `getGrappledBy(): IGrappleable` from `IGrappleableWrapper`
+- `getGrappledByString(): String` from `IGrappleableWrapper`
+- `getGrappledByType(): String` from `IGrappleableWrapper`
+- `getGrapplingTarget(): IGrappleable` from `IGrappleableWrapper`
+- `getHeartDelay(): float`
+- `getHeartDelayMax(): float`
+- `getHoursSurvived(): double`
+- `getHumanVisual(): HumanVisual`
+- `getIndex(): int`
+- `getInputMode(): CharacterInputMode` from `CharacterInputComponentEntity`
+- `getInputMoveVector(Vector2 out): Vector2`
+- `getInputMovementRate(): float` from `CharacterInputComponentEntity`
+- `getInvAimingMod(): float`
+- `getInvAimingRangeMod(): float`
+- `getItemVisuals(ItemVisuals itemVisuals): void`
+- `getItemVisuals(): ItemVisuals`
+- `getJoypadBind(): int` from `CharacterInputComponentEntity`
+- `getLastAngle(): Vector2`
+- `getLastRemoteUpdate(): long`
+- `getLastSeenZomboidTime(): double`
+- `getLastSpotted(): Stack<IsoMovingObject>`
+- `getLightDistance(): float`
+- `getLuredAnimals(): List<IsoAnimal>`
+- `getMaxWeightDelta(): float`
+- `getMechanicsItem(String itemId): Long`
+- `getMinimumSimulationLevel(): UpdateSchedulerSimulationLevel`
+- `getMoodleLevel(MoodleType type): int`
+- `getMoveSpeed(): float`
+- `getMusicIntensityEvents(): MusicIntensityEvents`
+- `getMusicThreatStatuses(): MusicThreatStatuses`
+- `getNearVehicle(): BaseVehicle`
+- `getNetworkCharacterAI(): NetworkPlayerAI`
+- `getNutrition(): Nutrition`
+- `getObjectName(): String`
+- `getOffSetXUI(): int`
+- `getOffSetYUI(): int`
+- `getOnlineID(): short`
+- `getParameterCharacterMovementSpeed(): ParameterCharacterMovementSpeed`
+- `getPathSpeed(): float`
+- `getPing(): int`
+- `getPlayerClothingInsulation(): float`
+- `getPlayerClothingTemperature(): float`
+- `getPlayerCraftHistory(): PlayerCraftHistory`
+- `getPlayerNum(): int`
+- `getRelevantAndDistance(float x, float y, float relevantRange): float`
+- `getReloadingMod(): float`
+- `getRole(): Role`
+- `getScreenChestHeight(): float`
+- `getSelectedZoneForHighlight(): Double`
+- `getSelectedZonesForHighlight(): ArrayList<Double>`
+- `getSharedGrappleAnimFraction(): float` from `IGrappleableWrapper`
+- `getSharedGrappleAnimNode(): String` from `IGrappleableWrapper`
+- `getSharedGrappleAnimTime(): float` from `IGrappleableWrapper`
+- `getSharedGrappleType(): String` from `IGrappleableWrapper`
+- `getSleepingPillsTaken(): int`
+- `getSpottedList(): Stack<IsoMovingObject>`
+- `getSteamID(): long`
+- `getTagColor(): ColorInfo`
+- `getTagPrefix(): String`
+- `getTicksSinceSeenZombie(): int`
+- `getTimeSinceLastNetData(): int`
+- `getTimeSinceLastStab(): float`
+- `getTimeSurvived(): String`
+- `getTimedActionTimeModifier(): float`
+- `getTimedActionToRetrigger(): LuaTimedActionNew`
+- `getTorchDot(): float`
+- `getTorchStrength(): float`
+- `getTurnDelta(): float`
+- `getUseableAnimal(): IsoAnimal`
+- `getUseableVehicle(): BaseVehicle`
+- `getUsername(): String`
+- `getUsername(Boolean canShowFirstname): String`
+- `getUsername(Boolean canShowFirstname, Boolean canShowDisguisedName): String`
+- `getVariable(String key): IAnimationVariableSlot` from `IAnimationVariableSourceContainer`
+- `getVariableBoolean(AnimationVariableHandle handle): boolean` from `IAnimationVariableSource`
+- `getVariableBoolean(String name): boolean` from `IAnimationVariableSourceContainer`
+- `getVariableBoolean(String key, boolean defaultVal): boolean` from `IAnimationVariableSourceContainer`
+- `getVariableEnum(String key, EnumType defaultVal): EnumType` from `IAnimationVariableSource`
+- `getVariableFloat(String name, float defaultVal): float` from `IAnimationVariableSourceContainer`
+- `getVariableString(String name): String` from `IAnimationVariableSourceContainer`
+- `getVisual(): BaseVisual`
+- `getVoicePitch(): float`
+- `getVoiceType(): int`
+- `getZombieRelevenceScore(IsoZombie z): float`
+- `hasAttachedAnimals(): boolean`
+- `hasCurrentState(): boolean` from `IStateCharacter`
+- `hasECSComponent(Class<? extends ECSComponent> componentTypeClass): boolean` from `ECSEntity`
+- `hasECSComponent(ECSComponent component): boolean` from `ECSEntity`
+- `hitConsequences(HandWeapon weapon, IsoGameCharacter wielder, boolean bIgnoreDamage, float damage, boolean bRemote): void`
+- `hopFence(IsoDirections dir, boolean bTest): boolean`
+- `isAccessLevel(String level): boolean`
+- `isAimControlActive(): boolean`
+- `isAimKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isAiming(): boolean`
+- `isAllChatMuted(): boolean`
+- `isAllowRun(): boolean` from `CharacterInputComponentEntity`
+- `isAllowSprint(): boolean` from `CharacterInputComponentEntity`
+- `isAnyAimKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isAttackAnimThrowTimeOut(): boolean`
+- `isAttackButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isAttackFromBehind(): boolean`
+- `isAttackStarted(): boolean`
+- `isAttackType(AttackType attackType): boolean`
+- `isAttacking(): boolean`
+- `isAuthorizeMeleeAction(): boolean`
+- `isAuthorizeShoveStomp(): boolean`
+- `isAuthorizedHandToHand(): boolean`
+- `isAuthorizedHandToHandAction(): boolean`
+- `isBannedAttacking(): boolean`
+- `isBehaviourMoving(): boolean`
+- `isBeingGrappled(): boolean` from `IGrappleableWrapper`
+- `isBeingGrappledBy(IGrappleable grappledBy): boolean` from `IGrappleableWrapper`
+- `isBlockMovement(): boolean`
+- `isBuildButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isBuildButtonReleased(): boolean` from `CharacterInputComponentEntity`
+- `isChangeCharacterKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isCheatPlayerSeeEveryone(): boolean`
+- `isClimbOverWallStruggle(): boolean`
+- `isClimbOverWallSuccess(): boolean`
+- `isCollidedWithPushableThisFrame(): boolean` from `IsoLivingCharacter`
+- `isCrouchButtonPressed(): boolean` from `CharacterInputComponentEntity`
+- `isCurrentStateAttacking(): boolean` from `IStateCharacter`
+- `isCurrentStateMoving(): boolean` from `IStateCharacter`
+- `isDoContinueGrapple(): boolean` from `IGrappleableWrapper`
+- `isDoGrapple(): boolean` from `IGrappleableWrapper`
+- `isDoHandToHandAttack(): boolean` from `IsoLivingCharacter`
+- `isDoShove(): boolean` from `IsoLivingCharacter`
+- `isDoStomp(): boolean` from `IsoLivingCharacter`
+- `isDoingActionThatCanBeCancelled(): boolean`
+- `isF12KeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isFactionPvp(): boolean`
+- `isFarming(): boolean`
+- `isFavouriteRecipe(String recipe): boolean`
+- `isFavouriteRecipe(CraftRecipe recipe): boolean`
+- `isForceAim(): boolean` from `CharacterInputComponentEntity`
+- `isForceOverrideAnim(): boolean`
+- `isForceRun(): boolean` from `CharacterInputComponentEntity`
+- `isForceSprint(): boolean` from `CharacterInputComponentEntity`
+- `isGettingUp(): boolean`
+- `isGhostMode(): boolean`
+- `isGrapplePressed(): boolean`
+- `isGrappling(): boolean` from `IGrappleableWrapper`
+- `isGrapplingTarget(IGrappleable grapplingTarget): boolean` from `IGrappleableWrapper`
+- `isGrapplingWhileAiming(): boolean` from `IsoLivingCharacter`
+- `isIgnoreAutoVault(): boolean`
+- `isIgnoreContextKey(): boolean`
+- `isIgnoreInputsForDirection(): boolean` from `CharacterInputComponentEntity`
+- `isIgnoringAimingInput(): boolean` from `CharacterInputComponentEntity`
+- `isInRange(IPositional other, float range): boolean` from `IPositional`
+- `isInTrees2(boolean ignoreBush): boolean`
+- `isInitiateAttack(): boolean`
+- `isInputMoveAxisApplied(): boolean` from `CharacterInputComponentEntity`
+- `isInteractButtonClicked(): boolean` from `CharacterInputComponentEntity`
+- `isInteractButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isInteractButtonPressed(): boolean` from `CharacterInputComponentEntity`
+- `isInvPageDirty(): boolean`
+- `isJoypadButtonsActive(): boolean` from `CharacterInputComponentEntity`
+- `isJoypadIgnoreAimUntilCentered(): boolean` from `CharacterInputComponentEntity`
+- `isJustMoved(): boolean`
+- `isLocalPlayer(): boolean`
+- `isLookingWhileInVehicle(): boolean`
+- `isManualFloorAtkButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isMaskClicked(int x, int y, boolean flip): boolean`
+- `isMeleeButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isMeleePressed(): boolean`
+- `isNearVehicle(): boolean`
+- `isNoClip(): boolean`
+- `isOnlyPlayerAsleep(): boolean`
+- `isOutside(): boolean`
+- `isPathfindRunning(): boolean`
+- `isPerformingAnAction(): boolean`
+- `isPerformingAnyGrappleAnimation(): boolean` from `IGrappleableWrapper`
+- `isPerformingGrappleGrabAnimation(): boolean` from `IGrappleableWrapper`
+- `isPlayerMoving(): boolean`
+- `isPlayingAttackLoopSound(String soundName): boolean`
+- `isPrecisionAimKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isPushableForSeparate(): boolean`
+- `isPushedByForSeparate(IsoMovingObject other): boolean`
+- `isRandXp(int checkInterval, float addXpChance, PerkFactory.Perk perk): boolean`
+- `isRemoteAndHasObstacleOnPath(): boolean`
+- `isRunButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isSafeToClimbOver(IsoDirections dir): boolean`
+- `isSaveFileIPValid(): boolean`
+- `isSaveFileInUse(): boolean`
+- `isSeeDesignationZone(): boolean`
+- `isSeeEveryone(): boolean`
+- `isSeeNonPvpZone(): boolean`
+- `isShiftKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isShoving(): boolean` from `IsoLivingCharacter`
+- `isShovingWhileAiming(): boolean` from `IsoLivingCharacter`
+- `isShowTag(): boolean`
+- `isSkeleton(): boolean`
+- `isSkipResolveCollision(): boolean`
+- `isSolidForSeparate(): boolean`
+- `isSprintButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isTargetedByZombie(): boolean`
+- `isTimedActionInstant(): boolean`
+- `isTorchCone(): boolean`
+- `isUnarmed(): boolean` from `IsoLivingCharacter`
+- `isUnwanted(String item): boolean`
+- `isVariable(String name, String val): boolean` from `IAnimationVariableSourceContainer`
+- `isWaiting(): boolean`
+- `isWalkToButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isWalking(): boolean`
+- `isWearingNightVisionGoggles(): boolean`
+- `isbChangeCharacterDebounce(): boolean`
+- `isbCouldBeSeenThisFrame(): boolean`
+- `isbSeenThisFrame(): boolean`
+- `load(String fileName): void`
+- `load(ByteBuffer input, int worldVersion, boolean isDebugSave): void`
+- `loadChange(IsoObjectChange change, ByteBufferReader bb): void`
+- `lureAnimal(InventoryItem item): void`
+- `moveUnmodded(float dirX, float dirY): void`
+- `nullifyAiming(): void`
+- `onGameLoadingStateEnter(): void` from `ECSEntity`
+- `onHitByVehicleApplyDamage(BaseVehicle vehicle, float impactSpeed): float`
+- `onInGameStateEnter(): void` from `ECSEntity`
+- `onKilled(IsoGameCharacter killer, HandWeapon attackingWeapon, boolean isGory): void`
+- `onWornItemsChanged(): void`
+- `petAnimal(): void`
+- `playBloodSplatterSound(): void`
+- `playGainExperienceLevelSound(): long`
+- `playRangedWeaponShootSound(String soundName): long`
+- `playerVoiceSound(String suffix): long`
+- `postupdate(): void`
+- `pressedAim(): boolean`
+- `pressedAttack(): void`
+- `pressedCancelAction(): boolean`
+- `pressedMovement(boolean ignoreBlock): boolean`
+- `preupdate(): void`
+- `processWakingUp(): void`
+- `registerECSComponents(): void`
+- `removeAllAttachedAnimals(): void`
+- `removeAttachedAnimal(IsoAnimal animal): void`
+- `removeECSComponent(ComponentType component): void` from `ECSEntity`
+- `removeECSComponent(Class<ComponentType> componentClass): void` from `ECSEntity`
+- `removeFromWorld(): void`
+- `removeSaveFile(): void`
+- `render(float x, float y, float z, ColorInfo col, boolean bDoChild, boolean bWallLightingPass, Shader shader): void`
+- `renderlast(): void`
+- `resetDisplayName(): void`
+- `resetGrappleStateToDefault(String grappleResult): void` from `IGrappleableWrapper`
+- `resetSelectedZonesForHighlight(): void`
+- `resetSleepingPillsTaken(): void`
+- `save(): void`
+- `save(String fileName): void`
+- `save(ByteBuffer output, boolean isDebugSave): void`
+- `setAddedToModelManager(ModelManager modelManager, boolean isAdded): void`
+- `setAllChatMuted(boolean allChatMuted): void`
+- `setAllowRun(boolean allowRun): void` from `CharacterInputComponentEntity`
+- `setAllowSprint(boolean allowSprint): void` from `CharacterInputComponentEntity`
+- `setAngleFromAim(): void`
+- `setAsleepTime(float asleepTime): void`
+- `setAttackAnimThrowTimer(long dt): void`
+- `setAttackFromBehind(boolean attackFromBehind): void`
+- `setAttackStarted(boolean attackStarted): void`
+- `setAttackType(AttackType attackType): void`
+- `setAttackVariationX(float attackVariationX): void`
+- `setAttackVariationY(float attackVariationY): void`
+- `setAuthorizeMeleeAction(boolean enabled): void`
+- `setAuthorizeShoveStomp(boolean enabled): void`
+- `setAuthorizedHandToHand(boolean enabled): void`
+- `setAuthorizedHandToHandAction(boolean enabled): void`
+- `setAutoDrink(boolean autoDrink): void`
+- `setBannedAttacking(boolean b): void`
+- `setBlockMovement(boolean blockMovement): void`
+- `setCanHearAll(boolean b): void`
+- `setCanSeeAll(boolean b): void`
+- `setClearSpottedTimer(int clearSpottedTimer): void`
+- `setClimbOverWallStruggle(boolean climbOverWallStruggle): void`
+- `setClimbOverWallSuccess(boolean climbOverWallSuccess): void`
+- `setCombatSpeed(float combatSpeed): void`
+- `setDialogMood(int dialogMood): void`
+- `setDir(IsoDirections directions): void` from `ILuaIsoObject`
+- `setDisplayName(String displayName): void`
+- `setDoContinueGrapple(boolean doContinueGrapple): void` from `IGrappleableWrapper`
+- `setDoGrapple(boolean doGrapple): void` from `IGrappleableWrapper`
+- `setDoGrappleLetGo(): void` from `IGrappleable`
+- `setDoShove(boolean bDoShove): void` from `IsoLivingCharacter`
+- `setDragCharacter(IsoSurvivor dragCharacter): void`
+- `setDragObject(IsoMovingObject dragObject): void`
+- `setECSComponent(ComponentType component): void` from `ECSEntity`
+- `setExtraInfoFlags(byte flags, boolean isForced): void`
+- `setFactionPvp(boolean pvp): void`
+- `setFishingStage(String stage): void`
+- `setFitnessSpeed(): void`
+- `setFollowID(int followId): void`
+- `setForceAim(boolean forceAim): void` from `CharacterInputComponentEntity`
+- `setForceOverrideAnim(boolean forceOverride): void`
+- `setForceRun(boolean forceRun): void` from `CharacterInputComponentEntity`
+- `setForceSprint(boolean forceSprint): void` from `CharacterInputComponentEntity`
+- `setGhostMode(boolean aGhostMode): void`
+- `setGhostMode(boolean aGhostMode, boolean isForced): void`
+- `setGrappleDeferredOffset(Vector3f grappleOffset): void` from `IGrappleable`
+- `setGrappleDeferredOffset(Vector3 grappleOffset): void` from `IGrappleable`
+- `setGrappleDeferredOffset(float x, float y, float z): void` from `IGrappleableWrapper`
+- `setGrapplePosOffsetForward(float grappleOffsetForward): void` from `IGrappleableWrapper`
+- `setGrappleResult(String grappleResult): void` from `IGrappleableWrapper`
+- `setGrappleRotOffsetYaw(float grappleOffsetYaw): void` from `IGrappleableWrapper`
+- `setGrappleoffsetBehaviour(GrappleOffsetBehaviour newBehaviour): void` from `IGrappleableWrapper`
+- `setHasObstacleOnPath(boolean value): void`
+- `setHeartDelay(float heartDelay): void`
+- `setHeartDelayMax(int heartDelayMax): void`
+- `setHoursSurvived(double hrs): void`
+- `setIgnoreAimingInput(boolean b): void` from `CharacterInputComponentEntity`
+- `setIgnoreAutoVault(boolean ignoreAutoVault): void`
+- `setIgnoreContextKey(boolean ignoreContextKey): void`
+- `setIgnoreInputsForDirection(boolean ignoreInputsForDirection): void` from `CharacterInputComponentEntity`
+- `setIgnoreMovement(boolean ignoreMovement): void`
+- `setInitiateAttack(boolean initiate): void`
+- `setInvPageDirty(boolean b): void`
+- `setIsFarming(boolean isFarmingBool): void`
+- `setIsLuringAnimals(boolean luring): void`
+- `setJoypadBind(int joypadBind): void` from `CharacterInputComponentEntity`
+- `setJoypadButtonsActive(boolean joypadMovementActive): void` from `CharacterInputComponentEntity`
+- `setJoypadIgnoreAim(boolean ignore): void` from `CharacterInputComponentEntity`
+- `setJoypadIgnoreAimUntilCentered(boolean ignore): void` from `CharacterInputComponentEntity`
+- `setJustMoved(boolean val): void`
+- `setLastAngle(Vector2 lastAngle): void`
+- `setLastAttackWasHandToHand(boolean lastAttackWasHandToHand): void`
+- `setLastCheatToggleMillis(long lastCheatToggleMillis): void`
+- `setLastRemoteUpdate(long lastRemoteUpdate): void`
+- `setLastSpotted(Stack<IsoMovingObject> lastSpotted): void`
+- `setMaxWeightDelta(float maxWeightDelta): void`
+- `setMeleeHitSurface(String material): void`
+- `setMeleeHitSurface(ParameterMeleeHitSurface.Material material): void`
+- `setMoodleCantSprint(boolean b): void`
+- `setMoveSpeed(float moveSpeed): void`
+- `setNoClip(boolean noClip): void`
+- `setNoClip(boolean noClip, boolean isForced): void`
+- `setNpc(boolean isNpc): void`
+- `setOffSetXUI(int offSetXUi): void`
+- `setOffSetYUI(int offSetYUi): void`
+- `setOnlineID(short value): void`
+- `setPathfindRunning(boolean newvalue): void`
+- `setPerformingAnAction(boolean val): void`
+- `setPerformingGrappleGrabAnimation(boolean grappleGrabAnim): void` from `IGrappleableWrapper`
+- `setPing(int ping): void`
+- `setPlayerStats(ByteBufferReader bb, String adminUsername): String`
+- `setPosition(Vector3 position): void` from `IGrappleable`
+- `setRole(String newLvl): void`
+- `setRole(Role newRole): void`
+- `setSeeDesignationZone(boolean seeMetaAnimalZone): void`
+- `setSeeNonPvpZone(boolean seeNonPvpZone): void`
+- `setSelectedZoneForHighlight(Double id): void`
+- `setSharedGrappleAnimFraction(float grappleAnimFraction): void` from `IGrappleableWrapper`
+- `setSharedGrappleAnimNode(String sharedGrappleAnimNode): void` from `IGrappleableWrapper`
+- `setSharedGrappleAnimTime(float grappleAnimTime): void` from `IGrappleableWrapper`
+- `setSharedGrappleType(String sharedGrappleType): void` from `IGrappleableWrapper`
+- `setShowTag(boolean show): void`
+- `setSleepingPillsTaken(int sleepingPillsTaken): void`
+- `setSteamID(long steamId): void`
+- `setTagColor(ColorInfo tagColor): void`
+- `setTagPrefix(String newTag): void`
+- `setTargetGrapplePos(Vector3f grapplePos): void` from `IGrappleable`
+- `setTargetGrapplePos(Vector3 grapplePos): void` from `IGrappleable`
+- `setTargetGrappleRotation(Vector2 forward): void` from `IGrappleable`
+- `setTargetGrappleRotation(float x, float y): void` from `IGrappleableWrapper`
+- `setTicksSinceSeenZombie(int ticksSinceSeenZombie): void`
+- `setTimeSinceLastNetData(int timeSinceLastNetData): void`
+- `setTimeSinceLastStab(float timeSinceLastStab): void`
+- `setTimedActionToRetrigger(LuaTimedActionNew timedActionToRetrigger): void`
+- `setUnwanted(String item, Boolean unwanted): void`
+- `setUsername(String newUsername): void`
+- `setVariable(String key, Class<EnumType> enumTypeClass, Supplier<EnumType> callbackGet, Consumer<EnumType> callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, Class<EnumType> enumTypeClass, Supplier<EnumType> callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, boolean defaultVal, AnimationVariableSlotCallbackBool.CallbackGetStrongTyped callbackGet, AnimationVariableSlotCallbackBool.CallbackSetStrongTyped callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, boolean defaultVal, AnimationVariableSlotCallbackBool.CallbackGetStrongTyped callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, float defaultVal, AnimationVariableSlotCallbackFloat.PrimitiveFloatSupplier callbackGet, AnimationVariableSlotCallbackFloat.PrimitiveFloatConsumer callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, float defaultVal, AnimationVariableSlotCallbackFloat.PrimitiveFloatSupplier callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, int defaultVal, AnimationVariableSlotCallbackInt.PrimitiveIntSupplier callbackGet, AnimationVariableSlotCallbackInt.PrimitiveIntConsumer callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, int defaultVal, AnimationVariableSlotCallbackInt.PrimitiveIntSupplier callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, String defaultVal, AnimationVariableSlotCallbackString.CallbackGetStrongTyped callbackGet, AnimationVariableSlotCallbackString.CallbackSetStrongTyped callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, String defaultVal, AnimationVariableSlotCallbackString.CallbackGetStrongTyped callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackBool.CallbackGetStrongTyped callbackGet, AnimationVariableSlotCallbackBool.CallbackSetStrongTyped callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackBool.CallbackGetStrongTyped callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackFloat.PrimitiveFloatSupplier callbackGet, AnimationVariableSlotCallbackFloat.PrimitiveFloatConsumer callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackFloat.PrimitiveFloatSupplier callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackInt.PrimitiveIntSupplier callbackGet, AnimationVariableSlotCallbackInt.PrimitiveIntConsumer callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackInt.PrimitiveIntSupplier callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackString.CallbackGetStrongTyped callbackGet, AnimationVariableSlotCallbackString.CallbackSetStrongTyped callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackString.CallbackGetStrongTyped callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVehicle4TestCollision(BaseVehicle vehicle): void`
+- `setVehicleHitLocation(BaseVehicle vehicle): void`
+- `setVoicePitch(float voicePitch): void`
+- `setVoiceType(int voiceType): void`
+- `setWaiting(boolean waiting): void`
+- `setWearingNightVisionGoggles(boolean b): void`
+- `setbChangeCharacterDebounce(boolean changeCharacterDebounce): void`
+- `setbCouldBeSeenThisFrame(boolean couldBeSeenThisFrame): void`
+- `setbSeenThisFrame(boolean seenThisFrame): void`
+- `shouldBeTurning(): boolean`
+- `startAttackLoopSound(String soundName): void`
+- `startReceivingBodyDamageUpdates(IsoPlayer other): void`
+- `stopLuringAnimals(boolean eatFood): void`
+- `stopPlayerVoiceSound(String suffix): long`
+- `stopReceivingBodyDamageUpdates(IsoPlayer other): void`
+- `syncVisuals(): void`
+- `toggleForceAim(): boolean` from `CharacterInputComponentEntity`
+- `tooDarkToRead(): boolean`
+- `transmitPlayerVoiceSound(String suffix): long`
+- `triggerMusicIntensityEvent(String id): void`
+- `tryGetECSComponent(Class<ComponentType> componentTypeClass): ComponentType` from `ECSEntity`
+- `update(): void`
+- `updateEnduranceWhileInVehicle(): void`
+- `updateEnduranceWhileSitting(): void`
+- `updateLOS(): void`
+- `updateMovementRates(): void`
+- `updateRemotePlayerInVehicle(): void`
+- `updateUsername(): void`
+- `updateVocalProperties(): void`
+- `visitAllComponents(Class<? extends ST> instanceOf, BiConsumer<ST, P1> visitor, P1 param1): void` from `ECSEntity`
+- `visitAllComponents(Class<? extends ST> instanceOf, Consumer<ST> visitor): void` from `ECSEntity`
+- `wasLastAttackHandToHand(): boolean`
+- `wasRunButtonDown(): boolean` from `CharacterInputComponentEntity`
+
+Static functions, called as `IsoPlayer.name(...)`:
+
+- `Reset(): void`
+- `UpdateRemovedEmitters(): void`
+- `allPlayersAsleep(): boolean`
+- `allPlayersDead(): boolean`
+- `anyPlayer(C compareParam, BiPredicate<IsoPlayer, C> predicate): boolean`
+- `findPlayer(C compareParam, BiPredicate<IsoPlayer, C> predicate): IsoPlayer`
+- `forEachPlayer(Invokers.Params1.ICallback<IsoPlayer> visitor): void`
+- `getAllFileNames(): ArrayList<String>`
+- `getAllSavedPlayers(): ArrayList<IsoPlayer>`
+- `getCoopPVP(): boolean`
+- `getFollowDeadCount(): int`
+- `getInstance(): IsoPlayer`
+- `getLocalPlayerByOnlineID(short id): IsoPlayer`
+- `getPlayer(int playerIndex): IsoPlayer`
+- `getPlayerIndex(): int`
+- `getPlayerIndex(IsoGameCharacter chr): int`
+- `getPlayers(): ArrayList<IsoPlayer>`
+- `getUniqueFileName(): String`
+- `getUnwantedModDataString(String item): String`
+- `hasInstance(): boolean`
+- `invokeOnPlayerInstance(Runnable callback): void`
+- `isLocalPlayer(Object characterObject): boolean`
+- `isLocalPlayer(IsoGameCharacter character): boolean`
+- `isServerPlayerIDValid(String id): boolean`
+- `setCoopPVP(boolean enabled): void`
+- `setFollowDeadCount(int aFollowDeadCount): void`
+- `setInstance(IsoPlayer newInstance): void`
+- `setLocalPlayer(int index, IsoPlayer newPlayerObj): void`
+- `visitAllPlayers(Consumer<IsoPlayer> visitor): void`
+- `visitAllPlayersWithComponent(Class<ComponentType> componentClass, BiConsumer<IsoPlayer, ComponentType> visitor): void`
+
+Constructors: `IsoPlayer.new(IsoCell cell)`, `IsoPlayer.new(IsoCell cell, SurvivorDesc desc, int x, int y, int z)`, `IsoPlayer.new(IsoCell cell, SurvivorDesc desc, int x, int y, int z, boolean isAnimal)`.
+
+Static fields (a copy of the value taken when the class is exposed): `AwkwardGlovesStrengthDivisor: int`, `DEATH_MUSIC_NAME: String`, `DEFAULT_ENTITY_DISPLAY_NAME: String`, `GlovesStrengthBonus: int`, `HUMANOID_SCREEN_CHEST_HEIGHT: float`, `HUMANOID_WORLD_CHEST_HEIGHT: float`, `MAX: short`, `MAX_WALL_SPLATS: int`, `MAX_ZOMBIES_EATING: int`, `NoSound: boolean`, `RENDER_OFFSET_X: int`, `RENDER_OFFSET_Y: int`, `THUMP_STRESS_DEFAULT: float`, `THUMP_STRESS_FENCES: float`, `THUMP_STRESS_THUMPABLE: float`, `THUMP_STRESS_TRANSPARENT_FENCES: float`, `WALK_SPEED_DEFAULT: float`, `WALK_SPEED_SLOW: float`, `assumedPlayer: int`, `bmod: float`, `fireColor: ColorInfo`, `gmod: float`, `isTestAIMode: boolean`, `lastRendered: IsoObject`, `lastRenderedRendered: IsoObject`, `lowLightingQualityHack: boolean`, `numPlayers: int`, `players: IsoPlayer[]`, `rmod: float`, `s_maxPossibleTwist: float`, `treeSoundMgr: TreeSoundManager`.
+
+### IsoSurvivor
+
+`zombie.characters.IsoSurvivor`, class. Extends `IsoLivingCharacter`. Also has the methods of [IsoGameCharacter](#isogamecharacter) (1,191), [GameEntity](/pz/build-42/modding/reference/lua-classes-entities#gameentity) (44), [IsoMovingObject](/pz/build-42/modding/reference/lua-classes-world-1#isomovingobject) (170), [IsoObject](/pz/build-42/modding/reference/lua-classes-world-2#isoobject) (386), listed on their own entries.
+
+Methods, called as `obj:name(...)`:
+
+- `AcceptGrapple(IGrappleable grappleAcceptor, String grappleType): void` from `IGrappleableWrapper`
+- `AttemptAttack(float chargeDelta): boolean` from `IsoLivingCharacter`
+- `Despawn(): void`
+- `DoAttack(float chargeDelta): boolean` from `IsoLivingCharacter`
+- `Grappled(IGrappleable grappler, HandWeapon weapon, float grappleEffectiveness, String grappleType): void` from `IGrappleableWrapper`
+- `GrapplerLetGo(IGrappleable grappler, String grappleResult): void` from `IGrappleableWrapper`
+- `LetGoOfGrappled(String grappleResult): void` from `IGrappleableWrapper`
+- `RejectGrapple(IGrappleable grappleRejector): void` from `IGrappleableWrapper`
+- `Thump(IsoMovingObject isoMovingObject): void` from `Thumpable`
+- `addAnimEventListener(String animEventName, IAnimEventListenerEnum<E> listener, E defaultValue): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerNoTrackEnum<E> listener, E defaultValue): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListener listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerBoolean listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerFloat listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerNoParam listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerNoTrack listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerNoTrackString listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerString listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(IAnimEventListenerSetVariableString listener): void` from `IAnimEventWrappedBroadcaster`
+- `animEvent(IsoGameCharacter owner, AnimLayer layer, AnimationTrack track, AnimEvent event): void` from `IAnimEventWrappedBroadcaster`
+- `canBeHitByVehicle(BaseVehicle impactingVehicle): boolean` from `IStateCharacter`
+- `canCurrentStateRagdoll(): boolean` from `IStateCharacter`
+- `canSlowDownVehicleWhenHit(BaseVehicle impactingVehicle): boolean` from `IStateCharacter`
+- `canTransitionToState(String stateName): boolean` from `IAnimatable`
+- `clearHandToHandAttack(): void` from `IsoLivingCharacter`
+- `containsVariable(String name): boolean` from `IAnimationVariableSourceContainer`
+- `frameStep(): void` from `ECSEntity`
+- `getAttackingWeapon(): HandWeapon` from `IsoLivingCharacter`
+- `getBearingFromGrappledTarget(): float` from `IGrappleableWrapper`
+- `getBearingToGrappledTarget(): float` from `IGrappleableWrapper`
+- `getCharacterInputComponent(): CharacterInputComponent` from `CharacterInputComponentEntity`
+- `getECSComponent(Class<ComponentType> componentTypeClass): ComponentType` from `ECSEntity`
+- `getFrameNo(): int` from `ECSEntity`
+- `getGrappleOffset(Vector3f result): Vector3f` from `IGrappleableWrapper`
+- `getGrappleOffset(Vector3 result): Vector3` from `IGrappleableWrapper`
+- `getGrappleOffsetBehaviour(): GrappleOffsetBehaviour` from `IGrappleableWrapper`
+- `getGrapplePosOffsetForward(): float` from `IGrappleableWrapper`
+- `getGrappleResult(): String` from `IGrappleableWrapper`
+- `getGrappleRotOffsetYaw(): float` from `IGrappleableWrapper`
+- `getGrappledBy(): IGrappleable` from `IGrappleableWrapper`
+- `getGrappledByString(): String` from `IGrappleableWrapper`
+- `getGrappledByType(): String` from `IGrappleableWrapper`
+- `getGrapplingTarget(): IGrappleable` from `IGrappleableWrapper`
+- `getInputMode(): CharacterInputMode` from `CharacterInputComponentEntity`
+- `getInputMoveVector(Vector2 out): Vector2` from `CharacterInputComponentEntity`
+- `getInputMovementRate(): float` from `CharacterInputComponentEntity`
+- `getJoypadBind(): int` from `CharacterInputComponentEntity`
+- `getObjectName(): String`
+- `getOnlineID(): short` from `IAnimatable`
+- `getSharedGrappleAnimFraction(): float` from `IGrappleableWrapper`
+- `getSharedGrappleAnimNode(): String` from `IGrappleableWrapper`
+- `getSharedGrappleAnimTime(): float` from `IGrappleableWrapper`
+- `getSharedGrappleType(): String` from `IGrappleableWrapper`
+- `getVariable(String key): IAnimationVariableSlot` from `IAnimationVariableSourceContainer`
+- `getVariableBoolean(AnimationVariableHandle handle): boolean` from `IAnimationVariableSource`
+- `getVariableBoolean(String name): boolean` from `IAnimationVariableSourceContainer`
+- `getVariableBoolean(String key, boolean defaultVal): boolean` from `IAnimationVariableSourceContainer`
+- `getVariableEnum(String key, EnumType defaultVal): EnumType` from `IAnimationVariableSource`
+- `getVariableFloat(String name, float defaultVal): float` from `IAnimationVariableSourceContainer`
+- `getVariableString(String name): String` from `IAnimationVariableSourceContainer`
+- `hasCurrentState(): boolean` from `IStateCharacter`
+- `hasECSComponent(Class<? extends ECSComponent> componentTypeClass): boolean` from `ECSEntity`
+- `hasECSComponent(ECSComponent component): boolean` from `ECSEntity`
+- `isAimKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isAllowRun(): boolean` from `CharacterInputComponentEntity`
+- `isAllowSprint(): boolean` from `CharacterInputComponentEntity`
+- `isAnyAimKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isAttackButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isBeingGrappled(): boolean` from `IGrappleableWrapper`
+- `isBeingGrappledBy(IGrappleable grappledBy): boolean` from `IGrappleableWrapper`
+- `isBuildButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isBuildButtonReleased(): boolean` from `CharacterInputComponentEntity`
+- `isChangeCharacterKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isCollidedWithPushableThisFrame(): boolean` from `IsoLivingCharacter`
+- `isCrouchButtonPressed(): boolean` from `CharacterInputComponentEntity`
+- `isCurrentStateAttacking(): boolean` from `IStateCharacter`
+- `isCurrentStateMoving(): boolean` from `IStateCharacter`
+- `isDoContinueGrapple(): boolean` from `IGrappleableWrapper`
+- `isDoGrapple(): boolean` from `IGrappleableWrapper`
+- `isDoHandToHandAttack(): boolean` from `IsoLivingCharacter`
+- `isDoShove(): boolean` from `IsoLivingCharacter`
+- `isDoStomp(): boolean` from `IsoLivingCharacter`
+- `isF12KeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isForceAim(): boolean` from `CharacterInputComponentEntity`
+- `isForceRun(): boolean` from `CharacterInputComponentEntity`
+- `isForceSprint(): boolean` from `CharacterInputComponentEntity`
+- `isGrappling(): boolean` from `IGrappleableWrapper`
+- `isGrapplingTarget(IGrappleable grapplingTarget): boolean` from `IGrappleableWrapper`
+- `isGrapplingWhileAiming(): boolean` from `IsoLivingCharacter`
+- `isIgnoreInputsForDirection(): boolean` from `CharacterInputComponentEntity`
+- `isIgnoringAimingInput(): boolean` from `CharacterInputComponentEntity`
+- `isInputMoveAxisApplied(): boolean` from `CharacterInputComponentEntity`
+- `isInteractButtonClicked(): boolean` from `CharacterInputComponentEntity`
+- `isInteractButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isInteractButtonPressed(): boolean` from `CharacterInputComponentEntity`
+- `isJoypadButtonsActive(): boolean` from `CharacterInputComponentEntity`
+- `isJoypadIgnoreAimUntilCentered(): boolean` from `CharacterInputComponentEntity`
+- `isManualFloorAtkButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isMeleeButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isPerformingAnyGrappleAnimation(): boolean` from `IGrappleableWrapper`
+- `isPerformingGrappleGrabAnimation(): boolean` from `IGrappleableWrapper`
+- `isPrecisionAimKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isRunButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isShiftKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isShoving(): boolean` from `IsoLivingCharacter`
+- `isShovingWhileAiming(): boolean` from `IsoLivingCharacter`
+- `isSprintButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isUnarmed(): boolean` from `IsoLivingCharacter`
+- `isVariable(String name, String val): boolean` from `IAnimationVariableSourceContainer`
+- `isWalkToButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `onGameLoadingStateEnter(): void` from `ECSEntity`
+- `onInGameStateEnter(): void` from `ECSEntity`
+- `reloadSpritePart(): void`
+- `removeECSComponent(ComponentType component): void` from `ECSEntity`
+- `removeECSComponent(Class<ComponentType> componentClass): void` from `ECSEntity`
+- `resetGrappleStateToDefault(String grappleResult): void` from `IGrappleableWrapper`
+- `setAllowRun(boolean allowRun): void` from `CharacterInputComponentEntity`
+- `setAllowSprint(boolean allowSprint): void` from `CharacterInputComponentEntity`
+- `setDir(IsoDirections directions): void` from `ILuaIsoObject`
+- `setDoContinueGrapple(boolean doContinueGrapple): void` from `IGrappleableWrapper`
+- `setDoGrapple(boolean doGrapple): void` from `IGrappleableWrapper`
+- `setDoGrappleLetGo(): void` from `IGrappleable`
+- `setDoShove(boolean bDoShove): void` from `IsoLivingCharacter`
+- `setECSComponent(ComponentType component): void` from `ECSEntity`
+- `setForceAim(boolean forceAim): void` from `CharacterInputComponentEntity`
+- `setForceRun(boolean forceRun): void` from `CharacterInputComponentEntity`
+- `setForceSprint(boolean forceSprint): void` from `CharacterInputComponentEntity`
+- `setGrappleDeferredOffset(Vector3f grappleOffset): void` from `IGrappleable`
+- `setGrappleDeferredOffset(Vector3 grappleOffset): void` from `IGrappleable`
+- `setGrappleDeferredOffset(float x, float y, float z): void` from `IGrappleableWrapper`
+- `setGrapplePosOffsetForward(float grappleOffsetForward): void` from `IGrappleableWrapper`
+- `setGrappleResult(String grappleResult): void` from `IGrappleableWrapper`
+- `setGrappleRotOffsetYaw(float grappleOffsetYaw): void` from `IGrappleableWrapper`
+- `setGrappleoffsetBehaviour(GrappleOffsetBehaviour newBehaviour): void` from `IGrappleableWrapper`
+- `setIgnoreAimingInput(boolean b): void` from `CharacterInputComponentEntity`
+- `setIgnoreInputsForDirection(boolean ignoreInputsForDirection): void` from `CharacterInputComponentEntity`
+- `setJoypadBind(int joypadBind): void` from `CharacterInputComponentEntity`
+- `setJoypadButtonsActive(boolean joypadMovementActive): void` from `CharacterInputComponentEntity`
+- `setJoypadIgnoreAim(boolean ignore): void` from `CharacterInputComponentEntity`
+- `setJoypadIgnoreAimUntilCentered(boolean ignore): void` from `CharacterInputComponentEntity`
+- `setPerformingGrappleGrabAnimation(boolean grappleGrabAnim): void` from `IGrappleableWrapper`
+- `setPosition(Vector3 position): void` from `IGrappleable`
+- `setSharedGrappleAnimFraction(float grappleAnimFraction): void` from `IGrappleableWrapper`
+- `setSharedGrappleAnimNode(String sharedGrappleAnimNode): void` from `IGrappleableWrapper`
+- `setSharedGrappleAnimTime(float grappleAnimTime): void` from `IGrappleableWrapper`
+- `setSharedGrappleType(String sharedGrappleType): void` from `IGrappleableWrapper`
+- `setTargetGrapplePos(Vector3f grapplePos): void` from `IGrappleable`
+- `setTargetGrapplePos(Vector3 grapplePos): void` from `IGrappleable`
+- `setTargetGrappleRotation(Vector2 forward): void` from `IGrappleable`
+- `setTargetGrappleRotation(float x, float y): void` from `IGrappleableWrapper`
+- `setVariable(String key, Class<EnumType> enumTypeClass, Supplier<EnumType> callbackGet, Consumer<EnumType> callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, Class<EnumType> enumTypeClass, Supplier<EnumType> callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, boolean defaultVal, AnimationVariableSlotCallbackBool.CallbackGetStrongTyped callbackGet, AnimationVariableSlotCallbackBool.CallbackSetStrongTyped callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, boolean defaultVal, AnimationVariableSlotCallbackBool.CallbackGetStrongTyped callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, float defaultVal, AnimationVariableSlotCallbackFloat.PrimitiveFloatSupplier callbackGet, AnimationVariableSlotCallbackFloat.PrimitiveFloatConsumer callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, float defaultVal, AnimationVariableSlotCallbackFloat.PrimitiveFloatSupplier callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, int defaultVal, AnimationVariableSlotCallbackInt.PrimitiveIntSupplier callbackGet, AnimationVariableSlotCallbackInt.PrimitiveIntConsumer callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, int defaultVal, AnimationVariableSlotCallbackInt.PrimitiveIntSupplier callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, String defaultVal, AnimationVariableSlotCallbackString.CallbackGetStrongTyped callbackGet, AnimationVariableSlotCallbackString.CallbackSetStrongTyped callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, String defaultVal, AnimationVariableSlotCallbackString.CallbackGetStrongTyped callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackBool.CallbackGetStrongTyped callbackGet, AnimationVariableSlotCallbackBool.CallbackSetStrongTyped callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackBool.CallbackGetStrongTyped callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackFloat.PrimitiveFloatSupplier callbackGet, AnimationVariableSlotCallbackFloat.PrimitiveFloatConsumer callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackFloat.PrimitiveFloatSupplier callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackInt.PrimitiveIntSupplier callbackGet, AnimationVariableSlotCallbackInt.PrimitiveIntConsumer callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackInt.PrimitiveIntSupplier callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackString.CallbackGetStrongTyped callbackGet, AnimationVariableSlotCallbackString.CallbackSetStrongTyped callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackString.CallbackGetStrongTyped callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `toggleForceAim(): boolean` from `CharacterInputComponentEntity`
+- `tryGetECSComponent(Class<ComponentType> componentTypeClass): ComponentType` from `ECSEntity`
+- `visitAllComponents(Class<? extends ST> instanceOf, BiConsumer<ST, P1> visitor, P1 param1): void` from `ECSEntity`
+- `visitAllComponents(Class<? extends ST> instanceOf, Consumer<ST> visitor): void` from `ECSEntity`
+- `wasRunButtonDown(): boolean` from `CharacterInputComponentEntity`
+
+Constructors: `IsoSurvivor.new(SurvivorDesc desc, IsoCell cell, int x, int y, int z)`, `IsoSurvivor.new(SurvivorDesc desc, IsoCell cell, int x, int y, int z, boolean bSetInstance)`, `IsoSurvivor.new(IsoCell cell)`.
+
+Static fields (a copy of the value taken when the class is exposed): `AwkwardGlovesStrengthDivisor: int`, `DEFAULT_ENTITY_DISPLAY_NAME: String`, `GlovesStrengthBonus: int`, `HUMANOID_SCREEN_CHEST_HEIGHT: float`, `HUMANOID_WORLD_CHEST_HEIGHT: float`, `MAX_WALL_SPLATS: int`, `MAX_ZOMBIES_EATING: int`, `RENDER_OFFSET_X: int`, `RENDER_OFFSET_Y: int`, `THUMP_STRESS_DEFAULT: float`, `THUMP_STRESS_FENCES: float`, `THUMP_STRESS_THUMPABLE: float`, `THUMP_STRESS_TRANSPARENT_FENCES: float`, `WALK_SPEED_DEFAULT: float`, `WALK_SPEED_SLOW: float`, `bmod: float`, `fireColor: ColorInfo`, `gmod: float`, `lastRendered: IsoObject`, `lastRenderedRendered: IsoObject`, `lowLightingQualityHack: boolean`, `rmod: float`, `s_maxPossibleTwist: float`, `treeSoundMgr: TreeSoundManager`.
+
+### IsoZombie
+
+`zombie.characters.IsoZombie`, class. Extends [IsoGameCharacter](#isogamecharacter). Also has the methods of [IsoGameCharacter](#isogamecharacter) (1,147), [GameEntity](/pz/build-42/modding/reference/lua-classes-entities#gameentity) (44), [IsoMovingObject](/pz/build-42/modding/reference/lua-classes-world-1#isomovingobject) (162), [IsoObject](/pz/build-42/modding/reference/lua-classes-world-2#isoobject) (385), listed on their own entries.
+
+Methods, called as `obj:name(...)`:
+
+- `AcceptGrapple(IGrappleable grappleAcceptor, String grappleType): void` from `IGrappleableWrapper`
+- `DoCorpseInventory(): void`
+- `DoFootstepSound(float volume): void`
+- `DoFootstepSound(String type): void`
+- `DoZombieInventory(): void`
+- `DoZombieSpeeds(float spMod): void`
+- `DoZombieStats(): void`
+- `GetAnimSetName(): String`
+- `Grappled(IGrappleable grappler, HandWeapon weapon, float grappleEffectiveness, String grappleType): void` from `IGrappleableWrapper`
+- `GrapplerLetGo(IGrappleable grappler, String grappleResult): void` from `IGrappleableWrapper`
+- `Hit(HandWeapon weapon, IsoGameCharacter wielder, float damageSplit, boolean bIgnoreDamage, float modDelta, boolean bRemote): float`
+- `InitSpritePartsZombie(): void`
+- `InitSpritePartsZombie(SurvivorDesc desc): void`
+- `LetGoOfGrappled(String grappleResult): void` from `IGrappleableWrapper`
+- `RejectGrapple(IGrappleable grappleRejector): void` from `IGrappleableWrapper`
+- `RespondToSound(): void`
+- `Thump(IsoMovingObject isoMovingObject): void` from `Thumpable`
+- `Wander(): void`
+- `WanderFromWindow(): boolean`
+- `actionStateChanged(ActionContext sender): void`
+- `addAggro(IsoMovingObject other, float damage): void`
+- `addAnimEventListener(String animEventName, IAnimEventListenerEnum<E> listener, E defaultValue): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerNoTrackEnum<E> listener, E defaultValue): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListener listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerBoolean listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerFloat listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerNoParam listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerNoTrack listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerNoTrackString listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(String animEventName, IAnimEventListenerString listener): void` from `IAnimEventWrappedBroadcaster`
+- `addAnimEventListener(IAnimEventListenerSetVariableString listener): void` from `IAnimEventWrappedBroadcaster`
+- `addBloodFromVehicleImpact(float speed): void`
+- `addFootstepParametersIfNeeded(): void`
+- `addItemToSpawnAtDeath(InventoryItem item): void`
+- `addRandomBloodDirtHolesEtc(): void`
+- `addRandomVisualBandages(): void`
+- `addRandomVisualDamages(): void`
+- `addVisualBandage(BodyPartType bodyPart, boolean bloody): void`
+- `allowsInvisibleAnimationSkips(): boolean`
+- `animEvent(IsoGameCharacter owner, AnimLayer layer, AnimationTrack track, AnimEvent event): void` from `IAnimEventWrappedBroadcaster`
+- `canBeHitByVehicle(BaseVehicle impactingVehicle): boolean` from `IStateCharacter`
+- `canCurrentStateRagdoll(): boolean` from `IStateCharacter`
+- `canSeeHeadSquare(IsoPlayer player): boolean`
+- `canSlowDownVehicleWhenHit(BaseVehicle impactingVehicle): boolean` from `IStateCharacter`
+- `canTransitionToState(String stateName): boolean` from `IAnimatable`
+- `cantBite(): boolean`
+- `clearAggroList(): void`
+- `clearItemsToSpawnAtDeath(): void`
+- `clothingItemChanged(String itemGuid): void`
+- `collideWith(IsoObject obj): void`
+- `containsVariable(String name): boolean` from `IAnimationVariableSourceContainer`
+- `couldSeeHeadSquare(IsoPlayer player): boolean`
+- `doCrawlerSpeed(int zombieSpeed): void`
+- `doFakeShambler(int zombieSpeed): void`
+- `doFastShambler(): void`
+- `doShambler(): void`
+- `doSprinter(): void`
+- `doZombieSpeed(): void`
+- `doZombieSpeed(int zombieSpeed): void`
+- `dressInClothingItem(String itemGUID): void`
+- `dressInNamedOutfit(String outfitName): void`
+- `dressInPersistentOutfitID(int outfitID): void`
+- `dressInRandomOutfit(): void`
+- `frameStep(): void` from `ECSEntity`
+- `getAttackDidDamage(): boolean`
+- `getAttackOutcome(): String`
+- `getBearingFromGrappledTarget(): float` from `IGrappleableWrapper`
+- `getBearingToGrappledTarget(): float` from `IGrappleableWrapper`
+- `getBiteSoundName(): String`
+- `getCharacterInputComponent(): CharacterInputComponent` from `CharacterInputComponentEntity`
+- `getCrawlerType(): int`
+- `getECSComponent(Class<ComponentType> componentTypeClass): ComponentType` from `ECSEntity`
+- `getEatBodyTarget(): IsoMovingObject`
+- `getEatSpeed(): float`
+- `getFootstepVolume(): float`
+- `getFrameNo(): int` from `ECSEntity`
+- `getGrappleOffset(Vector3f result): Vector3f` from `IGrappleableWrapper`
+- `getGrappleOffset(Vector3 result): Vector3` from `IGrappleableWrapper`
+- `getGrappleOffsetBehaviour(): GrappleOffsetBehaviour` from `IGrappleableWrapper`
+- `getGrapplePosOffsetForward(): float` from `IGrappleableWrapper`
+- `getGrappleResult(): String` from `IGrappleableWrapper`
+- `getGrappleRotOffsetYaw(): float` from `IGrappleableWrapper`
+- `getGrappledBy(): IGrappleable` from `IGrappleableWrapper`
+- `getGrappledByString(): String` from `IGrappleableWrapper`
+- `getGrappledByType(): String` from `IGrappleableWrapper`
+- `getGrapplingTarget(): IGrappleable` from `IGrappleableWrapper`
+- `getHeadSquare(IsoPlayer player): IsoGridSquare`
+- `getHitHeadWhileOnFloor(): int`
+- `getHitTime(): int`
+- `getHumanVisual(): HumanVisual`
+- `getInputMode(): CharacterInputMode` from `CharacterInputComponentEntity`
+- `getInputMoveVector(Vector2 out): Vector2` from `CharacterInputComponentEntity`
+- `getInputMovementRate(): float` from `CharacterInputComponentEntity`
+- `getItemVisuals(ItemVisuals itemVisuals): void`
+- `getItemVisuals(): ItemVisuals`
+- `getJoypadBind(): int` from `CharacterInputComponentEntity`
+- `getLastHitPart(): String`
+- `getNetworkCharacterAI(): NetworkZombieAI`
+- `getObjectName(): String`
+- `getOnlineID(): short`
+- `getOutfitName(): String`
+- `getOwner(): UdpConnection`
+- `getOwnerPlayer(): IsoPlayer`
+- `getPlayerAttackPosition(): String`
+- `getRealState(): String`
+- `getReanimatedPlayer(): IsoPlayer`
+- `getScreenProperX(int playerIndex): int`
+- `getScreenProperY(int playerIndex): int`
+- `getSharedDescriptor(): SharedDescriptors.Descriptor`
+- `getSharedDescriptorID(): int`
+- `getSharedGrappleAnimFraction(): float` from `IGrappleableWrapper`
+- `getSharedGrappleAnimNode(): String` from `IGrappleableWrapper`
+- `getSharedGrappleAnimTime(): float` from `IGrappleableWrapper`
+- `getSharedGrappleType(): String` from `IGrappleableWrapper`
+- `getSpeedType(): int`
+- `getTarget(): IsoMovingObject`
+- `getTargetSeenTime(): float`
+- `getThumpCondition(): float`
+- `getThumpTimer(): int`
+- `getTurnDelta(): float`
+- `getUnbalancedLevel(): float`
+- `getVariable(String key): IAnimationVariableSlot` from `IAnimationVariableSourceContainer`
+- `getVariableBoolean(AnimationVariableHandle handle): boolean` from `IAnimationVariableSource`
+- `getVariableBoolean(String name): boolean` from `IAnimationVariableSourceContainer`
+- `getVariableBoolean(String key, boolean defaultVal): boolean` from `IAnimationVariableSourceContainer`
+- `getVariableEnum(String key, EnumType defaultVal): EnumType` from `IAnimationVariableSource`
+- `getVariableFloat(String name, float defaultVal): float` from `IAnimationVariableSourceContainer`
+- `getVariableString(String name): String` from `IAnimationVariableSourceContainer`
+- `getVisual(): BaseVisual`
+- `getVoiceChoice(): int`
+- `getVoiceSoundName(): String`
+- `getWalkType(): String`
+- `getZombieLungeSpeed(): void`
+- `getZombieWalkTowardSpeed(float speed, float dist, Vector2 temp): void`
+- `hasCurrentState(): boolean` from `IStateCharacter`
+- `hasECSComponent(Class<? extends ECSComponent> componentTypeClass): boolean` from `ECSEntity`
+- `hasECSComponent(ECSComponent component): boolean` from `ECSEntity`
+- `helmetFallFromVisuals(boolean hitHead): boolean`
+- `hitConsequences(HandWeapon weapon, IsoGameCharacter wielder, boolean bIgnoreDamage, float damage, boolean bRemote): void`
+- `initCanCrawlUnderVehicle(): void`
+- `initializeStates(): void`
+- `isAimKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isAllowRun(): boolean` from `CharacterInputComponentEntity`
+- `isAllowSprint(): boolean` from `CharacterInputComponentEntity`
+- `isAlwaysKnockedDown(): boolean`
+- `isAnyAimKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isAttackButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isAttacking(): boolean`
+- `isBecomeCrawler(): boolean`
+- `isBeingGrappled(): boolean` from `IGrappleableWrapper`
+- `isBeingGrappledBy(IGrappleable grappledBy): boolean` from `IGrappleableWrapper`
+- `isBuildButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isBuildButtonReleased(): boolean` from `CharacterInputComponentEntity`
+- `isCanCrawlUnderVehicle(): boolean`
+- `isCanWalk(): boolean`
+- `isChangeCharacterKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isCrawling(): boolean`
+- `isCrouchButtonPressed(): boolean` from `CharacterInputComponentEntity`
+- `isCurrentStateAttacking(): boolean` from `IStateCharacter`
+- `isCurrentStateMoving(): boolean` from `IStateCharacter`
+- `isDoContinueGrapple(): boolean` from `IGrappleableWrapper`
+- `isDoGrapple(): boolean` from `IGrappleableWrapper`
+- `isF12KeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isFacingTarget(): boolean`
+- `isFakeDead(): boolean`
+- `isForceAim(): boolean` from `CharacterInputComponentEntity`
+- `isForceEatingAnimation(): boolean`
+- `isForceFakeDead(): boolean`
+- `isForceRun(): boolean` from `CharacterInputComponentEntity`
+- `isForceSprint(): boolean` from `CharacterInputComponentEntity`
+- `isGettingUp(): boolean`
+- `isGrappling(): boolean` from `IGrappleableWrapper`
+- `isGrapplingTarget(IGrappleable grapplingTarget): boolean` from `IGrappleableWrapper`
+- `isHitLegsWhileOnFloor(): boolean`
+- `isIgnoreInputsForDirection(): boolean` from `CharacterInputComponentEntity`
+- `isIgnoringAimingInput(): boolean` from `CharacterInputComponentEntity`
+- `isInputMoveAxisApplied(): boolean` from `CharacterInputComponentEntity`
+- `isInteractButtonClicked(): boolean` from `CharacterInputComponentEntity`
+- `isInteractButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isInteractButtonPressed(): boolean` from `CharacterInputComponentEntity`
+- `isJawStabAttach(): boolean`
+- `isJoypadButtonsActive(): boolean` from `CharacterInputComponentEntity`
+- `isJoypadIgnoreAimUntilCentered(): boolean` from `CharacterInputComponentEntity`
+- `isKnifeDeath(): boolean`
+- `isLeadAggro(IsoMovingObject other): boolean`
+- `isManualFloorAtkButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isMeleeButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isMovingToPlayerSound(): boolean`
+- `isNoTeeth(): boolean`
+- `isOnlyJawStab(): boolean`
+- `isPerformingAnyGrappleAnimation(): boolean` from `IGrappleableWrapper`
+- `isPerformingGrappleGrabAnimation(): boolean` from `IGrappleableWrapper`
+- `isPrecisionAimKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isProne(): boolean`
+- `isPushableForSeparate(): boolean`
+- `isPushedByForSeparate(IsoMovingObject other): boolean`
+- `isReanimate(): boolean`
+- `isReanimatedForGrappleOnly(): boolean`
+- `isReanimatedPlayer(): boolean`
+- `isRemoteZombie(): boolean`
+- `isRespondingToPlayerSound(): boolean`
+- `isRunButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isShiftKeyDown(): boolean` from `CharacterInputComponentEntity`
+- `isSitAgainstWall(): boolean`
+- `isSkeleton(): boolean`
+- `isSkipResolveCollision(): boolean`
+- `isSolidForSeparate(): boolean`
+- `isSprintButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isStaggerBack(): boolean`
+- `isTargetInCone(float dist, float dot): boolean`
+- `isTargetLocationKnown(): boolean`
+- `isTargetVisible(): boolean`
+- `isUseless(): boolean`
+- `isUsingWornItems(): boolean`
+- `isVariable(String name, String val): boolean` from `IAnimationVariableSourceContainer`
+- `isWalkToButtonDown(): boolean` from `CharacterInputComponentEntity`
+- `isZombie(): boolean`
+- `isZombieAttacking(): boolean`
+- `isZombieAttacking(IsoMovingObject other): boolean`
+- `knockDown(boolean hitFromBehind): void`
+- `load(ByteBuffer input, int worldVersion, boolean isDebugSave): void`
+- `makeInactive(boolean binactive): void`
+- `moveUnmodded(float dirX, float dirY): void`
+- `onDeath_ShouldDoSplatterAndSounds(HandWeapon weapon, IsoGameCharacter wielder, boolean isGory): boolean`
+- `onGameLoadingStateEnter(): void` from `ECSEntity`
+- `onHitByVehicle(BaseVehicle vehicle, float impactSpeed, Vector2 hitDir, Vector2 impactPosOnVehicle): float`
+- `onInGameStateEnter(): void` from `ECSEntity`
+- `onKilled(IsoGameCharacter killer, HandWeapon handWeapon, boolean bGory): void`
+- `onMouseLeftClick(): void`
+- `onWornItemsChanged(): void`
+- `onZombieGrappleEnded(): void`
+- `pathToCharacter(IsoGameCharacter target): void`
+- `pathToLocationF(float x, float y, float z): void`
+- `playHurtSound(): long`
+- `postupdate(): void`
+- `preupdate(): void`
+- `registerECSComponents(): void`
+- `removeECSComponent(ComponentType component): void` from `ECSEntity`
+- `removeECSComponent(Class<ComponentType> componentClass): void` from `ECSEntity`
+- `removeFromWorld(): void`
+- `render(float x, float y, float z, ColorInfo col, boolean bDoChild, boolean bWallLightingPass, Shader shader): void`
+- `renderlast(): void`
+- `resetForReuse(): void`
+- `resetGrappleStateToDefault(String grappleResult): void` from `IGrappleableWrapper`
+- `save(ByteBuffer output, boolean isDebugSave): void`
+- `setAllowRun(boolean allowRun): void` from `CharacterInputComponentEntity`
+- `setAllowSprint(boolean allowSprint): void` from `CharacterInputComponentEntity`
+- `setAlwaysKnockedDown(boolean alwaysKnockedDown): void`
+- `setAsSurvivor(): void`
+- `setAttackDidDamage(boolean attackDidDamage): void`
+- `setAttackOutcome(String attackOutcome): void`
+- `setBecomeCrawler(boolean crawler): void`
+- `setBodyToEat(IsoDeadBody body): void`
+- `setCanCrawlUnderVehicle(boolean b): void`
+- `setCanWalk(boolean bCanStand): void`
+- `setCrawler(boolean crawling): void`
+- `setCrawlerType(int crawlerType): void`
+- `setDir(IsoDirections directions): void` from `ILuaIsoObject`
+- `setDoContinueGrapple(boolean doContinueGrapple): void` from `IGrappleableWrapper`
+- `setDoGrapple(boolean doGrapple): void` from `IGrappleableWrapper`
+- `setDoGrappleLetGo(): void` from `IGrappleable`
+- `setDressInRandomOutfit(boolean dressInRandom): void`
+- `setECSComponent(ComponentType component): void` from `ECSEntity`
+- `setEatBodyTarget(IsoMovingObject target, boolean force): void`
+- `setEatBodyTarget(IsoMovingObject target, boolean force, float eatSpeed): void`
+- `setFakeDead(boolean bFakeDead): void`
+- `setFemaleEtc(boolean female): void`
+- `setForceAim(boolean forceAim): void` from `CharacterInputComponentEntity`
+- `setForceEatingAnimation(boolean forceEatingAnimation): void`
+- `setForceFakeDead(boolean bForceFakeDead): void`
+- `setForceRun(boolean forceRun): void` from `CharacterInputComponentEntity`
+- `setForceSprint(boolean forceSprint): void` from `CharacterInputComponentEntity`
+- `setGrappleDeferredOffset(Vector3f grappleOffset): void` from `IGrappleable`
+- `setGrappleDeferredOffset(Vector3 grappleOffset): void` from `IGrappleable`
+- `setGrappleDeferredOffset(float x, float y, float z): void` from `IGrappleableWrapper`
+- `setGrapplePosOffsetForward(float grappleOffsetForward): void` from `IGrappleableWrapper`
+- `setGrappleResult(String grappleResult): void` from `IGrappleableWrapper`
+- `setGrappleRotOffsetYaw(float grappleOffsetYaw): void` from `IGrappleableWrapper`
+- `setGrappleoffsetBehaviour(GrappleOffsetBehaviour newBehaviour): void` from `IGrappleableWrapper`
+- `setHitHeadWhileOnFloor(int hitHeadWhileOnFloor): void`
+- `setHitLegsWhileOnFloor(boolean hitLegsWhileOnFloor): void`
+- `setHitTime(int hitTime): void`
+- `setIgnoreAimingInput(boolean b): void` from `CharacterInputComponentEntity`
+- `setIgnoreInputsForDirection(boolean ignoreInputsForDirection): void` from `CharacterInputComponentEntity`
+- `setImmortalTutorialZombie(boolean immortal): void`
+- `setJawStabAttach(boolean bJawStabAttach): void`
+- `setJoypadBind(int joypadBind): void` from `CharacterInputComponentEntity`
+- `setJoypadButtonsActive(boolean joypadMovementActive): void` from `CharacterInputComponentEntity`
+- `setJoypadIgnoreAim(boolean ignore): void` from `CharacterInputComponentEntity`
+- `setJoypadIgnoreAimUntilCentered(boolean ignore): void` from `CharacterInputComponentEntity`
+- `setKnifeDeath(boolean bKnifeDeath): void`
+- `setNoTeeth(boolean noTeeth): void`
+- `setOnlyJawStab(boolean onlyJawStab): void`
+- `setOwner(UdpConnection connection): void`
+- `setOwnerPlayer(IsoPlayer player): void`
+- `setPerformingGrappleGrabAnimation(boolean grappleGrabAnim): void` from `IGrappleableWrapper`
+- `setPlayerAttackPosition(String playerAttackPosition): void`
+- `setPosition(Vector3 position): void` from `IGrappleable`
+- `setReanimate(boolean reanimate): void`
+- `setReanimatedForGrappleOnly(boolean val): void`
+- `setReanimatedPlayer(boolean reanimated): void`
+- `setSharedGrappleAnimFraction(float grappleAnimFraction): void` from `IGrappleableWrapper`
+- `setSharedGrappleAnimNode(String sharedGrappleAnimNode): void` from `IGrappleableWrapper`
+- `setSharedGrappleAnimTime(float grappleAnimTime): void` from `IGrappleableWrapper`
+- `setSharedGrappleType(String sharedGrappleType): void` from `IGrappleableWrapper`
+- `setSitAgainstWall(boolean sitAgainstWall): void`
+- `setSkeleton(boolean isSkeleton): void`
+- `setSpeedTypeFromWalkType(): void`
+- `setStaggerBack(boolean bStaggerBack): void`
+- `setTarget(IsoMovingObject t): void`
+- `setTargetGrapplePos(Vector3f grapplePos): void` from `IGrappleable`
+- `setTargetGrapplePos(Vector3 grapplePos): void` from `IGrappleable`
+- `setTargetGrappleRotation(Vector2 forward): void` from `IGrappleable`
+- `setTargetGrappleRotation(float x, float y): void` from `IGrappleableWrapper`
+- `setTargetSeenTime(float seconds): void`
+- `setThumpCondition(float condition): void`
+- `setThumpCondition(int condition, int maxCondition): void`
+- `setThumpFlag(int v): void`
+- `setThumpTimer(int thumpTimer): void`
+- `setTurnAlertedValues(int soundX, int soundY): void`
+- `setUnbalancedLevel(float unbalancedLevel): void`
+- `setUseless(boolean useless): void`
+- `setVariable(String key, Class<EnumType> enumTypeClass, Supplier<EnumType> callbackGet, Consumer<EnumType> callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, Class<EnumType> enumTypeClass, Supplier<EnumType> callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, boolean defaultVal, AnimationVariableSlotCallbackBool.CallbackGetStrongTyped callbackGet, AnimationVariableSlotCallbackBool.CallbackSetStrongTyped callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, boolean defaultVal, AnimationVariableSlotCallbackBool.CallbackGetStrongTyped callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, float defaultVal, AnimationVariableSlotCallbackFloat.PrimitiveFloatSupplier callbackGet, AnimationVariableSlotCallbackFloat.PrimitiveFloatConsumer callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, float defaultVal, AnimationVariableSlotCallbackFloat.PrimitiveFloatSupplier callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, int defaultVal, AnimationVariableSlotCallbackInt.PrimitiveIntSupplier callbackGet, AnimationVariableSlotCallbackInt.PrimitiveIntConsumer callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, int defaultVal, AnimationVariableSlotCallbackInt.PrimitiveIntSupplier callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, String defaultVal, AnimationVariableSlotCallbackString.CallbackGetStrongTyped callbackGet, AnimationVariableSlotCallbackString.CallbackSetStrongTyped callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, String defaultVal, AnimationVariableSlotCallbackString.CallbackGetStrongTyped callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackBool.CallbackGetStrongTyped callbackGet, AnimationVariableSlotCallbackBool.CallbackSetStrongTyped callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackBool.CallbackGetStrongTyped callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackFloat.PrimitiveFloatSupplier callbackGet, AnimationVariableSlotCallbackFloat.PrimitiveFloatConsumer callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackFloat.PrimitiveFloatSupplier callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackInt.PrimitiveIntSupplier callbackGet, AnimationVariableSlotCallbackInt.PrimitiveIntConsumer callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackInt.PrimitiveIntSupplier callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackString.CallbackGetStrongTyped callbackGet, AnimationVariableSlotCallbackString.CallbackSetStrongTyped callbackSet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVariable(String key, AnimationVariableSlotCallbackString.CallbackGetStrongTyped callbackGet, IAnimationVariableSlotDescriptor descriptor): void` from `IAnimationVariableRegistry`
+- `setVehicle4TestCollision(BaseVehicle vehicle): void`
+- `setVehicleHitLocation(BaseVehicle vehicle): void`
+- `setWalkType(String walkType): void`
+- `setWasFakeDead(boolean wasFakeDead): void`
+- `shouldDoFenceLunge(): boolean`
+- `shouldDressInRandomOutfit(): boolean`
+- `shouldGetUpFromCrawl(): boolean`
+- `shouldZombieHaveKey(boolean allowBandits): boolean`
+- `spotted(IsoMovingObject other, boolean bForced): void`
+- `spottedNew(IsoMovingObject other, boolean bForced): void`
+- `spottedOld(IsoMovingObject other, boolean bForced): void`
+- `toString(): String`
+- `toggleCrawling(): void`
+- `toggleForceAim(): boolean` from `CharacterInputComponentEntity`
+- `tryGetECSComponent(Class<ComponentType> componentTypeClass): ComponentType` from `ECSEntity`
+- `tryThump(IsoGridSquare square): boolean`
+- `update(): void`
+- `updateVocalProperties(): void`
+- `useDescriptor(SharedDescriptors.Descriptor sharedDesc): void`
+- `visitAllComponents(Class<? extends ST> instanceOf, BiConsumer<ST, P1> visitor, P1 param1): void` from `ECSEntity`
+- `visitAllComponents(Class<? extends ST> instanceOf, Consumer<ST> visitor): void` from `ECSEntity`
+- `wasFakeDead(): boolean`
+- `wasRunButtonDown(): boolean` from `CharacterInputComponentEntity`
+
+Static functions, called as `IsoZombie.name(...)`:
+
+- `getSpeedTypeFromWalkType(String walkType): int`
+
+Constructors: `IsoZombie.new(IsoCell cell)`, `IsoZombie.new(IsoCell cell, SurvivorDesc desc, int palette)`.
+
+Static fields (a copy of the value taken when the class is exposed): `AllowRepathDelayMax: int`, `AwkwardGlovesStrengthDivisor: int`, `CRAWLER_DAMAGE_DOT: float`, `CRAWLER_DAMAGE_RANGE: float`, `DEFAULT_ENTITY_DISPLAY_NAME: String`, `EAT_BODY_DIST: float`, `EAT_BODY_TIME: float`, `GlovesStrengthBonus: int`, `HEARING_NORMAL: byte`, `HEARING_NORMAL_OR_POOR: byte`, `HEARING_PINPOINT: byte`, `HEARING_POOR: byte`, `HEARING_RANDOM: byte`, `HEARING_UNSEEN_OFFSET_HEAVY_RAIN: int`, `HEARING_UNSEEN_OFFSET_MAX: int`, `HEARING_UNSEEN_OFFSET_MIN: int`, `HUMANOID_SCREEN_CHEST_HEIGHT: float`, `HUMANOID_WORLD_CHEST_HEIGHT: float`, `LUNGE_TIME: float`, `MAX_WALL_SPLATS: int`, `MAX_ZOMBIES_EATING: int`, `PALETTE_COUNT: int`, `RENDER_OFFSET_X: int`, `RENDER_OFFSET_Y: int`, `SPEED_FAST_SHAMBLER: byte`, `SPEED_NONE: byte`, `SPEED_RANDOM: byte`, `SPEED_SHAMBLER: byte`, `SPEED_SPRINTER: byte`, `SPRINTER_FIXES: boolean`, `THUMP_FLAG_CHAINLINK_FENCE: byte`, `THUMP_FLAG_GARAGE_DOOR: byte`, `THUMP_FLAG_GENERIC: byte`, `THUMP_FLAG_METAL: byte`, `THUMP_FLAG_METAL_POLE_GATE: byte`, `THUMP_FLAG_WINDOW: byte`, `THUMP_FLAG_WINDOW_EXTRA: byte`, `THUMP_FLAG_WOOD: byte`, `THUMP_STRESS_DEFAULT: float`, `THUMP_STRESS_FENCES: float`, `THUMP_STRESS_THUMPABLE: float`, `THUMP_STRESS_TRANSPARENT_FENCES: float`, `VISION_DARKNESS_PENALTY_MAX: float`, `VISION_FOG_PENALTY_MAX: float`, `VISION_RADIUS_MAX: float`, `VISION_RADIUS_MIN: float`, `VISION_RAIN_PENALTY_MAX: float`, `WALK_SPEED_DEFAULT: float`, `WALK_SPEED_SLOW: float`, `bmod: float`, `fireColor: ColorInfo`, `gmod: float`, `lastRendered: IsoObject`, `lastRenderedRendered: IsoObject`, `lowLightingQualityHack: boolean`, `rmod: float`, `s_maxPossibleTwist: float`, `treeSoundMgr: TreeSoundManager`.
+
+### Moodle
+
+`zombie.characters.Moodles.Moodle`, class.
+
+Methods, called as `obj:name(...)`:
+
+- `Update(): boolean`
+- `chevronDifference(int count, boolean isUp, Color col): boolean`
+- `getChevronColor(): Color`
+- `getChevronCount(): int`
+- `getLevel(): int`
+- `getMoodleType(): MoodleType`
+- `isChevronIsUp(): boolean`
+- `setChevron(int count, boolean isUp, Color col): void`
+
+Constructors: `Moodle.new(MoodleType moodleType, IsoGameCharacter isoGameCharacter)`.
