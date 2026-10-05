@@ -24,7 +24,7 @@ export function Layout({ children, hideHeader = false, hideFooter = false }: Lay
   return (
     <div className="layout">
       {!hideHeader && (
-        <Header onMobileMenuToggle={handleMobileMenuToggle} />
+        <Header onMobileMenuToggle={handleMobileMenuToggle} mobileMenuOpen={mobileMenuOpen} />
       )}
       <MobileMenu isOpen={mobileMenuOpen} onClose={handleMobileMenuClose} />
       <AuthErrorFlash />

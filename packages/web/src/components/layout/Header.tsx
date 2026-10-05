@@ -11,6 +11,12 @@ export function siteSections(versionId: string) {
     .sort((a, b) => a.displayOrder - b.displayOrder);
 }
 
+/**
+ * The id of the slide-out menu (MobileMenu), which the header's menu button controls.
+ * Prefixed so an article heading's generated id (rehype-slug) cannot collide with it.
+ */
+export const MOBILE_MENU_ID = 'site-mobile-menu';
+
 // Icons
 const MenuIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -22,9 +28,11 @@ const MenuIcon = () => (
 
 interface HeaderProps {
   onMobileMenuToggle?: () => void;
+  /** Whether the slide-out menu is open, announced on the menu button as aria-expanded. */
+  mobileMenuOpen?: boolean;
 }
 
-export function Header({ onMobileMenuToggle }: HeaderProps) {
+export function Header({ onMobileMenuToggle, mobileMenuOpen = false }: HeaderProps) {
   // The same links on every page, matching the live map's copy of this header
   // (packages/aurora/src/site/SiteHeader.tsx): the default version's sections in
   // displayOrder, skipping sections with no articles, then Live Map. Older builds
@@ -80,6 +88,8 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
             className="header__mobile-menu-btn"
             onClick={onMobileMenuToggle}
             aria-label="Toggle mobile menu"
+            aria-expanded={mobileMenuOpen}
+            aria-controls={MOBILE_MENU_ID}
           >
             <MenuIcon />
           </button>

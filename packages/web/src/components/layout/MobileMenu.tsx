@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useArticleTOC } from '../../context/ArticleContext';
 import { DEFAULT_VERSION } from '../../config/versions.generated';
-import { siteSections } from './Header';
+import { MOBILE_MENU_ID, siteSections } from './Header';
 import { resolveIcon } from './Sidebar';
 import { VersionSelect } from './VersionSelect';
 import '../../styles/components/mobile-menu.css';
@@ -46,6 +46,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
       {/* Menu */}
       <nav
+        id={MOBILE_MENU_ID}
         className={`mobile-menu ${isOpen ? 'mobile-menu--open' : ''}`}
         aria-label="Mobile navigation"
         aria-hidden={!isOpen}
