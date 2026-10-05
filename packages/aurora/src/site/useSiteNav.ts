@@ -20,13 +20,16 @@ export const SITE_NAV_URL = '/data/versions.json'
 /**
  * Shown while the navigation loads, and whenever it cannot be read: always in
  * `npm run aurora` (the dev server has no /data/ folder), and on the live site if the
- * file is missing or has changed shape. The Build 42 sections as of 2026-09-29.
+ * file is missing or has changed shape. The Build 42 sections as of 2026-10-04 (KB14
+ * added How the Game Works and Running a Server).
  */
 export const FALLBACK_SECTIONS: readonly SiteSection[] = [
   { id: 'modding', name: 'Modding', href: '/pz/build-42/modding' },
   { id: 'mapping', name: 'Mapping', href: '/pz/build-42/mapping' },
   { id: 'vehicles', name: 'Vehicles', href: '/pz/build-42/vehicles' },
   { id: 'outcast-mods', name: 'Outcast Mods', href: '/pz/build-42/outcast-mods' },
+  { id: 'gameplay', name: 'How the Game Works', href: '/pz/build-42/gameplay' },
+  { id: 'server', name: 'Running a Server', href: '/pz/build-42/server' },
 ]
 
 // Version and section ids become part of a link, so only plain slugs are accepted.

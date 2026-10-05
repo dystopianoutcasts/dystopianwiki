@@ -118,7 +118,7 @@ main[tabindex="-1"]:focus { outline: none; }
 /* A copy of the wiki's header (packages/web/src/styles/components/header.css), so the
    map carries the same top bar as every page of the site. Same height, colours, font,
    sizes and breakpoints. Above the map's own layers and its phone bottom sheet (1300),
-   so the phone menu opens over them. */
+   so the site menu opens over them. */
 .site-header {
   flex: none; position: relative; z-index: 1400;
   height: var(--header-height);
@@ -212,8 +212,9 @@ main[tabindex="-1"]:focus { outline: none; }
 }
 .site-header .account__login:hover { background-color: var(--color-accent-500); text-decoration: none; }
 
-/* Phone menu: a native <details>, so it opens and closes by keyboard and announces its
-   state with no script. Only shown at the wiki's own tablet breakpoint and below. */
+/* Site menu: a native <details>, so it opens and closes by keyboard and announces its
+   state (expanded or collapsed) with no script. Shown wherever the section links are
+   hidden: the wiki's xl breakpoint, 1280px, and below. */
 .site-header__menu { display: none; position: relative; }
 .site-header__menu-btn {
   list-style: none; display: flex; align-items: center; justify-content: center;
@@ -233,10 +234,22 @@ main[tabindex="-1"]:focus { outline: none; }
   display: flex; align-items: center; min-height: 44px; font-size: var(--font-size-base);
 }
 
-/* The wiki's breakpoints: 768px hides the section links, 640px hides the site name. */
-@media (max-width: 768px) {
+/* The wiki's breakpoints (packages/web header.css and mobile-menu.css, KB14): 1280px
+   swaps the section links for the menu, 768px widens the search box, 640px hides the
+   site name. With six Build 42 sections and Live Map (headless Edge, 2026-10-04) the
+   swap at 768px left the links on two to four lines up to 1,200px, pushed the header
+   121px past an 800px window and 21px past a 900px one, and at 1,240px still squeezed
+   the search box to 73px. The nav, the menu and the closed panel's hiding switch
+   together, or a width exists with no way to navigate. */
+@media (max-width: 1280px) {
   .site-header__nav { display: none; }
   .site-header__menu { display: block; }
+  /* Hidden, not only unopened, so Tab never reaches the closed menu's links. A closed
+     <details> already skips its content; this keeps that true if the element changes. */
+  .site-header__menu-panel { visibility: hidden; }
+  .site-header__menu[open] .site-header__menu-panel { visibility: visible; }
+}
+@media (max-width: 768px) {
   .site-header__search { max-width: none; margin: 0 var(--spacing-2); }
 }
 @media (max-width: 640px) {

@@ -100,8 +100,15 @@ describe('sectionsFrom: garbage in, null out', () => {
 })
 
 describe('fallback and address', () => {
-  it('falls back to the four Build 42 sections the task names', () => {
-    expect(FALLBACK_SECTIONS.map((s) => s.name)).toEqual(['Modding', 'Mapping', 'Vehicles', 'Outcast Mods'])
+  it('falls back to the six Build 42 sections (T39 named four; KB14 added two)', () => {
+    expect(FALLBACK_SECTIONS.map((s) => s.name)).toEqual([
+      'Modding',
+      'Mapping',
+      'Vehicles',
+      'Outcast Mods',
+      'How the Game Works',
+      'Running a Server',
+    ])
     for (const s of FALLBACK_SECTIONS) expect(s.href).toBe(`/pz/build-42/${s.id}`)
   })
 

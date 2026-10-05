@@ -4,6 +4,7 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
+import { sectionsFrom } from './useSiteNav'
 
 const src = readFileSync(fileURLToPath(new URL('./SiteHeader.tsx', import.meta.url)), 'utf8')
 
@@ -59,5 +60,92 @@ describe('the site header styles', () => {
     expect(used.size).toBeGreaterThan(0)
     const missing = [...used].filter((name) => !new RegExp(`${name}\\s*:`).test(css))
     expect(missing).toEqual([])
+  })
+})
+
+// Where the section links give way to the menu (MAPNAV, after KB14 fixed the wiki's own
+// header at the same width, packages/web commit 9784bff). With six Build 42 sections and
+// Live Map the old 768px switch left the links on two to four lines up to 1,200px and
+// pushed the header 121px past an 800px window (headless Edge, 2026-10-04). The nav must
+// hide, the menu must show and its closed panel must be hidden at exactly the same width,
+// or a width exists with no way to navigate, or with links Tab reaches but no one sees.
+describe('the site header breakpoint', () => {
+  const css = readFileSync(fileURLToPath(new URL('../styles/aurora.css', import.meta.url)), 'utf8').replace(
+    /\/\*[\s\S]*?\*\//g,
+    '',
+  )
+  const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+  /** The max-width (px) of every @media block holding a rule `selector { ... decl ... }`. */
+  function maxWidthsFor(selector: string, decl: RegExp): number[] {
+    const found: number[] = []
+    const media = /@media\s*\(max-width:\s*(\d+)px\)\s*\{/g
+    let m: RegExpExecArray | null
+    while ((m = media.exec(css))) {
+      let depth = 1
+      let i = media.lastIndex
+      while (i < css.length && depth > 0) {
+        if (css[i] === '{') depth++
+        else if (css[i] === '}') depth--
+        i++
+      }
+      const body = css.slice(media.lastIndex, i - 1)
+      const rule = new RegExp(`(?:^|\\})\\s*${escape(selector)}\\s*\\{([^}]*)\\}`, 'g')
+      if ([...body.matchAll(rule)].some((r) => decl.test(r[1]))) found.push(Number(m[1]))
+    }
+    return found
+  }
+
+  const navHidden = maxWidthsFor('.site-header__nav', /display:\s*none/)
+  const menuShown = maxWidthsFor('.site-header__menu', /display:\s*block/)
+  const panelHidden = maxWidthsFor('.site-header__menu-panel', /visibility:\s*hidden/)
+  const panelOpen = maxWidthsFor('.site-header__menu[open] .site-header__menu-panel', /visibility:\s*visible/)
+
+  it('the header carries the seven links the 1280px breakpoint was measured for', () => {
+    // The file the header reads at runtime, /data/versions.json (repo root data/).
+    const published = JSON.parse(readFileSync(fileURLToPath(new URL('../../../../data/versions.json', import.meta.url)), 'utf8'))
+    const sections = sectionsFrom(published) ?? []
+    expect(
+      sections.length + 1,
+      'sections + Live Map. A section was added or removed: re-measure the header and move the breakpoint',
+    ).toBe(7)
+  })
+
+  it('the nav hides and the menu shows at one single width', () => {
+    expect(navHidden).toHaveLength(1)
+    expect(menuShown).toEqual(navHidden)
+  })
+
+  it('that width is the wiki\'s xl breakpoint, 1280px', () => {
+    expect(navHidden).toEqual([1280])
+  })
+
+  it('above it the menu is not displayed at all, so only one "Site" navigation is exposed', () => {
+    expect(css).toMatch(/(?:^|\})\s*\.site-header__menu\s*\{[^}]*display:\s*none/)
+  })
+
+  it('the default nav and menu rules come before the 1280px block, so the block wins', () => {
+    // Same specificity: a default placed after the @media block would override it, and the
+    // menu would never show (or the nav never hide) at any width.
+    const block = css.indexOf('@media (max-width: 1280px)')
+    const menuDefault = /(?:^|\})\s*\.site-header__menu\s*\{[^}]*display:\s*none/
+    const navDefault = /(?:^|\})\s*\.site-header__nav\s*\{[^}]*display:\s*flex/
+    expect(block).toBeGreaterThan(-1)
+    expect(css.slice(0, block)).toMatch(menuDefault)
+    expect(css.slice(0, block)).toMatch(navDefault)
+    expect(css.slice(block)).not.toMatch(menuDefault)
+    expect(css.slice(block)).not.toMatch(navDefault)
+  })
+
+  it('the closed menu panel is hidden, not only unopened, so Tab cannot reach its links', () => {
+    expect(panelHidden).toEqual(navHidden)
+    expect(panelOpen).toEqual(navHidden)
+  })
+
+  it('the menu stays a native <details>, whose summary exposes expanded state without aria-expanded', () => {
+    expect(src).toMatch(/<details className="site-header__menu">\s*<summary className="site-header__menu-btn">/)
+    // ARIA in HTML: a details element's summary takes only global attributes,
+    // aria-disabled and aria-haspopup. The browser maps the open state onto it.
+    expect(src).not.toMatch(/<summary[^>]*aria-expanded/)
   })
 })

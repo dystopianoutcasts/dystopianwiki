@@ -14,7 +14,10 @@
 //   wiki's default version.
 // - At the right, the same "Log in" button and avatar as the wiki (the login session is
 //   shared, sign-in happens on the wiki's /login page), plus "Sign out" when signed in.
-// - On a phone the section links fold into a native <details> menu.
+// - Up to 1280 px wide (the wiki's own switch, KB14) the section links fold into a native
+//   <details> menu. Its <summary> carries no aria-expanded: the browser exposes the
+//   details' open state on it already, and ARIA in HTML allows only global attributes,
+//   aria-disabled and aria-haspopup on a details element's summary.
 import { AccountControl } from '../auth/AccountControl'
 import { useSiteNav } from './useSiteNav'
 import type { SiteSection } from './useSiteNav'
@@ -72,7 +75,7 @@ export function SiteHeader() {
           <span className="site-header__logo-text">{SITE_NAME}</span>
         </a>
 
-        {/* Wide screens. Hidden on a phone, where the menu below takes over. */}
+        {/* Wider than 1280 px. Hidden at and below it, where the menu below takes over. */}
         <nav className="site-header__nav" aria-label="Site">
           <SiteLinks sections={sections} />
         </nav>
@@ -96,7 +99,7 @@ export function SiteHeader() {
 
         <div className="site-header__actions">
           <AccountControl />
-          {/* Phones only. Hidden (display: none) on wide screens, so only one
+          {/* 1280 px and below only. Hidden (display: none) when wider, so only one
               "Site" navigation is ever exposed at a time. */}
           <details className="site-header__menu">
             <summary className="site-header__menu-btn">
