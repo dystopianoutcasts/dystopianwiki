@@ -90,8 +90,12 @@
   background-color: var(--color-primary-800);
 }
 
-/* @breakpoint-md: 768px - Tablet: Hide desktop nav, use mobile menu */
-@media (max-width: 768px) {
+/* @breakpoint-xl: 1280px - Hide desktop nav, use mobile menu. The six Build 42
+   section links and Live Map take about 800 px; with the logo, search and account
+   the header needs about 1,170 px. Any narrower the links wrap, and below about
+   1,000 px they push Log in off screen (KB14). Keep in step with
+   .header__mobile-menu-btn below and mobile-menu.css. */
+@media (max-width: 1280px) {
   .header__nav {
     display: none;
   }
@@ -185,8 +189,8 @@
   color: var(--color-text-primary);
 }
 
-/* @breakpoint-md: 768px - Tablet: Show mobile menu button */
-@media (max-width: 768px) {
+/* @breakpoint-xl: 1280px - Show mobile menu button wherever the nav is hidden */
+@media (max-width: 1280px) {
   .header__mobile-menu-btn {
     display: flex;
   }

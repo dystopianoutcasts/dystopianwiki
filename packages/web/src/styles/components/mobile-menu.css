@@ -7,8 +7,8 @@
   display: none;
 }
 
-/* @breakpoint-md: 768px - Tablet: Enable mobile menu */
-@media (max-width: 768px) {
+/* @breakpoint-xl: 1280px - Enable mobile menu wherever the header nav is hidden (header.css) */
+@media (max-width: 1280px) {
   .mobile-menu {
     display: block;
     position: fixed;
@@ -19,12 +19,15 @@
     background-color: var(--color-surface);
     z-index: 45;
     transform: translateX(-100%);
-    transition: transform var(--transition-normal);
+    /* Hidden, not only moved off screen, so Tab never reaches the closed menu's links. */
+    visibility: hidden;
+    transition: transform var(--transition-normal), visibility var(--transition-normal);
     overflow-y: auto;
   }
 
   .mobile-menu--open {
     transform: translateX(0);
+    visibility: visible;
   }
 
   /* Backdrop */
@@ -80,7 +83,9 @@
     color: var(--color-primary-600);
   }
 
-  [data-theme="dark"] .mobile-menu__nav-link--active {
+  /* Dark is the default theme and carries no data-theme attribute (useTheme), so a
+     [data-theme="dark"] selector never matched and the current page read 2:1. */
+  :root:not([data-theme="light"]) .mobile-menu__nav-link--active {
     color: var(--color-accent-400);
   }
 
