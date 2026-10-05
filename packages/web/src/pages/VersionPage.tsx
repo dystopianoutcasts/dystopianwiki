@@ -3,22 +3,12 @@ import { Layout } from '../components/layout/Layout';
 import { WikiLayout } from '../components/layout/WikiLayout';
 import { SEOHead } from '../components/seo/SEOHead';
 import { getVersion, DEFAULT_VERSION } from '../config/versions.generated';
+import { resolveIcon } from '../components/layout/Sidebar';
 import '../styles/pages/version-page.css';
 
-// Icon words come from _section.json (contract C2) and are the same short
-// words the sidebar understands. Kept small here on purpose: this page only
-// ever renders section-level icons, never category ones.
-const sectionIconMap: Record<string, string> = {
-  plug: '🔌',
-  map: '🗺️',
-  car: '🚗',
-  gear: '⚙️',
-  book: '📖',
-};
-
-function resolveSectionIcon(icon: string): string {
-  return sectionIconMap[icon] || sectionIconMap.book;
-}
+// Section icons resolve through the sidebar's resolveIcon, the one map of the
+// icon words written into _section.json and _category.json (contract C2), so a
+// new section's icon shows here as it does in the sidebar and the menu.
 
 const statusLabels: Record<string, string> = {
   current: 'Current',
@@ -89,8 +79,8 @@ export function VersionPage() {
                       to={`/pz/${version}/${section.id}`}
                       className="version-page__section-card"
                     >
-                      <span className="version-page__section-icon">
-                        {resolveSectionIcon(section.icon)}
+                      <span className="version-page__section-icon" aria-hidden="true">
+                        {resolveIcon(section.icon)}
                       </span>
                       <div className="version-page__section-content">
                         <h3 className="version-page__section-name">{section.name}</h3>
