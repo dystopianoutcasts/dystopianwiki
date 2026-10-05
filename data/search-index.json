@@ -1878,6 +1878,183 @@
     "difficulty": "beginner"
   },
   {
+    "id": "build-42-fatigue-sleep-and-endurance",
+    "title": "Fatigue, sleep and endurance: how fast they drain and recover",
+    "slug": "fatigue-sleep-and-endurance",
+    "url": "/pz/build-42/gameplay/the-real-numbers/fatigue-sleep-and-endurance",
+    "version": "build-42",
+    "section": "gameplay",
+    "category": "the-real-numbers",
+    "tags": [
+      "fatigue",
+      "sleep",
+      "endurance",
+      "fitness",
+      "sandbox"
+    ],
+    "excerpt": "Endurance runs on real time: standing still refills an empty bar in about 9.3 real minutes at Fitness 5, sitting does it five times faster. Fatigue runs on game time: about 16 in-game hours awake to reach Tired. Sleep clears 0.7 fatigue in 5 hours and the last 0.3 in 7. On a default multiplayer server there is no fatigue at all. Read from the 42.21 code.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-firearm-accuracy-and-damage",
+    "title": "How firearm accuracy and damage work",
+    "slug": "firearm-accuracy-and-damage",
+    "url": "/pz/build-42/gameplay/the-real-numbers/firearm-accuracy-and-damage",
+    "version": "build-42",
+    "section": "gameplay",
+    "category": "the-real-numbers",
+    "tags": [
+      "combat",
+      "firearms",
+      "aiming",
+      "weapons",
+      "sandbox"
+    ],
+    "excerpt": "Which zombie a bullet can reach is decided by the game's physics library; the hit chance on top of it is plain Java: the gun's HitChance plus 4 per Aiming level, a range bonus inside the gun's sight range, and penalties for moving, darkness, weather, moodles and headgear. A bullet does its damage roll x body part x 1.5 x 0.3, with criticals multiplying it again. The formulas and worked numbers from the Build 42.21 code.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-how-fast-skills-level",
+    "title": "How fast skills level: XP, multipliers and how they stack",
+    "slug": "how-fast-skills-level",
+    "url": "/pz/build-42/gameplay/the-real-numbers/how-fast-skills-level",
+    "version": "build-42",
+    "section": "gameplay",
+    "category": "the-real-numbers",
+    "tags": [
+      "skills",
+      "xp",
+      "skill-books",
+      "traits",
+      "sandbox"
+    ],
+    "excerpt": "A normal skill needs 32,775 XP to reach level 10, Strength and Fitness need 487,500. Every XP gain is multiplied by your starting level in that skill (a quarter speed if you started at 0), your learner trait, any skill book you have read and the sandbox multiplier, and they all multiply together. Read from the 42.21 code.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-how-infection-works",
+    "title": "How infection works: bites, scratches, armour and the clock",
+    "slug": "how-infection-works",
+    "url": "/pz/build-42/gameplay/the-real-numbers/how-infection-works",
+    "version": "build-42",
+    "section": "gameplay",
+    "category": "the-real-numbers",
+    "tags": [
+      "infection",
+      "zombies",
+      "health",
+      "clothing",
+      "sandbox"
+    ],
+    "excerpt": "A bite always infects, a laceration 25% of the time, a scratch 7%. From the front one zombie attack infects an unarmoured new character about 22% of the time; from behind about half. Clothing blocks by its bite or scratch defence. With default settings the infection kills in 2 to 3 in-game days. The full chain, read from the Build 42.21 code.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-how-long-zombies-remember-you",
+    "title": "How long a zombie remembers you",
+    "slug": "how-long-zombies-remember-you",
+    "url": "/pz/build-42/gameplay/the-real-numbers/how-long-zombies-remember-you",
+    "version": "build-42",
+    "section": "gameplay",
+    "category": "the-real-numbers",
+    "tags": [
+      "zombies",
+      "stealth",
+      "memory",
+      "sandbox"
+    ],
+    "excerpt": "When a zombie spots you it locks on for 15 seconds and knows where you are through walls and darkness. With Normal memory it forgets you about 17 seconds after it last really saw you or you last hit it. The timers, what breaks the lock, and what each Memory setting does, read from the Build 42.21 code.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-how-loot-is-rolled-and-respawns",
+    "title": "How loot is rolled, and when it respawns",
+    "slug": "how-loot-is-rolled-and-respawns",
+    "url": "/pz/build-42/gameplay/the-real-numbers/how-loot-is-rolled-and-respawns",
+    "version": "build-42",
+    "section": "gameplay",
+    "category": "the-real-numbers",
+    "tags": [
+      "loot",
+      "distributions",
+      "sandbox",
+      "loot-respawn"
+    ],
+    "excerpt": "Every container rolls its loot list a set number of times, and on each roll every item gets its own test: listed chance x 100 x your sandbox slider, out of 10,000. Default sliders are 0.6 for most categories. Loot is rolled once per container and saved; respawn is off by default and, when on, only refills looted town containers holding fewer than 5 items. Read from the 42.21 code.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-how-zombies-see-and-hear-you",
+    "title": "How far zombies see and hear you",
+    "slug": "how-zombies-see-and-hear-you",
+    "url": "/pz/build-42/gameplay/the-real-numbers/how-zombies-see-and-hear-you",
+    "version": "build-42",
+    "section": "gameplay",
+    "category": "the-real-numbers",
+    "tags": [
+      "zombies",
+      "stealth",
+      "sneaking",
+      "noise",
+      "sandbox"
+    ],
+    "excerpt": "A zombie can only spot you inside its vision radius (20 tiles in clear daylight, never less than 10) and only while you are in its field of view; inside that, it rolls a chance every frame that light, facing, sneaking, traits and cover change. It hears any noise whose radius reaches it. The formulas, the default numbers and the noise table, read from the Build 42.21 code.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-melee-damage-and-critical-hits",
+    "title": "How melee damage and critical hits work",
+    "slug": "melee-damage-and-critical-hits",
+    "url": "/pz/build-42/gameplay/the-real-numbers/melee-damage-and-critical-hits",
+    "version": "build-42",
+    "section": "gameplay",
+    "category": "the-real-numbers",
+    "tags": [
+      "combat",
+      "melee",
+      "weapons",
+      "zombies",
+      "sandbox"
+    ],
+    "excerpt": "A melee hit is the weapon's damage roll times about a dozen factors, ending in a fixed x0.15. Normal zombies have 1.5 to 1.8 health, and from the fourth hit on every blow is multiplied again (x3, x4.5, x6). A critical needs a roll against the weapon's crit chance plus 3 per skill level, multiplies damage by at least 2 and knocks the zombie down. The full chain from the Build 42.21 code, with worked examples.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-the-helicopter-event",
+    "title": "The helicopter event: how it picks its day and its target",
+    "slug": "the-helicopter-event",
+    "url": "/pz/build-42/gameplay/the-real-numbers/the-helicopter-event",
+    "version": "build-42",
+    "section": "gameplay",
+    "category": "the-real-numbers",
+    "tags": [
+      "helicopter",
+      "events",
+      "zombies",
+      "sandbox"
+    ],
+    "excerpt": "On the default sandbox the helicopter comes once, on a random day after 6 to 9 nights, starting between 9 AM and 6 PM in a window 1 to 4 hours long. It picks one player at random, flies in from 1,000 tiles away, hovers for at most a minute and makes a 500-tile noise about every ten seconds. Read from the 42.21 code.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-weight-encumbrance-and-strength",
+    "title": "Weight, encumbrance and strength: what you can really carry",
+    "slug": "weight-encumbrance-and-strength",
+    "url": "/pz/build-42/gameplay/the-real-numbers/weight-encumbrance-and-strength",
+    "version": "build-42",
+    "section": "gameplay",
+    "category": "the-real-numbers",
+    "tags": [
+      "weight",
+      "encumbrance",
+      "strength",
+      "bags",
+      "endurance"
+    ],
+    "excerpt": "At Strength 5 your weight limit is 12, from 6 at Strength 0 to 20 at Strength 10. Worn and held items count at 30%, hotbar items at 70%, and a bag in your main inventory counts in full. Heavy Load starts above 100% of the limit and gets worse at 125%, 150% and 175%. Read from the 42.21 code.",
+    "difficulty": "beginner"
+  },
+  {
     "id": "build-42-buildings-and-buildinged",
     "title": "Buildings and BuildingEd",
     "slug": "buildings-and-buildinged",
@@ -3010,6 +3187,206 @@
       "recipe-tags"
     ],
     "excerpt": "Minimal real recipe (from entities/agricultural/workstations/entity_stone_mill.txt) [CONFIRMED]:",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-body-damage-wounds-and-infection",
+    "title": "Body damage, wounds and infection: how the body is simulated",
+    "slug": "body-damage-wounds-and-infection",
+    "url": "/pz/build-42/modding/engine/body-damage-wounds-and-infection",
+    "version": "build-42",
+    "section": "modding",
+    "category": "engine",
+    "tags": [
+      "engine",
+      "health",
+      "infection",
+      "multiplayer",
+      "lua-api"
+    ],
+    "excerpt": "Seventeen body parts, one overall health number worked out from them, and an infection clock. In Build 42 multiplayer the whole body runs on the server and reaches your client in packets every half second to two seconds. How it fits together, what Lua can change, and the call that infects the player when you meant to heal a bite.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-body-temperature-and-the-thermoregulator",
+    "title": "Body temperature: the thermoregulator, clothing and the two moodles",
+    "slug": "body-temperature-and-the-thermoregulator",
+    "url": "/pz/build-42/modding/engine/body-temperature-and-the-thermoregulator",
+    "version": "build-42",
+    "section": "modding",
+    "category": "engine",
+    "tags": [
+      "engine",
+      "temperature",
+      "clothing",
+      "multiplayer",
+      "lua-api"
+    ],
+    "excerpt": "Every player carries a heat model with seventeen body nodes, a metabolic rate and a core temperature. How clothing, wetness and work feed it, what the Hypothermia and Hyperthermia moodles read, why Hyperthermia cannot pass level 2 in 42.21, and why the work your timed action does may never reach the server's copy of the model.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-chat-channels-and-the-chat-server",
+    "title": "Chat: the channels, the chat server and what Lua can do with it",
+    "slug": "chat-channels-and-the-chat-server",
+    "url": "/pz/build-42/modding/engine/chat-channels-and-the-chat-server",
+    "version": "build-42",
+    "section": "modding",
+    "category": "engine",
+    "tags": [
+      "engine",
+      "chat",
+      "multiplayer",
+      "server",
+      "lua-api"
+    ],
+    "excerpt": "Multiplayer chat is a Java chat server, a Java client manager and a Lua chat window. The nine channels, how far say and shout carry, where the bad-word filter, slow mode and the character limit really live, why typing makes no noise for zombies, and what a mod can and cannot send.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-erosion",
+    "title": "Erosion: how the world grows back",
+    "slug": "erosion",
+    "url": "/pz/build-42/modding/engine/erosion",
+    "version": "build-42",
+    "section": "modding",
+    "category": "engine",
+    "tags": [
+      "engine",
+      "world",
+      "erosion",
+      "seasons",
+      "sandbox",
+      "multiplayer"
+    ],
+    "excerpt": "Long grass, new trees, vines on walls and cracks in the road all come from one clock that ticks every ten game minutes. How the erosion clock works, why your base does not change while you stand in it, how multiplayer keeps every client growing the same plants, and what a mod can and cannot touch.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-pathfinding-and-the-native-library",
+    "title": "Pathfinding: what Java decides and what the native library hides",
+    "slug": "pathfinding-and-the-native-library",
+    "url": "/pz/build-42/modding/engine/pathfinding-and-the-native-library",
+    "version": "build-42",
+    "section": "modding",
+    "category": "engine",
+    "tags": [
+      "engine",
+      "pathfinding",
+      "zombies",
+      "multiplayer",
+      "native"
+    ],
+    "excerpt": "In Build 42.21 the route search itself runs in a native library, PZPathFind64, on its own thread. Java still decides when to search, what it tells the search about the walker, and how the walker follows the route. What each side does, the queue order, how squares reach the pathfinder, and why MapKnowledge does nothing with the native search on.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-procedural-world-generation",
+    "title": "Procedural world generation in Build 42",
+    "slug": "procedural-world-generation",
+    "url": "/pz/build-42/modding/engine/procedural-world-generation",
+    "version": "build-42",
+    "section": "modding",
+    "category": "engine",
+    "tags": [
+      "engine",
+      "world",
+      "worldgen",
+      "biomes",
+      "mapping",
+      "multiplayer"
+    ],
+    "excerpt": "Build 42 generates ground the map never drew, and repaints the vegetation of the map it did draw, from Lua tables, a biome image per cell and the world seed. When the generator runs, which side runs it, what the seed really changes (zombies included), and how a mod or a map changes the result.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-radio-and-television",
+    "title": "Radio and television: how broadcasts reach you",
+    "slug": "radio-and-television",
+    "url": "/pz/build-42/modding/engine/radio-and-television",
+    "version": "build-42",
+    "section": "modding",
+    "category": "engine",
+    "tags": [
+      "engine",
+      "radio",
+      "television",
+      "lua-api",
+      "multiplayer"
+    ],
+    "excerpt": "Every radio station, TV show, emergency broadcast and walkie-talkie line goes through ZomboidRadio. Where channels come from, when a broadcast starts airing, how lines reach a device and a player, how the skill and mood codes are applied, and the traps in the device loop that a radio mod will hit.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-randomized-stories",
+    "title": "Stories and randomized content: how the world gets its scenes",
+    "slug": "randomized-stories",
+    "url": "/pz/build-42/modding/engine/randomized-stories",
+    "version": "build-42",
+    "section": "modding",
+    "category": "engine",
+    "tags": [
+      "engine",
+      "world",
+      "stories",
+      "sandbox",
+      "multiplayer"
+    ],
+    "excerpt": "The burnt house, the police roadblock, the campsite in the woods and the dead survivor in the bathroom are all placed by one Java system the first time a chunk loads. How the five kinds of story are rolled, what the sandbox options really do to the odds, what Lua can tune, and the traps we found in the code.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-the-entity-component-system",
+    "title": "The Build 42 entity component system: GameEntity, components and the engine",
+    "slug": "the-entity-component-system",
+    "url": "/pz/build-42/modding/engine/the-entity-component-system",
+    "version": "build-42",
+    "section": "modding",
+    "category": "engine",
+    "tags": [
+      "engine",
+      "entities",
+      "crafting",
+      "fluids",
+      "multiplayer"
+    ],
+    "excerpt": "Build 42 bolted a small entity component system onto the old object classes. Crafting benches, drying racks and every fluid container are made of its components. What a GameEntity is, the 23 fixed component types, when the engine ticks them and on which side, how machines keep working while nobody is near, and the traps in the code.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-the-world-map",
+    "title": "The world map: data, discovery and symbols",
+    "slug": "the-world-map",
+    "url": "/pz/build-42/modding/engine/the-world-map",
+    "version": "build-42",
+    "section": "modding",
+    "category": "engine",
+    "tags": [
+      "engine",
+      "world-map",
+      "ui",
+      "lua-api",
+      "multiplayer"
+    ],
+    "excerpt": "The map you open with M, the minimap, paper maps and the stamps you draw are one Java system with a Lua front end. Where the map data comes from, how the fog of discovery is stored and synced, who owns a symbol on a server, and how a mod adds a paper map, a stamp or a reveal that survives a reconnect.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-zombies-states-and-the-ai-director",
+    "title": "Zombies: the state machine, who runs them, and the \"AI director\"",
+    "slug": "zombies-states-and-the-ai-director",
+    "url": "/pz/build-42/modding/engine/zombies-states-and-the-ai-director",
+    "version": "build-42",
+    "section": "modding",
+    "category": "engine",
+    "tags": [
+      "engine",
+      "zombies",
+      "ai",
+      "multiplayer",
+      "sandbox"
+    ],
+    "excerpt": "A zombie is a Java state machine driven by XML transition files, the same kind animals use. How a zombie picks what to do, when it walks straight and when it asks the pathfinder, which client runs it in multiplayer, and what the \"sadistic AI director\" really is: the sleep interruption system, two of whose switches do nothing in 42.21.",
     "difficulty": "intermediate"
   },
   {
@@ -6628,6 +7005,348 @@
     ],
     "excerpt": "Everything this mod depends on, with the line it was read from. Sources:",
     "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-admin-commands",
+    "title": "Admin commands (Build 42.21)",
+    "slug": "admin-commands",
+    "url": "/pz/build-42/server/admin-commands/admin-commands",
+    "version": "build-42",
+    "section": "server",
+    "category": "admin-commands",
+    "tags": [
+      "server",
+      "admin",
+      "commands",
+      "generated"
+    ],
+    "excerpt": "All 67 Build 42.21 server commands: their forms, the capability each needs, the roles that have it, and the game's help text.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-reading-the-servers-numbers",
+    "title": "Reading the server's numbers",
+    "slug": "reading-the-servers-numbers",
+    "url": "/pz/build-42/server/getting-started/reading-the-servers-numbers",
+    "version": "build-42",
+    "section": "server",
+    "category": "getting-started",
+    "tags": [
+      "server",
+      "statistics",
+      "admin",
+      "logs"
+    ],
+    "excerpt": "Where a Build 42.21 server keeps its numbers: the statistics period, who may see the statistics, the /stats command, and the perk and action logs. What the numbers mean is in our separate article.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-running-a-server",
+    "title": "Running a server",
+    "slug": "running-a-server",
+    "url": "/pz/build-42/server/getting-started/running-a-server",
+    "version": "build-42",
+    "section": "server",
+    "category": "getting-started",
+    "tags": [
+      "server",
+      "server-options",
+      "sandbox-options",
+      "admin"
+    ],
+    "excerpt": "The Outcast server owner's handbook for Build 42.21: your server's files, every server option, sandbox option, admin command and role, what surprised us in the code, and how these pages are made.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-server-roles-and-capabilities",
+    "title": "Roles and capabilities (Build 42.21)",
+    "slug": "server-roles-and-capabilities",
+    "url": "/pz/build-42/server/roles-and-access/server-roles-and-capabilities",
+    "version": "build-42",
+    "section": "server",
+    "category": "roles-and-access",
+    "tags": [
+      "server",
+      "admin",
+      "roles",
+      "generated"
+    ],
+    "excerpt": "The 7 built-in roles of Build 42.21, what each may do, and all 98 capabilities with the commands that need them.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-where-each-capability-is-checked",
+    "title": "Where each capability is checked (Build 42.21)",
+    "slug": "where-each-capability-is-checked",
+    "url": "/pz/build-42/server/roles-and-access/where-each-capability-is-checked",
+    "version": "build-42",
+    "section": "server",
+    "category": "roles-and-access",
+    "tags": [
+      "server",
+      "admin",
+      "roles",
+      "reference",
+      "generated"
+    ],
+    "excerpt": "Every Build 42.21 capability with the Java and Lua code that checks it.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-sandbox-options-character",
+    "title": "Sandbox options: character and XP",
+    "slug": "sandbox-options-character",
+    "url": "/pz/build-42/server/sandbox-options/sandbox-options-character",
+    "version": "build-42",
+    "section": "server",
+    "category": "sandbox-options",
+    "tags": [
+      "server",
+      "sandbox-options",
+      "sandbox",
+      "generated"
+    ],
+    "excerpt": "Character creation points, injuries, needs, reading, weapons and the XP multipliers for every skill. Every option with its default, the presets that change it, and where Build 42.21 reads it.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-sandbox-options-directory",
+    "title": "Sandbox options A to Z (Build 42.21)",
+    "slug": "sandbox-options-directory",
+    "url": "/pz/build-42/server/sandbox-options/sandbox-options-directory",
+    "version": "build-42",
+    "section": "server",
+    "category": "sandbox-options",
+    "tags": [
+      "server",
+      "sandbox-options",
+      "sandbox",
+      "reference",
+      "generated"
+    ],
+    "excerpt": "All 269 Build 42.21 sandbox options A to Z, how the SandboxVars file and the presets work, and which options the code never reads.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-sandbox-options-loot",
+    "title": "Sandbox options: loot",
+    "slug": "sandbox-options-loot",
+    "url": "/pz/build-42/server/sandbox-options/sandbox-options-loot",
+    "version": "build-42",
+    "section": "server",
+    "category": "sandbox-options",
+    "tags": [
+      "server",
+      "sandbox-options",
+      "sandbox",
+      "generated"
+    ],
+    "excerpt": "How much loot there is, of each kind, how it respawns and how already-looted the world looks as time passes. Every option with its default, the presets that change it, and where Build 42.21 reads it.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-sandbox-options-meta-events",
+    "title": "Sandbox options: meta events and stories",
+    "slug": "sandbox-options-meta-events",
+    "url": "/pz/build-42/server/sandbox-options/sandbox-options-meta-events",
+    "version": "build-42",
+    "section": "server",
+    "category": "sandbox-options",
+    "tags": [
+      "server",
+      "sandbox-options",
+      "sandbox",
+      "generated"
+    ],
+    "excerpt": "The helicopter, distant gunshots and other meta events, generators, annotated maps and the randomised stories in houses, on roads and in zones. Every option with its default, the presets that change it, and where Build 42.21 reads it.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-sandbox-options-nature-and-livestock",
+    "title": "Sandbox options: nature and livestock",
+    "slug": "sandbox-options-nature-and-livestock",
+    "url": "/pz/build-42/server/sandbox-options/sandbox-options-nature-and-livestock",
+    "version": "build-42",
+    "section": "server",
+    "category": "sandbox-options",
+    "tags": [
+      "server",
+      "sandbox-options",
+      "sandbox",
+      "generated"
+    ],
+    "excerpt": "Farming, foraging, fishing, erosion and the animals. Every option with its default, the presets that change it, and where Build 42.21 reads it.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-sandbox-options-not-on-the-settings-screen",
+    "title": "Sandbox options not on the settings screen",
+    "slug": "sandbox-options-not-on-the-settings-screen",
+    "url": "/pz/build-42/server/sandbox-options/sandbox-options-not-on-the-settings-screen",
+    "version": "build-42",
+    "section": "server",
+    "category": "sandbox-options",
+    "tags": [
+      "server",
+      "sandbox-options",
+      "sandbox",
+      "generated"
+    ],
+    "excerpt": "These sandbox options exist in the code and in the SandboxVars file but on no page of the settings screen, or only in debug mode. Every option with its default, the presets that change it, and where Build 42.21 reads it.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-sandbox-options-time-and-world",
+    "title": "Sandbox options: time and world",
+    "slug": "sandbox-options-time-and-world",
+    "url": "/pz/build-42/server/sandbox-options/sandbox-options-time-and-world",
+    "version": "build-42",
+    "section": "server",
+    "category": "sandbox-options",
+    "tags": [
+      "server",
+      "sandbox-options",
+      "sandbox",
+      "generated"
+    ],
+    "excerpt": "When the world starts, how long a day lasts, when the water and power go off, alarms, locked houses, the weather and the look of the world. Every option with its default, the presets that change it, and where Build 42.21 reads it.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-sandbox-options-vehicles",
+    "title": "Sandbox options: vehicles",
+    "slug": "sandbox-options-vehicles",
+    "url": "/pz/build-42/server/sandbox-options/sandbox-options-vehicles",
+    "version": "build-42",
+    "section": "server",
+    "category": "sandbox-options",
+    "tags": [
+      "server",
+      "sandbox-options",
+      "sandbox",
+      "generated"
+    ],
+    "excerpt": "How many cars there are, their fuel, condition, locks and alarms, and what a crash does. Every option with its default, the presets that change it, and where Build 42.21 reads it.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-sandbox-options-zombies",
+    "title": "Sandbox options: zombies",
+    "slug": "sandbox-options-zombies",
+    "url": "/pz/build-42/server/sandbox-options/sandbox-options-zombies",
+    "version": "build-42",
+    "section": "server",
+    "category": "sandbox-options",
+    "tags": [
+      "server",
+      "sandbox-options",
+      "sandbox",
+      "generated"
+    ],
+    "excerpt": "How many zombies, how they spread and respawn, and the Zombie Lore: speed, strength, infection, senses and behaviour. Every option with its default, the presets that change it, and where Build 42.21 reads it.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-server-options-chat-voice-and-connections",
+    "title": "Server options: chat, voice, RCON, Discord and the rest",
+    "slug": "server-options-chat-voice-and-connections",
+    "url": "/pz/build-42/server/server-options/server-options-chat-voice-and-connections",
+    "version": "build-42",
+    "section": "server",
+    "category": "server-options",
+    "tags": [
+      "server",
+      "server-options",
+      "multiplayer",
+      "generated"
+    ],
+    "excerpt": "Chat, voice, remote control (RCON), the Discord bridge, UPnP, vehicles and the settings screen's \"Other\" page. Every option with its default, range and where Build 42.21 reads it.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-server-options-details-steam-and-backups",
+    "title": "Server options: details, Steam and backups",
+    "slug": "server-options-details-steam-and-backups",
+    "url": "/pz/build-42/server/server-options/server-options-details-steam-and-backups",
+    "version": "build-42",
+    "section": "server",
+    "category": "server-options",
+    "tags": [
+      "server",
+      "server-options",
+      "multiplayer",
+      "generated"
+    ],
+    "excerpt": "The options on the first pages of the server settings screen: the server's name and port, the password, Steam, and the automatic backups. Every option with its default, range and where Build 42.21 reads it.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-server-options-directory",
+    "title": "Server options A to Z (Build 42.21)",
+    "slug": "server-options-directory",
+    "url": "/pz/build-42/server/server-options/server-options-directory",
+    "version": "build-42",
+    "section": "server",
+    "category": "server-options",
+    "tags": [
+      "server",
+      "server-options",
+      "reference",
+      "generated"
+    ],
+    "excerpt": "All 144 options of the Build 42.21 server ini file, A to Z, with type, default and settings page, and how the game reads the file.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-server-options-only-in-the-ini-file",
+    "title": "Server options only in the ini file",
+    "slug": "server-options-only-in-the-ini-file",
+    "url": "/pz/build-42/server/server-options/server-options-only-in-the-ini-file",
+    "version": "build-42",
+    "section": "server",
+    "category": "server-options",
+    "tags": [
+      "server",
+      "server-options",
+      "multiplayer",
+      "generated"
+    ],
+    "excerpt": "These options are in the server's ini file but on no page of the settings screen: anti-cheat, the bad-word filter, spawn points, towing and more. You change them by editing the file, or with `/changeoption`. Every option with its default, range and where Build 42.21 reads it.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-server-options-players-and-admins",
+    "title": "Server options: players and admins",
+    "slug": "server-options-players-and-admins",
+    "url": "/pz/build-42/server/server-options/server-options-players-and-admins",
+    "version": "build-42",
+    "section": "server",
+    "category": "server-options",
+    "tags": [
+      "server",
+      "server-options",
+      "multiplayer",
+      "generated"
+    ],
+    "excerpt": "Who can join, how many, what players see of each other, sleeping, respawning, and what admins are shown. Every option with its default, range and where Build 42.21 reads it.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-server-options-pvp-safehouses-and-factions",
+    "title": "Server options: PVP, safehouses, factions, fire and loot",
+    "slug": "server-options-pvp-safehouses-and-factions",
+    "url": "/pz/build-42/server/server-options/server-options-pvp-safehouses-and-factions",
+    "version": "build-42",
+    "section": "server",
+    "category": "server-options",
+    "tags": [
+      "server",
+      "server-options",
+      "multiplayer",
+      "generated"
+    ],
+    "excerpt": "Everything that decides how players treat each other: PVP and its damage, safehouses, factions, the war system, fire and loot respawn in safehouses. Every option with its default, range and where Build 42.21 reads it.",
+    "difficulty": "beginner"
   },
   {
     "id": "build-42-how-to-animate-a-vehicle-part",

@@ -1,0 +1,12 @@
+{
+  "categories": [
+    {
+      "id": "the-real-numbers",
+      "name": "The Real Numbers",
+      "description": "One question players argue about per page, answered from the code: the formula, the default-sandbox numbers, and what changes them.",
+      "icon": "database",
+      "articleCount": 10,
+      "displayOrder": 1
+    }
+  ]
+}

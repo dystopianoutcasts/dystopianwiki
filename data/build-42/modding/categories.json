@@ -119,6 +119,14 @@
       "icon": "book",
       "articleCount": 26,
       "displayOrder": 15
+    },
+    {
+      "id": "engine",
+      "name": "The Engine Explained",
+      "description": "What each big Build 42 subsystem does, where it lives in the code, which side runs it, and what a mod can reach.",
+      "icon": "gear",
+      "articleCount": 11,
+      "displayOrder": 16
     }
   ]
 }
