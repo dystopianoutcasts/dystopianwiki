@@ -57,7 +57,7 @@
   background-color: var(--color-primary-100);
 }
 
-[data-theme="dark"] .toc__link--active {
+:where(:root):not([data-theme="light"]) .toc__link--active {
   color: var(--color-accent-400);
   border-left-color: var(--color-accent-500);
   background-color: var(--color-primary-800);

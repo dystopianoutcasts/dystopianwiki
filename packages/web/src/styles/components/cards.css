@@ -145,10 +145,10 @@
   color: var(--color-accent-600);
 }
 
-[data-theme="dark"] .section-card--primary .section-card__link {
+:where(:root):not([data-theme="light"]) .section-card--primary .section-card__link {
   color: var(--color-primary-300);
 }
 
-[data-theme="dark"] .section-card--accent .section-card__link {
+:where(:root):not([data-theme="light"]) .section-card--accent .section-card__link {
   color: var(--color-accent-400);
 }

@@ -22,7 +22,7 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-[data-theme="dark"] .code-block__header {
+:where(:root):not([data-theme="light"]) .code-block__header {
   background-color: var(--color-primary-900);
 }
 
@@ -63,7 +63,7 @@
   border-color: var(--color-accent-300);
 }
 
-[data-theme="dark"] .code-block__copy--copied {
+:where(:root):not([data-theme="light"]) .code-block__copy--copied {
   background-color: var(--color-accent-900);
   color: var(--color-accent-300);
   border-color: var(--color-accent-700);
@@ -166,14 +166,15 @@
 }
 
 /* Dark theme adjustments */
-[data-theme="dark"] .code-block .hljs-keyword {
+:where(:root):not([data-theme="light"]) .code-block .hljs-keyword {
   color: #c678dd;
 }
 
-[data-theme="dark"] .code-block .hljs-string {
+:where(:root):not([data-theme="light"]) .code-block .hljs-string {
   color: #98c379;
 }
 
-[data-theme="dark"] .code-block .hljs-comment {
-  color: #7f848e;
+:where(:root):not([data-theme="light"]) .code-block .hljs-comment {
+  /* 4.7:1 on --color-code-bg (#7f848e read 4.4:1, under the 4.5:1 AA minimum) */
+  color: #848993;
 }

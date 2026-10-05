@@ -84,7 +84,7 @@
   border-radius: var(--border-radius-full);
 }
 
-[data-theme="dark"] .wiki-article__category {
+:where(:root):not([data-theme="light"]) .wiki-article__category {
   color: var(--color-accent-400);
   background-color: var(--color-primary-800);
 }
@@ -111,17 +111,17 @@
   color: var(--color-highlight-700);
 }
 
-[data-theme="dark"] .wiki-article__difficulty--beginner {
+:where(:root):not([data-theme="light"]) .wiki-article__difficulty--beginner {
   background-color: var(--color-accent-900);
   color: var(--color-accent-300);
 }
 
-[data-theme="dark"] .wiki-article__difficulty--intermediate {
+:where(:root):not([data-theme="light"]) .wiki-article__difficulty--intermediate {
   background-color: var(--color-primary-800);
   color: var(--color-primary-200);
 }
 
-[data-theme="dark"] .wiki-article__difficulty--advanced {
+:where(:root):not([data-theme="light"]) .wiki-article__difficulty--advanced {
   background-color: var(--color-highlight-900);
   color: var(--color-highlight-300);
 }
@@ -217,7 +217,7 @@
   text-decoration: none;
 }
 
-[data-theme="dark"] .wiki-article__next-step:hover {
+:where(:root):not([data-theme="light"]) .wiki-article__next-step:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
@@ -227,7 +227,7 @@
   color: var(--color-primary-600);
 }
 
-[data-theme="dark"] .wiki-article__next-step-title {
+:where(:root):not([data-theme="light"]) .wiki-article__next-step-title {
   color: var(--color-accent-400);
 }
 

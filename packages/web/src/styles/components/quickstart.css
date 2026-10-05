@@ -65,7 +65,7 @@
   text-decoration: none;
 }
 
-[data-theme="dark"] .quickstart-card:hover {
+:where(:root):not([data-theme="light"]) .quickstart-card:hover {
   border-color: var(--color-accent-500);
 }
 
@@ -120,12 +120,12 @@
   color: var(--color-accent-700);
 }
 
-[data-theme="dark"] .quickstart-card__section--modding {
+:where(:root):not([data-theme="light"]) .quickstart-card__section--modding {
   background-color: var(--color-primary-800);
   color: var(--color-primary-200);
 }
 
-[data-theme="dark"] .quickstart-card__section--mapping {
+:where(:root):not([data-theme="light"]) .quickstart-card__section--mapping {
   background-color: var(--color-accent-900);
   color: var(--color-accent-200);
 }

@@ -204,6 +204,12 @@
 
    ═══════════════════════════════════════════════════════════════════ */
 
+/* Dark is the default: these :root values, with no data-theme attribute (nothing in the
+   app sets one; useTheme is not used). A dark-only rule is therefore written
+   :where(:root):not([data-theme="light"]) .x, which matches whenever the theme is not
+   light and has the specificity [data-theme="dark"] .x would have; [data-theme="dark"]
+   itself never matches. */
+
 /* ═══════════════════════════════════════════════════════════════════
    LIGHT THEME - Deep Royal Blue with Cyan Highlights
    Deep navy background (#000d23) with bright cyan (#00FFFF) accents

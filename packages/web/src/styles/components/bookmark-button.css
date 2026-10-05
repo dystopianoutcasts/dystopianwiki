@@ -90,13 +90,25 @@
 }
 
 /* Dark theme */
-[data-theme="dark"] .bookmark-button {
+:where(:root):not([data-theme="light"]) .bookmark-button {
   background: var(--color-neutral-800, #2d2d2d);
   border-color: var(--color-neutral-600, #525252);
 }
 
-[data-theme="dark"] .bookmark-button:hover:not(:disabled) {
+:where(:root):not([data-theme="light"]) .bookmark-button:hover:not(:disabled) {
   background: var(--color-neutral-700, #404040);
+}
+
+/* The two rules above outrank .bookmark-button--active, so the bookmarked state restates
+   its fill here, or it would look the same as not bookmarked (white on primary-600 9:1). */
+:where(:root):not([data-theme="light"]) .bookmark-button--active {
+  background: var(--color-primary-600, #387a7a);
+  border-color: var(--color-primary-600, #387a7a);
+}
+
+:where(:root):not([data-theme="light"]) .bookmark-button--active:hover:not(:disabled) {
+  background: var(--color-primary-700, #2d6363);
+  border-color: var(--color-primary-700, #2d6363);
 }
 
 /* Mobile responsive */

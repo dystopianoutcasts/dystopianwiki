@@ -94,7 +94,7 @@
 }
 
 /* Dark theme adjustments */
-[data-theme="dark"] .not-found-page__title {
+:where(:root):not([data-theme="light"]) .not-found-page__title {
   color: var(--color-primary-400);
 }
 
