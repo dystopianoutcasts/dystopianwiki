@@ -105,6 +105,17 @@
   text-decoration: none;
 }
 
+/* Dark theme: the same, because orange links on near-white text differ by colour alone too
+   (1.9:1) */
+:where(:root):not([data-theme="light"]) .markdown a {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+:where(:root):not([data-theme="light"]) .markdown :is(h1, h2, h3, h4, h5, h6) a {
+  text-decoration: none;
+}
+
 /* Lists */
 .markdown ul,
 .markdown ol {

@@ -9,7 +9,7 @@
  * label read 1.03:1, the next-step title 2.16:1. It is now a light theme in the brand's blues,
  * and every pair below is checked against WCAG 2.2 AA (4.5:1 text, 3:1 large text and non-text
  * UI) on the light palette, read from variables.css. A guard pins the dark values the new tokens
- * add, so the dark theme computes the same colours as before.
+ * add (KB17 changed three of them on purpose; darkTheme.test.ts checks those).
  *
  * node:test, run with `npx tsx --test src/styles/lightTheme.test.ts` from packages/web.
  */
@@ -198,13 +198,13 @@ for (const [file, selector, check] of LIGHT_RULES) {
   })
 }
 
-test('the tokens KB16 adds leave the dark theme computing the same colours', () => {
+test('the tokens KB16 adds have the dark values intended (KB17 changed three, checked in darkTheme.test.ts)', () => {
   const d = (name: string) => resolveWith(darkTokens, v(name))
-  assert.equal(d('on-accent'), '#ffffff', 'buttons that wrote color: white must stay white in dark')
+  assert.equal(d('on-accent'), '#000000', 'KB17: text on orange fills is black in dark too (white read 2.7 to 3.2:1)')
   assert.equal(d('inline-code-bg'), d('code-bg'), 'inline code in dark keeps the code background')
   assert.equal(d('inline-code-text'), d('code-text'), 'inline code in dark keeps the code colour')
-  assert.equal(d('control-border'), d('border'), 'form controls in dark keep the divider colour')
-  assert.equal(d('code-line-number'), d('text-muted'), 'line numbers in dark keep the muted colour')
+  assert.equal(d('control-border'), d('primary-400'), 'KB17: form controls in dark are outlined in primary-400 (the divider colour read 1.6:1)')
+  assert.equal(d('code-line-number'), d('text-secondary'), 'KB17: line numbers in dark use the secondary text colour (the muted one read 3.5:1)')
 })
 
 test('the dark :root palette is the one darkTheme.test.ts checks (no KB16 value changed it)', () => {

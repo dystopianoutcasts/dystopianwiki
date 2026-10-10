@@ -319,6 +319,12 @@
   cursor: default;
 }
 
+/* The completed button has no fill (--color-success-600 is not defined), so in dark its text
+   stays white on the page rather than taking the black meant for an orange fill */
+:where(:root):not([data-theme="light"]) .wiki-article__complete-btn--completed {
+  color: #ffffff;
+}
+
 .wiki-article__complete-btn--completed::before {
   content: '\2713 ';
 }
