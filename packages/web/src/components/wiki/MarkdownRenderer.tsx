@@ -4,6 +4,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
 import { CodeBlock } from './CodeBlock';
+import { ScrollBox } from './ScrollBox';
 import { footnoteBackContent } from './footnoteBack';
 import '../../styles/components/markdown.css';
 
@@ -117,11 +118,11 @@ export function MarkdownRenderer({ content, className = '' }: MarkdownRendererPr
         );
       },
 
-      // Tables with wrapper for horizontal scroll
+      // Tables scroll sideways inside their own box on a narrow screen, never the page
       table: ({ children, ...props }: any) => (
-        <div style={{ overflowX: 'auto' }}>
+        <ScrollBox className="markdown-table-scroll" label="Table">
           <table {...props}>{children}</table>
-        </div>
+        </ScrollBox>
       ),
 
       // Images with loading lazy

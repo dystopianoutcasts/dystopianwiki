@@ -422,8 +422,12 @@
 
 /* @breakpoint-xl: 1280px - Below large desktop: Stack article layout, hide desktop TOC */
 @media (max-width: 1280px) {
+  /* Stacked, the article column must take the page's width (stretch), not shrink to its
+     content: with flex-start a long code line or a wide table made it as wide as itself
+     (585 to 1781 px at a 390 px viewport, KB16) and the page cut its right side off. */
   .wiki-article__body {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .wiki-article__toc {

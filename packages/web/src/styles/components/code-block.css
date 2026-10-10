@@ -74,13 +74,22 @@
   height: 14px;
 }
 
-/* Code Content */
+/* Code Content: a long line scrolls inside the block, never the page (KB16) */
 .code-block__content {
   overflow-x: auto;
+  max-width: 100%;
   padding: var(--spacing-4);
 }
 
+/* The block clips its children (rounded corners), so the focus ring sits inside the edge,
+   on the code background, in the code colour (the page's ring is made for the page). */
+.code-block__content:focus-visible {
+  outline: 2px solid var(--color-code-text);
+  outline-offset: -2px;
+}
+
 .code-block__content pre {
+  overflow: visible;
   margin: 0;
   padding: 0;
   background: transparent;

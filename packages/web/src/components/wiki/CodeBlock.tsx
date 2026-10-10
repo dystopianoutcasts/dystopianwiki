@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { ScrollBox } from './ScrollBox';
 import '../../styles/components/code-block.css';
 
 // Icons
@@ -60,7 +61,7 @@ export function CodeBlock({
       </div>
 
       {/* Code Content */}
-      <div className="code-block__content">
+      <ScrollBox className="code-block__content" label={`Code: ${filename || language}`}>
         {showLineNumbers && (
           <div className="code-block__line-numbers" aria-hidden="true">
             {lines.map((_, i) => (
@@ -73,7 +74,7 @@ export function CodeBlock({
             {code}
           </code>
         </pre>
-      </div>
+      </ScrollBox>
     </div>
   );
 }

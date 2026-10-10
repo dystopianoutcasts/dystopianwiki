@@ -178,6 +178,37 @@
   text-align: center;
 }
 
+/* Phone widths (KB16): long words, URLs and inline code wrap inside the column. Code blocks
+   (white-space: pre) and tables keep their width and scroll inside their own box. */
+.markdown {
+  overflow-wrap: anywhere;
+}
+
+.markdown th,
+.markdown td {
+  overflow-wrap: break-word; /* a table keeps its natural width; its box scrolls */
+}
+
+.markdown video,
+.markdown iframe {
+  max-width: 100%;
+}
+
+.markdown-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: var(--spacing-4) 0;
+}
+
+.markdown-table-scroll > table {
+  margin: 0;
+}
+
+.markdown-table-scroll:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
 /* Tables */
 .markdown table {
   width: 100%;
