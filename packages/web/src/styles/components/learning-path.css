@@ -22,11 +22,12 @@
 }
 
 [data-theme="light"] .learning-path__hero {
+  /* Pale blue to pale purple: the hero's navy text reads on it (KB16) */
   background: linear-gradient(
     135deg,
-    #1d4ed8 0%,
-    #2563eb 50%,
-    #7c3aed 100%
+    #d5e3f0 0%,
+    #e8eef6 55%,
+    #e5dced 100%
   );
 }
 
@@ -214,7 +215,7 @@
   align-items: center;
   justify-content: center;
   background: var(--color-accent-500);
-  color: white;
+  color: var(--color-on-accent);
   border-radius: 50%;
   font-size: 14px;
   font-weight: bold;
@@ -332,4 +333,25 @@
 .learning-path__reset:hover {
   border-color: var(--color-accent-400);
   color: var(--color-accent-400);
+}
+
+/* Light theme (KB16): the base colour is made for the dark page */
+[data-theme="light"] .learning-card__difficulty--beginner {
+  background: #d3efe4;
+  color: #075e45;
+}
+
+[data-theme="light"] .learning-card__difficulty--intermediate {
+  background: #dce6f2;
+  color: #1d4f8c;
+}
+
+[data-theme="light"] .learning-card__difficulty--advanced {
+  background: #ece3f4;
+  color: #5f2d8a;
+}
+
+/* Light theme (KB16): the base colour is made for the dark page */
+[data-theme="light"] .learning-path__reset:hover {
+  color: var(--color-accent-900);
 }

@@ -70,6 +70,8 @@
   --color-text-muted: #64748b;
   --color-border: var(--color-primary-700);
   --color-border-light: var(--color-primary-800);
+  /* Outline of a form control (the same as a divider here; 3:1 in the light theme) */
+  --color-control-border: var(--color-border);
 
   /* Interactive - warm orange pops against deep blue */
   --color-link: var(--color-accent-400);
@@ -89,6 +91,15 @@
   /* Code - slightly elevated surface */
   --color-code-bg: var(--color-primary-800);
   --color-code-text: var(--color-accent-300);
+  /* Inline code chips; the same as code blocks here, a light chip in the light theme */
+  --color-inline-code-bg: var(--color-code-bg);
+  --color-inline-code-text: var(--color-code-text);
+
+  /* Line numbers beside a code block */
+  --color-code-line-number: var(--color-text-muted);
+
+  /* Text on an accent (orange) fill: white here, dark in the light theme (KB16) */
+  --color-on-accent: #ffffff;
 
   /* Deeper shadows for the dark base */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
@@ -211,42 +222,55 @@
    itself never matches. */
 
 /* ═══════════════════════════════════════════════════════════════════
-   LIGHT THEME - Deep Royal Blue with Cyan Highlights
-   Deep navy background (#000d23) with bright cyan (#00FFFF) accents
+   LIGHT THEME - pale steel blue with navy text (KB16)
+   A light theme in the brand's blues (a blue tint, not white or cream): navy text, navy
+   links, the copper accent kept for fills and darkened where it is text. Code blocks stay
+   dark navy, because their highlight colours are made for a dark ground. Every value here
+   is checked for WCAG 2.2 AA by lightTheme.test.ts. The selector belongs to the theme
+   mechanism (KB15); the values to KB16.
    ═══════════════════════════════════════════════════════════════════ */
 [data-theme="light"] {
-  /* Deep royal blue backgrounds - from palette */
-  --color-background: #000d23;           /* Deep midnight blue */
-  --color-surface: #001334;              /* Slightly lighter navy */
-  --color-surface-elevated: #002567;     /* Elevated surface blue */
+  /* Pale blue page, lighter cards, white raised surfaces */
+  --color-background: #e8eef6;
+  --color-surface: #f4f7fb;
+  --color-surface-elevated: #ffffff;
 
-  /* White/light text for contrast on deep blue */
-  --color-text-primary: #ffffff;         /* Pure white for maximum contrast */
-  --color-text-secondary: #b8d4f0;       /* Soft blue-white */
-  --color-text-muted: #7aa3c9;           /* Muted light blue */
+  /* Navy text: 14.2, 8.2 and 5.6 to 1 on the page */
+  --color-text-primary: #0f1f35;
+  --color-text-secondary: #33475f;
+  --color-text-muted: #4e5f75;
 
-  /* Borders - calm mid-blues */
-  --color-border: #003189;               /* Mid-tone blue border */
-  --color-border-light: #0046c5;         /* Brighter blue border */
+  /* Dividers (decoration) and control outlines */
+  --color-border: #b4c3d6;
+  --color-border-light: #ccd8e6;
+  --color-control-border: #6b7c93;
 
-  /* Interactive - bright cyan highlights + orange accent */
-  --color-link: #00e5ff;                 /* Bright cyan link */
-  --color-link-hover: #00ffff;           /* Full cyan on hover */
-  --color-focus-ring: #00ffff;           /* Cyan focus ring */
+  /* Navy links (7.1:1 on the page), a deep copper focus ring (5.4:1) */
+  --color-link: #1d4f8c;
+  --color-link-hover: #163d6e;
+  --color-focus-ring: #9a4a0b;
 
-  /* Code - deeper blue with cyan text */
-  --color-code-bg: #001945;              /* Deep blue code background */
-  --color-code-text: #00ffff;            /* Cyan code text */
+  /* Code blocks stay dark navy; inline code is a light chip with copper text */
+  --color-code-bg: #0f1f35;
+  --color-code-text: #f0bb82;
+  --color-inline-code-bg: #dce6f2;
+  --color-inline-code-text: #7a3d0a;
+  --color-code-line-number: #94a3b8;
 
-  /* Badges - cyan highlights for special elements */
-  --color-badge-new: #00e5ff;            /* Cyan for new badges */
-  --color-badge-advanced: #00bfff;       /* Lighter cyan */
-  --color-badge-beginner: var(--color-accent-400);  /* Keep orange */
-  --color-badge-intermediate: #0058f8;   /* Royal blue */
+  /* Badges, alerts and text on accent fills */
+  --color-badge-new: #4e3668;
+  --color-badge-advanced: #4e3668;
+  --color-badge-beginner: #7a3d0a;
+  --color-badge-intermediate: #264a78;
+  --color-alert-info-bg: #e5dced;
+  --color-alert-info-border: #7d5f9c;
+  --color-alert-warning-bg: #faecd5;
+  --color-alert-warning-border: #b85f12;
+  --color-on-accent: #000000; /* 4.7:1 even on the accent-700 hover fill */
 
-  /* Shadows with deep blue tint */
-  --shadow-sm: 0 1px 2px rgba(0, 10, 30, 0.4);
-  --shadow-md: 0 4px 6px rgba(0, 10, 30, 0.45), 0 2px 4px rgba(0, 10, 30, 0.3);
-  --shadow-lg: 0 10px 15px rgba(0, 10, 30, 0.45), 0 4px 6px rgba(0, 10, 30, 0.3);
-  --shadow-xl: 0 20px 25px rgba(0, 10, 30, 0.5), 0 10px 10px rgba(0, 10, 30, 0.3);
+  /* Soft navy-tinted shadows for a light ground */
+  --shadow-sm: 0 1px 2px rgba(15, 31, 53, 0.08);
+  --shadow-md: 0 4px 6px rgba(15, 31, 53, 0.1), 0 2px 4px rgba(15, 31, 53, 0.06);
+  --shadow-lg: 0 10px 15px rgba(15, 31, 53, 0.12), 0 4px 6px rgba(15, 31, 53, 0.06);
+  --shadow-xl: 0 20px 25px rgba(15, 31, 53, 0.16), 0 10px 10px rgba(15, 31, 53, 0.05);
 }

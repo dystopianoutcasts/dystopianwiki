@@ -566,3 +566,10 @@
     transition: none;
   }
 }
+
+/* Light theme (KB16): the base colour is made for the dark page */
+[data-theme="light"] .mascot-vote__voted-rank,
+[data-theme="light"] .mascot-vote__rank-pos,
+[data-theme="light"] .mascot-vote__tag {
+  color: var(--color-accent-900);
+}

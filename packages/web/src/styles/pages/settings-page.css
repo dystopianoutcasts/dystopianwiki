@@ -186,3 +186,8 @@
     padding: 1rem;
   }
 }
+
+/* Light theme (KB16): the base colour is made for the dark page */
+[data-theme="light"] .settings-form__submit {
+  background: var(--color-primary-700);
+}

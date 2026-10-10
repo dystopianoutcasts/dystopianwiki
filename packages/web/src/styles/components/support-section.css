@@ -105,3 +105,9 @@
     justify-content: center;
   }
 }
+
+/* Light theme (KB16): the base colour is made for the dark page */
+[data-theme="light"] .support-section__button {
+  color: var(--color-accent-900);
+  border-color: var(--color-accent-800);
+}

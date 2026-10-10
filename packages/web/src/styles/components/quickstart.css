@@ -115,9 +115,10 @@
   color: var(--color-primary-700);
 }
 
+/* light theme (the dark rule below overrides it): accent-900 on accent-100, 7.2:1 (accent-700 read 3.85:1) */
 .quickstart-card__section--mapping {
   background-color: var(--color-accent-100);
-  color: var(--color-accent-700);
+  color: var(--color-accent-900);
 }
 
 :where(:root):not([data-theme="light"]) .quickstart-card__section--modding {

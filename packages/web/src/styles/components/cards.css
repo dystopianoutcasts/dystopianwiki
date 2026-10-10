@@ -141,8 +141,9 @@
   color: var(--color-primary-600);
 }
 
+/* light theme (the dark rule below overrides it): accent-900, 7.2:1 on the page */
 .section-card--accent .section-card__link {
-  color: var(--color-accent-600);
+  color: var(--color-accent-900);
 }
 
 :where(:root):not([data-theme="light"]) .section-card--primary .section-card__link {

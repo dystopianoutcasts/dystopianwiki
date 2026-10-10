@@ -28,7 +28,7 @@
   display: inline-block;
   padding: var(--spacing-2) var(--spacing-4);
   background: var(--color-accent-600);
-  color: white;
+  color: var(--color-on-accent);
   border-radius: var(--radius-md);
   text-decoration: none;
   font-weight: 500;

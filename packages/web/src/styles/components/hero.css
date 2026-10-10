@@ -26,11 +26,12 @@
 
 /* Light theme - rich Mega Man cobalt blue gradient */
 [data-theme="light"] .hero__gradient {
+  /* Pale blue to pale copper: the hero's navy text reads on it (KB16) */
   background: linear-gradient(
     135deg,
-    #1d4ed8 0%,           /* Deep cobalt blue */
-    #2563eb 50%,          /* Rich Mega Man blue */
-    #ea580c 100%          /* Deep orange accent */
+    #d5e3f0 0%,
+    #e8eef6 55%,
+    #f5d4ab 100%
   );
 }
 
@@ -109,7 +110,7 @@
 }
 
 [data-theme="light"] .hero__subtitle em {
-  color: #fb923c;  /* Warm orange to match theme */
+  color: var(--color-accent-900);
 }
 
 /* Search Container */
@@ -166,7 +167,7 @@
   gap: var(--spacing-2);
   padding: var(--spacing-3) var(--spacing-6);
   background: var(--color-accent-500);
-  color: white;
+  color: var(--color-on-accent);
   font-family: var(--font-family-display);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-medium);
@@ -181,7 +182,7 @@
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
   text-decoration: none;
-  color: white;
+  color: var(--color-on-accent);
 }
 
 .hero__learn-btn:focus-visible {
@@ -200,7 +201,7 @@
 .hero__learn-btn--secondary:hover {
   background: var(--color-accent-500);
   border-color: var(--color-accent-500);
-  color: white;
+  color: var(--color-on-accent);
 }
 
 .hero__learn-btn--secondary:focus-visible {
@@ -230,7 +231,7 @@
 }
 
 [data-theme="light"] .hero__actions-hint {
-  color: #e0e7ff;
+  color: var(--color-text-secondary);
 }
 
 /* @breakpoint-md: 768px - Tablet: Reduced padding, hide decorations */

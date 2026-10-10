@@ -668,3 +668,14 @@
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
 }
+
+/* Light theme (KB16): the base colour is made for the dark page */
+[data-theme="light"] .home-step__number {
+  color: var(--color-accent-900);
+}
+
+/* Light theme (KB16): the base colour is made for the dark page */
+[data-theme="light"] .home-counter__value,
+[data-theme="light"] .home-survivor__rank {
+  color: var(--color-accent-900);
+}

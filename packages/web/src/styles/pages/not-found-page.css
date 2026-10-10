@@ -73,7 +73,7 @@
 
 .not-found-page__button--primary {
   background: var(--color-accent-600);
-  color: white;
+  color: var(--color-on-accent);
 }
 
 .not-found-page__button--primary:hover {

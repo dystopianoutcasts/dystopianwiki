@@ -48,3 +48,8 @@
   font-size: var(--font-size-sm);
   color: var(--color-accent-300);
 }
+
+/* Light theme (KB16): the base colour is made for the dark page */
+[data-theme="light"] .connect-discord__error {
+  color: #9a2a14;
+}

@@ -100,3 +100,8 @@
   outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
+
+/* Light theme (KB16): the base colour is made for the dark page */
+[data-theme="light"] .season-card__icon {
+  color: var(--color-accent-900);
+}

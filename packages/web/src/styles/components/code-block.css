@@ -57,9 +57,10 @@
   border-color: var(--color-text-muted);
 }
 
+/* light theme (the dark rule below overrides it): accent-900 on accent-100, 7.2:1 (accent-700 read 3.85:1) */
 .code-block__copy--copied {
   background-color: var(--color-accent-100);
-  color: var(--color-accent-700);
+  color: var(--color-accent-900);
   border-color: var(--color-accent-300);
 }
 
@@ -118,7 +119,7 @@
   border-right: 1px solid var(--color-border);
   text-align: right;
   user-select: none;
-  color: var(--color-text-muted);
+  color: var(--color-code-line-number);
   font-family: var(--font-family-mono);
   font-size: var(--font-size-sm);
   line-height: 1.6;
@@ -128,8 +129,8 @@
 .inline-code {
   font-family: var(--font-family-mono);
   font-size: 0.9em;
-  background-color: var(--color-code-bg);
-  color: var(--color-code-text);
+  background-color: var(--color-inline-code-bg);
+  color: var(--color-inline-code-text);
   padding: 0.125em 0.375em;
   border-radius: var(--border-radius-sm);
   border: 1px solid var(--color-border-light);
@@ -152,8 +153,9 @@
   color: #61afef;
 }
 
+/* The light theme keeps code blocks dark, so the comment colour is the dark rule's (4.7:1) */
 .code-block .hljs-comment {
-  color: #5c6370;
+  color: #848993;
   font-style: italic;
 }
 

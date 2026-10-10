@@ -47,7 +47,7 @@
 }
 
 [data-theme="light"] .about-section__text strong {
-  color: var(--color-accent-600);
+  color: var(--color-accent-900);
 }
 
 /* Stats */

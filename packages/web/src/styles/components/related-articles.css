@@ -91,9 +91,10 @@
   border-radius: var(--border-radius-sm);
 }
 
+/* light theme (the dark rule below overrides it): accent-900 on accent-100, 7.2:1 (accent-700 read 3.85:1) */
 .related-article__difficulty--beginner {
   background-color: var(--color-accent-100);
-  color: var(--color-accent-700);
+  color: var(--color-accent-900);
 }
 
 .related-article__difficulty--intermediate {

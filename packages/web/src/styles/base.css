@@ -95,8 +95,8 @@ a:hover {
 code {
   font-family: var(--font-family-mono);
   font-size: 0.9em;
-  background-color: var(--color-code-bg);
-  color: var(--color-code-text);
+  background-color: var(--color-inline-code-bg);
+  color: var(--color-inline-code-text);
   padding: 0.125em 0.375em;
   border-radius: var(--border-radius-sm);
 }
@@ -111,6 +111,7 @@ pre {
 
 pre code {
   background: none;
+  color: var(--color-code-text);
   padding: 0;
 }
 
@@ -199,8 +200,8 @@ img {
 }
 
 [data-theme="light"] ::selection {
-  background-color: rgba(0, 255, 255, 0.35);
-  color: #ffffff;
+  background-color: #c7d7ec;
+  color: #0f1f35;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -225,11 +226,11 @@ img {
 }
 
 [data-theme="light"] ::-webkit-scrollbar-thumb {
-  background: #003dab;
+  background: #6b7c93;
 }
 
 [data-theme="light"] ::-webkit-scrollbar-thumb:hover {
-  background: #0058f8;
+  background: #4e5f75;
 }
 
 /* ═══════════════════════════════════════════════════════════════════

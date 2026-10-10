@@ -44,7 +44,7 @@
   font-size: var(--font-size-lg);
   color: var(--color-text-primary);
   background: var(--color-surface);
-  border: 2px solid var(--color-border);
+  border: 2px solid var(--color-control-border);
   border-radius: var(--radius-lg);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -156,6 +156,11 @@
   background: var(--color-accent-100);
   color: var(--color-accent-700);
   border-radius: var(--radius-sm);
+}
+
+/* Light theme: accent-900 on accent-100, 7.2:1 (accent-700 reads 3.85:1) */
+[data-theme="light"] .search-page__result-category {
+  color: var(--color-accent-900);
 }
 
 .search-page__result-title {

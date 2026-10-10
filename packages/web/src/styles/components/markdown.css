@@ -93,6 +93,18 @@
   text-decoration: underline;
 }
 
+/* Light theme: article links are underlined, because navy links on navy text differ by colour
+   alone (1.6:1; WCAG 1.4.1 asks for 3:1 or a second cue). */
+[data-theme="light"] .markdown a {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+/* ...but not the heading anchors (every heading is a link to itself) */
+[data-theme="light"] .markdown :is(h1, h2, h3, h4, h5, h6) a {
+  text-decoration: none;
+}
+
 /* Lists */
 .markdown ul,
 .markdown ol {
@@ -237,8 +249,8 @@
 .markdown code:not(pre code) {
   font-family: var(--font-family-mono);
   font-size: 0.875em;
-  background-color: var(--color-code-bg);
-  color: var(--color-code-text);
+  background-color: var(--color-inline-code-bg);
+  color: var(--color-inline-code-text);
   padding: 0.125em 0.375em;
   border-radius: var(--border-radius-sm);
   border: 1px solid var(--color-border-light);

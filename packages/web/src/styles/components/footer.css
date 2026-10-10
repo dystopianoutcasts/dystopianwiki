@@ -101,3 +101,8 @@
     gap: var(--spacing-3);
   }
 }
+
+/* Light theme (KB16): the base colour is made for the dark page */
+[data-theme="light"] .footer__legal-link:hover {
+  color: var(--color-accent-900);
+}

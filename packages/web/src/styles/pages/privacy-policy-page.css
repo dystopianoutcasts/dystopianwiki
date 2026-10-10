@@ -121,3 +121,10 @@
     padding-left: 1.5rem;
   }
 }
+
+/* Light theme (KB16): the base colour is made for the dark page */
+[data-theme="light"] .privacy-policy-page__content a,
+[data-theme="light"] .privacy-policy-page__content a:hover {
+  color: var(--color-link);
+  text-decoration: underline;
+}

@@ -140,3 +140,9 @@
     font-size: 1.75rem;
   }
 }
+
+/* Light theme (KB16): the base colour is made for the dark page */
+[data-theme="light"] .terms-page__content h2,
+[data-theme="light"] .terms-page__content ul li::before {
+  color: var(--color-accent-800);
+}
