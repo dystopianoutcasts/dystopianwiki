@@ -2,6 +2,7 @@
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { themeBootPlugin } from '../shared/site-header/themeBoot'
 
 // One website (T20, 2026-09-29): the map is served from /map/ on the wiki's own
 // domain, not a subdomain of its own. The build therefore lands directly in the
@@ -11,7 +12,8 @@ const repoRoot = fileURLToPath(new URL('../../', import.meta.url))
 
 // envDir is the monorepo root, the same as packages/web, so both apps read one set of variables.
 export default defineConfig({
-  plugins: [react()],
+  // themeBootPlugin: the site header's theme script, first in <head>, the same as the wiki's (KB15).
+  plugins: [react(), themeBootPlugin()],
   base: '/map/',
   envDir: '../../',
   build: {
@@ -38,6 +40,7 @@ export default defineConfig({
     // scripts/tiles/*.test.ts is included too: those scripts are Node build
     // tooling, not app code, but this is the only vitest project in the repo
     // and a second one would be pure duplication for a handful of files.
-    include: ['src/**/*.test.ts', '../../scripts/tiles/**/*.test.ts'],
+    // ../shared/site-header: the site header shared with the wiki (KB15); its tests run here.
+    include: ['src/**/*.test.ts', '../../scripts/tiles/**/*.test.ts', '../shared/site-header/**/*.test.ts'],
   },
 })

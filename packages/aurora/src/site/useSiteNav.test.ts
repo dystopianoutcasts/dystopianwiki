@@ -1,4 +1,4 @@
-// T39: the map's copy of the site header reads the wiki's published navigation.
+// T39: the map's site header links come from the wiki's published navigation.
 // sectionsFrom is the shape check; the hook itself only fetches and falls back.
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'

@@ -2,7 +2,7 @@ import type { MouseEvent } from 'react'
 import { HashRouter, Link, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthContext'
 import { MapPage } from './pages/MapPage'
-import { SiteHeader } from './site/SiteHeader'
+import { MapHeader } from './site/MapHeader'
 import { LinkPage } from './link/LinkPage'
 import { LINK_FEATURE_ENABLED } from './config'
 
@@ -27,7 +27,7 @@ export default function App() {
             "Page not found", so the link moves focus itself (T39: the site header now
             sits in front of the map, which makes this link worth having). */}
         <a href="#main" className="skip-link" onClick={skipToMain}>Skip to content</a>
-        <SiteHeader />
+        <MapHeader />
         <main id="main" tabIndex={-1}>
           <Routes>
             <Route path="/" element={<MapPage />} />

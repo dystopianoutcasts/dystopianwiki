@@ -3,7 +3,7 @@
 // `open` only tells this component when to call showModal()/close(); the dialog's own
 // `close` event (fired by Escape, the Cancel button and a backdrop click alike) is the
 // single path back to the caller's onClose, so every way of leaving the dialog behaves
-// the same way (AccountControl returns focus to "Admin sign in" from that one callback).
+// the same way (a caller returns focus to its own button from that one callback).
 import { useEffect, useRef } from 'react'
 import type { MouseEvent } from 'react'
 import { SignInButtons } from './SignInButtons'

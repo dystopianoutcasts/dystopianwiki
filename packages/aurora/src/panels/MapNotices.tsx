@@ -1,7 +1,7 @@
 // T50: admin-only notices above the layer toggles. MapPage renders this for admins only
 // and passes nothing it could not read without error (both fail closed). The admin page
 // is the wiki's own /admin, so the links are plain page loads, never react-router links
-// (site/SiteHeader.tsx explains why).
+// (site/MapHeader.tsx and packages/shared/site-header/views.tsx explain why).
 
 /** The no-tiles notice for one map, exactly as the admin reads it. */
 export function noTilesText(name: string): string {

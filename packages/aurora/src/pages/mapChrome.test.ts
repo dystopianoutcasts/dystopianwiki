@@ -33,8 +33,8 @@ describe('T39: the site header replaces the account control in the side panel', 
     expect(mapPageSrc).not.toMatch(/AccountControl/)
   })
 
-  it('App.tsx renders SiteHeader after the skip link and before <main>', () => {
-    expect(appSrc).toMatch(/className="skip-link"[\s\S]*<SiteHeader \/>[\s\S]*<main id="main"/)
+  it('App.tsx renders the site header (MapHeader, KB15) after the skip link and before <main>', () => {
+    expect(appSrc).toMatch(/className="skip-link"[\s\S]*<MapHeader \/>[\s\S]*<main id="main"/)
   })
 
   it('the skip link moves focus itself instead of changing the HashRouter route to "main"', () => {

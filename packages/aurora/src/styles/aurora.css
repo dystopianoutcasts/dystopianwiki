@@ -1,4 +1,5 @@
-/* Aurora map. Dark by default; the light variant follows the visitor's system setting.
+/* Aurora map. Dark by default; light when <html> has data-theme="light", which the site
+   header's theme control sets (System follows the visitor's system setting; KB15).
    Colours are tokens on :root. State is never carried by colour alone (see .aurora-dot). */
 :root {
   color-scheme: dark;
@@ -15,61 +16,22 @@
   --danger: #ff8a80;
   --focus: #ffd866;
 
-  /* The wiki's own tokens, for the site header only (T39). Copied as VALUES from
-     packages/web/src/styles/variables.css (the wiki's default navy theme), not imported:
-     the two apps are built separately. The wiki header is navy in both of the wiki's
-     themes, so these are not redefined in the light scheme below. Keep in step with
-     that file by hand. */
-  --color-primary-100: #d5e3f0;
-  --color-primary-500: #2e5a91;
-  --color-primary-600: #264a78;
-  --color-primary-950: #060d18;
-  --color-accent-500: #e08a3c;
-  --color-accent-600: #d4782c;
-  --color-surface-elevated: #1e3a5f;
-  --color-background: #0a1628;
-  --color-surface: #0f1f35;
-  --color-border: #1e3a5f;
-  --color-text-primary: #f0f4f8;
-  --color-text-secondary: #94a3b8;
-  --color-neutral-400: #8a8a8a;
-  --color-focus-ring: #e08a3c;
-  --font-family-sans: 'Rajdhani', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-weight-medium: 500;
-  --font-weight-bold: 700;
-  --line-height-normal: 1.5;
-  --spacing-1: 0.25rem;
-  --spacing-2: 0.5rem;
-  --spacing-3: 0.75rem;
-  --spacing-4: 1rem;
-  --spacing-6: 1.5rem;
-  --border-radius-md: 8px;
-  --border-radius-lg: 12px;
-  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
-  --transition-fast: 150ms ease;
-  --header-height: 64px;
-  --content-max-width: 1400px;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color-scheme: light;
-    --bg: #f4f6f9;
-    --surface: #ffffff;
-    --surface-2: #eaeef4;
-    --text: #15202b;
-    --text-muted: #46536a;
-    --border: #b8c2d0;
-    --control-border: #66738a;
-    --accent: #0b5cad;
-    --accent-text: #ffffff;
-    --warn: #8a5300;
-    --danger: #b3261e;
-    --focus: #8a4b00;
-  }
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --surface-2: #eaeef4;
+  --text: #15202b;
+  --text-muted: #46536a;
+  --border: #b8c2d0;
+  --control-border: #66738a;
+  --accent: #0b5cad;
+  --accent-text: #ffffff;
+  --warn: #8a5300;
+  --danger: #b3261e;
+  --focus: #8a4b00;
 }
 
 * { box-sizing: border-box; }
@@ -114,151 +76,9 @@ main[tabindex="-1"]:focus { outline: none; }
   overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
 }
 
-/* ---- site header (T39) ------------------------------------------------------------ */
-/* A copy of the wiki's header (packages/web/src/styles/components/header.css), so the
-   map carries the same top bar as every page of the site. Same height, colours, font,
-   sizes and breakpoints. Above the map's own layers and its phone bottom sheet (1300),
-   so the site menu opens over them. */
-.site-header {
-  flex: none; position: relative; z-index: 1400;
-  height: var(--header-height);
-  background-color: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  font-family: var(--font-family-sans);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-normal);
-  color: var(--color-text-primary);
-}
-.site-header :focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 2px; }
-
-.site-header__container {
-  display: flex; align-items: center; justify-content: space-between;
-  height: 100%; max-width: var(--content-max-width); margin: 0 auto; padding: 0 var(--spacing-4);
-}
-
-.site-header__logo {
-  display: flex; align-items: center; gap: var(--spacing-3);
-  text-decoration: none; color: var(--color-text-primary);
-}
-.site-header__logo-image { width: 40px; height: 40px; border-radius: var(--border-radius-md); }
-.site-header__logo-text {
-  font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-text-primary);
-}
-
-.site-header__nav { display: flex; align-items: center; gap: var(--spacing-6); }
-.site-header__nav-link {
-  font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary); text-decoration: none;
-  padding: var(--spacing-2) var(--spacing-3); border-radius: var(--border-radius-md);
-  transition: color var(--transition-fast), background-color var(--transition-fast), transform var(--transition-fast);
-}
-.site-header__nav-link:hover {
-  color: var(--color-text-primary); background-color: var(--color-background); transform: translateY(-1px);
-}
-/* The wiki's active-link look, which the map shows on "Map" (aria-current="page"). */
-.site-header__nav-link--active { color: var(--color-primary-600); background-color: var(--color-primary-100); }
-
-/* The wiki's search box look. A plain form that lands on the wiki's search page. The
-   input drops its own outline, so the whole box carries the focus ring instead. */
-.site-header__search {
-  flex: 1; min-width: 0; max-width: 320px; margin: 0 var(--spacing-4);
-  display: flex; align-items: center;
-  background-color: var(--color-background);
-  border: 2px solid var(--color-border); border-radius: var(--border-radius-lg);
-  padding: var(--spacing-3) var(--spacing-4);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-}
-.site-header__search:focus-within {
-  border-color: var(--color-primary-500);
-  outline: 2px solid var(--color-focus-ring); outline-offset: 2px;
-}
-.site-header__search-icon {
-  display: flex; width: 20px; height: 20px; margin-right: var(--spacing-3); flex-shrink: 0;
-  color: var(--color-neutral-400);
-}
-.site-header__search-icon svg { width: 100%; height: 100%; }
-.site-header__search-input {
-  flex: 1; min-width: 0; border: none; background: transparent; padding: 0;
-  font: inherit; font-size: var(--font-size-base); line-height: normal; color: var(--color-text-primary);
-  -webkit-appearance: none; appearance: none;
-}
-.site-header__search-input:focus, .site-header__search-input:focus-visible { outline: none; }
-.site-header__search-input::placeholder { color: var(--color-neutral-400); }
-
-.site-header__actions { flex: none; display: flex; align-items: center; gap: var(--spacing-2); }
-/* "Log in" / "Sign out" (AccountControl), dressed like the wiki's header controls. */
-.site-header .account button {
-  font-size: var(--font-size-sm); padding: var(--spacing-2) var(--spacing-3); min-height: 44px; white-space: nowrap;
-  background-color: var(--color-surface); color: var(--color-text-primary);
-  border: 1px solid var(--color-border); border-radius: var(--border-radius-md);
-}
-.site-header .account button:hover { border-color: var(--color-primary-500); }
-.site-header .account .who { color: var(--color-text-secondary); font-size: var(--font-size-sm); }
-.site-header .account__avatar {
-  display: inline-flex; align-items: center; justify-content: center; flex: none;
-  width: 32px; height: 32px; border-radius: 50%; object-fit: cover; overflow: hidden;
-  background-color: var(--color-surface-elevated); color: var(--color-text-secondary);
-}
-.site-header .account__avatar--generic svg { width: 24px; height: 24px; margin-top: 4px; }
-.site-header .account__avatar--initial {
-  background-color: var(--color-accent-600); color: var(--color-primary-950);
-  font-weight: var(--font-weight-bold); font-size: var(--font-size-sm);
-}
-.site-header .account__login {
-  display: inline-flex; align-items: center; justify-content: center; min-height: 48px;
-  padding: 0 var(--spacing-4); border-radius: var(--border-radius-md); white-space: nowrap;
-  background-color: var(--color-accent-600); color: var(--color-primary-950);
-  font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); text-decoration: none;
-}
-.site-header .account__login:hover { background-color: var(--color-accent-500); text-decoration: none; }
-
-/* Site menu: a native <details>, so it opens and closes by keyboard and announces its
-   state (expanded or collapsed) with no script. Shown wherever the section links are
-   hidden: the wiki's xl breakpoint, 1280px, and below. */
-.site-header__menu { display: none; position: relative; }
-.site-header__menu-btn {
-  list-style: none; display: flex; align-items: center; justify-content: center;
-  width: 44px; height: 44px; border-radius: var(--border-radius-md);
-  color: var(--color-text-secondary); cursor: pointer;
-}
-.site-header__menu-btn::-webkit-details-marker { display: none; }
-.site-header__menu-btn:hover { background-color: var(--color-background); color: var(--color-text-primary); }
-.site-header__menu-btn svg { width: 32px; height: 32px; }
-.site-header__menu-panel {
-  position: absolute; right: 0; top: calc(100% + var(--spacing-2)); min-width: 200px;
-  display: flex; flex-direction: column; gap: var(--spacing-1); padding: var(--spacing-2);
-  background-color: var(--color-surface); border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-lg); box-shadow: var(--shadow-md);
-}
-.site-header__menu-panel .site-header__nav-link {
-  display: flex; align-items: center; min-height: 44px; font-size: var(--font-size-base);
-}
-
-/* The wiki's breakpoints (packages/web header.css and mobile-menu.css, KB14): 1280px
-   swaps the section links for the menu, 768px widens the search box, 640px hides the
-   site name. With six Build 42 sections and Live Map (headless Edge, 2026-10-04) the
-   swap at 768px left the links on two to four lines up to 1,200px, pushed the header
-   121px past an 800px window and 21px past a 900px one, and at 1,240px still squeezed
-   the search box to 73px. The nav, the menu and the closed panel's hiding switch
-   together, or a width exists with no way to navigate. */
-@media (max-width: 1280px) {
-  .site-header__nav { display: none; }
-  .site-header__menu { display: block; }
-  /* Hidden, not only unopened, so Tab never reaches the closed menu's links. A closed
-     <details> already skips its content; this keeps that true if the element changes. */
-  .site-header__menu-panel { visibility: hidden; }
-  .site-header__menu[open] .site-header__menu-panel { visibility: visible; }
-}
-@media (max-width: 768px) {
-  .site-header__search { max-width: none; margin: 0 var(--spacing-2); }
-}
-@media (max-width: 640px) {
-  .site-header__logo-text { display: none; }
-  .site-header__search { margin: 0 var(--spacing-1); padding: var(--spacing-1) var(--spacing-2); }
-  .site-header__search-input { font-size: var(--font-size-sm); }
-  /* The signed-in email would crowd out the search box; "Sign out" stays. */
-  .site-header .account .who { display: none; }
-}
+/* ---- site header: packages/shared/site-header/site-header.css (KB15), imported by the
+   shared header itself. Above the map's own layers and its phone bottom sheet (1300). */
+:root { --site-header-z: 1400; }
 
 button {
   font: inherit; color: var(--text); background: var(--surface-2);
@@ -268,13 +88,11 @@ button:hover:not(:disabled) { border-color: var(--accent); }
 button:disabled { opacity: 0.6; cursor: default; }
 button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
 
-/* ---- side panel head (the panel's title; the account control moved to the site header, T39) */
+/* ---- side panel head (the panel's title; the account menu is in the site header, T39/KB15) */
 .side-head {
   display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
 }
 .side-head .brand { font-weight: 700; font-size: 1.1rem; color: var(--text); }
-.account { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.account .who { color: var(--text-muted); font-size: 0.9rem; }
 .signin { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 
 /* ---- admin sign-in dialog ---------------------------------------------------------- */

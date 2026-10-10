@@ -1,9 +1,9 @@
-// The website's section links, for the map's copy of the site header (T39).
+// The website's section links, which the map passes to the shared site header (T39, KB15).
 //
 // The wiki and the map are two separate apps with two bundles, so the map cannot
 // import the wiki's generated navigation module. Instead it reads the file the wiki
 // publishes for itself, /data/versions.json, once per page load. That keeps the two
-// menus identical without shared code. The shape check is the pure function
+// menus identical without the map importing the wiki's code. The shape check is the pure function
 // sectionsFrom, so it can be tested without a browser.
 import { useEffect, useState } from 'react'
 
