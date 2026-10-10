@@ -1,9 +1,9 @@
 /**
- * memberProfile - reads display data off a Supabase user, defensively.
+ * memberProfile - reads a member's Discord identity off a Supabase user, defensively.
  *
- * Discord and Google put the avatar in user_metadata.avatar_url (Google also `picture`)
- * and the name in full_name / name / custom_claims.global_name / user_name. None of it is
- * guaranteed, so every read is type-checked.
+ * The name, initial and avatar the site header shows are read by the shared
+ * packages/shared/site-header/profile.ts (KB15), one reading for the wiki and the map.
+ * None of the identity data is guaranteed, so every read is type-checked.
  */
 import type { User, UserIdentity } from '@supabase/supabase-js';
 
@@ -21,32 +21,6 @@ function firstString(...values: unknown[]): string | null {
     if (s) return s;
   }
   return null;
-}
-
-function nameFrom(data: Record<string, unknown>): string | null {
-  return firstString(
-    record(data.custom_claims).global_name,
-    data.full_name,
-    data.name,
-    data.user_name,
-    data.preferred_username,
-    data.display_name,
-  );
-}
-
-export function getDisplayName(user: User): string {
-  return nameFrom(record(user.user_metadata)) ?? user.email?.split('@')[0] ?? 'Member';
-}
-
-/** Only https avatar URLs are used; anything else falls back to the initial. */
-export function getAvatarUrl(user: User): string | null {
-  const meta = record(user.user_metadata);
-  const url = firstString(meta.avatar_url, meta.picture);
-  return url && /^https:\/\//i.test(url) ? url : null;
-}
-
-export function getInitial(user: User): string {
-  return getDisplayName(user).charAt(0).toUpperCase() || '?';
 }
 
 function discordIdentity(user: User | null): UserIdentity | undefined {

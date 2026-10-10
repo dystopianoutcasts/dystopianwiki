@@ -202,15 +202,14 @@
   height: 20px;
 }
 
-/* Dark Theme */
-@media (prefers-color-scheme: dark) {
-  .bookmark-card {
-    background: var(--card-bg-dark, #1e1e1e);
-  }
+/* Dark Theme: follows the visitor's theme choice (the site header's theme control, KB15),
+   not the system setting alone, as every dark-only rule does. */
+:where(:root):not([data-theme="light"]) .bookmark-card {
+  background: var(--card-bg-dark, #1e1e1e);
+}
 
-  .bookmark-card:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  }
+:where(:root):not([data-theme="light"]) .bookmark-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Mobile Responsive */
@@ -239,4 +238,10 @@
     margin-left: 0;
     flex-basis: 100%;
   }
+}
+
+/* Light theme (KB16): the base colour is made for the dark page */
+[data-theme="light"] .bookmarks-page__cta {
+  background: var(--color-primary-700);
+  color: #ffffff;
 }

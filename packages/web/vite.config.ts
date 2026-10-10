@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
 import fs from 'node:fs'
 import path from 'node:path'
+import { themeBootPlugin } from '../shared/site-header/themeBoot'
 
 // Dev-only: serve the repo-root map/ folder (the separately built Aurora map
 // app) at /map/, so the home page map and the Map link work under `vite`.
@@ -67,7 +68,8 @@ function serveRepoMap(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), serveRepoMap()],
+  // themeBootPlugin: the site header's theme script, first in <head>, the same as the map's (KB15).
+  plugins: [react(), serveRepoMap(), themeBootPlugin()],
   // Use '/' for custom domain, or '/repo-name/' for GitHub Pages subdirectory
   base: '/',
   // Load .env from monorepo root

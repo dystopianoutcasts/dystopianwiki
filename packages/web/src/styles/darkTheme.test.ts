@@ -1,17 +1,20 @@
 /**
  * Tests for the dark-only rules (WEBFIX, after KB14).
  *
- * Dark is the default theme: the :root values in variables.css, with no data-theme attribute
- * (nothing sets one; useTheme is not used). The 31 rules written `[data-theme="dark"] .x`
- * therefore never applied, and the light-theme base colours they were meant to replace showed
- * on the dark page (the next-step title at 2.0:1, the code block header at 1.7:1, the search
+ * Dark is the default theme: the :root values in variables.css. Until KB15 nothing set a
+ * data-theme attribute, so the 31 rules written `[data-theme="dark"] .x` never applied, and
+ * the light-theme base colours they were meant to replace showed on the dark page (the next-step title at 2.0:1, the code block header at 1.7:1, the search
  * focus border at 2.4:1). They are now `:where(:root):not([data-theme="light"]) .x`: they match
  * whenever the theme is not light, with the specificity `[data-theme="dark"] .x` would have, so
  * the cascade is the one the rules were written for, and [data-theme="light"] is untouched.
+ * Since KB15 the site header's theme control writes data-theme="light" or "dark" (System
+ * follows the system setting); the same prefix matches "dark" and a missing attribute alike.
  *
- * Two rules are added: those dark rules outrank .bookmark-button--active, so the bookmarked
- * state restates its fill; and the current page in the header, whose dark background is the
- * header's own colour, also gets an underline. Every rule's colours are checked against
+ * Two rules were added: those dark rules outrank .bookmark-button--active, so the bookmarked
+ * state restates its fill. The header's own rules moved with the header to the shared
+ * packages/shared/site-header (tested there, both themes). KB15 also moved the bookmark card's
+ * dark rules off @media (prefers-color-scheme: dark), which ignored the visitor's choice, onto
+ * the same prefix. Every rule's colours are checked against
  * WCAG 2.2 AA on the dark palette, read from variables.css. node:test, run with `npx tsx --test src/styles/darkTheme.test.ts` from
  * packages/web.
  */
@@ -75,7 +78,7 @@ type Check =
   | { kind: 'border'; against: string[] } // a focus or hover border, 3:1 against what it sits on
   | { kind: 'decorative' } // a shadow or a scrollbar thumb
 
-/** The 31 rules plus the two bookmarked-state rules: file, selector after the prefix, what they must meet. */
+/** The 30 rules left after the header moved out, the two bookmarked-state rules and the two bookmark-card rules: file, selector after the prefix, what they must meet. */
 const DARK_RULES: [string, string, Check][] = [
   ['components/bookmark-button.css', '.bookmark-button', { kind: 'text', fg: 'var(--color-text-primary)', min: 4.5 }],
   ['components/bookmark-button.css', '.bookmark-button:hover:not(:disabled)', { kind: 'text', fg: 'var(--color-text-primary)', min: 4.5 }],
@@ -88,7 +91,6 @@ const DARK_RULES: [string, string, Check][] = [
   ['components/code-block.css', '.code-block .hljs-keyword', { kind: 'text', bg: 'var(--color-code-bg)', min: 4.5 }],
   ['components/code-block.css', '.code-block .hljs-string', { kind: 'text', bg: 'var(--color-code-bg)', min: 4.5 }],
   ['components/code-block.css', '.code-block .hljs-comment', { kind: 'text', bg: 'var(--color-code-bg)', min: 4.5 }],
-  ['components/header.css', '.header__nav-link--active', { kind: 'text', min: 4.5 }],
   ['components/quickstart.css', '.quickstart-card:hover', { kind: 'border', against: ['var(--color-background)'] }],
   ['components/quickstart.css', '.quickstart-card__section--modding', { kind: 'text', min: 4.5 }],
   ['components/quickstart.css', '.quickstart-card__section--mapping', { kind: 'text', min: 4.5 }],
@@ -110,22 +112,24 @@ const DARK_RULES: [string, string, Check][] = [
   ['components/wiki-article.css', '.wiki-article__next-step:hover', { kind: 'decorative' }],
   ['components/wiki-article.css', '.wiki-article__next-step-title', { kind: 'text', bg: 'var(--color-background)', min: 4.5 }],
   ['pages/not-found-page.css', '.not-found-page__title', { kind: 'text', bg: 'var(--color-background)', min: 3 }], // 6rem
+  ['pages/bookmarks-page.css', '.bookmark-card', { kind: 'text', fg: 'var(--color-text-primary)', min: 4.5 }],
+  ['pages/bookmarks-page.css', '.bookmark-card:hover', { kind: 'decorative' }],
 ]
 
-test('no rule is written for a [data-theme="dark"] attribute, which nothing sets', () => {
+test('no rule is written for a [data-theme="dark"] attribute: dark is also the page with no attribute at all', () => {
   const left = rules.filter((r) => r.selector.includes('[data-theme="dark"]')).map((r) => `${r.file}: ${r.selector}`)
   assert.deepEqual(left, [])
 })
 
 test('the dark rules match whenever the theme is not light', () => {
-  assert.equal(DARK_RULES.length, 33)
+  assert.equal(DARK_RULES.length, 34)
   const dark = rules.filter((r) => r.selector.startsWith(DARK + ' ')).map((r) => `${r.file} ${r.selector.slice(DARK.length + 1)}`)
   assert.deepEqual(dark.sort(), DARK_RULES.map(([file, selector]) => `${file} ${selector}`).sort())
 })
 
 test('the dark prefix keeps the specificity of [data-theme="dark"]: :root sits inside :where()', () => {
   for (const r of rules) {
-    if (r.selector.includes(':not([data-theme="light"])') && !r.selector.includes('mobile-menu__nav-link--active')) {
+    if (r.selector.includes(':not([data-theme="light"])')) {
       assert.ok(r.selector.startsWith(DARK + ' '), `${r.file}: ${r.selector}`)
     }
   }
@@ -146,15 +150,9 @@ test('in dark a bookmarked button still looks bookmarked, resting and hovered', 
   assert.notEqual(resolve(activeHover.decls.get('background') ?? ''), resolve(hover.decls.get('background') ?? ''))
 })
 
-test('in dark the current page in the header is underlined, not only coloured', () => {
-  const active = rules[at('components/header.css', '.header__nav-link--active')]
-  assert.ok(active, 'rule missing')
-  const shadow = /^inset 0 -2px 0 (var\(--[\w-]+\))$/.exec(active.decls.get('box-shadow') ?? '')
-  assert.ok(shadow, `no underline: ${active.decls.get('box-shadow')}`)
-  // Against the header (surface) and against the link's own background.
-  for (const bg of ['var(--color-surface)', active.decls.get('background-color') ?? '']) {
-    assert.ok(contrast(shadow[1], bg) >= 3, `${shadow[1]} on ${bg}: ${contrast(shadow[1], bg).toFixed(2)}`)
-  }
+test("no dark rule follows the system setting instead of the visitor's theme choice", () => {
+  const left = [...sources].filter(([, src]) => /@media\s*\(prefers-color-scheme/.test(src)).map(([file]) => file)
+  assert.deepEqual(left, [])
 })
 
 for (const [file, selector, check] of DARK_RULES) {

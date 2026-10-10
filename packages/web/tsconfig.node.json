@@ -18,6 +18,8 @@
     "declarationMap": true,
     "emitDeclarationOnly": true,
     "outDir": "./dist-node",
+    /* ".." so vite.config.ts may import the shared theme boot plugin (KB15). */
+    "rootDir": "..",
 
     /* Linting */
     "strict": true,
@@ -25,5 +27,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["vite.config.ts"]
+  "include": ["vite.config.ts", "../shared/site-header/themeBoot.ts"]
 }
