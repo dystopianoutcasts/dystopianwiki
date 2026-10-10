@@ -215,11 +215,11 @@
 
    ═══════════════════════════════════════════════════════════════════ */
 
-/* Dark is the default: these :root values, with no data-theme attribute (nothing in the
-   app sets one; useTheme is not used). A dark-only rule is therefore written
-   :where(:root):not([data-theme="light"]) .x, which matches whenever the theme is not
-   light and has the specificity [data-theme="dark"] .x would have; [data-theme="dark"]
-   itself never matches. */
+/* Dark is the default: these :root values. The theme boot script and the header's theme
+   control (KB15) set data-theme="light" or "dark" on <html>; without an attribute the page
+   is dark. A dark-only rule is written :where(:root):not([data-theme="light"]) .x, which
+   matches "dark" and a missing attribute alike, with the specificity [data-theme="dark"] .x
+   would have. */
 
 /* ═══════════════════════════════════════════════════════════════════
    LIGHT THEME - pale steel blue with navy text (KB16)
