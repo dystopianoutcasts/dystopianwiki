@@ -25,7 +25,7 @@ export interface Section {
   id: string;           // "modding"
   name: string;         // "Modding"
   description: string;  // "Learn to create mods for Project Zomboid"
-  icon: string;         // Emoji or icon identifier
+  icon: string;         // Icon word (contract C2), drawn by components/icons
 }
 
 export interface SectionsIndex {

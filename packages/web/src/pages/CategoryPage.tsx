@@ -5,7 +5,7 @@ import { SEOHead } from '../components/seo/SEOHead';
 import { useArticlesByCategory } from '../hooks/useSupabase';
 import { useGameContext } from '../hooks/useGameContext';
 import { DEFAULT_VERSION, getSection } from '../config/versions.generated';
-import { resolveIcon } from '../components/layout/Sidebar';
+import { resolveIcon } from '../components/icons/Icon';
 import { inSection } from '../lib/sectionArticles';
 import type { Difficulty } from '../types/wiki';
 import '../styles/pages/category-page.css';
@@ -73,7 +73,7 @@ export function CategoryPage() {
       <WikiLayout>
         <div className="category-page">
           <header className="category-page__header">
-            <span className="category-page__icon">
+            <span className="category-page__icon" aria-hidden="true">
               {resolveIcon(categoryInfo?.icon ?? 'book')}
             </span>
             <h1 className="category-page__title">

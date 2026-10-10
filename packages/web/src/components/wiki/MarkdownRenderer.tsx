@@ -4,6 +4,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
 import { CodeBlock } from './CodeBlock';
+import { footnoteBackContent } from './footnoteBack';
 import '../../styles/components/markdown.css';
 
 // Import highlight.js styles (we'll use a dark theme that works in both modes)
@@ -19,6 +20,9 @@ function nodeText(node: ReactNode): string {
   if (isValidElement<{ children?: ReactNode }>(node)) return nodeText(node.props.children);
   return '';
 }
+
+// Footnote back links draw an icon, not the U+21A9 character phones show as an emoji.
+const REMARK_REHYPE_OPTIONS = { footnoteBackContent };
 
 interface MarkdownRendererProps {
   content: string;
@@ -132,6 +136,7 @@ export function MarkdownRenderer({ content, className = '' }: MarkdownRendererPr
     <div className={`markdown ${className}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
+        remarkRehypeOptions={REMARK_REHYPE_OPTIONS}
         rehypePlugins={[rehypeHighlight, rehypeSlug]}
         components={components}
       >

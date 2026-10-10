@@ -169,6 +169,13 @@ img {
   display: block;
 }
 
+/* Drawn icons (components/icons): 1em square, sitting on the text baseline like a glyph. */
+.icon {
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: -0.125em;
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    FOCUS STYLES
    ═══════════════════════════════════════════════════════════════════ */

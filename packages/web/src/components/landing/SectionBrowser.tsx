@@ -1,19 +1,7 @@
 import { Link } from 'react-router-dom';
 import { getVersion, DEFAULT_VERSION } from '../../config/versions.generated';
+import { Icon } from '../icons/Icon';
 import '../../styles/components/cards.css';
-
-// Section icon words (contract C2) mapped to the emoji this page renders.
-const sectionIconMap: Record<string, string> = {
-  plug: '🔌',
-  map: '🗺️',
-  car: '🚗',
-  gear: '⚙️',
-  book: '📖',
-};
-
-function resolveSectionIcon(icon: string): string {
-  return sectionIconMap[icon] || sectionIconMap.book;
-}
 
 // Static section metadata (colors, extended descriptions)
 const sectionMeta: Record<string, { color: 'primary' | 'accent'; description: string }> = {
@@ -41,7 +29,7 @@ export function SectionBrowser({ version = DEFAULT_VERSION }: SectionBrowserProp
 
       return {
         id: section.id,
-        icon: resolveSectionIcon(section.icon),
+        icon: section.icon,
         title: section.name,
         description: sectionMeta[section.id]?.description || section.description,
         categories,
@@ -66,8 +54,8 @@ export function SectionBrowser({ version = DEFAULT_VERSION }: SectionBrowserProp
             className={`section-card section-card--${section.color}`}
           >
             <div className="section-card__header">
-              <span className="section-card__icon" role="img" aria-hidden="true">
-                {section.icon}
+              <span className="section-card__icon" aria-hidden="true">
+                <Icon name={section.icon} />
               </span>
               <h3 className="section-card__title">{section.title}</h3>
             </div>

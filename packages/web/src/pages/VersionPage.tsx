@@ -3,11 +3,11 @@ import { Layout } from '../components/layout/Layout';
 import { WikiLayout } from '../components/layout/WikiLayout';
 import { SEOHead } from '../components/seo/SEOHead';
 import { getVersion, DEFAULT_VERSION } from '../config/versions.generated';
-import { resolveIcon } from '../components/layout/Sidebar';
+import { resolveIcon } from '../components/icons/Icon';
 import '../styles/pages/version-page.css';
 
-// Section icons resolve through the sidebar's resolveIcon, the one map of the
-// icon words written into _section.json and _category.json (contract C2), so a
+// Section icons resolve through the shared resolveIcon (the drawn icon set keyed by
+// the icon words written into _section.json and _category.json, contract C2), so a
 // new section's icon shows here as it does in the sidebar and the menu.
 
 const statusLabels: Record<string, string> = {

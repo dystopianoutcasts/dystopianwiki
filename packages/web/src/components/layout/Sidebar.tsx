@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { NavLink, useParams, useLocation } from 'react-router-dom';
 import { getVersion, DEFAULT_VERSION } from '../../config/versions.generated';
+import { Icon, resolveIcon } from '../icons/Icon';
 import '../../styles/components/sidebar.css';
 
 // Chevron icon
@@ -10,39 +11,8 @@ const ChevronIcon = () => (
   </svg>
 );
 
-// Icon mapping from the short icon words written into _section.json /
-// _category.json (contract C2) to the emoji the sidebar renders. Keeps every
-// word that has ever appeared in build-41 or build-42 content-tree metadata
-// so neither version regresses to showing a raw word.
-const iconMap: Record<string, string> = {
-  book: '📖',
-  box: '🎮',
-  cog: '🩹',
-  database: '🗄️',
-  'file-text': '📄',
-  hammer: '⚔️',
-  layout: '🖥️',
-  leaf: '🌿',
-  scroll: '📜',
-  settings: '⚙️',
-  sparkles: '✨',
-  tool: '🛠️',
-  video: '🎬',
-  wrench: '🔧',
-  zap: '⚡',
-  plug: '🔌',
-  car: '🚗',
-  gear: '⚙️',
-  map: '🗺️',
-  grid: '🏗️',
-  globe: '🌍',
-  building: '🏠',
-  mountain: '⛰️',
-};
-
-export function resolveIcon(icon: string): string {
-  return iconMap[icon] || iconMap.book;
-}
+// Section and category icons are drawn SVG icons keyed by the short icon words written into
+// _section.json / _category.json (contract C2); see ../icons/iconShapes.ts.
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -105,8 +75,8 @@ export function Sidebar({ isOpen = false, onClose, collapsed = false }: SidebarP
             }
             onClick={onClose}
           >
-            <span className="sidebar__learning-icon" role="img" aria-hidden="true">
-              &#128218;
+            <span className="sidebar__learning-icon" aria-hidden="true">
+              <Icon name="path" />
             </span>
             <span>Learning Path</span>
           </NavLink>
@@ -131,7 +101,7 @@ export function Sidebar({ isOpen = false, onClose, collapsed = false }: SidebarP
                 onKeyDown={(e) => e.key === 'Enter' && toggleSection(section.id)}
               >
                 <span className="sidebar__section-title">
-                  <span className="sidebar__section-icon" role="img" aria-hidden="true">
+                  <span className="sidebar__section-icon" aria-hidden="true">
                     {resolveIcon(section.icon)}
                   </span>
                   <span>{section.name}</span>
@@ -153,7 +123,7 @@ export function Sidebar({ isOpen = false, onClose, collapsed = false }: SidebarP
                         className={`sidebar__category-link ${isActive ? 'sidebar__category-link--active' : ''}`}
                         onClick={onClose}
                       >
-                        <span className="sidebar__category-icon" role="img" aria-hidden="true">
+                        <span className="sidebar__category-icon" aria-hidden="true">
                           {resolveIcon(category.icon)}
                         </span>
                         <span>{category.name}</span>

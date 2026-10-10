@@ -4,7 +4,7 @@ import { WikiLayout } from '../components/layout/WikiLayout';
 import { SEOHead } from '../components/seo/SEOHead';
 import { useGameContext } from '../hooks/useGameContext';
 import { DEFAULT_VERSION, getSection } from '../config/versions.generated';
-import { resolveIcon } from '../components/layout/Sidebar';
+import { resolveIcon } from '../components/icons/Icon';
 import '../styles/pages/section-page.css';
 
 export function SectionPage() {
@@ -43,7 +43,7 @@ export function SectionPage() {
       <WikiLayout>
         <div className="section-page">
           <header className="section-page__header">
-            <span className="section-page__icon">
+            <span className="section-page__icon" aria-hidden="true">
               {resolveIcon(sectionInfo.icon)}
             </span>
             <h1 className="section-page__title">{sectionInfo.name}</h1>
@@ -60,7 +60,7 @@ export function SectionPage() {
                     to={buildPath(version, section, category.id)}
                     className="section-page__category-card"
                   >
-                    <span className="section-page__category-icon">
+                    <span className="section-page__category-icon" aria-hidden="true">
                       {resolveIcon(category.icon)}
                     </span>
                     <div className="section-page__category-content">
