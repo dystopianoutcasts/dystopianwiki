@@ -1,0 +1,301 @@
+/* The one site header (KB15), the same in the wiki and the live map.
+   Self-contained: its colours are its own tokens below, dark by default and light under
+   :root[data-theme="light"], so it looks the same whichever app draws it. The dark values
+   are the wiki's navy palette (packages/web/src/styles/variables.css); the light values
+   were chosen here and are checked for WCAG 2.2 AA by headerStyles.test.ts. Every rule is
+   under .site-header so neither app's own styles (the map's global button rule, say) leak
+   in, and every property such a global rule could set is set here. */
+
+/* The theme switch for the whole page: native controls and scrollbars follow the theme
+   that the boot script (themeBoot.ts) and the theme control write to <html>. */
+:root { color-scheme: dark; }
+:root[data-theme="light"] { color-scheme: light; }
+
+.site-header {
+  --sh-bg: #0f1f35;
+  --sh-sunken: #0a1628;
+  --sh-raised: #1e3a5f;
+  --sh-border: #1e3a5f;
+  --sh-field-border: #4a7ab3;
+  --sh-control-border: #4a7ab3;
+  --sh-text: #f0f4f8;
+  --sh-text-2: #94a3b8;
+  --sh-muted: #8a8a8a;
+  --sh-accent: #d4782c;
+  --sh-accent-hover: #e08a3c;
+  --sh-on-accent: #060d18;
+  --sh-current-fg: #e9a35e;
+  --sh-current-bg: #0a1628;
+  --sh-current-line: #e08a3c;
+  --sh-focus: #e08a3c;
+  --sh-signout: #e9a35e;
+  --sh-error: #f0bb82;
+  --sh-avatar-bg: #1e3a5f;
+  --sh-avatar-fg: #94a3b8;
+  --sh-shadow: 0 10px 20px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
+
+  box-sizing: border-box;
+  position: sticky;
+  top: 0;
+  z-index: var(--site-header-z, 50);
+  flex: none;
+  height: 64px;
+  background-color: var(--sh-bg);
+  border-bottom: 1px solid var(--sh-border);
+  color: var(--sh-text);
+  font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: left;
+}
+
+:root[data-theme="light"] .site-header {
+  --sh-bg: #ffffff;
+  --sh-sunken: #f1f4f8;
+  --sh-raised: #e3e9f1;
+  --sh-border: #c5cfdc;
+  --sh-field-border: #6b7c93;
+  --sh-control-border: #6b7c93;
+  --sh-text: #0f1f35;
+  --sh-text-2: #33475f;
+  --sh-muted: #55657a;
+  --sh-accent: #d4782c;
+  --sh-accent-hover: #e08a3c;
+  --sh-on-accent: #060d18;
+  --sh-current-fg: #264a78;
+  --sh-current-bg: #d5e3f0;
+  --sh-current-line: #264a78;
+  --sh-focus: #9a4a0b;
+  --sh-signout: #9c4e0d;
+  --sh-error: #9a2a14;
+  --sh-avatar-bg: #e3e9f1;
+  --sh-avatar-fg: #33475f;
+  --sh-shadow: 0 10px 20px rgba(15, 31, 53, 0.15), 0 2px 6px rgba(15, 31, 53, 0.12);
+}
+
+.site-header *,
+.site-header *::before,
+.site-header *::after { box-sizing: border-box; }
+
+/* The closed pop-ups use the hidden attribute; a display rule below must never undo it. */
+.site-header [hidden] { display: none !important; }
+
+.site-header :focus-visible { outline: 2px solid var(--sh-focus); outline-offset: 2px; }
+
+.site-header__visually-hidden {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+.site-header__bar {
+  display: flex; align-items: center; gap: 16px;
+  height: 100%; max-width: 1400px; margin: 0 auto; padding: 0 16px;
+}
+
+/* ---- brand ---- */
+.site-header__brand {
+  display: flex; flex: none; align-items: center; gap: 12px;
+  color: var(--sh-text); text-decoration: none;
+}
+.site-header__brand:hover { color: var(--sh-text); text-decoration: none; }
+.site-header__brand-image { display: block; flex: none; width: 40px; height: 40px; border-radius: 8px; }
+.site-header__brand-text { font-size: 1.125rem; font-weight: 700; white-space: nowrap; }
+
+/* ---- section links (wider than 1280 px) ---- */
+/* flex: none and nowrap: the links keep one line; the search box is what gives way. */
+.site-header__nav { display: flex; flex: none; align-items: center; gap: 4px; }
+.site-header__link {
+  display: inline-flex; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 8px;
+  color: var(--sh-text-2); font-size: 0.875rem; font-weight: 500; text-decoration: none; white-space: nowrap;
+  transition: color 150ms ease, background-color 150ms ease;
+}
+.site-header__link:hover { color: var(--sh-text); background-color: var(--sh-sunken); text-decoration: none; }
+/* The current page: colour, background AND an underline, so colour is never the only cue. */
+.site-header__link[aria-current="page"] {
+  color: var(--sh-current-fg); background-color: var(--sh-current-bg);
+  box-shadow: inset 0 -2px 0 var(--sh-current-line);
+}
+
+/* ---- search ---- */
+.site-header__search { flex: 1 1 auto; min-width: 0; max-width: 320px; }
+.site-header__search-form {
+  display: flex; align-items: center; width: 100%; margin: 0;
+  background-color: var(--sh-sunken); border: 2px solid var(--sh-field-border); border-radius: 12px;
+  padding: 10px 14px;
+}
+.site-header__search-form:focus-within { outline: 2px solid var(--sh-focus); outline-offset: 2px; }
+.site-header__search-icon { display: flex; flex: none; width: 20px; height: 20px; margin-right: 10px; color: var(--sh-muted); }
+.site-header__search-icon svg { width: 100%; height: 100%; }
+.site-header__search-input {
+  flex: 1; min-width: 0; min-height: 0; margin: 0; padding: 0; border: none; border-radius: 0;
+  background: transparent; color: var(--sh-text);
+  font: inherit; font-size: 1rem; line-height: normal;
+  -webkit-appearance: none; appearance: none;
+}
+.site-header__search-input:focus,
+.site-header__search-input:focus-visible { outline: none; }
+.site-header__search-input::placeholder { color: var(--sh-muted); opacity: 1; }
+/* The wiki's live search (FuzzySearchBar) in the same slot, dressed the same. */
+.site-header__search .search-bar { width: 100%; }
+.site-header__search .search-bar__input-wrapper { background-color: var(--sh-sunken); border-color: var(--sh-field-border); }
+.site-header__search .search-bar__input { color: var(--sh-text); }
+.site-header__search .search-bar__input::placeholder { color: var(--sh-muted); opacity: 1; }
+.site-header__search .search-bar__icon { color: var(--sh-muted); }
+
+/* ---- the right-hand controls ---- */
+/* margin-left: auto keeps the controls at the right edge when the search box stops growing. */
+.site-header__actions { display: flex; flex: none; align-items: center; gap: 8px; margin-left: auto; }
+.site-header__popup { position: relative; }
+
+.site-header__icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; min-height: 44px; margin: 0; padding: 0;
+  border: 1px solid transparent; border-radius: 8px; background: transparent;
+  color: var(--sh-text-2); font: inherit; cursor: pointer;
+}
+/* Prefixed with .site-header so the map's global button:hover:not(:disabled) (0,2,1) cannot outrank it. */
+.site-header .site-header__icon-btn:hover { background-color: var(--sh-sunken); color: var(--sh-text); border-color: transparent; }
+.site-header__icon-btn svg { width: 24px; height: 24px; }
+.site-header .site-header__icon-btn[aria-expanded="true"] { background-color: var(--sh-sunken); color: var(--sh-text); border-color: var(--sh-control-border); }
+
+/* ---- account ---- */
+.site-header__account { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; }
+.site-header__account--loading { min-width: 112px; }
+.site-header__avatar {
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  width: 32px; height: 32px; border-radius: 50%; object-fit: cover; overflow: hidden;
+}
+.site-header__avatar--generic { background-color: var(--sh-avatar-bg); color: var(--sh-avatar-fg); }
+.site-header__avatar--generic svg { width: 24px; height: 24px; margin-top: 4px; }
+.site-header__avatar--initial {
+  background-color: var(--sh-accent); color: var(--sh-on-accent); font-size: 0.875rem; font-weight: 700;
+}
+.site-header__login {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 44px;
+  padding: 0 16px; border-radius: 8px; white-space: nowrap;
+  background-color: var(--sh-accent); color: var(--sh-on-accent);
+  font-size: 0.875rem; font-weight: 700; text-decoration: none;
+}
+.site-header__login:hover { background-color: var(--sh-accent-hover); color: var(--sh-on-accent); text-decoration: none; }
+.site-header__avatar-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+  min-width: 48px; min-height: 48px; height: 48px; margin: 0; padding: 0 8px;
+  border: 1px solid var(--sh-border); border-radius: 9999px; background-color: var(--sh-bg);
+  color: var(--sh-text); font: inherit; cursor: pointer;
+}
+.site-header .site-header__avatar-btn:hover,
+.site-header .site-header__avatar-btn[aria-expanded="true"] { border-color: var(--sh-control-border); background-color: var(--sh-raised); }
+.site-header__chevron { width: 16px; height: 16px; transition: transform 200ms ease; }
+.site-header__avatar-btn[aria-expanded="true"] .site-header__chevron { transform: rotate(180deg); }
+
+/* ---- pop-ups ---- */
+.site-header__dropdown {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 10;
+  min-width: 220px; max-width: calc(100vw - 32px); padding: 8px;
+  background-color: var(--sh-bg); border: 1px solid var(--sh-border); border-radius: 12px;
+  box-shadow: var(--sh-shadow); color: var(--sh-text);
+}
+.site-header__dropdown--narrow { min-width: 180px; }
+.site-header__member {
+  padding: 8px 12px 12px; margin-bottom: 8px; border-bottom: 1px solid var(--sh-border);
+  font-weight: 700; overflow-wrap: anywhere;
+}
+.site-header__item {
+  display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; margin: 0; padding: 0 12px;
+  border: none; border-radius: 8px; background: none; color: var(--sh-text);
+  font: inherit; font-size: 0.9375rem; text-align: left; text-decoration: none; white-space: nowrap; cursor: pointer;
+}
+.site-header__item:hover,
+.site-header__item:focus-visible { background-color: var(--sh-raised); color: var(--sh-text); text-decoration: none; border-color: transparent; }
+.site-header__item--signout,
+.site-header__item--signout:hover,
+.site-header__item--signout:focus-visible { color: var(--sh-signout); }
+.site-header__item-mark { display: inline-flex; flex: none; width: 16px; height: 16px; }
+.site-header__check { width: 16px; height: 16px; }
+.site-header__item-note { margin-left: auto; padding-left: 12px; color: var(--sh-text-2); font-size: 0.875rem; }
+.site-header__error { margin: 8px 12px 4px; font-size: 0.875rem; color: var(--sh-error); }
+
+/* ---- the folding site menu (1280 px and below) ---- */
+.site-header__menu { display: none; }
+.site-header__menu-panel {
+  display: flex; flex-direction: column; gap: 4px; min-width: 240px;
+  max-height: calc(100vh - 80px); overflow-y: auto;
+}
+.site-header__menu-links { display: flex; flex-direction: column; gap: 4px; }
+.site-header__menu-link {
+  display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px;
+  color: var(--sh-text); font-size: 1rem; font-weight: 500; text-decoration: none;
+}
+.site-header__menu-link:hover { background-color: var(--sh-sunken); color: var(--sh-text); text-decoration: none; }
+.site-header__menu-link[aria-current="page"] {
+  color: var(--sh-current-fg); background-color: var(--sh-current-bg);
+  box-shadow: inset 3px 0 0 var(--sh-current-line);
+}
+.site-header__group { margin: 4px 0 0; padding: 8px 0 0; border-top: 1px solid var(--sh-border); }
+.site-header__group-title {
+  display: block; padding: 4px 12px; margin: 0;
+  color: var(--sh-text-2); font-size: 0.875rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+}
+/* Shown on phones only, where the bar's theme button is hidden (see the 640 px block). */
+.site-header__menu-theme { display: none; }
+.site-header__radios { margin: 0; padding: 0; border: 0; min-width: 0; }
+.site-header__radio-row { display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 12px 0; }
+.site-header__radio {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px;
+  border: 1px solid var(--sh-control-border); border-radius: 8px; color: var(--sh-text); cursor: pointer;
+}
+.site-header__radio:has(input:checked) { background-color: var(--sh-current-bg); color: var(--sh-current-fg); border-color: var(--sh-current-line); }
+.site-header__radio input { width: 18px; height: 18px; min-height: 0; margin: 0; accent-color: var(--sh-current-line); }
+/* The wiki's build switch (VersionSelect) in the menu, in the header's colours, so it reads
+   in both themes whatever the page palette is. */
+.site-header__menu-panel .version-select { padding: 0 12px 4px; }
+.site-header__menu-panel .version-select__label {
+  padding: 4px 0; color: var(--sh-text-2); font-size: 0.875rem; font-weight: 700; letter-spacing: 0.04em;
+}
+.site-header__menu-panel .version-select__control {
+  background-color: var(--sh-bg); color: var(--sh-text); border-color: var(--sh-control-border);
+}
+.site-header__sublink {
+  display: flex; align-items: center; min-height: 32px; padding: 4px 12px; border-radius: 8px;
+  color: var(--sh-text-2); font-size: 0.875rem; text-decoration: none;
+}
+.site-header__sublink:hover { background-color: var(--sh-sunken); color: var(--sh-text); text-decoration: none; }
+.site-header__sublink--level-3 { padding-left: 24px; }
+.site-header__sublink--level-4 { padding-left: 36px; }
+
+/* xl, 1280 px: the seven links give way to the folding menu at one single width. */
+@media (max-width: 1280px) {
+  .site-header__nav { display: none; }
+  .site-header__menu { display: block; }
+}
+
+/* md, 768 px: the search box takes all the room that is left. */
+@media (max-width: 768px) {
+  .site-header__search { max-width: none; }
+}
+
+/* sm, 640 px: phones. The theme choice moves into the folding menu, the site name goes,
+   and the pop-ups span the screen so none is cut off at 320 px. */
+@media (max-width: 640px) {
+  .site-header__bar { gap: 8px; padding: 0 12px; }
+  .site-header__brand-text { display: none; }
+  .site-header__theme { display: none; }
+  .site-header__menu-theme { display: block; }
+  .site-header__actions { gap: 4px; }
+  .site-header__account { gap: 4px; }
+  .site-header__login { padding: 0 12px; }
+  .site-header__search-form { padding: 6px 8px; }
+  .site-header__search-icon { margin-right: 6px; }
+  .site-header__search-input { font-size: 0.875rem; }
+  .site-header__search .search-bar__input-wrapper { padding: 6px 8px; }
+  .site-header__search .search-bar__input { font-size: 0.875rem; }
+  .site-header__dropdown { position: fixed; top: 72px; right: 12px; max-width: calc(100vw - 24px); }
+  .site-header__menu-panel { left: 12px; min-width: 0; max-height: calc(100vh - 88px); }
+}
+
+/* 400 px and below: the signed-out avatar is decoration (the "Log in" link carries the
+   meaning), so it gives its room to the search box. */
+@media (max-width: 400px) {
+  .site-header__avatar--generic { display: none; }
+}
