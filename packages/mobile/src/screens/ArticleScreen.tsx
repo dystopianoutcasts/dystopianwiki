@@ -14,7 +14,7 @@ import { theme } from '../theme'
 import { api } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { useHaptics } from '../hooks/useHaptics'
-import type { Article } from '@dystopianwiki/shared'
+import { fieldNotesToPlainMarkdown, type Article } from '@dystopianwiki/shared'
 
 export function ArticleScreen() {
   const navigation = useNavigation<HomeStackNavProp>()
@@ -261,7 +261,8 @@ export function ArticleScreen() {
 
       {/* Article Content */}
       <View style={styles.content}>
-        <Markdown style={markdownStyles}>{article.content}</Markdown>
+        {/* The app has no field-notes components; their directives read as plain Markdown */}
+        <Markdown style={markdownStyles}>{fieldNotesToPlainMarkdown(article.content)}</Markdown>
       </View>
 
       {/* Related Articles */}
