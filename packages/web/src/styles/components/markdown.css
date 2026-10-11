@@ -31,7 +31,8 @@
 .markdown h2 {
   font-size: var(--font-size-2xl);
   padding-bottom: var(--spacing-2);
-  border-bottom: 1px solid var(--color-border-light);
+  border-bottom: 2px solid var(--color-border);
+  color: var(--fn-heading); /* the field-notes copper, both themes (field-notes.css) */
 }
 
 .markdown h3 {
@@ -164,16 +165,7 @@
   margin-bottom: 0;
 }
 
-/* Info/Warning/Note callouts */
-.markdown blockquote.info {
-  border-left-color: var(--color-highlight-500);
-  background-color: var(--color-alert-info-bg);
-}
-
-.markdown blockquote.warning {
-  border-left-color: var(--color-accent-500);
-  background-color: var(--color-alert-warning-bg);
-}
+/* A blockquote that opens with a bold label is a callout: field-notes.css */
 
 /* Horizontal rules */
 .markdown hr {
@@ -221,6 +213,8 @@
   max-width: 100%;
   overflow-x: auto;
   margin: var(--spacing-4) 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
 }
 
 .markdown-table-scroll > table {
@@ -240,16 +234,23 @@
   font-size: var(--font-size-sm);
 }
 
+/* Rows are divided by rules; the rounded scroll box draws the outer edge */
 .markdown th,
 .markdown td {
   padding: var(--spacing-3) var(--spacing-4);
   text-align: left;
-  border: 1px solid var(--color-border);
+  vertical-align: top;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.markdown tr:last-child > td {
+  border-bottom: 0;
 }
 
 .markdown th {
-  font-weight: var(--font-weight-semibold);
-  background-color: var(--color-background);
+  font-weight: var(--font-weight-bold);
+  background-color: var(--fn-table-head-bg);
+  color: var(--fn-table-head-text);
 }
 
 .markdown tr:nth-child(even) {

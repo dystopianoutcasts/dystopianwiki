@@ -102,6 +102,60 @@
      fill (white read 2.7 to 3.2:1 on the accent-500 and accent-600 buttons) */
   --color-on-accent: #000000;
 
+  /* Field notes (components/field-notes.css): callouts, badges, cards, meters and the cover.
+     Every pair is checked for WCAG 2.2 AA in both themes by fieldNotes.test.ts. */
+  --fn-heading: #e9a35e;
+  --fn-number-bg: #d4782c;
+  --fn-number-text: #000000;
+  --fn-panel-bg: #0f1f35;
+  --fn-panel-border: #1e3a5f;
+  --fn-card-label: #e9a35e;
+  --fn-kicker: #c9b8d8;
+  --fn-callout-text: #f0f4f8;
+  --fn-key-bg: #0f1f35;
+  --fn-key-bar: #4a7ab3;
+  --fn-key-label-bg: #4a7ab3;
+  --fn-key-label-text: #000000;
+  --fn-key-link: #e9a35e;
+  --fn-warn-bg: #7a3d0a;
+  --fn-warn-bar: #e08a3c;
+  --fn-warn-label-bg: #e9a35e;
+  --fn-warn-label-text: #000000;
+  --fn-warn-link: #f5d4ab;
+  --fn-design-bg: #3d2a52;
+  --fn-design-bar: #7d5f9c;
+  --fn-design-label-bg: #ad94c4;
+  --fn-design-label-text: #000000;
+  --fn-design-link: #f0bb82;
+  --fn-proof-bg: #0a1628;
+  --fn-proof-bar: #7199c7;
+  --fn-proof-label-bg: #a3bfdb;
+  --fn-proof-label-text: #000000;
+  --fn-proof-link: #e9a35e;
+  --fn-badge-text: #000000;
+  --fn-badge-yes: #8fd19e;
+  --fn-badge-no: #f2a3a3;
+  --fn-badge-maybe: #f0bb82;
+  --fn-badge-t1: #e9a35e;
+  --fn-badge-t2: #ad94c4;
+  --fn-badge-t3: #7199c7;
+  --fn-badge-rare: #f5d4ab;
+  --fn-badge-border: #0a1628;
+  --fn-table-head-bg: #1e3a5f;
+  --fn-table-head-text: #f0f4f8;
+  --fn-meter-on: #e08a3c;
+  --fn-meter-off: #1e3a5f;
+  --fn-meter-off-border: #4a7ab3;
+  --fn-bar-1: #e9a35e;
+  --fn-bar-2: #ad94c4;
+  --fn-bar-3: #7199c7;
+  --fn-chip-bg: #1e3a5f;
+  --fn-chip-border: #4a7ab3;
+  --fn-chip-text: #f0f4f8;
+  --fn-stripe: #d4782c;
+  --fn-plate-bg: #000000;
+  --fn-plate-text: #e9a35e;
+
   /* Deeper shadows for the dark base */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -268,6 +322,59 @@
   --color-alert-warning-bg: #faecd5;
   --color-alert-warning-border: #b85f12;
   --color-on-accent: #000000; /* 4.7:1 even on the accent-700 hover fill */
+
+  /* Field notes: light values of the --fn-* tokens above */
+  --fn-heading: #9a4a0b;
+  --fn-number-bg: #d4782c;
+  --fn-number-text: #000000;
+  --fn-panel-bg: #f4f7fb;
+  --fn-panel-border: #b4c3d6;
+  --fn-card-label: #7a3d0a;
+  --fn-kicker: #4e3668;
+  --fn-callout-text: #0f1f35;
+  --fn-key-bg: #f4f7fb;
+  --fn-key-bar: #264a78;
+  --fn-key-label-bg: #264a78;
+  --fn-key-label-text: #ffffff;
+  --fn-key-link: #1d4f8c;
+  --fn-warn-bg: #faecd5;
+  --fn-warn-bar: #b85f12;
+  --fn-warn-label-bg: #7a3d0a;
+  --fn-warn-label-text: #ffffff;
+  --fn-warn-link: #1d4f8c;
+  --fn-design-bg: #e5dced;
+  --fn-design-bar: #6b4d8a;
+  --fn-design-label-bg: #4e3668;
+  --fn-design-label-text: #ffffff;
+  --fn-design-link: #1d4f8c;
+  --fn-proof-bg: #f4f7fb;
+  --fn-proof-bar: #6b7c93;
+  --fn-proof-label-bg: #33475f;
+  --fn-proof-label-text: #ffffff;
+  --fn-proof-link: #1d4f8c;
+  --fn-badge-text: #000000;
+  --fn-badge-yes: #8fd19e;
+  --fn-badge-no: #f2a3a3;
+  --fn-badge-maybe: #f0bb82;
+  --fn-badge-t1: #e9a35e;
+  --fn-badge-t2: #ad94c4;
+  --fn-badge-t3: #7199c7;
+  --fn-badge-rare: #f5d4ab;
+  --fn-badge-border: #6b7c93;
+  --fn-table-head-bg: #dce6f2;
+  --fn-table-head-text: #0f1f35;
+  --fn-meter-on: #b85f12;
+  --fn-meter-off: #dce6f2;
+  --fn-meter-off-border: #6b7c93;
+  --fn-bar-1: #b85f12;
+  --fn-bar-2: #6b4d8a;
+  --fn-bar-3: #264a78;
+  --fn-chip-bg: #dce6f2;
+  --fn-chip-border: #6b7c93;
+  --fn-chip-text: #0f1f35;
+  --fn-stripe: #d4782c;
+  --fn-plate-bg: #000000;
+  --fn-plate-text: #e9a35e;
 
   /* Soft navy-tinted shadows for a light ground */
   --shadow-sm: 0 1px 2px rgba(15, 31, 53, 0.08);

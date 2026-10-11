@@ -6,7 +6,9 @@ import rehypeSlug from 'rehype-slug';
 import { CodeBlock } from './CodeBlock';
 import { ScrollBox } from './ScrollBox';
 import { footnoteBackContent } from './footnoteBack';
+import { FIELD_NOTES_REMARK_PLUGINS, hasFieldNotesMarker } from './fieldNotes';
 import '../../styles/components/markdown.css';
+import '../../styles/components/field-notes.css';
 
 // Import highlight.js styles (we'll use a dark theme that works in both modes)
 import 'highlight.js/styles/atom-one-dark.css';
@@ -24,6 +26,9 @@ function nodeText(node: ReactNode): string {
 
 // Footnote back links draw an icon, not the U+21A9 character phones show as an emoji.
 const REMARK_REHYPE_OPTIONS = { footnoteBackContent };
+
+// Labelled callouts and the field-notes directives (fieldNotes.ts), after GFM
+const REMARK_PLUGINS = [remarkGfm, ...FIELD_NOTES_REMARK_PLUGINS];
 
 interface MarkdownRendererProps {
   content: string;
@@ -133,10 +138,12 @@ export function MarkdownRenderer({ content, className = '' }: MarkdownRendererPr
     []
   );
 
+  const fieldNotes = useMemo(() => hasFieldNotesMarker(content), [content]);
+
   return (
-    <div className={`markdown ${className}`}>
+    <div className={`markdown ${fieldNotes ? 'markdown--field-notes ' : ''}${className}`}>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={REMARK_PLUGINS}
         remarkRehypeOptions={REMARK_REHYPE_OPTIONS}
         rehypePlugins={[rehypeHighlight, rehypeSlug]}
         components={components}

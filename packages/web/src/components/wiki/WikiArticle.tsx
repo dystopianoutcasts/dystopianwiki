@@ -2,6 +2,7 @@ import { useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { WikiArticle as WikiArticleType, Difficulty } from '../../types/wiki';
 import { MarkdownRenderer } from './MarkdownRenderer';
+import { hasFieldNotesMarker } from './fieldNotes';
 import { TableOfContents, extractTOCFromMarkdown } from './TableOfContents';
 import { RelatedArticles } from './RelatedArticles';
 import { OutcastInvitation } from './OutcastInvitation';
@@ -81,6 +82,9 @@ export function WikiArticle({
     return () => clearTocItems();
   }, [tocItems, setTocItems, clearTocItems]);
 
+  // The ::field-notes marker also draws the header as a cover (field-notes.css)
+  const fieldNotes = useMemo(() => hasFieldNotesMarker(article.content), [article.content]);
+
   // Format last updated date
   const formattedDate = useMemo(() => {
     try {
@@ -95,7 +99,7 @@ export function WikiArticle({
   }, [article.lastUpdated]);
 
   return (
-    <article className="wiki-article">
+    <article className={`wiki-article${fieldNotes ? ' wiki-article--field-notes' : ''}`}>
       {/* Article body with sidebar */}
       <div className="wiki-article__body">
         {/* Main Content */}

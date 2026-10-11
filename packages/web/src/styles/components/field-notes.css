@@ -1,0 +1,394 @@
+/**
+ * Field notes: labelled callouts on every article, and the full field-notes look (cover header,
+ * numbered sections, cards, badges, meters, the EYES ONLY banner) on an article that carries the
+ * ::field-notes marker. Markup comes from components/wiki/fieldNotes.ts; the syntax is described
+ * in packages/shared/field-notes. Colours are the --fn-* tokens in variables.css, one set per
+ * theme, so no rule here is theme-specific.
+ *
+ * Colour is never the only signal: a callout has its label, a badge its word, a meter its text.
+ */
+
+/* ═══════════════════════════════════════════════════════════════
+   EVERY ARTICLE - labelled callouts (> **Label:** text, or :::callout)
+   ═══════════════════════════════════════════════════════════════ */
+.markdown .callout {
+  margin: var(--spacing-5) 0;
+  padding: var(--spacing-4) var(--spacing-5);
+  border-left: 6px solid var(--fn-key-bar);
+  border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0;
+  background-color: var(--fn-key-bg);
+  color: var(--fn-callout-text);
+}
+
+.markdown .callout > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown .callout__label {
+  display: inline-block;
+  margin-right: var(--spacing-2);
+  padding: 0.1em 0.6em;
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.12em;
+  line-height: 1.6;
+  text-transform: uppercase;
+  vertical-align: 0.1em;
+  background-color: var(--fn-key-label-bg);
+  color: var(--fn-key-label-text);
+}
+
+.markdown .callout__label-row {
+  margin-bottom: var(--spacing-2);
+}
+
+.markdown .callout a {
+  color: var(--fn-key-link);
+}
+
+.markdown .callout--warn {
+  border-left-color: var(--fn-warn-bar);
+  background-color: var(--fn-warn-bg);
+}
+
+.markdown .callout--warn .callout__label {
+  background-color: var(--fn-warn-label-bg);
+  color: var(--fn-warn-label-text);
+}
+
+.markdown .callout--warn a {
+  color: var(--fn-warn-link);
+}
+
+.markdown .callout--design {
+  border-left-color: var(--fn-design-bar);
+  background-color: var(--fn-design-bg);
+}
+
+.markdown .callout--design .callout__label {
+  background-color: var(--fn-design-label-bg);
+  color: var(--fn-design-label-text);
+}
+
+.markdown .callout--design a {
+  color: var(--fn-design-link);
+}
+
+.markdown .callout--proof {
+  border-left-color: var(--fn-proof-bar);
+  background-color: var(--fn-proof-bg);
+}
+
+.markdown .callout--proof .callout__label {
+  background-color: var(--fn-proof-label-bg);
+  color: var(--fn-proof-label-text);
+}
+
+.markdown .callout--proof a {
+  color: var(--fn-proof-link);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FIELD NOTES - inline badges (usable in any article)
+   ═══════════════════════════════════════════════════════════════ */
+.markdown .fn-badge {
+  display: inline-block;
+  padding: 0 0.55em;
+  border: 1px solid var(--fn-badge-border);
+  border-radius: var(--border-radius-sm);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.9em;
+  line-height: 1.5;
+  color: var(--fn-badge-text);
+  background-color: var(--fn-badge-maybe);
+}
+
+.markdown .fn-badge--yes { background-color: var(--fn-badge-yes); }
+.markdown .fn-badge--no { background-color: var(--fn-badge-no); }
+.markdown .fn-badge--t1 { background-color: var(--fn-badge-t1); }
+.markdown .fn-badge--t2 { background-color: var(--fn-badge-t2); }
+.markdown .fn-badge--t3 { background-color: var(--fn-badge-t3); }
+.markdown .fn-badge--rare { background-color: var(--fn-badge-rare); }
+
+/* ═══════════════════════════════════════════════════════════════
+   FIELD NOTES - EYES ONLY banner
+   ═══════════════════════════════════════════════════════════════ */
+.markdown .fn-eyes-only {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+  margin: 0 0 var(--spacing-6);
+  padding: var(--spacing-2);
+  border-radius: var(--border-radius-md);
+  background: repeating-linear-gradient(-45deg, var(--fn-stripe) 0 14px, var(--fn-plate-bg) 14px 28px);
+}
+
+.markdown .fn-eyes-only__plate {
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  background-color: var(--fn-plate-bg);
+  color: var(--fn-plate-text);
+}
+
+@media (max-width: 640px) {
+  .markdown .fn-eyes-only__plate[aria-hidden="true"] {
+    display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FIELD NOTES - cards, facts, chips
+   ═══════════════════════════════════════════════════════════════ */
+.markdown .fn-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--spacing-3);
+  margin: var(--spacing-4) 0;
+}
+
+.markdown .fn-card {
+  padding: var(--spacing-4);
+  border: 1px solid var(--fn-panel-border);
+  border-top: 5px solid var(--fn-bar-1);
+  border-radius: var(--border-radius-lg);
+  background-color: var(--fn-panel-bg);
+  color: var(--color-text-primary);
+}
+
+.markdown .fn-card--purple { border-top-color: var(--fn-bar-2); }
+.markdown .fn-card--blue { border-top-color: var(--fn-bar-3); }
+.markdown .fn-card--cream { border-top-color: var(--fn-panel-border); }
+
+.markdown .fn-card > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown .fn-card :is(h3, h4) {
+  margin-top: 0;
+  margin-bottom: var(--spacing-2);
+}
+
+.markdown .fn-card__label-row {
+  margin-bottom: var(--spacing-1);
+}
+
+.markdown .fn-card__label {
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fn-card-label);
+}
+
+/* :::facts around a list of "**Key** text" items: the key in a column of its own */
+.markdown .fn-facts > ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.markdown .fn-facts li {
+  position: relative;
+  margin: 0;
+  padding: var(--spacing-3) 0 var(--spacing-3) 10rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.markdown .fn-facts li:last-child {
+  border-bottom: 0;
+}
+
+.markdown .fn-facts li > strong:first-child {
+  position: absolute;
+  left: 0;
+  width: 9rem;
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fn-card-label);
+}
+
+@media (max-width: 640px) {
+  .markdown .fn-facts li {
+    padding-left: 0;
+  }
+
+  .markdown .fn-facts li > strong:first-child {
+    position: static;
+    display: block;
+    width: auto;
+  }
+}
+
+.markdown .fn-chips > ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  list-style: none;
+  padding-left: 0;
+}
+
+.markdown .fn-chips li {
+  margin: 0;
+  padding: var(--spacing-1) var(--spacing-3);
+  border: 1px solid var(--fn-chip-border);
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-bold);
+  background-color: var(--fn-chip-bg);
+  color: var(--fn-chip-text);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FIELD NOTES - meters and bars (the words carry the value; the bars are drawn beside them)
+   ═══════════════════════════════════════════════════════════════ */
+.markdown .fn-meter {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(8rem, 14rem);
+  grid-template-areas: 'name track' 'name text';
+  column-gap: var(--spacing-4);
+  align-items: center;
+  margin: var(--spacing-3) 0;
+}
+
+.markdown .fn-meter__name {
+  grid-area: name;
+  font-weight: var(--font-weight-bold);
+}
+
+.markdown .fn-meter__track {
+  grid-area: track;
+  display: flex;
+  gap: 4px;
+}
+
+.markdown .fn-meter__seg {
+  flex: 1;
+  height: 1.1rem;
+  border: 1px solid var(--fn-meter-off-border);
+  border-radius: 3px;
+  background-color: var(--fn-meter-off);
+}
+
+.markdown .fn-meter__seg--on {
+  border-color: var(--fn-meter-on);
+  background-color: var(--fn-meter-on);
+}
+
+.markdown .fn-meter__text {
+  grid-area: text;
+  justify-self: end;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 640px) {
+  .markdown .fn-meter {
+    grid-template-columns: 1fr;
+    grid-template-areas: 'name' 'track' 'text';
+    row-gap: var(--spacing-1);
+  }
+}
+
+.markdown .fn-bar {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: var(--spacing-3);
+  align-items: center;
+  margin: var(--spacing-2) 0;
+}
+
+.markdown .fn-bar__name {
+  font-family: var(--font-family-display);
+  text-align: right;
+}
+
+.markdown .fn-bar__track {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.markdown .fn-bar__fill {
+  height: 1.6rem;
+  border-radius: var(--border-radius-sm);
+  background-color: var(--fn-bar-1);
+}
+
+.markdown .fn-bar--purple .fn-bar__fill { background-color: var(--fn-bar-2); }
+.markdown .fn-bar--blue .fn-bar__fill { background-color: var(--fn-bar-3); }
+.markdown .fn-bar--cream .fn-bar__fill { background-color: var(--fn-panel-border); }
+
+.markdown .fn-bar__text {
+  font-weight: var(--font-weight-bold);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FIELD NOTES - full look (::field-notes): numbered sections and the cover header.
+   The header rules are written .wiki-article.wiki-article--field-notes to outrank
+   wiki-article.css, which loads after this file, and its dark category rule.
+   ═══════════════════════════════════════════════════════════════ */
+.markdown--field-notes {
+  counter-reset: fn-section;
+}
+
+.markdown--field-notes h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  counter-increment: fn-section;
+}
+
+.markdown--field-notes h2::before {
+  content: counter(fn-section);
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-lg);
+  background-color: var(--fn-number-bg);
+  color: var(--fn-number-text);
+}
+
+.wiki-article.wiki-article--field-notes .wiki-article__header {
+  padding: var(--spacing-6);
+  border: 2px solid var(--fn-panel-border);
+  border-radius: var(--border-radius-xl);
+  background-color: var(--fn-panel-bg);
+}
+
+.wiki-article.wiki-article--field-notes .wiki-article__title {
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-4xl);
+}
+
+.wiki-article.wiki-article--field-notes .wiki-article__category {
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-normal);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background-color: transparent;
+  color: var(--fn-kicker);
+  padding-left: 0;
+}
+
+@media (max-width: 640px) {
+  .wiki-article.wiki-article--field-notes .wiki-article__header {
+    padding: var(--spacing-4);
+  }
+
+  .wiki-article.wiki-article--field-notes .wiki-article__title {
+    font-size: var(--font-size-3xl);
+  }
+}
