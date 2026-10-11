@@ -17,14 +17,14 @@ const ENTRY_IDS = MASCOT_ENTRIES.map((e) => e.id)
 type RpcError = { code?: unknown; message?: unknown; status?: unknown } | null
 
 /** A refusal the database meant (wrong role, or a move it does not allow), as opposed to a failure. */
-function reasonOf(error: RpcError): 'login' | 'network' | 'refused' {
-  if (error && (error.code === '55000' || error.code === 'P0002' || error.code === '22004' || error.code === 'P0001')) return 'refused'
+export function reasonOf(error: RpcError): 'login' | 'network' | 'refused' {
+  if (error && (error.code === '55000' || error.code === 'P0002' || error.code === '22004' || error.code === 'P0001' || error.code === '23514')) return 'refused'
   const kind = classifyRpcError(error)
   // A signed-in caller refused for their role also gets 42501; the page shows that as "admins only".
   return kind === 'login' ? 'login' : 'network'
 }
 
-async function rpc(name: string, args?: Record<string, unknown>): Promise<{ data: unknown; error: RpcError }> {
+export async function rpc(name: string, args?: Record<string, unknown>): Promise<{ data: unknown; error: RpcError }> {
   try {
     const { data, error } = await api.getClient().rpc(name, args)
     return { data, error: error as RpcError }
