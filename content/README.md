@@ -95,6 +95,10 @@ last_updated: 2026-09-29
 - Build 42 ids are `build-42-{slug}`; the sync derives the id when `id` is omitted.
 - `version`, `section` and `category` must match the folders the file is in.
 
+## Callouts and the field-notes look
+
+A quote that opens with a bold label (`> **Warning:** ...`) is drawn as a coloured callout. Put `::field-notes` at the top of the body for the full look: a cover header, numbered sections, cards, badges and meters. Syntax and a preview tool: [docs/guides/field-notes-style.md](../docs/guides/field-notes-style.md).
+
 ## Drafts
 
 `content/drafts/` holds articles that are not ready to publish. It is gitignored: drafts are
