@@ -4,6 +4,7 @@
  * AdminDashboardPage keep the state and the handlers; these only draw.
  */
 import { memberRole, type AdminBallot, type Member } from '../../lib/adminDashboard'
+import { executiveState, formatBytes, type EyesOnlyListItem, type ExecutiveMember, type ExecutiveState } from '../../lib/eyesOnly'
 import { TILE_STATE_TEXT, type MapRow } from '../../lib/mapPanel'
 import type { World } from '../../lib/worldsApi'
 import { formatDate, originText } from '../../lib/worldsPanel'
@@ -162,6 +163,102 @@ export function BallotsTable({
           ],
         }
       })}
+    />
+  )
+}
+
+export const EXECUTIVE_COLUMNS: readonly FitColumn[] = [
+  { label: 'Discord username', kind: 'break' },
+  { label: 'Email', kind: 'break' },
+  { label: 'Joined', kind: 'text' },
+  { label: 'Role', kind: 'short' },
+  { label: 'Executive', kind: 'text' },
+  { label: 'Change', kind: 'action' },
+]
+
+const EXECUTIVE_TEXT: Readonly<Record<ExecutiveState, string>> = {
+  inherited: 'Executive (inherited)',
+  executive: 'Executive',
+  none: 'No',
+}
+
+export function ExecutivesTable({
+  members,
+  selfId,
+  onAsk,
+  labelledBy,
+}: {
+  members: readonly ExecutiveMember[]
+  selfId: string
+  onAsk: (m: ExecutiveMember) => void
+  labelledBy: string
+}) {
+  return (
+    <FitTable
+      labelledBy={labelledBy}
+      columns={EXECUTIVE_COLUMNS}
+      stack="wide"
+      rows={members.map((m) => {
+        const state = executiveState(m)
+        return {
+          key: m.userId,
+          cells: [
+            m.discordUsername ?? <span className="admin__none">No Discord</span>,
+            m.email ?? '-',
+            formatWhen(m.joinedAt),
+            memberRole(m),
+            EXECUTIVE_TEXT[state],
+            // Admins and the superadmin have it already, and nobody changes their own account.
+            m.userId === selfId || state === 'inherited' ? (
+              <span className="admin__none">-</span>
+            ) : (
+              <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary admin__row-btn" onClick={() => onAsk(m)}>
+                {state === 'executive' ? 'Remove executive' : 'Make executive'}
+                <span className="sr-only"> ({nameOfMember(m)})</span>
+              </button>
+            ),
+          ],
+        }
+      })}
+    />
+  )
+}
+
+export const EYES_ONLY_COLUMNS: readonly FitColumn[] = [
+  { label: 'Title', kind: 'break' },
+  { label: 'Slug', kind: 'break' },
+  { label: 'Updated', kind: 'text' },
+  { label: 'Size', kind: 'short' },
+  { label: 'Delete', kind: 'action' },
+]
+
+export function EyesOnlyTable({
+  documents,
+  onAsk,
+  labelledBy,
+}: {
+  documents: readonly EyesOnlyListItem[]
+  onAsk: (d: EyesOnlyListItem) => void
+  labelledBy: string
+}) {
+  return (
+    <FitTable
+      labelledBy={labelledBy}
+      columns={EYES_ONLY_COLUMNS}
+      stack="wide"
+      rows={documents.map((d) => ({
+        key: d.slug,
+        cells: [
+          d.title,
+          d.slug,
+          formatWhen(d.updatedAt),
+          formatBytes(d.sizeBytes),
+          <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary admin__row-btn" onClick={() => onAsk(d)}>
+            Delete
+            <span className="sr-only"> ({d.title})</span>
+          </button>,
+        ],
+      }))}
     />
   )
 }

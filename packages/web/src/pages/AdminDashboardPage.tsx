@@ -15,7 +15,16 @@ import { SEOHead } from '../components/seo/SEOHead'
 import { MascotDialog } from '../components/mascot/MascotDialog'
 import { ArtImage } from '../components/mascot/ArtImage'
 import { RoundTable } from '../components/mascot/RoundTable'
-import { BallotsTable, MembersTable, TilesTable, WorldsTable, formatWhen, nameOfMember } from '../components/admin/AdminTables'
+import {
+  BallotsTable,
+  ExecutivesTable,
+  EyesOnlyTable,
+  MembersTable,
+  TilesTable,
+  WorldsTable,
+  formatWhen,
+  nameOfMember,
+} from '../components/admin/AdminTables'
 import { useAuth } from '../context/AuthContext'
 import { MASCOT_ENTRIES, getMascotEntry } from '../data/mascotEntries'
 import { loginUrlFor } from '../utils/loginNext'
@@ -46,6 +55,18 @@ import {
   setStatus,
   type ApiResult,
 } from '../lib/adminApi'
+import {
+  EYES_ONLY_MAX_BYTES,
+  SLUG_MAX_LENGTH,
+  SUMMARY_MAX_LENGTH,
+  TITLE_MAX_LENGTH,
+  formatBytes,
+  suggestSlug,
+  uploadProblem,
+  type EyesOnlyListItem,
+  type ExecutiveMember,
+} from '../lib/eyesOnly'
+import { deleteEyesOnly, fetchAdminMembers, fetchEyesOnlyList, putEyesOnly, setExecutive } from '../lib/eyesOnlyApi'
 import { AURORA_SERVER_ID } from '../lib/aurora'
 import { worldsApi } from '../lib/worldsClient'
 import { mapRebuildApi } from '../lib/mapRebuildClient'
@@ -197,6 +218,10 @@ function Dashboard({ superadmin, selfId }: { superadmin: boolean; selfId: string
 
       {superadmin && <MembersSection selfId={selfId} />}
 
+      <ExecutivesSection selfId={selfId} />
+
+      {superadmin && <EyesOnlySection />}
+
       {election.state === 'loading' && (
         <p className="mascot-vote__loading" role="status">
           Loading the mascot vote...
@@ -299,7 +324,11 @@ function Confirm({
 }
 
 /** Runs one change behind a confirmation; reports the database's refusal in the dialog. */
-function useConfirmedAction<T>(run: (target: T) => Promise<ApiResult<null>>, onDone: () => void) {
+function useConfirmedAction<T>(
+  run: (target: T) => Promise<ApiResult<null>>,
+  onDone: () => void,
+  failureText: Readonly<Record<'login' | 'network' | 'malformed' | 'refused', string>> = FAILURE_TEXT,
+) {
   const [target, setTarget] = useState<T | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -320,7 +349,7 @@ function useConfirmedAction<T>(run: (target: T) => Promise<ApiResult<null>>, onD
       setTarget(null)
       onDone()
     } else {
-      setError(FAILURE_TEXT[r.reason])
+      setError(failureText[r.reason])
     }
   }
   return { target, busy, error, ask, cancel, confirm }
@@ -793,6 +822,272 @@ function MembersSection({ selfId }: { selfId: string }) {
             {action.target.isAdmin
               ? `${nameOfMember(action.target)} will lose this dashboard and the live map's admin panel straight away.`
               : `${nameOfMember(action.target)} will be able to open this dashboard, see every ballot with its Discord username, run the vote, and use the live map's admin panel.`}
+          </p>
+        )}
+      </Confirm>
+    </section>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Executives (admins and the superadmin; migration 041)
+// ---------------------------------------------------------------------------
+
+/** The EYES ONLY sections' own wording for a refusal (the shared text talks about the vote). */
+const EXECUTIVE_FAILURE_TEXT: Readonly<Record<'login' | 'network' | 'malformed' | 'refused', string>> = {
+  ...FAILURE_TEXT,
+  refused: 'The database refused that change. Check what you entered, reload the dashboard and try again.',
+}
+
+function ExecutivesSection({ selfId }: { selfId: string }) {
+  const [members, setMembers] = useState<Load<ExecutiveMember[]>>({ state: 'loading' })
+  const [key, setKey] = useState(0)
+  const [query, setQuery] = useState('')
+  const filterId = useId()
+
+  useEffect(() => {
+    let cancelled = false
+    void fetchAdminMembers().then((r) => {
+      if (!cancelled) setMembers(toLoad(r))
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [key])
+
+  const action = useConfirmedAction<ExecutiveMember>(
+    (m) => setExecutive(m.userId, !m.isExecutive),
+    () => setKey((k) => k + 1),
+    EXECUTIVE_FAILURE_TEXT,
+  )
+  const shown = members.state === 'ready' ? filterMembers(members.value, query) : []
+
+  return (
+    <section className="mascot-vote__panel" aria-labelledby="ad-executives">
+      <h2 id="ad-executives" className="mascot-vote__panel-title">
+        Executives
+      </h2>
+      <p>
+        Executives can open the hidden EYES ONLY documents and nothing else. Admins and the superadmin are executives already.
+      </p>
+      {members.state === 'loading' && <p role="status">Loading accounts...</p>}
+      {members.state === 'error' && (
+        <>
+          <p role="alert">{members.text}</p>
+          <button type="button" className="mascot-vote__btn mascot-vote__btn--primary" onClick={() => setKey((k) => k + 1)}>
+            Try again
+          </button>
+        </>
+      )}
+      {members.state === 'ready' && (
+        <>
+          <div className="admin__filter">
+            <label htmlFor={filterId}>Filter by Discord username or email</label>
+            <input id={filterId} type="search" value={query} onChange={(e) => setQuery(e.target.value)} />
+          </div>
+          <p className="mascot-vote__meta" role="status">
+            {shown.length} of {members.value.length} {members.value.length === 1 ? 'account' : 'accounts'}
+          </p>
+          <ExecutivesTable members={shown} selfId={selfId} onAsk={action.ask} labelledBy="ad-executives" />
+        </>
+      )}
+      <Confirm
+        open={action.target !== null}
+        title={action.target?.isExecutive ? 'Remove executive?' : 'Make executive?'}
+        confirmLabel={action.target?.isExecutive ? 'Remove executive' : 'Make executive'}
+        busy={action.busy}
+        error={action.error}
+        onConfirm={() => void action.confirm()}
+        onCancel={action.cancel}
+      >
+        {action.target && (
+          <p>
+            {action.target.isExecutive
+              ? `${nameOfMember(action.target)} will lose access to the EYES ONLY documents straight away.`
+              : `${nameOfMember(action.target)} will be able to open every EYES ONLY document straight away.`}
+          </p>
+        )}
+      </Confirm>
+    </section>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// EYES ONLY documents (superadmin only; migration 041)
+// ---------------------------------------------------------------------------
+
+function EyesOnlySection() {
+  const [docs, setDocs] = useState<Load<EyesOnlyListItem[]>>({ state: 'loading' })
+  const [key, setKey] = useState(0)
+  const fileId = useId()
+  const slugId = useId()
+  const titleId = useId()
+  const summaryId = useId()
+  const [fileKey, setFileKey] = useState(0)
+  const [fileName, setFileName] = useState('')
+  const [html, setHtml] = useState('')
+  const [slug, setSlug] = useState('')
+  const [title, setTitle] = useState('')
+  const [summary, setSummary] = useState('')
+  const [problem, setProblem] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [uploaded, setUploaded] = useState<{ slug: string; sha256: string } | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    void fetchEyesOnlyList().then((r) => {
+      if (!cancelled) setDocs(toLoad(r))
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [key])
+
+  const removal = useConfirmedAction<EyesOnlyListItem>(
+    (d) => deleteEyesOnly(d.slug),
+    () => setKey((k) => k + 1),
+    EXECUTIVE_FAILURE_TEXT,
+  )
+
+  const replaces = docs.state === 'ready' && docs.value.some((d) => d.slug === slug)
+
+  const onFile = async (file: File | undefined) => {
+    setUploaded(null)
+    setProblem(null)
+    if (!file) {
+      setFileName('')
+      setHtml('')
+      return
+    }
+    // Checked before reading, so a huge file is never pulled into memory.
+    if (file.size > EYES_ONLY_MAX_BYTES) {
+      setFileName('')
+      setHtml('')
+      setProblem(`That file is larger than ${formatBytes(EYES_ONLY_MAX_BYTES)}.`)
+      return
+    }
+    try {
+      const text = await file.text()
+      setFileName(file.name)
+      setHtml(text)
+      if (!slug) setSlug(suggestSlug(file.name))
+    } catch {
+      setFileName('')
+      setHtml('')
+      setProblem('That file could not be read.')
+    }
+  }
+
+  const onSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
+    if (busy) return
+    setUploaded(null)
+    const draft = { slug, title, summary, html }
+    const found = uploadProblem(draft)
+    setProblem(found)
+    if (found) return
+    setBusy(true)
+    const r = await putEyesOnly(draft)
+    setBusy(false)
+    if (!r.ok) {
+      setProblem(EXECUTIVE_FAILURE_TEXT[r.reason])
+      return
+    }
+    setUploaded({ slug, sha256: r.value })
+    setFileKey((k) => k + 1)
+    setFileName('')
+    setHtml('')
+    setSlug('')
+    setTitle('')
+    setSummary('')
+    setKey((k) => k + 1)
+  }
+
+  return (
+    <section className="mascot-vote__panel" aria-labelledby="ad-eyes-only">
+      <h2 id="ad-eyes-only" className="mascot-vote__panel-title">
+        EYES ONLY documents
+      </h2>
+      <p>
+        Only you see this section. Documents are stored in the database only, never in the public repository. Upload a
+        self-contained HTML file built with the style kit.
+      </p>
+      {docs.state === 'loading' && <p role="status">Loading documents...</p>}
+      {docs.state === 'error' && (
+        <>
+          <p role="alert">{docs.text}</p>
+          <button type="button" className="mascot-vote__btn mascot-vote__btn--primary" onClick={() => setKey((k) => k + 1)}>
+            Try again
+          </button>
+        </>
+      )}
+      {docs.state === 'ready' &&
+        (docs.value.length === 0 ? (
+          <p>No documents have been uploaded yet.</p>
+        ) : (
+          <EyesOnlyTable documents={docs.value} onAsk={removal.ask} labelledBy="ad-eyes-only" />
+        ))}
+
+      <form onSubmit={(e) => void onSubmit(e)} noValidate>
+        <h3 className="admin__subtitle">Upload a document</h3>
+        <div className="admin__filter">
+          <label htmlFor={fileId}>HTML file (up to {formatBytes(EYES_ONLY_MAX_BYTES)})</label>
+          <input
+            key={fileKey}
+            id={fileId}
+            type="file"
+            accept=".html,text/html"
+            onChange={(e) => void onFile(e.target.files?.[0])}
+          />
+          {fileName && <span className="mascot-vote__meta">Selected: {fileName}</span>}
+        </div>
+        <div className="admin__filter">
+          <label htmlFor={slugId}>Slug (the address: /eyes-only/slug)</label>
+          <input id={slugId} type="text" value={slug} maxLength={SLUG_MAX_LENGTH} autoComplete="off" onChange={(e) => setSlug(e.target.value)} />
+        </div>
+        <div className="admin__filter">
+          <label htmlFor={titleId}>Title</label>
+          <input id={titleId} type="text" value={title} maxLength={TITLE_MAX_LENGTH} autoComplete="off" onChange={(e) => setTitle(e.target.value)} />
+        </div>
+        <div className="admin__filter">
+          <label htmlFor={summaryId}>Summary (optional, shown on the card)</label>
+          <input id={summaryId} type="text" value={summary} maxLength={SUMMARY_MAX_LENGTH} autoComplete="off" onChange={(e) => setSummary(e.target.value)} />
+        </div>
+        {replaces && (
+          <p className="mascot-vote__hint" role="status">
+            A document with this slug exists. Uploading replaces it.
+          </p>
+        )}
+        {problem && (
+          <p className="mascot-vote__notice" role="alert">
+            {problem}
+          </p>
+        )}
+        {uploaded && (
+          <p className="mascot-vote__hint" role="status">
+            Uploaded {uploaded.slug}. sha256: <code>{uploaded.sha256}</code>
+          </p>
+        )}
+        <div className="admin__actions">
+          <button type="submit" className="mascot-vote__btn mascot-vote__btn--primary" disabled={busy}>
+            {busy ? 'Uploading...' : 'Upload'}
+          </button>
+        </div>
+      </form>
+
+      <Confirm
+        open={removal.target !== null}
+        title="Delete this document?"
+        confirmLabel="Delete document"
+        busy={removal.busy}
+        error={removal.error}
+        onConfirm={() => void removal.confirm()}
+        onCancel={removal.cancel}
+      >
+        {removal.target && (
+          <p>
+            {removal.target.title} ({removal.target.slug}) will be removed from the database. Executives will no longer see it. This
+            cannot be undone.
           </p>
         )}
       </Confirm>

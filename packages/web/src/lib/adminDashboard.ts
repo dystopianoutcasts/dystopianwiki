@@ -65,7 +65,7 @@ export function memberRole(m: Pick<Member, 'isAdmin' | 'isSuperadmin'>): 'Supera
 }
 
 /** Case-insensitive match on Discord username or email. */
-export function filterMembers(members: readonly Member[], query: string): Member[] {
+export function filterMembers<M extends Member>(members: readonly M[], query: string): M[] {
   const q = query.trim().toLowerCase()
   if (!q) return [...members]
   return members.filter((m) => (m.discordUsername ?? '').toLowerCase().includes(q) || (m.email ?? '').toLowerCase().includes(q))

@@ -50,3 +50,9 @@ test('the area is not in the sitemap or robots.txt', () => {
     assert.doesNotMatch(readFileSync(here(p), 'utf8'), /eyes-only/i, p)
   }
 })
+
+test('the dashboard shows the Executives section to admins and the documents section to the superadmin only', () => {
+  const dashboard = code('./AdminDashboardPage.tsx')
+  assert.match(dashboard, /^\s*<ExecutivesSection selfId=\{selfId\} \/>/m)
+  assert.match(dashboard, /\{superadmin && <EyesOnlySection \/>\}/)
+})
