@@ -157,3 +157,10 @@ export function executiveState(m: Pick<ExecutiveMember, 'isAdmin' | 'isSuperadmi
   if (m.isAdmin || m.isSuperadmin) return 'inherited'
   return m.isExecutive ? 'executive' : 'none'
 }
+
+/** "Oct 11, 2026", in UTC so the same instant reads the same for everyone. Empty for a bad time. */
+export function formatDocDate(iso: string): string {
+  const t = Date.parse(iso)
+  if (Number.isNaN(t)) return ''
+  return new Date(t).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })
+}

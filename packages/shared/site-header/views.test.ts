@@ -121,6 +121,18 @@ describe('account menu: signed in', () => {
     ])
   })
 
+  it('EYES ONLY sits after Admin dashboard, only for an executive, and is a plain link', () => {
+    expect(menuItems(account(signedIn({ isExecutive: true }), true))).toEqual(['Settings', 'EYES ONLY', 'Log out'])
+    expect(menuItems(account(signedIn({ isSiteAdmin: true, isExecutive: true }), true))).toEqual([
+      'Settings',
+      'Admin dashboard',
+      'EYES ONLY',
+      'Log out',
+    ])
+    expect(menuItems(account(signedIn({ isExecutive: false }), true))).toEqual(['Settings', 'Log out'])
+    expect(account(signedIn({ isExecutive: true }), true)).toMatch(/<a href="\/eyes-only" role="menuitem" class="site-header__item">EYES ONLY<\/a>/)
+  })
+
   it('Settings and Admin dashboard are plain links (they work from the map as page loads); Log out is a button', () => {
     const html = account(signedIn({ isSiteAdmin: true }), true)
     expect(html).toMatch(/<a href="\/settings" role="menuitem" class="site-header__item">Settings<\/a>/)

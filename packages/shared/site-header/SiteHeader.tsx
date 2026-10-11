@@ -33,6 +33,8 @@ export interface SiteHeaderProps {
   currentPath: string
   account: AccountInput
   siteAdminCheck: SiteAdminCheck
+  /** The wiki's public.site_is_executive() call; left out by the map, which shows no EYES ONLY link. */
+  siteExecutiveCheck?: SiteAdminCheck
   /** The app's search box; the plain GET form to /search when left out. */
   search?: ReactNode
   /** Extra groups for the end of the folding menu; `close` closes the menu. */
@@ -40,6 +42,9 @@ export interface SiteHeaderProps {
   /** Lets an app route its own paths without a page load. Leave out for plain page loads. */
   onLinkClick?: LinkClick
 }
+
+/** Stable (module level) stand-in for an app with no EYES ONLY area: always "not an executive". */
+const NO_EXECUTIVE_CHECK: SiteAdminCheck = () => Promise.resolve({ data: false, error: null })
 
 const MENU_ITEMS = '[role="menuitem"], [role="menuitemradio"]'
 const SITE_MENU_ITEMS = 'a[href]'
@@ -50,6 +55,7 @@ export function SiteHeader({
   currentPath,
   account,
   siteAdminCheck,
+  siteExecutiveCheck,
   search,
   menuExtras,
   onLinkClick,
@@ -60,6 +66,7 @@ export function SiteHeader({
   const theme = useSiteTheme()
   const signedIn = account.status === 'signed-in' ? account : null
   const isSiteAdmin = useSiteAdmin(siteAdminCheck, signedIn ? signedIn.userId : null)
+  const isExecutive = useSiteAdmin(siteExecutiveCheck ?? NO_EXECUTIVE_CHECK, signedIn ? signedIn.userId : null)
   // The URL that failed to load, so a new avatar URL gets its own chance.
   const [failedAvatar, setFailedAvatar] = useState<string | null>(null)
   const [signOutError, setSignOutError] = useState(false)
@@ -84,6 +91,7 @@ export function SiteHeader({
       status: 'signed-in',
       member: account.member,
       isSiteAdmin,
+      isExecutive,
       avatarFailed: avatarUrl !== null && failedAvatar === avatarUrl,
       onAvatarError,
       signOutError,

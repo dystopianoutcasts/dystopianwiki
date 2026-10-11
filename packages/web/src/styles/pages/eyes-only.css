@@ -1,0 +1,349 @@
+/**
+ * EYES ONLY area (/eyes-only and /eyes-only/:slug).
+ *
+ * Ported from the field-notes style kit's web/eyes-only.css (FieldNotes_Style_Kit), the house
+ * look of our internal documents. Every rule sits under one root class, `.eyes-only`, and the
+ * palette is its own set of custom properties, so nothing here leaks into the wiki and the
+ * page keeps its dark look whichever theme the visitor chose. Fonts (Russo One, Rajdhani) are
+ * the ones index.html already loads.
+ */
+
+.eyes-only {
+  --eo-navy-950: #060d18;
+  --eo-navy-900: #0a1628;
+  --eo-navy-800: #0f1f35;
+  --eo-navy-700: #1e3a5f;
+  --eo-navy-400: #4a7ab3;
+  --eo-navy-200: #a3bfdb;
+  --eo-orange-600: #d4782c;
+  --eo-orange-500: #e08a3c;
+  --eo-orange-400: #e9a35e;
+  --eo-orange-300: #f0bb82;
+  --eo-purple-200: #c9b8d8;
+  --eo-cream: #f8f6f3;
+  --eo-text: #f0f4f8;
+  --eo-text-2: #b4c2d3;
+  --eo-display: 'Russo One', Impact, sans-serif;
+  --eo-body: 'Rajdhani', 'Segoe UI', Roboto, sans-serif;
+
+  box-sizing: border-box;
+  min-height: 100vh;
+  background: var(--eo-navy-900);
+  color: var(--eo-text);
+  font-family: var(--eo-body);
+  font-weight: 500;
+  font-size: 1.15rem;
+  line-height: 1.45;
+}
+.eyes-only *,
+.eyes-only *::before,
+.eyes-only *::after {
+  box-sizing: border-box;
+}
+.eyes-only__main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+.eyes-only p {
+  margin: 0 0 0.6em;
+}
+.eyes-only a {
+  color: var(--eo-orange-400);
+  text-underline-offset: 3px;
+}
+.eyes-only a:hover {
+  color: var(--eo-orange-300);
+}
+.eyes-only :focus-visible {
+  outline: 3px solid var(--eo-orange-400);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---------- EYES ONLY strip ---------- */
+.eyes-only .eyes-only-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  background: repeating-linear-gradient(-45deg, var(--eo-orange-600) 0 14px, #000 14px 28px);
+  padding: 5px;
+  border-radius: 6px;
+  margin-bottom: 18px;
+}
+.eyes-only .eyes-only-strip span {
+  background: #000;
+  color: var(--eo-orange-400);
+  font-family: var(--eo-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
+  padding: 4px 12px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+/* ---------- Cover ---------- */
+.eyes-only .eo-cover {
+  position: relative;
+  background: linear-gradient(135deg, var(--eo-navy-800) 0%, var(--eo-navy-950) 100%);
+  border: 2px solid var(--eo-navy-700);
+  border-radius: 14px;
+  padding: 26px 28px 24px;
+  margin-bottom: 22px;
+  overflow: hidden;
+}
+.eyes-only .eo-cover-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+.eyes-only .eo-cover-logo {
+  width: 220px;
+  max-width: 55%;
+  height: auto;
+  display: block;
+}
+.eyes-only .eo-stamp {
+  transform: rotate(-6deg);
+  border: 3px solid var(--eo-orange-500);
+  color: var(--eo-orange-400);
+  font-family: var(--eo-display);
+  text-align: center;
+  padding: 8px 16px 6px;
+  border-radius: 6px;
+  line-height: 1.1;
+}
+.eyes-only .eo-stamp-big {
+  font-size: 1.9rem;
+  letter-spacing: 0.08em;
+  display: block;
+}
+.eyes-only .eo-stamp-small {
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  display: block;
+  margin-top: 4px;
+  color: var(--eo-orange-300);
+}
+.eyes-only .eo-kicker {
+  margin-top: 22px;
+  font-family: var(--eo-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  color: var(--eo-purple-200);
+}
+.eyes-only .eo-title {
+  font-family: var(--eo-display);
+  font-weight: 400;
+  line-height: 1.15;
+  font-size: 2.6rem;
+  color: var(--eo-cream);
+  margin: 6px 0 8px;
+}
+.eyes-only .eo-title-accent {
+  color: var(--eo-orange-400);
+}
+.eyes-only .eo-subtitle {
+  font-size: 1.15rem;
+  color: var(--eo-text-2);
+  max-width: 36em;
+  margin: 0;
+}
+
+/* ---------- Document cards ---------- */
+.eyes-only .eo-section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--eo-display);
+  font-weight: 400;
+  line-height: 1.15;
+  font-size: 1.5rem;
+  color: var(--eo-orange-400);
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--eo-navy-700);
+}
+.eyes-only .eo-cards {
+  list-style: none;
+  margin: 0 0 22px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.eyes-only .eo-card {
+  position: relative;
+  background: var(--eo-navy-800);
+  border: 1.5px solid var(--eo-navy-700);
+  border-top: 5px solid var(--eo-orange-400);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.eyes-only .eo-card:hover,
+.eyes-only .eo-card:focus-within {
+  border-color: var(--eo-orange-500);
+  border-top-color: var(--eo-orange-400);
+}
+.eyes-only .eo-card-title {
+  font-family: var(--eo-display);
+  font-weight: 400;
+  font-size: 1.15rem;
+  line-height: 1.2;
+  margin: 0 0 6px;
+}
+.eyes-only .eo-card-title a {
+  color: var(--eo-cream);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.eyes-only .eo-card-title a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+}
+.eyes-only .eo-card-title a:hover {
+  color: var(--eo-orange-300);
+  text-decoration: underline;
+}
+.eyes-only .eo-card-summary {
+  font-size: 1.05rem;
+  color: var(--eo-text-2);
+  overflow-wrap: anywhere;
+}
+.eyes-only .eo-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--eo-navy-200);
+}
+.eyes-only .eo-empty {
+  background: var(--eo-navy-800);
+  border: 1.5px dashed var(--eo-navy-400);
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: var(--eo-text-2);
+}
+.eyes-only .eo-message {
+  background: var(--eo-navy-800);
+  border: 1.5px solid var(--eo-navy-700);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+/* ---------- Footer note ---------- */
+.eyes-only .eo-footer-note {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  background: var(--eo-navy-800);
+  border: 1.5px dashed var(--eo-navy-400);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.eyes-only .eo-footer-note img {
+  width: 72px;
+  height: auto;
+  flex: none;
+}
+.eyes-only .eo-footer-note p {
+  font-size: 1rem;
+  color: var(--eo-text-2);
+  margin: 0;
+}
+
+/* ---------- Viewer: a slim bar above the document ---------- */
+.eyes-only.eo-viewer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+}
+.eyes-only .eo-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: none;
+  background: #000;
+  border-bottom: 3px solid var(--eo-orange-600);
+  padding: 6px 12px;
+  min-width: 0;
+}
+.eyes-only .eo-bar-back {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 10px;
+  font-family: var(--eo-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-decoration: none;
+  color: var(--eo-orange-400);
+  border: 2px solid var(--eo-orange-500);
+  border-radius: 6px;
+}
+.eyes-only .eo-bar-title {
+  margin: 0;
+  min-width: 0;
+  font-family: var(--eo-display);
+  font-weight: 400;
+  font-size: 1rem;
+  color: var(--eo-cream);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.eyes-only .eo-frame {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  border: 0;
+  background: var(--eo-navy-900);
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 720px) {
+  .eyes-only .eo-cards {
+    grid-template-columns: 1fr;
+  }
+  .eyes-only .eo-cover {
+    padding: 18px 16px;
+  }
+  .eyes-only .eo-cover-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .eyes-only .eo-stamp {
+    align-self: flex-end;
+  }
+  .eyes-only .eo-stamp-big {
+    font-size: 1.4rem;
+  }
+  .eyes-only .eo-title {
+    font-size: 1.9rem;
+  }
+  .eyes-only .eyes-only-strip span {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    padding: 3px 6px;
+  }
+  .eyes-only .eyes-only-strip span:nth-child(2) {
+    display: none;
+  }
+}
+
+/* ---------- The neutral wait shown before the answer is known (same for everyone) ---------- */
+.eyes-only-wait {
+  min-height: 40vh;
+  padding: 48px 16px;
+  text-align: center;
+}

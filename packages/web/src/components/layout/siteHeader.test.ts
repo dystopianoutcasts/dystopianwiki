@@ -66,6 +66,11 @@ test('site admin comes from public.site_is_admin, through a stable module-level 
   assert.match(wiki, /siteAdminCheck=\{checkSiteAdmin\}/)
 })
 
+test('the EYES ONLY link comes from public.site_is_executive, through a stable module-level function', () => {
+  assert.match(wiki, /^const checkSiteExecutive = \(\) => api\.getClient\(\)\.rpc\('site_is_executive'\)/m)
+  assert.match(wiki, /siteExecutiveCheck=\{checkSiteExecutive\}/)
+})
+
 test('the wiki adds its live search and menu extras, and no account options of its own', () => {
   assert.match(wiki, /search=\{<FuzzySearchBar placeholder="Search docs\.\.\." \/>\}/)
   assert.match(wiki, /menuExtras=\{menuExtras\}/)

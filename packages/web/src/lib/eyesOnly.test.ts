@@ -8,6 +8,7 @@ import {
   EYES_ONLY_MAX_BYTES,
   executiveState,
   formatBytes,
+  formatDocDate,
   isValidSlug,
   parseDocument,
   parseDocumentList,
@@ -144,4 +145,10 @@ test('executiveState: admins and the superadmin are inherited, others by their f
   assert.equal(executiveState({ isAdmin: true, isSuperadmin: true, isExecutive: true }), 'inherited')
   assert.equal(executiveState({ isAdmin: false, isSuperadmin: false, isExecutive: true }), 'executive')
   assert.equal(executiveState({ isAdmin: false, isSuperadmin: false, isExecutive: false }), 'none')
+})
+
+test('formatDocDate reads in UTC and gives nothing for a bad time', () => {
+  assert.equal(formatDocDate('2026-10-11T23:30:00Z'), 'Oct 11, 2026')
+  assert.equal(formatDocDate('2026-10-12T00:30:00Z'), 'Oct 12, 2026')
+  assert.equal(formatDocDate('yesterday'), '')
 })

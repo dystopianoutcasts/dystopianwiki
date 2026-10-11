@@ -15,6 +15,8 @@ import { LoginPage } from './pages/LoginPage';
 import { MascotVotePage } from './pages/MascotVotePage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
+import { EyesOnlyPage } from './pages/EyesOnlyPage';
+import { EyesOnlyDocumentPage } from './pages/EyesOnlyDocumentPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { ArticleProvider } from './context/ArticleContext';
 import { LearningPathProvider } from './context/LearningPathContext';
@@ -74,6 +76,10 @@ function App() {
         {/* Mascot vote. Above the /:version routes. */}
         <Route path="/vote" element={<MascotVotePage />} />
         <Route path="/admin" element={<AdminDashboardPage />} />
+
+        {/* EYES ONLY documents for executives. Above the /:version routes, which would capture it. */}
+        <Route path="/eyes-only" element={<EyesOnlyPage />} />
+        <Route path="/eyes-only/:slug" element={<EyesOnlyDocumentPage />} />
 
         {/* User Pages (wrapped in Layout so the header and its Log in button show) */}
         <Route path="/bookmarks" element={<Layout><BookmarksPage /></Layout>} />

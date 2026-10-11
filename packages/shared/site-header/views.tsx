@@ -23,17 +23,18 @@ export const SITE_MENU_ID = 'site-menu-panel'
 export type LinkClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => void
 
 export interface AccountOption {
-  id: 'settings' | 'admin' | 'logout'
+  id: 'settings' | 'admin' | 'eyes-only' | 'logout'
   label: string
   /** A page of the wiki (a full page load from the map). None for Log out, which is a button. */
   href?: string
 }
 
 /** The account menu's options, in order: the same list in both apps. */
-export function accountOptions(isSiteAdmin: boolean): AccountOption[] {
+export function accountOptions(isSiteAdmin: boolean, isExecutive = false): AccountOption[] {
   return [
     { id: 'settings', label: 'Settings', href: '/settings' },
     ...(isSiteAdmin ? [{ id: 'admin' as const, label: 'Admin dashboard', href: '/admin' }] : []),
+    ...(isExecutive ? [{ id: 'eyes-only' as const, label: 'EYES ONLY', href: '/eyes-only' }] : []),
     { id: 'logout', label: 'Log out' },
   ]
 }
@@ -45,6 +46,8 @@ export type AccountView =
       status: 'signed-in'
       member: MemberDisplay
       isSiteAdmin: boolean
+      /** Shows the EYES ONLY link. Left out by the map, which has no such area. */
+      isExecutive?: boolean
       avatarFailed: boolean
       onAvatarError: () => void
       signOutError: boolean
@@ -326,7 +329,7 @@ export function AccountMenuView({
           {member.name}
         </div>
         <div id={ACCOUNT_MENU_ID} role="menu" aria-label="Account" ref={popup.panelRef} onKeyDown={popup.onPanelKeyDown}>
-          {accountOptions(account.isSiteAdmin).map((o) =>
+          {accountOptions(account.isSiteAdmin, account.isExecutive === true).map((o) =>
             o.href ? (
               <a
                 key={o.id}

@@ -6,7 +6,7 @@
  * Passes only what is the wiki's own:
  * - the default version's sections from the generated navigation (skipping sections with no
  *   articles, in displayOrder), and which one is current;
- * - the wiki's sign-in state and its site-admin check;
+ * - the wiki's sign-in state and its site-admin and site-executive checks;
  * - the live-suggestion search box;
  * - the folding menu's extra groups: the game build switch and, on an article, its contents;
  * - onLinkClick, so the header's plain <a href> links to wiki pages route inside this app
@@ -34,6 +34,9 @@ export function siteSections(versionId: string): SiteSection[] {
 
 /** public.site_is_admin(). Module level, so its identity is stable across renders. */
 const checkSiteAdmin = () => api.getClient().rpc('site_is_admin')
+
+/** public.site_is_executive(), for the EYES ONLY link in the account menu. Module level, for the same reason. */
+const checkSiteExecutive = () => api.getClient().rpc('site_is_executive')
 
 /** The folding menu's wiki-only groups: the build switch, and the open article's headings. */
 function WikiMenuExtras({ onClose }: { onClose: () => void }) {
@@ -109,6 +112,7 @@ export function WikiHeader() {
       currentPath={location.pathname + location.search}
       account={account}
       siteAdminCheck={checkSiteAdmin}
+      siteExecutiveCheck={checkSiteExecutive}
       search={<FuzzySearchBar placeholder="Search docs..." />}
       menuExtras={menuExtras}
       onLinkClick={onLinkClick}
