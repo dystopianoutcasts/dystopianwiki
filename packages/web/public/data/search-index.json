@@ -2055,6 +2055,25 @@
     "difficulty": "beginner"
   },
   {
+    "id": "build-42-building-our-county",
+    "title": "Building Our County",
+    "slug": "building-our-county",
+    "url": "/pz/build-42/mapping/buildings-and-tiles/building-our-county",
+    "version": "build-42",
+    "section": "mapping",
+    "category": "buildings-and-tiles",
+    "tags": [
+      "buildinged",
+      "loot",
+      "room-definitions",
+      "shops",
+      "roads",
+      "generator"
+    ],
+    "excerpt": "What vanilla Kentucky, the community building pools and Sagewood North taught us about rooms, loot, shops, roads and towns, and what our building generator does with it.",
+    "difficulty": "advanced"
+  },
+  {
     "id": "build-42-buildings-and-buildinged",
     "title": "Buildings and BuildingEd",
     "slug": "buildings-and-buildinged",

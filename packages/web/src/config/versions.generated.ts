@@ -348,7 +348,7 @@ export const VERSIONS: VersionInfo[] = [
             description: 'BuildingEd, room templates, tilesets, tiledefs, and tile slicing.',
             icon: 'map',
             displayOrder: 2,
-            articleCount: 2,
+            articleCount: 3,
           },
           {
             id: 'zones-and-packaging',

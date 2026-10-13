@@ -916,6 +916,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/mapping/buildings-and-tiles/building-our-county</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/mapping/buildings-and-tiles/buildings-and-buildinged</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
