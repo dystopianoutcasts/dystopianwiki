@@ -44,7 +44,9 @@
 //   pos      u username, n display name, id online id, x, y, z, v vehicle id or null,
 //            hs hours survived, al access level, zk the character's zombie kill
 //            counter (exporter 0.7.0; a non-negative integer, omitted when unreadable;
-//            any other value is dropped from the record, never a shape failure)
+//            any other value is dropped from the record, never a shape failure),
+//            sk the character's total level over every skill the server knows
+//            (exporter 0.7.5, modded skills included; the same rules as zk)
 //   veh      id vehicle id, s script name, ty vehicle type, x, y, z,
 //            d driver username or null (exporter 0.2; `sc` is the name this
 //            contract used before and is still accepted),
@@ -248,6 +250,8 @@ export interface PosRecord extends BaseRecord {
   al?: string;
   /** The character's zombie kill counter (exporter 0.7.0): a non-negative integer or absent. */
   zk?: number;
+  /** The character's total skill level (exporter 0.7.5): a non-negative integer or absent. */
+  sk?: number;
 }
 
 export interface VehRecord extends BaseRecord {
@@ -673,6 +677,8 @@ export function parseLineDetailed(line: string): ParseResult {
   if (!checkShape(o)) return { ok: false, reason: 'bad-shape', kind: o.k };
   // An unusable kill counter is dropped, never a reason to lose the position.
   if (o.k === 'pos' && o.zk !== undefined && !isKillCounter(o.zk)) delete o.zk;
+  // The same for the skill total (0.7.5).
+  if (o.k === 'pos' && o.sk !== undefined && !isKillCounter(o.sk)) delete o.sk;
   // The leaderboard table: bad entries dropped, {} read as the empty table.
   if (o.k === 'lb') {
     o.e = Array.isArray(o.e) ? o.e.filter(isLbEntry) : [];

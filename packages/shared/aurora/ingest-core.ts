@@ -145,7 +145,7 @@ export interface PlanOptions {
   worldId?: string | null;
   /**
    * Which pos samples go to aurora.observe_lives (034). 'newest' (the live ingest,
-   * the default): the newest sample per username that carries hs or zk. 'replay'
+   * the default): the newest sample per username that carries hs, zk or sk. 'replay'
    * (the backfill, one plan per whole log file): every sample where a life can
    * change, in time order, so a file that spans a new character reproduces it.
    */
@@ -895,25 +895,28 @@ export function buildKillRow(r: KillRecord, serverId: string): Row {
   };
 }
 
-/** One observe_lives row: username and t always, hs and zk only when usable. */
+/** One observe_lives row: username and t always, hs, zk and sk only when usable. */
 function lifeRow(p: PosRecord): Row {
   const row: Row = { username: p.u, t: toIso(p.t) };
   if (typeof p.hs === 'number' && Number.isFinite(p.hs) && p.hs >= 0) row.hs = p.hs;
   if (typeof p.zk === 'number' && Number.isSafeInteger(p.zk) && p.zk >= 0) row.zk = p.zk;
+  if (typeof p.sk === 'number' && Number.isSafeInteger(p.sk) && p.sk >= 0) row.sk = p.sk;
   return row;
 }
 
 /**
- * Rows for aurora.observe_lives (034), in time order. Only samples that carry hs or
- * zk count. 'newest': one per username, the newest. 'replay': per username, the first
- * and the last sample, the first positive zk after a zero, and both sides of every
- * drop in zk or hs (where a new character can start), so the SQL sees every change
- * of life and every life's maxima without the whole file.
+ * Rows for aurora.observe_lives (034, 042), in time order. Only samples that carry
+ * hs, zk or sk count. 'newest': one per username, the newest. 'replay': per username,
+ * the first and the last sample, the first positive zk after a zero, both sides of
+ * every drop in zk or hs (where a new character can start), and the highest sk
+ * between two such drops (a skill total can fall, Strength and Fitness decay, so a
+ * life's best is not always its last sample), so the SQL sees every change of life
+ * and every life's maxima without the whole file.
  */
 export function buildLifeSampleRows(positions: PosRecord[], mode: 'newest' | 'replay'): Row[] {
   const usable = positions.filter((p) => {
     const row = lifeRow(p);
-    return p.u !== '' && ('hs' in row || 'zk' in row);
+    return p.u !== '' && ('hs' in row || 'zk' in row || 'sk' in row);
   });
   if (mode === 'newest') {
     return dedupe(usable, (p) => p.u, (p) => p.t)
@@ -932,20 +935,31 @@ export function buildLifeSampleRows(positions: PosRecord[], mode: 'newest' | 're
     const keep = new Set<number>([0, ordered.length - 1]);
     let lastZk: number | undefined;
     let lastHs: number | undefined;
+    let peak = -1;
+    let peakSk = -1;
     for (let i = 0; i < ordered.length; i++) {
       const row = lifeRow(ordered[i]);
       const zk = row.zk as number | undefined;
       const hs = row.hs as number | undefined;
+      const sk = row.sk as number | undefined;
       const drop = (zk !== undefined && lastZk !== undefined && zk < lastZk) ||
         (hs !== undefined && lastHs !== undefined && hs < lastHs);
       if (drop && i > 0) {
         keep.add(i - 1);
         keep.add(i);
+        if (peak >= 0) keep.add(peak);
+        peak = -1;
+        peakSk = -1;
+      }
+      if (sk !== undefined && sk > peakSk) {
+        peak = i;
+        peakSk = sk;
       }
       if (zk !== undefined && zk > 0 && lastZk === 0) keep.add(i);
       if (zk !== undefined) lastZk = zk;
       if (hs !== undefined) lastHs = hs;
     }
+    if (peak >= 0) keep.add(peak);
     for (const i of [...keep].sort((a, b) => a - b)) kept.push(ordered[i]);
   }
   return kept.sort((a, b) => a.t - b.t).map(lifeRow);

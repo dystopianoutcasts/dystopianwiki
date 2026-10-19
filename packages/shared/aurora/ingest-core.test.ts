@@ -1509,6 +1509,33 @@ Deno.test('T54 observe_lives replay mode: first, last, the first kill and both s
   assertEquals(buildLifeSampleRows(pos, 'newest').length, 1);
 });
 
+Deno.test('T80 observe_lives: sk rides in the row, and a sample with only sk counts', () => {
+  const lines = [
+    `A1 {"k":"pos","t":1000,"u":"alice","x":1,"y":1,"hs":2,"zk":3,"sk":40}`,
+    `A1 {"k":"pos","t":2000,"u":"bob","x":1,"y":1,"sk":12}`,
+  ];
+  const pos = parsedLines(lines).filter((r) => r.k === 'pos') as PosRecord[];
+  assertEquals(buildLifeSampleRows(pos, 'newest'), [
+    { username: 'alice', t: '1970-01-01T00:00:01.000Z', hs: 2, zk: 3, sk: 40 },
+    { username: 'bob', t: '1970-01-01T00:00:02.000Z', sk: 12 },
+  ]);
+});
+
+Deno.test('T80 observe_lives replay mode: each life keeps its highest sk sample', () => {
+  // [i, hs, zk, sk]. Life 1 peaks at sk 30 (sample 2) then falls (Strength decay);
+  // the drop at 5 starts life 2, which peaks at its last sample.
+  const lines = [
+    [0, 1, 0, 20], [1, 2, 0, 25], [2, 3, 0, 30], [3, 4, 0, 28], [4, 5, 0, 27], [5, 0.2, 0, 10], [6, 1, 0, 11],
+    [7, 2, 0, 12],
+  ].map(([i, hs, zk, sk]) =>
+    `A1 {"k":"pos","t":${1000 + i * 1000},"u":"alice","x":1,"y":1,"hs":${hs},"zk":${zk},"sk":${sk}}`
+  );
+  const pos = parsedLines(lines).filter((r) => r.k === 'pos') as PosRecord[];
+  const kept = buildLifeSampleRows(pos, 'replay').map((r) => (Date.parse(r.t as string) - 1000) / 1000);
+  // 0 first; 2 life 1's peak; 4 and 5 the drop; 7 last (and life 2's peak).
+  assertEquals(kept, [0, 2, 4, 5, 7]);
+});
+
 Deno.test('T54 replace_factions: the newest facs record, liveOnly, seen_at is the ingest clock', () => {
   const recs = parsedLines([
     'A1 {"k":"facs","t":1,"f":[{"n":"Old","g":"","o":"x","m":["x"]}]}',

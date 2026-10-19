@@ -484,6 +484,21 @@ Deno.test('T54 pos: an unusable zk is dropped from the record, never a shape fai
   assertEquals((zero as unknown as { zk: number }).zk, 0, 'zero is a valid counter');
 });
 
+Deno.test('T80 pos: sk (exporter 0.7.5) is kept, and an unusable one dropped like zk', () => {
+  const ok = parseLine(`${P1} A1 {"k":"pos","t":1,"u":"alice","x":1,"y":2,"zk":3,"sk":57}.`);
+  assertEquals((ok as unknown as { sk: number }).sk, 57);
+  for (const sk of ['-1', '1.5', '"3"', 'null', 'true', '1e400']) {
+    const r = parseLineDetailed(`${P1} A1 {"k":"pos","t":1,"u":"alice","x":1,"y":2,"zk":3,"sk":${sk}}.`);
+    assert(r.ok, `sk ${sk}: the position survives`);
+    if (r.ok) {
+      assert(!('sk' in r.record), `sk ${sk} must be dropped`);
+      assertEquals((r.record as unknown as { zk: number }).zk, 3, `sk ${sk}: zk untouched`);
+    }
+  }
+  const zero = parseLine(`${P1} A1 {"k":"pos","t":1,"u":"alice","x":1,"y":2,"sk":0}.`);
+  assertEquals((zero as unknown as { sk: number }).sk, 0, 'zero is a valid total');
+});
+
 Deno.test('T54 kill: the T53 harness line parses with every field', () => {
   const r = parseLineDetailed(`${P1} ${T53_KILL_LINE}.`);
   assert(r.ok, 'parsed');
