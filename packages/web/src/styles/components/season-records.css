@@ -20,8 +20,10 @@
   .season-records > .season-card { --season-cols: 2; }
 }
 
-@container (min-width: 880px) {
-  .season-records > .season-card { --season-cols: 3; }
+/* Two or four columns, never three: the cards come in pairs (all-time, then alive now;
+   lib/seasonRecords.ts awardCards), and an even count keeps each pair on one row. */
+@container (min-width: 1040px) {
+  .season-records > .season-card { --season-cols: 4; }
 }
 
 .season-card {

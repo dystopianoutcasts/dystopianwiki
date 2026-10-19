@@ -1,6 +1,8 @@
 /**
  * The home page's "Season records": the shape of aurora.season_records(p_server)
- * (T54, migration 034), read defensively, and the six award cards built from it.
+ * (T54, migration 034; T80, migration 042), read defensively, and the ten award cards
+ * built from it. Every per-character record shows twice, all-time this season and
+ * among the living (owner standard, 2026-10-19).
  *
  * Pure of the Supabase client and the browser (the caller passes `rpc`), so all of it
  * is tested without either (seasonRecords.test.ts). Anything missing is null and the
@@ -27,6 +29,10 @@ export interface FirstEvent {
 export interface MostKillsSeason { name: string; kills: number }
 export interface MostKillsLife { name: string; kills: number; lifeNo: number | null; alive: boolean | null }
 export interface LongestLife { name: string; hours: number; alive: boolean | null }
+export interface MostKillsAlive { name: string; kills: number; lifeNo: number | null }
+export interface LongestLifeAlive { name: string; hours: number }
+export interface MostSkillsLife { name: string; skills: number; lifeNo: number | null; alive: boolean | null }
+export interface MostSkillsAlive { name: string; skills: number; lifeNo: number | null }
 export interface BiggestFaction { name: string; tag: string | null; ownerName: string | null; members: number }
 
 export interface SeasonRecords {
@@ -35,7 +41,11 @@ export interface SeasonRecords {
   firstKill: FirstEvent | null
   mostKillsSeason: MostKillsSeason | null
   mostKillsOneLife: MostKillsLife | null
+  mostKillsAlive: MostKillsAlive | null
   longestLife: LongestLife | null
+  longestLifeAlive: LongestLifeAlive | null
+  mostSkillsOneLife: MostSkillsLife | null
+  mostSkillsAlive: MostSkillsAlive | null
   biggestFaction: BiggestFaction | null
 }
 
@@ -90,6 +100,35 @@ function longestLife(v: unknown): LongestLife | null {
   return name === null || hours === null ? null : { name, hours, alive: bool(v.alive) }
 }
 
+function mostKillsAlive(v: unknown): MostKillsAlive | null {
+  if (!isRecord(v)) return null
+  const name = str(v.name)
+  const kills = num(v.kills)
+  return name === null || kills === null ? null : { name, kills, lifeNo: num(v.life_no) }
+}
+
+function longestLifeAlive(v: unknown): LongestLifeAlive | null {
+  if (!isRecord(v)) return null
+  const name = str(v.name)
+  const hours = num(v.hours)
+  return name === null || hours === null ? null : { name, hours }
+}
+
+function mostSkillsLife(v: unknown): MostSkillsLife | null {
+  if (!isRecord(v)) return null
+  const name = str(v.name)
+  const skills = num(v.skills)
+  if (name === null || skills === null) return null
+  return { name, skills, lifeNo: num(v.life_no), alive: bool(v.alive) }
+}
+
+function mostSkillsAlive(v: unknown): MostSkillsAlive | null {
+  if (!isRecord(v)) return null
+  const name = str(v.name)
+  const skills = num(v.skills)
+  return name === null || skills === null ? null : { name, skills, lifeNo: num(v.life_no) }
+}
+
 function biggestFaction(v: unknown): BiggestFaction | null {
   if (!isRecord(v)) return null
   const name = str(v.name)
@@ -107,7 +146,11 @@ export function parseSeasonRecords(raw: unknown): SeasonRecords | null {
     firstKill: firstEvent(raw.first_kill),
     mostKillsSeason: mostKillsSeason(raw.most_kills_season),
     mostKillsOneLife: mostKillsLife(raw.most_kills_one_life),
+    mostKillsAlive: mostKillsAlive(raw.most_kills_alive),
     longestLife: longestLife(raw.longest_life),
+    longestLifeAlive: longestLifeAlive(raw.longest_life_alive),
+    mostSkillsOneLife: mostSkillsLife(raw.most_skills_one_life),
+    mostSkillsAlive: mostSkillsAlive(raw.most_skills_alive),
     biggestFaction: biggestFaction(raw.biggest_faction),
   }
 }
@@ -165,13 +208,19 @@ function empty(key: string, title: string): AwardCard {
   return { key, title, holder: NO_ONE, value: '', detail: '', mapHref: null }
 }
 
-/** The six awards in the owner's order. A missing holder reads "No one yet". */
+/** The ten awards. The two firsts, then each all-time record beside its living one (so the
+ * pairs share a row at two and four columns), then the season's kills and the biggest
+ * faction. A missing holder reads "No one yet". */
 export function awardCards(r: SeasonRecords | null): AwardCard[] {
   const d = r?.firstDeath ?? null
   const k = r?.firstKill ?? null
   const ms = r?.mostKillsSeason ?? null
   const ml = r?.mostKillsOneLife ?? null
+  const ka = r?.mostKillsAlive ?? null
   const ll = r?.longestLife ?? null
+  const la = r?.longestLifeAlive ?? null
+  const sl = r?.mostSkillsOneLife ?? null
+  const sa = r?.mostSkillsAlive ?? null
   const bf = r?.biggestFaction ?? null
   return [
     d
@@ -194,16 +243,6 @@ export function awardCards(r: SeasonRecords | null): AwardCard[] {
           mapHref: mapLink(k),
         }
       : empty('first-kill', 'First kill of the season'),
-    ms
-      ? {
-          key: 'most-kills-season',
-          title: 'Most kills this season',
-          holder: ms.name,
-          value: plural(ms.kills, 'kill', 'kills'),
-          detail: '',
-          mapHref: null,
-        }
-      : empty('most-kills-season', 'Most kills this season'),
     ml
       ? {
           key: 'most-kills-life',
@@ -214,16 +253,66 @@ export function awardCards(r: SeasonRecords | null): AwardCard[] {
           mapHref: null,
         }
       : empty('most-kills-life', 'Most kills in one life'),
+    ka
+      ? {
+          key: 'most-kills-alive',
+          title: 'Most kills, alive now',
+          holder: ka.name,
+          value: plural(ka.kills, 'kill', 'kills'),
+          detail: ka.lifeNo === null ? '' : `life ${ka.lifeNo}`,
+          mapHref: null,
+        }
+      : empty('most-kills-alive', 'Most kills, alive now'),
     ll
       ? {
           key: 'longest-life',
-          title: 'Longest living survivor',
+          title: 'Longest life this season',
           holder: ll.name,
           value: formatHoursSurvived(ll.hours),
           detail: aliveWord(ll.alive) ?? '',
           mapHref: null,
         }
-      : empty('longest-life', 'Longest living survivor'),
+      : empty('longest-life', 'Longest life this season'),
+    la
+      ? {
+          key: 'longest-life-alive',
+          title: 'Longest living survivor',
+          holder: la.name,
+          value: formatHoursSurvived(la.hours),
+          detail: '',
+          mapHref: null,
+        }
+      : empty('longest-life-alive', 'Longest living survivor'),
+    sl
+      ? {
+          key: 'most-skills-life',
+          title: 'Most skill levels in one life',
+          holder: sl.name,
+          value: plural(sl.skills, 'skill level', 'skill levels'),
+          detail: join([sl.lifeNo === null ? null : `life ${sl.lifeNo}`, aliveWord(sl.alive)]),
+          mapHref: null,
+        }
+      : empty('most-skills-life', 'Most skill levels in one life'),
+    sa
+      ? {
+          key: 'most-skills-alive',
+          title: 'Most skill levels, alive now',
+          holder: sa.name,
+          value: plural(sa.skills, 'skill level', 'skill levels'),
+          detail: sa.lifeNo === null ? '' : `life ${sa.lifeNo}`,
+          mapHref: null,
+        }
+      : empty('most-skills-alive', 'Most skill levels, alive now'),
+    ms
+      ? {
+          key: 'most-kills-season',
+          title: 'Most kills this season',
+          holder: ms.name,
+          value: plural(ms.kills, 'kill', 'kills'),
+          detail: '',
+          mapHref: null,
+        }
+      : empty('most-kills-season', 'Most kills this season'),
     bf
       ? {
           key: 'biggest-faction',

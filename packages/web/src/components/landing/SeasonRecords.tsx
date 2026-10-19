@@ -4,7 +4,8 @@ import { awardCards, NO_ONE, sectionTitle, UNAVAILABLE_LINE } from '../../lib/se
 import '../../styles/components/home-sections.css';
 import '../../styles/components/season-records.css';
 
-// "Season <n> records": six awards for the current world (T54's season_records()).
+// "Season <n> records": ten awards for the current world (season_records(), 034 and 042),
+// each per-character record all-time and among the living.
 // Before the function exists every card reads "No one yet".
 
 export function SeasonRecords() {
