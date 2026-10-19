@@ -485,8 +485,12 @@ BEGIN
   FOREACH s IN ARRAY ARRAY['test-s2', 'no-such-server'] LOOP
     j := aurora.season_records(s);
     IF s = 'test-s2' THEN j := j - 'world_seq' - 'world_started_at'; END IF;
+    -- 034's eight keys must all be there; later migrations may add more (042 adds four and
+    -- pins them in aurora_skill_records.sql).
     IF (SELECT count(*) FROM jsonb_each(j) e WHERE e.value <> 'null'::jsonb) <> 0
-       OR (s = 'no-such-server' AND (SELECT count(*) FROM jsonb_object_keys(j)) <> 8) THEN
+       OR (s = 'no-such-server' AND NOT (j ?& ARRAY['world_seq', 'world_started_at', 'first_death', 'first_kill',
+                                                    'most_kills_season', 'most_kills_one_life', 'longest_life',
+                                                    'biggest_faction'])) THEN
       RAISE EXCEPTION 'FAIL: empty server % gives %', s, j;
     END IF;
   END LOOP;
