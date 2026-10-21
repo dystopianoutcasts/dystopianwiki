@@ -33,9 +33,14 @@ export function cellOf(cfg: TilesConfig, sq: Square): { cx: number; cy: number }
   return { cx: Math.floor(sq.x / cfg.cellSize), cy: Math.floor(sq.y / cfg.cellSize) }
 }
 
-/** Centre of a cell in squares. Used to place zombie-grid heat. */
+/** Centre of a cell in squares. */
 export function cellCentre(cfg: TilesConfig, cx: number, cy: number): Square {
-  return { x: cx * cfg.cellSize + cfg.cellSize / 2, y: cy * cfg.cellSize + cfg.cellSize / 2 }
+  return binCentre(cx, cy, cfg.cellSize)
+}
+
+/** Centre of a square bin `size` squares a side, by its indices. Used to place zombie-grid heat. */
+export function binCentre(bx: number, by: number, size: number): Square {
+  return { x: (bx + 0.5) * size, y: (by + 0.5) * size }
 }
 
 /** Tile that holds a square at a pyramid level. */

@@ -286,6 +286,20 @@ describe('zombie heat', () => {
     ])
   })
 
+  it('places a 32-square bin at its own centre, and a row without size at the cell centre (T81)', () => {
+    const pts = heatPoints(
+      [
+        { server_id: 's', size: 32, cell_x: 341, cell_y: 322, count: 8, t: null },
+        { server_id: 's', size: null, cell_x: 42, cell_y: 40, count: 4, t: null },
+      ],
+      cfg,
+    )
+    expect(pts).toEqual([
+      [322 * 32 + 16, 341 * 32 + 16, 1],
+      [40 * 256 + 128, 42 * 256 + 128, 0.5],
+    ])
+  })
+
   it('is empty when nothing is counted', () => {
     expect(heatPoints([], cfg)).toEqual([])
   })

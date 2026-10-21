@@ -117,8 +117,8 @@ export const MAP_KEY: Record<LayerKey, KeyRow[]> = {
     row('zone', 'Zone (hover or tap for its name and kind)', { kind: 'area', style: ZONE_AREA_STYLE }),
     row('zone-point', 'Zone that is a single point', { kind: 'dot', style: ZONE_POINT_STYLE }),
   ],
-  // buildHeat + heatPoints: per-cell live counts from the last 3 minutes, scaled by the busiest cell.
-  zombieHeat: [row('heat', 'Zombies now, last 3 minutes: blue fewer, red most (compared with the busiest cell)', { kind: 'ramp', stops: HEAT_GRADIENT, opacity: 1 })],
+  // buildHeat + heatPoints: per-bin live counts (32 squares, T81) from the last 3 minutes, scaled by the busiest bin.
+  zombieHeat: [row('heat', 'Zombies now, counted in 32-square blocks over the last 3 minutes: blue fewer, red most (compared with the busiest block)', { kind: 'ramp', stops: HEAT_GRADIENT, opacity: 1 })],
   // buildZombieDensityLayer: pre-rendered spawn-density tiles (pzmap2dzi get_color).
   zombieDensity: [row('density', 'Zombie spawn density from the map files, not live: blue low, green medium, red high', { kind: 'ramp', stops: DENSITY_GRADIENT, opacity: DENSITY_LAYER_OPACITY })],
   // buildObjects + objectFeatures: "<label> (<kind>)".

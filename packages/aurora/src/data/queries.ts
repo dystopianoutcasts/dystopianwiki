@@ -350,7 +350,7 @@ export function fetchZones(db: SupabaseClient, serverId: string): Promise<Zone[]
 
 export function fetchZombieGrid(db: SupabaseClient, serverId: string): Promise<ZombieCell[]> {
   return rows<ZombieCell>(
-    db.from('zombie_grid').select('server_id,cell_x,cell_y,count,t').eq('server_id', serverId),
+    db.from('zombie_grid').select('server_id,size,cell_x,cell_y,count,t').eq('server_id', serverId),
     'zombie grid',
   )
 }

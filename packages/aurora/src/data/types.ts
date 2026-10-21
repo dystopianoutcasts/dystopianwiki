@@ -72,6 +72,9 @@ export interface Zone {
 
 export interface ZombieCell {
   server_id: string
+  /** Bin side in squares (043, exporter 0.7.6: 32). Null or absent means the whole cell. */
+  size?: number | null
+  /** Bin indices in units of `size`, not cell numbers once size is below the cell. */
   cell_x: number
   cell_y: number
   count: number | null

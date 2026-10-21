@@ -1,7 +1,7 @@
 // Pure conversions from database rows to what the map draws. No Leaflet, no React, so they
 // are tested directly. Everything is in world squares; latlng is [y, x] (see map/coords.ts).
 import type { TilesConfig } from '../map/tiles'
-import { cellCentre } from '../map/coords'
+import { binCentre } from '../map/coords'
 import type { Death, HealthSample, MapObject, NpcGroup, NpcOutpost, PlayerPublic, Safehouse, Vehicle, VisiblePosition, Zone, ZombieCell } from '../data/types'
 import { vehicleKey } from '../data/live'
 import { vehicleDisplayName } from '../data/vehicleNames'
@@ -215,13 +215,15 @@ export function zoneFeatures(list: Zone[]): ZoneFeature[] {
  */
 const ZOMBIE_STALE_MS = 3 * 60_000
 
-/** [lat, lng, intensity] at each cell centre, intensity scaled to 0..1 by the busiest cell. */
+/** [lat, lng, intensity] at each bin centre, intensity scaled to 0..1 by the busiest bin.
+ * T81: a row's bin is `size` squares a side (32 from exporter 0.7.6); a row without one is a
+ * whole cell, as every row was before 043. */
 export function heatPoints(cells: ZombieCell[], cfg: TilesConfig, now: number = Date.now()): [number, number, number][] {
   const counted = cells.filter((c) => (c.count ?? 0) > 0 && (c.t == null || now - Date.parse(c.t) <= ZOMBIE_STALE_MS))
   if (counted.length === 0) return []
   const max = Math.max(...counted.map((c) => c.count as number))
   return counted.map((c) => {
-    const centre = cellCentre(cfg, c.cell_x, c.cell_y)
+    const centre = binCentre(c.cell_x, c.cell_y, c.size ?? cfg.cellSize)
     return [centre.y, centre.x, (c.count as number) / max]
   })
 }
