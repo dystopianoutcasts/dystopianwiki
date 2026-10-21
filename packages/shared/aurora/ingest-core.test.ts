@@ -196,7 +196,7 @@ Deno.test('on_conflict targets match the schema primary keys', () => {
   assertEquals(table(plan.upserts, 'vehicles'), undefined, 'vehicles go through upsert_vehicles, not a plain upsert');
   assertEquals(table(plan.upserts, 'safehouses')?.onConflict, 'server_id,id');
   assertEquals(table(plan.upserts, 'zones')?.onConflict, 'server_id,kind,title,x1,y1');
-  assertEquals(table(plan.upserts, 'zombie_grid')?.onConflict, 'server_id,cell_x,cell_y');
+  assertEquals(table(plan.upserts, 'zombie_grid')?.onConflict, 'server_id,size,cell_x,cell_y');
   assertEquals(table(plan.upserts, 'item_catalog')?.onConflict, 'server_id,full_type');
 });
 
@@ -287,6 +287,30 @@ Deno.test('a real exporter 0.3 vehicle line keeps q and o end to end', () => {
 
 Deno.test('a batch with no vehicles makes no vehicle call', () => {
   assertEquals(buildPlan([{ k: 'pos', t: 1, u: 'a', x: 1, y: 1 }], SERVER).rpcs.length, 0);
+});
+
+// --- zombie_grid bin size (T81, exporter 0.7.6) -----------------------------
+
+Deno.test('zgrid rows carry the bin size, and a record without s is a 256-square cell', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'zgrid', t: 1, cx: 300, cy: 280, c: 4, s: 32 },
+    { k: 'zgrid', t: 1, cx: 37, cy: 35, c: 9 },
+  ];
+  const rows = table(buildPlan(recs, SERVER).upserts, 'zombie_grid')?.rows ?? [];
+  assertEquals(rows.length, 2);
+  assertEquals(rows.find((r) => r.cell_x === 300)?.size, 32);
+  assertEquals(rows.find((r) => r.cell_x === 37)?.size, 256);
+});
+
+Deno.test('a 32 bin and a 256 cell with the same indices are two rows (the upgrade batch)', () => {
+  const recs: AuroraRecord[] = [
+    { k: 'zgrid', t: 1, cx: 5, cy: 5, c: 3 },
+    { k: 'zgrid', t: 2, cx: 5, cy: 5, c: 7, s: 32 },
+  ];
+  const rows = table(buildPlan(recs, SERVER).upserts, 'zombie_grid')?.rows ?? [];
+  assertEquals(rows.length, 2, 'size is part of the dedupe key');
+  assertEquals(rows.find((r) => r.size === 256)?.count, 3);
+  assertEquals(rows.find((r) => r.size === 32)?.count, 7);
 });
 
 // --- zombie_grid staleness --------------------------------------------------

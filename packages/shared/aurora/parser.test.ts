@@ -242,6 +242,17 @@ Deno.test('zgrid: count is `c`', () => {
   assertEquals(parseLineDetailed(`${P1} A1 {"k":"zgrid","t":1,"cx":42,"cy":40,"n":17}.`).ok, false, 'the old n name is rejected');
 });
 
+Deno.test('zgrid: s is the bin side (exporter 0.7.6), and a bad s drops the record', () => {
+  const rec = parseLine(`${P1} A1 {"k":"zgrid","t":1,"cx":341,"cy":322,"c":5,"s":32}.`);
+  assert(rec !== null && rec.k === 'zgrid' && rec.s === 32, 'zgrid parses with s');
+  const legacy = parseLine(`${P1} A1 {"k":"zgrid","t":1,"cx":42,"cy":40,"c":5}.`);
+  assert(legacy !== null && legacy.k === 'zgrid' && legacy.s === undefined, 'no s is still a record');
+  for (const bad of ['0', '-32', '31.5', '512', '"32"', 'null']) {
+    assertEquals(parseLineDetailed(`${P1} A1 {"k":"zgrid","t":1,"cx":1,"cy":1,"c":5,"s":${bad}}.`).ok, false, `s ${bad} is rejected`);
+  }
+  assertEquals(parseLineDetailed(`${P1} A1 {"k":"zgrid","t":1,"cx":1,"cy":1,"c":5,"s":256}.`).ok, true, 's 256 is the cell itself');
+});
+
 Deno.test('catalog: weight is `w`; catalogv is a known kind carrying only cv', () => {
   const rec = parseLine(`${P1} A1 {"k":"catalog","t":1,"ft":"Base.Axe","dn":"Axe","cat":"Weapon","w":3,"cv":"abc"}.`);
   assert(rec !== null && rec.k === 'catalog' && rec.w === 3, 'catalog parses with w');

@@ -55,7 +55,8 @@
 //   sh       id, x, y, w, h, o owner, ti title, p [usernames], lv last visited ms,
 //            c created ms
 //   zone     kd kind, ti title, x1, y1, x2, y2
-//   zgrid    cx cell x, cy cell y, n count
+//   zgrid    cx, cy bin index (floor(square / s)), c count, s bin side in squares
+//            (exporter 0.7.6, 32; absent before it, meaning the 256-square cell)
 //   catalog  ft full type, dn display name, cat category, w weight, cv version
 //   catalogv cv version (header line before a catalog set)
 //   link     c code, u username
@@ -309,6 +310,16 @@ export interface ZgridRecord extends BaseRecord {
   cx: number;
   cy: number;
   c: number;
+  /** Bin side in squares (exporter 0.7.6). Absent from older exporters, whose bin is the 256-square cell. */
+  s?: number;
+}
+
+/** Bin side of a zgrid record from an exporter that predates `s`: the whole B42 cell. */
+export const ZGRID_LEGACY_BIN = 256;
+
+/** A usable zgrid bin side: a whole number of squares from 1 to the 256-square cell. */
+export function isZgridBin(v: unknown): v is number {
+  return typeof v === 'number' && Number.isInteger(v) && v >= 1 && v <= ZGRID_LEGACY_BIN;
 }
 
 export interface CatalogRecord extends BaseRecord {
@@ -603,7 +614,9 @@ function checkShape(o: Record<string, unknown>): boolean {
     case 'zone':
       return isStr(o.kind) && isStr(o.ti) && isNum(o.x1) && isNum(o.y1);
     case 'zgrid':
-      return isNum(o.cx) && isNum(o.cy) && isNum(o.c);
+      // A bad `s` drops the record whole: dropping only the field would draw a
+      // 32-square bin as a 256-square cell, 8 times too far from the origin.
+      return isNum(o.cx) && isNum(o.cy) && isNum(o.c) && (o.s === undefined || isZgridBin(o.s));
     case 'catalog':
       return isStr(o.ft);
     case 'catalogv':

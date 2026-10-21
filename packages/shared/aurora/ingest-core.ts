@@ -44,7 +44,7 @@ import type {
   ZgridRecord,
   ZoneRecord,
 } from './parser.ts';
-import { isVehicleScriptName } from './parser.ts';
+import { isVehicleScriptName, ZGRID_LEGACY_BIN } from './parser.ts';
 
 export type Row = Record<string, unknown>;
 
@@ -550,9 +550,14 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
   }
 
   // --- zombie_grid ---------------------------------------------------------
-  const zgridRows = dedupe(zgrid, (g: ZgridRecord) => `${g.cx}\u0000${g.cy}`, (g) => g.t).map(
+  // T81 (043): a row is one bin of `size` squares; exporters before 0.7.6 send no
+  // `s` and their bin is the whole cell. size is in the key, so a 256 row and a
+  // 32 row with the same indices (the batch that spans the upgrade) stay apart.
+  const zgridSize = (g: ZgridRecord): number => g.s ?? ZGRID_LEGACY_BIN;
+  const zgridRows = dedupe(zgrid, (g: ZgridRecord) => `${zgridSize(g)}\u0000${g.cx}\u0000${g.cy}`, (g) => g.t).map(
     (g): Row => ({
       server_id: serverId,
+      size: zgridSize(g),
       cell_x: g.cx,
       cell_y: g.cy,
       count: g.c,
@@ -562,7 +567,7 @@ export function buildPlan(records: AuroraRecord[], serverId: string, opts: PlanO
   if (zgridRows.length > 0) {
     upserts.push({
       table: 'zombie_grid',
-      onConflict: 'server_id,cell_x,cell_y',
+      onConflict: 'server_id,size,cell_x,cell_y',
       rows: zgridRows,
     });
   }
