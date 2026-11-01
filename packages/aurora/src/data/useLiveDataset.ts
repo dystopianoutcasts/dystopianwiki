@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Dataset } from './useDataset'
 import { mergeByKey, newestT, tickKind } from './live'
+import { catchUpKind, onPageShown, pageHidden } from './pageVisibility'
 
 export interface LiveDatasetOptions<T> {
   enabled: boolean
@@ -26,7 +27,9 @@ export interface LiveDataset<T> extends Dataset<T> {
  * are in live.ts). One timer, one request per tick: every (fullMs / liveMs)-th tick
  * is the full fetch instead of a delta, so the two never race each other. As in
  * useDataset, a response from an older request never overwrites a newer one, and
- * `refresh` (sign-in or out) is always a full fetch.
+ * `refresh` (sign-in or out) is always a full fetch. While the tab is hidden the timer
+ * sends nothing; a returning tab catches up at once, with a full fetch if it was away
+ * for at least fullMs (a delta cannot see rows that disappeared meanwhile).
  */
 export function useLiveDataset<T>(opts: LiveDatasetOptions<T>): LiveDataset<T> {
   const [data, setData] = useState<T[]>([])
@@ -38,9 +41,11 @@ export function useLiveDataset<T>(opts: LiveDatasetOptions<T>): LiveDataset<T> {
   const held = useRef<T[]>([])
   const seq = useRef(0)
   const tick = useRef(0)
+  const lastStart = useRef(0)
 
   const load = useCallback(async (kind: 'full' | 'delta') => {
     const { fetchFull, fetchSince, keyOf, tOf } = optsRef.current
+    lastStart.current = Date.now()
     const since = newestT(held.current, tOf)
     const mode = kind === 'full' || since === null ? 'full' : 'delta'
     const mine = ++seq.current
@@ -69,11 +74,24 @@ export function useLiveDataset<T>(opts: LiveDatasetOptions<T>): LiveDataset<T> {
     const fullEvery = fullMs === null ? null : Math.max(1, Math.round(fullMs / liveMs))
     tick.current = 0
     void load('full')
-    const id = setInterval(() => {
+    const poll = () => {
       tick.current++
       void load(tickKind(tick.current, fullEvery, newestT(held.current, optsRef.current.tOf)))
+    }
+    const id = setInterval(() => {
+      if (!pageHidden()) poll()
     }, liveMs)
-    return () => clearInterval(id)
+    const off = onPageShown(() => {
+      const kind = catchUpKind(Date.now() - lastStart.current, liveMs, fullMs)
+      if (kind === 'none') return
+      if (kind === 'poll') return poll()
+      tick.current = 0
+      void load('full')
+    })
+    return () => {
+      clearInterval(id)
+      off()
+    }
   }, [enabled, liveMs, fullMs, load])
 
   // A disabled dataset stays silent even when asked to refresh (sign-in or out).

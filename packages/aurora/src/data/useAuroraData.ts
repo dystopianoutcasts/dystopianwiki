@@ -76,13 +76,14 @@ export function useAuroraData(client: SupabaseClient, serverId: string, prefs: L
   const vehicles = useLiveDataset({
     enabled: prefs.vehicles || watching.size > 0,
     fetchFull: () => (isAdmin ? fetchVehiclesAdmin(client, serverId) : fetchVehiclesPublic(client, serverId)),
-    // The admin read is an RPC with no `t > since`: it is a full fetch every poll (see `fullMs`).
+    // The admin read is an RPC with no `t > since`: it is a full fetch every poll, the whole
+    // ~600 kB car list, so an admin polls on the ingest interval rather than every 10 s (usage, 2026-11-01).
     fetchSince: (since) => (isAdmin ? fetchVehiclesAdmin(client, serverId) : fetchVehiclesPublic(client, serverId, since)),
     // sql_id when known, so a car moving between loaded and ledger-only (whose vehicle_id differs) replaces its own row.
     keyOf: vehicleKey,
     tOf: (v) => v.t,
     ...live,
-    fullMs: isAdmin ? LIVE_POLL_MS : live.fullMs,
+    liveMs: isAdmin ? INGEST_INTERVAL_MS : live.liveMs,
   })
   const safehouses = useDataset(prefs.safehouses, () => fetchSafehouses(client, serverId), SLOW_POLL_MS)
   // A-Life NPCs (migration 029): public, spoilers already filtered by the database. Groups

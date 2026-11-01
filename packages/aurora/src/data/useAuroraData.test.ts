@@ -98,7 +98,9 @@ describe('T34: vehicles are public (type and position); only an admin also gets 
     const call = useAuroraData.match(/const vehicles = useLiveDataset\(\{[\s\S]*?\}\)/)?.[0] ?? ''
     expect(call).toMatch(/isAdmin \? fetchVehiclesAdmin\(client, serverId\) : fetchVehiclesPublic\(client, serverId\)/)
     expect(call).toMatch(/isAdmin \? fetchVehiclesAdmin\(client, serverId\) : fetchVehiclesPublic\(client, serverId, since\)/)
-    expect(call).toMatch(/fullMs: isAdmin \? LIVE_POLL_MS/)
+    // Usage (2026-11-01): the admin's full list polls once a minute, not every 10 s.
+    expect(call).toMatch(/liveMs: isAdmin \? INGEST_INTERVAL_MS : live\.liveMs/)
+    expect(call).not.toMatch(/isAdmin \? LIVE_POLL_MS/)
   })
 
   it('vehicles refetch in full when the admin flag itself changes', () => {
