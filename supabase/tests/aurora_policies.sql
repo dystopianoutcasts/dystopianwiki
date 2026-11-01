@@ -398,12 +398,20 @@ BEGIN
    WHERE p.pubname = 'supabase_realtime'
      AND n.nspname = 'aurora';
 
-  IF v_tables IS DISTINCT FROM ARRAY['health_samples', 'player_positions', 'vehicles'] THEN
-    RAISE EXCEPTION
-      'FAIL: supabase_realtime publishes aurora tables %, expected exactly {health_samples,player_positions,vehicles}',
-      COALESCE(v_tables::TEXT, 'none');
+  -- 044 (housekeeping) takes all three out: nothing subscribes since T19.
+  IF to_regprocedure('aurora.housekeeping(int, int, int, int)') IS NOT NULL THEN
+    IF v_tables IS NOT NULL THEN
+      RAISE EXCEPTION 'FAIL: supabase_realtime still publishes aurora tables % after 044', v_tables;
+    END IF;
+    RAISE NOTICE 'PASS supabase_realtime publishes no aurora table (044)';
+  ELSE
+    IF v_tables IS DISTINCT FROM ARRAY['health_samples', 'player_positions', 'vehicles'] THEN
+      RAISE EXCEPTION
+        'FAIL: supabase_realtime publishes aurora tables %, expected exactly {health_samples,player_positions,vehicles}',
+        COALESCE(v_tables::TEXT, 'none');
+    END IF;
+    RAISE NOTICE 'PASS supabase_realtime publishes exactly the three aurora tables';
   END IF;
-  RAISE NOTICE 'PASS supabase_realtime publishes exactly the three aurora tables';
 END;
 $$;
 
