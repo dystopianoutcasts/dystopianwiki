@@ -13,6 +13,7 @@ import {
   countRankedChoice,
   formatPercent,
   normalizeBallot,
+  tieForFirst,
   winnerSentence,
   type Ballot,
   type CountResult,
@@ -301,4 +302,61 @@ test('ballotsToCsv: header plus one padded row per ballot, refuses an id that wo
   assert.throws(() => ballotsToCsv([['=cmd']], 1))
   assert.throws(() => ballotsToCsv([['-A1']], 1))
   assert.throws(() => ballotsToCsv([['art_001', 'art_002']], 1))
+})
+
+// The ten counted ballots of the first mascot vote (published 2026-11-03), sorted as the
+// public download sorts them. It ended 5 to 5 between art_002 and art_004.
+const FIRST_VOTE: Ballot[] = [
+  ['art_002'],
+  ['art_002', 'art_004', 'art_003', 'art_005', 'art_006', 'art_001'],
+  ['art_002', 'art_004', 'art_005', 'art_003', 'art_006'],
+  ['art_002', 'art_006', 'art_003', 'art_001', 'art_004'],
+  ['art_004', 'art_002', 'art_006', 'art_003', 'art_001'],
+  ['art_004', 'art_003'],
+  ['art_004', 'art_006', 'art_003', 'art_001', 'art_005', 'art_002'],
+  ['art_004', 'art_006', 'art_003', 'art_002', 'art_001'],
+  ['art_005', 'art_006', 'art_004', 'art_003', 'art_001', 'art_002'],
+  ['art_006', 'art_002', 'art_004', 'art_005', 'art_003', 'art_001'],
+]
+const SIX = ['art_001', 'art_002', 'art_003', 'art_004', 'art_005', 'art_006']
+
+test('tieForFirst: the first mascot vote is a 5 to 5 tie whatever the draw order', () => {
+  for (const drawOrder of [
+    ['art_001', 'art_003', 'art_005', 'art_006', 'art_002', 'art_004'],
+    ['art_001', 'art_003', 'art_006', 'art_005', 'art_002', 'art_004'],
+    ['art_001', 'art_003', 'art_005', 'art_006', 'art_004', 'art_002'],
+    ['art_004', 'art_002', 'art_006', 'art_005', 'art_003', 'art_001'],
+  ]) {
+    const result = countRankedChoice({ entries: SIX, ballots: FIRST_VOTE, drawOrder })
+    assertTotals(result)
+    assert.notEqual(result.winner, null)
+    assert.deepEqual(tieForFirst(result)?.sort(), ['art_002', 'art_004'], drawOrder.join())
+    const final = result.rounds[result.rounds.length - 2]
+    assert.deepEqual(final.votes, { art_002: 5, art_004: 5 })
+  }
+})
+
+test('tieForFirst: null when the votes decided it, including after an earlier tie for last', () => {
+  // A wins outright in round 1.
+  const outright = countRankedChoice({ entries: ['A', 'B'], ballots: [['A'], ['A'], ['B']], drawOrder: ['A', 'B'] })
+  assert.equal(tieForFirst(outright), null)
+  // C and D tie for last (1 each) and C goes by the draw; then D goes on votes, and A
+  // wins 4 to 2. The draw settled a tie for last, not the winner.
+  const lastTie = countRankedChoice({
+    entries: ['A', 'B', 'C', 'D'],
+    ballots: [['A'], ['A'], ['A'], ['B'], ['B'], ['C'], ['D', 'A']],
+    drawOrder: ['C', 'D', 'B', 'A'],
+  })
+  assert.equal(lastTie.rounds[0].tieBreak?.kind, 'draw-order')
+  assert.equal(lastTie.winner?.id, 'A')
+  assert.equal(lastTie.rounds.length, 3)
+  assert.equal(tieForFirst(lastTie), null)
+  // No ballots: no winner, no tie.
+  assert.equal(tieForFirst(countRankedChoice({ entries: ['A', 'B'], ballots: [], drawOrder: ['A', 'B'] })), null)
+})
+
+test('tieForFirst: a two-entry runoff that ties is reported, with both entries', () => {
+  const result = countRankedChoice({ entries: ['art_002', 'art_004'], ballots: [['art_002'], ['art_004']], drawOrder: ['art_004', 'art_002'] })
+  assert.equal(result.winner?.id, 'art_002')
+  assert.deepEqual(tieForFirst(result)?.sort(), ['art_002', 'art_004'])
 })

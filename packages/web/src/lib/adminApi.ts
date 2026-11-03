@@ -1,5 +1,5 @@
 /**
- * The admin dashboard's calls to the database (migrations 024 and 025). Every answer is
+ * The admin dashboard's calls to the database (migrations 024, 025 and 045). Every answer is
  * validated by adminDashboard.ts. Nothing here throws: failures come back as values.
  *
  * The database is the gate. Each admin function refuses a caller without the right
@@ -18,7 +18,7 @@ type RpcError = { code?: unknown; message?: unknown; status?: unknown } | null
 
 /** A refusal the database meant (wrong role, or a move it does not allow), as opposed to a failure. */
 export function reasonOf(error: RpcError): 'login' | 'network' | 'refused' {
-  if (error && (error.code === '55000' || error.code === 'P0002' || error.code === '22004' || error.code === 'P0001' || error.code === '23514')) return 'refused'
+  if (error && (error.code === '55000' || error.code === 'P0002' || error.code === '22004' || error.code === 'P0001' || error.code === '23514' || error.code === '22023')) return 'refused'
   const kind = classifyRpcError(error)
   // A signed-in caller refused for their role also gets 42501; the page shows that as "admins only".
   return kind === 'login' ? 'login' : 'network'
@@ -71,6 +71,16 @@ export async function setCounted(ballotId: string, counted: boolean): Promise<Ap
 export async function setStatus(status: ElectionStatus): Promise<ApiResult<null>> {
   const { error } = await rpc('mascot_admin_set_status', { p_status: status })
   return error ? { ok: false, reason: reasonOf(error) } : { ok: true, value: null }
+}
+
+/**
+ * Migration 045: from a published vote, create the runoff between `entries` as the next
+ * election, in draft with a fresh random tie-breaker order. Returns the new election's id.
+ */
+export async function startRunoff(entries: readonly string[]): Promise<ApiResult<number>> {
+  const { data, error } = await rpc('mascot_admin_start_runoff', { p_entries: [...entries] })
+  if (error) return { ok: false, reason: reasonOf(error) }
+  return typeof data === 'number' && Number.isInteger(data) ? { ok: true, value: data } : { ok: false, reason: 'malformed' }
 }
 
 export async function setClosesAt(iso: string | null): Promise<ApiResult<null>> {

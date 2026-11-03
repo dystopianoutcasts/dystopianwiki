@@ -6,7 +6,7 @@
  *
  * Tests: mascotVoteLogic.test.ts
  */
-import type { Round, Winner } from './rankedChoice'
+import { tieForFirst, type CountResult, type Round, type Winner } from './rankedChoice'
 
 /** The most entries a ballot can hold: all six. */
 export const MAX_RANKS = 6
@@ -24,9 +24,32 @@ export interface Election {
   id: number
   status: ElectionStatus
   closesAt: string | null
-  /** The six entry ids in the published random order. */
+  /** This election's entries in gallery order: all six, or a runoff's few (migration 045). */
+  entries: string[]
+  /** The election this one settles, or null (migration 045). */
+  runoffOf: number | null
+  /** This election's entries in the published random order. */
   drawOrder: string[]
   publishedAt: string | null
+}
+
+/** True for an election that settles a tied one. */
+export function isRunoff(election: Pick<Election, 'runoffOf'>): boolean {
+  return election.runoffOf !== null
+}
+
+/**
+ * How many entries a ballot may rank. A two-entry election is a straight choice: the
+ * second rank could never count (when the first choice is eliminated, the vote is over),
+ * so the ballot is one pick.
+ */
+export function maxRanksFor(entries: readonly string[]): number {
+  return entries.length === 2 ? 1 : entries.length
+}
+
+/** How many ranks keep a ballot counting to the final round: all but one entry, at most five. */
+export function recommendedRanksFor(entries: readonly string[]): number {
+  return Math.min(RECOMMENDED_RANKS, Math.max(1, entries.length - 1))
 }
 
 export interface MyBallot {
@@ -108,16 +131,16 @@ export function canSubmit(ranking: readonly string[]): boolean {
   return ranking.length >= 1
 }
 
-/** True when the voter should be nudged to rank more (fewer than 5, but at least one). */
-export function isShortBallot(ranking: readonly string[]): boolean {
-  return ranking.length >= 1 && ranking.length < RECOMMENDED_RANKS
+/** True when the voter should be nudged to rank more (fewer than `recommended`, but at least one). */
+export function isShortBallot(ranking: readonly string[], recommended: number = RECOMMENDED_RANKS): boolean {
+  return ranking.length >= 1 && ranking.length < recommended
 }
 
-/** The lead line of the confirmation when fewer than five are ranked. */
-export function shortBallotWarning(count: number, total: number = MAX_RANKS): string {
+/** The lead line of the confirmation when fewer than `recommended` are ranked. */
+export function shortBallotWarning(count: number, total: number = MAX_RANKS, recommended: number = RECOMMENDED_RANKS): string {
   return (
     `You ranked ${count} of ${total}. If all your picks are eliminated, your ballot stops counting. ` +
-    `Rank at least ${RECOMMENDED_RANKS} and it counts to the end.`
+    `Rank at least ${recommended} and it counts to the end.`
   )
 }
 
@@ -167,31 +190,56 @@ function isDateString(value: unknown): value is string {
 
 /**
  * One row of mascot_elections. `null` (no election exists yet) is a valid answer.
- * The draw order must list every known entry exactly once, because the count refuses
- * anything else.
+ * `entries` null means every known entry (migration 045); otherwise two or more known
+ * entries, kept in gallery order. The draw order must list this election's entries
+ * exactly once, because the count refuses anything else.
  */
 export function parseElection(raw: unknown, knownIds: readonly string[]): Parsed<Election | null> {
   if (raw === null || raw === undefined) return { ok: true, value: null }
   if (!isRecord(raw)) return { ok: false }
-  const { id, status, closes_at, draw_order, published_at } = raw
+  const { id, status, closes_at, draw_order, published_at, entries, runoff_of } = raw
   if (typeof id !== 'number' || !Number.isInteger(id)) return { ok: false }
   if (typeof status !== 'string' || !(ELECTION_STATUSES as readonly string[]).includes(status)) return { ok: false }
   if (closes_at !== null && !isDateString(closes_at)) return { ok: false }
   if (published_at !== null && published_at !== undefined && !isDateString(published_at)) return { ok: false }
+  if (runoff_of !== null && runoff_of !== undefined && (typeof runoff_of !== 'number' || !Number.isInteger(runoff_of))) return { ok: false }
+  let own: string[]
+  if (entries === null || entries === undefined) {
+    own = [...knownIds]
+  } else {
+    if (!isStringArray(entries) || entries.length < 2 || new Set(entries).size !== entries.length) return { ok: false }
+    if (!entries.every((x) => knownIds.includes(x))) return { ok: false }
+    own = knownIds.filter((x) => entries.includes(x))
+  }
   if (!isStringArray(draw_order)) return { ok: false }
-  const known = new Set(knownIds)
-  if (draw_order.length !== known.size || new Set(draw_order).size !== draw_order.length) return { ok: false }
-  if (!draw_order.every((x) => known.has(x))) return { ok: false }
+  if (draw_order.length !== own.length || new Set(draw_order).size !== draw_order.length) return { ok: false }
+  if (!draw_order.every((x) => own.includes(x))) return { ok: false }
   return {
     ok: true,
     value: {
       id,
       status: status as ElectionStatus,
       closesAt: closes_at,
+      entries: own,
+      runoffOf: typeof runoff_of === 'number' ? runoff_of : null,
       drawOrder: [...draw_order],
       publishedAt: typeof published_at === 'string' ? published_at : null,
     },
   }
+}
+
+/** Every election, oldest first. A malformed row fails the whole list. */
+export function parseElections(raw: unknown, knownIds: readonly string[]): Parsed<Election[]> {
+  if (raw === null || raw === undefined) return { ok: true, value: [] }
+  if (!Array.isArray(raw)) return { ok: false }
+  const out: Election[] = []
+  for (const row of raw) {
+    const parsed = parseElection(row, knownIds)
+    if (!parsed.ok || parsed.value === null) return { ok: false }
+    out.push(parsed.value)
+  }
+  out.sort((a, b) => a.id - b.id)
+  return { ok: true, value: out }
 }
 
 /** mascot_my_ballot returns zero or one row; PostgREST sends an array. */
@@ -282,4 +330,48 @@ export function roundNote(round: Round, nameOf: (id: string) => string, winner: 
     return `${tied} were tied on ${n}; ${out} had fewer in round ${tb.round}, so it was eliminated.`
   }
   return `${tied} were tied on ${n}, and no earlier round separated them; ${out} comes first in the tie-breaker order, so it was eliminated.`
+}
+
+// --------------------------------------------------------------------------
+// A count that ended in a tie for first (the first mascot vote, 2026-11-03)
+// --------------------------------------------------------------------------
+
+export interface TiedCount {
+  /** The entries tied for first, in gallery order of `entries`. */
+  tied: string[]
+  /** Votes each tied entry had in the tied round. */
+  votes: number
+  /** The round they tied in, which is the last round shown. */
+  round: number
+  /** The count cut at the tied round: nothing eliminated in it, and no winner. */
+  result: CountResult
+}
+
+/**
+ * When the voters left a tie for first, the rounds up to and including the tied one and
+ * nothing after: what the tie-break rule would have done next was not the voters' choice,
+ * and the owner settles it with a runoff instead. Null when the votes decided the count.
+ */
+export function tiedCount(result: CountResult, entries: readonly string[]): TiedCount | null {
+  const tied = tieForFirst(result)
+  if (tied === null) return null
+  let at = result.rounds.length - 1
+  while (at >= 0 && result.rounds[at].eliminated === null) at--
+  const decisive = result.rounds[at]
+  const rounds = result.rounds.slice(0, at + 1).map((r, i) => (i === at ? { ...r, eliminated: null, tieBreak: null } : r))
+  return {
+    tied: entries.filter((id) => tied.includes(id)),
+    votes: decisive.votes[tied[0]] ?? 0,
+    round: decisive.round,
+    result: { totalBallots: result.totalBallots, rounds, winner: null },
+  }
+}
+
+/** The note under the tied round: "Entry 2 and Entry 4 are tied on 5 votes each. ..." */
+export function tieNote(tie: TiedCount, nameOf: (id: string) => string): string {
+  return (
+    `${joinNames(tie.tied.map(nameOf))} are tied on ${tie.votes} ${tie.votes === 1 ? 'vote' : 'votes'} each, and no ` +
+    `further count can separate them. The published rules would settle this with the tie-breaker order; a runoff ` +
+    `between them decides instead.`
+  )
 }

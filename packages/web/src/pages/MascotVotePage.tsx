@@ -20,20 +20,24 @@ import { hasDiscordIdentity } from '../utils/memberProfile'
 import { loginUrlFor } from '../utils/loginNext'
 import { liveVoteApi, type VoteApi, type VoteSource, type Viewer } from '../lib/mascotVote'
 import {
-  MAX_RANKS,
-  RECOMMENDED_RANKS,
   announceAdded,
   announceMoved,
   announceRemoved,
   canSubmit,
   drawOrderText,
   effectiveStatus,
+  isRunoff,
   isShortBallot,
+  joinNames,
+  maxRanksFor,
   moveDown,
   moveUp,
   ordinal,
+  recommendedRanksFor,
   removeEntry,
   shortBallotWarning,
+  tieNote,
+  tiedCount,
   toggleEntry,
   type CastOutcome,
   type Election,
@@ -42,8 +46,6 @@ import {
 } from '../lib/mascotVoteLogic'
 import { ballotsToCsv, countRankedChoice, winnerSentence } from '../lib/rankedChoice'
 import '../styles/pages/mascot-vote.css'
-
-const ENTRY_IDS = MASCOT_ENTRIES.map((e) => e.id)
 
 function nameOf(id: string): string {
   return getMascotEntry(id)?.label ?? id
@@ -87,20 +89,16 @@ export function MascotVotePage() {
     <Layout>
       <SEOHead
         title="Choose the community mascot"
-        description="Six mascot entries, one winner. Members with a Discord account rank their favourites and the results are published round by round."
+        description="The community mascot vote. Members with a Discord account vote, and the results are published round by round."
       />
       <main className="mascot-vote">
-        <header className="mascot-vote__intro">
-          <h1 className="mascot-vote__title">Choose our mascot</h1>
-          <p className="mascot-vote__lead">
-            Six entries, one mascot. Members with a Discord account rank their favourites. The count is an instant
-            runoff, and once it is published you can read every round and download the ballots to check it yourself.
-          </p>
-        </header>
         {source === null ? (
-          <p className="mascot-vote__loading" role="status">
-            Loading the vote...
-          </p>
+          <>
+            <Intro runoff={null} />
+            <p className="mascot-vote__loading" role="status">
+              Loading the vote...
+            </p>
+          </>
         ) : (
           <VoteContent key={previewName ?? 'live'} source={source} viewer={viewer} />
         )}
@@ -109,13 +107,45 @@ export function MascotVotePage() {
   )
 }
 
+/** The page heading. A runoff says what it settles and who may vote. */
+function Intro({ runoff }: { runoff: Election | null }) {
+  if (runoff) {
+    return (
+      <header className="mascot-vote__intro">
+        <h1 className="mascot-vote__title">Choose our mascot: the runoff</h1>
+        {runoff.status === 'published' ? (
+          <p className="mascot-vote__lead">
+            The first vote ended in a tie between {joinNames(runoff.entries.map(nameOf))}, and the community settled it in a
+            runoff. Both counts are below, round by round, with their ballots to check.
+          </p>
+        ) : (
+          <p className="mascot-vote__lead">
+            The first vote ended in a tie between {joinNames(runoff.entries.map(nameOf))}. Everyone in the community with a
+            Discord account can vote in the runoff, whether or not you voted the first time. Pick one: the entry with more
+            votes becomes our mascot. The first vote&apos;s full count is further down this page.
+          </p>
+        )}
+      </header>
+    )
+  }
+  return (
+    <header className="mascot-vote__intro">
+      <h1 className="mascot-vote__title">Choose our mascot</h1>
+      <p className="mascot-vote__lead">
+        Six entries, one mascot. Members with a Discord account rank their favorites. The count is an instant runoff, and
+        once it is published you can read every round and download the ballots to check it yourself.
+      </p>
+    </header>
+  )
+}
+
 // ---------------------------------------------------------------------------
-// Content: loads the election, then shows whichever situation applies
+// Content: loads the elections, then shows whichever situation applies
 // ---------------------------------------------------------------------------
 
 function VoteContent({ source, viewer: viewerIn }: { source: VoteSource; viewer: Viewer | 'loading' }) {
   const { api } = source
-  const [electionLoad, setElectionLoad] = useState<Load<Election | null>>({ state: 'loading' })
+  const [electionLoad, setElectionLoad] = useState<Load<Election[]>>({ state: 'loading' })
   const [reloadKey, setReloadKey] = useState(0)
   const [notice, setNotice] = useState<string | null>(null)
   const [zoomId, setZoomId] = useState<string | null>(null)
@@ -123,7 +153,7 @@ function VoteContent({ source, viewer: viewerIn }: { source: VoteSource; viewer:
 
   useEffect(() => {
     let cancelled = false
-    void api.fetchElection().then((r) => {
+    void api.fetchElections().then((r) => {
       if (cancelled) return
       setElectionLoad(r.ok ? { state: 'ready', value: r.value } : { state: 'error', reason: r.reason })
     })
@@ -132,7 +162,11 @@ function VoteContent({ source, viewer: viewerIn }: { source: VoteSource; viewer:
     }
   }, [api, reloadKey])
 
-  const election = electionLoad.state === 'ready' ? electionLoad.value : null
+  const elections = electionLoad.state === 'ready' ? electionLoad.value : []
+  // The newest election is the one every action reaches (migration 025). A runoff names the
+  // election it settles, whose published count stays on the page below it.
+  const election = elections.length > 0 ? elections[elections.length - 1] : null
+  const settles = election?.runoffOf != null ? (elections.find((e) => e.id === election.runoffOf) ?? null) : null
   const status = election ? effectiveStatus(election, Date.now()) : null
 
   // Flip an open election to closed at its closing time without waiting for a reload.
@@ -184,6 +218,9 @@ function VoteContent({ source, viewer: viewerIn }: { source: VoteSource; viewer:
 
   const zoomEntry = zoomId ? getMascotEntry(zoomId) : undefined
 
+  const entries = election?.entries ?? MASCOT_ENTRIES.map((e) => e.id)
+  const firstVote = settles && settles.status === 'published' ? <Results election={settles} api={api} settled /> : null
+
   let body: React.ReactNode
   if (electionLoad.state === 'loading') {
     body = (
@@ -194,7 +231,7 @@ function VoteContent({ source, viewer: viewerIn }: { source: VoteSource; viewer:
   } else if (electionLoad.state === 'error') {
     body = (
       <>
-        <Gallery onZoom={setZoomId} />
+        <Gallery entries={entries} onZoom={setZoomId} />
         <section className="mascot-vote__panel" aria-labelledby="mv-error">
           <h2 id="mv-error" className="mascot-vote__panel-title">
             The vote could not be loaded
@@ -220,7 +257,7 @@ function VoteContent({ source, viewer: viewerIn }: { source: VoteSource; viewer:
   } else if (election === null || status === null) {
     body = (
       <>
-        <Gallery onZoom={setZoomId} />
+        <Gallery entries={entries} onZoom={setZoomId} />
         <section className="mascot-vote__panel" aria-labelledby="mv-none">
           <h2 id="mv-none" className="mascot-vote__panel-title">
             There is no vote right now
@@ -232,27 +269,31 @@ function VoteContent({ source, viewer: viewerIn }: { source: VoteSource; viewer:
   } else if (status === 'published') {
     body = (
       <>
-        <Gallery onZoom={setZoomId} />
+        <Gallery entries={entries} onZoom={setZoomId} />
         <Results election={election} api={api} />
+        {firstVote}
       </>
     )
   } else if (status === 'open' && viewer === 'ready' && myBallotLoad.state === 'ready' && myBallotLoad.value === null) {
     body = (
-      <BallotSection
-        key="ballot"
-        election={election}
-        api={api}
-        initialRanking={source.initialRanking}
-        notice={notice}
-        onVoted={handleVoted}
-        onNotOpen={handleNotOpen}
-        onZoom={setZoomId}
-      />
+      <>
+        <BallotSection
+          key="ballot"
+          election={election}
+          api={api}
+          initialRanking={source.initialRanking}
+          notice={notice}
+          onVoted={handleVoted}
+          onNotOpen={handleNotOpen}
+          onZoom={setZoomId}
+        />
+        {firstVote}
+      </>
     )
   } else {
     body = (
       <>
-        <Gallery onZoom={setZoomId} />
+        <Gallery entries={entries} onZoom={setZoomId} />
         {notice && (
           <p className="mascot-vote__notice" role="alert">
             {notice}
@@ -265,14 +306,17 @@ function VoteContent({ source, viewer: viewerIn }: { source: VoteSource; viewer:
           myBallotLoad={needsMyBallot ? myBallotLoad : null}
           justVoted={justVoted}
           onRetryMyBallot={() => setMyBallotKey((k) => k + 1)}
+          pickOne={maxRanksFor(election.entries) === 1}
         />
-        <HowItWorks drawOrder={election.drawOrder} />
+        <HowItWorks election={election} />
+        {firstVote}
       </>
     )
   }
 
   return (
     <>
+      <Intro runoff={election && isRunoff(election) ? election : null} />
       {body}
       <MascotDialog open={zoomEntry !== undefined} onClose={() => setZoomId(null)} labelledBy="mv-zoom-title" className="mascot-dialog--zoom">
         {zoomEntry && (
@@ -300,18 +344,25 @@ function VoteContent({ source, viewer: viewerIn }: { source: VoteSource; viewer:
 // ---------------------------------------------------------------------------
 
 interface GalleryProps {
+  /** The election's entries; a runoff shows only its own. */
+  entries: readonly string[]
   onZoom: (id: string) => void
   /** Present on the ballot: the art is the control. */
   ranking?: readonly string[]
   onToggle?: (id: string) => void
+  /** A two-entry ballot is one pick, not a ranking. */
+  pickOne?: boolean
 }
 
-function Gallery({ onZoom, ranking, onToggle }: GalleryProps) {
+const COUNT_WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six']
+
+function Gallery({ entries, onZoom, ranking, onToggle, pickOne = false }: GalleryProps) {
   const baseId = useId()
   const interactive = onToggle !== undefined && ranking !== undefined
+  const shown = MASCOT_ENTRIES.filter((e) => entries.includes(e.id))
   return (
-    <ul className="mascot-vote__gallery" aria-label="The six entries">
-      {MASCOT_ENTRIES.map((entry) => {
+    <ul className="mascot-vote__gallery" aria-label={`The ${COUNT_WORDS[shown.length] ?? shown.length} entries`}>
+      {shown.map((entry) => {
         const position = ranking ? ranking.indexOf(entry.id) + 1 : 0
         const ranked = position > 0
         const descId = `${baseId}-${entry.id}`
@@ -324,9 +375,13 @@ function Gallery({ onZoom, ranking, onToggle }: GalleryProps) {
                     type="button"
                     className="mascot-vote__art"
                     aria-label={
-                      ranked
-                        ? `Remove ${entry.label} from your ranking (currently ${ordinal(position)} choice)`
-                        : `Rank ${entry.label} as your ${ordinal(ranking.length + 1)} choice`
+                      pickOne
+                        ? ranked
+                          ? `Take back your pick of ${entry.label}`
+                          : `Pick ${entry.label}`
+                        : ranked
+                          ? `Remove ${entry.label} from your ranking (currently ${ordinal(position)} choice)`
+                          : `Rank ${entry.label} as your ${ordinal(ranking.length + 1)} choice`
                     }
                     aria-describedby={descId}
                     onClick={() => onToggle(entry.id)}
@@ -342,7 +397,7 @@ function Gallery({ onZoom, ranking, onToggle }: GalleryProps) {
               )}
               {ranked && (
                 <span className="mascot-vote__badge" aria-hidden="true">
-                  {ordinal(position)} choice
+                  {pickOne ? 'Your pick' : `${ordinal(position)} choice`}
                 </span>
               )}
             </div>
@@ -369,11 +424,36 @@ function Gallery({ onZoom, ranking, onToggle }: GalleryProps) {
 // Shared explanation
 // ---------------------------------------------------------------------------
 
-function HowItWorks({ drawOrder }: { drawOrder: readonly string[] }) {
+function HowItWorks({ election, title = 'How the count works' }: { election: Election; title?: string }) {
+  const headingId = `mv-how-${election.id}`
+  if (maxRanksFor(election.entries) === 1) {
+    return (
+      <section className="mascot-vote__panel" aria-labelledby={headingId}>
+        <h2 id={headingId} className="mascot-vote__panel-title">
+          {title}
+        </h2>
+        <ol className="mascot-vote__steps">
+          <li>Every ballot is one vote for one of the two entries.</li>
+          <li>The entry with more votes wins.</li>
+          <li>
+            If they finish level, the tie-breaker order below decides: the entry that comes first in it is eliminated, and
+            the other wins.
+          </li>
+        </ol>
+        <p>
+          The order was drawn at random when the runoff was set up and is shown before anyone votes, so it cannot be
+          picked after the results are known.
+        </p>
+        <p className="mascot-vote__draw">
+          <strong>Tie-breaker order:</strong> {drawOrderText(election.drawOrder, nameOf)}
+        </p>
+      </section>
+    )
+  }
   return (
-    <section className="mascot-vote__panel" aria-labelledby="mv-how">
-      <h2 id="mv-how" className="mascot-vote__panel-title">
-        How the count works
+    <section className="mascot-vote__panel" aria-labelledby={headingId}>
+      <h2 id={headingId} className="mascot-vote__panel-title">
+        {title}
       </h2>
       <ol className="mascot-vote__steps">
         <li>Every ballot counts for its highest choice that is still in the running.</li>
@@ -388,7 +468,7 @@ function HowItWorks({ drawOrder }: { drawOrder: readonly string[] }) {
         anyone votes, so it cannot be picked after the results are known.
       </p>
       <p className="mascot-vote__draw">
-        <strong>Tie-breaker order:</strong> {drawOrderText(drawOrder, nameOf)}
+        <strong>Tie-breaker order:</strong> {drawOrderText(election.drawOrder, nameOf)}
       </p>
     </section>
   )
@@ -414,12 +494,13 @@ interface StatusPanelProps {
   myBallotLoad: Load<MyBallot | null> | null
   justVoted: boolean
   onRetryMyBallot: () => void
+  pickOne: boolean
 }
 
-function StatusPanel({ election, status, viewer, myBallotLoad, justVoted, onRetryMyBallot }: StatusPanelProps) {
+function StatusPanel({ election, status, viewer, myBallotLoad, justVoted, onRetryMyBallot, pickOne }: StatusPanelProps) {
   // Already voted: open or closed, read-only.
   if (myBallotLoad?.state === 'ready' && myBallotLoad.value) {
-    return <VotedPanel ballot={myBallotLoad.value} status={status} focusOnMount={justVoted} />
+    return <VotedPanel ballot={myBallotLoad.value} status={status} focusOnMount={justVoted} pickOne={pickOne} />
   }
 
   if (myBallotLoad?.state === 'error' && myBallotLoad.reason !== 'login') {
@@ -508,7 +589,17 @@ function ViewerPrompt({ viewer, readyText }: { viewer: Viewer | 'loading'; ready
   return readyText ? <p>{readyText}</p> : null
 }
 
-function VotedPanel({ ballot, status, focusOnMount }: { ballot: MyBallot; status: 'draft' | 'open' | 'closed'; focusOnMount: boolean }) {
+function VotedPanel({
+  ballot,
+  status,
+  focusOnMount,
+  pickOne,
+}: {
+  ballot: MyBallot
+  status: 'draft' | 'open' | 'closed'
+  focusOnMount: boolean
+  pickOne: boolean
+}) {
   const headingRef = useRef<HTMLHeadingElement>(null)
   useEffect(() => {
     if (focusOnMount) headingRef.current?.focus()
@@ -518,14 +609,22 @@ function VotedPanel({ ballot, status, focusOnMount }: { ballot: MyBallot; status
       <h2 id="mv-status" className="mascot-vote__panel-title" ref={headingRef} tabIndex={-1}>
         Your vote is in
       </h2>
-      <p>Thank you. Your ballot is final and cannot be changed. This is how you ranked the entries:</p>
-      <ol className="mascot-vote__voted-list">
-        {ballot.rankings.map((id, i) => (
-          <li key={id}>
-            <span className="mascot-vote__voted-rank">{ordinal(i + 1)} choice</span> {nameOf(id)}
-          </li>
-        ))}
-      </ol>
+      {pickOne ? (
+        <p>
+          Thank you. You voted for <strong>{nameOf(ballot.rankings[0])}</strong>. Your vote is final and cannot be changed.
+        </p>
+      ) : (
+        <>
+          <p>Thank you. Your ballot is final and cannot be changed. This is how you ranked the entries:</p>
+          <ol className="mascot-vote__voted-list">
+            {ballot.rankings.map((id, i) => (
+              <li key={id}>
+                <span className="mascot-vote__voted-rank">{ordinal(i + 1)} choice</span> {nameOf(id)}
+              </li>
+            ))}
+          </ol>
+        </>
+      )}
       <p>
         {status === 'open'
           ? 'Voting is still open for others. Results are published here once voting has closed and the ballots have been checked.'
@@ -570,6 +669,10 @@ function BallotSection({ election, api, initialRanking, notice, onVoted, onNotOp
   const pendingFocus = useRef<string | null>(null)
 
   const say = (text: string) => setAnnouncement(text)
+  // A runoff of two is one pick; anything bigger is a ranking.
+  const maxRanks = maxRanksFor(election.entries)
+  const pickOne = maxRanks === 1
+  const recommended = recommendedRanksFor(election.entries)
 
   // Once the list has re-rendered, put keyboard focus somewhere sensible.
   useEffect(() => {
@@ -582,11 +685,18 @@ function BallotSection({ election, api, initialRanking, notice, onVoted, onNotOp
 
   const handleToggle = (id: string) => {
     setLocalNotice(null)
+    if (pickOne) {
+      // Pressing the other entry switches the pick; pressing the picked one takes it back.
+      const next = ranking.includes(id) ? [] : [id]
+      say(next.length === 0 ? `${nameOf(id)} is no longer your pick` : `${nameOf(id)} is your pick`)
+      setRanking(next)
+      return
+    }
     if (ranking.includes(id)) {
       say(announceRemoved(nameOf(id), ranking, id, nameOf))
       setRanking(removeEntry(ranking, id))
     } else {
-      const next = toggleEntry(ranking, id)
+      const next = toggleEntry(ranking, id, maxRanks)
       setRanking(next)
       say(announceAdded(nameOf(id), next.indexOf(id) + 1))
     }
@@ -638,7 +748,7 @@ function BallotSection({ election, api, initialRanking, notice, onVoted, onNotOp
     }
   }
 
-  const short = isShortBallot(ranking)
+  const short = !pickOne && isShortBallot(ranking, recommended)
   const empty = !canSubmit(ranking)
 
   return (
@@ -647,10 +757,17 @@ function BallotSection({ election, api, initialRanking, notice, onVoted, onNotOp
         <h2 id="mv-ballot" className="mascot-vote__panel-title">
           Your ballot
         </h2>
-        <p>
-          Press an entry&apos;s art to add it to your ranking, in the order you press. Press it again to take it out;
-          the entries below it move up. Rank at least {RECOMMENDED_RANKS} if you can.
-        </p>
+        {pickOne ? (
+          <p>
+            Press the art of the entry you want as our mascot. Press the other one to switch, or press your pick again
+            to take it back.
+          </p>
+        ) : (
+          <p>
+            Press an entry&apos;s art to add it to your ranking, in the order you press. Press it again to take it out;
+            the entries below it move up. Rank at least {recommended} if you can.
+          </p>
+        )}
         <ClosingLine election={election} />
         {notice && (
           <p className="mascot-vote__notice" role="alert">
@@ -659,14 +776,16 @@ function BallotSection({ election, api, initialRanking, notice, onVoted, onNotOp
         )}
       </section>
 
-      <Gallery onZoom={onZoom} ranking={ranking} onToggle={handleToggle} />
+      <Gallery entries={election.entries} onZoom={onZoom} ranking={ranking} onToggle={handleToggle} pickOne={pickOne} />
 
       <section className="mascot-vote__panel" aria-labelledby="mv-ranking">
         <h2 id="mv-ranking" className="mascot-vote__panel-title" ref={headingRef} tabIndex={-1}>
-          Your ranking
+          {pickOne ? 'Your pick' : 'Your ranking'}
         </h2>
         {ranking.length === 0 ? (
-          <p className="mascot-vote__empty">You have not ranked anything yet. Press an entry above to start.</p>
+          <p className="mascot-vote__empty">
+            {pickOne ? 'You have not picked an entry yet. Press one above.' : 'You have not ranked anything yet. Press an entry above to start.'}
+          </p>
         ) : (
           <ol className="mascot-vote__ranking">
             {ranking.map((id, i) => {
@@ -678,30 +797,34 @@ function BallotSection({ election, api, initialRanking, notice, onVoted, onNotOp
               }
               return (
                 <li key={id} className="mascot-vote__rank-row">
-                  <span className="mascot-vote__rank-pos">{ordinal(i + 1)}</span>
+                  <span className="mascot-vote__rank-pos">{pickOne ? 'Pick' : ordinal(i + 1)}</span>
                   <span className="mascot-vote__rank-thumb">
                     <ArtImage entry={entry} alt="" />
                   </span>
                   <span className="mascot-vote__rank-name">{entry.label}</span>
                   <span className="mascot-vote__rank-actions">
-                    <button
-                      type="button"
-                      ref={refFor('up')}
-                      className="mascot-vote__btn mascot-vote__btn--secondary"
-                      aria-disabled={i === 0}
-                      onClick={() => handleMove(id, 'up')}
-                    >
-                      Move up<span className="sr-only"> {entry.label}</span>
-                    </button>
-                    <button
-                      type="button"
-                      ref={refFor('down')}
-                      className="mascot-vote__btn mascot-vote__btn--secondary"
-                      aria-disabled={i === ranking.length - 1}
-                      onClick={() => handleMove(id, 'down')}
-                    >
-                      Move down<span className="sr-only"> {entry.label}</span>
-                    </button>
+                    {!pickOne && (
+                      <>
+                        <button
+                          type="button"
+                          ref={refFor('up')}
+                          className="mascot-vote__btn mascot-vote__btn--secondary"
+                          aria-disabled={i === 0}
+                          onClick={() => handleMove(id, 'up')}
+                        >
+                          Move up<span className="sr-only"> {entry.label}</span>
+                        </button>
+                        <button
+                          type="button"
+                          ref={refFor('down')}
+                          className="mascot-vote__btn mascot-vote__btn--secondary"
+                          aria-disabled={i === ranking.length - 1}
+                          onClick={() => handleMove(id, 'down')}
+                        >
+                          Move down<span className="sr-only"> {entry.label}</span>
+                        </button>
+                      </>
+                    )}
                     <button
                       type="button"
                       ref={refFor('remove')}
@@ -718,8 +841,8 @@ function BallotSection({ election, api, initialRanking, notice, onVoted, onNotOp
         )}
         {short && (
           <p className="mascot-vote__hint">
-            You have ranked {ranking.length} of {MAX_RANKS}. If every entry you ranked is eliminated, your ballot stops
-            counting. Rank at least {RECOMMENDED_RANKS} and it counts to the end.
+            You have ranked {ranking.length} of {maxRanks}. If every entry you ranked is eliminated, your ballot stops
+            counting. Rank at least {recommended} and it counts to the end.
           </p>
         )}
         <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
@@ -727,7 +850,7 @@ function BallotSection({ election, api, initialRanking, notice, onVoted, onNotOp
         </div>
       </section>
 
-      <HowItWorks drawOrder={election.drawOrder} />
+      <HowItWorks election={election} />
 
       <section className="mascot-vote__panel" aria-labelledby="mv-before">
         <h2 id="mv-before" className="mascot-vote__panel-title">
@@ -776,7 +899,7 @@ function BallotSection({ election, api, initialRanking, notice, onVoted, onNotOp
         </button>
         {empty && (
           <p id="mv-submit-why" className="mascot-vote__hint">
-            Rank at least one entry to lock in your vote.
+            {pickOne ? 'Pick an entry to lock in your vote.' : 'Rank at least one entry to lock in your vote.'}
           </p>
         )}
       </section>
@@ -791,15 +914,23 @@ function BallotSection({ election, api, initialRanking, notice, onVoted, onNotOp
         <h2 id="mv-confirm-title" className="mascot-dialog__title">
           Lock in your vote?
         </h2>
-        {short && <p className="mascot-vote__warning">{shortBallotWarning(ranking.length, MAX_RANKS)}</p>}
-        <p>You are about to submit this ranking:</p>
-        <ol className="mascot-vote__voted-list">
-          {ranking.map((id, i) => (
-            <li key={id}>
-              <span className="mascot-vote__voted-rank">{ordinal(i + 1)} choice</span> {nameOf(id)}
-            </li>
-          ))}
-        </ol>
+        {short && <p className="mascot-vote__warning">{shortBallotWarning(ranking.length, maxRanks, recommended)}</p>}
+        {pickOne ? (
+          <p>
+            You are about to vote for <strong>{ranking[0] ? nameOf(ranking[0]) : ''}</strong>.
+          </p>
+        ) : (
+          <>
+            <p>You are about to submit this ranking:</p>
+            <ol className="mascot-vote__voted-list">
+              {ranking.map((id, i) => (
+                <li key={id}>
+                  <span className="mascot-vote__voted-rank">{ordinal(i + 1)} choice</span> {nameOf(id)}
+                </li>
+              ))}
+            </ol>
+          </>
+        )}
         <p>
           <strong>Your vote cannot be changed once you lock it in.</strong>
         </p>
@@ -855,43 +986,49 @@ function BallotSection({ election, api, initialRanking, notice, onVoted, onNotOp
 // Results
 // ---------------------------------------------------------------------------
 
-function Results({ election, api }: { election: Election; api: VoteApi }) {
+/**
+ * One election's published results. `settled` is the first vote shown under the runoff that
+ * settles it: every heading says "The first vote" so the two counts never read as one.
+ */
+function Results({ election, api, settled = false }: { election: Election; api: VoteApi; settled?: boolean }) {
   const [load, setLoad] = useState<Load<PublicBallots | null>>({ state: 'loading' })
   const [key, setKey] = useState(0)
   const [downloadError, setDownloadError] = useState(false)
+  const ids = `mv-${election.id}`
 
   useEffect(() => {
     let cancelled = false
     setLoad({ state: 'loading' })
-    void api.fetchPublicBallots().then((r) => {
+    void api.fetchPublicBallots(election.id).then((r) => {
       if (cancelled) return
       setLoad(r.ok ? { state: 'ready', value: r.value } : { state: 'error', reason: r.reason })
     })
     return () => {
       cancelled = true
     }
-  }, [api, key])
+  }, [api, key, election.id])
 
   const data = load.state === 'ready' ? load.value : null
-  // The one count: rankedChoice.ts, with the draw order the election published.
+  // The one count: rankedChoice.ts, with this election's entries and published draw order.
   const counted = useMemo(() => {
     if (!data) return null
     try {
-      return { result: countRankedChoice({ entries: ENTRY_IDS, ballots: data.ballots, drawOrder: election.drawOrder }) }
+      return { result: countRankedChoice({ entries: election.entries, ballots: data.ballots, drawOrder: election.drawOrder }) }
     } catch {
       return { error: true as const }
     }
-  }, [data, election.drawOrder])
+  }, [data, election.entries, election.drawOrder])
 
   const download = () => {
     if (!data) return
     setDownloadError(false)
     try {
-      const csv = ballotsToCsv(data.ballots, MAX_RANKS)
+      // A runoff ballot can rank at most its own entries, so its file has that many columns.
+      const csv = ballotsToCsv(data.ballots, election.entries.length)
       const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }))
       const link = document.createElement('a')
       link.href = url
-      link.download = 'mascot-vote-ballots.csv'
+      link.download = isRunoff(election) ? 'mascot-runoff-ballots.csv' : 'mascot-vote-ballots.csv'
       document.body.appendChild(link)
       link.click()
       link.remove()
@@ -911,9 +1048,9 @@ function Results({ election, api }: { election: Election; api: VoteApi }) {
 
   if (load.state === 'error' || data === null || counted === null || 'error' in counted) {
     return (
-      <section className="mascot-vote__panel" aria-labelledby="mv-results-error">
-        <h2 id="mv-results-error" className="mascot-vote__panel-title">
-          The results could not be shown
+      <section className="mascot-vote__panel" aria-labelledby={`${ids}-results-error`}>
+        <h2 id={`${ids}-results-error`} className="mascot-vote__panel-title">
+          {settled ? 'The first vote could not be shown' : 'The results could not be shown'}
         </h2>
         <p role="alert">
           {load.state === 'error' && load.reason === 'network'
@@ -928,41 +1065,88 @@ function Results({ election, api }: { election: Election; api: VoteApi }) {
   }
 
   const { result } = counted
-  const winnerEntry = result.winner ? getMascotEntry(result.winner.id) : undefined
+  // A tie for first is shown as a tie, cut at the tied round: what the tie-break rule
+  // would have done next was not the voters' choice, and a runoff settles it instead.
+  const tie = tiedCount(result, election.entries)
+  const winnerEntry = !tie && result.winner ? getMascotEntry(result.winner.id) : undefined
+  const winnerTitle = result.winner
+    ? `${settled ? 'The first vote: ' : 'The winner: '}${nameOf(result.winner.id)}`
+    : settled
+      ? 'The first vote: no winner'
+      : 'No winner'
 
   return (
     <>
-      <section className="mascot-vote__panel mascot-vote__panel--winner" aria-labelledby="mv-winner">
-        <h2 id="mv-winner" className="mascot-vote__panel-title">
-          {result.winner ? `The winner: ${nameOf(result.winner.id)}` : 'No winner'}
-        </h2>
-        {result.winner && winnerEntry ? (
-          <div className="mascot-vote__winner">
-            <div className="mascot-vote__frame mascot-vote__frame--winner">
-              <ArtImage entry={winnerEntry} alt={winnerEntry.alt} />
-            </div>
-            <p className="mascot-vote__winner-text">{winnerSentence(result.winner, winnerEntry.label)}</p>
+      {tie ? (
+        <section className="mascot-vote__panel mascot-vote__panel--winner" aria-labelledby={`${ids}-winner`}>
+          <h2 id={`${ids}-winner`} className="mascot-vote__panel-title">
+            {settled ? 'The first vote: a tie' : 'A tie: a runoff decides'}
+          </h2>
+          <div className="mascot-vote__tied">
+            {tie.tied.map((id) => {
+              const entry = getMascotEntry(id)
+              return entry ? (
+                <div key={id} className="mascot-vote__frame mascot-vote__frame--winner">
+                  <ArtImage entry={entry} alt={entry.alt} />
+                </div>
+              ) : null
+            })}
           </div>
-        ) : (
-          <p>No ballots were counted, so there is no winner.</p>
-        )}
-        {election.publishedAt && (
-          <p className="mascot-vote__meta">
-            Published <time dateTime={election.publishedAt}>{formatWhen(election.publishedAt)}</time>.
+          <p className="mascot-vote__winner-text">
+            {joinNames(tie.tied.map(nameOf))} finished level, with {tie.votes} {tie.votes === 1 ? 'vote' : 'votes'} each in
+            round {tie.round} of the count. Rather than settle it with the tie-breaker order, the community decides in a
+            runoff between them. {settled ? 'The runoff is at the top of this page.' : 'The runoff opens on this page soon.'}
           </p>
+          {election.publishedAt && (
+            <p className="mascot-vote__meta">
+              Published <time dateTime={election.publishedAt}>{formatWhen(election.publishedAt)}</time>.
+            </p>
+          )}
+        </section>
+      ) : (
+        <section className="mascot-vote__panel mascot-vote__panel--winner" aria-labelledby={`${ids}-winner`}>
+          <h2 id={`${ids}-winner`} className="mascot-vote__panel-title">
+            {winnerTitle}
+          </h2>
+          {result.winner && winnerEntry ? (
+            <div className="mascot-vote__winner">
+              <div className="mascot-vote__frame mascot-vote__frame--winner">
+                <ArtImage entry={winnerEntry} alt={winnerEntry.alt} />
+              </div>
+              <p className="mascot-vote__winner-text">{winnerSentence(result.winner, winnerEntry.label)}</p>
+            </div>
+          ) : (
+            <p>No ballots were counted, so there is no winner.</p>
+          )}
+          {election.publishedAt && (
+            <p className="mascot-vote__meta">
+              Published <time dateTime={election.publishedAt}>{formatWhen(election.publishedAt)}</time>.
+            </p>
+          )}
+        </section>
+      )}
+
+      <section className="mascot-vote__panel" aria-labelledby={`${ids}-rounds`}>
+        <h2 id={`${ids}-rounds`} className="mascot-vote__panel-title">
+          {settled ? 'The first vote, round by round' : 'Round by round'}
+        </h2>
+        {tie ? (
+          <RoundTable
+            result={tie.result}
+            labelledBy={`${ids}-rounds`}
+            nameOf={nameOf}
+            entries={election.entries}
+            tied={tie.tied}
+            finalNote={tieNote(tie, nameOf)}
+          />
+        ) : (
+          <RoundTable result={result} labelledBy={`${ids}-rounds`} nameOf={nameOf} entries={election.entries} />
         )}
       </section>
 
-      <section className="mascot-vote__panel" aria-labelledby="mv-rounds">
-        <h2 id="mv-rounds" className="mascot-vote__panel-title">
-          Round by round
-        </h2>
-        <RoundTable result={result} labelledBy="mv-rounds" nameOf={nameOf} />
-      </section>
-
-      <section className="mascot-vote__panel" aria-labelledby="mv-ballots">
-        <h2 id="mv-ballots" className="mascot-vote__panel-title">
-          The ballots
+      <section className="mascot-vote__panel" aria-labelledby={`${ids}-ballots`}>
+        <h2 id={`${ids}-ballots`} className="mascot-vote__panel-title">
+          {settled ? 'The first vote: the ballots' : 'The ballots'}
         </h2>
         <p>
           {result.totalBallots} {result.totalBallots === 1 ? 'ballot was' : 'ballots were'} counted.{' '}
@@ -970,11 +1154,11 @@ function Results({ election, api }: { election: Election; api: VoteApi }) {
           page. Admins exclude ballots from accounts that are not members of the Dystopian Outcasts Discord.
         </p>
         <p>
-          The ballots below have no names, accounts or times: only each voter&apos;s ranking. Anyone can download them and
+          The ballots have no names, accounts or times: only each voter&apos;s choices. Anyone can download them and
           recount.
         </p>
         <button type="button" className="mascot-vote__btn mascot-vote__btn--primary" onClick={download}>
-          Download the ballots
+          {settled ? 'Download the first vote ballots' : 'Download the ballots'}
         </button>
         {downloadError && (
           <p className="mascot-vote__notice" role="alert">
@@ -983,7 +1167,7 @@ function Results({ election, api }: { election: Election; api: VoteApi }) {
         )}
       </section>
 
-      <HowItWorks drawOrder={election.drawOrder} />
+      <HowItWorks election={election} title={settled ? 'How the first vote was counted' : undefined} />
     </>
   )
 }

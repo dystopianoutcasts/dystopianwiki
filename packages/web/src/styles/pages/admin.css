@@ -77,6 +77,11 @@
   margin: var(--spacing-3) 0;
 }
 
+/* The runoff offer under a tied count (migration 045). */
+.admin__runoff {
+  margin: var(--spacing-3) 0 var(--spacing-4);
+}
+
 /* ---- Admin tables (T78): never wider than their panel ----
    components/admin/FitTable.tsx. Cells wrap, so the table's minimum width is the sum of
    its longest WORDS, not its longest cells; padding is tighter than the vote page's. No

@@ -26,9 +26,9 @@ import {
   nameOfMember,
 } from '../components/admin/AdminTables'
 import { useAuth } from '../context/AuthContext'
-import { MASCOT_ENTRIES, getMascotEntry } from '../data/mascotEntries'
+import { getMascotEntry } from '../data/mascotEntries'
 import { loginUrlFor } from '../utils/loginNext'
-import { fetchElection, effectiveStatus, type Election, type ElectionStatus } from '../lib/mascotVote'
+import { fetchElection, effectiveStatus, isRunoff, joinNames, tieNote, tiedCount, type Election, type ElectionStatus } from '../lib/mascotVote'
 import { countRankedChoice, formatPercent, type CountResult } from '../lib/rankedChoice'
 import {
   STATUS_MOVES,
@@ -53,6 +53,7 @@ import {
   setClosesAt,
   setCounted,
   setStatus,
+  startRunoff,
   type ApiResult,
 } from '../lib/adminApi'
 import {
@@ -96,7 +97,6 @@ import '../styles/pages/admin.css'
 import '../styles/pages/admin-worlds.css'
 import '../styles/pages/admin-map.css'
 
-const ENTRY_IDS = MASCOT_ENTRIES.map((e) => e.id)
 
 /** On the dashboard entries go by their file id (art_00N), as asked; the public page says "Entry N". */
 const idOf = (id: string) => id
@@ -247,7 +247,7 @@ function Dashboard({ superadmin, selfId }: { superadmin: boolean; selfId: string
           {ballots.state === 'error' && <ErrorPanel id="ad-ballots-error" title="The ballots could not be loaded" text={ballots.text} onRetry={reload} />}
           {ballots.state === 'ready' && (
             <>
-              <VoteResults election={election.value} ballots={ballots.value} />
+              <VoteResults election={election.value} ballots={ballots.value} onChanged={reload} />
               <BallotsSection election={election.value} ballots={ballots.value} onChanged={reload} />
             </>
           )}
@@ -1130,8 +1130,14 @@ function VoteControls({ election, onChanged }: { election: Election; onChanged: 
   return (
     <section className="mascot-vote__panel" aria-labelledby="ad-controls">
       <h2 id="ad-controls" className="mascot-vote__panel-title" ref={headingRef} tabIndex={-1}>
-        Mascot vote: controls
+        {isRunoff(election) ? 'Mascot runoff: controls' : 'Mascot vote: controls'}
       </h2>
+      {isRunoff(election) && (
+        <p>
+          This is the runoff between {joinNames(election.entries)}, settling vote {election.runoffOf}. Every control here acts
+          on the runoff; the first vote stays published.
+        </p>
+      )}
       <p>
         <strong>Status:</strong> {STATUS_TEXT[election.status]}
       </p>
@@ -1218,17 +1224,24 @@ function VoteControls({ election, onChanged }: { election: Election; onChanged: 
 // Results so far
 // ---------------------------------------------------------------------------
 
-function VoteResults({ election, ballots }: { election: Election; ballots: AdminBallot[] }) {
+function VoteResults({ election, ballots, onChanged }: { election: Election; ballots: AdminBallot[]; onChanged: () => void }) {
   const counted = useMemo(() => countedRankings(ballots), [ballots])
-  const result = useMemo<CountResult | null>(() => {
+  const full = useMemo<CountResult | null>(() => {
     try {
-      return countRankedChoice({ entries: ENTRY_IDS, ballots: counted, drawOrder: election.drawOrder })
+      return countRankedChoice({ entries: election.entries, ballots: counted, drawOrder: election.drawOrder })
     } catch {
       return null
     }
-  }, [counted, election.drawOrder])
+  }, [counted, election.entries, election.drawOrder])
+  // A tie for first (045): the count stops at the tied round, as on the public page.
+  const tie = useMemo(() => (full ? tiedCount(full, election.entries) : null), [full, election.entries])
+  const result = tie ? tie.result : full
   const [roundIndex, setRoundIndex] = useState(0)
   const selectId = useId()
+  const runoff = useConfirmedAction<string[]>(
+    (entries) => startRunoff(entries).then((r): ApiResult<null> => (r.ok ? { ok: true, value: null } : r)),
+    onChanged,
+  )
 
 
   // Clamped here, not in an effect: excluding a ballot can shorten the count, and the
@@ -1251,7 +1264,12 @@ function VoteResults({ election, ballots }: { election: Election; ballots: Admin
         <p role="alert">The ballots could not be counted. Reload the dashboard.</p>
       ) : (
         <>
-          {result.winner ? (
+          {tie ? (
+            <p className="admin__leader">
+              <strong>{status === 'published' || status === 'closed' ? 'Tied for first' : 'Tied for the lead now'}:</strong>{' '}
+              {joinNames(tie.tied)}, with {tie.votes} each in round {tie.round}.
+            </p>
+          ) : result.winner ? (
             <p className="admin__leader">
               <strong>{status === 'published' || status === 'closed' ? 'Winner' : 'Leading now'}:</strong> {result.winner.id}, with{' '}
               {result.winner.votes} of {result.winner.active} active ballots ({formatPercent(result.winner.percentOfActive)}) in round{' '}
@@ -1273,7 +1291,28 @@ function VoteResults({ election, ballots }: { election: Election; ballots: Admin
             </select>
           </div>
 
-          <ResultsChart result={result} roundIndex={shownRound} />
+          {tie && !isRunoff(election) && (
+            <div className="admin__runoff">
+              {status === 'published' ? (
+                <>
+                  <p>
+                    The voters left a tie. Start a runoff between {joinNames(tie.tied)}: it becomes the vote on /vote, in
+                    draft, with its own random tie-breaker order. Then set a closing time and open voting above.
+                  </p>
+                  <button type="button" className="mascot-vote__btn mascot-vote__btn--primary" onClick={() => runoff.ask(tie.tied)}>
+                    Start the runoff
+                  </button>
+                </>
+              ) : (
+                <p className="mascot-vote__hint">
+                  Publish the results to start a runoff between {joinNames(tie.tied)}. The public page shows the tie, not a
+                  winner.
+                </p>
+              )}
+            </div>
+          )}
+
+          <ResultsChart result={result} roundIndex={shownRound} entries={election.entries} />
 
           <h3 id="ad-rounds" className="admin__subtitle">
             Round by round
@@ -1284,9 +1323,28 @@ function VoteResults({ election, ballots }: { election: Election; ballots: Admin
             nameOf={idOf}
             winnerLabel={status === 'published' || status === 'closed' ? 'Winner' : 'Leading'}
             fit
+            entries={election.entries}
+            tied={tie?.tied}
+            finalNote={tie ? tieNote(tie, idOf) : undefined}
           />
         </>
       )}
+
+      <Confirm
+        open={runoff.target !== null}
+        title="Start the runoff?"
+        confirmLabel="Start the runoff"
+        busy={runoff.busy}
+        error={runoff.error}
+        onConfirm={() => void runoff.confirm()}
+        onCancel={runoff.cancel}
+      >
+        <p>
+          This creates the runoff between {joinNames(runoff.target ?? [])} in draft, with a new random tie-breaker order that
+          is shown on /vote before anyone votes. From then on the controls above act on the runoff, and this vote stays
+          published for good: it can no longer be unpublished or have a ballot changed.
+        </p>
+      </Confirm>
     </section>
   )
 }
@@ -1297,9 +1355,9 @@ function VoteResults({ election, ballots }: { election: Election; ballots: Admin
  * same figures are in the round table below for screen readers, so the plot itself is
  * hidden from them.
  */
-function ResultsChart({ result, roundIndex }: { result: CountResult; roundIndex: number }) {
+function ResultsChart({ result, roundIndex, entries }: { result: CountResult; roundIndex: number; entries: readonly string[] }) {
   const round = result.rounds[roundIndex]
-  const bars = barsForRound(result, roundIndex, ENTRY_IDS)
+  const bars = barsForRound(result, roundIndex, entries)
   const ticks = axisTicks(Math.max(...bars.map((b) => b.votes)))
   const top = ticks[ticks.length - 1]
   const titleId = useId()

@@ -27,6 +27,13 @@ export const PREVIEW_STATES = [
   'published',
   'published-empty',
   'published-error',
+  'published-tie',
+  'runoff-draft',
+  'runoff-out',
+  'runoff-open',
+  'runoff-voted',
+  'runoff-closed',
+  'runoff-published',
 ] as const
 export type PreviewState = (typeof PREVIEW_STATES)[number]
 
@@ -78,10 +85,42 @@ function election(status: Election['status'], closesAt: string | null = null): E
     id: 1,
     status,
     closesAt,
+    entries: IDS,
+    runoffOf: null,
     drawOrder: DRAW_ORDER,
     publishedAt: status === 'published' ? '2026-10-20T18:00:00Z' : null,
   }
 }
+
+/** Election 2, settling election 1's tie between Entry 2 and Entry 4. */
+function runoff(status: Election['status'], closesAt: string | null = null): Election {
+  return {
+    id: 2,
+    status,
+    closesAt,
+    entries: ['art_002', 'art_004'],
+    runoffOf: 1,
+    drawOrder: ['art_004', 'art_002'],
+    publishedAt: status === 'published' ? '2026-11-10T18:00:00Z' : null,
+  }
+}
+
+/** The first vote's real ten ballots (rankings only, as published): a 5 to 5 tie. */
+const TIED_BALLOTS: string[][] = [
+  ['art_002'],
+  ['art_002', 'art_004', 'art_003', 'art_005', 'art_006', 'art_001'],
+  ['art_002', 'art_004', 'art_005', 'art_003', 'art_006'],
+  ['art_002', 'art_006', 'art_003', 'art_001', 'art_004'],
+  ['art_004', 'art_002', 'art_006', 'art_003', 'art_001'],
+  ['art_004', 'art_003'],
+  ['art_004', 'art_006', 'art_003', 'art_001', 'art_005', 'art_002'],
+  ['art_004', 'art_006', 'art_003', 'art_002', 'art_001'],
+  ['art_005', 'art_006', 'art_004', 'art_003', 'art_001', 'art_002'],
+  ['art_006', 'art_002', 'art_004', 'art_005', 'art_003', 'art_001'],
+]
+
+/** A made-up runoff result: 23 to 18. */
+const RUNOFF_BALLOTS: string[][] = [...Array.from({ length: 23 }, () => ['art_004']), ...Array.from({ length: 18 }, () => ['art_002'])]
 
 const ok = <T,>(value: T): FetchResult<T> => ({ ok: true, value })
 
@@ -93,10 +132,30 @@ export function previewSource(state: string, cast: string | null): VoteSource | 
   let myBallot: MyBallot | null =
     name === 'voted' || name === 'closed-voted'
       ? { rankings: ['art_002', 'art_005', 'art_004', 'art_001', 'art_006'], createdAt: '2026-10-08T15:30:00Z' }
-      : null
+      : name === 'runoff-voted'
+        ? { rankings: ['art_004'], createdAt: '2026-11-05T15:30:00Z' }
+        : null
 
+  const isRunoffState = name.startsWith('runoff-')
   let current: Election | null
   switch (name) {
+    case 'runoff-draft':
+      current = runoff('draft')
+      break
+    case 'runoff-out':
+    case 'runoff-open':
+    case 'runoff-voted':
+      current = runoff('open', closesInDays(4))
+      break
+    case 'runoff-closed':
+      current = runoff('closed', closesInDays(-1))
+      break
+    case 'runoff-published':
+      current = runoff('published', closesInDays(-2))
+      break
+    case 'published-tie':
+      current = election('published', closesInDays(-10))
+      break
     case 'draft-out':
     case 'draft-nodiscord':
     case 'draft-ready':
@@ -119,17 +178,22 @@ export function previewSource(state: string, cast: string | null): VoteSource | 
   const never = new Promise<never>(() => {})
 
   const api: VoteApi = {
-    async fetchElection() {
+    async fetchElections() {
       if (name === 'loading') return never
       if (name === 'error') return { ok: false, reason: 'network' }
-      return ok(current)
+      if (!current) return ok([])
+      return ok(isRunoffState ? [election('published', closesInDays(-10)), current] : [current])
     },
     async fetchMyBallot() {
       return ok(myBallot)
     },
-    async fetchPublicBallots(): Promise<FetchResult<PublicBallots | null>> {
+    async fetchPublicBallots(electionId: number): Promise<FetchResult<PublicBallots | null>> {
       if (name === 'published-error') return { ok: false, reason: 'malformed' }
       if (name === 'published-empty') return ok({ ballots: [], excluded: 0 })
+      if (isRunoffState || name === 'published-tie') {
+        if (electionId === 1) return ok({ ballots: TIED_BALLOTS, excluded: 0 })
+        return ok(name === 'runoff-published' ? { ballots: RUNOFF_BALLOTS, excluded: 1 } : null)
+      }
       return ok({ ballots: cannedBallots(), excluded: 3 })
     },
     async castBallot(rankings) {

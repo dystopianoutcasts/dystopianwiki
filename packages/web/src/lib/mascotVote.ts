@@ -11,7 +11,7 @@ import { MASCOT_ENTRIES } from '../data/mascotEntries'
 import {
   classifyRpcError,
   parseCastResult,
-  parseElection,
+  parseElections,
   parseMyBallot,
   parsePublicBallots,
   type CastOutcome,
@@ -27,12 +27,12 @@ export type FetchResult<T> = { ok: true; value: T } | { ok: false; reason: 'logi
 
 /** Everything the vote page needs from the server. Tests and the dev preview swap it out. */
 export interface VoteApi {
-  /** The election with the highest id, or null when none exists. */
-  fetchElection(): Promise<FetchResult<Election | null>>
-  /** The signed-in member's own ballot, or null when they have not voted. */
+  /** Every election, oldest first; the last is the current one (a runoff, once there is one). */
+  fetchElections(): Promise<FetchResult<Election[]>>
+  /** The signed-in member's own ballot in the current election, or null when they have not voted. */
   fetchMyBallot(): Promise<FetchResult<MyBallot | null>>
-  /** Counted ballots, rankings only; null until the election is published. */
-  fetchPublicBallots(): Promise<FetchResult<PublicBallots | null>>
+  /** One election's counted ballots, rankings only; null until that election is published. */
+  fetchPublicBallots(electionId: number): Promise<FetchResult<PublicBallots | null>>
   castBallot(rankings: readonly string[]): Promise<CastOutcome>
 }
 
@@ -50,21 +50,25 @@ export interface VoteSource {
 
 const ENTRY_IDS = MASCOT_ENTRIES.map((e) => e.id)
 
-export async function fetchElection(): Promise<FetchResult<Election | null>> {
+export async function fetchElections(): Promise<FetchResult<Election[]>> {
   try {
     const { data, error } = await api
       .getClient()
       .from('mascot_elections')
-      .select('id,status,closes_at,draw_order,published_at')
-      .order('id', { ascending: false })
-      .limit(1)
-      .maybeSingle()
+      .select('id,status,closes_at,draw_order,published_at,entries,runoff_of')
+      .order('id', { ascending: true })
     if (error) return { ok: false, reason: 'network' }
-    const parsed = parseElection(data, ENTRY_IDS)
+    const parsed = parseElections(data, ENTRY_IDS)
     return parsed.ok ? { ok: true, value: parsed.value } : { ok: false, reason: 'malformed' }
   } catch {
     return { ok: false, reason: 'network' }
   }
+}
+
+/** The election with the highest id, or null when none exists: the one every action reaches. */
+export async function fetchElection(): Promise<FetchResult<Election | null>> {
+  const r = await fetchElections()
+  return r.ok ? { ok: true, value: r.value[r.value.length - 1] ?? null } : r
 }
 
 export async function fetchMyBallot(): Promise<FetchResult<MyBallot | null>> {
@@ -78,9 +82,9 @@ export async function fetchMyBallot(): Promise<FetchResult<MyBallot | null>> {
   }
 }
 
-export async function fetchPublicBallots(): Promise<FetchResult<PublicBallots | null>> {
+export async function fetchPublicBallots(electionId: number): Promise<FetchResult<PublicBallots | null>> {
   try {
-    const { data, error } = await api.getClient().rpc('mascot_public_ballots')
+    const { data, error } = await api.getClient().rpc('mascot_public_ballots_of', { p_election: electionId })
     if (error) return { ok: false, reason: 'network' }
     const parsed = parsePublicBallots(data, ENTRY_IDS)
     return parsed.ok ? { ok: true, value: parsed.value } : { ok: false, reason: 'malformed' }
@@ -99,4 +103,4 @@ export async function castBallot(rankings: readonly string[]): Promise<CastOutco
   }
 }
 
-export const liveVoteApi: VoteApi = { fetchElection, fetchMyBallot, fetchPublicBallots, castBallot }
+export const liveVoteApi: VoteApi = { fetchElections, fetchMyBallot, fetchPublicBallots, castBallot }

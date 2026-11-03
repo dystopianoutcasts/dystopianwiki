@@ -360,6 +360,18 @@
   width: min(100%, 260px);
 }
 
+/* A tie for first: the tied entries side by side, at the winner's size, wrapping on a phone. */
+.mascot-vote__tied {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-4);
+  margin-block-end: var(--spacing-4);
+}
+
+.mascot-vote__tied .mascot-vote__frame--winner {
+  width: min(100%, 220px);
+}
+
 .mascot-vote__winner-text {
   margin: 0;
   font-size: var(--font-size-xl);

@@ -17,18 +17,24 @@ import {
   classifyRpcError,
   drawOrderText,
   effectiveStatus,
+  isRunoff,
   isShortBallot,
   joinNames,
+  maxRanksFor,
   moveDown,
   moveUp,
   ordinal,
   parseCastResult,
   parseElection,
+  parseElections,
   parseMyBallot,
   parsePublicBallots,
+  recommendedRanksFor,
   removeEntry,
   roundNote,
   shortBallotWarning,
+  tieNote,
+  tiedCount,
   toggleEntry,
 } from './mascotVoteLogic'
 
@@ -297,4 +303,124 @@ test('roundNote: names the round that settled the tie, whichever round it was', 
 test('classifyRpcError: the 42501 code alone is enough to mean log in', () => {
   assert.equal(classifyRpcError({ code: '42501', message: 'something else entirely' }), 'login')
   assert.equal(classifyRpcError({ code: '42P01', message: 'something else entirely' }), 'network')
+})
+
+// ---- runoffs (migration 045) -----------------------------------------------
+
+const runoffRow = {
+  id: 2,
+  status: 'draft',
+  closes_at: null,
+  draw_order: ['art_004', 'art_002'],
+  published_at: null,
+  entries: ['art_004', 'art_002'],
+  runoff_of: 1,
+}
+
+test('parseElection: a full election holds every entry and settles nothing', () => {
+  const r = parseElection({ ...goodElection, entries: null, runoff_of: null }, IDS)
+  assert.equal(r.ok, true)
+  if (r.ok && r.value) {
+    assert.deepEqual(r.value.entries, IDS)
+    assert.equal(r.value.runoffOf, null)
+    assert.equal(isRunoff(r.value), false)
+  }
+  // A row from before 045 has neither column: the same full election.
+  const old = parseElection(goodElection, IDS)
+  assert.equal(old.ok && old.value?.entries.length, 6)
+})
+
+test('parseElection: a runoff keeps its entries in gallery order and names the vote it settles', () => {
+  const r = parseElection(runoffRow, IDS)
+  assert.equal(r.ok, true)
+  if (r.ok && r.value) {
+    assert.deepEqual(r.value.entries, ['art_002', 'art_004'])
+    assert.deepEqual(r.value.drawOrder, ['art_004', 'art_002'])
+    assert.equal(r.value.runoffOf, 1)
+    assert.equal(isRunoff(r.value), true)
+  }
+})
+
+test('parseElection rejects a malformed runoff', () => {
+  const bad: unknown[] = [
+    { ...runoffRow, entries: ['art_002'], draw_order: ['art_002'] },
+    { ...runoffRow, entries: ['art_002', 'art_002'] },
+    { ...runoffRow, entries: ['art_002', 'art_999'], draw_order: ['art_002', 'art_999'] },
+    { ...runoffRow, entries: 'art_002,art_004' },
+    // The draw order must be the runoff's own entries, not all six or others.
+    { ...runoffRow, draw_order: IDS },
+    { ...runoffRow, draw_order: ['art_002', 'art_003'] },
+    { ...runoffRow, runoff_of: '1' },
+    { ...runoffRow, runoff_of: 1.5 },
+  ]
+  for (const raw of bad) assert.equal(parseElection(raw, IDS).ok, false, JSON.stringify(raw))
+})
+
+test('parseElections: oldest first, and one bad row fails the list', () => {
+  const r = parseElections([runoffRow, { ...goodElection, status: 'published' }], IDS)
+  assert.equal(r.ok, true)
+  if (r.ok) assert.deepEqual(r.value.map((e) => e.id), [1, 2])
+  assert.deepEqual(parseElections([], IDS), { ok: true, value: [] })
+  assert.deepEqual(parseElections(null, IDS), { ok: true, value: [] })
+  assert.equal(parseElections([runoffRow, { ...goodElection, status: 'gone' }], IDS).ok, false)
+  assert.equal(parseElections([null], IDS).ok, false)
+  assert.equal(parseElections({ rows: [] }, IDS).ok, false)
+})
+
+test('maxRanksFor and recommendedRanksFor: two entries is one pick; six is a ranking of up to six, five recommended', () => {
+  assert.equal(maxRanksFor(['a', 'b']), 1)
+  assert.equal(maxRanksFor(['a', 'b', 'c']), 3)
+  assert.equal(maxRanksFor(IDS), 6)
+  assert.equal(recommendedRanksFor(IDS), 5)
+  assert.equal(recommendedRanksFor(['a', 'b', 'c']), 2)
+  assert.equal(recommendedRanksFor(['a', 'b']), 1)
+  assert.equal(isShortBallot(['a'], recommendedRanksFor(['a', 'b'])), false)
+  assert.equal(isShortBallot(['a'], recommendedRanksFor(['a', 'b', 'c'])), true)
+  assert.match(shortBallotWarning(1, 3, 2), /You ranked 1 of 3\..*Rank at least 2/)
+})
+
+// The first mascot vote's ten counted ballots: a 5 to 5 tie in round 5.
+const FIRST_VOTE = [
+  ['art_002'],
+  ['art_002', 'art_004', 'art_003', 'art_005', 'art_006', 'art_001'],
+  ['art_002', 'art_004', 'art_005', 'art_003', 'art_006'],
+  ['art_002', 'art_006', 'art_003', 'art_001', 'art_004'],
+  ['art_004', 'art_002', 'art_006', 'art_003', 'art_001'],
+  ['art_004', 'art_003'],
+  ['art_004', 'art_006', 'art_003', 'art_001', 'art_005', 'art_002'],
+  ['art_004', 'art_006', 'art_003', 'art_002', 'art_001'],
+  ['art_005', 'art_006', 'art_004', 'art_003', 'art_001', 'art_002'],
+  ['art_006', 'art_002', 'art_004', 'art_005', 'art_003', 'art_001'],
+]
+
+test('tiedCount: the first vote is cut at the 5 to 5 round, with no winner and nothing eliminated in it', () => {
+  const full = countRankedChoice({ entries: IDS, ballots: FIRST_VOTE, drawOrder: goodElection.draw_order })
+  assert.notEqual(full.winner, null, 'the full count names a winner by the tie-break rule')
+  const tie = tiedCount(full, IDS)
+  assert.notEqual(tie, null)
+  if (!tie) return
+  assert.deepEqual(tie.tied, ['art_002', 'art_004'])
+  assert.equal(tie.votes, 5)
+  assert.equal(tie.round, 5)
+  assert.equal(tie.result.winner, null)
+  assert.equal(tie.result.totalBallots, 10)
+  assert.equal(tie.result.rounds.length, 5)
+  const last = tie.result.rounds[4]
+  assert.deepEqual(last.votes, { art_002: 5, art_004: 5 })
+  assert.equal(last.eliminated, null)
+  assert.equal(last.tieBreak, null)
+  // The rounds before it are untouched, and the full count was not changed.
+  assert.deepEqual(tie.result.rounds.slice(0, 4), full.rounds.slice(0, 4))
+  assert.notEqual(full.rounds[4].eliminated, null)
+  assert.equal(
+    tieNote(tie, nameOf),
+    'Entry 2 and Entry 4 are tied on 5 votes each, and no further count can separate them. The published rules would ' +
+      'settle this with the tie-breaker order; a runoff between them decides instead.',
+  )
+})
+
+test('tiedCount: null when the votes decided the count', () => {
+  const decided = countRankedChoice({ entries: IDS, ballots: [...FIRST_VOTE, ['art_004']], drawOrder: goodElection.draw_order })
+  assert.equal(decided.winner?.id, 'art_004')
+  assert.equal(tiedCount(decided, IDS), null)
 })

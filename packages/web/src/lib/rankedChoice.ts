@@ -179,6 +179,26 @@ export function breakTie(
   return { eliminated: byDraw, tieBreak: { kind: 'draw-order', tied: [...tied] } }
 }
 
+/**
+ * The entries tied for first, or null when the votes decided the count.
+ *
+ * The count ended in a tie when, in the last round that eliminated anything, every entry
+ * still in the race had the same number of votes: whichever went out was picked by the
+ * tie-break rule, not by the voters, and the winner is whoever was left. The first mascot
+ * vote ended this way (5 to 5, 2026-11-03), and the owner settles such a tie with a runoff
+ * between the tied entries rather than the draw.
+ *
+ * A tie for LAST place earlier in the count is ordinary and is not reported here.
+ */
+export function tieForFirst(result: CountResult): string[] | null {
+  if (result.winner === null) return null
+  const decisive = [...result.rounds].reverse().find((r) => r.eliminated !== null)
+  if (!decisive) return null
+  const counts = Object.values(decisive.votes)
+  if (counts.length < 2 || !counts.every((c) => c === counts[0])) return null
+  return Object.keys(decisive.votes)
+}
+
 /** One decimal place, with a trailing ".0" dropped: 51.47 -> "51.5%", 35 -> "35%". */
 export function formatPercent(value: number): string {
   const fixed = value.toFixed(1)

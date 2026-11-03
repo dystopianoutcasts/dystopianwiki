@@ -17,6 +17,9 @@ export function RoundTable({
   nameOf,
   winnerLabel = 'Winner',
   fit = false,
+  entries,
+  tied,
+  finalNote,
 }: {
   result: CountResult
   /** id of the heading above the table */
@@ -24,17 +27,26 @@ export function RoundTable({
   nameOf: (id: string) => string
   /** The tag on the entry that wins the count; the dashboard says "Leading" while voting is open. */
   winnerLabel?: string
+  /** The rows: this election's entries (a runoff holds only some). Defaults to every entry. */
+  entries?: readonly string[]
+  /** Entries tied for first (tiedCount): each is tagged "Tied" instead of anyone being the winner. */
+  tied?: readonly string[]
+  /** Replaces the note of the last round (the tie note). */
+  finalNote?: string
   /**
    * The admin dashboard's variant (T78): never wider than its panel, stacked per entry on a
    * narrow panel, no scroll region. The public page leaves it off and keeps its scrolling table.
    */
   fit?: boolean
 }) {
+  const rowEntries = MASCOT_ENTRIES.filter((e) => entries === undefined || entries.includes(e.id))
+  const last = result.rounds.length - 1
+  const tagOf = (id: string): string | null => (tied?.includes(id) ? 'Tied' : result.winner?.id === id ? winnerLabel : null)
   const notes = (
     <ol className="mascot-vote__notes">
-      {result.rounds.map((r) => (
+      {result.rounds.map((r, i) => (
         <li key={r.round}>
-          <strong>Round {r.round}.</strong> {roundNote(r, nameOf, result.winner)}
+          <strong>Round {r.round}.</strong> {i === last && finalNote !== undefined ? finalNote : roundNote(r, nameOf, result.winner)}
         </li>
       ))}
     </ol>
@@ -45,13 +57,13 @@ export function RoundTable({
       ...result.rounds.map((r): FitColumn => ({ label: `Round ${r.round}`, kind: 'num' })),
     ]
     const rows = [
-      ...MASCOT_ENTRIES.map((entry) => ({
+      ...rowEntries.map((entry) => ({
         key: entry.id,
-        className: result.winner?.id === entry.id ? 'mascot-vote__row--winner' : undefined,
+        className: tagOf(entry.id) ? 'mascot-vote__row--winner' : undefined,
         cells: [
           <>
             {nameOf(entry.id)}
-            {result.winner?.id === entry.id && <span className="mascot-vote__tag">{winnerLabel}</span>}
+            {tagOf(entry.id) && <span className="mascot-vote__tag">{tagOf(entry.id)}</span>}
           </>,
           ...result.rounds.map((r) => {
             const votes = r.votes[entry.id]
@@ -92,11 +104,11 @@ export function RoundTable({
               </tr>
             </thead>
             <tbody>
-              {MASCOT_ENTRIES.map((entry) => (
-                <tr key={entry.id} className={result.winner?.id === entry.id ? 'mascot-vote__row--winner' : undefined}>
+              {rowEntries.map((entry) => (
+                <tr key={entry.id} className={tagOf(entry.id) ? 'mascot-vote__row--winner' : undefined}>
                   <th scope="row">
                     {nameOf(entry.id)}
-                    {result.winner?.id === entry.id && <span className="mascot-vote__tag">{winnerLabel}</span>}
+                    {tagOf(entry.id) && <span className="mascot-vote__tag">{tagOf(entry.id)}</span>}
                   </th>
                   {result.rounds.map((r) => {
                     const votes = r.votes[entry.id]
