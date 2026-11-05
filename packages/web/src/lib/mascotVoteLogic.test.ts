@@ -16,6 +16,7 @@ import {
   canSubmit,
   classifyRpcError,
   drawOrderText,
+  calloutKind,
   effectiveStatus,
   isRunoff,
   isShortBallot,
@@ -235,6 +236,26 @@ test('effectiveStatus: an open election past its closing time reads as closed', 
   assert.equal(effectiveStatus({ status: 'open', closesAt: null }, t + 1e12), 'open')
   assert.equal(effectiveStatus({ status: 'draft', closesAt: closes }, t + 1), 'draft')
   assert.equal(effectiveStatus({ status: 'published', closesAt: closes }, t + 1), 'published')
+})
+
+test('calloutKind: the home page never invites a vote the server would refuse', () => {
+  const closes = '2026-11-01T05:00:00Z'
+  const t = Date.parse(closes)
+  const first = { runoffOf: null, closesAt: closes }
+  const runoff = { runoffOf: 1, closesAt: closes }
+  // The live state on 2026-11-05: the first vote still says open, past its closing time.
+  assert.equal(calloutKind({ ...first, status: 'open' }, t + 1), 'counting')
+  assert.equal(calloutKind({ ...first, status: 'open' }, t - 1), 'open')
+  assert.equal(calloutKind({ ...first, status: 'open', closesAt: null }, t + 1e12), 'open')
+  assert.equal(calloutKind({ ...first, status: 'closed' }, t - 1), 'counting')
+  assert.equal(calloutKind({ ...first, status: 'published' }, t + 1), 'results')
+  assert.equal(calloutKind({ ...first, status: 'draft' }, t - 1), 'none')
+  assert.equal(calloutKind({ ...runoff, status: 'draft' }, t - 1), 'runoff-soon')
+  assert.equal(calloutKind({ ...runoff, status: 'open' }, t - 1), 'runoff-open')
+  assert.equal(calloutKind({ ...runoff, status: 'open', closesAt: null }, t + 1e12), 'runoff-open')
+  assert.equal(calloutKind({ ...runoff, status: 'open' }, t), 'counting')
+  assert.equal(calloutKind({ ...runoff, status: 'closed' }, t - 1), 'counting')
+  assert.equal(calloutKind({ ...runoff, status: 'published' }, t + 1), 'results')
 })
 
 // ---- words ----------------------------------------------------------------

@@ -295,6 +295,29 @@ export function effectiveStatus(election: Pick<Election, 'status' | 'closesAt'>,
   return election.status
 }
 
+/**
+ * What the home page callout says about the newest election. It never invites a vote that
+ * the server would refuse: a vote past its closing time reads as closed.
+ *   runoff-open    the runoff takes ballots: the big "vote now" banner
+ *   runoff-soon    the runoff exists in draft: its entries, not yet open
+ *   open           the first vote takes ballots
+ *   counting       voting has closed, results not yet published
+ *   results        the newest election is published
+ *   none           a first vote still in draft: nothing to show
+ */
+export type CalloutKind = 'runoff-open' | 'runoff-soon' | 'open' | 'counting' | 'results' | 'none'
+
+export function calloutKind(
+  election: Pick<Election, 'status' | 'closesAt' | 'runoffOf'>,
+  now: number,
+): CalloutKind {
+  const status = effectiveStatus(election, now)
+  if (status === 'published') return 'results'
+  if (status === 'closed') return 'counting'
+  if (isRunoff(election)) return status === 'open' ? 'runoff-open' : 'runoff-soon'
+  return status === 'open' ? 'open' : 'none'
+}
+
 // --------------------------------------------------------------------------
 // Words for the results
 // --------------------------------------------------------------------------

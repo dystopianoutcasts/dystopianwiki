@@ -203,7 +203,7 @@ test('dark text on an orange fill meets 4.5:1 on every accent fill, hover includ
 
 test('every dark rule that writes on-accent text sets an accent fill under it', () => {
   const users = rules.filter((r) => r.file !== 'variables.css' && !r.selector.startsWith('[data-theme="light"]') && r.decls.get('color') === v('on-accent'))
-  assert.equal(users.length, 11, 'the 11 button and badge rules that use --color-on-accent')
+  assert.equal(users.length, 12, 'the 12 button, badge and label rules that use --color-on-accent')
   for (const r of users) {
     const bg = r.decls.get('background-color') ?? r.decls.get('background') ?? ''
     assert.ok(ACCENT_FILLS.map(v).includes(bg), `${r.file} ${r.selector}: on-accent text on ${bg || 'no fill of its own'}`)

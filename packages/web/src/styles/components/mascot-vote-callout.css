@@ -89,6 +89,97 @@
   width: 100%;
 }
 
+/* ---- The runoff banner: big, centered, the entries face to face ---- */
+
+.mascot-callout__inner--runoff {
+  align-items: center;
+  text-align: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-8) var(--spacing-4);
+  border: 2px solid var(--color-accent-600);
+  box-shadow: var(--shadow-lg);
+}
+
+.mascot-callout__kicker {
+  margin: 0;
+  padding: var(--spacing-1) var(--spacing-4);
+  background: var(--color-accent-600);
+  color: var(--color-on-accent);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--border-radius-full);
+}
+
+.mascot-callout__title--runoff {
+  margin: 0;
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.mascot-callout__inner--runoff .mascot-callout__description {
+  max-width: 40rem;
+  margin: 0;
+}
+
+.mascot-callout__faceoff {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-3);
+  width: 100%;
+}
+
+.mascot-callout__contender {
+  flex: 1 1 0;
+  max-width: 260px;
+  margin: 0;
+  min-width: 0;
+}
+
+/* Same light square and fit as the vote page: the whole image, never cropped. */
+.mascot-callout__contender-art {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  background: var(--color-neutral-50);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius-xl);
+}
+
+.mascot-callout__contender-label {
+  margin-top: var(--spacing-2);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  color: var(--color-text-primary);
+}
+
+.mascot-callout__vs {
+  flex: 0 0 auto;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.mascot-callout__button--runoff {
+  min-width: 14rem;
+  font-size: var(--font-size-xl);
+  text-transform: uppercase;
+}
+
+.mascot-callout__closes {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
 /* @breakpoint-sm: 640px - All six thumbnails in one row, still under the text */
 @media (min-width: 640px) {
   .mascot-callout__button {
@@ -112,5 +203,11 @@
   .mascot-callout__thumbs {
     flex-shrink: 0;
     width: 480px;
+  }
+
+  /* The runoff banner stays one centered column, whatever the width. */
+  .mascot-callout__inner--runoff {
+    flex-direction: column;
+    justify-content: center;
   }
 }
