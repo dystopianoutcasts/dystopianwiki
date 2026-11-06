@@ -71,7 +71,7 @@
   gap: var(--spacing-2);
 }
 
-/* Same fill and fit as the vote page's frames: the whole image on a light square, never cropped. */
+/* Same fill and fit as the vote page's frames: each entry's preview on a light square, never cropped further. */
 .mascot-callout__thumb {
   display: block;
   width: 100%;
@@ -141,7 +141,7 @@
   min-width: 0;
 }
 
-/* Same light square and fit as the vote page: the whole image, never cropped. */
+/* Same light square and fit as the vote page: each entry's preview, never cropped further. */
 .mascot-callout__contender-art {
   display: block;
   width: 100%;

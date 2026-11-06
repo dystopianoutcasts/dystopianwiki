@@ -2,6 +2,8 @@ export interface MascotEntry {
   id: string
   label: string
   image: string
+  /** A square crop for thumbnails and cards; the zoom dialog always shows `image`, the full art. */
+  preview?: string
   alt: string
   /** Tiny pixel art: scale it up without smoothing (image-rendering: pixelated). */
   pixelArt?: boolean
@@ -18,6 +20,7 @@ export const MASCOT_ENTRIES: readonly MascotEntry[] = [
     id: 'art_002',
     label: 'Entry 2',
     image: '/assets/mascot-vote/art_002.jpg',
+    preview: '/assets/mascot-vote/art_002-face.jpg',
     alt: 'Grey cat in a brown beanie and blue jumper holding a baseball bat',
   },
   {
@@ -47,6 +50,11 @@ export const MASCOT_ENTRIES: readonly MascotEntry[] = [
     alt: 'Yellow cartoon fox head in a blue cap',
   },
 ]
+
+/** The art a thumbnail or card shows: the square crop when there is one, else the full image. */
+export function previewOf(entry: MascotEntry): string {
+  return entry.preview ?? entry.image
+}
 
 export function getMascotEntry(id: string): MascotEntry | undefined {
   return MASCOT_ENTRIES.find((entry) => entry.id === id)

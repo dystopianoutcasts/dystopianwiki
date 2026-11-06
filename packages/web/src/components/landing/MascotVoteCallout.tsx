@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { MASCOT_ENTRIES, type MascotEntry } from '../../data/mascotEntries';
+import { MASCOT_ENTRIES, previewOf, type MascotEntry } from '../../data/mascotEntries';
 import { calloutKind, fetchElection, type Election, type FetchResult } from '../../lib/mascotVote';
 import '../../styles/components/mascot-vote-callout.css';
 
@@ -111,9 +111,9 @@ function Band({
         </div>
         {thumbs.length > 0 && (
           <div className="mascot-callout__thumbs" aria-hidden="true">
-            {/* Every entry in the vote, in entry order and uncropped, so the home page favors none. */}
+            {/* Every entry in the vote, in entry order and the same size, so the home page favors none. */}
             {thumbs.map((entry) => (
-              <img key={entry.id} src={entry.image} alt="" className={thumbClass(entry)} />
+              <img key={entry.id} src={previewOf(entry)} alt="" className={thumbClass(entry)} />
             ))}
           </div>
         )}
@@ -152,7 +152,7 @@ function RunoffBanner({
                 </span>
               )}
               <figure className="mascot-callout__contender">
-                <img src={entry.image} alt={entry.alt} className={thumbClass(entry, 'mascot-callout__contender-art')} />
+                <img src={previewOf(entry)} alt={entry.alt} className={thumbClass(entry, 'mascot-callout__contender-art')} />
                 <figcaption className="mascot-callout__contender-label">{entry.label}</figcaption>
               </figure>
             </Fragment>
