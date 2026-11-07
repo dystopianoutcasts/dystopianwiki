@@ -80,6 +80,7 @@ function main(): void {
     { loc: '/', changefreq: 'weekly', priority: '1.0' },
     { loc: '/map/', changefreq: 'weekly', priority: '0.8' },
     { loc: '/vote', changefreq: 'weekly', priority: '0.6' },
+    { loc: '/sots', changefreq: 'monthly', priority: '0.6' },
   ]
   const known = new Set(versionsFile.versions.map(v => v.id))
 

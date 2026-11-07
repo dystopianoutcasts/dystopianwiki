@@ -10,6 +10,7 @@ import { Leaderboard } from '../components/landing/Leaderboard';
 import { OutcastModsShowcase } from '../components/landing/OutcastModsShowcase';
 import { AboutSection } from '../components/landing/AboutSection';
 import { MascotVoteCallout } from '../components/landing/MascotVoteCallout';
+import { SotsCallout } from '../components/landing/SotsCallout';
 import { CommunityBanner } from '../components/landing/CommunityBanner';
 import { SupportSection } from '../components/landing/SupportSection';
 import { SEOHead } from '../components/seo/SEOHead';
@@ -29,6 +30,7 @@ export function HomePage() {
         <HeroSection />
         <MascotVoteCallout />
         <ServerNow />
+        <SotsCallout />
         <ActivitySection />
         <JoinSteps />
         <ServerSettings />
