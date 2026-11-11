@@ -16,6 +16,7 @@ import {
   INSTALLER_BYTES,
   INSTALLER_DATE,
   INSTALLER_DOWNLOAD_URL,
+  BROKEN_INSTALLER_VERSION,
   INSTALLER_FILE,
   INSTALLER_RELEASES_URL,
   INSTALLER_SHA256,
@@ -162,7 +163,7 @@ export function OutcastBuddyPage() {
             </dd>
             <dt>Game stopped starting after an earlier installer?</dt>
             <dd>
-              The first installer (3.0.0-beta3) could stop the game from starting if you already had
+              The first installer ({BROKEN_INSTALLER_VERSION}) could stop the game from starting if you already had
               Steam launch options, like a memory setting. We're sorry about that! Download the new
               installer above, run it, and click <strong>Repair or apply memory</strong> (or{' '}
               <strong>Uninstall</strong>). Either one fixes it.

@@ -20,6 +20,12 @@ export const INSTALLER_BYTES = 9296896
 /** When the release was published, ISO date. */
 export const INSTALLER_DATE = '2026-11-11'
 
+/**
+ * The one released installer that could stop the game from starting (two "--" in the Steam
+ * launch options). Fixed on purpose: it names that old release, not the current one.
+ */
+export const BROKEN_INSTALLER_VERSION = '3.0.0-beta3'
+
 export const INSTALLER_FILE = 'OutcastBuddyInstaller.exe'
 export const INSTALLER_REPO_URL = 'https://github.com/dystopianoutcasts/OutcastBuddy-Installer'
 export const INSTALLER_DOWNLOAD_URL = `${INSTALLER_REPO_URL}/releases/download/v${INSTALLER_VERSION}/${INSTALLER_FILE}`
