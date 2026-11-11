@@ -11,7 +11,7 @@
   z-index: 10;
 }
 
-/* Gradient Background - Default is dark navy */
+/* Gradient Background - Default is dark soot */
 .hero__gradient {
   position: absolute;
   inset: 0;
@@ -24,14 +24,14 @@
   z-index: -1;
 }
 
-/* Light theme - rich Mega Man cobalt blue gradient */
+/* Light theme - lichen gradient */
 [data-theme="light"] .hero__gradient {
-  /* Pale blue to pale copper: the hero's navy text reads on it (KB16) */
+  /* Pale lichen to pale copper: the hero's deep-root text reads on it (KB16) */
   background: linear-gradient(
     135deg,
-    #d5e3f0 0%,
-    #e8eef6 55%,
-    #f5d4ab 100%
+    #dce5c8 0%,
+    #eef1e2 55%,
+    #f8d2b2 100%
   );
 }
 
@@ -221,13 +221,13 @@
 
 /* Light theme button adjustments */
 [data-theme="light"] .hero__learn-btn {
-  background: #ea580c;
-  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+  background: #c4581e;
+  box-shadow: 0 4px 12px rgba(196, 88, 30, 0.3);
 }
 
 [data-theme="light"] .hero__learn-btn:hover {
-  background: #f97316;
-  box-shadow: 0 6px 16px rgba(234, 88, 12, 0.4);
+  background: #e2742d;
+  box-shadow: 0 6px 16px rgba(196, 88, 30, 0.4);
 }
 
 [data-theme="light"] .hero__actions-hint {

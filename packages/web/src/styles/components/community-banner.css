@@ -5,7 +5,7 @@
 
 .community-banner {
   padding: var(--spacing-12) var(--spacing-4);
-  /* Same colors in both themes - always dark purple/navy gradient */
+  /* Same colors in both themes - always dark sage/gunmetal gradient */
   background: linear-gradient(
     135deg,
     var(--color-highlight-900) 0%,
@@ -52,14 +52,14 @@
   font-family: var(--font-family-display);
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-normal);
-  color: #f0f4f8; /* Fixed light text for dark background */
+  color: #e6dcc6; /* Fixed light text for dark background */
   margin-bottom: var(--spacing-2);
   letter-spacing: 0.01em;
 }
 
 .community-banner__description {
   font-size: var(--font-size-base);
-  color: #94a3b8; /* Fixed muted light text for dark background */
+  color: #a99c88; /* Fixed muted light text for dark background */
   line-height: var(--line-height-relaxed);
   margin: 0;
   max-width: 600px;

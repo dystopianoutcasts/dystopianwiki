@@ -242,7 +242,7 @@
 .wiki-article__learning-path {
   margin-top: var(--spacing-8);
   padding: var(--spacing-6);
-  background: linear-gradient(135deg, var(--color-surface) 0%, rgba(125, 95, 156, 0.08) 100%);
+  background: linear-gradient(135deg, var(--color-surface) 0%, rgba(122, 154, 85, 0.08) 100%);
   border: 2px solid var(--color-highlight-500);
   border-radius: var(--border-radius-lg);
 }
@@ -348,7 +348,7 @@
 
 .wiki-article__learning-link:hover {
   border-color: var(--color-highlight-400);
-  box-shadow: 0 2px 8px rgba(125, 95, 156, 0.15);
+  box-shadow: 0 2px 8px rgba(122, 154, 85, 0.15);
   text-decoration: none;
 }
 

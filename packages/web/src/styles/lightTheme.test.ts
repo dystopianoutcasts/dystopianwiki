@@ -201,7 +201,7 @@ for (const [file, selector, check] of LIGHT_RULES) {
 test('the tokens KB16 adds have the dark values intended (KB17 changed three, checked in darkTheme.test.ts)', () => {
   const d = (name: string) => resolveWith(darkTokens, v(name))
   assert.equal(d('on-accent'), '#000000', 'KB17: text on orange fills is black in dark too (white read 2.7 to 3.2:1)')
-  assert.equal(d('inline-code-bg'), d('code-bg'), 'inline code in dark keeps the code background')
+  assert.equal(d('inline-code-bg'), d('primary-700'), 'Flight Jacket: inline code in dark is a gunmetal chip, lighter than the soot code background')
   assert.equal(d('inline-code-text'), d('code-text'), 'inline code in dark keeps the code colour')
   assert.equal(d('control-border'), d('primary-400'), 'KB17: form controls in dark are outlined in primary-400 (the divider colour read 1.6:1)')
   assert.equal(d('code-line-number'), d('text-secondary'), 'KB17: line numbers in dark use the secondary text colour (the muted one read 3.5:1)')
@@ -210,11 +210,11 @@ test('the tokens KB16 adds have the dark values intended (KB17 changed three, ch
 test('the dark :root palette is the one darkTheme.test.ts checks (no KB16 value changed it)', () => {
   const pinned: Record<string, string> = {
     '--color-background': 'var(--color-primary-900)', '--color-surface': 'var(--color-primary-800)',
-    '--color-surface-elevated': 'var(--color-primary-700)', '--color-text-primary': '#f0f4f8',
-    '--color-text-secondary': '#94a3b8', '--color-text-muted': '#64748b', '--color-link': 'var(--color-accent-400)',
+    '--color-surface-elevated': 'var(--color-primary-700)', '--color-text-primary': '#e6dcc6',
+    '--color-text-secondary': '#a99c88', '--color-text-muted': '#9a8f7d', '--color-link': 'var(--color-accent-500)',
     '--color-link-hover': 'var(--color-accent-300)', '--color-focus-ring': 'var(--color-accent-500)',
-    '--color-code-bg': 'var(--color-primary-800)', '--color-code-text': 'var(--color-accent-300)',
-    '--color-border': 'var(--color-primary-700)', '--color-border-light': 'var(--color-primary-800)',
+    '--color-code-bg': 'var(--color-primary-950)', '--color-code-text': 'var(--color-accent-300)',
+    '--color-border': 'var(--color-primary-600)', '--color-border-light': 'var(--color-primary-700)',
   }
   for (const [k, val] of Object.entries(pinned)) assert.equal(darkTokens.get(k), val, k)
 })

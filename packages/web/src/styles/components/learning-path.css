@@ -22,12 +22,12 @@
 }
 
 [data-theme="light"] .learning-path__hero {
-  /* Pale blue to pale purple: the hero's navy text reads on it (KB16) */
+  /* Pale lichen to pale sage: the hero's deep-root text reads on it (KB16) */
   background: linear-gradient(
     135deg,
-    #d5e3f0 0%,
-    #e8eef6 55%,
-    #e5dced 100%
+    #dce5c8 0%,
+    #eef1e2 55%,
+    #e3ebd2 100%
   );
 }
 
@@ -181,14 +181,14 @@
 
 .learning-card--completed {
   border-color: var(--color-accent-500);
-  background: linear-gradient(135deg, var(--color-surface) 0%, rgba(212, 120, 44, 0.05) 100%);
+  background: linear-gradient(135deg, var(--color-surface) 0%, rgba(226, 116, 45, 0.05) 100%);
 }
 
 .learning-card--active {
   transform: scale(1.02);
   box-shadow: var(--shadow-lg);
   border-color: var(--color-highlight-400);
-  background: linear-gradient(135deg, var(--color-surface) 0%, rgba(125, 95, 156, 0.1) 100%);
+  background: linear-gradient(135deg, var(--color-surface) 0%, rgba(122, 154, 85, 0.1) 100%);
 }
 
 /* Card Header */
@@ -257,18 +257,18 @@
 }
 
 .learning-card__difficulty--beginner {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  background: rgba(238, 159, 102, 0.15);
+  color: var(--color-badge-beginner);
 }
 
 .learning-card__difficulty--intermediate {
-  background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
+  background: rgba(138, 143, 150, 0.15);
+  color: var(--color-badge-intermediate);
 }
 
 .learning-card__difficulty--advanced {
-  background: rgba(168, 85, 247, 0.15);
-  color: #a855f7;
+  background: rgba(156, 197, 107, 0.15);
+  color: var(--color-badge-advanced);
 }
 
 .learning-card__time {
@@ -337,18 +337,18 @@
 
 /* Light theme (KB16): the base colour is made for the dark page */
 [data-theme="light"] .learning-card__difficulty--beginner {
-  background: #d3efe4;
-  color: #075e45;
+  background: #fcebdd;
+  color: var(--color-badge-beginner);
 }
 
 [data-theme="light"] .learning-card__difficulty--intermediate {
-  background: #dce6f2;
-  color: #1d4f8c;
+  background: #e6e8ea;
+  color: var(--color-badge-intermediate);
 }
 
 [data-theme="light"] .learning-card__difficulty--advanced {
-  background: #ece3f4;
-  color: #5f2d8a;
+  background: #e3ebd2;
+  color: var(--color-badge-advanced);
 }
 
 /* Light theme (KB16): the base colour is made for the dark page */

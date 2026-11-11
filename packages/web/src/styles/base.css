@@ -195,13 +195,13 @@ img {
    Toned down for better readability and less eye strain
    ═══════════════════════════════════════════════════════════════════ */
 ::selection {
-  background-color: rgba(212, 120, 44, 0.35);
+  background-color: rgba(226, 116, 45, 0.35);
   color: var(--color-neutral-50);
 }
 
 [data-theme="light"] ::selection {
-  background-color: #c7d7ec;
-  color: #0f1f35;
+  background-color: #cdd5b8;
+  color: #1e2a1a;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -226,11 +226,11 @@ img {
 }
 
 [data-theme="light"] ::-webkit-scrollbar-thumb {
-  background: #6b7c93;
+  background: #6e7a62;
 }
 
 [data-theme="light"] ::-webkit-scrollbar-thumb:hover {
-  background: #4e5f75;
+  background: #4e5c46;
 }
 
 /* ═══════════════════════════════════════════════════════════════════

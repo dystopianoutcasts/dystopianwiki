@@ -1,7 +1,7 @@
 /* The one site header (KB15), the same in the wiki and the live map.
    Self-contained: its colours are its own tokens below, dark by default and light under
    :root[data-theme="light"], so it looks the same whichever app draws it. The dark values
-   are the wiki's navy palette (packages/web/src/styles/variables.css); the light values
+   are the wiki's Flight Jacket palette (packages/web/src/styles/variables.css); the light values
    were chosen here and are checked for WCAG 2.2 AA by headerStyles.test.ts. Every rule is
    under .site-header so neither app's own styles (the map's global button rule, say) leak
    in, and every property such a global rule could set is set here. */
@@ -12,26 +12,26 @@
 :root[data-theme="light"] { color-scheme: light; }
 
 .site-header {
-  --sh-bg: #0f1f35;
-  --sh-sunken: #0a1628;
-  --sh-raised: #1e3a5f;
-  --sh-border: #1e3a5f;
-  --sh-field-border: #4a7ab3;
-  --sh-control-border: #4a7ab3;
-  --sh-text: #f0f4f8;
-  --sh-text-2: #94a3b8;
+  --sh-bg: #24262a;
+  --sh-sunken: #161819;
+  --sh-raised: #2e3034;
+  --sh-border: #2e3034;
+  --sh-field-border: #8a8f96;
+  --sh-control-border: #8a8f96;
+  --sh-text: #e6dcc6;
+  --sh-text-2: #a99c88;
   --sh-muted: #8a8a8a;
-  --sh-accent: #d4782c;
-  --sh-accent-hover: #e08a3c;
-  --sh-on-accent: #060d18;
-  --sh-current-fg: #e9a35e;
-  --sh-current-bg: #0a1628;
-  --sh-current-line: #e08a3c;
-  --sh-focus: #e08a3c;
-  --sh-signout: #e9a35e;
-  --sh-error: #f0bb82;
-  --sh-avatar-bg: #1e3a5f;
-  --sh-avatar-fg: #94a3b8;
+  --sh-accent: #e2742d;
+  --sh-accent-hover: #e8884a;
+  --sh-on-accent: #0e0f10;
+  --sh-current-fg: #ee9f66;
+  --sh-current-bg: #161819;
+  --sh-current-line: #e8884a;
+  --sh-focus: #e8884a;
+  --sh-signout: #ee9f66;
+  --sh-error: #f3b88a;
+  --sh-avatar-bg: #2e3034;
+  --sh-avatar-fg: #a99c88;
   --sh-shadow: 0 10px 20px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
 
   box-sizing: border-box;
@@ -52,26 +52,26 @@
 
 :root[data-theme="light"] .site-header {
   --sh-bg: #ffffff;
-  --sh-sunken: #f1f4f8;
-  --sh-raised: #e3e9f1;
-  --sh-border: #c5cfdc;
-  --sh-field-border: #6b7c93;
-  --sh-control-border: #6b7c93;
-  --sh-text: #0f1f35;
-  --sh-text-2: #33475f;
-  --sh-muted: #55657a;
-  --sh-accent: #d4782c;
-  --sh-accent-hover: #e08a3c;
-  --sh-on-accent: #060d18;
-  --sh-current-fg: #264a78;
-  --sh-current-bg: #d5e3f0;
-  --sh-current-line: #264a78;
-  --sh-focus: #9a4a0b;
-  --sh-signout: #9c4e0d;
+  --sh-sunken: #f8faf0;
+  --sh-raised: #f8faf0;
+  --sh-border: #cdd5b8;
+  --sh-field-border: #6e7a62;
+  --sh-control-border: #6e7a62;
+  --sh-text: #1e2a1a;
+  --sh-text-2: #3b4834;
+  --sh-muted: #4e5c46;
+  --sh-accent: #e2742d;
+  --sh-accent-hover: #e8884a;
+  --sh-on-accent: #0e0f10;
+  --sh-current-fg: #1e2a1a;
+  --sh-current-bg: #dce5c8;
+  --sh-current-line: #1e2a1a;
+  --sh-focus: #9a3e0e;
+  --sh-signout: #9a3e0e;
   --sh-error: #9a2a14;
-  --sh-avatar-bg: #e3e9f1;
-  --sh-avatar-fg: #33475f;
-  --sh-shadow: 0 10px 20px rgba(15, 31, 53, 0.15), 0 2px 6px rgba(15, 31, 53, 0.12);
+  --sh-avatar-bg: #f8faf0;
+  --sh-avatar-fg: #3b4834;
+  --sh-shadow: 0 10px 20px rgba(30, 42, 26, 0.15), 0 2px 6px rgba(30, 42, 26, 0.12);
 }
 
 .site-header *,
