@@ -1,0 +1,265 @@
+/**
+ * Outcast Buddy page (/buddy)
+ * The two actions (subscribe, download) as labeled buttons first, then the steps and answers.
+ */
+
+.buddy {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: var(--spacing-8) var(--spacing-4) var(--spacing-12);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-relaxed);
+}
+
+.buddy a {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.buddy a:hover {
+  color: var(--color-link-hover);
+}
+
+.buddy a:focus-visible,
+.buddy summary:focus-visible {
+  outline: 3px solid var(--color-link);
+  outline-offset: 2px;
+  border-radius: var(--border-radius-md);
+}
+
+.buddy code {
+  overflow-wrap: anywhere;
+}
+
+.buddy__header {
+  text-align: center;
+  margin-bottom: var(--spacing-8);
+}
+
+.buddy__kicker {
+  margin: 0 0 var(--spacing-2);
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.buddy__title {
+  margin: 0 0 var(--spacing-4);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-normal);
+}
+
+.buddy__lead {
+  max-width: 62ch;
+  margin: 0 auto;
+}
+
+/* The two actions */
+
+.buddy__get {
+  margin: 0 0 var(--spacing-10);
+  padding: var(--spacing-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-xl);
+}
+
+.buddy__get-title {
+  margin: 0 0 var(--spacing-4);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-normal);
+  text-align: center;
+}
+
+.buddy__actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-6);
+}
+
+.buddy__action {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--spacing-2);
+}
+
+.buddy__action-step {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.buddy__action-note {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.buddy .buddy__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: var(--spacing-3) var(--spacing-6);
+  /* Dark text on the lighter accent: 4.5:1 or better (the same pair as the SOTS and vote buttons). */
+  background: var(--color-accent-400);
+  color: var(--color-primary-950);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  text-decoration: none;
+  border: 2px solid var(--color-accent-400);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.buddy .buddy__button:hover {
+  background: var(--color-accent-300);
+  border-color: var(--color-accent-300);
+  color: var(--color-primary-950);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.buddy .buddy__button--secondary {
+  background: transparent;
+  color: var(--color-link);
+  box-shadow: none;
+}
+
+.buddy .buddy__button--secondary:hover {
+  background: var(--color-surface-elevated);
+  border-color: var(--color-accent-300);
+  color: var(--color-link-hover);
+}
+
+.buddy .buddy__button:focus-visible {
+  outline: 3px solid var(--color-link);
+  outline-offset: 3px;
+}
+
+.buddy__check {
+  margin-top: var(--spacing-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+}
+
+.buddy__check summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: var(--spacing-2) var(--spacing-4);
+  cursor: pointer;
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.buddy__check-body {
+  padding: 0 var(--spacing-4) var(--spacing-4);
+}
+
+.buddy__check-body p {
+  margin: 0 0 var(--spacing-2);
+}
+
+.buddy__hash code {
+  display: block;
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-sm);
+  background: var(--color-background);
+  border-radius: var(--border-radius-md);
+}
+
+/* Steps and answers */
+
+.buddy__section {
+  margin: 0 0 var(--spacing-8);
+}
+
+.buddy__section h2 {
+  margin: 0 0 var(--spacing-3);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-normal);
+}
+
+.buddy__section p {
+  margin: 0 0 var(--spacing-3);
+}
+
+.buddy__steps,
+.buddy__list {
+  margin: 0 0 var(--spacing-3);
+  padding-left: var(--spacing-6);
+}
+
+.buddy__steps > li {
+  margin-bottom: var(--spacing-3);
+}
+
+.buddy__steps ul {
+  margin: var(--spacing-2) 0 0;
+  padding-left: var(--spacing-5);
+  color: var(--color-text-secondary);
+}
+
+.buddy__faq {
+  margin: 0;
+}
+
+.buddy__faq dt {
+  margin-top: var(--spacing-4);
+  font-weight: var(--font-weight-semibold);
+}
+
+.buddy__faq dd {
+  margin: var(--spacing-1) 0 0;
+}
+
+.buddy__signature {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+}
+
+.buddy__footer {
+  margin-top: var(--spacing-10);
+  padding-top: var(--spacing-6);
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.buddy__credits {
+  margin: 0 0 var(--spacing-4);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.buddy__home {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+@media (min-width: 640px) {
+  .buddy__actions {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .buddy .buddy__button,
+  .buddy .buddy__button:hover {
+    transition: none;
+    transform: none;
+  }
+}

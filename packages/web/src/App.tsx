@@ -18,6 +18,7 @@ import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { EyesOnlyPage } from './pages/EyesOnlyPage';
 import { EyesOnlyDocumentPage } from './pages/EyesOnlyDocumentPage';
 import { SotsPage } from './pages/SotsPage';
+import { OutcastBuddyPage } from './pages/OutcastBuddyPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { ArticleProvider } from './context/ArticleContext';
 import { LearningPathProvider } from './context/LearningPathContext';
@@ -80,6 +81,9 @@ function App() {
 
         {/* State of the Server, the newsletter. Above the /:version routes, which would capture it. */}
         <Route path="/sots" element={<SotsPage />} />
+
+        {/* Outcast Buddy download and install steps. Above the /:version routes, which would capture it. */}
+        <Route path="/buddy" element={<OutcastBuddyPage />} />
 
         {/* EYES ONLY documents for executives. Above the /:version routes, which would capture it. */}
         <Route path="/eyes-only" element={<EyesOnlyPage />} />
