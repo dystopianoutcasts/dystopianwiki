@@ -4,8 +4,8 @@
   "description": "Dystopian Outcasts is a Project Zomboid community: a multiplayer server with a live map, our own mods, and free modding guides for Lua scripting, items, recipes and game mechanics.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#060d18",
-  "theme_color": "#060d18",
+  "background_color": "#161819",
+  "theme_color": "#161819",
   "orientation": "portrait-primary",
   "icons": [
     {
