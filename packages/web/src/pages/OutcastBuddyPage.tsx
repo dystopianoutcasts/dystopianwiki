@@ -107,7 +107,8 @@ export function OutcastBuddyPage() {
               <strong>Close Project Zomboid.</strong>
             </li>
             <li>
-              <strong>Double-click {INSTALLER_FILE} and click Install.</strong> That's it!
+              <strong>Double-click {INSTALLER_FILE} and click Install Outcast Buddy.</strong> That's
+              it!
               <ul>
                 <li>
                   If Windows says "Windows protected your PC", click <strong>More info</strong>, then{' '}
@@ -115,8 +116,9 @@ export function OutcastBuddyPage() {
                   times yet.
                 </li>
                 <li>
-                  If Steam is open, the installer will politely ask you to close it, so it can save
-                  the launch setting. It tells you when.
+                  If Steam is open, the installer offers to close it for you, finishes, and opens
+                  Steam again. If you'd rather not, click <strong>Go back</strong> and nothing is
+                  changed.
                 </li>
               </ul>
             </li>
@@ -151,6 +153,20 @@ export function OutcastBuddyPage() {
         <section className="buddy__section" aria-labelledby="buddy-faq-title">
           <h2 id="buddy-faq-title">Good to know</h2>
           <dl className="buddy__faq">
+            <dt>Game memory (RAM)</dt>
+            <dd>
+              The installer also shows how much memory your PC has and how much the game is set to
+              use. If you like, pick a new amount: it only offers sizes that are safe for your PC, and
+              it marks the one we recommend. If you're happy with your current setting, leave it on
+              "Keep current". Your other Steam launch options are never touched.
+            </dd>
+            <dt>Game stopped starting after an earlier installer?</dt>
+            <dd>
+              The first installer (3.0.0-beta3) could stop the game from starting if you already had
+              Steam launch options, like a memory setting. We're sorry about that! Download the new
+              installer above, run it, and click <strong>Repair or apply memory</strong> (or{' '}
+              <strong>Uninstall</strong>). Either one fixes it.
+            </dd>
             <dt>Updates</dt>
             <dd>
               You never need to run the installer again for updates. They come through your Workshop
