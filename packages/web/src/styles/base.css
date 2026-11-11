@@ -29,6 +29,7 @@ body {
   line-height: var(--line-height-normal);
   color: var(--color-text-primary);
   background-color: var(--color-background);
+  accent-color: var(--color-link); /* radios, checkboxes and range inputs in the palette */
   min-height: 100vh;
   transition: background-color var(--transition-normal), color var(--transition-normal);
   overflow-x: hidden;
