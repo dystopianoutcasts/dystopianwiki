@@ -15,7 +15,7 @@
 /** The release tag on dystopianoutcasts/OutcastBuddy-Installer, without the leading "v". */
 export const INSTALLER_VERSION = '3.0.0-beta5'
 /** SHA-256 of OutcastBuddyInstaller.exe in that release (checked 2026-11-11 against GitHub's digest). */
-export const INSTALLER_SHA256 = '129D610D499428EDC6C60308AB3CACD594D385C714A49FD2BF7881B709449807'
+export const INSTALLER_SHA256 = '867A290E01C845711A4C9BA4C371E2DACB4C9424D11111E0D5DFE62FA5D5BEB3'
 export const INSTALLER_BYTES = 9141760
 /** When the release was published, ISO date. */
 export const INSTALLER_DATE = '2026-11-11'
@@ -32,7 +32,7 @@ export const INSTALLER_DOWNLOAD_URL = `${INSTALLER_REPO_URL}/releases/download/v
 export const INSTALLER_RELEASES_URL = `${INSTALLER_REPO_URL}/releases`
 
 /** The Workshop item (unlisted, so it is reached by this link only). */
-export const BUDDY_WORKSHOP_ID = '3837533847'
+export const BUDDY_WORKSHOP_ID = '3838159103'
 export const BUDDY_WORKSHOP_URL = `https://steamcommunity.com/sharedfiles/filedetails/?id=${BUDDY_WORKSHOP_ID}`
 export const BUDDY_WORKSHOP_STEAM_URL = `steam://url/CommunityFilePage/${BUDDY_WORKSHOP_ID}`
 
