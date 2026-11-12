@@ -181,8 +181,10 @@ export function OutcastBuddyPage() {
             </dd>
             <dt>Removing it</dt>
             <dd>
-              Run {INSTALLER_FILE} again and click <strong>Uninstall</strong>. It puts every file and
-              setting back the way it was.
+              Run {INSTALLER_FILE} again, click <strong>Uninstall</strong>, then{' '}
+              <strong>Remove Outcast Buddy</strong>. It puts every file and setting back the way it was.
+              In the 3.0.0-beta4 installer that last button did nothing, sorry! Download the new one
+              above and it works.
             </dd>
             <dt>Prefer the game's own loading screen?</dt>
             <dd>
