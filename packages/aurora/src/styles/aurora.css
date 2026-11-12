@@ -1,7 +1,8 @@
 /* Aurora map. Dark by default; light when <html> has data-theme="light", which the site
    header's theme control sets (System follows the visitor's system setting; KB15).
-   Colours are tokens on :root, in the official Flight Jacket palette (soot and Fur Orange dark,
-   lichen and ember light; DOCS/STYLE/BRAND.md in the DystopianOutcasts repo). Marker and layer
+   Colours are tokens on :root, in the official Flight Jacket palette (soot and kudzu dark,
+   aluminum and moss light; green does the work, orange is the brand; DOCS/STYLE/BRAND.md in the
+   DystopianOutcasts repo). Marker and layer
    colours below are map data colours and stay as they are. State is never carried by colour
    alone (see .aurora-dot). */
 :root {
@@ -13,28 +14,28 @@
   --text-muted: #a99c88;
   --border: #3a3d42;
   --control-border: #8a8f96;
-  --accent: #e8884a;
+  --accent: #9cc56b;
   --accent-text: #000000;
   --warn: #f0b050;
   --danger: #ff8a80;
-  --focus: #f3b88a;
+  --focus: #b9db8e;
 
 }
 
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg: #eef1e2;
-  --surface: #f8faf0;
-  --surface-2: #dce5c8;
-  --text: #1e2a1a;
-  --text-muted: #4e5c46;
-  --border: #cdd5b8;
-  --control-border: #6e7a62;
-  --accent: #9a3e0e;
+  --bg: #ecedea;
+  --surface: #f7f7f5;
+  --surface-2: #dfe1dc;
+  --text: #1a1c1e;
+  --text-muted: #4a4e52;
+  --border: #c9ccc6;
+  --control-border: #6e7276;
+  --accent: #2f6a1f;
   --accent-text: #ffffff;
   --warn: #8a5300;
   --danger: #b3261e;
-  --focus: #b9501a;
+  --focus: #3f7d2c;
 }
 
 * { box-sizing: border-box; }

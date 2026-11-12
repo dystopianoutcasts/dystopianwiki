@@ -100,7 +100,7 @@
   left: var(--spacing-2);
   padding: var(--spacing-1) var(--spacing-2);
   background: var(--color-accent-400);
-  color: var(--color-primary-950);
+  color: var(--color-on-accent);
   border: 2px solid var(--color-primary-950);
   border-radius: var(--border-radius-sm);
   font-size: var(--font-size-sm);
@@ -245,11 +245,11 @@
 
 .mascot-vote__btn--primary {
   background: var(--color-accent-400);
-  color: var(--color-primary-950);
+  color: var(--color-on-accent);
 }
 
 .mascot-vote__btn--primary:hover:not(:disabled):not([aria-disabled='true']) {
-  background: var(--color-accent-300);
+  background: var(--color-accent-500);
 }
 
 .mascot-vote__btn--secondary {

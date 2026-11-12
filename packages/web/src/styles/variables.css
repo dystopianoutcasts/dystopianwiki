@@ -1,10 +1,12 @@
 /**
  * Dystopian Outcasts - Design Tokens
- * The official Flight Jacket palette (locked 2026-11-11; rules in the DystopianOutcasts repo,
- * DOCS/STYLE/BRAND.md). Dark mode is the jacket's lining: soot, gunmetal and Fur Orange.
- * Light mode is its outside: lichen, moss and kudzu. Orange is the only accent in both; green is
- * the second color. The token names predate the palette: "primary" is now the soot and gunmetal
- * scale, "highlight" the sage and kudzu greens.
+ * The official Flight Jacket palette (rules in the DystopianOutcasts repo, DOCS/STYLE/BRAND.md;
+ * locked 2026-11-11, revised 2026-11-12). Green does the work, orange is the brand: the "accent"
+ * scale is green (every button, link, focus ring, label, badge and meter); the "brand" scale is
+ * Fur Orange, for the second word of our names, Boone, the stripes and at most one highlight per
+ * screen (warnings). Grounds are neutral metal: soot and gunmetal in dark, aluminum in light.
+ * The token names predate the palette: "primary" is the soot and gunmetal scale, "highlight" the
+ * sage and kudzu greens.
  */
 
 :root {
@@ -23,20 +25,35 @@
   --color-primary-100: #e6e8ea;
 
   /* ═══════════════════════════════════════════════════════════════
-     ACCENT - Fur Orange (the one accent)
+     ACCENT - Kudzu green: the working color (buttons, links, focus, labels, badges, meters)
      ═══════════════════════════════════════════════════════════════ */
-  --color-accent-900: #6b2e0a;
-  --color-accent-800: #9a3e0e;  /* Ember: links and small orange text on light grounds */
-  --color-accent-700: #c4581e;  /* Hover fill: black text on it is 4.8:1 */
-  --color-accent-600: #e2742d;  /* Fur Orange: main */
-  --color-accent-500: #e8884a;
-  --color-accent-400: #ee9f66;
-  --color-accent-300: #f3b88a;
-  --color-accent-200: #f8d2b2;
-  --color-accent-100: #fcebdd;
+  --color-accent-900: #1f3a14;
+  --color-accent-800: #2f6a1f;  /* Deep Moss */
+  --color-accent-700: #7aab52;  /* Hover fill: black text on it is 8.6:1 */
+  --color-accent-600: #9cc56b;  /* Kudzu: main (black text on it: 11:1) */
+  --color-accent-500: #a9cf7c;
+  --color-accent-400: #b9db8e;
+  --color-accent-300: #c9e3a6;
+  --color-accent-200: #dbedc3;
+  --color-accent-100: #eef6e3;
 
   /* ═══════════════════════════════════════════════════════════════
-     HIGHLIGHT - Jacket sage and kudzu (the second color, never the accent)
+     BRAND - Fur Orange: the second word of our names, Boone, the seal, the stripes, and at most
+     one highlight per screen (warnings, an event spotlight). Never a button, link or label.
+     ═══════════════════════════════════════════════════════════════ */
+  --color-brand-900: #6b2e0a;
+  --color-brand-800: #9a3e0e;  /* Ember: small orange text on light grounds */
+  --color-brand-700: #c4581e;
+  --color-brand-600: #e2742d;  /* Fur Orange */
+  --color-brand-500: #e8884a;
+  --color-brand-400: #ee9f66;
+  --color-brand-300: #f3b88a;
+  --color-brand-200: #f8d2b2;
+  --color-brand-100: #fcebdd;
+  --color-brand-name-light: #b9501a;  /* Burnt Orange: the name's second word on light grounds */
+
+  /* ═══════════════════════════════════════════════════════════════
+     HIGHLIGHT - Jacket sage and kudzu (fabric, info notices and other green tints)
      ═══════════════════════════════════════════════════════════════ */
   --color-highlight-900: #26301f;
   --color-highlight-800: #33402a;
@@ -64,7 +81,7 @@
 
   /* ═══════════════════════════════════════════════════════════════
      SEMANTIC COLORS - Default theme (dark: the jacket's lining)
-     Soot and gunmetal with cream text and Fur Orange accents
+     Soot and gunmetal with cream text and kudzu green accents
      ═══════════════════════════════════════════════════════════════ */
   --color-background: var(--color-primary-900);
   --color-surface: var(--color-primary-800);
@@ -77,7 +94,7 @@
   /* Outline of a form control: 3:1 on the page and on cards */
   --color-control-border: var(--color-primary-400);
 
-  /* Interactive - orange on soot */
+  /* Interactive - kudzu on soot */
   --color-link: var(--color-accent-500);
   --color-link-hover: var(--color-accent-300);
   --color-focus-ring: var(--color-accent-500);
@@ -89,8 +106,8 @@
   --color-badge-intermediate: var(--color-primary-400);
   --color-alert-info-bg: var(--color-highlight-900);
   --color-alert-info-border: var(--color-highlight-700);
-  --color-alert-warning-bg: var(--color-accent-900);
-  --color-alert-warning-border: var(--color-accent-700);
+  --color-alert-warning-bg: var(--color-brand-900);
+  --color-alert-warning-border: var(--color-brand-700);
 
   /* Code - a little darker than the page */
   --color-code-bg: var(--color-primary-950);
@@ -102,25 +119,25 @@
   /* Line numbers beside a code block (4.5:1 on the code background, as in the light theme) */
   --color-code-line-number: var(--color-text-secondary);
 
-  /* Text on an accent (orange) fill: black in both themes, 4.8:1 even on the accent-700 hover
-     fill */
+  /* Text on an accent (green) fill: black in dark (8.6:1 or more on every accent fill); the
+     light theme turns it white on its moss fills */
   --color-on-accent: #000000;
 
   /* Field notes (components/field-notes.css): callouts, badges, cards, meters and the cover.
      Every pair is checked for WCAG 2.2 AA in both themes by fieldNotes.test.ts. */
-  --fn-heading: #ee9f66;
-  --fn-number-bg: #e2742d;
+  --fn-heading: #b9db8e;
+  --fn-number-bg: #9cc56b;
   --fn-number-text: #000000;
   --fn-panel-bg: #24262a;
   --fn-panel-border: #3a3d42;
-  --fn-card-label: #ee9f66;
+  --fn-card-label: #b9db8e;
   --fn-kicker: #b9db8e;
   --fn-callout-text: #e6dcc6;
   --fn-key-bg: #24262a;
   --fn-key-bar: #9cc56b;
   --fn-key-label-bg: #9cc56b;
   --fn-key-label-text: #000000;
-  --fn-key-link: #ee9f66;
+  --fn-key-link: #9cc56b;
   --fn-warn-bg: #6b2e0a;
   --fn-warn-bar: #e8884a;
   --fn-warn-label-bg: #ee9f66;
@@ -130,28 +147,28 @@
   --fn-design-bar: #7a9a55;
   --fn-design-label-bg: #b9db8e;
   --fn-design-label-text: #000000;
-  --fn-design-link: #f3b88a;
+  --fn-design-link: #c9e3a6;
   --fn-proof-bg: #161819;
   --fn-proof-bar: #a9aeb4;
   --fn-proof-label-bg: #cacdcf;
   --fn-proof-label-text: #000000;
-  --fn-proof-link: #ee9f66;
+  --fn-proof-link: #9cc56b;
   --fn-badge-text: #000000;
   --fn-badge-yes: #8fd19e;
   --fn-badge-no: #f2a3a3;
   --fn-badge-maybe: #f3b88a;
-  --fn-badge-t1: #ee9f66;
-  --fn-badge-t2: #b9db8e;
+  --fn-badge-t1: #9cc56b;
+  --fn-badge-t2: #d3e8b8;
   --fn-badge-t3: #a9aeb4;
   --fn-badge-rare: #f8d2b2;
   --fn-badge-border: #161819;
   --fn-table-head-bg: #2e3034;
   --fn-table-head-text: #e6dcc6;
-  --fn-meter-on: #e8884a;
+  --fn-meter-on: #9cc56b;
   --fn-meter-off: #2e3034;
   --fn-meter-off-border: #8a8f96;
-  --fn-bar-1: #ee9f66;
-  --fn-bar-2: #b9db8e;
+  --fn-bar-1: #9cc56b;
+  --fn-bar-2: #e6dcc6;
   --fn-bar-3: #a9aeb4;
   --fn-chip-bg: #2e3034;
   --fn-chip-border: #8a8f96;
@@ -281,66 +298,70 @@
    would have. */
 
 /* ═══════════════════════════════════════════════════════════════════
-   LIGHT THEME - lichen and moss with deep-root text (the jacket's outside)
-   Lichen ground, deep-root text, ember links. Fur Orange stays the accent for fills (with
-   black text); orange used as text darkens to burnt orange or ember. Green is the second
-   color. Code blocks stay dark (soot), because their highlight colors are made for a dark
+   LIGHT THEME - aluminum and moss with gunmetal-ink text
+   Aluminum ground, gunmetal-ink text, deep moss links. Buttons are moss with white text; orange
+   is kept for the brand and warnings (the brand scale). Code blocks stay dark (soot), because their highlight colors are made for a dark
    ground. Every value here is checked for WCAG 2.2 AA by lightTheme.test.ts. The selector
    belongs to the theme mechanism (KB15); the values to the Flight Jacket palette.
    ═══════════════════════════════════════════════════════════════════ */
 [data-theme="light"] {
-  /* Lichen page, lighter cards, white raised surfaces */
-  --color-background: #eef1e2;
-  --color-surface: #f8faf0;
+  /* Aluminum page, lighter cards, white raised surfaces */
+  --color-background: #ecedea;
+  --color-surface: #f7f7f5;
   --color-surface-elevated: #ffffff;
 
   /* Deep-root text */
-  --color-text-primary: #1e2a1a;
-  --color-text-secondary: #3b4834;
-  --color-text-muted: #4e5c46;
+  --color-text-primary: #1a1c1e;
+  --color-text-secondary: #3a3d42;
+  --color-text-muted: #4a4e52;
 
   /* Dividers (decoration) and control outlines */
-  --color-border: #cdd5b8;
-  --color-border-light: #dce5c8;
-  --color-control-border: #6e7a62;
+  --color-border: #c9ccc6;
+  --color-border-light: #dfe1dc;
+  --color-control-border: #6e7276;
 
-  /* Ember links, a burnt-orange focus ring */
-  --color-link: #9a3e0e;
-  --color-link-hover: #7a300a;
-  --color-focus-ring: #b9501a;
+  /* Deep moss links, a moss focus ring */
+  --color-link: #2f6a1f;
+  --color-link-hover: #24521a;
+  --color-focus-ring: #3f7d2c;
 
   /* Code blocks stay dark (soot); inline code is a light chip with ember text */
   --color-code-bg: #161819;
-  --color-code-text: #f3b88a;
-  --color-inline-code-bg: #dce5c8;
-  --color-inline-code-text: #7a300a;
+  --color-code-text: #c9e3a6;
+  --color-inline-code-bg: #dfe1dc;
+  --color-inline-code-text: #24521a;
   --color-code-line-number: #a99c88;
 
   /* Badges, alerts and text on accent fills */
   --color-badge-new: #3f5a2c;
   --color-badge-advanced: #3f5a2c;
-  --color-badge-beginner: #8a3a0e;
+  --color-badge-beginner: #2f6a1f;
   --color-badge-intermediate: #3a3d42;
   --color-alert-info-bg: #e3ebd2;
   --color-alert-info-border: #5b6b48;
   --color-alert-warning-bg: #fcebdd;
   --color-alert-warning-border: #c4581e;
-  --color-on-accent: #000000; /* 4.8:1 even on the accent-700 hover fill */
+  /* Buttons in light are Moss with white text (5.0:1), Deep Moss on hover (6.6:1) */
+  --color-accent-400: #24521a;
+  --color-accent-500: #2f6a1f;
+  --color-accent-600: #3f7d2c;
+  --color-accent-700: #2f6a1f;
+  --color-on-accent: #ffffff;
 
   /* Field notes: light values of the --fn-* tokens above */
-  --fn-heading: #9a3e0e;
-  --fn-number-bg: #e2742d;
-  --fn-number-text: #000000;
-  --fn-panel-bg: #f8faf0;
-  --fn-panel-border: #cdd5b8;
-  --fn-card-label: #8a3a0e;
+  --fn-heading: #2f6a1f;
+  --fn-number-bg: #3f7d2c;
+  --fn-number-text: #ffffff;
+  --fn-panel-bg: #f7f7f5;
+  --fn-panel-border: #c9ccc6;
+  --fn-card-label: #2f6a1f;
   --fn-kicker: #3f5a2c;
-  --fn-callout-text: #1e2a1a;
-  --fn-key-bg: #f8faf0;
+  --fn-callout-text: #1a1c1e;
+  --fn-key-bg: #f7f7f5;
   --fn-key-bar: #3f7d2c;
   --fn-key-label-bg: #3f5a2c;
   --fn-key-label-text: #ffffff;
-  --fn-key-link: #9a3e0e;
+  --fn-key-link: #2f6a1f;
   --fn-warn-bg: #fcebdd;
   --fn-warn-bar: #c4581e;
   --fn-warn-label-bg: #8a3a0e;
@@ -350,32 +371,32 @@
   --fn-design-bar: #5b6b48;
   --fn-design-label-bg: #33402a;
   --fn-design-label-text: #ffffff;
-  --fn-design-link: #8a3a0e;
-  --fn-proof-bg: #f8faf0;
-  --fn-proof-bar: #6e7a62;
-  --fn-proof-label-bg: #3b4834;
+  --fn-design-link: #2f6a1f;
+  --fn-proof-bg: #f7f7f5;
+  --fn-proof-bar: #6e7276;
+  --fn-proof-label-bg: #3a3d42;
   --fn-proof-label-text: #ffffff;
-  --fn-proof-link: #9a3e0e;
+  --fn-proof-link: #2f6a1f;
   --fn-badge-text: #000000;
   --fn-badge-yes: #8fd19e;
   --fn-badge-no: #f2a3a3;
   --fn-badge-maybe: #f3b88a;
-  --fn-badge-t1: #ee9f66;
+  --fn-badge-t1: #9cc56b;
   --fn-badge-t2: #b9db8e;
   --fn-badge-t3: #a9aeb4;
   --fn-badge-rare: #f8d2b2;
-  --fn-badge-border: #6e7a62;
-  --fn-table-head-bg: #dce5c8;
-  --fn-table-head-text: #1e2a1a;
-  --fn-meter-on: #c4581e;
-  --fn-meter-off: #dce5c8;
-  --fn-meter-off-border: #6e7a62;
-  --fn-bar-1: #c4581e;
-  --fn-bar-2: #5b6b48;
+  --fn-badge-border: #6e7276;
+  --fn-table-head-bg: #dfe1dc;
+  --fn-table-head-text: #1a1c1e;
+  --fn-meter-on: #3f7d2c;
+  --fn-meter-off: #dfe1dc;
+  --fn-meter-off-border: #6e7276;
+  --fn-bar-1: #3f7d2c;
+  --fn-bar-2: #6e7276;
   --fn-bar-3: #3a3d42;
-  --fn-chip-bg: #dce5c8;
-  --fn-chip-border: #6e7a62;
-  --fn-chip-text: #1e2a1a;
+  --fn-chip-bg: #dfe1dc;
+  --fn-chip-border: #6e7276;
+  --fn-chip-text: #1a1c1e;
   --fn-stripe: #e2742d;
   --fn-plate-bg: #000000;
   --fn-plate-text: #ee9f66;

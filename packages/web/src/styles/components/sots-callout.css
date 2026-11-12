@@ -62,9 +62,9 @@
   justify-content: center;
   min-height: 48px;
   padding: var(--spacing-3) var(--spacing-6);
-  /* Dark text on the lighter accent: 4.5:1 or better (the same pair as the mascot vote button). */
+  /* A green button: on-accent text on the accent fill (the same pair as the mascot vote button). */
   background: var(--color-accent-400);
-  color: var(--color-primary-950);
+  color: var(--color-on-accent);
   font-family: var(--font-family-display);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-medium);
@@ -75,11 +75,11 @@
 }
 
 .sots-callout__button:hover {
-  background: var(--color-accent-300);
+  background: var(--color-accent-500);
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
   text-decoration: none;
-  color: var(--color-primary-950);
+  color: var(--color-on-accent);
 }
 
 .sots-callout__button:focus-visible {

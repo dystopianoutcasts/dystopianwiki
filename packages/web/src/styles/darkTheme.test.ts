@@ -203,7 +203,9 @@ test('dark text on an orange fill meets 4.5:1 on every accent fill, hover includ
 
 test('every dark rule that writes on-accent text sets an accent fill under it', () => {
   const users = rules.filter((r) => r.file !== 'variables.css' && !r.selector.startsWith('[data-theme="light"]') && r.decls.get('color') === v('on-accent'))
-  assert.equal(users.length, 12, 'the 12 button, badge and label rules that use --color-on-accent')
+  // 19 since the 2026-11-12 brand rules: the SOTS, mascot and Buddy buttons (with their hovers) and the vote badge joined;
+  // the runoff kicker left for the brand orange.
+  assert.equal(users.length, 19, 'the 19 button, badge and label rules that use --color-on-accent')
   for (const r of users) {
     const bg = r.decls.get('background-color') ?? r.decls.get('background') ?? ''
     assert.ok(ACCENT_FILLS.map(v).includes(bg), `${r.file} ${r.selector}: on-accent text on ${bg || 'no fill of its own'}`)

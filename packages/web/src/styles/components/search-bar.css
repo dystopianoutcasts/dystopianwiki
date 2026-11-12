@@ -29,8 +29,8 @@
 }
 
 [data-theme="light"] .search-bar__input-wrapper:focus-within {
-  box-shadow: 0 0 0 4px rgba(154, 62, 14, 0.2);
-  border-color: #9a3e0e;
+  box-shadow: 0 0 0 4px rgba(63, 125, 44, 0.25);
+  border-color: #3f7d2c;
 }
 
 /* Large size variant */
@@ -136,7 +136,7 @@
 
 [data-theme="light"] .search-suggestion:hover,
 [data-theme="light"] .search-suggestion--selected {
-  background-color: #dce5c8;
+  background-color: #dfe1dc;
 }
 
 .search-suggestion__title {
@@ -159,8 +159,8 @@
 }
 
 [data-theme="light"] .search-suggestion__title mark {
-  background: #f8d2b2;
-  color: #1e2a1a;
+  background: #dbedc3;
+  color: #1a1c1e;
 }
 
 .search-suggestion__meta {
@@ -188,8 +188,8 @@
 }
 
 [data-theme="light"] .search-suggestion__badge {
-  background-color: #dce5c8;
-  color: #1e2a1a;
+  background-color: #dfe1dc;
+  color: #1a1c1e;
 }
 
 .search-suggestion__excerpt {

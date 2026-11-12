@@ -40,9 +40,9 @@
   justify-content: center;
   min-height: 48px;
   padding: var(--spacing-3) var(--spacing-6);
-  /* Dark text on the lighter accent: 4.5:1 or better (the vote page's primary button uses the same pair). */
+  /* A green button: on-accent text on the accent fill (black on kudzu in dark, white on deep moss in light). */
   background: var(--color-accent-400);
-  color: var(--color-primary-950);
+  color: var(--color-on-accent);
   font-family: var(--font-family-display);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-medium);
@@ -53,11 +53,11 @@
 }
 
 .mascot-callout__button:hover {
-  background: var(--color-accent-300);
+  background: var(--color-accent-500);
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
   text-decoration: none;
-  color: var(--color-primary-950);
+  color: var(--color-on-accent);
 }
 
 .mascot-callout__button:focus-visible {
@@ -96,15 +96,16 @@
   text-align: center;
   gap: var(--spacing-4);
   padding: var(--spacing-8) var(--spacing-4);
-  border: 2px solid var(--color-accent-600);
+  /* The runoff is this page's one orange highlight (brand rules, 2026-11-12) */
+  border: 2px solid var(--color-brand-600);
   box-shadow: var(--shadow-lg);
 }
 
 .mascot-callout__kicker {
   margin: 0;
   padding: var(--spacing-1) var(--spacing-4);
-  background: var(--color-accent-600);
-  color: var(--color-on-accent);
+  background: var(--color-brand-600);
+  color: var(--color-primary-900);
   font-family: var(--font-family-display);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);

@@ -201,8 +201,8 @@ img {
 }
 
 [data-theme="light"] ::selection {
-  background-color: #cdd5b8;
-  color: #1e2a1a;
+  background-color: #c9ccc6;
+  color: #1a1c1e;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -227,11 +227,11 @@ img {
 }
 
 [data-theme="light"] ::-webkit-scrollbar-thumb {
-  background: #6e7a62;
+  background: #6e7276;
 }
 
 [data-theme="light"] ::-webkit-scrollbar-thumb:hover {
-  background: #4e5c46;
+  background: #4a4e52;
 }
 
 /* ═══════════════════════════════════════════════════════════════════

@@ -11,7 +11,7 @@
   z-index: 10;
 }
 
-/* Gradient Background - Default is dark soot */
+/* Gradient Background - Default is dark soot, neutral metal all the way (grounds are never tinted) */
 .hero__gradient {
   position: absolute;
   inset: 0;
@@ -19,19 +19,19 @@
     135deg,
     var(--color-primary-900) 0%,
     var(--color-primary-800) 50%,
-    var(--color-accent-900) 100%
+    var(--color-primary-700) 100%
   );
   z-index: -1;
 }
 
-/* Light theme - lichen gradient */
+/* Light theme - aluminum gradient */
 [data-theme="light"] .hero__gradient {
-  /* Pale lichen to pale copper: the hero's deep-root text reads on it (KB16) */
+  /* Light metal, neutral: the hero's ink text reads on it (KB16) */
   background: linear-gradient(
     135deg,
-    #dce5c8 0%,
-    #eef1e2 55%,
-    #f8d2b2 100%
+    #dfe1dc 0%,
+    #ecedea 55%,
+    #f7f7f5 100%
   );
 }
 
@@ -134,7 +134,7 @@
   transform: translateY(-50%);
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, var(--color-accent-400) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--color-primary-400) 0%, transparent 70%);
 }
 
 .hero__decoration--right {
@@ -221,13 +221,13 @@
 
 /* Light theme button adjustments */
 [data-theme="light"] .hero__learn-btn {
-  background: #c4581e;
-  box-shadow: 0 4px 12px rgba(196, 88, 30, 0.3);
+  background: #3f7d2c;
+  box-shadow: 0 4px 12px rgba(63, 125, 44, 0.3);
 }
 
 [data-theme="light"] .hero__learn-btn:hover {
-  background: #e2742d;
-  box-shadow: 0 6px 16px rgba(196, 88, 30, 0.4);
+  background: #2f6a1f;
+  box-shadow: 0 6px 16px rgba(63, 125, 44, 0.4);
 }
 
 [data-theme="light"] .hero__actions-hint {
