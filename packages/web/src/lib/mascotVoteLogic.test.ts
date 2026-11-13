@@ -9,6 +9,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { countRankedChoice } from './rankedChoice'
 import {
+  winnerAnnouncement,
   addEntry,
   announceAdded,
   announceMoved,
@@ -444,4 +445,15 @@ test('tiedCount: null when the votes decided the count', () => {
   const decided = countRankedChoice({ entries: IDS, ballots: [...FIRST_VOTE, ['art_004']], drawOrder: goodElection.draw_order })
   assert.equal(decided.winner?.id, 'art_004')
   assert.equal(tiedCount(decided, IDS), null)
+})
+
+test('winnerAnnouncement: names the winner and artist, says runoff or vote, and counts plainly', () => {
+  assert.equal(
+    winnerAnnouncement('Boone', 'Fanare', { votes: 12, active: 20 }, true),
+    'Boone, drawn by Fanare, won the runoff with 12 of 20 ballots in the final round.',
+  )
+  assert.equal(
+    winnerAnnouncement('Boone', 'Fanare', { votes: 1, active: 1 }, false),
+    'Boone, drawn by Fanare, won the vote with 1 of 1 ballot in the final round.',
+  )
 })

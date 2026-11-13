@@ -398,3 +398,14 @@ export function tieNote(tie: TiedCount, nameOf: (id: string) => string): string 
     `between them decides instead.`
   )
 }
+/** The home page's winner announcement: one sentence, plain numbers, no percentages. */
+export function winnerAnnouncement(
+  name: string,
+  artist: string,
+  winner: { votes: number; active: number },
+  runoff: boolean,
+): string {
+  const contest = runoff ? 'runoff' : 'vote'
+  const ballots = winner.active === 1 ? 'ballot' : 'ballots'
+  return `${name}, drawn by ${artist}, won the ${contest} with ${winner.votes} of ${winner.active} ${ballots} in the final round.`
+}

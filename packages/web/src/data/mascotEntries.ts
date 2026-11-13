@@ -7,6 +7,8 @@ export interface MascotEntry {
   alt: string
   /** Tiny pixel art: scale it up without smoothing (image-rendering: pixelated). */
   pixelArt?: boolean
+  /** Set once an entry has won and is named; entries stay anonymous while a vote runs. */
+  winner?: { name: string; artist: string; image: string; alt: string }
 }
 
 export const MASCOT_ENTRIES: readonly MascotEntry[] = [
@@ -36,6 +38,13 @@ export const MASCOT_ENTRIES: readonly MascotEntry[] = [
     image: '/assets/mascot-vote/art_004.png',
     alt: 'Pixel-art orange fox head in a leather aviator cap with cracked goggles',
     pixelArt: true,
+    // Won the 2026-11-12 runoff; the site mascot since 9a96afa.
+    winner: {
+      name: 'Boone',
+      artist: 'Fanare',
+      image: '/assets/branding/boone/boone-512.png',
+      alt: 'Boone, an orange fox in a leather aviator cap with cracked goggles',
+    },
   },
   {
     id: 'art_005',

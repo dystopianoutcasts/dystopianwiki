@@ -212,3 +212,37 @@
     justify-content: center;
   }
 }
+
+/* Winner banner: Boone beside the announcement (stacked and centered on phones). */
+.mascot-callout--winner .mascot-callout__inner--winner {
+  align-items: center;
+  text-align: center;
+  border: 2px solid var(--color-brand-600);
+}
+
+.mascot-callout__winner-art {
+  display: block;
+  width: 160px;
+  height: 160px;
+  object-fit: contain; /* drawn below its 512 px size, so it is smoothed, not pixelated */
+}
+
+.mascot-callout--winner .mascot-callout__kicker {
+  display: inline-block;
+  margin-bottom: var(--spacing-3);
+}
+
+@media (min-width: 1025px) {
+  .mascot-callout--winner .mascot-callout__inner--winner {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--spacing-8);
+    text-align: left;
+  }
+
+  .mascot-callout__winner-art {
+    width: 200px;
+    height: 200px;
+    flex-shrink: 0;
+  }
+}

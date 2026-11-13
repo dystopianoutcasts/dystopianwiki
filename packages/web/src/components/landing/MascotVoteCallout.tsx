@@ -75,7 +75,7 @@ export function MascotVoteCallout() {
         />
       );
     case 'results':
-      return <ResultsBanner election={election} inVote={inVote} />;
+      return <ResultsBanner election={election} inVote={inVote} previewName={previewName} />;
     case 'none':
       return null;
   }
@@ -89,11 +89,26 @@ type Named = { entry: MascotEntry; named: NonNullable<MascotEntry['winner']>; se
  * /vote, so the two never disagree. Anything else (a tie, no ballots, a fetch that fails,
  * an unnamed winner) shows the plain results band.
  */
-function ResultsBanner({ election, inVote }: { election: Election; inVote: readonly MascotEntry[] }) {
+function ResultsBanner({
+  election,
+  inVote,
+  previewName,
+}: {
+  election: Election;
+  inVote: readonly MascotEntry[];
+  previewName: string | null;
+}) {
   const [named, setNamed] = useState<Named | null | 'loading'>('loading');
   useEffect(() => {
     let cancelled = false;
-    void fetchPublicBallots(election.id).then((r) => {
+    // Development previews (/?callout=runoff-published) count the preview's canned ballots.
+    const ballots =
+      import.meta.env.DEV && previewName
+        ? import('../../lib/mascotVotePreview').then(
+            (m) => m.previewSource(previewName, null)?.api.fetchPublicBallots(election.id) ?? fetchPublicBallots(election.id),
+          )
+        : fetchPublicBallots(election.id);
+    void ballots.then((r) => {
       if (cancelled) return;
       if (!r.ok || r.value === null) return setNamed(null);
       try {
@@ -108,7 +123,7 @@ function ResultsBanner({ election, inVote }: { election: Election; inVote: reado
     return () => {
       cancelled = true;
     };
-  }, [election]);
+  }, [election, previewName]);
 
   if (named === 'loading') return null;
   if (named === null) {
