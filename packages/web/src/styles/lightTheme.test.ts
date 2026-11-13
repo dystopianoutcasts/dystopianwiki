@@ -166,8 +166,9 @@ const LIGHT_RULES: [string, string, Check][] = [
   ['components/code-block.css', '.code-block__line-numbers', { bg: v('code-bg'), min: 4.5 }],
 ]
 
+// The landing hero's background is a fade now (fades.css); fades.test.ts checks every point of it.
 test('the light hero backgrounds are pale enough for the navy hero text at every stop', () => {
-  for (const [file, selector] of [['components/hero.css', `${LIGHT} .hero__gradient`], ['components/learning-path.css', `${LIGHT} .learning-path__hero`]]) {
+  for (const [file, selector] of [['components/learning-path.css', `${LIGHT} .learning-path__hero`]]) {
     const rule = rules.find((r) => r.file === file && r.selector === selector)
     assert.ok(rule, `${selector} missing`)
     const stops = [...(rule.decls.get('background') ?? '').matchAll(/#[0-9a-f]{6}/gi)].map((m) => m[0])

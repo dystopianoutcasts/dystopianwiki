@@ -31,7 +31,7 @@ import { checkForContentUpdates } from './utils/manifestChecker';
 // Import global styles
 import './styles/variables.css';
 import './styles/base.css';
-import './styles/dim-lights.css';
+import './styles/fades.css';
 import './styles/animations.css';
 
 // Backup for the OAuth round trip: if the provider returns the member somewhere other

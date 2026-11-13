@@ -11,63 +11,11 @@
   z-index: 10;
 }
 
-/* Gradient Background - neutral metal, with two dim lights (dim-lights.css tokens): an orange circle
-   on the left (the brand) and a green one on the right, each 7/8 of the hero's height. They sit a
-   third past the edge so they stay clear of the stat chips' small labels. */
+/* Background: green -> Gunmetal -> orange, from fades.css (fade fade--green-orange on the div) */
 .hero__gradient {
   position: absolute;
   inset: 0;
-  overflow: hidden;
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-900) 0%,
-    var(--color-primary-800) 50%,
-    var(--color-primary-700) 100%
-  );
   z-index: -1;
-}
-
-/* Light theme - aluminum gradient */
-[data-theme="light"] .hero__gradient {
-  /* Light metal, neutral: the hero's ink text reads on it (KB16) */
-  background: linear-gradient(
-    135deg,
-    #dfe1dc 0%,
-    #ecedea 55%,
-    #f7f7f5 100%
-  );
-}
-
-.hero__gradient::before,
-.hero__gradient::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  height: min(87.5%, 80vw);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  pointer-events: none;
-  background: radial-gradient(
-    closest-side,
-    var(--hero-light) 0%,
-    var(--hero-light) 70%,
-    var(--hero-light-rim) 86%,
-    transparent 100%
-  );
-}
-
-.hero__gradient::before {
-  --hero-light: var(--dim-light-orange);
-  --hero-light-rim: var(--dim-light-orange-rim);
-  left: 0;
-  transform: translate(-35%, -50%);
-}
-
-.hero__gradient::after {
-  --hero-light: var(--dim-light-green);
-  --hero-light-rim: var(--dim-light-green-rim);
-  right: 0;
-  transform: translate(35%, -50%);
 }
 
 /* Content Container */

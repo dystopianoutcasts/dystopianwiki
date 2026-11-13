@@ -168,7 +168,7 @@ function Band({
 }) {
   return (
     <section className="mascot-callout" aria-labelledby="mascot-callout-title">
-      <div className="mascot-callout__inner dim-lights dim-lights--brand-right">
+      <div className="mascot-callout__inner fade fade--orange-right">
         <div className="mascot-callout__text">
           <h2 id="mascot-callout-title" className="mascot-callout__title">
             {title}
@@ -202,7 +202,7 @@ function RunoffBanner({
 }) {
   return (
     <section className="mascot-callout mascot-callout--runoff" aria-labelledby="mascot-callout-title">
-      <div className="mascot-callout__inner mascot-callout__inner--runoff dim-lights dim-lights--brand-right">
+      <div className="mascot-callout__inner mascot-callout__inner--runoff fade fade--orange-right">
         <p className="mascot-callout__kicker">Mascot runoff</p>
         <h2 id="mascot-callout-title" className="mascot-callout__title mascot-callout__title--runoff">
           {open ? 'Vote now!' : 'The runoff opens soon'}

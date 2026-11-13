@@ -90,7 +90,7 @@ export function HeroSection() {
 
   return (
     <section className="hero">
-      <div className="hero__gradient" />
+      <div className="hero__gradient fade fade--green-orange" />
 
       <div className="hero__content">
         {/* Banner Logo - Links to Discord */}

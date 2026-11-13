@@ -1,8 +1,8 @@
 /**
- * Dim lights (dim-lights.css) are discs of green or orange laid under a component's content. A disc
- * may sit under text, so its strength must keep every text color at WCAG 2.2 AA (4.5:1) on the page
- * ground in both themes, at the disc's strongest point. Tokens are read from variables.css.
- * Run with `npx tsx --test src/styles/dimLights.test.ts` from packages/web.
+ * Fades (fades.css) run sideways from the page ground tinted green or orange (one edge) to
+ * --color-surface (the other end). Text may sit anywhere on a fade, so every point along it must
+ * keep every text color at WCAG 2.2 AA (4.5:1) in both themes. Tokens are read from variables.css.
+ * Run with `npx tsx --test src/styles/fades.test.ts` from packages/web.
  */
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -51,19 +51,22 @@ const contrast = (a: Rgb, b: Rgb) => {
   return (x + 0.05) / (y + 0.05)
 }
 
+const mix = (a: Rgb, b: Rgb, t: number): Rgb => a.map((x, i) => x + (b[i] - x) * t) as Rgb
+
 for (const [mode, tokens] of [['dark', dark], ['light', light]] as const) {
-  for (const lightName of ['--dim-light-green', '--dim-light-orange']) {
-    test(`${mode}: text keeps 4.5:1 on the page ground under ${lightName}`, () => {
-      const ground = over(hex(resolve(tokens, '--color-background')), rgba(resolve(tokens, lightName)))
-      for (const text of ['--color-text-primary', '--color-text-secondary', '--color-text-muted']) {
-        const ratio = contrast(hex(resolve(tokens, text)), ground)
-        assert.ok(ratio >= 4.5, `${mode} ${text} on ${lightName}: ${ratio.toFixed(2)}:1`)
+  for (const tint of ['--fade-green', '--fade-orange']) {
+    test(`${mode}: text keeps 4.5:1 all along a ${tint} fade`, () => {
+      const page = hex(resolve(tokens, '--color-background'))
+      const surface = hex(resolve(tokens, '--color-surface'))
+      const edge = rgba(resolve(tokens, tint))
+      for (let i = 0; i <= 40; i++) {
+        const t = i / 40
+        const ground = over(mix(page, surface, t), { rgb: edge.rgb, a: edge.a * (1 - t) })
+        for (const text of ['--color-text-primary', '--color-text-secondary', '--color-text-muted']) {
+          const ratio = contrast(hex(resolve(tokens, text)), ground)
+          assert.ok(ratio >= 4.5, `${mode} ${text} at ${Math.round(t * 100)}% of ${tint}: ${ratio.toFixed(2)}:1`)
+        }
       }
     })
   }
-  test(`${mode}: each light's rim is fainter than its disc`, () => {
-    for (const c of ['green', 'orange']) {
-      assert.ok(rgba(resolve(tokens, `--dim-light-${c}-rim`)).a < rgba(resolve(tokens, `--dim-light-${c}`)).a, c)
-    }
-  })
 }

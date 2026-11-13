@@ -1,0 +1,44 @@
+/**
+ * Fades: a soft sideways fade of green or orange into Gunmetal, part of a component's own
+ * background (owner, 2026-11-13: "a fade from green to gunmetal to orange, or green to gunmetal or
+ * orange to gunmetal"; earlier: lights belong to the components, not pinned to the page).
+ *
+ * Use on a section or card root, with one direction:
+ *   <section className="home-section fade fade--green-left">
+ *
+ *   fade--green-left    green (left edge) -> Gunmetal (right edge)
+ *   fade--green-right   Gunmetal -> green (right edge)
+ *   fade--orange-right  Gunmetal -> orange (right edge)
+ *   fade--green-orange  green -> Gunmetal (middle) -> orange; the hero only
+ *
+ * The colored edge is the page ground (Soot, or Aluminum in light mode) tinted with --fade-green or
+ * --fade-orange (variables.css); the plain end is --color-surface (Gunmetal). fades.test.ts samples
+ * every point of that ramp and holds all text colors at 4.5:1 or more, so text may sit anywhere on
+ * a fade. Green is the default; orange is the brand and stays rare (BRAND.md rule 2).
+ *
+ * The double-class selectors replace the component's own background on purpose.
+ */
+
+.fade.fade--green-left {
+  background:
+    linear-gradient(90deg, var(--fade-green), transparent),
+    linear-gradient(90deg, var(--color-background), var(--color-surface));
+}
+
+.fade.fade--green-right {
+  background:
+    linear-gradient(270deg, var(--fade-green), transparent),
+    linear-gradient(270deg, var(--color-background), var(--color-surface));
+}
+
+.fade.fade--orange-right {
+  background:
+    linear-gradient(270deg, var(--fade-orange), transparent),
+    linear-gradient(270deg, var(--color-background), var(--color-surface));
+}
+
+.fade.fade--green-orange {
+  background:
+    linear-gradient(90deg, var(--fade-green), transparent 50%, var(--fade-orange)),
+    linear-gradient(90deg, var(--color-background), var(--color-surface) 50%, var(--color-background));
+}
