@@ -29,6 +29,11 @@ body {
   line-height: var(--line-height-normal);
   color: var(--color-text-primary);
   background-color: var(--color-background);
+  /* The edge brush is pinned to the window, so it stays put while the page scrolls under it */
+  background-image: var(--page-brush);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   accent-color: var(--color-link); /* radios, checkboxes and range inputs in the palette */
   min-height: 100vh;
   transition: background-color var(--transition-normal), color var(--transition-normal);

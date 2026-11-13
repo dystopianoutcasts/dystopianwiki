@@ -11,28 +11,33 @@
   z-index: 10;
 }
 
-/* Gradient Background - Default is dark soot, neutral metal all the way (grounds are never tinted) */
+/* Gradient Background - Default is dark soot, neutral metal. The page's edge brush is laid on top and
+   pinned to the window like the body's, so the two line up as one. */
 .hero__gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-900) 0%,
-    var(--color-primary-800) 50%,
-    var(--color-primary-700) 100%
-  );
+  background:
+    var(--page-brush) 0 0 / 100% 100% no-repeat fixed,
+    linear-gradient(
+      135deg,
+      var(--color-primary-900) 0%,
+      var(--color-primary-800) 50%,
+      var(--color-primary-700) 100%
+    );
   z-index: -1;
 }
 
 /* Light theme - aluminum gradient */
 [data-theme="light"] .hero__gradient {
   /* Light metal, neutral: the hero's ink text reads on it (KB16) */
-  background: linear-gradient(
-    135deg,
-    #dfe1dc 0%,
-    #ecedea 55%,
-    #f7f7f5 100%
-  );
+  background:
+    var(--page-brush) 0 0 / 100% 100% no-repeat fixed,
+    linear-gradient(
+      135deg,
+      #dfe1dc 0%,
+      #ecedea 55%,
+      #f7f7f5 100%
+    );
 }
 
 /* Content Container */

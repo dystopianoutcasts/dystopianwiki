@@ -84,6 +84,9 @@
      Soot and gunmetal with cream text and kudzu green accents
      ═══════════════════════════════════════════════════════════════ */
   --color-background: var(--color-primary-900);
+  /* Soft orange and green brush at the window's edges, behind everything (owner, 2026-11-13: "a splash
+     of orange and green soft brush to the background edges"). Kept off the middle, under the text. */
+  --page-brush: url('/assets/branding/page-brush-dark.svg');
   --color-surface: var(--color-primary-800);
   --color-surface-elevated: var(--color-primary-700);
   --color-text-primary: #e6dcc6;  /* Muzzle Cream */
@@ -307,6 +310,7 @@
 [data-theme="light"] {
   /* Aluminum page, lighter cards, white raised surfaces */
   --color-background: #ecedea;
+  --page-brush: url('/assets/branding/page-brush-light.svg');
   --color-surface: #f7f7f5;
   --color-surface-elevated: #ffffff;
 
