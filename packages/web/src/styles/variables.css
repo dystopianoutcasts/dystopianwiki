@@ -84,9 +84,12 @@
      Soot and gunmetal with cream text and kudzu green accents
      ═══════════════════════════════════════════════════════════════ */
   --color-background: var(--color-primary-900);
-  /* Soft orange and green brush at the window's edges, behind everything (owner, 2026-11-13: "a splash
-     of orange and green soft brush to the background edges"). Kept off the middle, under the text. */
-  --page-brush: url('/assets/branding/page-brush-dark.svg');
+  /* Dim lights (dim-lights.css): soft round pools of green and orange inside sections (owner,
+     2026-11-13). Kept faint: they sit under text, which still meets its contrast on every pixel. */
+  --dim-light-green: rgba(156, 197, 107, 0.17);
+  --dim-light-green-mid: rgba(156, 197, 107, 0.08);
+  --dim-light-orange: rgba(226, 116, 45, 0.20);
+  --dim-light-orange-mid: rgba(226, 116, 45, 0.09);
   --color-surface: var(--color-primary-800);
   --color-surface-elevated: var(--color-primary-700);
   --color-text-primary: #e6dcc6;  /* Muzzle Cream */
@@ -310,7 +313,10 @@
 [data-theme="light"] {
   /* Aluminum page, lighter cards, white raised surfaces */
   --color-background: #ecedea;
-  --page-brush: url('/assets/branding/page-brush-light.svg');
+  --dim-light-green: rgba(63, 125, 44, 0.12);
+  --dim-light-green-mid: rgba(63, 125, 44, 0.05);
+  --dim-light-orange: rgba(226, 116, 45, 0.15);
+  --dim-light-orange-mid: rgba(226, 116, 45, 0.06);
   --color-surface: #f7f7f5;
   --color-surface-elevated: #ffffff;
 

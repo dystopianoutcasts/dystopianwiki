@@ -18,7 +18,7 @@ const BUILD_COUNT = VERSIONS.length;
 
 export function AboutSection() {
   return (
-    <section className="about-section">
+    <section className="about-section dim-lights dim-lights--right">
       <div className="about-section__content">
         <h2 className="about-section__title">About Dystopian Outcasts</h2>
         <div className="about-section__text">

@@ -1,7 +1,9 @@
 import { Fragment, useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { MASCOT_ENTRIES, previewOf, type MascotEntry } from '../../data/mascotEntries';
-import { calloutKind, fetchElection, type Election, type FetchResult } from '../../lib/mascotVote';
+import { calloutKind, fetchElection, fetchPublicBallots, type Election, type FetchResult } from '../../lib/mascotVote';
+import { isRunoff, winnerAnnouncement } from '../../lib/mascotVoteLogic';
+import { countRankedChoice, tieForFirst } from '../../lib/rankedChoice';
 import '../../styles/components/mascot-vote-callout.css';
 
 type Load = { state: 'loading' } | { state: 'error' } | { state: 'ready'; election: Election | null };
@@ -73,17 +75,69 @@ export function MascotVoteCallout() {
         />
       );
     case 'results':
-      return (
-        <Band
+      return <ResultsBanner election={election} inVote={inVote} />;
+    case 'none':
+      return null;
+  }
+}
+
+type Named = { entry: MascotEntry; named: NonNullable<MascotEntry['winner']>; sentence: string };
+
+/**
+ * Published results: name the winner when the count has one and that entry has been named
+ * (data/mascotEntries.ts `winner`). Counted from the published ballots, the same count as
+ * /vote, so the two never disagree. Anything else (a tie, no ballots, a fetch that fails,
+ * an unnamed winner) shows the plain results band.
+ */
+function ResultsBanner({ election, inVote }: { election: Election; inVote: readonly MascotEntry[] }) {
+  const [named, setNamed] = useState<Named | null | 'loading'>('loading');
+  useEffect(() => {
+    let cancelled = false;
+    void fetchPublicBallots(election.id).then((r) => {
+      if (cancelled) return;
+      if (!r.ok || r.value === null) return setNamed(null);
+      try {
+        const result = countRankedChoice({ entries: election.entries, ballots: r.value.ballots, drawOrder: election.drawOrder });
+        const entry = result.winner && !tieForFirst(result) ? MASCOT_ENTRIES.find((e) => e.id === result.winner!.id) : undefined;
+        if (!result.winner || !entry?.winner) return setNamed(null);
+        setNamed({ entry, named: entry.winner, sentence: winnerAnnouncement(entry.winner.name, entry.winner.artist, result.winner, isRunoff(election)) });
+      } catch {
+        setNamed(null);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [election]);
+
+  if (named === 'loading') return null;
+  if (named === null) {
+    return (
+      <Band
           title="The mascot vote results are in"
           description="See every round of the count, and download every ballot to check it yourself."
           button="See the results"
           thumbs={inVote}
         />
-      );
-    case 'none':
-      return null;
+    );
   }
+  return (
+    <section className="mascot-callout mascot-callout--winner" aria-labelledby="mascot-callout-title">
+      <div className="mascot-callout__inner mascot-callout__inner--winner">
+        <img src={named.named.image} alt={named.named.alt} className="mascot-callout__winner-art" width={512} height={512} />
+        <div className="mascot-callout__text">
+          <p className="mascot-callout__kicker">Our new mascot</p>
+          <h2 id="mascot-callout-title" className="mascot-callout__title">
+            Meet {named.named.name}
+          </h2>
+          <p className="mascot-callout__description">{named.sentence} Thank you to everyone who drew and everyone who voted.</p>
+          <Link to="/vote" className="mascot-callout__button">
+            See the full count
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function Band({
@@ -99,7 +153,7 @@ function Band({
 }) {
   return (
     <section className="mascot-callout" aria-labelledby="mascot-callout-title">
-      <div className="mascot-callout__inner">
+      <div className="mascot-callout__inner dim-lights dim-lights--right">
         <div className="mascot-callout__text">
           <h2 id="mascot-callout-title" className="mascot-callout__title">
             {title}
@@ -133,7 +187,7 @@ function RunoffBanner({
 }) {
   return (
     <section className="mascot-callout mascot-callout--runoff" aria-labelledby="mascot-callout-title">
-      <div className="mascot-callout__inner mascot-callout__inner--runoff">
+      <div className="mascot-callout__inner mascot-callout__inner--runoff dim-lights dim-lights--right">
         <p className="mascot-callout__kicker">Mascot runoff</p>
         <h2 id="mascot-callout-title" className="mascot-callout__title mascot-callout__title--runoff">
           {open ? 'Vote now!' : 'The runoff opens soon'}

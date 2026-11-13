@@ -21,7 +21,7 @@ export function JoinSteps() {
   return (
     <section
       id={JOIN_SECTION_ID}
-      className="home-section home-section--alt home-section--anchor"
+      className="home-section home-section--alt home-section--anchor dim-lights dim-lights--left"
       aria-labelledby={titleId}
     >
       <div className="home-section__inner">

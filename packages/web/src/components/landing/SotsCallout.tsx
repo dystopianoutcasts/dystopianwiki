@@ -10,7 +10,7 @@ export function SotsCallout() {
   const issue = CURRENT_SOTS;
   return (
     <section className="sots-callout" aria-labelledby="sots-callout-title">
-      <div className="sots-callout__inner">
+      <div className="sots-callout__inner dim-lights dim-lights--brand-left">
         <img
           className="sots-callout__cover"
           src={issue.cover}

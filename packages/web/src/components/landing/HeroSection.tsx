@@ -92,10 +92,6 @@ export function HeroSection() {
     <section className="hero">
       <div className="hero__gradient" />
 
-      {/* Decorative blurs */}
-      <div className="hero__decoration hero__decoration--left" />
-      <div className="hero__decoration hero__decoration--right" />
-
       <div className="hero__content">
         {/* Banner Logo - Links to Discord */}
         <a

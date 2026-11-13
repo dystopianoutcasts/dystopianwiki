@@ -1,0 +1,97 @@
+/**
+ * Dim lights: soft round pools of green or orange light, part of a section's own background
+ * (owner, 2026-11-13: "circles or ovals, like dim lights, not blobs"; "part of the components").
+ *
+ * Use on a section root, with one placement:
+ *   <section className="home-section dim-lights dim-lights--left">
+ *
+ * The lights are extra background layers on the section itself, so they scroll with it, add no
+ * element and no stacking context, and sit under the section's text and cards. Each light is a
+ * clean oval whose center sits near the section's side edge, away from the centered text.
+ * Strength and colors are tokens in variables.css (--dim-light-*), set per theme.
+ * Green is the default; orange is the brand and stays rare (BRAND.md rule 2).
+ *
+ * Contrast: small muted text fails 4.5:1 right at a light's center on a surface (card) ground, and
+ * passes from the 36% stop outward. So put the light on the side of a component that has no text
+ * (pictures, art, empty margin), and keep its center near the edge.
+ *
+ * The doubled class (.dim-lights.dim-lights--x) outranks a section's own `background` shorthand,
+ * whichever stylesheet loads last.
+ */
+
+.dim-lights.dim-lights--left {
+  background-image: radial-gradient(
+    ellipse 520px 300px at 6% 55%,
+    var(--dim-light-green) 0%,
+    var(--dim-light-green-mid) 36%,
+    transparent 70%
+  );
+}
+
+.dim-lights.dim-lights--right {
+  background-image: radial-gradient(
+    ellipse 520px 300px at 94% 45%,
+    var(--dim-light-green) 0%,
+    var(--dim-light-green-mid) 36%,
+    transparent 70%
+  );
+}
+
+/* The brand light: an orange oval on the right. Use at most once or twice on a page. */
+.dim-lights.dim-lights--brand-right {
+  background-image: radial-gradient(
+    ellipse 480px 280px at 94% 50%,
+    var(--dim-light-orange) 0%,
+    var(--dim-light-orange-mid) 36%,
+    transparent 70%
+  );
+}
+
+/* The brand light on the left */
+.dim-lights.dim-lights--brand-left {
+  background-image: radial-gradient(
+    ellipse 480px 280px at 6% 50%,
+    var(--dim-light-orange) 0%,
+    var(--dim-light-orange-mid) 36%,
+    transparent 70%
+  );
+}
+
+/* Phones: smaller pools, so a light never fills the narrow column behind the text */
+@media (max-width: 768px) {
+  .dim-lights.dim-lights--left {
+    background-image: radial-gradient(
+      ellipse 240px 200px at 0% 50%,
+      var(--dim-light-green) 0%,
+      var(--dim-light-green-mid) 36%,
+      transparent 70%
+    );
+  }
+
+  .dim-lights.dim-lights--right {
+    background-image: radial-gradient(
+      ellipse 240px 200px at 100% 50%,
+      var(--dim-light-green) 0%,
+      var(--dim-light-green-mid) 36%,
+      transparent 70%
+    );
+  }
+
+  .dim-lights.dim-lights--brand-right {
+    background-image: radial-gradient(
+      ellipse 240px 200px at 100% 50%,
+      var(--dim-light-orange) 0%,
+      var(--dim-light-orange-mid) 36%,
+      transparent 70%
+    );
+  }
+
+  .dim-lights.dim-lights--brand-left {
+    background-image: radial-gradient(
+      ellipse 240px 200px at 0% 50%,
+      var(--dim-light-orange) 0%,
+      var(--dim-light-orange-mid) 36%,
+      transparent 70%
+    );
+  }
+}

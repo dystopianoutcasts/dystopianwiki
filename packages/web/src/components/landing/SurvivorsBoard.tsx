@@ -11,7 +11,7 @@ export function SurvivorsBoard() {
   const list = summary?.longest ?? [];
 
   return (
-    <section className="home-section" aria-labelledby={titleId}>
+    <section className="home-section dim-lights dim-lights--right" aria-labelledby={titleId}>
       <div className="home-section__inner">
         <h2 className="home-section__title" id={titleId}>
           Longest survivors
