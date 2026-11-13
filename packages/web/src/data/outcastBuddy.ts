@@ -13,12 +13,12 @@
  */
 
 /** The release tag on dystopianoutcasts/OutcastBuddy-Installer, without the leading "v". */
-export const INSTALLER_VERSION = '3.0.0-beta6'
-/** SHA-256 of OutcastBuddyInstaller.exe in that release (checked 2026-11-12 against GitHub's digest). */
-export const INSTALLER_SHA256 = 'AA4F0C992D593EFA11D6A20D39A856D15D2BCC671C08E80A534D6916349ED09A'
-export const INSTALLER_BYTES = 9143808
+export const INSTALLER_VERSION = '3.0.0-beta7'
+/** SHA-256 of OutcastBuddyInstaller.exe in that release (checked 2026-11-13 against GitHub's digest). */
+export const INSTALLER_SHA256 = '625D49558EDA1160BB6FC73A8B5D0F3786318E6D9EC5A9B989ED57D2CCDEDA18'
+export const INSTALLER_BYTES = 9174528
 /** When the release was published, ISO date. */
-export const INSTALLER_DATE = '2026-11-12'
+export const INSTALLER_DATE = '2026-11-13'
 
 /**
  * The one released installer that could stop the game from starting (two "--" in the Steam
