@@ -13,7 +13,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-6);
-  padding: var(--spacing-6);
+  /* Faded components stand 1.5x their content height (owner, 2026-11-13): the extra space is split above and below. */
+  padding: calc(var(--spacing-6) + var(--fade-extra)) var(--spacing-6);
+  --fade-extra: 5.5rem;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-xl);
@@ -183,6 +185,8 @@
 
 /* @breakpoint-sm: 640px - All six thumbnails in one row, still under the text */
 @media (min-width: 640px) {
+  .mascot-callout__inner { --fade-extra: 4.5rem; }
+
   .mascot-callout__button {
     width: auto;
   }
@@ -195,6 +199,8 @@
 
 /* @breakpoint-lg: 1024px - Desktop: text beside thumbnails */
 @media (min-width: 1025px) {
+  .mascot-callout__inner { --fade-extra: 3rem; }
+
   .mascot-callout__inner {
     flex-direction: row;
     align-items: center;

@@ -301,13 +301,23 @@
 /* ---- Shared section frame -------------------------------------------------- */
 
 .home-section {
-  padding: var(--spacing-12) var(--spacing-4);
+  padding: calc(var(--spacing-12) + var(--fade-extra, 0rem)) var(--spacing-4);
   background: var(--color-background);
   border-bottom: 1px solid var(--color-border);
 }
 
 .home-section--alt {
   background: var(--color-surface);
+}
+
+/* Faded components stand 1.5x their content height (owner, 2026-11-13): the extra space is split above and below. */
+.home-section--join { --fade-extra: 6.5rem; }
+.home-section--survivors { --fade-extra: 7.5rem; }
+@media (max-width: 1024px) {
+  .home-section--join { --fade-extra: 10rem; }
+}
+@media (max-width: 640px) {
+  .home-section--join { --fade-extra: 13.5rem; }
 }
 
 /* A section other pages link to by its id (Join in three steps is /#join, KB05): the
@@ -655,7 +665,7 @@
 }
 
 @media (max-width: 640px) {
-  .home-section { padding: var(--spacing-8) var(--spacing-4); }
+  .home-section { padding: calc(var(--spacing-8) + var(--fade-extra, 0rem)) var(--spacing-4); }
   .home-counter__value { font-size: var(--font-size-2xl); }
   .home-setting { flex-direction: column; gap: 0; }
   .home-setting dd { text-align: left; }

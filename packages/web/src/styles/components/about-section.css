@@ -3,8 +3,10 @@
  * About Dystopian Outcasts section on the landing page
  */
 
+/* Faded components stand 1.5x their content height (owner, 2026-11-13): the extra space is split above and below. */
 .about-section {
-  padding: var(--spacing-12) var(--spacing-4);
+  --fade-extra: 5.75rem;
+  padding: calc(var(--spacing-12) + var(--fade-extra)) var(--spacing-4);
   background: var(--color-bg-secondary);
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
@@ -87,7 +89,8 @@
 /* Responsive */
 @media (max-width: 640px) {
   .about-section {
-    padding: var(--spacing-8) var(--spacing-4);
+    --fade-extra: 7rem;
+    padding: calc(var(--spacing-8) + var(--fade-extra)) var(--spacing-4);
   }
 
   .about-section__stats {
