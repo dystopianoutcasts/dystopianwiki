@@ -13,7 +13,7 @@ import type { ResolvedTheme, ThemeChoice } from './theme'
 import type { Popup } from './usePopup'
 
 export const SITE_NAME = 'Dystopian Outcasts'
-export const LOGO_SRC = '/assets/branding/mascot-placeholder/placeholder-512.png'
+export const LOGO_SRC = '/assets/branding/boone/boone-80.png'
 
 /** The ids aria-controls points at. Prefixed so an article heading's generated id cannot collide. */
 export const ACCOUNT_MENU_ID = 'site-account-menu'

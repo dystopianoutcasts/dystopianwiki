@@ -19,7 +19,8 @@
   max-width: 280px;
   width: 100%;
   height: auto;
-  margin-bottom: var(--spacing-6);
+  /* base.css makes img a block, so text-align cannot center it */
+  margin: 0 auto var(--spacing-6);
   animation: float 3s ease-in-out infinite;
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
 }

@@ -63,8 +63,8 @@ export function Footer() {
         <div className="footer__info">
           <div className="footer__branding">
             <img
-              src="/assets/branding/mascot-placeholder/placeholder-32.png"
-              alt="Mascot placeholder"
+              src="/assets/branding/boone/boone-48.png"
+              alt=""
               className="footer__branding-logo"
             />
             <span>Dystopian Outcasts</span>

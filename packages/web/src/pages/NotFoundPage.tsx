@@ -14,8 +14,8 @@ export function NotFoundPage() {
       <div className="not-found-page">
         <div className="not-found-page__content">
           <img
-            src="/assets/branding/mascot-placeholder/placeholder-512.png"
-            alt="Mascot placeholder"
+            src="/assets/branding/boone/boone-512.png"
+            alt="Boone, our mascot: an orange ringtail in a flight helmet and cracked goggles"
             className="not-found-page__image"
           />
           <h1 className="not-found-page__title">404</h1>
