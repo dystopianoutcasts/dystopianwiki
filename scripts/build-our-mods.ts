@@ -15,8 +15,14 @@
  *                                                   { id, workshopId, name, group, blurb, poster }
  *   packages/web/public/assets/mods/<id>.webp       poster, 320 px wide at most, quality 80
  *
- * The mod list below is the owner's list (2026-10-02). OutcastAurora, OutcastLib and
- * OutcastStowAll are deliberately not on it. A Workshop id whose folder or mod.info id
+ * The mod list below is the community's mods on the main server's mod list (2026-11-13; first
+ * made 2026-10-02). Outcast mods that are internal, server-side or test builds (Lib, Aurora,
+ * Sims, Sketch01Test, Stairs, Economy, Ledger, Kernel, TerritoriesZombies) are deliberately not
+ * on it, nor are archived ones (Hearing) or test copies (mapStyleTest).
+ *
+ * Outcast posters come from the repo's Workshop plates (PLATES_ROOT/<id>/preview.png, made by
+ * DystopianOutcasts TOOLS/workshop-plates), so the site shows them before each mod's next
+ * upload reaches Steam. Every other poster comes from the Workshop download. A Workshop id whose folder or mod.info id
  * does not match is reported and skipped, never guessed; the script then exits 1.
  *
  * Names come from mod.info, tidied (lib/ourMods.ts tidyName), with NAME_OVERRIDES for the
@@ -45,6 +51,7 @@ import { execFileSync } from 'child_process'
 import { tidyName, type ModGroup, type OurMod } from '../packages/web/src/lib/ourMods'
 
 const WORKSHOP_ROOT = process.env.WORKSHOP_ROOT || 'R:/Games/Steam/steamapps/workshop/content/108600'
+const PLATES_ROOT = process.env.PLATES_ROOT || 'R:/DystopianOutcasts/MODS'
 const ROOT = process.cwd()
 const WEB = path.join(ROOT, 'packages', 'web')
 const OUT_JSON = path.join(WEB, 'src', 'data', 'ourMods.json')
@@ -57,7 +64,6 @@ const LIST: Array<[ModGroup, string, string]> = [
   ['Outcast', 'OutcastUpright', '3778988335'],
   ['Outcast', 'OutcastProximity', '3778987974'],
   ['Outcast', 'OutcastHusbandry', '3778967781'],
-  ['Outcast', 'OutcastHearing', '3778967689'],
   ['Outcast', 'OutcastSawAll', '3777720992'],
   ['Outcast', 'OutcastRipAll', '3777620871'],
   ['Outcast', 'OutcastLightLoad', '3777386409'],
@@ -66,6 +72,17 @@ const LIST: Array<[ModGroup, string, string]> = [
   ['Outcast', 'OutcastMotors', '3782914142'],
   ['Outcast', 'OutcastMotorsAnimated', '3782914294'],
   ['Outcast', 'OutcastMotorsUI', '3782915479'],
+  ['Outcast', 'OutcastDisinfectAll', '3813271835'],
+  ['Outcast', 'OutcastPacking', '3815375509'],
+  ['Outcast', 'OutcastSearch', '3817581411'],
+  ['Outcast', 'OutcastLocking', '3827505595'],
+  ['Outcast', 'OutcastHighDrive', '3833867601'],
+  ['Outcast', 'OutcastMusicians', '3834949227'],
+  ['Outcast', 'OutcastTerritories', '3834985954'],
+  ['Outcast', 'OutcastViewpoint', '3835082422'],
+  ['Outcast', 'OutcastAchievements', '3837262687'],
+  ['Outcast', 'OutcastNature', '3838127382'],
+  ['Outcast', 'OutcastBuddy', '3838159103'],
   ['Dystopian', 'DystopianQoL', '3777144094'],
   ['Dystopian', 'DystopianNexus', '3781342201'],
   ['Dystopian', 'DystopianArsenal', '3781355461'],
@@ -81,9 +98,32 @@ const LIST: Array<[ModGroup, string, string]> = [
   ['Dystopian', 'DystopianSpearFishing', '3798907324'],
   ['Dystopian', 'DystopianTinkering', '3799704805'],
   ['Dystopian', 'DystopianTransit', '3809923895'],
-  ['Dystopian', 'MRAPMC', '3801434536'],
+  ['Dystopian', 'DystopianBuildMenu', '3821656463'],
+  ['Dystopian', 'DystopianBasements', '3829746627'],
+  ['Dystopian', 'DystopianVehicleInteriors', '3832229382'],
+  ['Dystopian', 'DystopianArchery', '3834940830'],
   ['Cosmic', 'CosmicSolar', '3792538685'],
   ['Cosmic', 'CosmicLoadout', '3793798119'],
+  ['Cosmic', 'MRAPMC', '3801434536'],
+  ['Cosmic', 'CosmicTowing', '3815051983'],
+  ['Cosmic', 'CosmicForklift', '3818214366'],
+  ['Cosmic', 'CosmicNoveltyCars', '3820642610'],
+  ['Cosmic', 'CosmicGunRework', '3829264783'],
+  ['Cosmic', 'CosmicCinema', '3835643076'],
+  ['Cosmic', 'CosmicEscalade', '3835643234'],
+  ['Cosmic', 'CosmicExcavator', '3835643646'],
+  ['Cosmic', 'CosmicFlatbedTow', '3835643788'],
+  ['Cosmic', 'CosmicHumvee', '3835644316'],
+  ['Cosmic', 'CosmicM978', '3835644498'],
+  ['Cosmic', 'CosmicReeferTruck', '3835645040'],
+  ['Cosmic', 'CosmicRoadRoller', '3835645223'],
+  ['Cosmic', 'CosmicSkylineR34', '3835645448'],
+  ['Cosmic', 'CosmicStationWagon', '3835645783'],
+  ['Cosmic', 'CosmicStreetSweeper', '3835645963'],
+  ['Cosmic', 'CosmicTankTrailer', '3835646203'],
+  ['Cosmic', 'CosmicWaterTruck', '3835646417'],
+  ['Cosmic', 'CosmicTornado', '3835646644'],
+  ['Cosmic', 'OshkoshFleet', '3835652465'],
   ['Squirrelly Industries', 'SquirrellyIndustries', '3797845758'],
 ]
 
@@ -95,6 +135,24 @@ const NAME_OVERRIDES: Record<string, { name: string; note: string }> = {
 
 /** Blurbs written from the mod's files, where mod.info says nothing useful. */
 const DERIVED: Record<string, string> = {
+  // mod.info description, shortened
+  OutcastMotors: 'Engines built from twenty-four parts, each with its own condition, that you can pull out, put back and craft.',
+  // mod.info description, shortened
+  OutcastDisinfectAll: 'One option on an oven or sink washes your dirty bandages and sheets and sterilizes the clean ones.',
+  // mod.info description, shortened
+  OutcastPacking: 'Pack 5 to 1000 identical items into one lighter pack, or unpack them again, with every change made by the server.',
+  // workshop.txt description
+  OutcastLocking: 'Real locks for doors, windows, gates, garage doors and containers.',
+  // mod.info description, shortened
+  OutcastMusicians: 'Playable instruments with a songbook: learn each song from sheet music, master it, and train a Music skill.',
+  // mod.info description, shortened
+  OutcastViewpoint: 'The Viewpoint first-person mod as our servers run it, with its cheat features taken out.',
+  // mod.info description, shortened
+  CosmicExcavator: 'A tracked excavator you can drive: the cab swings all the way round, and one button digs a hole and bags the dirt.',
+  // mod.info description, reworded in American English
+  CosmicSkylineR34: 'A right-hand-drive Skyline R34 with opening doors, hood and trunk, an interior, breakable glass and an armor kit.',
+  // mod.info description, shortened
+  OshkoshFleet: 'Every Oshkosh vehicle in one mod: the M1070 HET with its semitrailer, the Heavy Wrecker, a flatbed and a dump truck.',
   DystopianCrossbow: 'Adds a Crossbow skill.',
   // mod.info description, shortened (media/lua/client: DQOL_HealthHud, DQOL_StatPanel, DQOL_PryOpen, DQOL_DismantleVehicle)
   DystopianQoL: 'Adds weapon and health HUD indicators, a player stat panel, crowbar prying and vehicle dismantling.',
@@ -110,7 +168,7 @@ const DERIVED: Record<string, string> = {
   // media/scripts: TapeDystopianItems.txt (302 items) and VinylDystopianItems.txt (12 items)
   DystopianMusic: 'Adds more than 300 cassette tapes and 12 vinyl records to play in the game.',
   // media/scripts: Arsenal_Weapons.txt (14 items), Arsenal_Bags.txt (22 items); media/clothing: hats, masks, armour
-  DystopianArsenal: 'Adds 14 weapons, 22 bags and a range of clothing, from hats and masks to armour sets.',
+  DystopianArsenal: 'Adds 14 weapons, 22 bags and a range of clothing, from hats and masks to armor sets.',
   // media/scripts/DystopianTraits_character_traits.txt (58 definitions); UI_EN.txt names
   DystopianTraits: 'Adds 58 character traits to the server, including Survivor, Medic, Butcher and Mortician.',
   // media/lua/client: DO_HelpButton.lua, DO_HelpUI.lua, DO_DeathLogPanel.lua
@@ -242,7 +300,9 @@ async function main() {
     if (override) mod.note = override.note
     if (mod.blurb.length > MAX_BLURB) problems.push(`${id}: blurb is ${mod.blurb.length} characters (max ${MAX_BLURB}): ${mod.blurb}`)
 
-    const poster = findPoster(modDir)
+    const plate = group === 'Outcast' ? path.join(PLATES_ROOT, id, 'preview.png') : null
+    if (plate && !fs.existsSync(plate)) problems.push(`${id}: no Workshop plate at ${plate}`)
+    const poster = plate && fs.existsSync(plate) ? plate : findPoster(modDir)
     if (poster) {
       const dest = path.join(STAGE, `${id}.webp`)
       const size = await writePoster(poster, dest)

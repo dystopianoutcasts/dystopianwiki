@@ -24,16 +24,8 @@
     "workshopId": "3778967781",
     "name": "Outcast Husbandry",
     "group": "Outcast",
-    "blurb": "Livestock in a designated animal zone get hungry, thirsty and sick while you are away, but never starve to death.",
-    "poster": null
-  },
-  {
-    "id": "OutcastHearing",
-    "workshopId": "3778967689",
-    "name": "Outcast Hearing",
-    "group": "Outcast",
-    "blurb": "Gunfire damages your hearing.",
-    "poster": "/assets/mods/OutcastHearing.webp",
+    "blurb": "Livestock in a designated animal zone get hungry and thirsty far more slowly, so a few days away does not come back to a dead herd.",
+    "poster": "/assets/mods/OutcastHusbandry.webp",
     "posterWidth": 256,
     "posterHeight": 256
   },
@@ -72,7 +64,7 @@
     "workshopId": "3777373070",
     "name": "Outcast Ladders",
     "group": "Outcast",
-    "blurb": "Climb the ladders that are already in the world.",
+    "blurb": "See the ladders hidden behind buildings.",
     "poster": "/assets/mods/OutcastLadders.webp",
     "posterWidth": 256,
     "posterHeight": 256
@@ -92,8 +84,9 @@
     "workshopId": "3782914142",
     "name": "Outcast Motors",
     "group": "Outcast",
-    "blurb": "Engines are built, not repaired.",
+    "blurb": "Engines built from twenty-four parts, each with its own condition, that you can pull out, put back and craft.",
     "poster": "/assets/mods/OutcastMotors.webp",
+    "blurbSource": "derived",
     "posterWidth": 256,
     "posterHeight": 256
   },
@@ -114,6 +107,121 @@
     "group": "Outcast",
     "blurb": "A vehicle mechanics window that presents the whole car.",
     "poster": "/assets/mods/OutcastMotorsUI.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastDisinfectAll",
+    "workshopId": "3813271835",
+    "name": "Outcast Disinfect All",
+    "group": "Outcast",
+    "blurb": "One option on an oven or sink washes your dirty bandages and sheets and sterilizes the clean ones.",
+    "poster": "/assets/mods/OutcastDisinfectAll.webp",
+    "blurbSource": "derived",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastPacking",
+    "workshopId": "3815375509",
+    "name": "Outcast Packing",
+    "group": "Outcast",
+    "blurb": "Pack 5 to 1000 identical items into one lighter pack, or unpack them again, with every change made by the server.",
+    "poster": "/assets/mods/OutcastPacking.webp",
+    "blurbSource": "derived",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastSearch",
+    "workshopId": "3817581411",
+    "name": "Outcast Search",
+    "group": "Outcast",
+    "blurb": "A search box on every container you open: your bags, crates, corpses, the floor.",
+    "poster": "/assets/mods/OutcastSearch.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastLocking",
+    "workshopId": "3827505595",
+    "name": "Outcast Locking",
+    "group": "Outcast",
+    "blurb": "Real locks for doors, windows, gates, garage doors and containers.",
+    "poster": "/assets/mods/OutcastLocking.webp",
+    "blurbSource": "derived",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastHighDrive",
+    "workshopId": "3833867601",
+    "name": "Outcast High Drive",
+    "group": "Outcast",
+    "blurb": "Drive a car up a ramp and park it on an upper deck in multiplayer.",
+    "poster": "/assets/mods/OutcastHighDrive.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastMusicians",
+    "workshopId": "3834949227",
+    "name": "Outcast Musicians",
+    "group": "Outcast",
+    "blurb": "Playable instruments with a songbook: learn each song from sheet music, master it, and train a Music skill.",
+    "poster": "/assets/mods/OutcastMusicians.webp",
+    "blurbSource": "derived",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastTerritories",
+    "workshopId": "3834985954",
+    "name": "Outcast Territories",
+    "group": "Outcast",
+    "blurb": "Zones for the Dystopian Outcasts server: difficulty by area and PvPvE.",
+    "poster": "/assets/mods/OutcastTerritories.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastViewpoint",
+    "workshopId": "3835082422",
+    "name": "Outcast Viewpoint",
+    "group": "Outcast",
+    "blurb": "The Viewpoint first-person mod as our servers run it, with its cheat features taken out.",
+    "poster": "/assets/mods/OutcastViewpoint.webp",
+    "blurbSource": "derived",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastAchievements",
+    "workshopId": "3837262687",
+    "name": "Outcast Achievements",
+    "group": "Outcast",
+    "blurb": "Achievements for your character, tracked by the server: zombie kills, time survived and total skill levels.",
+    "poster": "/assets/mods/OutcastAchievements.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastNature",
+    "workshopId": "3838127382",
+    "name": "Outcast Nature",
+    "group": "Outcast",
+    "blurb": "Trees, bushes and plants that grow, spread and die over the years on every server.",
+    "poster": "/assets/mods/OutcastNature.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OutcastBuddy",
+    "workshopId": "3838159103",
+    "name": "Outcast Buddy",
+    "group": "Outcast",
+    "blurb": "The helper that lets the game load the Java parts of Outcast mods (the Outcast Viewpoint first-person view and the Outcast loading screen).",
+    "poster": "/assets/mods/OutcastBuddy.webp",
     "posterWidth": 256,
     "posterHeight": 256
   },
@@ -144,7 +252,7 @@
     "workshopId": "3781355461",
     "name": "Dystopian Arsenal",
     "group": "Dystopian",
-    "blurb": "Adds 14 weapons, 22 bags and a range of clothing, from hats and masks to armour sets.",
+    "blurb": "Adds 14 weapons, 22 bags and a range of clothing, from hats and masks to armor sets.",
     "poster": "/assets/mods/DystopianArsenal.webp",
     "blurbSource": "derived",
     "posterWidth": 256,
@@ -278,14 +386,42 @@
     "posterHeight": 256
   },
   {
-    "id": "MRAPMC",
-    "workshopId": "3801434536",
-    "name": "MRAP Mine Clearer",
+    "id": "DystopianBuildMenu",
+    "workshopId": "3821656463",
+    "name": "Dystopian Build Menu",
     "group": "Dystopian",
-    "blurb": "Adds an MRAP mine clearer vehicle.",
-    "poster": "/assets/mods/MRAPMC.webp",
-    "blurbSource": "derived",
-    "note": "mod.info name is \"MRAPMC\"",
+    "blurb": "A mod that adds an additional Build Menu UI to allow players to customize their base using existing tile sets.",
+    "poster": "/assets/mods/DystopianBuildMenu.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "DystopianBasements",
+    "workshopId": "3829746627",
+    "name": "Dystopian Basements",
+    "group": "Dystopian",
+    "blurb": "Dig stairwells and excavate basements under your base.",
+    "poster": "/assets/mods/DystopianBasements.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "DystopianVehicleInteriors",
+    "workshopId": "3832229382",
+    "name": "Dystopian Vehicle Interiors",
+    "group": "Dystopian",
+    "blurb": "Step inside the back of a stepvan: a small room to rest, sleep and store gear, wherever the van goes.",
+    "poster": "/assets/mods/DystopianVehicleInteriors.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "DystopianArchery",
+    "workshopId": "3834940830",
+    "name": "Dystopian Archery",
+    "group": "Dystopian",
+    "blurb": "Bows with custom archery animations.",
+    "poster": "/assets/mods/DystopianArchery.webp",
     "posterWidth": 256,
     "posterHeight": 256
   },
@@ -309,6 +445,211 @@
     "note": "mod.info name is \"UIoverhaul\"",
     "posterWidth": 256,
     "posterHeight": 256
+  },
+  {
+    "id": "MRAPMC",
+    "workshopId": "3801434536",
+    "name": "MRAP Mine Clearer",
+    "group": "Cosmic",
+    "blurb": "Adds an MRAP mine clearer vehicle.",
+    "poster": "/assets/mods/MRAPMC.webp",
+    "blurbSource": "derived",
+    "note": "mod.info name is \"MRAPMC\"",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "CosmicTowing",
+    "workshopId": "3815051983",
+    "name": "Cosmic Realistic Towing",
+    "group": "Cosmic",
+    "blurb": "Towing you can feel.",
+    "poster": "/assets/mods/CosmicTowing.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "CosmicForklift",
+    "workshopId": "3818214366",
+    "name": "Cosmic Forklift",
+    "group": "Cosmic",
+    "blurb": "Makes the ForkLift mod forklift drivable and adds cargo pallets: drag items in, lift, stack and load them onto trucks and trailers.",
+    "poster": "/assets/mods/CosmicForklift.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "CosmicNoveltyCars",
+    "workshopId": "3820642610",
+    "name": "Cosmic Novelty Cars",
+    "group": "Cosmic",
+    "blurb": "Adds two drivable vehicles: the Shadow Batmobile and the foot-powered BamBamobile.",
+    "poster": "/assets/mods/CosmicNoveltyCars.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "CosmicGunRework",
+    "workshopId": "3829264783",
+    "name": "Cosmic Gun Rework",
+    "group": "Cosmic",
+    "blurb": "A Tarkov-inspired firearms overhaul.",
+    "poster": "/assets/mods/CosmicGunRework.webp",
+    "posterWidth": 320,
+    "posterHeight": 320
+  },
+  {
+    "id": "CosmicCinema",
+    "workshopId": "3835643076",
+    "name": "Cosmic Cinema",
+    "group": "Cosmic",
+    "blurb": "Play your own movies and TV shows on any wall.",
+    "poster": "/assets/mods/CosmicCinema.webp",
+    "posterWidth": 320,
+    "posterHeight": 320
+  },
+  {
+    "id": "CosmicEscalade",
+    "workshopId": "3835643234",
+    "name": "Cosmic Escalade",
+    "group": "Cosmic",
+    "blurb": "2003 Cadillac Escalade ESV. Opening doors, hood and rear hatch, working lights, breakable glass, white and green paint.",
+    "poster": "/assets/mods/CosmicEscalade.webp",
+    "posterWidth": 320,
+    "posterHeight": 320
+  },
+  {
+    "id": "CosmicExcavator",
+    "workshopId": "3835643646",
+    "name": "Cosmic Excavator",
+    "group": "Cosmic",
+    "blurb": "A tracked excavator you can drive: the cab swings all the way round, and one button digs a hole and bags the dirt.",
+    "poster": "/assets/mods/CosmicExcavator.webp",
+    "blurbSource": "derived",
+    "posterWidth": 320,
+    "posterHeight": 320
+  },
+  {
+    "id": "CosmicFlatbedTow",
+    "workshopId": "3835643788",
+    "name": "Flatbed Tow Truck",
+    "group": "Cosmic",
+    "blurb": "A drivable rollback flatbed tow truck (Base.FlatbedTow).",
+    "poster": "/assets/mods/CosmicFlatbedTow.webp",
+    "posterWidth": 320,
+    "posterHeight": 206
+  },
+  {
+    "id": "CosmicHumvee",
+    "workshopId": "3835644316",
+    "name": "Cosmic Humvee",
+    "group": "Cosmic",
+    "blurb": "M998 Humvee with four seats, opening doors, hood and cargo lid, an interior and engine bay, glass that breaks, and working lights.",
+    "poster": "/assets/mods/CosmicHumvee.webp",
+    "posterWidth": 320,
+    "posterHeight": 320
+  },
+  {
+    "id": "CosmicM978",
+    "workshopId": "3835644498",
+    "name": "M978 HEMTT Tankers",
+    "group": "Cosmic",
+    "blurb": "M978 HEMTT 8x8 tankers: a 2,500 L fuel tanker and a 2,500 L water tanker.",
+    "poster": "/assets/mods/CosmicM978.webp",
+    "posterWidth": 320,
+    "posterHeight": 320
+  },
+  {
+    "id": "CosmicReeferTruck",
+    "workshopId": "3835645040",
+    "name": "Cosmic Reefer Truck",
+    "group": "Cosmic",
+    "blurb": "A refrigerated box truck with a fridge and a freezer behind a roll-up rear door.",
+    "poster": "/assets/mods/CosmicReeferTruck.webp",
+    "posterWidth": 320,
+    "posterHeight": 320
+  },
+  {
+    "id": "CosmicRoadRoller",
+    "workshopId": "3835645223",
+    "name": "Cosmic Road Roller",
+    "group": "Cosmic",
+    "blurb": "A drivable tandem-drum road roller (Base.RoadRoller).",
+    "poster": "/assets/mods/CosmicRoadRoller.webp",
+    "posterWidth": 320,
+    "posterHeight": 320
+  },
+  {
+    "id": "CosmicSkylineR34",
+    "workshopId": "3835645448",
+    "name": "Cosmic Skyline R34",
+    "group": "Cosmic",
+    "blurb": "A right-hand-drive Skyline R34 with opening doors, hood and trunk, an interior, breakable glass and an armor kit.",
+    "poster": "/assets/mods/CosmicSkylineR34.webp",
+    "blurbSource": "derived",
+    "posterWidth": 320,
+    "posterHeight": 320
+  },
+  {
+    "id": "CosmicStationWagon",
+    "workshopId": "3835645783",
+    "name": "Woodgrain Station Wagon (Cosmic)",
+    "group": "Cosmic",
+    "blurb": "A pearl white 1970s woodgrain station wagon.",
+    "poster": "/assets/mods/CosmicStationWagon.webp",
+    "posterWidth": 320,
+    "posterHeight": 320
+  },
+  {
+    "id": "CosmicStreetSweeper",
+    "workshopId": "3835645963",
+    "name": "Tymco 600 Street Sweeper",
+    "group": "Cosmic",
+    "blurb": "A drivable street sweeper. Turn it on from the vehicle radial menu and it sweeps items, bodies, blood and litter into its hopper.",
+    "poster": "/assets/mods/CosmicStreetSweeper.webp",
+    "posterWidth": 320,
+    "posterHeight": 320
+  },
+  {
+    "id": "CosmicTankTrailer",
+    "workshopId": "3835646203",
+    "name": "Tank Trailers (Cosmic)",
+    "group": "Cosmic",
+    "blurb": "Single-axle water and fuel bowser trailers, 1000 L each.",
+    "poster": "/assets/mods/CosmicTankTrailer.webp",
+    "posterWidth": 320,
+    "posterHeight": 320
+  },
+  {
+    "id": "CosmicWaterTruck",
+    "workshopId": "3835646417",
+    "name": "Cosmic Water Truck",
+    "group": "Cosmic",
+    "blurb": "A two-seat water truck with opening doors, a tilt-forward front end, working lights and a split tank: 2,500 L of water and 1,500 L of fuel.",
+    "poster": "/assets/mods/CosmicWaterTruck.webp",
+    "posterWidth": 320,
+    "posterHeight": 320
+  },
+  {
+    "id": "CosmicTornado",
+    "workshopId": "3835646644",
+    "name": "Cosmic Tornado",
+    "group": "Cosmic",
+    "blurb": "Dynamic weather and dangerous tornadoes.",
+    "poster": "/assets/mods/CosmicTornado.webp",
+    "posterWidth": 256,
+    "posterHeight": 256
+  },
+  {
+    "id": "OshkoshFleet",
+    "workshopId": "3835652465",
+    "name": "Oshkosh Fleet",
+    "group": "Cosmic",
+    "blurb": "Every Oshkosh vehicle in one mod: the M1070 HET with its semitrailer, the Heavy Wrecker, a flatbed and a dump truck.",
+    "poster": "/assets/mods/OshkoshFleet.webp",
+    "blurbSource": "derived",
+    "posterWidth": 320,
+    "posterHeight": 213
   },
   {
     "id": "SquirrellyIndustries",
