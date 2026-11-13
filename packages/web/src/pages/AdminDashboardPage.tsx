@@ -92,6 +92,17 @@ import {
   statusLine,
   worldCountText,
 } from '../lib/worldsPanel'
+import { CopyField } from '../components/landing/CopyField'
+import { STORAGE_FAILURE_TEXT, formatMegabytes, storedFileLine, type StoredFile } from '../lib/serverBuddy'
+import { fetchServerBuddyFile, fetchServerBuddyLink } from '../lib/serverBuddyApi'
+import {
+  SERVERBUDDY_BYTES,
+  SERVERBUDDY_DATE,
+  SERVERBUDDY_FILE,
+  SERVERBUDDY_LINK_SECONDS,
+  SERVERBUDDY_SHA256,
+  SERVERBUDDY_VERSION,
+} from '../data/serverBuddy'
 import '../styles/pages/mascot-vote.css'
 import '../styles/pages/admin.css'
 import '../styles/pages/admin-worlds.css'
@@ -212,6 +223,8 @@ function Dashboard({ superadmin, selfId }: { superadmin: boolean; selfId: string
         </a>
       </section>
 
+      <ServerBuddySection />
+
       <WorldSection />
 
       <MapSection />
@@ -254,6 +267,131 @@ function Dashboard({ superadmin, selfId }: { superadmin: boolean; selfId: string
         </>
       )}
     </>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// ServerBuddy download (migration 047). Every admin; the bucket refuses anyone else.
+// ---------------------------------------------------------------------------
+
+type FileLoad = { state: 'loading' } | { state: 'error'; text: string } | { state: 'ready'; value: StoredFile | null }
+
+function ServerBuddySection() {
+  const [file, setFile] = useState<FileLoad>({ state: 'loading' })
+  const [key, setKey] = useState(0)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [started, setStarted] = useState(false)
+  const reload = useCallback(() => setKey((k) => k + 1), [])
+
+  useEffect(() => {
+    let cancelled = false
+    void fetchServerBuddyFile().then((r) => {
+      if (cancelled) return
+      setFile(r.ok ? { state: 'ready', value: r.value } : { state: 'error', text: STORAGE_FAILURE_TEXT[r.reason] })
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [key])
+
+  const download = async () => {
+    setBusy(true)
+    setError(null)
+    setStarted(false)
+    const r = await fetchServerBuddyLink()
+    setBusy(false)
+    if (!r.ok) {
+      setError(STORAGE_FAILURE_TEXT[r.reason])
+      return
+    }
+    setStarted(true)
+    window.location.assign(r.value)
+  }
+
+  const line = file.state === 'ready' ? storedFileLine(file.value, SERVERBUDDY_BYTES, SERVERBUDDY_FILE) : null
+  const missing = file.state === 'ready' && file.value === null
+
+  return (
+    <section className="mascot-vote__panel admin__download" aria-labelledby="ad-serverbuddy">
+      <h2 id="ad-serverbuddy" className="mascot-vote__panel-title">
+        ServerBuddy (admins only)
+      </h2>
+      <p>
+        A Windows program for managing our game servers from outside: status and players, setting up Outcast Buddy on a
+        server, files, logs and the console. Only admins can download it here.
+      </p>
+      <p>
+        It holds no logins. You type a server's address, file (SFTP) login and RCON password into it on your own PC, and
+        Windows keeps them encrypted for your Windows account. Please do not pass the file on.
+      </p>
+
+      {file.state === 'loading' && <p role="status">Checking the file...</p>}
+      {file.state === 'error' && (
+        <>
+          <p role="alert">{file.text}</p>
+          <div className="admin__actions">
+            <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary" onClick={reload}>
+              Check again
+            </button>
+          </div>
+        </>
+      )}
+      {line && (
+        <p className={line.tone === 'warn' ? 'mascot-vote__notice' : 'mascot-vote__meta'} role="status">
+          {line.text}
+        </p>
+      )}
+
+      <dl className="admin__facts">
+        <dt>Version</dt>
+        <dd>{SERVERBUDDY_VERSION}</dd>
+        <dt>Built</dt>
+        <dd>{SERVERBUDDY_DATE}</dd>
+        <dt>Size</dt>
+        <dd>
+          {formatMegabytes(SERVERBUDDY_BYTES)} ({SERVERBUDDY_BYTES.toLocaleString('en-US')} bytes)
+        </dd>
+        <dt>SHA-256</dt>
+        <dd>
+          <CopyField value={SERVERBUDDY_SHA256} what="SHA-256" />
+        </dd>
+      </dl>
+
+      <div className="admin__actions">
+        <button
+          type="button"
+          className="mascot-vote__btn mascot-vote__btn--primary"
+          disabled={busy || missing}
+          onClick={() => void download()}
+        >
+          {busy ? 'Preparing the download...' : `Download ServerBuddy ${SERVERBUDDY_VERSION}`}
+        </button>
+      </div>
+      {missing && <p className="mascot-vote__meta">The button turns on once the file is uploaded. Reload the page after uploading.</p>}
+      {error && <p role="alert">{error}</p>}
+      {started && (
+        <p role="status">
+          Your download of {SERVERBUDDY_FILE} should start now. If it does not, press the button again: each link works for{' '}
+          {SERVERBUDDY_LINK_SECONDS} seconds.
+        </p>
+      )}
+
+      <details className="admin__maplog">
+        <summary>After downloading: check the file and start it</summary>
+        <ol>
+          <li>
+            Check the file (optional). In PowerShell: <code>Get-FileHash .\{SERVERBUDDY_FILE}</code>. In Git Bash:{' '}
+            <code>sha256sum {SERVERBUDDY_FILE}</code>. The hash should match the SHA-256 above (capital or small letters do not matter).
+          </li>
+          <li>
+            Open it. ServerBuddy is not code-signed yet, so Windows may say it protected your PC: press More info, then Run
+            anyway.
+          </li>
+          <li>Press Add a server and fill in the server's address, file login and RCON password.</li>
+        </ol>
+      </details>
+    </section>
   )
 }
 

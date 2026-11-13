@@ -539,3 +539,42 @@
     overflow-wrap: normal;
   }
 }
+
+/* ---- ServerBuddy download (migration 047) ---------------------------------- */
+
+.admin__facts {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: var(--spacing-2) var(--spacing-4);
+  margin: 0 0 var(--spacing-4);
+}
+
+.admin__facts dt {
+  color: var(--color-text-secondary);
+}
+
+.admin__facts dd {
+  margin: 0;
+  min-width: 0;
+}
+
+/* A 64-character hash must wrap on a phone instead of pushing the page sideways. */
+.admin__download .copy-field {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.admin__download .copy-field code {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--font-family-mono);
+}
+
+.admin__download details ol {
+  margin: var(--spacing-2) 0 0;
+  padding-left: var(--spacing-5, 1.25rem);
+}
+
+.admin__download details li + li {
+  margin-top: var(--spacing-2);
+}
