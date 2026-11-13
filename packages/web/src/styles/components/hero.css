@@ -11,45 +11,63 @@
   z-index: 10;
 }
 
-/* Gradient Background - neutral metal, with two dim lights (dim-lights.css tokens): an orange oval
-   upper left (the brand) and a green one lower right. They belong to the hero and scroll with it. */
+/* Gradient Background - neutral metal, with two dim lights (dim-lights.css tokens): an orange circle
+   on the left (the brand) and a green one on the right, each 7/8 of the hero's height. They sit a
+   third past the edge so they stay clear of the stat chips' small labels. */
 .hero__gradient {
   position: absolute;
   inset: 0;
-  --hero-lights:
-    radial-gradient(ellipse 560px 320px at 8% 30%, var(--dim-light-orange) 0%, var(--dim-light-orange-mid) 36%, transparent 70%),
-    radial-gradient(ellipse 600px 340px at 92% 72%, var(--dim-light-green) 0%, var(--dim-light-green-mid) 36%, transparent 70%);
-  background:
-    var(--hero-lights),
-    linear-gradient(
-      135deg,
-      var(--color-primary-900) 0%,
-      var(--color-primary-800) 50%,
-      var(--color-primary-700) 100%
-    );
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-900) 0%,
+    var(--color-primary-800) 50%,
+    var(--color-primary-700) 100%
+  );
   z-index: -1;
 }
 
 /* Light theme - aluminum gradient */
 [data-theme="light"] .hero__gradient {
   /* Light metal, neutral: the hero's ink text reads on it (KB16) */
-  background:
-    var(--hero-lights),
-    linear-gradient(
-      135deg,
-      #dfe1dc 0%,
-      #ecedea 55%,
-      #f7f7f5 100%
-    );
+  background: linear-gradient(
+    135deg,
+    #dfe1dc 0%,
+    #ecedea 55%,
+    #f7f7f5 100%
+  );
 }
 
-/* Phones: smaller pools tucked into the corners, clear of the centered text */
-@media (max-width: 768px) {
-  .hero__gradient {
-    --hero-lights:
-      radial-gradient(ellipse 260px 200px at 0% 18%, var(--dim-light-orange) 0%, var(--dim-light-orange-mid) 36%, transparent 70%),
-      radial-gradient(ellipse 260px 200px at 100% 85%, var(--dim-light-green) 0%, var(--dim-light-green-mid) 36%, transparent 70%);
-  }
+.hero__gradient::before,
+.hero__gradient::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  height: min(87.5%, 80vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side,
+    var(--hero-light) 0%,
+    var(--hero-light) 70%,
+    var(--hero-light-rim) 86%,
+    transparent 100%
+  );
+}
+
+.hero__gradient::before {
+  --hero-light: var(--dim-light-orange);
+  --hero-light-rim: var(--dim-light-orange-rim);
+  left: 0;
+  transform: translate(-35%, -50%);
+}
+
+.hero__gradient::after {
+  --hero-light: var(--dim-light-green);
+  --hero-light-rim: var(--dim-light-green-rim);
+  right: 0;
+  transform: translate(35%, -50%);
 }
 
 /* Content Container */

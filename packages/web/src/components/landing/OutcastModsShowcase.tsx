@@ -133,7 +133,7 @@ export function OutcastModsShowcase() {
   if (groups.length === 0) return null;
 
   return (
-    <section className="home-section home-section--alt dim-lights dim-lights--left" aria-labelledby={titleId}>
+    <section className="home-section home-section--alt" aria-labelledby={titleId}>
       <div className="home-section__inner">
         <h2 className="home-section__title" id={titleId}>
           Made by Dystopian Outcasts

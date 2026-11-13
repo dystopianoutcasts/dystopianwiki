@@ -84,12 +84,13 @@
      Soot and gunmetal with cream text and kudzu green accents
      ═══════════════════════════════════════════════════════════════ */
   --color-background: var(--color-primary-900);
-  /* Dim lights (dim-lights.css): soft round pools of green and orange inside sections (owner,
-     2026-11-13). Kept faint: they sit under text, which still meets its contrast on every pixel. */
-  --dim-light-green: rgba(156, 197, 107, 0.17);
-  --dim-light-green-mid: rgba(156, 197, 107, 0.08);
-  --dim-light-orange: rgba(226, 116, 45, 0.20);
-  --dim-light-orange-mid: rgba(226, 116, 45, 0.09);
+  /* Dim lights (dim-lights.css): round pools of green and orange inside components (owner,
+     2026-11-13). Disc and rim strengths; dimLights.test.ts holds muted text at 4.5:1 on Soot under
+     the disc (limits: green 0.115, orange 0.155). */
+  --dim-light-green: rgba(156, 197, 107, 0.10);
+  --dim-light-green-rim: rgba(156, 197, 107, 0.05);
+  --dim-light-orange: rgba(226, 116, 45, 0.14);
+  --dim-light-orange-rim: rgba(226, 116, 45, 0.07);
   --color-surface: var(--color-primary-800);
   --color-surface-elevated: var(--color-primary-700);
   --color-text-primary: #e6dcc6;  /* Muzzle Cream */
@@ -314,9 +315,9 @@
   /* Aluminum page, lighter cards, white raised surfaces */
   --color-background: #ecedea;
   --dim-light-green: rgba(63, 125, 44, 0.12);
-  --dim-light-green-mid: rgba(63, 125, 44, 0.05);
-  --dim-light-orange: rgba(226, 116, 45, 0.15);
-  --dim-light-orange-mid: rgba(226, 116, 45, 0.06);
+  --dim-light-green-rim: rgba(63, 125, 44, 0.06);
+  --dim-light-orange: rgba(226, 116, 45, 0.14);
+  --dim-light-orange-rim: rgba(226, 116, 45, 0.07);
   --color-surface: #f7f7f5;
   --color-surface-elevated: #ffffff;
 
