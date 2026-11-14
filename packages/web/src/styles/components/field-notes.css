@@ -392,3 +392,154 @@
     font-size: var(--font-size-3xl);
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   FIELD NOTES - code references (:cite and "Code" table columns)
+   Hidden by default. display: none, so screen readers skip them too. The class goes on
+   the article root (WikiArticle) only when the article has citations and the reader has
+   not chosen to show them.
+   ═══════════════════════════════════════════════════════════════ */
+.wiki-article--hide-cites .fn-cite,
+.wiki-article--hide-cites .fn-cite-col {
+  display: none;
+}
+
+.markdown .fn-cite {
+  color: var(--color-text-muted);
+  font-size: 0.9em;
+}
+
+/* The labeled Show/Hide button, under the header and in the contents list. 40px tall. */
+.code-refs-button {
+  min-height: 2.5rem;
+  padding: var(--spacing-2) var(--spacing-4);
+  border: 2px solid var(--fn-chip-border);
+  border-radius: var(--border-radius-md);
+  background-color: var(--fn-chip-bg);
+  color: var(--fn-chip-text);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+.code-refs-button:hover {
+  border-color: var(--fn-key-bar);
+}
+
+.code-refs-button[aria-pressed="true"] {
+  border-color: var(--fn-key-bar);
+}
+
+.wiki-article__tools {
+  margin: calc(var(--spacing-3) * -1) 0 var(--spacing-5);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FIELD NOTES - reading layout (::field-notes): 17px text, a line length of about 46rem for
+   prose, and a lede after each section heading. Tables, cards and code keep the full width.
+   ═══════════════════════════════════════════════════════════════ */
+.markdown--field-notes {
+  font-size: 17px;
+}
+
+.markdown--field-notes > :is(p, ul, ol, blockquote, aside.callout) {
+  max-width: 46rem;
+}
+
+.markdown--field-notes .fn-lede {
+  font-size: 1.2em;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FIELD NOTES - :::flow step diagrams. An ordered list of boxes joined by arrows: a row on
+   wide screens, a stack with down arrows on a phone. The arrows are empty, decorative spans.
+   ═══════════════════════════════════════════════════════════════ */
+.markdown .fn-flow {
+  margin: var(--spacing-5) 0;
+}
+
+.markdown .fn-flow__caption {
+  margin-bottom: var(--spacing-2);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fn-card-label);
+}
+
+.markdown .fn-flow__steps {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.markdown .fn-flow__step {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin: 0;
+  min-width: 0;
+}
+
+.markdown .fn-flow__box {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 1px solid var(--fn-panel-border);
+  border-top: 4px solid var(--fn-bar-1);
+  border-radius: var(--border-radius-lg);
+  background-color: var(--fn-panel-bg);
+  color: var(--color-text-primary);
+  overflow-wrap: anywhere;
+}
+
+.markdown .fn-flow__arrow {
+  position: relative;
+  flex: none;
+  align-self: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  transform: rotate(90deg); /* phone: points down */
+}
+
+.markdown .fn-flow__arrow::before {
+  content: "";
+  position: absolute;
+  left: 0.15rem;
+  right: 0.3rem;
+  top: 50%;
+  border-top: 2px solid var(--fn-chip-border);
+}
+
+.markdown .fn-flow__arrow::after {
+  content: "";
+  position: absolute;
+  right: 0.25rem;
+  top: 50%;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-top: 2px solid var(--fn-chip-border);
+  border-right: 2px solid var(--fn-chip-border);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+@media (min-width: 48rem) {
+  .markdown .fn-flow__steps {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .markdown .fn-flow__step {
+    flex: 1 1 0;
+    flex-direction: row;
+  }
+
+  .markdown .fn-flow__arrow {
+    transform: none; /* wide: points right */
+  }
+}

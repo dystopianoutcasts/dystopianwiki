@@ -82,6 +82,47 @@ A callout with any label. Kinds: key, warn, design, proof.
 | `::meter[name]` | `value`, `max` (whole numbers, max 10), `text` | It always shows "text: value of max" in words. |
 | `::bar[name]` | `value`, `max` (default 100), `text`, `accent` | Its width is value / max. |
 | `:badge[word]` | `kind` = yes, no, maybe, t1, t2, t3 or rare | `Yes` and `No` choose their own colour. Other words default to `maybe`. |
+| `:cite[text]` | none | A code reference the reader can hide, such as ``:cite[(`StashSystem.java:120`)]``. Layered articles only. See "Code references" below. |
+| `:::flow[caption]` | none | Wraps a list. Each item is a step, drawn as boxes joined by arrows. See "Flow diagrams" below. |
+
+## Code references
+
+Put the code reference (file and line) in the sentence with `:cite[...]`. The content is Markdown, so an inline code span works:
+
+```markdown
+The game picks a stash when the map is read :cite[(`StashSystem.java:120`)].
+
+| Step | Code |
+|------|------|
+| Pick the stash | `StashSystem.java:120` |
+```
+
+- A table column whose header cell is exactly **Code** is a code-reference column. Its header and cells hide and show with the `:cite` text.
+- On the web, code references are **hidden by default**. An article that has any shows a button, "Show code references" (it reads "Hide code references" while they are shown), under the article header and in the contents list. The reader's choice is remembered in their browser.
+- An article with no `:cite` and no Code column shows no button.
+- Needs the `::field-notes` marker. In an article without it, `:cite[...]` stays as written.
+- The mobile app has no button: `:cite[x]` reads as the plain inline text `x`.
+
+## Reading layout and ledes
+
+In a layered article (`::field-notes`), body text is 17px, paragraphs, lists and quotes are held to about 46rem so lines stay readable, and the **first paragraph right after each `##` heading is a lede**: larger and bold. Write it as the one-sentence answer to the section. Tables, cards and code blocks keep the full width. Articles without the marker are drawn as before.
+
+## Flow diagrams
+
+`:::flow` turns a list into steps joined by arrows: a row on wide screens, a stack on a phone.
+
+```markdown
+:::flow[How a map becomes a stash]
+- Draw the map
+- Annotate it
+- Read it in game
+- Find the stash
+:::
+```
+
+- Each list item is one step. Keep steps short (a few words to one sentence).
+- The optional label becomes a visible caption and the list's name for screen readers. Screen readers hear an ordered list of the steps in order; the arrows are decorative and skipped.
+- The mobile app shows the label as a bold line above a plain list.
 
 ## Rules
 
@@ -98,6 +139,8 @@ The app has no field-notes components. It reads `fieldNotesToPlainMarkdown(conte
 - card labels become bold lines
 - meters and bars become their words
 - badges become bold words
+- citations read as the text inside them (`:cite[x]` becomes `x`)
+- a flow's label becomes a bold line above its list
 - the markers disappear
 
 After changing `packages/shared/field-notes`, rebuild the shared package with `npm run shared:build`. `dist/` is ignored by git, so add the new files with `git add -f packages/shared/dist/field-notes/*`.

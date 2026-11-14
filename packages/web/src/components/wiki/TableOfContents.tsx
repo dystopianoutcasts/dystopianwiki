@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { TOCItem } from '../../types/wiki';
+import { CodeReferencesButton } from './CodeReferencesButton';
+import type { CodeReferences } from './useCodeReferences';
 import '../../styles/components/table-of-contents.css';
 
 // Chevron icon for mobile toggle
@@ -12,9 +14,11 @@ const ChevronIcon = () => (
 interface TableOfContentsProps {
   items: TOCItem[];
   className?: string;
+  /** Passed on articles that have code references: adds the same Show/Hide button the header has. */
+  codeRefs?: CodeReferences;
 }
 
-export function TableOfContents({ items, className = '' }: TableOfContentsProps) {
+export function TableOfContents({ items, className = '', codeRefs }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>('');
   const [expanded, setExpanded] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -114,6 +118,12 @@ export function TableOfContents({ items, className = '' }: TableOfContentsProps)
           </li>
         ))}
       </ul>
+
+      {codeRefs && (
+        <div className="toc__tools">
+          <CodeReferencesButton hidden={codeRefs.hidden} onToggle={codeRefs.toggle} />
+        </div>
+      )}
 
       {/* Progress bar */}
       <div className="toc__progress">

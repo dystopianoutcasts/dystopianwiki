@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { Difficulty } from '../../types/wiki';
+import { categoryLabel } from './categoryLabel';
 import '../../styles/components/related-articles.css';
 
 interface RelatedArticle {
@@ -42,7 +43,7 @@ export function RelatedArticles({
             className="related-article"
           >
             <span className="related-article__category">
-              {article.category.replace(/-/g, ' ')}
+              {categoryLabel(article.version, article.section, article.category)}
             </span>
             <h3 className="related-article__title">{article.title}</h3>
             <p className="related-article__excerpt">{article.excerpt}</p>

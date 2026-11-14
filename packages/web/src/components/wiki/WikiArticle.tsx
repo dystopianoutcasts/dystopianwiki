@@ -3,11 +3,16 @@ import { Link } from 'react-router-dom';
 import type { WikiArticle as WikiArticleType, Difficulty } from '../../types/wiki';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { hasFieldNotesMarker } from './fieldNotes';
+import { hasCitations } from '../../../../shared/field-notes';
+import { CodeReferencesButton } from './CodeReferencesButton';
+import { HIDE_CODE_REFERENCES_CLASS } from './codeReferences';
+import { useCodeReferences } from './useCodeReferences';
 import { TableOfContents, extractTOCFromMarkdown } from './TableOfContents';
 import { RelatedArticles } from './RelatedArticles';
 import { OutcastInvitation } from './OutcastInvitation';
 import { BookmarkButton } from '../article/BookmarkButton';
 import { useArticleContext } from '../../context/ArticleContext';
+import { categoryLabel } from './categoryLabel';
 import '../../styles/components/wiki-article.css';
 import '../../styles/components/outcast-invitation.css';
 
@@ -45,20 +50,6 @@ const difficultyLabels: Record<Difficulty, string> = {
   advanced: 'Advanced',
 };
 
-const categoryDisplayNames: Record<string, string> = {
-  'lua-api': 'Lua API',
-  recipes: 'Recipes',
-  items: 'Items',
-  'game-mechanics': 'Game Mechanics',
-  'weapon-repair': 'Weapon Repair',
-  foraging: 'Foraging',
-  tools: 'Tools',
-  tilezed: 'TileZed',
-  worlded: 'WorldEd',
-  buildings: 'Buildings',
-  terrain: 'Terrain',
-};
-
 export function WikiArticle({
   article,
   relatedArticles = [],
@@ -85,6 +76,11 @@ export function WikiArticle({
   // The ::field-notes marker also draws the header as a cover (field-notes.css)
   const fieldNotes = useMemo(() => hasFieldNotesMarker(article.content), [article.content]);
 
+  // Code references hide behind a labeled button, only on articles that have some
+  const hasCites = useMemo(() => hasCitations(article.content), [article.content]);
+  const codeRefs = useCodeReferences();
+  const hideCites = hasCites && codeRefs.hidden;
+
   // Format last updated date
   const formattedDate = useMemo(() => {
     try {
@@ -99,7 +95,9 @@ export function WikiArticle({
   }, [article.lastUpdated]);
 
   return (
-    <article className={`wiki-article${fieldNotes ? ' wiki-article--field-notes' : ''}`}>
+    <article
+      className={`wiki-article${fieldNotes ? ' wiki-article--field-notes' : ''}${hideCites ? ` ${HIDE_CODE_REFERENCES_CLASS}` : ''}`}
+    >
       {/* Article body with sidebar */}
       <div className="wiki-article__body">
         {/* Main Content */}
@@ -108,7 +106,7 @@ export function WikiArticle({
           <header className="wiki-article__header">
             <div className="wiki-article__meta">
               <span className="wiki-article__category">
-                {categoryDisplayNames[article.category] || article.category}
+                {categoryLabel(article.version, article.section, article.category)}
               </span>
               {article.difficulty && (
                 <span
@@ -141,9 +139,15 @@ export function WikiArticle({
             )}
           </header>
 
+          {hasCites && (
+            <div className="wiki-article__tools">
+              <CodeReferencesButton hidden={codeRefs.hidden} onToggle={codeRefs.toggle} />
+            </div>
+          )}
+
           {/* Mobile TOC */}
           {tocItems.length > 0 && (
-            <TableOfContents items={tocItems} className="toc--mobile" />
+            <TableOfContents items={tocItems} className="toc--mobile" codeRefs={hasCites ? codeRefs : undefined} />
           )}
 
           {/* Content */}
@@ -155,7 +159,7 @@ export function WikiArticle({
         {/* Desktop TOC */}
         {tocItems.length > 0 && (
           <aside className="wiki-article__toc">
-            <TableOfContents items={tocItems} />
+            <TableOfContents items={tocItems} codeRefs={hasCites ? codeRefs : undefined} />
           </aside>
         )}
       </div>

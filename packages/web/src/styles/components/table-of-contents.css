@@ -152,3 +152,22 @@
     display: none;
   }
 }
+
+/* The Show/Hide code references button, when the article has citations */
+.toc__tools {
+  margin-top: var(--spacing-3);
+  padding-top: var(--spacing-3);
+  border-top: 1px solid var(--color-border-light);
+}
+
+@media (max-width: 1280px) {
+  /* In the phone/tablet contents box it opens and closes with the list */
+  .toc--mobile .toc__tools {
+    display: none;
+  }
+
+  .toc--mobile.toc--expanded .toc__tools {
+    display: block;
+    padding: 0 var(--spacing-3) var(--spacing-3);
+  }
+}

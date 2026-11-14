@@ -6,18 +6,24 @@
  * remark-directive reads `:name`, `::name` and `:::name` everywhere, so a sentence like
  * "Note:this" would lose ":this". A directive this file does not know is put back as the text
  * it was written as, and an unknown container keeps its content.
+ *
+ * Layered articles (the ::field-notes marker) also get: `:cite[...]` code references and "Code"
+ * table columns that the reader can hide (class fn-cite / fn-cite-col), a lede class on the
+ * paragraph right after each h2, and `:::flow` step diagrams.
  */
 import remarkDirective from 'remark-directive'
-import type { Blockquote, Paragraph, Parent, Root, RootContent, Strong, Text } from 'mdast'
+import type { Blockquote, List, ListItem, Paragraph, Parent, Root, RootContent, Strong, Table, Text } from 'mdast'
 import type { ContainerDirective, LeafDirective, TextDirective } from 'mdast-util-directive'
 import type { ElementContent } from 'hast'
 import {
   DEFAULT_CALLOUT_LABEL,
   MAX_LABEL_LENGTH,
+  CITE_COLUMN_HEADER,
   METER_MAX_SEGMENTS,
   badgeKindFor,
   calloutKindForLabel,
   cardAccentFor,
+  hasFieldNotesMarker,
   isCalloutKind,
   meterText,
   readGauge,
@@ -29,7 +35,15 @@ export { hasFieldNotesMarker } from '../../../../shared/field-notes'
 type Directive = ContainerDirective | LeafDirective | TextDirective
 type Attrs = Record<string, string | null | undefined>
 
-const CONTAINERS = new Set(['callout', 'cards', 'card', 'facts', 'chips'])
+const CONTAINERS = new Set(['callout', 'cards', 'card', 'facts', 'chips', 'flow'])
+
+// State for one render: the article's source, whether it carries the marker, and how many
+// flow diagrams were drawn (each caption needs its own id).
+interface Context {
+  source: string
+  fieldNotes: boolean
+  flows: number
+}
 
 function textOf(node: { children?: unknown[]; value?: unknown }): string {
   if (typeof node.value === 'string') return node.value
@@ -118,8 +132,48 @@ function eyesOnlyElements(label: string | null): ElementContent[] {
   return [plate('EYES ONLY', false), plate(label || 'Dystopian Outcasts members', false), plate('EYES ONLY', true)]
 }
 
+// A step is a box; an arrow (decorative, hidden from screen readers) joins it to the next one.
+function arrow(): Strong {
+  const node: Strong = { type: 'strong', children: [] }
+  setElement(node, 'span', ['fn-flow__arrow'], { 'aria-hidden': 'true' })
+  return node
+}
+
+function flowStep(item: ListItem, last: boolean) {
+  const inline: Strong['children'] = []
+  const blocks: ListItem['children'] = []
+  for (const child of item.children) {
+    if (child.type === 'paragraph') {
+      if (inline.length) inline.push({ type: 'text', value: ' ' })
+      inline.push(...child.children)
+    } else blocks.push(child)
+  }
+  const box: Strong = { type: 'strong', children: inline }
+  setElement(box, 'div', ['fn-flow__box'])
+  // Block content (a nested list) goes inside the box after the text
+  box.children.push(...(blocks as unknown as Strong['children']))
+  item.children = (last ? [box] : [box, arrow()]) as unknown as ListItem['children']
+  setElement(item, 'li', ['fn-flow__step'])
+}
+
+// `:::flow[caption]` around a list: the list becomes an ordered list of steps named by the caption.
+function transformFlow(node: ContainerDirective, label: string | null, ctx: Context) {
+  const id = `fn-flow-${++ctx.flows}`
+  const lists = node.children.filter((c): c is List => c.type === 'list')
+  for (const list of lists) {
+    list.children.forEach((item, i) => flowStep(item, i === list.children.length - 1))
+    setElement(list, 'ol', ['fn-flow__steps'], label ? { 'aria-labelledby': id } : {})
+  }
+  if (label) {
+    const caption: Paragraph = { type: 'paragraph', children: [{ type: 'text', value: label }] }
+    setElement(caption, 'p', ['fn-flow__caption'], { id })
+    node.children.unshift(caption)
+  }
+  setElement(node, 'div', ['fn-flow'])
+}
+
 // Returns false when the directive is not one of ours (the caller restores it).
-function transformContainer(node: ContainerDirective, attrs: Attrs): boolean {
+function transformContainer(node: ContainerDirective, attrs: Attrs, ctx: Context): boolean {
   if (!CONTAINERS.has(node.name)) return false
   const label = takeLabel(node) ?? attrs.label ?? null
   switch (node.name) {
@@ -134,6 +188,9 @@ function transformContainer(node: ContainerDirective, attrs: Attrs): boolean {
       setElement(node, 'div', ['fn-card', `fn-card--${cardAccentFor(attrs.accent)}`])
       return true
     }
+    case 'flow':
+      transformFlow(node, label, ctx)
+      return true
     default:
       setElement(node, 'div', [`fn-${node.name}`])
       return true
@@ -153,10 +210,36 @@ function transformLeaf(node: LeafDirective, attrs: Attrs): boolean {
   return true
 }
 
-function transformText(node: TextDirective, attrs: Attrs): boolean {
+function transformText(node: TextDirective, attrs: Attrs, ctx: Context): boolean {
+  if (node.name === 'cite' && ctx.fieldNotes) {
+    setElement(node, 'span', ['fn-cite'])
+    return true
+  }
   if (node.name !== 'badge') return false
   setElement(node, 'span', ['fn-badge', `fn-badge--${badgeKindFor(textOf(node), attrs.kind)}`])
   return true
+}
+
+// A table with a header cell that is exactly "Code": that whole column hides with the citations.
+function markCiteColumns(table: Table) {
+  const header = table.children[0]
+  if (!header) return
+  const columns = header.children.flatMap((cell, i) => (textOf(cell).trim() === CITE_COLUMN_HEADER ? [i] : []))
+  if (!columns.length) return
+  table.children.forEach((row, r) => {
+    for (const i of columns) {
+      const cell = row.children[i]
+      if (cell) setElement(cell, r === 0 ? 'th' : 'td', ['fn-cite-col'])
+    }
+  })
+}
+
+// The first paragraph straight after each h2 is the lede.
+function markLedes(root: Root) {
+  root.children.forEach((node, i) => {
+    const next = root.children[i + 1]
+    if (node.type === 'heading' && node.depth === 2 && next?.type === 'paragraph') setElement(next, 'p', ['fn-lede'])
+  })
 }
 
 function sourceOf(node: Directive, source: string): string {
@@ -165,10 +248,11 @@ function sourceOf(node: Directive, source: string): string {
   return start === undefined || end === undefined ? `:${node.name}` : source.slice(start, end)
 }
 
-function walk(parent: Parent, source: string) {
+function walk(parent: Parent, ctx: Context) {
   for (let i = 0; i < parent.children.length; i++) {
     const node = parent.children[i] as RootContent
     if (node.type === 'blockquote') labelBlockquote(node)
+    if (node.type === 'table' && ctx.fieldNotes) markCiteColumns(node)
     if (node.type === 'leafDirective' && node.name === 'field-notes') {
       parent.children.splice(i--, 1)
       continue
@@ -177,10 +261,10 @@ function walk(parent: Parent, source: string) {
       const attrs: Attrs = node.attributes ?? {}
       const done =
         node.type === 'containerDirective'
-          ? transformContainer(node, attrs)
+          ? transformContainer(node, attrs, ctx)
           : node.type === 'leafDirective'
             ? transformLeaf(node, attrs)
-            : transformText(node, attrs)
+            : transformText(node, attrs, ctx)
       if (!done) {
         if (node.type === 'containerDirective') {
           // Unknown container: keep what it holds
@@ -188,20 +272,23 @@ function walk(parent: Parent, source: string) {
           i--
           continue
         }
-        const restored: Text = { type: 'text', value: sourceOf(node, source) }
+        const restored: Text = { type: 'text', value: sourceOf(node, ctx.source) }
         const replacement: RootContent =
           node.type === 'leafDirective' ? ({ type: 'paragraph', children: [restored] } satisfies Paragraph) : restored
         parent.children.splice(i, 1, replacement)
         continue
       }
     }
-    if ('children' in node) walk(node as Parent, source)
+    if ('children' in node) walk(node as Parent, ctx)
   }
 }
 
 export function remarkFieldNotes() {
   return (tree: Root, file: { value?: unknown }) => {
-    walk(tree, String(file.value ?? ''))
+    const source = String(file.value ?? '')
+    const ctx: Context = { source, fieldNotes: hasFieldNotesMarker(source), flows: 0 }
+    walk(tree, ctx)
+    if (ctx.fieldNotes) markLedes(tree)
   }
 }
 
