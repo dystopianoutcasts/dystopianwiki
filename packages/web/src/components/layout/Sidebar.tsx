@@ -104,7 +104,7 @@ export function Sidebar({ isOpen = false, onClose, collapsed = false }: SidebarP
                   <span className="sidebar__section-icon" aria-hidden="true">
                     {resolveIcon(section.icon)}
                   </span>
-                  <span>{section.name}</span>
+                  <span>{section.navName ?? section.name}</span>
                 </span>
                 <span className="sidebar__section-chevron">
                   <ChevronIcon />

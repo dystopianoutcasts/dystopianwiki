@@ -97,6 +97,11 @@ Both hold the same four keys:
 }
 ```
 
+A `_section.json` may also carry an optional `navName`, a short name for the site header and the
+sidebar (for example `"navName": "Engine"` for a section named "The Engine, System by System").
+The section's own page keeps its full `name`. Leave it out when `name` is already short. Run
+`npm run nav` to regenerate the navigation data.
+
 `icon` is a short word (`plug`, `map`, `car`, `book`, `wrench`), never an emoji. Without the
 file the name is the title-cased folder name, the icon `book` and the order 999.
 

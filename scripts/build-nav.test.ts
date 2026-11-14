@@ -108,3 +108,48 @@ test('an --exclude that matches no article fails and writes nothing', () => {
     fs.rmSync(root, { recursive: true, force: true })
   }
 })
+
+test('a section navName is passed through to the generated data; name is unchanged', () => {
+  const root = fixture()
+  try {
+    fs.writeFileSync(
+      path.join(root, 'content/articles/pz/build-42/modding/_section.json'),
+      JSON.stringify({ name: 'The Engine, System by System', navName: 'Engine', description: 'd', icon: 'gear', displayOrder: 1 }),
+    )
+    const r = run(root, [])
+    assert.equal(r.status, 0, r.stderr)
+    const data = path.join(root, 'packages/web/public/data')
+    const info = JSON.parse(fs.readFileSync(path.join(data, 'build-42/modding/section-info.json'), 'utf-8')) as {
+      name: string
+      navName?: string
+    }
+    assert.equal(info.name, 'The Engine, System by System')
+    assert.equal(info.navName, 'Engine')
+    const versions = JSON.parse(fs.readFileSync(path.join(data, 'versions.json'), 'utf-8')) as {
+      versions: Array<{ sections: Array<{ name: string; navName?: string }> }>
+    }
+    assert.equal(versions.versions[0].sections[0].navName, 'Engine')
+    assert.equal(versions.versions[0].sections[0].name, 'The Engine, System by System')
+    assert.match(readOutputs(root).ts, /navName: 'Engine',/)
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test('a section without navName has none in the output, and a blank navName is ignored', () => {
+  const root = fixture()
+  try {
+    const r = run(root, [])
+    assert.equal(r.status, 0, r.stderr)
+    const data = path.join(root, 'packages/web/public/data')
+    assert.doesNotMatch(fs.readFileSync(path.join(data, 'build-42/modding/section-info.json'), 'utf-8'), /navName/)
+    fs.writeFileSync(
+      path.join(root, 'content/articles/pz/build-42/modding/_section.json'),
+      JSON.stringify({ name: 'Modding', navName: '  ', description: 'd', icon: 'plug', displayOrder: 1 }),
+    )
+    assert.equal(run(root, []).status, 0)
+    assert.doesNotMatch(fs.readFileSync(path.join(data, 'build-42/modding/section-info.json'), 'utf-8'), /navName/)
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true })
+  }
+})

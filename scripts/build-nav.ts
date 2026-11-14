@@ -23,7 +23,8 @@
  * untouched.
  *
  * Version folders not listed in versions.config.json (content/articles/pz/meta/)
- * are skipped with a notice. Missing _section.json / _category.json fall back to
+ * are skipped with a notice. A _section.json may carry "navName", a short name for the header and
+ * sidebar; it is passed through and the section's own "name" is unchanged. Missing _section.json / _category.json fall back to
  * a title-cased id, an empty description, icon "book" and displayOrder 999.
  * Sections and categories are sorted by displayOrder, then id.
  *
@@ -68,6 +69,8 @@ interface CategoryInfo {
 interface SectionInfo {
   id: string
   name: string
+  /** Short name for the header and sidebar; the section's own page keeps `name`. */
+  navName?: string
   description: string
   icon: string
   displayOrder: number
@@ -91,6 +94,8 @@ interface VersionsConfig {
 
 interface MetaFile {
   name: string
+  /** _section.json only: a short name for the header and sidebar. */
+  navName?: string
   description: string
   icon: string
   displayOrder: number
@@ -210,7 +215,7 @@ function titleCase(id: string): string {
 }
 
 /** Read _section.json / _category.json, applying the contract C2 defaults. */
-function readMeta(file: string, id: string): MetaFile {
+function readMeta(file: string, id: string, allowNavName = false): MetaFile {
   const defaults: MetaFile = { name: titleCase(id), description: '', icon: 'book', displayOrder: 999 }
   if (!fs.existsSync(file)) return defaults
 
@@ -223,6 +228,7 @@ function readMeta(file: string, id: string): MetaFile {
       ? raw.displayOrder
       : defaults.displayOrder,
   }
+  if (allowNavName && typeof raw.navName === 'string' && raw.navName.trim()) meta.navName = raw.navName.trim()
   // Icons are short words (plug, map, book, wrench, car, gear); never emoji.
   if (/[^\x20-\x7E]/.test(meta.icon)) {
     warn(`${rel(file)}: icon "${meta.icon}" is not a plain word; using "book"`)
@@ -340,7 +346,7 @@ function build(config: VersionsConfig): BuildResult {
     const versionDir = path.join(gameDir, v.id)
     const sections: SectionInfo[] = subdirs(versionDir).map(sectionId => {
       const sectionDir = path.join(versionDir, sectionId)
-      const sectionMeta = readMeta(path.join(sectionDir, '_section.json'), sectionId)
+      const sectionMeta = readMeta(path.join(sectionDir, '_section.json'), sectionId, true)
 
       for (const stray of markdownFiles(sectionDir)) {
         warn(`${rel(stray)} sits directly in a section folder, not in a category; it is not counted`)
@@ -367,6 +373,7 @@ function build(config: VersionsConfig): BuildResult {
       return {
         id: sectionId,
         name: sectionMeta.name,
+        ...(sectionMeta.navName ? { navName: sectionMeta.navName } : {}),
         description: sectionMeta.description,
         icon: sectionMeta.icon,
         displayOrder: sectionMeta.displayOrder,
@@ -451,6 +458,7 @@ function writeData(config: VersionsConfig, result: BuildResult): void {
         json({
           id: section.id,
           name: section.name,
+          ...(section.navName ? { navName: section.navName } : {}),
           description: section.description,
           icon: section.icon,
           articleCount: sectionArticleCount(section),
@@ -500,6 +508,7 @@ export interface CategoryInfo {
 export interface SectionInfo {
   id: string
   name: string
+  navName?: string
   description: string
   icon: string
   displayOrder: number

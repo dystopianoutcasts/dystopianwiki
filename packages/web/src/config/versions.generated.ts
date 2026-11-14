@@ -16,6 +16,7 @@ export interface CategoryInfo {
 export interface SectionInfo {
   id: string
   name: string
+  navName?: string
   description: string
   icon: string
   displayOrder: number
@@ -549,6 +550,7 @@ export const VERSIONS: VersionInfo[] = [
       {
         id: 'gameplay',
         name: 'How the Game Works',
+        navName: 'Gameplay',
         description: 'For players: the numbers behind zombies, infection, combat, skills, weight, sleep, loot and the helicopter, read from the Build 42 code.',
         icon: 'box',
         displayOrder: 5,
@@ -566,6 +568,7 @@ export const VERSIONS: VersionInfo[] = [
       {
         id: 'server',
         name: 'Running a Server',
+        navName: 'Servers',
         description: 'For server owners: every server option, sandbox option, admin command and role in Build 42, generated from the code, with where the game reads each one.',
         icon: 'database',
         displayOrder: 6,

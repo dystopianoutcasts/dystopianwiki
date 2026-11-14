@@ -29,7 +29,7 @@ export function siteSections(versionId: string): SiteSection[] {
   return [...(getVersion(versionId)?.sections ?? [])]
     .filter((s) => s.categories.some((c) => c.articleCount > 0))
     .sort((a, b) => a.displayOrder - b.displayOrder)
-    .map((s) => ({ id: s.id, name: s.name, href: `/pz/${versionId}/${s.id}` }))
+    .map((s) => ({ id: s.id, name: s.navName ?? s.name, href: `/pz/${versionId}/${s.id}` }))
 }
 
 /** public.site_is_admin(). Module level, so its identity is stable across renders. */
