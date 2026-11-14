@@ -94,6 +94,19 @@
   color: var(--color-text-muted);
 }
 
+/* Boone's radio chatter (RadioChatter.tsx): one line per visit, the channel tag in green. */
+.footer__radio {
+  margin: var(--spacing-2) 0 0;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.footer__radio-channel {
+  color: var(--color-accent-400);
+  letter-spacing: 0.08em;
+}
+
 /* @breakpoint-sm: 640px - Mobile: Stack footer links vertically */
 @media (max-width: 640px) {
   .footer__links {

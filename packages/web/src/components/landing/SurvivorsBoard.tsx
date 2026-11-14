@@ -1,6 +1,7 @@
 import { useId } from 'react';
 import { useHomeSummary } from '../../hooks/useHomeSummary';
 import { formatHoursSurvived, TBD } from '../../lib/homeSummary';
+import { StrafingRun } from './BooneDetails';
 
 // "Longest survivors": the five living characters with the most in-game hours,
 // from aurora.home_summary() (027). Dead characters never appear.
@@ -12,6 +13,7 @@ export function SurvivorsBoard() {
 
   return (
     <section className="home-section home-section--survivors fade fade--green-right" aria-labelledby={titleId}>
+      <StrafingRun />
       <div className="home-section__inner">
         <h2 className="home-section__title" id={titleId}>
           Longest survivors

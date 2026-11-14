@@ -1,0 +1,175 @@
+/**
+ * Boone's details (components/landing/BooneDetails.tsx): the strafing run on Longest survivors,
+ * the dog tag on About, the cracked lens on the live map. Pictures only: none of them takes a
+ * click (except the tag's hover), and each sits in a section's empty edge or padding, never
+ * under text. Light-theme values follow the dark ones.
+ */
+
+:root {
+  --boone-hole-core: #050606;
+  --boone-hole-rim: #3a3f43;
+  --boone-hole-glint: rgba(214, 220, 224, 0.55);
+  --boone-hole-crack: rgba(0, 0, 0, 0.6);
+  --boone-hole-scorch: rgba(0, 0, 0, 0.55);
+  --boone-tag-shadow: rgba(0, 0, 0, 0.55);
+  --boone-tag-ink: #22262a;
+  --boone-tag-emboss: rgba(255, 255, 255, 0.6);
+  --boone-crack-line: rgba(236, 240, 242, 0.62);
+  --boone-crack-shadow: rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="light"] {
+  --boone-hole-core: #1b1e20;
+  --boone-hole-rim: #9aa0a4;
+  --boone-hole-glint: rgba(255, 255, 255, 0.9);
+  --boone-hole-crack: rgba(40, 44, 48, 0.55);
+  --boone-hole-scorch: rgba(40, 44, 48, 0.35);
+  --boone-tag-shadow: rgba(40, 44, 48, 0.3);
+}
+
+/* ---- Strafing run: Longest survivors, right edge --------------------------- */
+
+.home-section--survivors {
+  position: relative;
+}
+
+.boone-strafe {
+  position: absolute;
+  top: 50%;
+  right: max(2rem, calc((100% - 640px) / 2 - 300px));
+  width: 220px;
+  height: 320px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  overflow: visible;
+}
+
+.boone-strafe__scorch-in { stop-color: var(--boone-hole-scorch); }
+.boone-strafe__scorch-out { stop-color: var(--boone-hole-scorch); stop-opacity: 0; }
+.boone-strafe__rim { fill: var(--boone-hole-rim); }
+.boone-strafe__core { fill: var(--boone-hole-core); }
+.boone-strafe__crack { stroke: var(--boone-hole-crack); stroke-width: 0.9; stroke-linecap: round; }
+.boone-strafe__glint { fill: none; stroke: var(--boone-hole-glint); stroke-width: 1; stroke-linecap: round; }
+
+/* Between the full layout and tablets the edge is narrower: a smaller burst. */
+@media (max-width: 1279px) {
+  .boone-strafe {
+    right: 1.5rem;
+    width: 150px;
+    height: 218px;
+  }
+}
+
+/* Tablets and phones: the list fills the width, so two holes go in the top corner padding. */
+@media (max-width: 1024px) {
+  .boone-strafe {
+    top: 1rem;
+    right: 0.75rem;
+    width: 96px;
+    height: 140px;
+    transform: none;
+  }
+
+  .boone-strafe__hole--extra {
+    display: none;
+  }
+}
+
+/* ---- Dog tag: About, hung from the top edge -------------------------------- */
+
+.about-section {
+  position: relative;
+}
+
+.boone-tag {
+  position: absolute;
+  top: 0;
+  right: max(1rem, calc(50% - 400px - 270px));
+  width: 220px;
+  height: 180px;
+  overflow: visible;
+  filter: drop-shadow(2px 4px 3px var(--boone-tag-shadow));
+}
+
+.boone-tag__swing {
+  transform-box: view-box;
+  transform-origin: 81px 0;
+}
+
+.boone-tag:hover .boone-tag__swing {
+  animation: boone-tag-swing 1.8s ease-out;
+}
+
+@keyframes boone-tag-swing {
+  0% { transform: rotate(0deg); }
+  15% { transform: rotate(5deg); }
+  35% { transform: rotate(-3.5deg); }
+  55% { transform: rotate(2deg); }
+  75% { transform: rotate(-1deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boone-tag:hover .boone-tag__swing { animation: none; }
+}
+
+.boone-tag__bead { fill: #a7aeb3; stroke: #5d6368; stroke-width: 0.5; }
+.boone-tag__rim { fill: none; stroke: rgba(60, 66, 71, 0.45); stroke-width: 1; }
+
+.boone-tag__line text {
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  dominant-baseline: middle;
+}
+
+.boone-tag__text { fill: var(--boone-tag-ink); }
+.boone-tag__emboss { fill: var(--boone-tag-emboss); }
+
+/* The section's top padding is about 140 px: below the full layout the tag shrinks to fit in it. */
+@media (max-width: 1279px) {
+  .boone-tag {
+    right: 0.5rem;
+    width: 150px;
+    height: 123px;
+  }
+}
+
+@media (max-width: 640px) {
+  .boone-tag {
+    right: 0;
+    width: 124px;
+    height: 101px;
+  }
+}
+
+/* ---- Cracked lens: the live map, top right corner -------------------------- */
+
+.server-now__frame {
+  position: relative;
+}
+
+.boone-crack {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  width: 360px;
+  height: 225px;
+  pointer-events: none;
+}
+
+.boone-crack__line { fill: none; stroke: var(--boone-crack-line); stroke-linejoin: round; stroke-linecap: round; }
+.boone-crack__line--main { stroke-width: 0.9; }
+.boone-crack__line--fine { stroke-width: 0.6; opacity: 0.6; }
+.boone-crack__line--ring { stroke-width: 0.5; opacity: 0.55; }
+.boone-crack__shadow { fill: none; stroke: var(--boone-crack-shadow); stroke-width: 0.9; stroke-linejoin: round; }
+.boone-crack__impact { fill: var(--boone-crack-line); }
+
+@media (max-width: 640px) {
+  .boone-crack {
+    width: 240px;
+    height: 150px;
+  }
+}

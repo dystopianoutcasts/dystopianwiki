@@ -8,6 +8,7 @@ import type { MapDot } from '../../lib/serverNowDots';
 import { centerAt, fitScale, imageSize, scrollAt, truncateName, type MapScale, type WorldPoint } from '../../utils/mapView';
 import '../../styles/components/server-now.css';
 import { WhoIsOnNow } from './WhoIsOnNow';
+import { CrackedLens } from './BooneDetails';
 
 // "The world right now": live counters from aurora.home_summary() (027), who is on,
 // then the server map as a full-width banner with a dot and name for each player
@@ -282,58 +283,62 @@ export function ServerNow() {
         </div>
       </div>
 
-      {/* Full width of the page: a banner, outside the centred content column. */}
-      <div
-        ref={viewportRef}
-        className="server-now__viewport"
-        tabIndex={0}
-        role="region"
-        aria-label="Server map, centred on Rosewood. Drag, or use the arrow keys, to move."
-        onScroll={handleScroll}
-        onKeyDown={handleKeyDown}
-        onPointerDown={handlePointerDown}
-      >
-        <div className="server-now__inner" style={{ width: scale.width, height: scale.height }}>
-          <div
-            className="server-now__map"
-            role="img"
-            aria-label={describe(dots.length)}
-            style={{
-              gridTemplateColumns: tracks(grid.cols, grid.width),
-              gridTemplateRows: tracks(grid.rows, grid.height),
-            }}
-          >
-            {grid.tiles.map((tile) => (
-              <img
-                key={`${scale.tileZoom}_${tile.x}_${tile.y}`}
-                className="server-now__map-tile"
-                src={`/map/tiles/base_top/layer0_files/${scale.tileZoom}/${tile.x}_${tile.y}.webp`}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                draggable={false}
-                onError={(e) => {
-                  // The pyramid is sparse: tiles with no populated cells do not exist.
-                  e.currentTarget.style.visibility = 'hidden';
-                }}
-              />
-            ))}
-          </div>
+      {/* Full width of the page: a banner, outside the centred content column. The frame holds the
+          cracked lens still while the viewport scrolls under it. */}
+      <div className="server-now__frame">
+        <div
+          ref={viewportRef}
+          className="server-now__viewport"
+          tabIndex={0}
+          role="region"
+          aria-label="Server map, centred on Rosewood. Drag, or use the arrow keys, to move."
+          onScroll={handleScroll}
+          onKeyDown={handleKeyDown}
+          onPointerDown={handlePointerDown}
+        >
+          <div className="server-now__inner" style={{ width: scale.width, height: scale.height }}>
+            <div
+              className="server-now__map"
+              role="img"
+              aria-label={describe(dots.length)}
+              style={{
+                gridTemplateColumns: tracks(grid.cols, grid.width),
+                gridTemplateRows: tracks(grid.rows, grid.height),
+              }}
+            >
+              {grid.tiles.map((tile) => (
+                <img
+                  key={`${scale.tileZoom}_${tile.x}_${tile.y}`}
+                  className="server-now__map-tile"
+                  src={`/map/tiles/base_top/layer0_files/${scale.tileZoom}/${tile.x}_${tile.y}.webp`}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  draggable={false}
+                  onError={(e) => {
+                    // The pyramid is sparse: tiles with no populated cells do not exist.
+                    e.currentTarget.style.visibility = 'hidden';
+                  }}
+                />
+              ))}
+            </div>
 
-          {/* Last child, above the tile grid: players are always the top layer. */}
-          <ul className="server-now__players" aria-label="Players online">
-            {dots.map((dot) => (
-              <li
-                key={dot.id}
-                className={dot.id === foundId ? 'server-now__player server-now__player--found' : 'server-now__player'}
-                style={{ left: dot.x * scale.pixelsPerSquare, top: dot.y * scale.pixelsPerSquare }}
-              >
-                <span className="server-now__dot" />
-                <span className="server-now__name">{truncateName(shownName(dot, nameMode))}</span>
-              </li>
-            ))}
-          </ul>
+            {/* Last child, above the tile grid: players are always the top layer. */}
+            <ul className="server-now__players" aria-label="Players online">
+              {dots.map((dot) => (
+                <li
+                  key={dot.id}
+                  className={dot.id === foundId ? 'server-now__player server-now__player--found' : 'server-now__player'}
+                  style={{ left: dot.x * scale.pixelsPerSquare, top: dot.y * scale.pixelsPerSquare }}
+                >
+                  <span className="server-now__dot" />
+                  <span className="server-now__name">{truncateName(shownName(dot, nameMode))}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
+        <CrackedLens />
       </div>
 
       <div className="server-now__content">

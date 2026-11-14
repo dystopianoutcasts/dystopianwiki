@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { DISCORD_URL, SUPPORT_URL } from '../../lib/links';
+import { RadioChatter } from './RadioChatter';
 import '../../styles/components/footer.css';
 
 // Icons
@@ -77,6 +78,7 @@ export function Footer() {
           <p className="footer__copyright">
             &copy; {currentYear} Dystopian Outcasts. Not affiliated with The Indie Stone.
           </p>
+          <RadioChatter />
         </div>
       </div>
     </footer>

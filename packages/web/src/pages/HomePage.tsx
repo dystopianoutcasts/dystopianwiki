@@ -14,6 +14,7 @@ import { SotsCallout } from '../components/landing/SotsCallout';
 import { CommunityBanner } from '../components/landing/CommunityBanner';
 import { SupportSection } from '../components/landing/SupportSection';
 import { SEOHead } from '../components/seo/SEOHead';
+import '../styles/components/boone-details.css';
 
 // Top to bottom: the server and how to get in, proof it is alive (the map, who is
 // on, when people play, who has lasted), how it plays, what we build, who we are.
