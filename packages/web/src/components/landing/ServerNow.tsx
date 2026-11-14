@@ -9,6 +9,7 @@ import { centerAt, fitScale, imageSize, scrollAt, truncateName, type MapScale, t
 import '../../styles/components/server-now.css';
 import { WhoIsOnNow } from './WhoIsOnNow';
 import { CrackedLens } from './BooneDetails';
+import { CockpitHud } from './HeroBoone';
 
 // "The world right now": live counters from aurora.home_summary() (027), who is on,
 // then the server map as a full-width banner with a dot and name for each player
@@ -338,6 +339,7 @@ export function ServerNow() {
             </ul>
           </div>
         </div>
+        <CockpitHud />
         <CrackedLens />
       </div>
 

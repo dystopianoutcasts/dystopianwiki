@@ -1,5 +1,6 @@
 import { VERSIONS } from '../../config/versions.generated';
 import { DogTag } from './BooneDetails';
+import { BooneFiles } from './HeroBoone';
 import '../../styles/components/about-section.css';
 
 // Real counts read from the generated navigation data (scripts/build-nav.ts),
@@ -21,6 +22,9 @@ export function AboutSection() {
   return (
     <section className="about-section fade fade--green-right boone-rivets">
       <DogTag />
+      <div className="about-section__files">
+        <BooneFiles />
+      </div>
       <div className="about-section__content">
         <h2 className="about-section__title">About Dystopian Outcasts</h2>
         <div className="about-section__text">

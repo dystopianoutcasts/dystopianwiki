@@ -13,7 +13,7 @@ import { DISCORD_URL, SERVER_ADDRESS } from '../../lib/links';
 import { ServerDescription } from './ServerDescription';
 import { CopyField } from './CopyField';
 import { homeWorldLine } from '../../lib/worldsPanel';
-import { BooneFiles, CockpitHud } from './HeroBoone';
+import { BooneSeal } from './HeroBoone';
 import '../../styles/components/hero.css';
 import '../../styles/components/home-sections.css';
 import '../../styles/components/hero-cockpit.css';
@@ -93,10 +93,11 @@ export function HeroSection() {
   return (
     <section className="hero">
       <div className="hero__gradient fade fade--green-orange" />
-      <CockpitHud />
 
       <div className="hero__layout">
-        <BooneFiles />
+        <div className="hero__seal" aria-hidden="true">
+          <BooneSeal />
+        </div>
 
         <div className="hero__content">
           {/* The name as the brand writes it: the second word in orange. */}

@@ -1,9 +1,10 @@
 /**
- * The home page hero (owner, 2026-11-14): Boone's seal over his splayed service files beside the
- * introduction to us and the server, inside a cockpit view (heading tape, altitude ladders, corner
- * brackets). Markup: HeroSection.tsx and HeroBoone.tsx. The pictures take no clicks; the tape's
- * drift and the ring's turn stop for reduced motion. The seal is the brand's default set, Fur
- * Orange on Soot, in both themes (BRAND.md).
+ * Boone on the home page (owner, 2026-11-14): the hero is his seal, turning, beside the
+ * introduction to us and the server (option A); his service files lie splayed beside About; the
+ * cockpit frame (heading tape, altitude ladders, corner brackets) sits over the live map.
+ * Markup: HeroSection.tsx, AboutSection.tsx, ServerNow.tsx, HeroBoone.tsx. The pictures take no
+ * clicks; the tape's drift and the ring's turn stop for reduced motion. The seal is the brand's
+ * default set, Fur Orange on Soot, in both themes (BRAND.md).
  */
 
 :root {
@@ -171,6 +172,14 @@
 
 .cockpit__corner--tl { top: 60px; left: 20px; border-width: 2px 0 0 2px; }
 .cockpit__corner--tr { top: 60px; right: 20px; border-width: 2px 2px 0 0; }
+
+/* Over the live map: cream ink with a dark edge reads on the olive tiles; above the map, below the crack. */
+.server-now__frame .cockpit {
+  z-index: 1;
+  --cockpit-ink: rgba(236, 240, 226, 0.6);
+  --cockpit-ink-strong: rgba(236, 240, 226, 0.85);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7));
+}
 .cockpit__corner--bl { bottom: 20px; left: 20px; border-width: 0 0 2px 2px; }
 .cockpit__corner--br { bottom: 20px; right: 20px; border-width: 0 2px 2px 0; }
 
@@ -180,15 +189,27 @@
   .cockpit__tape { left: 24px; right: 24px; }
 }
 
-/* ---- Boone's seal ----------------------------------------------------------- */
+/* ---- Boone's seal, in the hero ---------------------------------------------- */
+
+.hero__seal {
+  flex: none;
+  width: 400px;
+  height: 400px;
+}
 
 .boone-seal {
-  position: absolute;
-  left: 0;
-  top: 84px;
-  width: 320px;
-  height: 320px;
+  position: relative;
+  width: 100%;
+  height: 100%;
   filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.5));
+}
+
+@media (max-width: 1099px) {
+  .hero__seal { width: 300px; height: 300px; }
+}
+
+@media (max-width: 640px) {
+  .hero__seal { width: 220px; height: 220px; }
 }
 
 .boone-seal__ring {
@@ -228,20 +249,20 @@
   image-rendering: pixelated;
 }
 
-/* ---- His service files, splayed behind the seal ----------------------------- */
+/* ---- His service files, splayed beside About -------------------------------- */
 
-/* The stage is drawn at 540 x 470 and scaled down on narrow screens (--files-scale). */
+/* The stage is drawn at 380 x 470 and scaled to fit (--files-scale). */
 .boone-files {
   --files-scale: 1;
   flex: none;
-  width: calc(540px * var(--files-scale));
+  width: calc(380px * var(--files-scale));
   height: calc(470px * var(--files-scale));
   pointer-events: none;
 }
 
 .boone-files__stage {
   position: relative;
-  width: 540px;
+  width: 380px;
   height: 470px;
   transform: scale(var(--files-scale));
   transform-origin: top left;
@@ -249,7 +270,7 @@
 
 .boone-files__folder {
   position: absolute;
-  left: 170px;
+  left: 10px;
   top: 22px;
   width: 330px;
   height: 380px;
@@ -275,7 +296,7 @@
 
 .boone-files__sheet {
   position: absolute;
-  left: 236px;
+  left: 76px;
   top: 52px;
   width: 280px;
   height: 340px;
@@ -330,7 +351,7 @@
 
 .boone-files__photo {
   position: absolute;
-  left: 372px;
+  left: 212px;
   top: 300px;
   width: 140px;
   box-sizing: border-box;
@@ -377,16 +398,18 @@
   stroke-linecap: round;
 }
 
-@media (max-width: 1099px) {
-  .boone-files { --files-scale: 0.82; }
+/* Beside About's text, in the left margin; only where the margin is wide enough. */
+.about-section__files {
+  position: absolute;
+  top: 50%;
+  left: max(16px, calc(50% - 400px - 300px));
+  transform: translateY(-50%);
 }
 
-@media (max-width: 640px) {
-  .boone-files { --files-scale: 0.6; }
+.about-section__files .boone-files { --files-scale: 0.66; }
 
-  /* The bottom brackets would crowd the search bar on a phone. */
-  .cockpit__corner--bl,
-  .cockpit__corner--br { display: none; }
+@media (max-width: 1359px) {
+  .about-section__files { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

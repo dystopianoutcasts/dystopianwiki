@@ -35,7 +35,7 @@ test('the files and the cockpit are hidden from screen readers; the seal ring is
   assert.match(staticMarkup(createElement(BooneSeal)), /<svg class="boone-seal__ring"[^>]*aria-hidden="true"/)
 })
 
-test('the service record carries its lines and the SURVIVED stamp', () => {
+test('the service record carries its lines and the SURVIVED stamp, without the seal', () => {
   const html = staticMarkup(createElement(BooneFiles))
   for (const [label, value] of SERVICE_RECORD) {
     if (label) assert.ok(html.includes(`<dt>${label}</dt>`), label)
@@ -43,6 +43,7 @@ test('the service record carries its lines and the SURVIVED stamp', () => {
   }
   assert.match(html, /SURVIVED<\/span>/)
   assert.match(html, /201 FILE \| BOONE/)
+  assert.ok(!html.includes('boone-seal'), 'the seal stays in the hero')
 })
 
 test('the pictures take no clicks, and the tape and ring hold still for reduced motion', () => {
@@ -52,10 +53,15 @@ test('the pictures take no clicks, and the tape and ring hold still for reduced 
   assert.match(reduced, /\.cockpit__tape-strip,\s*\.boone-seal__turn \{ animation: none; \}/)
 })
 
-test('the hero renders the cockpit and the files, and drops the old banner and callsign line', () => {
-  const src = read('./HeroSection.tsx')
-  assert.match(src, /<CockpitHud \/>/)
-  assert.match(src, /<BooneFiles \/>/)
-  assert.ok(!src.includes('hero__logo'), 'the banner image is gone')
-  assert.ok(!/CALLSIGN/i.test(src), 'no callsign line in the introduction')
+test('the hero shows the seal only; the files sit by About, the cockpit over the live map', () => {
+  const hero = read('./HeroSection.tsx')
+  assert.match(hero, /<BooneSeal \/>/)
+  assert.ok(!hero.includes('<BooneFiles') && !hero.includes('<CockpitHud'), 'the hero has neither')
+  assert.ok(!hero.includes('hero__logo'), 'the banner image is gone')
+  assert.ok(!/CALLSIGN/i.test(hero), 'no callsign line in the introduction')
+  assert.match(read('./AboutSection.tsx'), /<BooneFiles \/>/)
+  const map = read('./ServerNow.tsx')
+  assert.ok(map.indexOf('<CockpitHud />') > map.indexOf('className="server-now__viewport"'), 'cockpit after the scrolling map')
+  assert.ok(map.indexOf('<CockpitHud />') < map.indexOf('<CrackedLens />'), 'and under the crack')
+  assert.match(read('../../pages/HomePage.tsx'), /hero-cockpit\.css/)
 })

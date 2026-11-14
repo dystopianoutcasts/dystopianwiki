@@ -1,7 +1,8 @@
 /**
- * The home page hero's pictures (owner, 2026-11-14: the seal hero, option A on the brand canvas,
- * inside the cockpit view of option C): the cockpit frame (heading tape, altitude ladders, corner
- * brackets), and Boone's seal over his service files, splayed beside it.
+ * Boone's pictures on the home page (owner, 2026-11-14): his seal, turning, in the hero (option A
+ * on the brand canvas); his service files, splayed beside About; and the cockpit frame (heading
+ * tape, altitude ladders, corner brackets) around the live map. "Elsewhere": the files and the
+ * cockpit sit in other sections, not in the hero.
  *
  * All pictures only: aria-hidden, no clicks taken; the heading tape drifts and the seal ring turns,
  * both still for reduced motion (hero-cockpit.css). The file's lines are PROPOSED lore
@@ -51,7 +52,7 @@ export const SERVICE_RECORD: [string, string][] = [
   ['STATUS', 'SURVIVING'],
 ];
 
-/** The seal over his files: a manila folder, the typed service record with its stamp, a photo. */
+/** His files: a manila folder, the typed service record with its stamp, a photo. */
 export function BooneFiles() {
   return (
     <div className="boone-files" aria-hidden="true">
@@ -83,7 +84,6 @@ export function BooneFiles() {
           </span>
           <span className="boone-files__caption">RINGTAIL</span>
         </div>
-        <BooneSeal />
       </div>
     </div>
   );
@@ -142,7 +142,7 @@ function Ladder({ side }: { side: 'left' | 'right' }) {
   );
 }
 
-/** The cockpit frame around the hero. */
+/** The cockpit frame, laid over the live map (ServerNow). */
 export function CockpitHud() {
   return (
     <div className="cockpit" aria-hidden="true">

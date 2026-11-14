@@ -23,7 +23,10 @@ import {
   INSTALLER_VERSION,
   formatMegabytes,
 } from '../data/outcastBuddy';
+import { ClearedStamp, PreflightTag, RemoveBeforeFlight } from '../components/buddy/BuddyDetails';
 import '../styles/pages/outcast-buddy.css';
+import '../styles/components/boone-details.css';
+import '../styles/components/buddy-details.css';
 
 export function OutcastBuddyPage() {
   return (
@@ -44,7 +47,8 @@ export function OutcastBuddyPage() {
           </p>
         </header>
 
-        <section className="buddy__get" aria-labelledby="buddy-get-title">
+        <section className="buddy__get boone-rivets" aria-labelledby="buddy-get-title">
+          <RemoveBeforeFlight />
           <h2 id="buddy-get-title" className="buddy__get-title">
             Get Outcast Buddy
           </h2>
@@ -95,6 +99,7 @@ export function OutcastBuddyPage() {
         </section>
 
         <section className="buddy__section" aria-labelledby="buddy-install-title">
+          <PreflightTag />
           <h2 id="buddy-install-title">How to install (one time)</h2>
           <ol className="buddy__steps">
             <li>
@@ -217,6 +222,7 @@ export function OutcastBuddyPage() {
             <br />
             Dystopian Outcasts
           </p>
+          <ClearedStamp />
         </section>
 
         <footer className="buddy__footer">
