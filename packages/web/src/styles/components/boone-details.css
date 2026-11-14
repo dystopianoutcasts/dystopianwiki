@@ -1,7 +1,7 @@
 /**
  * Boone's details (components/landing/BooneDetails.tsx): the strafing run on Longest survivors,
  * the dog tag on About, the cracked lens on the live map. Pictures only: none of them takes a
- * click (except the tag's hover), and each sits in a section's empty edge or padding, never
+ * click (the tag's plate takes a hover, nothing else), and each sits in a section's empty edge or padding, never
  * under text. Light-theme values follow the dark ones.
  */
 
@@ -89,6 +89,12 @@
   height: 180px;
   overflow: visible;
   filter: drop-shadow(2px 4px 3px var(--boone-tag-shadow));
+  /* Only the plate takes the pointer (for the swing); the rest of the box lets clicks through. */
+  pointer-events: none;
+}
+
+.boone-tag__plate {
+  pointer-events: auto;
 }
 
 .boone-tag__swing {

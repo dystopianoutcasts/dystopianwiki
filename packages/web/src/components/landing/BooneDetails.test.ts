@@ -48,9 +48,11 @@ test('the dog tag carries its four lines, each with an emboss layer', () => {
   }
 })
 
-test('the strafe and the crack never take a click or a drag', () => {
+test('the strafe, the crack and the tag box never take a click or a drag; only the tag plate hovers', () => {
   assert.match(rule(css, '.boone-strafe'), /pointer-events:\s*none/)
   assert.match(rule(css, '.boone-crack'), /pointer-events:\s*none/)
+  assert.match(rule(css, '.boone-tag'), /pointer-events:\s*none/)
+  assert.match(rule(css, '.boone-tag__plate'), /pointer-events:\s*auto/)
 })
 
 test('the tag swing stops for reduced motion', () => {
