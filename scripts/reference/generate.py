@@ -984,7 +984,7 @@ def write_all(out):
     with open(os.path.join(out, '_section.json'), 'w', encoding='utf-8', newline='\n') as f:
         json.dump({'name': 'Build 42 Reference',
                    'description': 'The complete Build 42 reference, generated from the engine: Java classes, Lua files, scripts, events, globals, sandbox options, translations and natives.',
-                   'icon': 'book', 'displayOrder': 7}, f, indent=2)
+                   'icon': 'book', 'displayOrder': 8}, f, indent=2)
         f.write('\n')
     order = ['overview'] + sorted(c for c in CATS if c.startswith('java-')) + [
         'lua-client', 'lua-server', 'lua-shared', 'scripts', 'events', 'globals', 'sandbox-options',
