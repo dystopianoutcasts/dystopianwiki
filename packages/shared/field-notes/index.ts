@@ -129,9 +129,16 @@ export const CITE_COLUMN_HEADER = 'Code'
 
 const CITE = /:cite\[((?:[^\]\\]|\\.)*)\](?:\{[^}\n]*\})?/
 
+// Emphasis and code marks around a header cell's words do not change which column it is:
+// `**Code**` and `Code` are the same header, as in the renderer (which reads the cell's text).
 function isCodeHeaderRow(line: string): boolean {
   if (!line.trimStart().startsWith('|')) return false
-  return line.split('|').some((cell) => cell.trim() === CITE_COLUMN_HEADER)
+  return line.split('|').some((cell) => cell.replace(/[*_`]/g, '').trim() === CITE_COLUMN_HEADER)
+}
+
+// A line with its inline code spans cut out, so `:cite[x]` shown as code is not a citation.
+function withoutCodeSpans(line: string): string {
+  return line.replace(/(`+)[^`]*?\1/g, '')
 }
 
 // True when the article has a code reference to hide: a `:cite[...]` outside a code block, or a
@@ -142,7 +149,7 @@ export function hasCitations(markdown: string): boolean {
   const lines = scanLines(markdown)
   return lines.some(({ line, inCode }, i) => {
     if (inCode) return false
-    if (CITE.test(line)) return true
+    if (CITE.test(withoutCodeSpans(line))) return true
     // a header row is followed by a delimiter row such as |---|---|
     return isCodeHeaderRow(line) && /^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?\s*$/.test(lines[i + 1]?.line ?? '')
   })

@@ -229,7 +229,10 @@ function markCiteColumns(table: Table) {
   table.children.forEach((row, r) => {
     for (const i of columns) {
       const cell = row.children[i]
-      if (cell) setElement(cell, r === 0 ? 'th' : 'td', ['fn-cite-col'])
+      if (!cell) continue
+      // Merge, so anything already on the cell (its alignment) is kept
+      const prior = (cell.data as { hProperties?: Record<string, unknown> } | undefined)?.hProperties
+      setElement(cell, r === 0 ? 'th' : 'td', ['fn-cite-col'], prior)
     }
   })
 }

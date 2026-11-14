@@ -89,11 +89,12 @@ test('hasCitations: true for a :cite or a Code column, false for neither or no m
 
 // Steps 2 to 4: the button, in sync with one state
 
-test('the button names the action and aria-pressed tracks "shown"', () => {
+test('the button names the action, controls the article body, and has no aria-pressed', () => {
   const hidden = toHtml(CodeReferencesButton({ hidden: true, onToggle: () => {} }))
-  assert.match(hidden, /<button type="button" class="code-refs-button" aria-pressed="false"[^>]*>Show code references<\/button>/)
+  assert.match(hidden, /<button type="button" class="code-refs-button" aria-controls="article-content"[^>]*>Show code references<\/button>/)
   const shown = toHtml(CodeReferencesButton({ hidden: false, onToggle: () => {} }))
-  assert.match(shown, /aria-pressed="true"[^>]*>Hide code references<\/button>/)
+  assert.match(shown, />Hide code references<\/button>/)
+  assert.doesNotMatch(hidden + shown, /aria-pressed/)
   assert.equal(buttonLabel(true), 'Show code references')
   assert.equal(buttonLabel(false), 'Hide code references')
 })
@@ -154,4 +155,20 @@ test('mobile: :cite with attributes, two on a line, and code blocks untouched', 
   const plain = fieldNotesToPlainMarkdown(md).split(NL)
   assert.equal(plain[0], 'A (one) and (two).')
   assert.equal(plain[2], ':cite[(keep)]')
+})
+
+test('an aligned Code column keeps its alignment', () => {
+  const html = render(lines('::field-notes', '', '| Name | Code |', '|:--|--:|', '| a | `X.java:1` |'))
+  assert.match(html, /<th style="textAlign:left">Name<\/th>/)
+  assert.match(html, /<th class="fn-cite-col" style="textAlign:right">Code<\/th>/)
+  assert.match(html, /<td class="fn-cite-col" style="textAlign:right">/)
+})
+
+test('hasCitations ignores :cite shown as code, and reads **Code** like the renderer', () => {
+  assert.equal(hasCitations(lines('::field-notes', '', 'Write `:cite[(x)]` to cite.')), false)
+  assert.equal(hasCitations(lines('::field-notes', '', 'Write ``:cite[(x)]`` to cite.')), false)
+  assert.equal(hasCitations(lines('::field-notes', '', 'Real :cite[(`A.java:1`)] and `code`.')), true)
+  const bold = lines('::field-notes', '', '| Name | **Code** |', '|---|---|', '| a | `X.java:1` |')
+  assert.equal(hasCitations(bold), true)
+  assert.match(render(bold), /<th class="fn-cite-col"><strong>Code<\/strong><\/th>/)
 })

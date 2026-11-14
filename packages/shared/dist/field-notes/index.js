@@ -17,6 +17,8 @@
  *   ::meter[Suppressed .22]{value=1 max=5 text="Quietest"}
  *   ::bar[1993]{value=10 max=100 text="Est. tens of thousands" accent=purple}
  *   :badge[Yes]{kind=yes}                 inline pill (kinds below)
+ *   :cite[(`File.java:120`)]              a code reference the reader can hide (web); plain text (mobile)
+ *   :::flow[How it works]                 a list drawn as steps joined by arrows
  */
 export const CALLOUT_KINDS = ['key', 'warn', 'design', 'proof'];
 export const DEFAULT_CALLOUT_LABEL = {
@@ -102,6 +104,36 @@ function scanLines(markdown) {
 export function hasFieldNotesMarker(markdown) {
     return scanLines(markdown).some(({ line, inCode }) => !inCode && MARKER.test(line));
 }
+// A table header cell that is exactly this makes its column a code-reference column.
+export const CITE_COLUMN_HEADER = 'Code';
+const CITE = /:cite\[((?:[^\]\\]|\\.)*)\](?:\{[^}\n]*\})?/;
+// Emphasis and code marks around a header cell's words do not change which column it is:
+// `**Code**` and `Code` are the same header, as in the renderer (which reads the cell's text).
+function isCodeHeaderRow(line) {
+    if (!line.trimStart().startsWith('|'))
+        return false;
+    return line.split('|').some((cell) => cell.replace(/[*_`]/g, '').trim() === CITE_COLUMN_HEADER);
+}
+// A line with its inline code spans cut out, so `:cite[x]` shown as code is not a citation.
+function withoutCodeSpans(line) {
+    return line.replace(/(`+)[^`]*?\1/g, '');
+}
+// True when the article has a code reference to hide: a `:cite[...]` outside a code block, or a
+// table whose header has a cell that is exactly "Code". Only an article with the field-notes
+// marker counts, because only those draw citations.
+export function hasCitations(markdown) {
+    if (!hasFieldNotesMarker(markdown))
+        return false;
+    const lines = scanLines(markdown);
+    return lines.some(({ line, inCode }, i) => {
+        if (inCode)
+            return false;
+        if (CITE.test(withoutCodeSpans(line)))
+            return true;
+        // a header row is followed by a delimiter row such as |---|---|
+        return isCodeHeaderRow(line) && /^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?\s*$/.test(lines[i + 1]?.line ?? '');
+    });
+}
 // `{kind=warn label="Read this"}` as a map. Unquoted values end at whitespace.
 export function parseAttributes(source) {
     const attrs = {};
@@ -115,6 +147,7 @@ export function parseAttributes(source) {
 const CONTAINER = /^\s*(:{3,})([a-z][\w-]*)?(?:\[([^\]]*)\])?(?:\{([^}]*)\})?\s*$/;
 const LEAF = /^\s*::([a-z][\w-]*)(?:\[([^\]]*)\])?(?:\{([^}]*)\})?\s*$/;
 const BADGE = /:badge\[([^\]]*)\](?:\{[^}]*\})?/g;
+const CITE_ALL = new RegExp(CITE.source, 'g');
 function leafToPlain(name, label, attrs) {
     if (name === 'field-notes')
         return '';
@@ -133,7 +166,8 @@ function leafToPlain(name, label, attrs) {
  * The same article with every field-notes directive turned into plain Markdown, for a renderer
  * that has no field-notes components (the mobile app). Callouts become blockquotes that open
  * with their bold label, card labels become bold lines, meters and bars become their words,
- * badges become bold words, and the markers themselves disappear. Code blocks are left alone,
+ * badges become bold words, citations read as the text inside them, a flow's label becomes a bold
+ * line above its list, and the markers themselves disappear. Code blocks are left alone,
  * and a line that only looks like a directive is kept as it is.
  */
 export function fieldNotesToPlainMarkdown(markdown) {
@@ -176,7 +210,7 @@ export function fieldNotesToPlainMarkdown(markdown) {
             }
             stack.push({ colons: colons.length, quote: false });
             const heading = label || attrs.label;
-            if (name === 'card' && heading) {
+            if ((name === 'card' || name === 'flow') && heading) {
                 emit('');
                 emit(`**${heading}**`);
                 emit('');
@@ -192,7 +226,7 @@ export function fieldNotesToPlainMarkdown(markdown) {
                 continue;
             }
         }
-        emit(line.replace(BADGE, (_, text) => `**${text}**`));
+        emit(line.replace(BADGE, (_, text) => `**${text}**`).replace(CITE_ALL, (_, text) => text));
     }
     return out.join('\n');
 }

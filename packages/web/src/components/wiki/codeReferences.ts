@@ -43,5 +43,8 @@ export function buttonLabel(hidden: boolean): string {
   return hidden ? 'Show code references' : 'Hide code references'
 }
 
+/** The id of the article body, which the button's aria-controls names. */
+export const ARTICLE_CONTENT_ID = 'article-content'
+
 /** The class on the article root that hides every citation (field-notes.css). */
 export const HIDE_CODE_REFERENCES_CLASS = 'wiki-article--hide-cites'

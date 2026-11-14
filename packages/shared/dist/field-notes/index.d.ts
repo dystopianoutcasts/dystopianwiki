@@ -17,6 +17,8 @@
  *   ::meter[Suppressed .22]{value=1 max=5 text="Quietest"}
  *   ::bar[1993]{value=10 max=100 text="Est. tens of thousands" accent=purple}
  *   :badge[Yes]{kind=yes}                 inline pill (kinds below)
+ *   :cite[(`File.java:120`)]              a code reference the reader can hide (web); plain text (mobile)
+ *   :::flow[How it works]                 a list drawn as steps joined by arrows
  */
 export declare const CALLOUT_KINDS: readonly ["key", "warn", "design", "proof"];
 export type CalloutKind = (typeof CALLOUT_KINDS)[number];
@@ -38,12 +40,15 @@ export interface Gauge {
 export declare function readGauge(value: string | null | undefined, max: string | null | undefined, defaultMax: number): Gauge | null;
 export declare function meterText(gauge: Gauge, text: string | null | undefined): string;
 export declare function hasFieldNotesMarker(markdown: string): boolean;
+export declare const CITE_COLUMN_HEADER = "Code";
+export declare function hasCitations(markdown: string): boolean;
 export declare function parseAttributes(source: string | undefined): Record<string, string>;
 /**
  * The same article with every field-notes directive turned into plain Markdown, for a renderer
  * that has no field-notes components (the mobile app). Callouts become blockquotes that open
  * with their bold label, card labels become bold lines, meters and bars become their words,
- * badges become bold words, and the markers themselves disappear. Code blocks are left alone,
+ * badges become bold words, citations read as the text inside them, a flow's label becomes a bold
+ * line above its list, and the markers themselves disappear. Code blocks are left alone,
  * and a line that only looks like a directive is kept as it is.
  */
 export declare function fieldNotesToPlainMarkdown(markdown: string): string;

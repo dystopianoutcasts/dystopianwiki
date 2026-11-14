@@ -298,7 +298,7 @@
 
 .markdown .fn-bar {
   display: grid;
-  grid-template-columns: 4.5rem minmax(0, 1fr);
+  grid-template-columns: minmax(8rem, 40%) minmax(0, 1fr);
   gap: var(--spacing-3);
   align-items: center;
   margin: var(--spacing-2) 0;
@@ -307,6 +307,22 @@
 .markdown .fn-bar__name {
   font-family: var(--font-family-display);
   text-align: right;
+  /* wrap between words; a word is split only when it alone is wider than the column */
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none;
+}
+
+/* Phone and narrow columns: the name sits on its own line above the track */
+@media (max-width: 40rem) {
+  .markdown .fn-bar {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacing-1);
+  }
+
+  .markdown .fn-bar__name {
+    text-align: left;
+  }
 }
 
 .markdown .fn-bar__track {
@@ -427,9 +443,6 @@
   border-color: var(--fn-key-bar);
 }
 
-.code-refs-button[aria-pressed="true"] {
-  border-color: var(--fn-key-bar);
-}
 
 .wiki-article__tools {
   margin: calc(var(--spacing-3) * -1) 0 var(--spacing-5);

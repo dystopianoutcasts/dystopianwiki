@@ -5,7 +5,7 @@ import { MarkdownRenderer } from './MarkdownRenderer';
 import { hasFieldNotesMarker } from './fieldNotes';
 import { hasCitations } from '../../../../shared/field-notes';
 import { CodeReferencesButton } from './CodeReferencesButton';
-import { HIDE_CODE_REFERENCES_CLASS } from './codeReferences';
+import { ARTICLE_CONTENT_ID, HIDE_CODE_REFERENCES_CLASS } from './codeReferences';
 import { useCodeReferences } from './useCodeReferences';
 import { TableOfContents, extractTOCFromMarkdown } from './TableOfContents';
 import { RelatedArticles } from './RelatedArticles';
@@ -151,7 +151,7 @@ export function WikiArticle({
           )}
 
           {/* Content */}
-          <div className="wiki-article__content">
+          <div className="wiki-article__content" id={ARTICLE_CONTENT_ID}>
             <MarkdownRenderer content={article.content} />
           </div>
         </div>
