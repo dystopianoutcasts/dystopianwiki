@@ -133,6 +133,7 @@ const LIGHT_RULES: [string, string, Check][] = [
   ['components/wiki-article.css', '.wiki-article__next-step-title', { bg: v('background'), min: 4.5 }],
   ['components/cards.css', '.section-card--primary .section-card__link', { bg: v('surface'), min: 4.5 }],
   ['pages/not-found-page.css', '.not-found-page__title', { bg: v('background'), min: 3 }], // 6rem
+  ['components/hero-cockpit.css', `${LIGHT} .hero__title-second`, { bg: v('background'), min: 3 }], // 2.75rem and up
   ['pages/search-page.css', `${LIGHT} .search-page__result-category`, { bg: v('accent-100'), min: 4.5 }],
   ['components/wiki-article.css', '.wiki-article__complete-btn', { min: 4.5 }],
   ['pages/article-page.css', '.article-page__back-link', { min: 4.5 }],
@@ -240,6 +241,13 @@ function lightOverride(selector: string): Rule | undefined {
 }
 const isHex = (s: string) => /^#[0-9a-f]{6}$/i.test(s)
 
+/**
+ * Display text big enough to be WCAG "large text" (24 px and up), held to 3:1 instead of 4.5:1. Each
+ * entry is also in LIGHT_RULES with min 3. The hero name's second word is Burnt Orange on light
+ * grounds, which BRAND.md allows for large text only; the title is 2.75rem (44 px) and up.
+ */
+const LARGE_TEXT = new Set(['.hero__title-second'])
+
 test('every text colour that applies in light meets 4.5:1 on what it sits on', () => {
   const fails: string[] = []
   for (const r of rules) {
@@ -254,7 +262,7 @@ test('every text colour that applies in light meets 4.5:1 on what it sits on', (
       const grounds = isHex(own) ? [own] : [resolve(v('background')), resolve(v('surface'))]
       for (const g of grounds) {
         const k = contrast(fg, g)
-        if (k < 4.5) fails.push(`${k.toFixed(2)} ${r.file} ${part}: ${fg} on ${g}`)
+        if (k < (LARGE_TEXT.has(part) ? 3 : 4.5)) fails.push(`${k.toFixed(2)} ${r.file} ${part}: ${fg} on ${g}`)
       }
     }
   }

@@ -13,8 +13,10 @@ import { DISCORD_URL, SERVER_ADDRESS } from '../../lib/links';
 import { ServerDescription } from './ServerDescription';
 import { CopyField } from './CopyField';
 import { homeWorldLine } from '../../lib/worldsPanel';
+import { BooneFiles, CockpitHud } from './HeroBoone';
 import '../../styles/components/hero.css';
 import '../../styles/components/home-sections.css';
+import '../../styles/components/hero-cockpit.css';
 
 /**
  * The live line under the title: online or offline, survivors on now, time since
@@ -91,73 +93,64 @@ export function HeroSection() {
   return (
     <section className="hero">
       <div className="hero__gradient fade fade--green-orange" />
+      <CockpitHud />
 
-      <div className="hero__content">
-        {/* Banner Logo - Links to Discord */}
-        <a
-          href={DISCORD_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hero__logo-link"
-          aria-label="Join Dystopian Outcasts Discord"
-        >
-          <img
-            src="/assets/banners/dystopian-outcasts-banner-1024.png"
-            alt="Dystopian Outcasts"
-            className="hero__logo"
-          />
-        </a>
+      <div className="hero__layout">
+        <BooneFiles />
 
-        {/* Title */}
-        <h1 className="hero__title">Dystopian Outcasts</h1>
+        <div className="hero__content">
+          {/* The name as the brand writes it: the second word in orange. */}
+          <h1 className="hero__title">
+            Dystopian <span className="hero__title-second">Outcasts</span>
+          </h1>
 
-        <ServerStatus summary={summary} />
+          {/* The server's own browser description when it has one, one line per PZ line break. */}
+          <p className="hero__subtitle">
+            {description !== '' ? (
+              <ServerDescription text={description} />
+            ) : (
+              <>
+                A <em>Project Zomboid</em> community. We play together, build mods, and write down what we learn.
+              </>
+            )}
+          </p>
 
-        {/* The server's own browser description when it has one, one line per PZ line break. */}
-        <p className="hero__subtitle">
-          {description !== '' ? (
-            <ServerDescription text={description} />
-          ) : (
-            <>
-              A <em>Project Zomboid</em> community. We play together, build mods, and write down what we learn.
-            </>
-          )}
-        </p>
+          <ServerStatus summary={summary} />
+          <HeroBadges summary={summary} />
+          <WorldLine summary={summary} />
 
-        <HeroBadges summary={summary} />
-        <WorldLine summary={summary} />
-
-        {/*
-          Plain <a>, not react-router's Link (T43, 2026-09-29): /map/ is a
-          separately built static app committed at map/, not a route inside
-          this SPA, same reason as the header's Map link (T20).
-        */}
-        <div className="hero__actions hero__actions--split">
-          <a
-            href={DISCORD_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hero__learn-btn"
-          >
-            Join our Discord
-          </a>
-          <a href="/map/" className="hero__learn-btn hero__learn-btn--secondary">
-            See the live map
-          </a>
+          {/*
+            Plain <a>, not react-router's Link (T43, 2026-09-29): /map/ is a
+            separately built static app committed at map/, not a route inside
+            this SPA, same reason as the header's Map link (T20).
+          */}
+          <div className="hero__actions hero__actions--split">
+            <a
+              href={DISCORD_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hero__learn-btn"
+            >
+              Join our Discord
+            </a>
+            <a href="/map/" className="hero__learn-btn hero__learn-btn--secondary">
+              See the live map
+            </a>
+          </div>
+          <p className="home-address">
+            Server address: <CopyField value={SERVER_ADDRESS} what="server address" />
+          </p>
         </div>
-        <p className="home-address">
-          Server address: <CopyField value={SERVER_ADDRESS} what="server address" />
-        </p>
+      </div>
 
-        {/* Search Bar */}
-        <div className="hero__search">
-          <FuzzySearchBar
-            placeholder="Search all documentation..."
-            onSearch={handleSearch}
-            autoFocus={false}
-            size="large"
-          />
-        </div>
+      {/* Search Bar */}
+      <div className="hero__search">
+        <FuzzySearchBar
+          placeholder="Search all documentation..."
+          onSearch={handleSearch}
+          autoFocus={false}
+          size="large"
+        />
       </div>
     </section>
   );

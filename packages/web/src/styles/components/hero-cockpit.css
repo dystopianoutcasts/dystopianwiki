@@ -1,0 +1,395 @@
+/**
+ * The home page hero (owner, 2026-11-14): Boone's seal over his splayed service files beside the
+ * introduction to us and the server, inside a cockpit view (heading tape, altitude ladders, corner
+ * brackets). Markup: HeroSection.tsx and HeroBoone.tsx. The pictures take no clicks; the tape's
+ * drift and the ring's turn stop for reduced motion. The seal is the brand's default set, Fur
+ * Orange on Soot, in both themes (BRAND.md).
+ */
+
+:root {
+  --cockpit-ink: rgba(156, 197, 107, 0.55);
+  --cockpit-ink-strong: rgba(156, 197, 107, 0.8);
+}
+
+[data-theme="light"] {
+  --cockpit-ink: rgba(63, 125, 44, 0.55);
+  --cockpit-ink-strong: rgba(63, 125, 44, 0.8);
+}
+
+/* ---- Layout: the files on one side, the introduction on the other ---------- */
+
+.hero__layout {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-12);
+  max-width: 1120px;
+  margin: 0 auto var(--spacing-8);
+}
+
+.hero__layout .hero__content {
+  flex: 0 1 560px;
+  min-width: 0;
+  margin: 0;
+  text-align: left;
+}
+
+.hero__title {
+  font-size: clamp(2.75rem, 5.5vw, 4.75rem);
+  line-height: 1;
+  margin-bottom: var(--spacing-5, 1.25rem);
+}
+
+.hero__title-second {
+  display: block;
+  color: var(--color-brand-600);
+}
+
+[data-theme="light"] .hero__title-second {
+  color: var(--color-brand-name-light);
+}
+
+.hero__layout .hero__subtitle {
+  margin: 0 0 var(--spacing-5, 1.25rem);
+  max-width: 540px;
+}
+
+.hero__layout .home-status {
+  margin: 0 0 var(--spacing-4);
+}
+
+.hero__layout .home-badges {
+  justify-content: flex-start;
+  margin: 0 0 var(--spacing-6);
+}
+
+.hero__layout .home-world {
+  margin: calc(-1 * var(--spacing-4)) 0 var(--spacing-6);
+  text-align: left;
+}
+
+.hero__layout .hero__actions--split {
+  justify-content: flex-start;
+  margin-top: 0;
+}
+
+.hero__layout .home-address {
+  margin-bottom: 0;
+}
+
+.hero__search {
+  max-width: 640px;
+}
+
+/* Below 1100 px the files sit above the introduction, and everything centers. */
+@media (max-width: 1099px) {
+  .hero__layout {
+    flex-direction: column;
+    gap: var(--spacing-6);
+  }
+
+  .hero__layout .hero__content {
+    flex-basis: auto;
+    text-align: center;
+  }
+
+  .hero__layout .hero__subtitle { margin-left: auto; margin-right: auto; }
+  .hero__layout .home-badges,
+  .hero__layout .hero__actions--split { justify-content: center; }
+  .hero__layout .home-world { text-align: center; }
+}
+
+/* ---- The cockpit frame ------------------------------------------------------ */
+
+.cockpit {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.cockpit__tape {
+  position: absolute;
+  top: 14px;
+  left: 120px;
+  right: 120px;
+  height: 36px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+.cockpit__tape-strip {
+  display: block;
+  animation: cockpit-drift 160s linear infinite;
+}
+
+/* One full turn of tape is 1440 px: drift exactly that, then start over without a seam. */
+@keyframes cockpit-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(-1440px); }
+}
+
+.cockpit__tape-strip line,
+.cockpit__ladder line { stroke: var(--cockpit-ink); stroke-width: 1; }
+
+.cockpit__tape-strip text,
+.cockpit__ladder text {
+  fill: var(--cockpit-ink-strong);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+}
+
+.cockpit__caret {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: -6px;
+  border: 6px solid transparent;
+  border-top-color: var(--color-brand-600);
+}
+
+.cockpit__ladder {
+  position: absolute;
+  top: 50%;
+  width: 120px;
+  height: 420px;
+  transform: translateY(-50%);
+}
+
+.cockpit__ladder--left { left: 28px; }
+.cockpit__ladder--right { right: 28px; }
+
+.cockpit__corner {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border: 0 solid var(--cockpit-ink-strong);
+}
+
+.cockpit__corner--tl { top: 60px; left: 20px; border-width: 2px 0 0 2px; }
+.cockpit__corner--tr { top: 60px; right: 20px; border-width: 2px 2px 0 0; }
+.cockpit__corner--bl { bottom: 20px; left: 20px; border-width: 0 0 2px 2px; }
+.cockpit__corner--br { bottom: 20px; right: 20px; border-width: 0 2px 2px 0; }
+
+/* The ladders need the side margins the full layout leaves; narrower, the tape and corners stay. */
+@media (max-width: 1399px) {
+  .cockpit__ladder { display: none; }
+  .cockpit__tape { left: 24px; right: 24px; }
+}
+
+/* ---- Boone's seal ----------------------------------------------------------- */
+
+.boone-seal {
+  position: absolute;
+  left: 0;
+  top: 84px;
+  width: 320px;
+  height: 320px;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.5));
+}
+
+.boone-seal__ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.boone-seal__disc { fill: #161819; stroke: #e2742d; stroke-width: 6; }
+.boone-seal__inner { fill: #1d1f22; stroke: #e2742d; stroke-width: 3; }
+
+.boone-seal__text {
+  fill: #e2742d;
+  font-family: var(--font-family-display);
+  font-size: 25px;
+  /* Keep the trailing space, so the gap after the last pipe matches every other gap. */
+  white-space: pre;
+}
+
+.boone-seal__turn {
+  transform-box: view-box;
+  transform-origin: 200px 200px;
+  animation: boone-seal-turn 90s linear infinite;
+}
+
+@keyframes boone-seal-turn {
+  to { transform: rotate(360deg); }
+}
+
+.boone-seal__face {
+  position: absolute;
+  left: 25%;
+  top: 25%;
+  width: 50%;
+  height: 50%;
+  image-rendering: pixelated;
+}
+
+/* ---- His service files, splayed behind the seal ----------------------------- */
+
+/* The stage is drawn at 540 x 470 and scaled down on narrow screens (--files-scale). */
+.boone-files {
+  --files-scale: 1;
+  flex: none;
+  width: calc(540px * var(--files-scale));
+  height: calc(470px * var(--files-scale));
+  pointer-events: none;
+}
+
+.boone-files__stage {
+  position: relative;
+  width: 540px;
+  height: 470px;
+  transform: scale(var(--files-scale));
+  transform-origin: top left;
+}
+
+.boone-files__folder {
+  position: absolute;
+  left: 170px;
+  top: 22px;
+  width: 330px;
+  height: 380px;
+  border-radius: 4px 10px 10px 10px;
+  background: linear-gradient(160deg, #d4b57a, #b8955a 60%, #a8844c);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+  transform: rotate(6deg);
+}
+
+.boone-files__tab {
+  position: absolute;
+  top: -24px;
+  right: 18px;
+  padding: 4px 14px 6px;
+  border-radius: 8px 8px 0 0;
+  background: #c9aa6e;
+  color: #3b2f1a;
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.boone-files__sheet {
+  position: absolute;
+  left: 236px;
+  top: 52px;
+  width: 280px;
+  height: 340px;
+  box-sizing: border-box;
+  padding: 22px 16px 0 86px;
+  background: #f4f6ea;
+  color: #23271f;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
+  transform: rotate(-3deg);
+  font-family: var(--font-family-mono);
+  font-size: 11.5px;
+  line-height: 1.75;
+}
+
+.boone-files__head {
+  margin: 0 0 46px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  border-bottom: 1px solid #3f5a2c;
+}
+
+.boone-files__lines { margin: 0; }
+.boone-files__line { display: flex; gap: 8px; }
+.boone-files__line dt { width: 64px; flex: none; color: #4b5545; }
+.boone-files__line dd { margin: 0; font-weight: 700; }
+
+.boone-files__stamp {
+  position: absolute;
+  right: 14px;
+  top: 40px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  border: 2px solid #3f5a2c;
+  border-radius: 3px;
+  color: #3f5a2c;
+  font-family: var(--font-family-display);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+  transform: rotate(-14deg);
+}
+
+.boone-files__stamp-mark {
+  width: 18px;
+  height: 16px;
+  background: #3f5a2c;
+  -webkit-mask: url('/assets/branding/boone/boone-one-color-128.png') center / contain no-repeat;
+  mask: url('/assets/branding/boone/boone-one-color-128.png') center / contain no-repeat;
+}
+
+.boone-files__photo {
+  position: absolute;
+  left: 372px;
+  top: 300px;
+  width: 140px;
+  box-sizing: border-box;
+  padding: 9px 9px 0;
+  background: #f2f0ea;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+  transform: rotate(9deg);
+}
+
+.boone-files__picture {
+  display: block;
+  height: 112px;
+  background: linear-gradient(180deg, #3a4a5a, #1d2228);
+  overflow: hidden;
+}
+
+.boone-files__picture img {
+  display: block;
+  width: 104px;
+  height: 104px;
+  margin: 8px auto 0;
+  image-rendering: pixelated;
+}
+
+.boone-files__caption {
+  display: block;
+  padding: 6px 0 8px;
+  text-align: center;
+  color: #2b2b2b;
+  font-family: var(--font-family-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+}
+
+.boone-files__clip {
+  position: absolute;
+  top: -18px;
+  left: 18px;
+  width: 14px;
+  height: 36px;
+  fill: none;
+  stroke: #9aa1a7;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+@media (max-width: 1099px) {
+  .boone-files { --files-scale: 0.82; }
+}
+
+@media (max-width: 640px) {
+  .boone-files { --files-scale: 0.6; }
+
+  /* The bottom brackets would crowd the search bar on a phone. */
+  .cockpit__corner--bl,
+  .cockpit__corner--br { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cockpit__tape-strip,
+  .boone-seal__turn { animation: none; }
+}
