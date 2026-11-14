@@ -3,9 +3,11 @@ import { Layout } from '../components/layout/Layout';
 import { WikiLayout } from '../components/layout/WikiLayout';
 import { SEOHead } from '../components/seo/SEOHead';
 import { useGameContext } from '../hooks/useGameContext';
-import { DEFAULT_VERSION, getSection } from '../config/versions.generated';
+import { DEFAULT_VERSION, getSection, getVersion } from '../config/versions.generated';
 import { resolveIcon } from '../components/icons/Icon';
+import { panelCode, StencilCode } from '../components/details/PageDetails';
 import '../styles/pages/section-page.css';
+import '../styles/components/page-details.css';
 
 export function SectionPage() {
   const { version = DEFAULT_VERSION, section = '' } = useParams<{ version: string; section: string }>();
@@ -15,6 +17,8 @@ export function SectionPage() {
   // (contract C1), the same source the sidebar reads. Empty categories are hidden.
   const sectionInfo = getSection(version, section);
   const categories = (sectionInfo?.categories ?? []).filter((category) => category.articleCount > 0);
+  // The stenciled panel code: where this section sits in the build's list ("MOD-02").
+  const sectionIndex = Math.max(0, getVersion(version)?.sections.findIndex((s) => s.id === section) ?? 0);
 
   if (!sectionInfo) {
     return (
@@ -43,6 +47,7 @@ export function SectionPage() {
       <WikiLayout>
         <div className="section-page">
           <header className="section-page__header">
+            <StencilCode code={panelCode(section, sectionIndex)} />
             <span className="section-page__icon" aria-hidden="true">
               {resolveIcon(sectionInfo.icon)}
             </span>
@@ -54,7 +59,7 @@ export function SectionPage() {
             <section className="section-page__categories">
               <h2 className="section-page__categories-title">Categories</h2>
               <div className="section-page__categories-grid">
-                {categories.map((category) => (
+                {categories.map((category, categoryIndex) => (
                   <Link
                     key={category.id}
                     to={buildPath(version, section, category.id)}
@@ -70,6 +75,7 @@ export function SectionPage() {
                         {category.articleCount} {category.articleCount === 1 ? 'article' : 'articles'}
                       </span>
                     </div>
+                    <StencilCode code={panelCode(section, sectionIndex, categoryIndex)} small />
                   </Link>
                 ))}
               </div>

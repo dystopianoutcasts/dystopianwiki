@@ -10,7 +10,11 @@ import { Link } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { SEOHead } from '../components/seo/SEOHead';
 import { CURRENT_SOTS, sotsContents } from '../data/sots';
+import { CoffeeRing, FiledStamp } from '../components/details/PageDetails';
+import { Tape } from '../components/landing/BooneDetails';
 import '../styles/pages/sots.css';
+import '../styles/components/boone-details.css';
+import '../styles/components/page-details.css';
 
 export function SotsPage() {
   const issue = CURRENT_SOTS;
@@ -33,9 +37,13 @@ export function SotsPage() {
             {issue.season} &middot; {issue.covers} &middot; {total} pages
           </p>
           <p className="sots__summary">{issue.summary}</p>
+          <FiledStamp label={issue.season} />
         </header>
 
         <nav className="sots__contents" aria-label={`Contents of issue ${issue.issue}`}>
+          <Tape side="left" />
+          <Tape side="right" />
+          <CoffeeRing />
           <h2 className="sots__contents-title">Inside this issue</h2>
           <ol className="sots__contents-list">
             {sotsContents(issue).map((page) => (

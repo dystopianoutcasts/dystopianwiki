@@ -1,0 +1,126 @@
+/**
+ * Details on State of the Server and the wiki's section pages (components/details/PageDetails.tsx).
+ * None takes a click. The stamp is Moss Stamp ink on Lichen Paper, as every stamp is (BRAND.md).
+ */
+
+/* ---- FILED stamp, beside the State of the Server title ---------------------- */
+
+.sots__header {
+  position: relative;
+}
+
+.filed-stamp {
+  position: absolute;
+  top: 6px;
+  right: 2%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border: 3px double #3f5a2c;
+  border-radius: 5px;
+  background: #f4f6ea;
+  color: #3f5a2c;
+  font-family: var(--font-family-display);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  transform: rotate(8deg);
+  pointer-events: none;
+}
+
+.filed-stamp__mark {
+  width: 22px;
+  height: 20px;
+  background: #3f5a2c;
+  -webkit-mask: url('/assets/branding/boone/boone-one-color-128.png') center / contain no-repeat;
+  mask: url('/assets/branding/boone/boone-one-color-128.png') center / contain no-repeat;
+}
+
+/* Narrow: under the meta line instead of beside the title. */
+@media (max-width: 719px) {
+  .filed-stamp {
+    position: static;
+    width: fit-content;
+    margin: var(--spacing-3) auto 0;
+  }
+}
+
+/* ---- Tape and a coffee ring on the contents card ---------------------------- */
+
+.sots__contents {
+  position: relative;
+}
+
+.sots__contents .boone-tape {
+  top: -7px;
+}
+
+.sots__contents .boone-tape--left { left: 18px; transform: rotate(-24deg); }
+.sots__contents .boone-tape--right { right: 18px; left: auto; transform: rotate(22deg); }
+
+.coffee-ring {
+  position: absolute;
+  right: 14px;
+  bottom: 4px;
+  width: 86px;
+  height: 86px;
+  pointer-events: none;
+  transform: rotate(-18deg);
+}
+
+/* Warm brown, darker at the rim where the coffee dried, uneven all the way round. */
+.coffee-ring__wide { fill: none; stroke: rgba(150, 98, 46, 0.16); stroke-width: 8; }
+.coffee-ring__edge { fill: none; stroke: rgba(150, 98, 46, 0.42); stroke-width: 1.8; stroke-dasharray: 70 5 110 3 60 9; }
+.coffee-ring__drip { fill: none; stroke: rgba(150, 98, 46, 0.24); stroke-width: 3.5; stroke-linecap: round; }
+
+[data-theme="light"] .coffee-ring__wide { stroke: rgba(140, 86, 34, 0.18); }
+[data-theme="light"] .coffee-ring__edge { stroke: rgba(140, 86, 34, 0.5); }
+[data-theme="light"] .coffee-ring__drip { stroke: rgba(140, 86, 34, 0.28); }
+
+@media (max-width: 639px) {
+  .coffee-ring { width: 70px; height: 70px; }
+}
+
+/* ---- Stenciled panel codes on the wiki's section pages ---------------------- */
+
+.section-page__header {
+  position: relative;
+}
+
+.stencil-code {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 1px dashed var(--color-accent-400);
+  border-radius: 3px;
+  color: var(--color-accent-400);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.2em;
+  pointer-events: none;
+}
+
+.section-page__header .stencil-code {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.section-page__category-card {
+  position: relative;
+}
+
+/* Bottom right of the card, level with the article count, clear of the name and description. */
+.stencil-code--small {
+  position: absolute;
+  bottom: 10px;
+  right: 12px;
+  padding: 0 6px;
+  border: 0;
+  color: var(--color-text-secondary);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+}
+
+@media (max-width: 639px) {
+  .section-page__header .stencil-code { position: static; margin-bottom: var(--spacing-3); }
+}
