@@ -1,0 +1,997 @@
+{"c": "fmod.fmod.EmitterType", "purpose": "The list of emitter types for sounds: Extra, Footstep and Voice.", "confidence": "high"}
+{"c": "fmod.fmod.FMODAudio", "purpose": "Wraps one FMOD sound so it can be named, started, stopped, paused and set to a volume.", "confidence": "high"}
+{"c": "fmod.fmod.FMODDebugEventPlayer", "purpose": "Plays a named FMOD event for debugging, with its parameters, volume, looping and timeline position.", "confidence": "high"}
+{"c": "fmod.fmod.FMODSoundBank", "purpose": "Stores the footstep and voice sound lookups for the FMOD sound bank.", "confidence": "high"}
+{"c": "fmod.fmod.FMODSoundEmitter", "purpose": "Plays and controls game sounds through FMOD at a world position, with start, stop, pitch, volume and parameters.", "confidence": "high"}
+{"c": "org.joml.Vector2f", "purpose": "A two-value float vector from the JOML math library, used for 2D positions and directions.", "confidence": "high"}
+{"c": "org.joml.Vector3f", "purpose": "A three-value float vector from the JOML math library, used for 3D positions and directions.", "confidence": "high"}
+{"c": "org.lwjglx.input.Keyboard", "purpose": "Keyboard input access from the LWJGL library; the digest lists no members, so its exact use is unconfirmed.", "confidence": "low"}
+{"c": "se.krka.kahlua.vm.Coroutine", "purpose": "Runs one Lua coroutine: its call stack, object stack, resume, yield and status in the Kahlua Lua VM.", "confidence": "high"}
+{"c": "se.krka.kahlua.vm.KahluaUtil", "purpose": "Helper functions for the Kahlua Lua VM: argument checks, type tests, tostring and number conversion.", "confidence": "high"}
+{"c": "zombie.AmbientStreamManager", "purpose": "Plays the world's ambient sounds such as wind, rain, zone sounds and alarms, based on the player's location and time.", "confidence": "high"}
+{"c": "zombie.BaseAmbientStreamManager", "purpose": "Base class for the ambient sound manager, defining the shared calls for ambient, alarm, gunshot and thunder sounds.", "confidence": "high"}
+{"c": "zombie.DummySoundManager", "purpose": "Placeholder sound manager that accepts the same music and sound calls as the real one.", "confidence": "high"}
+{"c": "zombie.GameSounds", "purpose": "Loads the sound definitions from the sound INI file and looks up game sounds by name and category.", "confidence": "high"}
+{"c": "zombie.GameTime", "purpose": "Keeps the game clock: day, hour, minutes, days survived and time multipliers, and fires the every-minute, hour and day events.", "confidence": "high"}
+{"c": "zombie.GameWindow", "purpose": "The main game window and loop: startup, the render and tick loop, texture packs, save and load helpers, and boot events.", "confidence": "high"}
+{"c": "zombie.Lua.LuaEventManager", "purpose": "Registers and triggers the Lua event lists such as OnTick and OnGameBoot, and runs queued events for mod Lua.", "confidence": "high"}
+{"c": "zombie.Lua.LuaManager$GlobalObject$LuaFileWriter", "purpose": "A Lua-facing file writer that lets scripts write and close lines in a file.", "confidence": "high"}
+{"c": "zombie.Lua.MapObjects", "purpose": "Lua hooks that create map squares and objects from sprite names when a map chunk loads.", "confidence": "high"}
+{"c": "zombie.MapGroups", "purpose": "Sorts installed maps into groups and checks for map conflicts, including the vanilla map folders.", "confidence": "high"}
+{"c": "zombie.SandboxOptions", "purpose": "Holds the sandbox settings for zombies, day length, loot, animals and more, and loads them from game or server files.", "confidence": "high"}
+{"c": "zombie.SandboxOptions$BooleanSandboxOption", "purpose": "A true or false sandbox setting, with its table name, page, translation and tooltip.", "confidence": "high"}
+{"c": "zombie.SandboxOptions$DoubleSandboxOption", "purpose": "A decimal sandbox setting with a minimum and maximum, plus its page, translation and tooltip.", "confidence": "high"}
+{"c": "zombie.SandboxOptions$EnumSandboxOption", "purpose": "A sandbox setting that picks one value from a list, with translated names for each value.", "confidence": "high"}
+{"c": "zombie.SandboxOptions$IntegerSandboxOption", "purpose": "A whole-number sandbox setting, with its page, translation and tooltip.", "confidence": "high"}
+{"c": "zombie.SandboxOptions$StringSandboxOption", "purpose": "A text sandbox setting, with its page, translation and table name.", "confidence": "high"}
+{"c": "zombie.SoundManager", "purpose": "The main sound manager: plays world and UI sounds, music and ambient audio, and updates FMOD each tick.", "confidence": "high"}
+{"c": "zombie.SoundManager$AmbientSoundEffect", "purpose": "One looping ambient sound effect with its name, volume and FMOD event instance, started and stopped by the sound manager.", "confidence": "high"}
+{"c": "zombie.SystemDisabler", "purpose": "Developer switches that turn off or force parts of the game, such as character stats, zombie and survivor creation, FPS cap and vehicles.", "confidence": "high"}
+{"c": "zombie.VirtualZombieManager", "purpose": "Spawns and removes zombies in unloaded areas, including indoor zombies, hordes and building key spawns.", "confidence": "high"}
+{"c": "zombie.WorldSoundManager", "purpose": "Tracks world noises that draw zombies and stress animals, and updates their life and hearing each frame.", "confidence": "high"}
+{"c": "zombie.WorldSoundManager$WorldSound", "purpose": "One world noise with its position, volume, radius, lifetime and source.", "confidence": "high"}
+{"c": "zombie.ai.MapKnowledge", "purpose": "Remembers which doors, windows and edges a zombie or NPC has found blocked on the map.", "confidence": "high"}
+{"c": "zombie.ai.sadisticAIDirector.SleepingEvent", "purpose": "The sadistic AI director's sleep event, where a sleeping player may be attacked, scored by bed or floor quality.", "confidence": "high"}
+{"c": "zombie.ai.states.AttackState", "purpose": "AI state for a character's melee attack: plays the attack animation and resolves the hit or miss outcome.", "confidence": "high"}
+{"c": "zombie.ai.states.BurntToDeath", "purpose": "AI state for a zombie that dies from burning, playing its death animation and sound.", "confidence": "high"}
+{"c": "zombie.ai.states.ClimbDownState", "purpose": "AI state for a character climbing down, such as down a ladder, with its speed and direction set up.", "confidence": "high"}
+{"c": "zombie.ai.states.ClimbOverFenceState", "purpose": "AI state for climbing over a fence from a start point to an end point, with its outcome.", "confidence": "high"}
+{"c": "zombie.ai.states.ClimbOverWallState", "purpose": "AI state for climbing over a wall from a start point to an end point, with struggle and success outcomes.", "confidence": "high"}
+{"c": "zombie.ai.states.ClimbState", "purpose": "AI state for climbing a ladder, rope or other climb, with speed, direction and fall chance.", "confidence": "high"}
+{"c": "zombie.ai.states.ClimbThroughWindowState", "purpose": "AI state for climbing through an open window, including finding the free square past the obstacle.", "confidence": "high"}
+{"c": "zombie.ai.states.CloseWindowState", "purpose": "AI state for a character closing a window, with its animation outcome.", "confidence": "high"}
+{"c": "zombie.ai.states.CrawlingZombieTurnState", "purpose": "AI state that turns a crawling zombie to face a new direction, left or right.", "confidence": "high"}
+{"c": "zombie.ai.states.FakeDeadAttackState", "purpose": "AI state for a fake-dead zombie's attack, which plays the fall-on-front animation.", "confidence": "high"}
+{"c": "zombie.ai.states.FakeDeadZombieState", "purpose": "AI state for a zombie playing dead; the digest shows no further detail on when it acts.", "confidence": "low"}
+{"c": "zombie.ai.states.FishingState", "purpose": "AI state for a character fishing: aiming, the fishing stage and when the fishing finishes.", "confidence": "high"}
+{"c": "zombie.ai.states.FitnessState", "purpose": "AI state for a character doing a fitness exercise, with exercise type, hand and speed.", "confidence": "high"}
+{"c": "zombie.ai.states.ForceOpenState", "purpose": "AI state for forcing open a door, garage door or window, with its success and stop outcomes.", "confidence": "high"}
+{"c": "zombie.ai.states.ForceOpenState$ForcingType", "purpose": "The list of forcing types: left door, right door, garage door and window, each with its animation and event names.", "confidence": "high"}
+{"c": "zombie.ai.states.IdleState", "purpose": "AI state for a character standing idle, which can play a voice sound or a debug animation.", "confidence": "high"}
+{"c": "zombie.ai.states.LungeState", "purpose": "AI state for a zombie lunging toward its target for a set number of ticks.", "confidence": "high"}
+{"c": "zombie.ai.states.OpenWindowState", "purpose": "AI state for a character opening a window, with its animation outcome.", "confidence": "high"}
+{"c": "zombie.ai.states.PathFindState", "purpose": "AI state for walking a path found by pathfinding, with a tick count and moving flag.", "confidence": "high"}
+{"c": "zombie.ai.states.PlayerActionsState", "purpose": "AI state that runs the player's action animations, including primary and secondary item use and reload speed.", "confidence": "high"}
+{"c": "zombie.ai.states.PlayerAimState", "purpose": "AI state for the player aiming a weapon, including aiming at the floor and its distance.", "confidence": "high"}
+{"c": "zombie.ai.states.PlayerEmoteState", "purpose": "AI state for a player emote, with its looping sound and playing flag.", "confidence": "high"}
+{"c": "zombie.ai.states.PlayerExtState", "purpose": "AI state for a player's extra animation, with a playing flag; the digest does not name the animation.", "confidence": "low"}
+{"c": "zombie.ai.states.PlayerFallDownState", "purpose": "AI state for a player falling down: on the floor, knocked down or dead.", "confidence": "high"}
+{"c": "zombie.ai.states.PlayerFallingState", "purpose": "AI state for a player in the air while falling, including the landing impact and climbing.", "confidence": "high"}
+{"c": "zombie.ai.states.PlayerGetUpState", "purpose": "AI state for a player getting up from the floor, using force and movement inputs.", "confidence": "high"}
+{"c": "zombie.ai.states.PlayerHitReactionPVPState", "purpose": "AI state for a player's hit reaction in player-versus-player combat, including the death sound.", "confidence": "high"}
+{"c": "zombie.ai.states.PlayerHitReactionState", "purpose": "AI state for a player's hit reaction to a zombie attack, with male or female voice sounds.", "confidence": "high"}
+{"c": "zombie.ai.states.PlayerKnockedDown", "purpose": "AI state for a player knocked down to the ground, falling on the front or the back.", "confidence": "high"}
+{"c": "zombie.ai.states.PlayerOnGroundState", "purpose": "AI state for a player lying on the ground until the animation ends.", "confidence": "high"}
+{"c": "zombie.ai.states.PlayerSitOnFurnitureState", "purpose": "AI state for a player sitting on furniture, including the sit animation and getting up.", "confidence": "high"}
+{"c": "zombie.ai.states.PlayerSitOnGroundState", "purpose": "AI state for a player sitting on the ground, including the fire check and sit animation.", "confidence": "high"}
+{"c": "zombie.ai.states.PlayerStrafeState", "purpose": "AI state for a player strafing sideways while aiming, using a strafe speed.", "confidence": "high"}
+{"c": "zombie.ai.states.SmashWindowState", "purpose": "AI state for a character smashing a window, including vehicle windows and climbing through.", "confidence": "high"}
+{"c": "zombie.ai.states.StaggerBackState", "purpose": "AI state for a character staggering backward after a hit, then falling or changing state.", "confidence": "high"}
+{"c": "zombie.ai.states.SwipeStatePlayer", "purpose": "AI state for a player's melee swing, with weapon swing events and grapple and stomp handling.", "confidence": "high"}
+{"c": "zombie.ai.states.ThumpState", "purpose": "AI state for a zombie thumping on a door or wall, with frame timing and a damage multiplier.", "confidence": "high"}
+{"c": "zombie.ai.states.WalkTowardState", "purpose": "AI state for walking toward a target location, with an ignore offset and turn direction.", "confidence": "high"}
+{"c": "zombie.ai.states.ZombieFallDownState", "purpose": "AI state for a zombie falling to the ground, with its death sound.", "confidence": "high"}
+{"c": "zombie.ai.states.ZombieGetDownState", "purpose": "AI state for a zombie getting down to crawl, with a wait time and start position.", "confidence": "high"}
+{"c": "zombie.ai.states.ZombieGetUpState", "purpose": "AI state for a zombie getting back up after a fall.", "confidence": "high"}
+{"c": "zombie.ai.states.ZombieIdleState", "purpose": "AI state for an idle zombie, with its tick count and animation events.", "confidence": "high"}
+{"c": "zombie.ai.states.ZombieOnGroundState", "purpose": "AI state for a zombie lying on the ground, with a reanimate timer and a check for characters standing on it.", "confidence": "high"}
+{"c": "zombie.ai.states.ZombieReanimateState", "purpose": "AI state for a fallen zombie getting back up through its reanimate animation.", "confidence": "high"}
+{"c": "zombie.ai.states.ZombieSittingState", "purpose": "AI state for a zombie that is sitting.", "confidence": "high"}
+{"c": "zombie.ai.states.player.PlayerMilkAnimalState", "purpose": "AI state for a player milking an animal, with the milk animation.", "confidence": "high"}
+{"c": "zombie.ai.states.player.PlayerMovementState", "purpose": "AI state for a player's movement, set to run or sprint.", "confidence": "high"}
+{"c": "zombie.ai.states.player.PlayerPetAnimalState", "purpose": "AI state for a player petting an animal.", "confidence": "high"}
+{"c": "zombie.ai.states.player.PlayerShearAnimalState", "purpose": "AI state for a player shearing an animal.", "confidence": "high"}
+{"c": "zombie.audio.BaseSoundEmitter", "purpose": "Base class for sound emitters, defining the shared calls for playing, stopping, looping, volume, pitch and position.", "confidence": "high"}
+{"c": "zombie.audio.DummySoundBank", "purpose": "Placeholder sound bank with the same footstep and voice methods as the real bank.", "confidence": "high"}
+{"c": "zombie.audio.DummySoundEmitter", "purpose": "Placeholder sound emitter that accepts the same play, stop and volume calls without making sound.", "confidence": "high"}
+{"c": "zombie.audio.GameSound", "purpose": "One named game sound with its category, loop and 3D flags, its clips and a user volume.", "confidence": "high"}
+{"c": "zombie.audio.GameSoundClip", "purpose": "One clip inside a game sound, with its FMOD event, file, volume, pitch and min and max distance.", "confidence": "high"}
+{"c": "zombie.audio.MusicIntensityConfig", "purpose": "Loads the music intensity config and triggers intensity events, such as the see-bite health panel event.", "confidence": "high"}
+{"c": "zombie.audio.MusicIntensityEvent", "purpose": "One music intensity event with its id, intensity, duration and elapsed time.", "confidence": "high"}
+{"c": "zombie.audio.MusicIntensityEvents", "purpose": "The active list of music intensity events, with add, find, count and update.", "confidence": "high"}
+{"c": "zombie.audio.MusicThreatConfig", "purpose": "Loads the music threat settings: the status list and optional intensity overrides.", "confidence": "high"}
+{"c": "zombie.audio.MusicThreatStatus", "purpose": "One music threat status with its id and intensity value.", "confidence": "high"}
+{"c": "zombie.audio.MusicThreatStatuses", "purpose": "The live list of music threat statuses, such as player health and visible zombies, with their current intensity.", "confidence": "high"}
+{"c": "zombie.basements.Basements", "purpose": "Manages basements: which chunks have one, saving and loading basement data, and parsing basement definitions.", "confidence": "high"}
+{"c": "zombie.basements.BasementsV1", "purpose": "Reads version 1 basement definitions, access rules and spawn locations.", "confidence": "high"}
+{"c": "zombie.buildingRooms.BREBuilding", "purpose": "One building in the building room editor, with its rooms, validity and add and remove room actions.", "confidence": "high"}
+{"c": "zombie.buildingRooms.BRERoom", "purpose": "One room in the building room editor, with its name, level, rectangles and adjacency checks.", "confidence": "high"}
+{"c": "zombie.buildingRooms.BuildingRoomsEditor", "purpose": "The in-game building room editor: the buildings list, the current level and room, and applying changes.", "confidence": "high"}
+{"c": "zombie.characterTextures.BloodBodyPartType", "purpose": "The list of body parts that can show blood, such as head, hands, legs and torso.", "confidence": "high"}
+{"c": "zombie.characterTextures.BloodClothingType", "purpose": "The list of clothing types that can take blood, dirt and holes, with the body parts each one covers.", "confidence": "high"}
+{"c": "zombie.characters.AttachedItems.AttachedItem", "purpose": "One item attached to a character at a named location.", "confidence": "high"}
+{"c": "zombie.characters.AttachedItems.AttachedItems", "purpose": "All items attached to a character's attachment locations, with add, get and remove.", "confidence": "high"}
+{"c": "zombie.characters.AttachedItems.AttachedLocation", "purpose": "One attachment point on a character, with its id and attachment name.", "confidence": "high"}
+{"c": "zombie.characters.AttachedItems.AttachedLocationGroup", "purpose": "A named group of attachment points that holds the locations inside it.", "confidence": "high"}
+{"c": "zombie.characters.AttachedItems.AttachedLocations", "purpose": "The set of attachment location groups used for characters.", "confidence": "high"}
+{"c": "zombie.characters.BodyDamage.BodyDamage", "purpose": "A character's health and injuries: wounds, bleeding, bites, infection, panic, weapon and animal damage, and recovery.", "confidence": "high"}
+{"c": "zombie.characters.BodyDamage.BodyPart", "purpose": "One body part's health, damage, bleeding, bandage and infection state, with its damage and generation methods.", "confidence": "high"}
+{"c": "zombie.characters.BodyDamage.BodyPartType", "purpose": "The list of injury body parts, such as head, neck, torso, arms, hands, legs and feet, with wound and bandage models.", "confidence": "high"}
+{"c": "zombie.characters.BodyDamage.Fitness", "purpose": "A character's fitness and exercise state: endurance, regularity, stiffness and fitness XP updates.", "confidence": "high"}
+{"c": "zombie.characters.BodyDamage.Metabolics", "purpose": "The list of activity levels with their metabolic rates, such as sleeping, running and heavy work.", "confidence": "high"}
+{"c": "zombie.characters.BodyDamage.Nutrition", "purpose": "A character's nutrition: calories, carbs, lipids, proteins and weight, with weight gain and loss.", "confidence": "high"}
+{"c": "zombie.characters.BodyDamage.Thermoregulator", "purpose": "Simulates a character's body temperature: core and skin temperature, heat gain and loss, and metabolic rate.", "confidence": "high"}
+{"c": "zombie.characters.BodyDamage.Thermoregulator$ThermalNode", "purpose": "One body zone in the temperature model, with its celsius, insulation, wetness and wind resistance readings.", "confidence": "high"}
+{"c": "zombie.characters.Capability", "purpose": "The list of admin capabilities, such as adding items, banning users and seeing all players.", "confidence": "high"}
+{"c": "zombie.characters.CharacterActionAnims", "purpose": "The list of character action animation names, such as bandage, build, dig, drink, read and reload.", "confidence": "high"}
+{"c": "zombie.characters.CharacterInputBindingSet", "purpose": "A named set of key and button bindings, with load, save, reset and apply.", "confidence": "high"}
+{"c": "zombie.characters.CharacterInputBindingSetEntry", "purpose": "One entry in a character input binding set; the digest lists no members, so its exact role is unconfirmed.", "confidence": "low"}
+{"c": "zombie.characters.CharacterJoypadAxis2dBinding", "purpose": "The list of two-axis gamepad bindings for movement and aiming, with get, set and reset.", "confidence": "high"}
+{"c": "zombie.characters.CharacterJoypadButtonBinding", "purpose": "The list of gamepad button bindings for actions such as attack, crouch, inventory and interact.", "confidence": "high"}
+{"c": "zombie.characters.CharacterSoundEmitter", "purpose": "Plays and controls a character's sounds, such as footsteps and vocals, through FMOD.", "confidence": "high"}
+{"c": "zombie.characters.CharacterStat", "purpose": "Defines one character stat, such as hunger, fatigue, panic or stress, with its default and min and max values.", "confidence": "high"}
+{"c": "zombie.characters.CharacterTimedActions.LuaTimedAction", "purpose": "A timed action defined in Lua, with a max time and settings for stopping on walk, run or aim.", "confidence": "high"}
+{"c": "zombie.characters.CharacterTimedActions.LuaTimedActionNew", "purpose": "A newer Lua timed action with start, perform, update, complete and pathfinding support.", "confidence": "high"}
+{"c": "zombie.characters.CheatType", "purpose": "The list of debug cheat types, such as god mode, invisible, unlimited endurance, build and fast move.", "confidence": "high"}
+{"c": "zombie.characters.DummyCharacterSoundEmitter", "purpose": "Placeholder character sound emitter that accepts the same calls as the real one.", "confidence": "high"}
+{"c": "zombie.characters.Faction", "purpose": "A group of players with a name, tag, tag color, owner and members, saved for the server.", "confidence": "high"}
+{"c": "zombie.characters.HaloTextHelper", "purpose": "Shows floating text over a character, in good, bad or neutral colors, with optional arrows.", "confidence": "high"}
+{"c": "zombie.characters.HaloTextHelper$ColorRGB", "purpose": "A plain red, green, blue and alpha color record for halo text.", "confidence": "high"}
+{"c": "zombie.characters.IsoDummyCameraCharacter", "purpose": "A dummy character object tied to the camera, with only an update method listed; its exact role is unconfirmed.", "confidence": "low"}
+{"c": "zombie.characters.IsoGameCharacter", "purpose": "The base for every living character in the world: stats, body damage, XP, perks, animation variables, attached items and events.", "confidence": "high"}
+{"c": "zombie.characters.IsoGameCharacter$Location", "purpose": "An x, y, z position record for a character.", "confidence": "high"}
+{"c": "zombie.characters.IsoGameCharacter$PerkInfo", "purpose": "A perk and its level for a character.", "confidence": "high"}
+{"c": "zombie.characters.IsoGameCharacter$XP", "purpose": "A character's XP: total, level, per-perk XP and multipliers, with add and save.", "confidence": "high"}
+{"c": "zombie.characters.IsoPlayer", "purpose": "The player character: input, attacks, sounds, context actions, mechanics and the player events.", "confidence": "high"}
+{"c": "zombie.characters.IsoSurvivor", "purpose": "A non-player survivor NPC, with its drag and follow state, nights survived and creation events.", "confidence": "high"}
+{"c": "zombie.characters.IsoZombie", "purpose": "A zombie: its movement, hearing, sight, attacks, aggro, speed type, outfit and death behavior.", "confidence": "high"}
+{"c": "zombie.characters.Moodles.Moodle", "purpose": "One moodle (status icon such as pain), with its level, chevrons and update.", "confidence": "high"}
+{"c": "zombie.characters.Moodles.Moodles", "purpose": "The list of all moodles, their good, bad and neutral kinds, and their display strings and levels.", "confidence": "high"}
+{"c": "zombie.characters.MoveDeltaModifiers", "purpose": "Movement, turn and twist change limits that a character's animation can apply.", "confidence": "high"}
+{"c": "zombie.characters.NetworkUser", "purpose": "A connected player on a server, with username, Steam ID, role, ping, kicks, warnings and bans.", "confidence": "high"}
+{"c": "zombie.characters.PlayerCraftHistory", "purpose": "Saves which recipes a player has crafted, and the history of those crafts.", "confidence": "high"}
+{"c": "zombie.characters.Position3D", "purpose": "A simple x, y, z position.", "confidence": "high"}
+{"c": "zombie.characters.Role", "purpose": "A server role, such as admin, user or observer, with its capabilities, color and description.", "confidence": "high"}
+{"c": "zombie.characters.Safety", "purpose": "A player's safety toggle: its enabled state, cooldown, and whether it can be switched.", "confidence": "high"}
+{"c": "zombie.characters.Stats", "purpose": "A character's live stats: visible and chasing zombies, endurance, and tripping state.", "confidence": "high"}
+{"c": "zombie.characters.SurvivorDesc", "purpose": "A survivor's identity: name, profession, traits, voice, outfit and personality values.", "confidence": "high"}
+{"c": "zombie.characters.SurvivorFactory", "purpose": "Creates survivors and families with random forenames and surnames.", "confidence": "high"}
+{"c": "zombie.characters.SurvivorFactory$SurvivorType", "purpose": "The list of survivor types: Aggressive, Friendly and Neutral.", "confidence": "high"}
+{"c": "zombie.characters.WornItems.BodyLocation", "purpose": "One place on the body where an item can be worn, with flags for exclusive, hide model and multi-item.", "confidence": "high"}
+{"c": "zombie.characters.WornItems.BodyLocationGroup", "purpose": "A named group of body locations, with ordering and flags for exclusive, hide model and multi-item.", "confidence": "high"}
+{"c": "zombie.characters.WornItems.BodyLocations", "purpose": "The list of all body location groups for worn items.", "confidence": "high"}
+{"c": "zombie.characters.WornItems.WornItem", "purpose": "One item worn on a body location.", "confidence": "high"}
+{"c": "zombie.characters.WornItems.WornItems", "purpose": "The items a character is wearing, one per body location, with add, remove, save and load.", "confidence": "high"}
+{"c": "zombie.characters.animals.AnimalAllele", "purpose": "One version of an animal gene (allele), with its value, dominance and whether it is used.", "confidence": "high"}
+{"c": "zombie.characters.animals.AnimalChunk", "purpose": "The animal tracks saved for one map cell, with add, delete and find.", "confidence": "high"}
+{"c": "zombie.characters.animals.AnimalDefinitions", "purpose": "Loads animal type definitions, such as speed, body model, attacks and breeds, from the animal scripts.", "confidence": "high"}
+{"c": "zombie.characters.animals.AnimalGene", "purpose": "One animal gene holding two alleles, with inheritance and mutation.", "confidence": "high"}
+{"c": "zombie.characters.animals.AnimalGenomeDefinitions", "purpose": "Loads the genome definitions for an animal: gene names, value ranges and ratios.", "confidence": "high"}
+{"c": "zombie.characters.animals.AnimalPartsDefinitions", "purpose": "Loads the animal parts and bones definitions, including leather.", "confidence": "high"}
+{"c": "zombie.characters.animals.AnimalTracks", "purpose": "One animal track on the map, with its type, direction, age and nearest-track search.", "confidence": "high"}
+{"c": "zombie.characters.animals.IsoAnimal", "purpose": "An animal in the world: its health, behavior, eating, mating, milk, shearing, pets and death.", "confidence": "high"}
+{"c": "zombie.characters.animals.VirtualAnimal", "purpose": "An animal tracked off-screen without a world object, with its position, sleep and eat periods, and state.", "confidence": "high"}
+{"c": "zombie.characters.animals.behavior.BaseAnimalBehavior", "purpose": "Base logic for animal behavior: eating from troughs, going to hutches, fleeing, attacking and wandering.", "confidence": "high"}
+{"c": "zombie.characters.animals.datas.AnimalBreed", "purpose": "One animal breed, with its name, textures, leather, milk and wool types, and sounds.", "confidence": "high"}
+{"c": "zombie.characters.animals.datas.AnimalData", "purpose": "The saved state of one animal: age, growth stage, breed, eggs, milk, wool, hunger and pregnancy.", "confidence": "high"}
+{"c": "zombie.characters.professions.CharacterProfessionDefinition", "purpose": "One profession definition, with its label, cost, granted recipes and traits, and XP boosts.", "confidence": "high"}
+{"c": "zombie.characters.skills.PerkFactory", "purpose": "The list of all perks (skills) with their XP levels and translations, used by the skill system.", "confidence": "high"}
+{"c": "zombie.characters.skills.PerkFactory$Perk", "purpose": "One perk (skill), with its name, parent category, passive flag and XP per level.", "confidence": "high"}
+{"c": "zombie.characters.skills.PerkFactory$Perks", "purpose": "Named references to the built-in perks, such as Agility, Axe, Cooking and Fitness.", "confidence": "high"}
+{"c": "zombie.characters.traits.CharacterTraitDefinition", "purpose": "One trait definition, with its label, cost, mutual exclusions, granted recipes and XP boosts.", "confidence": "high"}
+{"c": "zombie.characters.traits.CharacterTraits", "purpose": "A character's trait set: add, remove, check, save and load, plus trait modifiers.", "confidence": "high"}
+{"c": "zombie.characters.traits.ObservationFactory", "purpose": "The list of survivor observations, with their mutual exclusions.", "confidence": "high"}
+{"c": "zombie.characters.traits.ObservationFactory$Observation", "purpose": "One observation trait, with its name, label, description and trait ID.", "confidence": "high"}
+{"c": "zombie.chat.ChatBase", "purpose": "A chat channel with its members, messages, title, range and settings, where messages are added and packed.", "confidence": "high"}
+{"c": "zombie.chat.ChatMessage", "purpose": "One chat message with its author, text, color, time, radio channel and display options.", "confidence": "high"}
+{"c": "zombie.chat.ServerChatMessage", "purpose": "A chat message from the server, with its author set to Server.", "confidence": "high"}
+{"c": "zombie.combat.CombatConfig", "purpose": "Gets and sets combat tuning values by key or by category.", "confidence": "high"}
+{"c": "zombie.combat.CombatConfigCategory", "purpose": "The list of combat setting categories: general, firearm, melee and ballistics.", "confidence": "high"}
+{"c": "zombie.combat.CombatConfigKey", "purpose": "The list of combat tuning keys, such as damage, hit chance, endurance loss and recoil, with defaults and limits.", "confidence": "high"}
+{"c": "zombie.config.BooleanConfigOption", "purpose": "A true or false config option, with its default, parse and reset.", "confidence": "high"}
+{"c": "zombie.config.ConfigOption", "purpose": "Base class for every config option, sandbox and game alike, with its name, value text, parse and reset.", "confidence": "high"}
+{"c": "zombie.config.DoubleConfigOption", "purpose": "A decimal config option with a minimum and maximum.", "confidence": "high"}
+{"c": "zombie.config.EnumConfigOption", "purpose": "A config option that picks one value from a numbered list.", "confidence": "high"}
+{"c": "zombie.config.IntegerConfigOption", "purpose": "A whole-number config option with a minimum and maximum.", "confidence": "high"}
+{"c": "zombie.config.StringConfigOption", "purpose": "A text config option, with an optional list of allowed values and a maximum length.", "confidence": "high"}
+{"c": "zombie.core.Clipboard", "purpose": "Reads and writes the system clipboard from the game's main thread.", "confidence": "high"}
+{"c": "zombie.core.Color", "purpose": "A mutable RGBA color with named presets such as white, black, red and orange, and blending.", "confidence": "high"}
+{"c": "zombie.core.Colors", "purpose": "The game's named color list, with names and hex values, and lookups by name, index and color-blind set.", "confidence": "high"}
+{"c": "zombie.core.Colors$ColNfo", "purpose": "One named color entry with its name, RGB values and hex code.", "confidence": "high"}
+{"c": "zombie.core.Colors$ColorSet", "purpose": "The list of color sets: Game, Standard and ColorBlind.", "confidence": "high"}
+{"c": "zombie.core.Core", "purpose": "The game's core: the frame loop, rendering setup, screenshots, key bindings, exit to menu and core events.", "confidence": "high"}
+{"c": "zombie.core.CreditsName", "purpose": "The list of credited names for the in-game credits, with display names and sort keys.", "confidence": "high"}
+{"c": "zombie.core.CreditsRole", "purpose": "The list of credit roles, such as director, artists, programmers and translators, with the names for each.", "confidence": "high"}
+{"c": "zombie.core.CreditsRoleGroup", "purpose": "The list of credit groups, such as programming, art and quality assurance, used on the credits screen.", "confidence": "high"}
+{"c": "zombie.core.GameMode", "purpose": "The list of game modes, such as Apocalypse, Sandbox, Multiplayer and Outbreak, with title, description and video.", "confidence": "high"}
+{"c": "zombie.core.GameVersion", "purpose": "A game version number with major, minor and suffix parts, plus parsing and comparison.", "confidence": "high"}
+{"c": "zombie.core.ImmutableColor", "purpose": "A read-only RGBA color with the same presets and blending as Color.", "confidence": "high"}
+{"c": "zombie.core.Language", "purpose": "One game language, with its base folder, name and AZERTY keyboard flag.", "confidence": "high"}
+{"c": "zombie.core.NetTimedAction", "purpose": "A timed action sent over the network to the server, with its progress, duration and state.", "confidence": "high"}
+{"c": "zombie.core.PerformanceSettings", "purpose": "The player's performance settings: frame rate, lighting, fog, water, puddles, render buffers and zombie animation options.", "confidence": "high"}
+{"c": "zombie.core.SpriteRenderer", "purpose": "Draws sprites, models, particles, water and sky to the screen through render states and shaders.", "confidence": "high"}
+{"c": "zombie.core.SurvivalGuideEntry", "purpose": "The survival guide's topics, such as movement, building, animals and cleaning, with their title, text, keys and media.", "confidence": "high"}
+{"c": "zombie.core.TradingState", "purpose": "The list of trading window states: sealed, unsealed, finalized and window closed.", "confidence": "high"}
+{"c": "zombie.core.Translator", "purpose": "Loads translation files and returns the text for items, recipes, UI and map labels in the active language.", "confidence": "high"}
+{"c": "zombie.core.fonts.AngelCodeFont", "purpose": "A bitmap font in AngelCode format that draws strings and measures their width, height and kerning.", "confidence": "high"}
+{"c": "zombie.core.logger.ZLogger", "purpose": "Writes lines to the game's log file and recreates the file when it grows too large.", "confidence": "high"}
+{"c": "zombie.core.math.PZMath", "purpose": "Math helper functions for game code: clamp, lerp, angles, distances and line intersection tests.", "confidence": "high"}
+{"c": "zombie.core.physics.Transform", "purpose": "A physics position and rotation, with origin and basis matrix, plus inverse and transform.", "confidence": "high"}
+{"c": "zombie.core.properties.IsoObjectChange", "purpose": "The list of changes that can be applied to a world object's properties, such as containers, energy and light radius.", "confidence": "high"}
+{"c": "zombie.core.properties.IsoPropertyType", "purpose": "The list of world object property names, such as bed, table, can't climb and surface, with lookup by name.", "confidence": "high"}
+{"c": "zombie.core.properties.PropertyContainer", "purpose": "Holds the properties set on one world object, such as surface, table, item height and sloped surface, and checks them.", "confidence": "high"}
+{"c": "zombie.core.skinnedmodel.advancedanimation.debug.AnimatorDebugMonitor", "purpose": "A debug view of animation variables for the animator, with a filter, values and a selected variable.", "confidence": "high"}
+{"c": "zombie.core.skinnedmodel.population.BeardStyle", "purpose": "One beard style, with its name, level, model, texture and trim choices.", "confidence": "high"}
+{"c": "zombie.core.skinnedmodel.population.BeardStyles", "purpose": "Loads the beard styles from beardStyles.xml and picks random or named ones.", "confidence": "high"}
+{"c": "zombie.core.skinnedmodel.population.ClothingItem", "purpose": "One clothing item, with its male and female models, textures, masks and spawn rules.", "confidence": "high"}
+{"c": "zombie.core.skinnedmodel.population.HairStyle", "purpose": "One hair style, with its name, level, model, texture and trim choices.", "confidence": "high"}
+{"c": "zombie.core.skinnedmodel.population.HairStyles", "purpose": "Loads the male and female hair styles from hairStyles.xml and picks random or named ones.", "confidence": "high"}
+{"c": "zombie.core.skinnedmodel.population.VoiceStyle", "purpose": "One voice style, with its name, prefix, voice type and default body type.", "confidence": "high"}
+{"c": "zombie.core.skinnedmodel.population.VoiceStyles", "purpose": "Loads the voice styles from voiceStyles.xml and finds them by name.", "confidence": "high"}
+{"c": "zombie.core.skinnedmodel.runtime.RuntimeAnimationScript", "purpose": "A script of runtime animation commands, such as copying frames, loaded and run by name.", "confidence": "high"}
+{"c": "zombie.core.skinnedmodel.visual.AnimalVisual", "purpose": "The look of an animal: its skin, skeleton or headless state, rot stage and outfit.", "confidence": "high"}
+{"c": "zombie.core.skinnedmodel.visual.HumanVisual", "purpose": "The look of a human character: skin, hair, beard, clothing, blood and dirt.", "confidence": "high"}
+{"c": "zombie.core.skinnedmodel.visual.ItemVisual", "purpose": "The look of one worn item: its texture, tint, hue, patches, holes, blood and dirt.", "confidence": "high"}
+{"c": "zombie.core.skinnedmodel.visual.ItemVisuals", "purpose": "A list of item visuals for a character, with save, load and hat or mask lookup.", "confidence": "high"}
+{"c": "zombie.core.stash.Stash", "purpose": "One stash, with its item, containers, zombies, barricades, and day and trap spawn ranges.", "confidence": "high"}
+{"c": "zombie.core.stash.StashBuilding", "purpose": "A building that holds a stash, with its position and stash name.", "confidence": "high"}
+{"c": "zombie.core.stash.StashSystem", "purpose": "The stash system: decides which buildings get stashes and spawns their items at load.", "confidence": "high"}
+{"c": "zombie.core.textures.ColorInfo", "purpose": "A mutable color with float RGBA values, plus conversion and interpolation.", "confidence": "high"}
+{"c": "zombie.core.textures.NinePatchTexture", "purpose": "A nine-slice texture whose edges and corners stay fixed while the middle stretches.", "confidence": "high"}
+{"c": "zombie.core.textures.Texture", "purpose": "A loaded image texture with its size, offsets, mask, GPU ID and binding for drawing.", "confidence": "high"}
+{"c": "zombie.core.textures.VideoTexture", "purpose": "A texture that plays a video file through Bink, with frame rendering and loading.", "confidence": "high"}
+{"c": "zombie.core.znet.SteamFriend", "purpose": "A Steam friend entry with name, Steam ID, avatar and online state.", "confidence": "high"}
+{"c": "zombie.core.znet.SteamUGCDetails", "purpose": "Details of one Steam Workshop child item: ID, title, size, times and install state.", "confidence": "high"}
+{"c": "zombie.core.znet.SteamWorkshopItem", "purpose": "A Steam Workshop item: create, read and update its title, description, tags, visibility and content, and validate its folder.", "confidence": "high"}
+{"c": "zombie.debug.BooleanDebugOption", "purpose": "A true or false debug option, with its parent options and whether it is debug-only.", "confidence": "high"}
+{"c": "zombie.debug.DebugCSVExport", "purpose": "Writes the tailoring CSV file for debugging, with item tags.", "confidence": "high"}
+{"c": "zombie.debug.DebugCSVExportFirearms", "purpose": "Writes the firearms CSV file for debugging.", "confidence": "high"}
+{"c": "zombie.debug.DebugCSVExportFluidContainers", "purpose": "Writes the fluid containers CSV file for debugging.", "confidence": "high"}
+{"c": "zombie.debug.DebugCSVExportMoveableTiles", "purpose": "Writes the moveable tiles CSV file for debugging.", "confidence": "high"}
+{"c": "zombie.debug.DebugLog", "purpose": "The game's logger: formats, filters and writes log lines by type and severity to files and the console.", "confidence": "high"}
+{"c": "zombie.debug.DebugOptions", "purpose": "A tree of debug options, such as animation, asset, cheat and character, with load, save, get and set.", "confidence": "high"}
+{"c": "zombie.debug.DebugType", "purpose": "The list of debug log types, such as Action, Animal, Asset, Ballistics and Clothing, with log and warn calls.", "confidence": "high"}
+{"c": "zombie.debug.LogSeverity", "purpose": "The list of log severity levels: All, Debug, Error, General, Noise, Off, Trace and Warning.", "confidence": "high"}
+{"c": "zombie.debug.objects.ObjectDebuggerLua", "purpose": "Lua helpers that collect and log text lines for debugging objects.", "confidence": "high"}
+{"c": "zombie.entity.Component", "purpose": "Base class for an entity component, a piece of an item's or object's behavior, with its owner, save, load, network sync and events.", "confidence": "high"}
+{"c": "zombie.entity.ComponentType", "purpose": "The list of component types, such as durability, crafting, fluid container and sprite config, with their classes.", "confidence": "high"}
+{"c": "zombie.entity.EntityBucket", "purpose": "A bucket that holds entities and notifies its listeners when entities are added or removed.", "confidence": "high"}
+{"c": "zombie.entity.Family", "purpose": "A rule for which component types an entity must have, using all, one or exclude.", "confidence": "high"}
+{"c": "zombie.entity.GameEntity", "purpose": "An entity made from components, such as a world object or an item, with its position, square and component lookups.", "confidence": "high"}
+{"c": "zombie.entity.GameEntityFactory", "purpose": "Adds and removes components on entities, including building entities for world objects and inventory items.", "confidence": "high"}
+{"c": "zombie.entity.GameEntityType", "purpose": "The list of entity kinds: inventory item, iso object, vehicle part, iso moving object, template and meta entity.", "confidence": "high"}
+{"c": "zombie.entity.MetaEntity", "purpose": "An entity kind for objects in the meta layer, with position, save and load; the exact meta role is not in the digest.", "confidence": "low"}
+{"c": "zombie.entity.components.attributes.Attribute", "purpose": "The list of attribute names for items and entities, such as condition, quality, sharpness and test fields.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeContainer", "purpose": "A set of attributes on an entity, with get, set, add, copy, save and load.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeInstance", "purpose": "One attribute's value on an entity, with its type, text and number value, and save and load.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeInstance$Bool", "purpose": "The true or false value holder for an attribute instance.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeInstance$Byte", "purpose": "The byte number value holder for an attribute instance.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeInstance$Double", "purpose": "The double-precision number value holder for an attribute instance.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeInstance$Enum", "purpose": "The single-choice enum value holder for an attribute instance.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeInstance$EnumSet", "purpose": "The multi-choice enum set value holder for an attribute instance.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeInstance$EnumStringSet", "purpose": "The value holder for an attribute that holds both enum values and free strings.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeInstance$Float", "purpose": "The float number value holder for an attribute instance.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeInstance$Int", "purpose": "The whole-number value holder for an attribute instance.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeInstance$Long", "purpose": "The long whole-number value holder for an attribute instance.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeInstance$Numeric", "purpose": "The shared base for numeric attribute values, with float conversion and display units.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeInstance$Short", "purpose": "The short whole-number value holder for an attribute instance.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeInstance$String", "purpose": "The text value holder for an attribute instance.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeType", "purpose": "Defines one attribute: its id, name, value type, display and bounds.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeType$Bool", "purpose": "The true or false attribute type, with its starting value.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeType$Byte", "purpose": "The byte number attribute type, with min and max bounds and validation.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeType$Double", "purpose": "The double-precision number attribute type, with min and max bounds and validation.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeType$Enum", "purpose": "The single-choice enum attribute type, with conversion from its string or byte value.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeType$EnumSet", "purpose": "The multi-choice enum set attribute type, with conversion from its string or byte values.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeType$EnumStringSet", "purpose": "The attribute type that holds enum values and strings together.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeType$Float", "purpose": "The float number attribute type, with min and max bounds and validation.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeType$Int", "purpose": "The whole-number attribute type, with min and max bounds and validation.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeType$Long", "purpose": "The long whole-number attribute type, with min and max bounds and validation.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeType$Numeric", "purpose": "Shared base for numeric attribute types, with bounds and validation.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeType$Short", "purpose": "The short whole-number attribute type, with min and max bounds and validation.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeType$String", "purpose": "The text attribute type, with its starting value.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeUtil", "purpose": "Helpers for converting attribute values, averaging them and parsing enum strings.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.AttributeValueType", "purpose": "The list of attribute value types: Boolean, Byte, Double, Enum, EnumSet, EnumStringSet, Float, Int, Long, Short and String.", "confidence": "high"}
+{"c": "zombie.entity.components.attributes.EnumStringObj", "purpose": "A holder of enum values and text strings together, for multi-value attributes.", "confidence": "high"}
+{"c": "zombie.entity.components.build.BuildLogic", "purpose": "The build menu logic: recipes, the selected build object, wall covering and build actions.", "confidence": "high"}
+{"c": "zombie.entity.components.contextmenuconfig.ContextMenuConfig", "purpose": "A component that holds the right-click menu entries for an entity.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.BaseCraftingLogic", "purpose": "Shared crafting logic: finds inputs and containers, filters recipes, checks whether a recipe can run and calls recipe Lua.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.BaseCraftingLogic$CachedRecipeInfo", "purpose": "Caches whether one recipe is available and can be performed right now.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.CraftBench", "purpose": "A component that marks a crafting bench and lists its recipes and resource inputs.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.CraftLogic", "purpose": "The crafting progress for one station: start, stop, progress, inputs and outputs.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.CraftLogicUILogic", "purpose": "The UI side of crafting: input slots, recipe list, sort mode, craft quantity and manual inputs.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.CraftMode", "purpose": "The list of craft modes: Automation and Handcraft.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.CraftRecipeComponent", "purpose": "A component that syncs the chosen craft recipe between client and server.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.CraftRecipeMonitor", "purpose": "A debug logger that writes the crafting recipe checks to a log.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.CraftUtil", "purpose": "Shared crafting helpers: finding resources, checking whether a craft can start, the Lua test and entity temperature.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.DryingCraftLogic", "purpose": "The drying craft logic: dries items with temperature checks and status icons.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.FluidMatchMode", "purpose": "The list of fluid match modes: Anything, Exact, Mixture and Primary.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.FurnaceLogic", "purpose": "The furnace logic: fuel and furnace input and output slots, recipes and progress.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.InputFlag", "purpose": "The list of input flags for crafting inputs, such as HandcraftOnly, AutomationOnly and AllowRottenItem.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.ItemApplyMode", "purpose": "The list of ways a craft input is applied: Destroy, Keep or Normal.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.MashingLogic", "purpose": "The mashing logic: fluid barrel, consumed amount, progress, start and stop.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.OutputFlag", "purpose": "The list of output flags for crafted results, such as HandcraftOnly, AlwaysFill, IsEmpty and SetActivated.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.StartMode", "purpose": "The list of craft start modes: Automatic, Manual and Passive.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.recipe.CraftRecipeData", "purpose": "The data for one craft recipe run: its inputs and outputs, consumption, creation and checks.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.recipe.CraftRecipeData$CacheData", "purpose": "Cached state for one recipe input or output during a craft check.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.recipe.CraftRecipeData$InputScriptData", "purpose": "The data for one recipe input script, with its items and checks.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.recipe.CraftRecipeData$OutputScriptData", "purpose": "The data for one recipe output script.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.recipe.CraftRecipeListNode", "purpose": "One node in the craft recipe list: a group or a recipe, with children and expanded state.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.recipe.CraftRecipeListNode$CraftRecipeListNodeExpandedState", "purpose": "The list of expanded states for a recipe list group: closed, partial and open.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.recipe.CraftRecipeListNode$CraftRecipeListNodeType", "purpose": "The list of recipe list node types: group and recipe.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.recipe.CraftRecipeListNodeCollection", "purpose": "A collection of recipe list nodes that adds, sorts and filters them.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.recipe.CraftRecipeManager", "purpose": "Runs the craft recipe system: loads recipes and tags, filters them by player, consumes inputs and creates outputs.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.recipe.CraftRecipeSort", "purpose": "Sorts craft recipes alphabetically and by whether they can be performed.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.recipe.HandcraftLogic", "purpose": "The hand-crafting logic: recipe selection, the workbench check and the craft action a player does by hand.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.recipe.HandcraftLogic$CachedRecipeInfo", "purpose": "Caches the availability and can-perform state of one handcraft recipe.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.recipe.InputItemNode", "purpose": "One input slot in a recipe, with its items, keep and tool flags, and expanded state.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.recipe.ItemDataList", "purpose": "A list of items that tracks which ones have been processed during a craft.", "confidence": "high"}
+{"c": "zombie.entity.components.crafting.recipe.OutputMapper", "purpose": "Maps recipe results to their output items, with default and registered output entries.", "confidence": "high"}
+{"c": "zombie.entity.components.fluids.Fluid", "purpose": "Defines fluids such as water, blood, petrol and alcohol, with their colors, categories and poison info.", "confidence": "high"}
+{"c": "zombie.entity.components.fluids.FluidCategory", "purpose": "The list of fluid categories: Alcoholic, Beverage, Colors, Dyes, Fuel, Medical, Water and more.", "confidence": "high"}
+{"c": "zombie.entity.components.fluids.FluidConsume", "purpose": "A fluid amount being consumed, such as a drink, with its amount and poison effect.", "confidence": "high"}
+{"c": "zombie.entity.components.fluids.FluidContainer", "purpose": "A component for anything that holds fluid: capacity, fluids, transfer rate, filters and the tooltip.", "confidence": "high"}
+{"c": "zombie.entity.components.fluids.FluidFilter", "purpose": "Which fluids a container accepts or refuses, as a whitelist or blacklist, with add, remove and check.", "confidence": "high"}
+{"c": "zombie.entity.components.fluids.FluidFilter$FilterType", "purpose": "The list of fluid filter types: Blacklist and Whitelist.", "confidence": "high"}
+{"c": "zombie.entity.components.fluids.FluidProperties", "purpose": "Sets the nutrition, effects and stat changes a fluid gives when drunk or used.", "confidence": "high"}
+{"c": "zombie.entity.components.fluids.FluidSample", "purpose": "A sample of fluid mixed from one or more fluids, with its amount, percentage, color and primary fluid.", "confidence": "high"}
+{"c": "zombie.entity.components.fluids.FluidType", "purpose": "The list of fluid types, such as water, petrol and alcohol, with display name and id.", "confidence": "high"}
+{"c": "zombie.entity.components.fluids.FluidUtil", "purpose": "Helpers that format fluid amounts in liters and milliliters and set transfer times and units.", "confidence": "high"}
+{"c": "zombie.entity.components.fluids.PoisonEffect", "purpose": "The list of poison strengths: None, Mild, Medium, Severe, Extreme and Deadly.", "confidence": "high"}
+{"c": "zombie.entity.components.fluids.PoisonInfo", "purpose": "A pairing of a fluid with its poison effect.", "confidence": "high"}
+{"c": "zombie.entity.components.fluids.SealedFluidProperties", "purpose": "Read-only fluid properties for nutrition, reduction and stat change, with load and save.", "confidence": "high"}
+{"c": "zombie.entity.components.lua.LuaComponent", "purpose": "A component that syncs a Lua-defined component between client and server.", "confidence": "high"}
+{"c": "zombie.entity.components.parts.Parts", "purpose": "A component that syncs an entity's parts between client and server.", "confidence": "high"}
+{"c": "zombie.entity.components.resources.Resource", "purpose": "Base class for an entity's resource slot, holding item, fluid or energy contents, with channel, I/O and fill checks.", "confidence": "high"}
+{"c": "zombie.entity.components.resources.ResourceBlueprint", "purpose": "Describes one resource slot in a script: its id, type, channel, I/O direction, filter and flags, with serial load and save.", "confidence": "high"}
+{"c": "zombie.entity.components.resources.ResourceChannel", "purpose": "The list of color channels a resource slot can use, such as Channel_Red, Channel_Blue and NO_CHANNEL.", "confidence": "high"}
+{"c": "zombie.entity.components.resources.ResourceEnergy", "purpose": "A resource slot that stores energy, tracking amount and capacity and moving energy to and from other slots.", "confidence": "high"}
+{"c": "zombie.entity.components.resources.ResourceFlag", "purpose": "The list of resource flags: AutoDecay and Temporary.", "confidence": "high"}
+{"c": "zombie.entity.components.resources.ResourceFluid", "purpose": "A resource slot that stores fluid, tracking amount and capacity and moving fluid in and out of containers.", "confidence": "high"}
+{"c": "zombie.entity.components.resources.ResourceIO", "purpose": "The list of resource directions: Any, Input and Output.", "confidence": "high"}
+{"c": "zombie.entity.components.resources.ResourceItem", "purpose": "A resource slot that stores items, with offer, poll, peek and remove, plus item counts, capacity and uses.", "confidence": "high"}
+{"c": "zombie.entity.components.resources.ResourceType", "purpose": "The list of resource kinds: Item, Fluid, Energy and Any.", "confidence": "high"}
+{"c": "zombie.entity.components.resources.Resources", "purpose": "The entity component that holds an object's resource slots, grouping, creating, loading and saving them.", "confidence": "high"}
+{"c": "zombie.entity.components.script.EntityScriptInfo", "purpose": "Records the entity script an object was built from and whether that origin was an item, with save and load.", "confidence": "high"}
+{"c": "zombie.entity.components.signals.Signals", "purpose": "Entity component with only sync and network packet hooks; the digest does not show what signal data it holds.", "confidence": "low"}
+{"c": "zombie.entity.components.sounds.CraftBenchSounds", "purpose": "Holds the sound name a crafting bench plays, read from its script and kept in sync over the network.", "confidence": "high"}
+{"c": "zombie.entity.components.spriteconfig.SpriteConfig", "purpose": "Holds an object's sprite layout from its entity script: tiles, faces, offsets and multi-square master, with validation.", "confidence": "high"}
+{"c": "zombie.entity.components.spriteconfig.SpriteConfigManager", "purpose": "Loads and indexes all sprite-config scripts, mapping sprite names to object info, faces and multi-square tiles.", "confidence": "high"}
+{"c": "zombie.entity.components.spriteconfig.SpriteConfigManager$FaceInfo", "purpose": "One face of a sprite-config object: its tiles, width, height, master tile and whether it is multi-square.", "confidence": "high"}
+{"c": "zombie.entity.components.spriteconfig.SpriteConfigManager$ObjectInfo", "purpose": "One scripted sprite-config object: its name, recipe, skill requirements, time, tags, faces and icon.", "confidence": "high"}
+{"c": "zombie.entity.components.spriteconfig.SpriteConfigManager$TileInfo", "purpose": "One tile of a sprite-config object: its sprite name, position, master offsets and whether it blocks.", "confidence": "high"}
+{"c": "zombie.entity.components.spriteconfig.SpriteOverlayConfig", "purpose": "Holds an object's overlay styles from its sprite config script and switches the active style.", "confidence": "high"}
+{"c": "zombie.entity.components.test.TestComponent", "purpose": "Entity component with empty sync and packet hooks, apparently a test stub; the digest shows no game use.", "confidence": "low"}
+{"c": "zombie.entity.components.ui.UiConfig", "purpose": "Holds an entity's UI settings from its script: display name, style, skin and whether its UI is enabled.", "confidence": "high"}
+{"c": "zombie.entity.debug.EntityDebugTest", "purpose": "Builds debug test setups of pipes, wires and utilities on the map and checks whether objects connect.", "confidence": "high"}
+{"c": "zombie.entity.debug.EntityDebugTestType", "purpose": "The list of entity debug test kinds; only BaseTest is listed.", "confidence": "high"}
+{"c": "zombie.entity.energy.Energy", "purpose": "Registers the energy types (electric, mechanical, steam, thermal, void) with their names, colors and bar textures.", "confidence": "high"}
+{"c": "zombie.entity.energy.EnergyType", "purpose": "The list of energy kinds: None, Electric, Mechanical, Thermal, Steam, VoidEnergy and Modded.", "confidence": "high"}
+{"c": "zombie.entity.events.ComponentEvent", "purpose": "A pooled event sent between entity components, carrying its event type and sender.", "confidence": "high"}
+{"c": "zombie.entity.events.ComponentEventType", "purpose": "The list of component event types; only OnContentsChanged is listed.", "confidence": "high"}
+{"c": "zombie.entity.events.EntityEvent", "purpose": "A pooled event sent to an entity, carrying its event type and the entity.", "confidence": "high"}
+{"c": "zombie.entity.events.EntityEventType", "purpose": "The list of entity event types; only AddedToWorld is listed.", "confidence": "high"}
+{"c": "zombie.entity.meta.MetaTagComponent", "purpose": "Entity component that stores one meta ID for an object and saves it with the object.", "confidence": "high"}
+{"c": "zombie.entity.util.Array", "purpose": "A resizable array utility with add, remove, sort, shuffle and random pick, used by entity code.", "confidence": "high"}
+{"c": "zombie.entity.util.BitSet", "purpose": "A bit set with get, set, clear, and/or/xor and next-bit searches, used by entity code for flags.", "confidence": "high"}
+{"c": "zombie.entity.util.GameEntityUtil", "purpose": "Holds the distance at which an entity's window closes.", "confidence": "high"}
+{"c": "zombie.entity.util.ImmutableArray", "purpose": "A read-only view of an array with get, search and iteration, used by entity code.", "confidence": "high"}
+{"c": "zombie.entity.util.assoc.AssocArray", "purpose": "A key-value array that keeps keys and values in order, with put, get, remove and debug printing.", "confidence": "high"}
+{"c": "zombie.entity.util.assoc.AssocEnumArray", "purpose": "A key-value array keyed by enum values, with put, remove and key listing.", "confidence": "high"}
+{"c": "zombie.erosion.ErosionConfig", "purpose": "Loads and saves the erosion settings file (erosion.ini): debug, season, seeds and time options.", "confidence": "high"}
+{"c": "zombie.erosion.ErosionConfig$Debug", "purpose": "Debug options for erosion: an enabled flag and a start day and month.", "confidence": "high"}
+{"c": "zombie.erosion.ErosionConfig$Season", "purpose": "A grouping for season settings in the erosion config; the digest shows no members.", "confidence": "low"}
+{"c": "zombie.erosion.ErosionConfig$Seeds", "purpose": "A grouping for erosion seed settings; the digest shows no members.", "confidence": "low"}
+{"c": "zombie.erosion.ErosionConfig$Time", "purpose": "A grouping for erosion time settings; the digest shows no members.", "confidence": "low"}
+{"c": "zombie.erosion.ErosionMain", "purpose": "Main controller of the erosion system: loads its config, ticks every ten minutes, checks snow and fires the season-init event.", "confidence": "high"}
+{"c": "zombie.erosion.season.ErosionSeason", "purpose": "Holds one season's day length, temperature, rain and daylight values for the erosion system.", "confidence": "high"}
+{"c": "zombie.gameStates.AnimationViewerState", "purpose": "Debug game state that shows an animation clip, with options for grid, bones, isometric view and deferred movement.", "confidence": "high"}
+{"c": "zombie.gameStates.AnimationViewerState$BooleanDebugOption", "purpose": "A true/false debug option for the animation viewer.", "confidence": "high"}
+{"c": "zombie.gameStates.AttachmentEditorState", "purpose": "Debug editor state for model attachments: reads and writes attachment scripts and lists clip names.", "confidence": "high"}
+{"c": "zombie.gameStates.ChooseGameInfo$Mod", "purpose": "Describes one mod in the mod chooser: id, name, author, version, folders, requirements and load order.", "confidence": "high"}
+{"c": "zombie.gameStates.DebugChunkState", "purpose": "Debug game state that draws chunk, room and building data over the world for inspection.", "confidence": "high"}
+{"c": "zombie.gameStates.DebugChunkState$BooleanDebugOption", "purpose": "A true/false debug option for the chunk debug view.", "confidence": "high"}
+{"c": "zombie.gameStates.DebugGlobalObjectState", "purpose": "Debug game state that shows global object data over the world, with camera drag controls.", "confidence": "high"}
+{"c": "zombie.gameStates.GameLoadingState", "purpose": "The game state shown while a world loads: loading text, progress and tips, with pre-map and player-create events.", "confidence": "high"}
+{"c": "zombie.gameStates.LoadingQueueState", "purpose": "The game state shown while waiting in a server login queue, with cancel and connection-lost handling.", "confidence": "high"}
+{"c": "zombie.gameStates.MainScreenState", "purpose": "The main menu screen: background, logo, lightning and fade effects, with its enter and exit events.", "confidence": "high"}
+{"c": "zombie.gameStates.SeamEditorState", "purpose": "Debug editor state for tile seams; it draws the seam outlines and writes the seam file.", "confidence": "high"}
+{"c": "zombie.gameStates.SeamEditorState$BooleanDebugOption", "purpose": "A true/false debug option for the seam editor.", "confidence": "high"}
+{"c": "zombie.gameStates.SpriteModelEditorState", "purpose": "Debug editor state for previewing sprite models with grid and wall guides.", "confidence": "high"}
+{"c": "zombie.gameStates.SpriteModelEditorState$BooleanDebugOption", "purpose": "A true/false debug option for the sprite model editor.", "confidence": "high"}
+{"c": "zombie.gameStates.TermsOfServiceState", "purpose": "The game state that shows the terms of service screen and fires the state-enter event.", "confidence": "high"}
+{"c": "zombie.gameStates.TileGeometryState", "purpose": "Debug game state that draws tile geometry guides such as pixel, sprite and square grids.", "confidence": "high"}
+{"c": "zombie.gameStates.TileGeometryState$BooleanDebugOption", "purpose": "A true/false debug option for the tile geometry view.", "confidence": "high"}
+{"c": "zombie.gizmo.Gizmos", "purpose": "Manages the on-screen move and rotate handles and reports which one the mouse is over.", "confidence": "high"}
+{"c": "zombie.gizmo.RotateGizmo", "purpose": "The rotate handle used by editor tools; it reports changes through onRotateGizmo.", "confidence": "high"}
+{"c": "zombie.gizmo.TransformMode", "purpose": "The list of transform modes for gizmos: Global and Local.", "confidence": "high"}
+{"c": "zombie.gizmo.TranslateGizmo", "purpose": "The move handle used by editor tools; it reports changes through onTranslateGizmo.", "confidence": "high"}
+{"c": "zombie.globalObjects.CGlobalObject", "purpose": "The client-side form of a global object; it adds no members of its own.", "confidence": "high"}
+{"c": "zombie.globalObjects.CGlobalObjectSystem", "purpose": "A client-side global object system that creates objects and handles server updates and commands.", "confidence": "high"}
+{"c": "zombie.globalObjects.CGlobalObjects", "purpose": "Registry of client-side global object systems: registers, finds and initializes them.", "confidence": "high"}
+{"c": "zombie.globalObjects.SGlobalObject", "purpose": "A server-side global object with load and save for its own data.", "confidence": "high"}
+{"c": "zombie.globalObjects.SGlobalObjectSystem", "purpose": "Server system for global objects: tracks them per chunk, syncs them to clients and saves mod data.", "confidence": "high"}
+{"c": "zombie.globalObjects.SGlobalObjects", "purpose": "Registry of server-side global object systems: loading, saving, updating and routing client commands.", "confidence": "high"}
+{"c": "zombie.input.GameKeyboard", "purpose": "Reads keyboard state each frame: keys down or pressed, and the key events that mods can hook.", "confidence": "high"}
+{"c": "zombie.input.JoypadAxis1d", "purpose": "The list of single-axis gamepad inputs: triggers and stick X and Y axes, with dead zones.", "confidence": "high"}
+{"c": "zombie.input.JoypadAxis2d", "purpose": "The list of two-axis gamepad sticks: LeftStick and RightStick.", "confidence": "high"}
+{"c": "zombie.input.JoypadButton", "purpose": "The list of gamepad buttons, such as A, B, X, Y, bumpers, sticks, d-pad, Start and Back.", "confidence": "high"}
+{"c": "zombie.input.KeybindId", "purpose": "The list of keybind IDs (such as Forward, Interact and Sprint) with registration and lookup.", "confidence": "high"}
+{"c": "zombie.input.Mouse", "purpose": "Reads mouse position, wheel and button state each frame, and draws the custom cursor.", "confidence": "high"}
+{"c": "zombie.inventory.FixingManager", "purpose": "Runs item repair: checks fixers such as duct tape, rolls failure chance and applies the repaired condition.", "confidence": "high"}
+{"c": "zombie.inventory.InventoryItem", "purpose": "The base class for every inventory item: weight, condition, container, use, age and sync, with many hooks.", "confidence": "high"}
+{"c": "zombie.inventory.ItemContainer", "purpose": "A container that holds items, such as bags, crates and fridges: adding, finding, removing and checking contents.", "confidence": "high"}
+{"c": "zombie.inventory.ItemPickerJava", "purpose": "Fills containers with loot from distributions: picks rooms, rolls items, and applies spawn chances and zombie density.", "confidence": "high"}
+{"c": "zombie.inventory.ItemPickerJava$KeyNamer", "purpose": "Gives names to loot keys by matching room and building names against word lists.", "confidence": "high"}
+{"c": "zombie.inventory.ItemSpawner", "purpose": "Spawns one or more items into a container and fires the fill-container event.", "confidence": "high"}
+{"c": "zombie.inventory.RecipeManager", "purpose": "Checks whether a recipe can run from the items available and performs it, including evolved and dismantle recipes.", "confidence": "high"}
+{"c": "zombie.inventory.recipemanager.RecipeMonitor", "purpose": "Logs recipe checks to a file for debugging: which containers and items were used, kept or destroyed.", "confidence": "high"}
+{"c": "zombie.inventory.types.AlarmClock", "purpose": "A clock item with a time and alarm: it sets, rings and stops the alarm, synced between player and world.", "confidence": "high"}
+{"c": "zombie.inventory.types.AlarmClockClothing", "purpose": "A wearable alarm clock with the same time, alarm and sound behavior as the clock item.", "confidence": "high"}
+{"c": "zombie.inventory.types.AnimalInventoryItem", "purpose": "An inventory item that holds a live animal's type, gender, age and appearance.", "confidence": "high"}
+{"c": "zombie.inventory.types.Clothing", "purpose": "A wearable clothing item: body parts covered, insulation, wind and water resistance, blood, dirt, holes and patches.", "confidence": "high"}
+{"c": "zombie.inventory.types.Clothing$ClothingPatch", "purpose": "One repair patch on clothing: fabric type, defense values, condition gain and whether it covers a hole.", "confidence": "high"}
+{"c": "zombie.inventory.types.Clothing$ClothingPatchFabricType", "purpose": "The list of patch fabric types: Cotton, Denim and Leather, each with defense limits.", "confidence": "high"}
+{"c": "zombie.inventory.types.ComboItem", "purpose": "An inventory item subclass with no members beyond the base item in the digest; its game role is not shown.", "confidence": "low"}
+{"c": "zombie.inventory.types.Drainable", "purpose": "Marker interface for items whose uses can be drained; it declares no methods.", "confidence": "high"}
+{"c": "zombie.inventory.types.DrainableComboItem", "purpose": "A drainable item that tracks remaining uses, heat, energy, and cooking or eating results.", "confidence": "high"}
+{"c": "zombie.inventory.types.Food", "purpose": "A food item: hunger, thirst, boredom and nutrition values, cooking and rot, freezing, eggs and poison.", "confidence": "high"}
+{"c": "zombie.inventory.types.HandWeapon", "purpose": "A melee or ranged weapon item: attacks, sharpness, firing and reload, attachments, jamming, sounds and aiming.", "confidence": "high"}
+{"c": "zombie.inventory.types.InventoryContainer", "purpose": "A container item such as a bag: its capacity, weight reduction, max item size and the inventory it holds.", "confidence": "high"}
+{"c": "zombie.inventory.types.Key", "purpose": "A key item: its key ID, number of keys, and whether it opens a padlock or digital padlock.", "confidence": "high"}
+{"c": "zombie.inventory.types.KeyRing", "purpose": "An item that holds keys and checks whether a key ID is on the ring.", "confidence": "high"}
+{"c": "zombie.inventory.types.Literature", "purpose": "A readable item such as a book or magazine: pages, recipes it teaches, skill it trains and mood effects.", "confidence": "high"}
+{"c": "zombie.inventory.types.MapItem", "purpose": "A map item with a world map ID and saved annotations; loads and saves the world map data.", "confidence": "high"}
+{"c": "zombie.inventory.types.Moveable", "purpose": "A movable item or object placed in the world: its sprite, light settings and custom name.", "confidence": "high"}
+{"c": "zombie.inventory.types.Radio", "purpose": "A radio item that receives and speaks broadcasts, with power, device data and signal handling.", "confidence": "high"}
+{"c": "zombie.inventory.types.WeaponPart", "purpose": "A weapon attachment that changes its aim, damage, range, reload or hit chance when attached.", "confidence": "high"}
+{"c": "zombie.inventory.types.WeaponType", "purpose": "The list of weapon types: knife, handgun, firearm, one-handed, two-handed, heavy, spear, throwing, chainsaw and unarmed.", "confidence": "high"}
+{"c": "zombie.iso.BentFences", "purpose": "Handles fences that bend and collapse when hit or thumped, including the tile swaps for each state.", "confidence": "high"}
+{"c": "zombie.iso.BrokenFences", "purpose": "Handles fences that break when destroyed, swapping in broken tiles and debris.", "confidence": "high"}
+{"c": "zombie.iso.BuildingDef", "purpose": "Describes one building: its bounds, rooms, zones, loot table, lock key and collapse area.", "confidence": "high"}
+{"c": "zombie.iso.ContainerOverlays", "purpose": "Applies overlay sprites to container objects based on their underlying sprite names.", "confidence": "high"}
+{"c": "zombie.iso.FishSchoolManager", "purpose": "Runs fishing: fish abundance, chum, catches, the fishing data file and noise from sound.", "confidence": "high"}
+{"c": "zombie.iso.ILockableDoor", "purpose": "Interface for doors that can be locked and opened, with key checks and garage-door and curtain rules.", "confidence": "high"}
+{"c": "zombie.iso.ISWorldObjectContextMenuLogic", "purpose": "Builds the right-click menu entries for world objects such as doors, animals and furniture.", "confidence": "high"}
+{"c": "zombie.iso.IsoButcherHook", "purpose": "A butcher hook object that holds an animal for butchering, with blood removal and corpse put-down steps.", "confidence": "high"}
+{"c": "zombie.iso.IsoCamera", "purpose": "Controls the camera: which character it follows, plus the screen offsets and bounds used for drawing.", "confidence": "high"}
+{"c": "zombie.iso.IsoCell", "purpose": "The world grid for the loaded area: its squares, chunks, buildings, moving objects and light and visibility passes.", "confidence": "high"}
+{"c": "zombie.iso.IsoChunk", "purpose": "One loaded chunk of the world: loads and saves its squares, objects, corpses, blood and vehicles.", "confidence": "high"}
+{"c": "zombie.iso.IsoChunkMap", "purpose": "Holds the loaded chunks around the player; loads, saves and finds grid squares within them.", "confidence": "high"}
+{"c": "zombie.iso.IsoDirectionSet", "purpose": "A set of compass directions with next-direction and rotate helpers.", "confidence": "high"}
+{"c": "zombie.iso.IsoDirections", "purpose": "The list of eight compass directions (N, NE, E and so on) with rotation and vector helpers.", "confidence": "high"}
+{"c": "zombie.iso.IsoGridSquare", "purpose": "One ground square of the world: its floor and objects, characters on it, light, fire and visibility checks.", "confidence": "high"}
+{"c": "zombie.iso.IsoHeatSource", "purpose": "A heat source point with a radius and temperature, used for warmth effects.", "confidence": "high"}
+{"c": "zombie.iso.IsoLightSource", "purpose": "A light source in the world with position, radius, color and on or off state.", "confidence": "high"}
+{"c": "zombie.iso.IsoLot", "purpose": "Loads a lot's map data (lot header and pack files) from disk and caches it.", "confidence": "high"}
+{"c": "zombie.iso.IsoLuaMover", "purpose": "A character-style object driven by Lua scripts, with an animation and per-frame update and render.", "confidence": "high"}
+{"c": "zombie.iso.IsoMarkers", "purpose": "Adds, draws and removes marker circles on the world at a square, with color and size.", "confidence": "high"}
+{"c": "zombie.iso.IsoMarkers$IsoMarker", "purpose": "One world marker: its position, size, color, alpha and whether it is active.", "confidence": "high"}
+{"c": "zombie.iso.IsoMetaCell", "purpose": "Holds the metadata for one map cell: its buildings, rooms, zones, triggers and animal zones.", "confidence": "high"}
+{"c": "zombie.iso.IsoMetaChunk", "purpose": "Holds the metadata for one chunk: its rooms, zones and zombie intensity, with lookups by position.", "confidence": "high"}
+{"c": "zombie.iso.IsoMetaGrid", "purpose": "The map metadata for the whole world: cells, buildings, rooms and zones, built from lot headers at startup.", "confidence": "high"}
+{"c": "zombie.iso.IsoMovingObject", "purpose": "The base for objects that move through the world: position, collision, hits and movement checks.", "confidence": "high"}
+{"c": "zombie.iso.IsoObject", "purpose": "The base for every placed world object such as furniture, walls, doors and trees: sprite, container, damage and sync.", "confidence": "high"}
+{"c": "zombie.iso.IsoObjectPicker", "purpose": "Picks the world object under the mouse, such as doors, trees, windows, corpses and vehicles.", "confidence": "high"}
+{"c": "zombie.iso.IsoPuddles", "purpose": "Renders puddles and wet ground from climate values for rain and mud.", "confidence": "high"}
+{"c": "zombie.iso.IsoPuddles$PuddlesFloat", "purpose": "A float setting for the puddle effect with a final value, min, max and an admin override.", "confidence": "high"}
+{"c": "zombie.iso.IsoPushableObject", "purpose": "A world object that can be pushed, with a weight and a carry capacity.", "confidence": "high"}
+{"c": "zombie.iso.IsoUtils", "purpose": "Math helpers for converting world and screen coordinates, and for distance and easing.", "confidence": "high"}
+{"c": "zombie.iso.IsoWaterGeometry", "purpose": "Stores water depth and shore flags for a square, used to draw water edges.", "confidence": "high"}
+{"c": "zombie.iso.IsoWorld", "purpose": "The world's main state: map, climate, weather, tile definitions, spawning and new-game events.", "confidence": "high"}
+{"c": "zombie.iso.LosUtil", "purpose": "Line-of-sight checks between squares, with a cache, that report which square blocks view.", "confidence": "high"}
+{"c": "zombie.iso.MetaObject", "purpose": "A small map-metadata object with a type, position, room and used flag.", "confidence": "high"}
+{"c": "zombie.iso.RoomDef", "purpose": "Describes one room in a building: its area, rectangles, objects, zombie spawns, and whether it is a shop or kids room.", "confidence": "high"}
+{"c": "zombie.iso.RoomDef$RoomRect", "purpose": "One rectangle that makes up part of a room's area, with its position and size.", "confidence": "high"}
+{"c": "zombie.iso.SearchMode", "purpose": "Controls the search-mode view for each player: blur, darkness, desaturation, radius and fade.", "confidence": "high"}
+{"c": "zombie.iso.SearchMode$PlayerSearchMode", "purpose": "The search-mode display values for one player: radius, blur, darkness and desaturation.", "confidence": "high"}
+{"c": "zombie.iso.SearchMode$SearchModeFloat", "purpose": "A float that eases between interior and exterior targets for search mode.", "confidence": "high"}
+{"c": "zombie.iso.SliceY", "purpose": "Holds a shared buffer and lock for Y-slice data; the digest does not show its use.", "confidence": "low"}
+{"c": "zombie.iso.SpriteDetails.IsoFlagType", "purpose": "The list of tile flags, such as collide, climb, door, hoppable and floor height, that sprites carry.", "confidence": "high"}
+{"c": "zombie.iso.SpriteDetails.IsoObjectType", "purpose": "The list of world object types, such as normal, jukebox, lightswitch, radio, doors and curtains.", "confidence": "high"}
+{"c": "zombie.iso.SpriteModel", "purpose": "A 3D model attached to a sprite: model script, texture, translate, rotate, scale and animation.", "confidence": "high"}
+{"c": "zombie.iso.TileOverlays", "purpose": "Adds overlay sprites to tiles from tile definitions, with chance and usage, and updates them.", "confidence": "high"}
+{"c": "zombie.iso.Vector2", "purpose": "A 2D vector with add, scale, normalize, rotate, angle and distance helpers.", "confidence": "high"}
+{"c": "zombie.iso.Vector3", "purpose": "A 3D vector with add, subtract, dot, normalize, rotate and distance helpers.", "confidence": "high"}
+{"c": "zombie.iso.WorldMarkers", "purpose": "Manages world markers: direction arrows, grid-square markers and homing points.", "confidence": "high"}
+{"c": "zombie.iso.WorldMarkers$DirectionArrow", "purpose": "One direction arrow marker in the world, with position, color, size and stair-arrow textures.", "confidence": "high"}
+{"c": "zombie.iso.WorldMarkers$GridSquareMarker", "purpose": "One grid-square marker with position, size, color, fade and blink settings.", "confidence": "high"}
+{"c": "zombie.iso.WorldMarkers$PlayerHomingPoint", "purpose": "One homing marker that guides the player toward a target, with angle, movement and distance settings.", "confidence": "high"}
+{"c": "zombie.iso.areas.DesignationZone", "purpose": "A designated map area, such as an animal zone, with position, size, name and type; saved and synced.", "confidence": "high"}
+{"c": "zombie.iso.areas.DesignationZoneAnimal", "purpose": "An animal zone that tracks its animals, troughs, hutches, corpses, food, fences and roofs.", "confidence": "high"}
+{"c": "zombie.iso.areas.IsoBuilding", "purpose": "A building in the world: its rooms, doors, windows, containers and exits, with safety and search helpers.", "confidence": "high"}
+{"c": "zombie.iso.areas.IsoRoom", "purpose": "A room in the world: its squares, containers, beds, lights and windows, with free-square helpers.", "confidence": "high"}
+{"c": "zombie.iso.areas.NonPvpZone", "purpose": "A rectangular area where player-versus-player combat is off, with title, size and save and load.", "confidence": "high"}
+{"c": "zombie.iso.areas.SafeHouse", "purpose": "A player's safehouse: its area, owner, players, title, hit points and access checks.", "confidence": "high"}
+{"c": "zombie.iso.areas.isoregion.IsoRegionLogType", "purpose": "The list of iso-region log levels: Normal and Warn.", "confidence": "high"}
+{"c": "zombie.iso.areas.isoregion.IsoRegions", "purpose": "Manages iso regions, the grouped squares of walls, floors and roofs per chunk, with save, load and client sync.", "confidence": "high"}
+{"c": "zombie.iso.areas.isoregion.IsoRegionsLogger", "purpose": "Keeps an in-memory log of iso-region messages for the debug view.", "confidence": "high"}
+{"c": "zombie.iso.areas.isoregion.IsoRegionsLogger$IsoRegionLog", "purpose": "One logged iso-region message with its text, color and type.", "confidence": "high"}
+{"c": "zombie.iso.areas.isoregion.IsoRegionsRenderer", "purpose": "Draws the iso-region debug view on the map, with edit modes and zombie and entity markers.", "confidence": "high"}
+{"c": "zombie.iso.areas.isoregion.IsoRegionsRenderer$BooleanDebugOption", "purpose": "A true/false debug option for the iso-region renderer.", "confidence": "high"}
+{"c": "zombie.iso.areas.isoregion.data.DataCell", "purpose": "Holds the iso-region data root for one map cell.", "confidence": "high"}
+{"c": "zombie.iso.areas.isoregion.data.DataChunk", "purpose": "Holds the iso-region flags for one chunk's squares, with save, load and region links.", "confidence": "high"}
+{"c": "zombie.iso.areas.isoregion.regions.IsoChunkRegion", "purpose": "A region of connected squares inside one chunk, with its neighbors, roof counts and enclosed flag.", "confidence": "high"}
+{"c": "zombie.iso.areas.isoregion.regions.IsoWorldRegion", "purpose": "A world-wide region made of chunk regions, tracking whether it is enclosed, fully roofed and its building.", "confidence": "high"}
+{"c": "zombie.iso.fboRenderChunk.FBORenderChunk", "purpose": "Holds the off-screen render target for a chunk, with dirty flags for redraw, objects and lighting.", "confidence": "high"}
+{"c": "zombie.iso.fboRenderChunk.FBORenderTracerEffects", "purpose": "Draws tracer effects such as bullet trails, with start and end radius, length and speed settings.", "confidence": "high"}
+{"c": "zombie.iso.objects.GridSquareEdge", "purpose": "The list of the four edges of a grid square: North, West, South and East.", "confidence": "high"}
+{"c": "zombie.iso.objects.GridSquareEdgeFacingDirection", "purpose": "The list of edge orientations: NORTH_SOUTH and EAST_WEST.", "confidence": "high"}
+{"c": "zombie.iso.objects.IForceableDoor", "purpose": "Interface for doors that can be forced open, with forced-open chance, failure and struggle effects.", "confidence": "high"}
+{"c": "zombie.iso.objects.IForceablePortal", "purpose": "Interface for windows and doors that can be forced open, with lock, open and struggle checks.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoAnimalTrack", "purpose": "An animal track object on the ground, with a glow option and the list of tracks.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoBarbecue", "purpose": "A barbecue object: fuel, lit state, temperature, propane tank, smoke and turning on and off.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoBarricade", "purpose": "A barricade on a door or window, made of planks or metal bars, with health, damage and break rules.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoBrokenGlass", "purpose": "A broken glass object on the ground; it only sets its name and picker render.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoCarBatteryCharger", "purpose": "A car battery charger that holds a battery and charges it at a set rate when powered.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoClothingDryer", "purpose": "A clothes dryer object with powered activation, the items it accepts, and its update.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoClothingWasher", "purpose": "A clothes washer object with powered activation, the items it accepts, and its update.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoCombinationWasherDryer", "purpose": "A combined washer and dryer object that switches between washer and dryer modes.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoCompost", "purpose": "A composter object that holds compost, can be damaged, and updates its sprite.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoCurtain", "purpose": "A curtain or sheet on a window or door: open and close, locked state, health and strength.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoDeadBody", "purpose": "A dead body, human or animal, in the world: clothing, items, rot stages, grab and drag, and corpse container.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoDoor", "purpose": "A door in the world: open and close, lock and key, barricades, health, double and garage doors, and forcing.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoFeedingTrough", "purpose": "A feeding trough for animals: holds food and water, linked animals, and a fluid container.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoFire", "purpose": "A fire or smoke object: life, spread, light, energy and campfire state.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoFireManager", "purpose": "Manages every fire in the world: starting, spreading, removing, light and fire sound, and characters on fire.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoFireplace", "purpose": "A fireplace object: fuel, lit state, temperature and the fire sprite.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoGenerator", "purpose": "A generator object: fuel, condition, power use per appliance and what it powers.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoHutch", "purpose": "An animal hutch: animals inside and outside, nest boxes, eggs, doors and dead bodies.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoHutch$NestBox", "purpose": "A nest box in a hutch: its animal, egg count and capacity.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoJukebox", "purpose": "A jukebox object that plays music when clicked, with its paw sounds.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoLightSwitch", "purpose": "A light switch that turns linked lights on and off, with bulbs, batteries, power and streetlights.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoMannequin", "purpose": "A mannequin object that displays a worn outfit, with pose, rotation and saved state.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoMolotovCocktail", "purpose": "A thrown molotov cocktail that flies and collides with characters, walls and ground.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoRadio", "purpose": "The placed-in-world version of a radio, with power use and its signal behavior.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoStackedWasherDryer", "purpose": "A stacked washer and dryer object, with each unit's activation and power.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoStove", "purpose": "A stove or microwave: on and off state, timer, temperature, broken state and sync.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoTelevision", "purpose": "A television object with screen sprites, facing direction and power use.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoThumpable", "purpose": "A breakable world object such as a wall or door: health, locks, sheets and the damage zombies thump.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoTrap", "purpose": "A trap object such as a placed explosive: countdown, explosion, fire and noise settings.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoTree", "purpose": "A tree on the map: its size, health, chopping and how it falls.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoWaveSignal", "purpose": "A world object that sends and receives radio signals: device data, talk range and light.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoWheelieBin", "purpose": "A wheelie bin object that can be pushed, with its weight.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoWindow", "purpose": "A window in the world: open and close, barricades, sheets, smashing, climbing through and forcing.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoWindowFrame", "purpose": "A window frame that holds sheets, barricades and curtains, and links to its window.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoWorldInventoryObject", "purpose": "An item lying on the ground in the world, with its drop position, water fluid and pickup.", "confidence": "high"}
+{"c": "zombie.iso.objects.IsoZombieGiblets", "purpose": "Zombie gibs that fly off with tints, a lifetime, and render and update steps.", "confidence": "high"}
+{"c": "zombie.iso.objects.ObjectRenderEffects", "purpose": "Holds the four corner points and the wind-driven motion used to shape object rendering.", "confidence": "high"}
+{"c": "zombie.iso.objects.RainManager", "purpose": "Runs rain: intensity, raindrop and splash objects around the player, and rain start and stop.", "confidence": "high"}
+{"c": "zombie.iso.objects.interfaces.BarricadeAble", "purpose": "Interface for objects that can take barricades, with barricade checks on each side.", "confidence": "high"}
+{"c": "zombie.iso.objects.interfaces.GridSquareEdgeElement", "purpose": "Interface for objects on a square's edge, such as a wall, door or window, with facing and opposite-square checks.", "confidence": "high"}
+{"c": "zombie.iso.sprite.IsoSprite", "purpose": "A sprite (image set) used by world objects: frames, animation, properties, depth and cached textures.", "confidence": "high"}
+{"c": "zombie.iso.sprite.IsoSpriteGrid", "purpose": "A grid of sprites that make up one multi-tile object, with width, height, levels and indices.", "confidence": "high"}
+{"c": "zombie.iso.sprite.IsoSpriteInstance", "purpose": "One running instance of a sprite with alpha, tint, scale, frame and offsets, pooled for reuse.", "confidence": "high"}
+{"c": "zombie.iso.sprite.IsoSpriteManager", "purpose": "Stores and finds sprites by name or ID, and creates sprite caches the first time they are used.", "confidence": "high"}
+{"c": "zombie.iso.weather.ClimateColorInfo", "purpose": "Holds the exterior and interior climate colors and reads or writes the climate color config.", "confidence": "high"}
+{"c": "zombie.iso.weather.ClimateForecaster", "purpose": "Builds the weather forecast for coming days, with per-day values and when weather first starts.", "confidence": "high"}
+{"c": "zombie.iso.weather.ClimateForecaster$DayForecast", "purpose": "One day's forecast: temperature, daylight, humidity, wind, fog, storms and weather timing.", "confidence": "high"}
+{"c": "zombie.iso.weather.ClimateForecaster$ForecastValue", "purpose": "Min, max and mean values for one forecast quantity over day, night and the total.", "confidence": "high"}
+{"c": "zombie.iso.weather.ClimateHistory", "purpose": "Hooks climate history into day changes; the digest shows only init and updateDayChange.", "confidence": "low"}
+{"c": "zombie.iso.weather.ClimateManager", "purpose": "The main climate system: temperature, humidity, wind, fog, light and color values, plus the climate tick.", "confidence": "high"}
+{"c": "zombie.iso.weather.ClimateManager$AirFront", "purpose": "An air front, a weather boundary, with its type, strength, wind angle and daily samples.", "confidence": "high"}
+{"c": "zombie.iso.weather.ClimateManager$ClimateBool", "purpose": "A climate true/false value with its internal, modded and override values.", "confidence": "high"}
+{"c": "zombie.iso.weather.ClimateManager$ClimateColor", "purpose": "A climate color value with internal, modded, override and final colors, plus exterior and interior settings.", "confidence": "high"}
+{"c": "zombie.iso.weather.ClimateManager$ClimateFloat", "purpose": "A climate number with internal, modded, override, admin and final values, bounded by min and max.", "confidence": "high"}
+{"c": "zombie.iso.weather.ClimateManager$DayInfo", "purpose": "The current climate date and time: day, month, year, hour, minutes and season.", "confidence": "high"}
+{"c": "zombie.iso.weather.ClimateMoon", "purpose": "Tracks the moon phase and gives its name and a moon value.", "confidence": "high"}
+{"c": "zombie.iso.weather.ClimateValues", "purpose": "A snapshot of climate values (temperature, humidity, wind, daylight and fog) for one moment in time.", "confidence": "high"}
+{"c": "zombie.iso.weather.Temperature", "purpose": "Temperature rules and display: Celsius and Fahrenheit conversion, body temperature ranges, windchill and insulation.", "confidence": "high"}
+{"c": "zombie.iso.weather.ThunderStorm", "purpose": "Runs thunderstorms: thunder clouds, their strength and radius, lightning on the player, and thunder events.", "confidence": "high"}
+{"c": "zombie.iso.weather.ThunderStorm$ThunderCloud", "purpose": "One thunder cloud with its center, radius, strength and lifetime.", "confidence": "high"}
+{"c": "zombie.iso.weather.WeatherPeriod", "purpose": "One weather period made of stages (start, storm, clearing and more), with strength, cloud color and precipitation.", "confidence": "high"}
+{"c": "zombie.iso.weather.WeatherPeriod$StrLerpVal", "purpose": "The list of how a weather stage's strength eases: Entry, Target, NextTarget and None.", "confidence": "high"}
+{"c": "zombie.iso.weather.WeatherPeriod$WeatherStage", "purpose": "One stage of a weather period: duration, strength, entry and exit values and fog.", "confidence": "high"}
+{"c": "zombie.iso.weather.WorldFlares", "purpose": "Launches flares that light an area of the world, with range, intensity and wind.", "confidence": "high"}
+{"c": "zombie.iso.weather.WorldFlares$Flare", "purpose": "One flare with its position, color, intensity, range, lifetime and wind.", "confidence": "high"}
+{"c": "zombie.iso.weather.fog.ImprovedFog", "purpose": "The fog renderer: color, alpha, offsets, circle size and noise texture, with editing options.", "confidence": "high"}
+{"c": "zombie.iso.weather.fx.IsoWeatherFX", "purpose": "The weather effects renderer: cloud, fog and precipitation intensity, wind angle and rain or snow.", "confidence": "high"}
+{"c": "zombie.iso.worldgen.WorldGenParams", "purpose": "The world generation settings: seed, cell bounds, and load and save of the worldgen data.", "confidence": "high"}
+{"c": "zombie.iso.worldgen.WorldGenUtils", "purpose": "Helpers for world generation: seed creation, file lists, placement checks and timers.", "confidence": "high"}
+{"c": "zombie.iso.zones.Trigger", "purpose": "A trigger point with a type, range, zombie exclusion range, data and fired state.", "confidence": "high"}
+{"c": "zombie.iso.zones.VehicleZone", "purpose": "A zone for vehicles with a direction and a face-direction flag.", "confidence": "high"}
+{"c": "zombie.iso.zones.Zone", "purpose": "A map zone such as a forest or town: its shape, area, name, zombie density and a random square in it.", "confidence": "high"}
+{"c": "zombie.modding.ActiveMods", "purpose": "The list of active mods: their order, missing-mod checks, and enable or disable.", "confidence": "high"}
+{"c": "zombie.network.Account", "purpose": "A saved login account: user name, encrypted password, play time, last logon and auth type.", "confidence": "high"}
+{"c": "zombie.network.DBBannedIP", "purpose": "A banned IP record with the IP, reason and user name.", "confidence": "high"}
+{"c": "zombie.network.DBBannedSteamID", "purpose": "A banned Steam ID record with the ID and reason.", "confidence": "high"}
+{"c": "zombie.network.DBResult", "purpose": "A database query result: its table name, column names and values.", "confidence": "high"}
+{"c": "zombie.network.DBTicket", "purpose": "A support ticket record: its message, author, answer and viewed state.", "confidence": "high"}
+{"c": "zombie.network.NetworkAIParams", "purpose": "Network tuning values for characters, animals and vehicles: update intervals, delays and distances.", "confidence": "high"}
+{"c": "zombie.network.PVPLogTool", "purpose": "Records player-versus-player combat, kill and safety events to a log that can be read back.", "confidence": "high"}
+{"c": "zombie.network.PVPLogTool$PVPEvent", "purpose": "One PVP event: its time, who hit or killed whom, the position and the text.", "confidence": "high"}
+{"c": "zombie.network.Server", "purpose": "A server listing entry: name, address, port, map, mods, players, version and password status.", "confidence": "high"}
+{"c": "zombie.network.ServerOptions", "purpose": "The server settings from the server file: every option's value, with get and change helpers.", "confidence": "high"}
+{"c": "zombie.network.ServerOptions$BooleanServerOption", "purpose": "A true/false server setting.", "confidence": "high"}
+{"c": "zombie.network.ServerOptions$DoubleServerOption", "purpose": "A decimal server setting with min, max and default values.", "confidence": "high"}
+{"c": "zombie.network.ServerOptions$EnumServerOption", "purpose": "A server setting that picks one value from a list, with translated value names.", "confidence": "high"}
+{"c": "zombie.network.ServerOptions$IntegerServerOption", "purpose": "A whole-number server setting with min, max and default values.", "confidence": "high"}
+{"c": "zombie.network.ServerOptions$StringServerOption", "purpose": "A text server setting.", "confidence": "high"}
+{"c": "zombie.network.ServerOptions$TextServerOption", "purpose": "A string server setting with the text type.", "confidence": "high"}
+{"c": "zombie.network.ServerSettings", "purpose": "One saved server profile: server options, sandbox options and spawn regions and points, with save, load and rename.", "confidence": "high"}
+{"c": "zombie.network.ServerSettingsManager", "purpose": "Lists and validates the saved server setting profiles in the settings folder.", "confidence": "high"}
+{"c": "zombie.network.Userlog", "purpose": "A user log entry, such as a kick, ban or warning, with the user, amount, type and text.", "confidence": "high"}
+{"c": "zombie.network.Userlog$UserlogType", "purpose": "The list of user log types: AdminLog, Kicked, Banned, DupeItem, LuaChecksum, WarningPoint and more.", "confidence": "high"}
+{"c": "zombie.network.WarManager", "purpose": "Runs player-versus-player wars: starting, accepting, ending and sending war state to players.", "confidence": "high"}
+{"c": "zombie.network.WarManager$State", "purpose": "The list of war states: Started, Accepted, Refused, Blocked, Claimed, Canceled and Ended.", "confidence": "high"}
+{"c": "zombie.network.WarManager$War", "purpose": "One war record: its attacker, defender, state, time and timestamp.", "confidence": "high"}
+{"c": "zombie.network.fields.ContainerID", "purpose": "Identifies which container an item is in (player, floor, vehicle part, corpse, world object) for network moves.", "confidence": "high"}
+{"c": "zombie.network.fields.ContainerID$ContainerType", "purpose": "The list of container kinds for network item moves, such as Floor, DeadBody, Vehicle and PlayerInventory.", "confidence": "high"}
+{"c": "zombie.network.packets.BodyPartSyncPacket", "purpose": "A network packet that syncs body-part damage such as bleeding, bandages and infection.", "confidence": "high"}
+{"c": "zombie.network.packets.NetTimedActionPacket", "purpose": "A network packet that sends a timed action between client and server, and accepts or rejects it.", "confidence": "high"}
+{"c": "zombie.network.packets.SyncPlayerStatsPacket", "purpose": "A network packet that syncs a player's stats, with a bit mask for which stat changed.", "confidence": "high"}
+{"c": "zombie.pathfind.PathFindBehavior2", "purpose": "The pathfinding behavior for characters: walks to a location, character, sound, seat or vehicle, reporting success or failure.", "confidence": "high"}
+{"c": "zombie.pathfind.PathFindBehavior2$BehaviorResult", "purpose": "The list of path results: Working, Succeeded and Failed.", "confidence": "high"}
+{"c": "zombie.popman.ZombiePopulationRenderer", "purpose": "Draws the zombie population map: cells, zombies, vehicles and the building grid, with coordinates.", "confidence": "high"}
+{"c": "zombie.popman.ZombiePopulationRenderer$BooleanDebugOption", "purpose": "A true/false debug option for the zombie population view.", "confidence": "high"}
+{"c": "zombie.radio.ChannelCategory", "purpose": "The list of radio channel categories: Radio, Television, Military, Amateur, Bandit, Emergency and more.", "confidence": "high"}
+{"c": "zombie.radio.RadioAPI", "purpose": "A small read-only API for radio channels and time conversions to minutes, hours and days.", "confidence": "high"}
+{"c": "zombie.radio.RadioData", "purpose": "Loads the radio channel and translation data files and reports whether each one is vanilla.", "confidence": "high"}
+{"c": "zombie.radio.StorySounds.DataPoint", "purpose": "One point on a story-sound curve: a time and an intensity.", "confidence": "high"}
+{"c": "zombie.radio.StorySounds.EventSound", "purpose": "A named story-sound event with a color, data points and the story sounds it uses.", "confidence": "high"}
+{"c": "zombie.radio.StorySounds.SLSoundManager", "purpose": "Manages story sounds: random positions around the border, a debug view and thunder tests.", "confidence": "high"}
+{"c": "zombie.radio.StorySounds.StorySound", "purpose": "One story sound with a name and base volume, which it can play.", "confidence": "high"}
+{"c": "zombie.radio.StorySounds.StorySoundEvent", "purpose": "A named story-sound event holding a list of event sounds.", "confidence": "high"}
+{"c": "zombie.radio.ZomboidRadio", "purpose": "The radio system: channels, transmissions, devices and broadcasts, with load, save and per-frame update.", "confidence": "high"}
+{"c": "zombie.radio.devices.DeviceData", "purpose": "Data for a radio-type device: channel, volume, power, battery, headphones, presets and playing media.", "confidence": "high"}
+{"c": "zombie.radio.devices.DevicePresets", "purpose": "Saved station presets on a radio device: name and frequency, with load and save.", "confidence": "high"}
+{"c": "zombie.radio.devices.PresetEntry", "purpose": "One station preset: its name and frequency.", "confidence": "high"}
+{"c": "zombie.radio.devices.WaveSignalDevice", "purpose": "Interface for a device that sends or receives radio signals, with its device data and position.", "confidence": "high"}
+{"c": "zombie.radio.media.MediaData", "purpose": "One recorded media item's data (title, author, lines and category), such as a VHS tape or CD.", "confidence": "high"}
+{"c": "zombie.radio.media.MediaData$MediaLineData", "purpose": "One line of recorded media text, with its color and translated text.", "confidence": "high"}
+{"c": "zombie.radio.media.RecordedMedia", "purpose": "Loads and saves the recorded media list and which lines the player has heard.", "confidence": "high"}
+{"c": "zombie.radio.scripting.DynamicRadioChannel", "purpose": "A radio channel that loads its airing broadcast on demand.", "confidence": "high"}
+{"c": "zombie.radio.scripting.RadioBroadCast", "purpose": "One broadcast: its start and end time, its lines, and the line position within it.", "confidence": "high"}
+{"c": "zombie.radio.scripting.RadioChannel", "purpose": "One radio channel: its name, frequency, category, scripts, current broadcast and listening state.", "confidence": "high"}
+{"c": "zombie.radio.scripting.RadioLine", "purpose": "One line of radio speech: its text, color, air time and effects.", "confidence": "high"}
+{"c": "zombie.radio.scripting.RadioScript", "purpose": "A radio script: a sequence of broadcasts with a start day, loop counts and exit options.", "confidence": "high"}
+{"c": "zombie.radio.scripting.RadioScript$ExitOption", "purpose": "One exit option for a radio script: the next script, its chance and start delay.", "confidence": "high"}
+{"c": "zombie.radio.scripting.RadioScriptManager", "purpose": "Manages all radio channels and their scripts: adding, removing, loading, saving and updating them.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.RandomizedWorldBase", "purpose": "Base for random world scenes: places items, tents, campfires, vehicles, blood and zombies on squares.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBBar", "purpose": "Random building setup for a bar or strip club, with darts and pool items placed in the room.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBBarn", "purpose": "Random building setup for a barn.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBBasic", "purpose": "The main random building setup for ordinary houses, with professions, survivor stories and special shops.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBBurnt", "purpose": "Random building setup for a burnt-out building.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBBurntCorpse", "purpose": "Random building setup for a burnt-out building with corpses.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBBurntFireman", "purpose": "Random building setup for a burnt building with a fireman story and gear.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBCafe", "purpose": "Random building setup for a cafe.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBClinic", "purpose": "Random building setup for a clinic, such as a vet or doctor's office.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBDorm", "purpose": "Random building setup for a university dormitory.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBGunstoreSiege", "purpose": "Random building setup for a barricaded gun store with a siege story.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBHairSalon", "purpose": "Random building setup for a hair salon.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBHeatBreakAfternoon", "purpose": "Random building setup for a bank robbery story.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBJackieJaye", "purpose": "Random building setup for the Jackie and Jaye studio story.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBJoanHartford", "purpose": "Random building setup for the Joan Hartford studio story.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBJudge", "purpose": "Random building setup for the judge's house, with its story and a revolver.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBKateAndBaldspot", "purpose": "Random building setup for the Kate and Baldspot story house.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBLooted", "purpose": "Random building setup for a looted building.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBMayorWestPoint", "purpose": "Random building setup for the West Point mayor's office story.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBNolans", "purpose": "Random building setup for the Nolan's office story.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBOffice", "purpose": "Random building setup for an office or car dealership office.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBOther", "purpose": "Random building setup for miscellaneous buildings.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBPileOCrepe", "purpose": "Random building setup for the Pile O Crepe restaurant.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBPizzaWhirled", "purpose": "Random building setup for the Pizza Whirled restaurant.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBPoliceSiege", "purpose": "Random building setup for a barricaded police station with a siege story.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBReverend", "purpose": "Random building setup for a church with the reverend's story.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBSafehouse", "purpose": "Random building setup for a safehouse with survivor and bandit story kinds.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBSchool", "purpose": "Random building setup for a school classroom with its supplies.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBShopLooted", "purpose": "Randomizes a looted shop building by type, such as a convenience store, grocery, warehouse, medical clinic or Zippee store.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBSpiffo", "purpose": "Turns a building into a Spiffo's restaurant with a dining room and a burger kitchen stocked with burgers, fries and ketchup.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBStripclub", "purpose": "Randomizes a stripclub building, placing money bundles and clothing items in its rooms.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBTrashed", "purpose": "Randomizes a trashed building, wrecking its rooms or mall shop floors and skipping stash and spawn houses.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBTwiggy", "purpose": "Sets up Sir Twiggy's bar building with a bar counter and official documents.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RBWoodcraft", "purpose": "Sets up the Woodcraft workshop building with a woodcraft set, woodcut items and a hammer.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedBuilding.RandomizedBuildingBase", "purpose": "Base class for randomized building scenes: it finds doors, windows and rooms, sets spawn chances, and places loot, weapons and zombies.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSBandPractice", "purpose": "Dead survivor scene: a band practice in a house, with guitars, a bass, a harmonica and a microphone.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSBanditRaid", "purpose": "Dead survivor scene: a bandit raid on a house, with bodies placed in the kitchen and bedroom.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSBathroomZed", "purpose": "Dead survivor scene: a zombie in a bathroom surrounded by grooming items such as a razor, comb and hairspray.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSBedroomZed", "purpose": "Dead survivor scene: a zombie in a bedroom, dressed in shoes and denim trousers.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSBleach", "purpose": "Dead survivor scene titled Suicide by Bleach; the digest shows only its title, so its exact props are not clear.", "confidence": "low"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSCorpsePsycho", "purpose": "Dead survivor scene: a mad scientist's corpse with a doctor's bag, placed in the kitchen, living room or bedroom.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSDeadDrunk", "purpose": "Dead survivor scene: a dead drunk surrounded by whiskey and wine bottles.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSDevouredByRats", "purpose": "Dead survivor scene: a body devoured by rats in a bedroom, kitchen, living room or laboratory.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSFootballNight", "purpose": "Dead survivor scene: a football night with a sports fan in a living room.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSGrouchos", "purpose": "Dead survivor scene named Grouchos, placing a Groucho-style character in a living room.", "confidence": "low"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSGunmanInBathroom", "purpose": "Dead survivor scene: a gunman in a bathroom with a shotgun and a revolver.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSGunslinger", "purpose": "Dead survivor scene named Gunslinger; the digest shows only its title, so its layout is not clear.", "confidence": "low"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSHenDo", "purpose": "Dead survivor scene: a hen party in a living room, with a naked body.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSHockeyPsycho", "purpose": "Dead survivor scene: a hockey-masked killer, a nod to the Friday the 13th films.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSHouseParty", "purpose": "Dead survivor scene: the aftermath of a house party in a living room.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSPokerNight", "purpose": "Dead survivor scene: a poker night in the kitchen, with money and a card deck.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSPoliceAtHouse", "purpose": "Dead survivor scene: police at a house, with police car lights.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSPrisonEscape", "purpose": "Dead survivor scene for a prison escape, tied to an escaped-inmate flag.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSPrisonEscapeWithPolice", "purpose": "Dead survivor scene: a prison escape with police and police car lights at the house.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSRPGNight", "purpose": "Dead survivor scene: an RPG game night with a calculator, an eraser and snack food.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSRatInfested", "purpose": "Dead survivor scene: a rat-infested house, with a rat room built around fridges and freezers.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSRatKing", "purpose": "Dead survivor scene: a rat king in a house, with rats in the kitchen and bedroom.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSRatWar", "purpose": "Dead survivor scene: a rat war in a house, with rats in the kitchen and bedroom.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSResourceGarage", "purpose": "Dead survivor scene: a rural resource garage with a garage storage shed and its supplies.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSSkeletonPsycho", "purpose": "Dead survivor scene with a skeleton-like psycho body and a doctor's bag, placed in a bedroom, kitchen or living room.", "confidence": "low"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSSpecificProfession", "purpose": "Dead survivor scene: a body of a set profession, such as a carpenter, electrician, farmer, nurse or chef.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSStagDo", "purpose": "Dead survivor scene: a stag do with cigarettes, whiskey and wine.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSStudentNight", "purpose": "Dead survivor scene: a student night party with cigarettes, whiskey and wine.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSSuicidePact", "purpose": "Dead survivor scene titled Suicide Pact, with a pistol and a note; the digest does not show its full layout.", "confidence": "low"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSTinFoilHat", "purpose": "Dead survivor scene for the tin foil hat family, with tin foil hats placed in the house.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSZombieLockedBathroom", "purpose": "Dead survivor scene: a zombie locked in a bathroom, with a pistol.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RDSZombiesEating", "purpose": "Dead survivor scene: zombies eating in a kitchen or living room.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedDeadSurvivor.RandomizedDeadSurvivorBase", "purpose": "Base class for dead survivor scenes: a building scene that skips spawn houses and stash buildings.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSAmbulanceCrash", "purpose": "Vehicle story: an ambulance crash on a road, with a driver and two vehicles.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSAnimalOnRoad", "purpose": "Vehicle story: a farm animal standing on a road, with its breed chosen from a list.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSAnimalTrailerOnRoad", "purpose": "Vehicle story: a livestock trailer on a road, carrying animals such as bulls, boars and turkeys.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSBanditRoad", "purpose": "Vehicle story: bandits on a road, with two vehicles and a corpse.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSBurntCar", "purpose": "Vehicle story: a burnt-out car placed in a road zone.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSCarCrash", "purpose": "Vehicle story: a basic car crash between two vehicles in a road zone.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSCarCrashCorpse", "purpose": "Vehicle story: a car crash with a corpse beside one vehicle.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSCarCrashDeer", "purpose": "Vehicle story: a car crash with a deer corpse on the road.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSChangingTire", "purpose": "Vehicle story: a car with a flat tire and tools, with a driver changing the tire.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSConstructionSite", "purpose": "Vehicle story: a construction site with a pickaxe, shovels, a hammer and a lead pipe.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSCrashHorde", "purpose": "Vehicle story named Crash Horde: a crashed, burnt vehicle in a road zone; the digest does not show the horde's setup.", "confidence": "low"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSDeadEnd", "purpose": "Vehicle story: a vehicle with a damaged wheel at a dead end, with a first aid kit and a bag.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSFlippedCrash", "purpose": "Vehicle story: a flipped vehicle crash, with a burnt or normal burnt vehicle.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSHerdOnRoad", "purpose": "Vehicle story: a herd of farm animals on a road, with breeds chosen from a list.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSPlonkies", "purpose": "Vehicle story: a Plonkies step van with a damaged right wheel on a road.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSPoliceBlockade", "purpose": "Vehicle story: a police blockade of two vehicles with police lights.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSPoliceBlockadeShooting", "purpose": "Vehicle story: a police blockade after a shooting, with barricades and a corpse.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSRegionalProfessionVehicle", "purpose": "Vehicle story that places a regional profession vehicle on a road zone; the digest does not show which vehicles it uses.", "confidence": "low"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSRichJerk", "purpose": "Vehicle story: a rich jerk's vehicle with a briefcase of money and a damaged wheel.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSRoadKill", "purpose": "Vehicle story: a large farm animal struck by a vehicle on a road.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSRoadKillSmall", "purpose": "Vehicle story: a small animal run over by a vehicle on a road.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSTrailerCrash", "purpose": "Vehicle story: a trailer crash between two vehicles in a road zone.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RVSUtilityVehicle", "purpose": "Vehicle story: a utility van for a construction worker, police or fire crew, with its own props.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedVehicleStory.RandomizedVehicleStoryBase", "purpose": "Base class for vehicle stories: it finds road zones and spawn points, checks size and chance, and places vehicles and props.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZJackieJaye", "purpose": "Zone story for the Jackie and Jaye characters, placing a press ID card in the area.", "confidence": "low"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSAttachedAnimal", "purpose": "Zone story: a farm animal tied up in the area, with its breed chosen from a list.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSBBQParty", "purpose": "Zone story: an outdoor BBQ party with a grill, a cooler and a meat-master survivor.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSBaseball", "purpose": "Zone story: a baseball game site with baseball players, bats and balls.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSBeachParty", "purpose": "Zone story: a beach party with camping items and outdoor seating.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSBurntWreck", "purpose": "Zone story: a burnt wreck in the forest, with bottles and cans around it.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSBuryingCamp", "purpose": "Zone story: a burying camp at a cemetery, with graves and cemetery props.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSCampsite", "purpose": "Zone story: a campsite with tin cans and outdoor seating.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSCharcoalBurner", "purpose": "Zone story: a charcoal burner camp with logs, saws, axes and finished charcoal.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSDean", "purpose": "Zone story for Dean's porch, with tin cans, a pan and a pot.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSDuke", "purpose": "Zone story for the Duke character, tied to the Redding name; the digest shows no other props.", "confidence": "low"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSEscapedAnimal", "purpose": "Zone story: an escaped animal loose in the area, with its breed chosen from a list.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSEscapedHerd", "purpose": "Zone story: an escaped herd of farm animals roaming the zone.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSFishingTrip", "purpose": "Zone story: a fishing trip with catfish and bass species and fishing tools.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSForestCamp", "purpose": "Zone story: a basic forest camp with pop, beef jerky, ham and water bottles.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSForestCampEaten", "purpose": "Zone story: a forest camp after a zombie attack, with a cooler and camper outfits; the digest does not show the full setup.", "confidence": "low"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSFrankHemingway", "purpose": "Zone story for the Frank Hemingway character; the digest shows no props beyond the name.", "confidence": "low"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSHermitCamp", "purpose": "Zone story: a hermit's campsite with matches, tinned beans, dog food and acorns.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSHillbillyHoedown", "purpose": "Zone story: a hillbilly hoedown party with whiskey, beer cans and cigarettes.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSHogWild", "purpose": "Zone story: wild hogs in the area, with large black and landrace breeds and boars.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSHunterCamp", "purpose": "Zone story: a hunter's forest camp with rifles, a shotgun and ammo boxes.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSKirstyKormick", "purpose": "Zone story for the Kirsty Kormick character, with a press ID card in the area.", "confidence": "low"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSMurderScene", "purpose": "Zone story: a murder scene with a shovel, an empty petrol can and cemetery props.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSMusicFest", "purpose": "Zone story: a music festival with beer cans and bottles.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSMusicFestStage", "purpose": "Zone story: a music festival stage with guitars, a keytar and guitar picks.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSNastyMattress", "purpose": "Zone story: a nasty mattress placed in the area.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSOccultActivity", "purpose": "Zone story: occult activity at a cemetery, with occult books, tarot cards and an Ouija board.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSOldFirepit", "purpose": "Zone story: an old firepit with tin cans, a pan and a pot.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSOldShelter", "purpose": "Zone story: an old shelter with tin cans, a pan and a pot.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSOrphanedFawn", "purpose": "Zone story: an orphaned fawn beside a hunter with rifles.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSRangerSmith", "purpose": "Zone story for Ranger Smith, with a picnic basket.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSRockerParty", "purpose": "Zone story: rocker kids partying with whiskey, beer and cigarettes.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSSadCamp", "purpose": "Zone story: a sad campsite with evacuee, retiree, student and generic survivor outfits.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSSexyTime", "purpose": "Zone story named Sexy Time, placing clothing items such as shoes and denim trousers.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSSirTwiggy", "purpose": "Zone story for Sir Twiggy, with an official document.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSSurvivalistCamp", "purpose": "Zone story: a survivalist campsite with survivalist outfits.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSTragicPicnic", "purpose": "Zone story: a tragic picnic with a picnic basket, a guitar and a ring.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSTrapperCamp", "purpose": "Zone story: a trapper's forest camp with constructed trap objects placed around it.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSVanCamp", "purpose": "Zone story: a camp around a van, with booze, beer and clothing.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSWasteDump", "purpose": "Zone story: a waste dump with industrial and military objects.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RZSWaterPump", "purpose": "Zone story: a water pump with a metal cup and buckets.", "confidence": "high"}
+{"c": "zombie.randomizedWorld.randomizedZoneStory.RandomizedZoneStoryBase", "purpose": "Base class for zone stories: it finds free squares in a zone, clears the area, and checks chance and minimum size.", "confidence": "high"}
+{"c": "zombie.scripting.ScriptManager", "purpose": "Loads and holds all script objects, such as items, recipes, vehicles and models, from every mod in load order.", "confidence": "high"}
+{"c": "zombie.scripting.ScriptType", "purpose": "The list of script object types, such as Item, CraftRecipe, Model, Clock and EntityTemplate, with verbose and critical flags.", "confidence": "high"}
+{"c": "zombie.scripting.entity.ComponentScript", "purpose": "Base class for the components on an entity script, such as crafting, fluids or UI, with shared copy and load steps.", "confidence": "high"}
+{"c": "zombie.scripting.entity.GameEntityScript", "purpose": "Loads a game entity script: its name, mod id, and the components it attaches.", "confidence": "high"}
+{"c": "zombie.scripting.entity.GameEntityTemplate", "purpose": "Holds a named entity template and its script body so entity scripts can reuse it.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.attributes.AttributesScript", "purpose": "Component script for entity attributes: reads attribute key-value pairs from a script block.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.contextmenuconfig.ContextMenuConfigScript", "purpose": "Component script that defines an entity's right-click menu entries, with menu, icon, submenu, function, window and timing.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.contextmenuconfig.ContextMenuConfigScript$EntryScript", "purpose": "One right-click menu entry: its menu text, icon, submenu, function, window, timing and distance.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.crafting.CraftBenchScript", "purpose": "Component script for a crafting bench: its recipe list, fluid inputs and energy inputs.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.crafting.CraftLogicScript", "purpose": "Component script for crafting logic: recipes, start mode, input and output groups, and the action animation.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.crafting.CraftRecipe", "purpose": "A craft recipe script: its inputs and outputs, required skills, XP awards, auto-learn rules and timing.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.crafting.CraftRecipe$RequiredSkill", "purpose": "One skill requirement of a craft recipe: a perk and a level.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.crafting.CraftRecipe$XpAward", "purpose": "One XP reward from a craft recipe: a perk and an amount.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.crafting.CraftRecipeComponentScript", "purpose": "Component script that makes an entity offer craft recipes, with its build category, icon texture and tags.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.crafting.FurnaceLogicScript", "purpose": "Component script for furnace logic: furnace recipes, fuel recipes, start mode and input and output groups.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.crafting.InputScript", "purpose": "One input of a craft recipe or process: the items, fluids or energy it takes, with condition, amount and filter rules.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.crafting.MashingLogicScript", "purpose": "Component script for mashing logic: its recipes, input group, fluid ID and recipe tag query.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.crafting.OutputScript", "purpose": "One output of a craft recipe or process: the item, fluid or energy it makes, with chance, amount and mapper rules.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.crafting.WallCoveringConfigScript", "purpose": "Component script for wall covering: its type (paint, plaster or wallpaper), name and sign index.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.fluids.FluidContainerScript", "purpose": "Component script for fluid containers: capacity, initial fluids, allowed and blocked fluids, and drinking sounds.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.fluids.FluidContainerScript$FluidScript", "purpose": "One fluid entry in a fluid container: its fluid type, percentage and custom color.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.lua.LuaComponentScript", "purpose": "Component script for Lua-driven entity behavior; it has no fields of its own beyond the shared copy step.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.parts.PartsScript", "purpose": "Component script for an entity's parts; it has no fields of its own beyond the shared copy step.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.signals.SignalsScript", "purpose": "Component script for entity signals; it has no fields of its own beyond the shared copy step.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.spriteconfig.SpriteConfigScript", "purpose": "Component script for an entity's sprite layout: faces, tile rows, z layers, health, light sources and placement rules.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.spriteconfig.SpriteConfigScript$FaceScript", "purpose": "One face of a sprite config: its name, layers, light source offsets and total size.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.spriteconfig.SpriteConfigScript$TileScript", "purpose": "One tile in a sprite config: its tile name and whether it blocks the square or is empty space.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.spriteconfig.SpriteConfigScript$XRow", "purpose": "One row of tiles in a sprite config, with its tile and width.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.spriteconfig.SpriteConfigScript$ZLayer", "purpose": "One z layer of a sprite config, with its rows and height.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.test.TestComponentScript", "purpose": "Test component script with sample keys, used to check the component system rather than for gameplay.", "confidence": "high"}
+{"c": "zombie.scripting.entity.components.ui.UiConfigScript", "purpose": "Component script for an entity's UI: its XUI skin, entity style and whether the UI is enabled.", "confidence": "high"}
+{"c": "zombie.scripting.itemConfig.ItemConfig", "purpose": "Loads an item config script with variables, includes, and chance and value buckets for generated items.", "confidence": "high"}
+{"c": "zombie.scripting.logic.ItemCodeOnCreate", "purpose": "Lua-hook helpers run when an item is created: print media, collectibles, schematics, ID cards, photos and similar items.", "confidence": "high"}
+{"c": "zombie.scripting.logic.ItemCodeOnTest", "purpose": "Item test helper that checks whether the player has a screwdriver.", "confidence": "high"}
+{"c": "zombie.scripting.logic.RecipeCodeOnCooked", "purpose": "Recipe helpers run after cooking: canned food and cake preparation.", "confidence": "high"}
+{"c": "zombie.scripting.logic.RecipeCodeOnCreate", "purpose": "Recipe helpers run when a craft creates its output: fixing, opening cans, cutting food, making coffee and similar results.", "confidence": "high"}
+{"c": "zombie.scripting.logic.RecipeCodeOnEat", "purpose": "Recipe helpers for eating effects: correction fluid, nicotine, rat poison and wild food.", "confidence": "high"}
+{"c": "zombie.scripting.logic.RecipeCodeOnTest", "purpose": "Recipe helpers that decide if a craft can run: filters, oxygen tanks, fire, glass, packing, keys and scratch tickets.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ActionSoundTime", "purpose": "The list of times an action sound can play: action start, animation event or animation start.", "confidence": "high"}
+{"c": "zombie.scripting.objects.AmmoType", "purpose": "Registry of ammo types, such as 9mm, .308, .38 and shotgun shells, each with its item key.", "confidence": "high"}
+{"c": "zombie.scripting.objects.AnimationsMesh", "purpose": "Script for an animation mesh: its mesh file, animation folders and prefixes, and post-processing.", "confidence": "high"}
+{"c": "zombie.scripting.objects.BaseScriptObject", "purpose": "Base class for all script objects: module, parent, enabled and debug flags, loaded body lines and version.", "confidence": "high"}
+{"c": "zombie.scripting.objects.Brochure", "purpose": "The list of brochure titles, such as the airport, the mall and the art gallery, with their translation keys.", "confidence": "high"}
+{"c": "zombie.scripting.objects.CharacterProfession", "purpose": "The list of character professions, such as carpenter, chef, doctor and police officer, with their names.", "confidence": "high"}
+{"c": "zombie.scripting.objects.CharacterTrait", "purpose": "The list of character traits, such as athletic, brave, clumsy and cook, with their names.", "confidence": "high"}
+{"c": "zombie.scripting.objects.CraftRecipeGroup", "purpose": "The craft recipe groups, each with its icon.", "confidence": "high"}
+{"c": "zombie.scripting.objects.DigType", "purpose": "The list of digging tools: hoe, pickaxe, shovel and trowel.", "confidence": "high"}
+{"c": "zombie.scripting.objects.EnergyDefinitionScript", "purpose": "Loads an energy type definition: its display name, color, icon and bar textures.", "confidence": "high"}
+{"c": "zombie.scripting.objects.EvolvedRecipe", "purpose": "An evolved recipe: a base item that takes ingredients, with its result, cooking and minimum water rules.", "confidence": "high"}
+{"c": "zombie.scripting.objects.Fixing", "purpose": "A fixing script: the items needed to repair a part, the fixers that can do it, and its condition modifier.", "confidence": "high"}
+{"c": "zombie.scripting.objects.Fixing$Fixer", "purpose": "One fixer for a fixing: its name, the skills it needs and how many uses it takes.", "confidence": "high"}
+{"c": "zombie.scripting.objects.Fixing$FixerSkill", "purpose": "One skill level needed by a fixer in a fixing.", "confidence": "high"}
+{"c": "zombie.scripting.objects.Flier", "purpose": "The list of flier titles, such as shop and cabin ads, with their translation keys.", "confidence": "high"}
+{"c": "zombie.scripting.objects.FluidDefinitionScript", "purpose": "Loads a fluid definition: its display name, color, categories, and its effects on hunger, thirst, mood and endurance.", "confidence": "high"}
+{"c": "zombie.scripting.objects.FluidFilterScript", "purpose": "Loads a fluid filter: a named or anonymous set of fluids or fluid categories.", "confidence": "high"}
+{"c": "zombie.scripting.objects.GameSoundScript", "purpose": "Loads a game sound script: its category, 3D flag, loop, master, instance limit and clip.", "confidence": "high"}
+{"c": "zombie.scripting.objects.Item", "purpose": "An item script: its type, weight, condition, use, sounds, clothing, weapon and food stats, with hundreds of fields.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemBodyLocation", "purpose": "The list of body locations an item can be worn on, such as belt, back, ankle holster and wrist.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemFilterScript", "purpose": "Loads an item filter: item types, tags and a blacklist that decide which items it allows.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemKey", "purpose": "Record that maps each item key to its name and type, with lookups by name or key value.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemKey$AlarmClock", "purpose": "Item key constants for alarm clocks and pocket watches.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemKey$AlarmClockClothing", "purpose": "Item key constants for wrist watches, left and right wrist, in several styles.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemKey$Animal", "purpose": "Item key constant for the animal item type.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemKey$Clothing", "purpose": "Item key constants for clothing and worn gear, such as aprons, bandages and other wearables.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemKey$Container", "purpose": "Item key constants for containers: bags, ammo straps and ammo boxes.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemKey$Drainable", "purpose": "Item key constants for drainable items such as batteries, bath towels, candles and buckets.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemKey$Food", "purpose": "Item key constants for food items, such as acorns, bacon and bagels.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemKey$Key", "purpose": "Item key constants for keys and locks: car keys, padlocks and key blanks.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemKey$Literature", "purpose": "Item key constants for books, magazines, armor magazines and seed packets.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemKey$Map", "purpose": "Item key constants for maps, such as the Louisville maps and the Riverside map.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemKey$Moveable", "purpose": "Item key constants for moveable objects, such as skulls, hides and an anvil.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemKey$Normal", "purpose": "Item key constants for plain items with no special type, such as aluminum, badges and bandage boxes.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemKey$Radio", "purpose": "Item key constants for radios, TVs, walkie-talkies and CD players.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemKey$Weapon", "purpose": "Item key constants for weapons, such as axes, hammers, rifles and the aerosol bomb.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemKey$WeaponPart", "purpose": "Item key constants for weapon parts: scopes, lasers, red dots, recoil pads and choke tubes.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemRecipe", "purpose": "A recipe name attached to an item, with its use and cooked flag.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemTag", "purpose": "The list of item tags, such as aerosol, ammo, alcoholic beverage and aluminum, with their translation names.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ItemType", "purpose": "The list of item types, such as food, clothing, weapon, container, key and radio.", "confidence": "high"}
+{"c": "zombie.scripting.objects.MannequinScript", "purpose": "Loads a mannequin script: its model, texture, female flag, anim set, state and pose.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ModelAttachment", "purpose": "One attachment point on a model: its id, bone, offset, scale and whether it can attach.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ModelKey", "purpose": "Record of all model keys, with lookup by id, covering item models such as ground, hand and world forms.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ModelScript", "purpose": "Loads a model script: its mesh, texture, shader, scale and attachments, with its model manager key.", "confidence": "high"}
+{"c": "zombie.scripting.objects.MoodleType", "purpose": "The list of moodle types, such as hungry, thirsty, bored, panic and hypothermia, with their names.", "confidence": "high"}
+{"c": "zombie.scripting.objects.MovableRecipe", "purpose": "A movable recipe that takes apart a movable object, with its tools, world sprite and XP perk.", "confidence": "high"}
+{"c": "zombie.scripting.objects.Newspaper", "purpose": "The list of newspapers, such as the Kentucky Herald, Knox KNEWS and the Louisville Sun Times, with their issues.", "confidence": "high"}
+{"c": "zombie.scripting.objects.PhysicsShapeScript", "purpose": "Loads a physics shape script: its mesh, translate, rotate, scale and post-processing.", "confidence": "high"}
+{"c": "zombie.scripting.objects.Recipe", "purpose": "A basic recipe script: its inputs and outputs, skill, time, sound, category and workstation rules.", "confidence": "high"}
+{"c": "zombie.scripting.objects.Recipe$RequiredSkill", "purpose": "One skill requirement of a recipe: a perk and a level.", "confidence": "high"}
+{"c": "zombie.scripting.objects.Recipe$Result", "purpose": "One result of a recipe: its item type, module, count and drainable count.", "confidence": "high"}
+{"c": "zombie.scripting.objects.Recipe$Source", "purpose": "One ingredient of a recipe: its item count and whether it is used, kept or destroyed.", "confidence": "high"}
+{"c": "zombie.scripting.objects.Registries", "purpose": "The list of script registries, such as ammo types, books, brochures, items and character traits.", "confidence": "high"}
+{"c": "zombie.scripting.objects.Registry", "purpose": "A registry of named script objects, such as items or books; it rejects duplicate names.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ResourceLocation", "purpose": "An identifier made of a namespace and a path, such as base and a name, for script resources.", "confidence": "high"}
+{"c": "zombie.scripting.objects.ScriptModule", "purpose": "A script module, such as a mod's module: it loads and holds its items, recipes, vehicles, models and other scripts.", "confidence": "high"}
+{"c": "zombie.scripting.objects.SoundTimelineScript", "purpose": "Loads a sound timeline: an event name and the position in an animation where it plays.", "confidence": "high"}
+{"c": "zombie.scripting.objects.StringListScript", "purpose": "Loads a named list of string values from a script.", "confidence": "high"}
+{"c": "zombie.scripting.objects.TimedActionScript", "purpose": "Loads a timed action: its time, sound, animation, metabolics, props and sit or face rules.", "confidence": "high"}
+{"c": "zombie.scripting.objects.UniqueRecipe", "purpose": "A unique recipe: its base recipe, item list and bonuses to hunger, happiness and boredom.", "confidence": "high"}
+{"c": "zombie.scripting.objects.VehiclePartModel", "purpose": "Links a vehicle part to its model and part model ids.", "confidence": "high"}
+{"c": "zombie.scripting.objects.VehicleScript", "purpose": "A vehicle script: its model, extents, parts, areas, seats, wheels, engine and physics, loaded from a vehicle script file.", "confidence": "high"}
+{"c": "zombie.scripting.objects.VehicleScript$Area", "purpose": "One rectangular area of a vehicle layout: an id with x, y, width and height.", "confidence": "high"}
+{"c": "zombie.scripting.objects.VehicleScript$Model", "purpose": "One model on a vehicle: its file, id, offset, rotation, scale and attachment names.", "confidence": "high"}
+{"c": "zombie.scripting.objects.VehicleScript$Part", "purpose": "One vehicle part: its category, area, container, door, window, wheel, models, animations and mechanic settings.", "confidence": "high"}
+{"c": "zombie.scripting.objects.VehicleScript$Passenger", "purpose": "One passenger seat: its area, door, positions, roof flag and switch-seat options.", "confidence": "high"}
+{"c": "zombie.scripting.objects.VehicleScript$PhysicsShape", "purpose": "One physics shape of a vehicle, a box, sphere or mesh, with its extents, offset and rotation.", "confidence": "high"}
+{"c": "zombie.scripting.objects.VehicleScript$Position", "purpose": "One position in a vehicle area, with its offset and rotation, such as a seat spot.", "confidence": "high"}
+{"c": "zombie.scripting.objects.VehicleScript$Wheel", "purpose": "One wheel of a vehicle: its model, offset, radius, width and whether it is a front wheel.", "confidence": "high"}
+{"c": "zombie.scripting.objects.VehicleTemplate", "purpose": "A named vehicle template that holds a vehicle script body for reuse.", "confidence": "high"}
+{"c": "zombie.scripting.objects.WallCoveringType", "purpose": "The list of wall covering types: paint thump, paint sign, plaster and wallpaper.", "confidence": "high"}
+{"c": "zombie.scripting.objects.WeaponCategory", "purpose": "The list of weapon categories, such as blunt, long blade, small blade, axe, spear and unarmed.", "confidence": "high"}
+{"c": "zombie.scripting.objects.WeaponReloadType", "purpose": "The list of weapon reload types, such as bolt action, double-barrel shotgun, handgun, revolver and shotgun.", "confidence": "high"}
+{"c": "zombie.scripting.objects.XuiColorsScript", "purpose": "Loads a named set of UI colors for an XUI skin.", "confidence": "high"}
+{"c": "zombie.scripting.objects.XuiConfigScript", "purpose": "Loads XUI config variable sets that the UI layouts and styles read.", "confidence": "low"}
+{"c": "zombie.scripting.objects.XuiLayoutScript", "purpose": "Loads an XUI layout script and returns its parsed UI script.", "confidence": "high"}
+{"c": "zombie.scripting.objects.XuiSkinScript", "purpose": "Loads an XUI skin script: its imports, entity UI styles, colors and display name.", "confidence": "high"}
+{"c": "zombie.scripting.ui.TextAlign", "purpose": "The list of text alignments: left, center and right.", "confidence": "high"}
+{"c": "zombie.scripting.ui.VectorPosAlign", "purpose": "The list of anchor positions for UI vectors, such as top left, center middle and bottom right.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiAutoApply", "purpose": "The list of rules for auto-applying an XUI value: always, if set, if set and key exists, forbidden or no.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiLuaStyle", "purpose": "A Lua-side UI style: its typed variables loaded from configs, with logging and debug helpers.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiLuaStyle$XuiBoolean", "purpose": "A true-or-false variable in a Lua UI style.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiLuaStyle$XuiColor", "purpose": "A color variable in a Lua UI style, with its red, green, blue and alpha parts.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiLuaStyle$XuiDouble", "purpose": "A decimal number variable in a Lua UI style.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiLuaStyle$XuiFontType", "purpose": "A font variable in a Lua UI style.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiLuaStyle$XuiString", "purpose": "A text variable in a Lua UI style.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiLuaStyle$XuiStringList", "purpose": "A list of text values in a Lua UI style.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiLuaStyle$XuiTexture", "purpose": "A texture variable in a Lua UI style.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiLuaStyle$XuiTranslateString", "purpose": "A translated text variable in a Lua UI style, looked up by its key.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiLuaStyle$XuiVar", "purpose": "Base type for Lua UI style variables, with value, default, Lua key and auto-apply mode.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiManager", "purpose": "Finds and caches XUI skins, layouts and styles by name, including the default skin and styles.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiReference", "purpose": "An XUI reference element that points to another layout and can set its dynamic flag and style.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScript", "purpose": "Base XUI script element: a UI node with its layout, style, anchors, colors, backgrounds and child elements.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScript$XuiBoolean", "purpose": "A true-or-false variable on an XUI script element.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScript$XuiColor", "purpose": "A color variable on an XUI script element.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScript$XuiDouble", "purpose": "A decimal number variable on an XUI script element.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScript$XuiFloat", "purpose": "A float number variable on an XUI script element.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScript$XuiFontType", "purpose": "A font variable on an XUI script element.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScript$XuiFunction", "purpose": "A function variable on an XUI script element, which names a Lua function.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScript$XuiInteger", "purpose": "An integer variable on an XUI script element.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScript$XuiSpacing", "purpose": "A spacing value (top, bottom, left, right) on an XUI script element; the code marks it not implemented.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScript$XuiString", "purpose": "A text variable on an XUI script element.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScript$XuiStringList", "purpose": "A list of text values on an XUI script element.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScript$XuiTextAlign", "purpose": "A text alignment variable on an XUI script element.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScript$XuiTexture", "purpose": "A texture variable on an XUI script element.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScript$XuiTranslateString", "purpose": "A translated text variable on an XUI script element.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScript$XuiUnit", "purpose": "A size variable on an XUI script element, which can be given as a percent.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScript$XuiVar", "purpose": "Base type for variables on an XUI script element, with value, default, Lua key and style rules.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScript$XuiVector", "purpose": "A position and size variable on an XUI script element; some of its parts are not implemented.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScript$XuiVectorPosAlign", "purpose": "An anchor position variable, such as top left, on an XUI script element.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiScriptType", "purpose": "The list of XUI script kinds: layout, style, default style and reference.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiSkin", "purpose": "An XUI skin: its name, colors, entity style and the component styles it sets for the UI.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiSkin$ComponentUiStyle", "purpose": "One UI component in a skin: its display name, icon, Lua panel class, style and enabled state.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiSkin$EntityUiStyle", "purpose": "One entity UI style in a skin: its display name, icon, window class, description and enabled components.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiTableScript", "purpose": "An XUI table script: its rows, columns and cell styles.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiTableScript$XuiTableCellScript", "purpose": "One cell of an XUI table; it tracks whether the cell has loaded.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiTableScript$XuiTableColumnScript", "purpose": "One column of an XUI table.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiTableScript$XuiTableRowScript", "purpose": "One row of an XUI table.", "confidence": "high"}
+{"c": "zombie.scripting.ui.XuiVarType", "purpose": "The list of XUI variable types, such as boolean, color, double, float, font, texture, vector and unit.", "confidence": "high"}
+{"c": "zombie.seams.SeamManager", "purpose": "Manages seam tiles that join tiles at their edges, with priority and tile lookups, saved to seams.txt.", "confidence": "high"}
+{"c": "zombie.seating.SeatingManager", "purpose": "Manages seating positions on tiles, such as left, right and front seats, with facing direction and animation tracks.", "confidence": "high"}
+{"c": "zombie.spriteModel.SpriteModelManager", "purpose": "Manages sprite models: loads them from spriteModels.txt and holds the tile properties for each.", "confidence": "high"}
+{"c": "zombie.text.templating.ReplaceProviderCharacter", "purpose": "Supplies a character's first and last name to text templates.", "confidence": "high"}
+{"c": "zombie.text.templating.TemplateText", "purpose": "Builds random names and text from templates, with registered keys such as first and last name; fires an init event.", "confidence": "high"}
+{"c": "zombie.tileDepth.TileDepthTexture", "purpose": "A depth texture for a tile: reads, sets and saves its pixels, and refreshes the GPU texture.", "confidence": "high"}
+{"c": "zombie.tileDepth.TileDepthTextureAssignmentManager", "purpose": "Assigns depth textures to sprite names and saves the assignments to tileDepthTextureAssignments.txt.", "confidence": "high"}
+{"c": "zombie.tileDepth.TileDepthTextureManager", "purpose": "Loads and caches depth textures for tiles and tilesets, with preset and billboard options and background loading.", "confidence": "high"}
+{"c": "zombie.tileDepth.TileDepthTextures", "purpose": "Loads, merges and saves tileset depth-texture images from the depth maps folder.", "confidence": "high"}
+{"c": "zombie.tileDepth.TileGeometryManager", "purpose": "Stores tile geometry, such as shape and offsets, and saves it to tileGeometry.txt.", "confidence": "high"}
+{"c": "zombie.tileDepth.TilesetDepthTexture", "purpose": "A tileset-wide depth texture: its tile grid, file, and save, load and merge operations.", "confidence": "high"}
+{"c": "zombie.ui.ActionProgressBar", "purpose": "The progress bar on screen that shows while a timed action runs, then hides.", "confidence": "high"}
+{"c": "zombie.ui.AtomUI", "purpose": "Base UI node for the atom UI system: position, size, angle, parent and child nodes, and input handling.", "confidence": "high"}
+{"c": "zombie.ui.AtomUIMap", "purpose": "An atom UI node that shows the world map and can reveal parts of it.", "confidence": "high"}
+{"c": "zombie.ui.AtomUIText", "purpose": "An atom UI node that draws text, with font, text tracking, leading and auto width.", "confidence": "high"}
+{"c": "zombie.ui.AtomUITextEntry", "purpose": "An atom UI node for a text box that takes typed input, with copy, paste, cut and a maximum length.", "confidence": "high"}
+{"c": "zombie.ui.AtomUITexture", "purpose": "An atom UI node that draws a texture, with nine-slice and animation support.", "confidence": "high"}
+{"c": "zombie.ui.Clock", "purpose": "The on-screen clock widget that shows the time and date in small, medium or large size.", "confidence": "high"}
+{"c": "zombie.ui.ModalDialog", "purpose": "A small modal dialog with a yes or no choice, used for the Sleep prompt.", "confidence": "high"}
+{"c": "zombie.ui.MoodlesUI", "purpose": "The on-screen moodle panel that shows status icons such as hunger, pain or boredom, updated each tick.", "confidence": "high"}
+{"c": "zombie.ui.NewHealthPanel", "purpose": "The body health panel that shows damage to each body part and the health bar for a character.", "confidence": "high"}
+{"c": "zombie.ui.ObjectTooltip", "purpose": "The hover tooltip for items and world objects: lays out labels, values and progress bars.", "confidence": "high"}
+{"c": "zombie.ui.ObjectTooltip$Layout", "purpose": "A block of tooltip rows with its own minimum label and value widths.", "confidence": "high"}
+{"c": "zombie.ui.ObjectTooltip$LayoutItem", "purpose": "One tooltip row with its label, value, progress bar and right-justified values.", "confidence": "high"}
+{"c": "zombie.ui.RadarPanel", "purpose": "The on-screen radar panel that draws the radar mask and border.", "confidence": "high"}
+{"c": "zombie.ui.RadialMenu", "purpose": "A radial pie menu with slices that have text or textures, selected by mouse or joypad.", "confidence": "high"}
+{"c": "zombie.ui.RadialProgressBar", "purpose": "A circular progress bar with a texture and color that shows a value.", "confidence": "high"}
+{"c": "zombie.ui.SpeedControls", "purpose": "The on-screen game speed controls: play, pause, faster and step forward buttons.", "confidence": "high"}
+{"c": "zombie.ui.TextDrawObject", "purpose": "Draws formatted rich text with colors, fonts, images, chat icons, line breaks and hearing ranges.", "confidence": "high"}
+{"c": "zombie.ui.TextManager", "purpose": "Loads the game fonts and draws text with them, including measuring, wrapping and font lookup.", "confidence": "high"}
+{"c": "zombie.ui.UI3DModel", "purpose": "A UI element that draws a 3D character model with its outfit, animation state and direction.", "confidence": "high"}
+{"c": "zombie.ui.UIDebugConsole", "purpose": "The debug console window: takes commands such as help, AddInvItem and SpawnZombie, and shows the output.", "confidence": "high"}
+{"c": "zombie.ui.UIElement", "purpose": "Base class for every on-screen UI element: layout, anchors, child elements, drawing helpers and input events.", "confidence": "high"}
+{"c": "zombie.ui.UIFont", "purpose": "The list of UI font names: small, medium, large, code, dialogue, handwritten and others.", "confidence": "high"}
+{"c": "zombie.ui.UIManager", "purpose": "Owns the on-screen UI: adds and removes elements, handles fades, mouse and key events, and the UI update loop.", "confidence": "high"}
+{"c": "zombie.ui.UITextBox2", "purpose": "A text box UI element with a frame, multiline support, clipboard use and a maximum length.", "confidence": "high"}
+{"c": "zombie.ui.UITransition", "purpose": "A fade-in or fade-out timer for UI elements, reporting progress as a fraction.", "confidence": "high"}
+{"c": "zombie.ui.VehicleGauge", "purpose": "A needle gauge on the vehicle dashboard, such as speed or fuel, that shows a value.", "confidence": "high"}
+{"c": "zombie.util.PZCalendar", "purpose": "A calendar helper that wraps time values, leap-year checks and conversion to milliseconds.", "confidence": "high"}
+{"c": "zombie.util.list.PZUnmodifiableList", "purpose": "A read-only list wrapper: any change attempt is refused.", "confidence": "high"}
+{"c": "zombie.vehicles.BaseVehicle", "purpose": "The vehicle in the world: physics, doors, windows, parts, engine sound, lights, damage, crashes and keys.", "confidence": "high"}
+{"c": "zombie.vehicles.EditVehicleState", "purpose": "The in-game editor state for laying out vehicle areas and writing their script code.", "confidence": "high"}
+{"c": "zombie.vehicles.UI3DScene", "purpose": "A UI element that shows a 3D vehicle scene and maps screen clicks to 3D rays and planes.", "confidence": "high"}
+{"c": "zombie.vehicles.VehicleDoor", "purpose": "One vehicle door's state: open, locked and lock broken, saved with the part.", "confidence": "high"}
+{"c": "zombie.vehicles.VehicleEngineRPM", "purpose": "Loads the engine RPM data that drives vehicle engine sound and gear changes.", "confidence": "high"}
+{"c": "zombie.vehicles.VehicleLight", "purpose": "One vehicle light: whether it is active, its intensity, distance, focus and color.", "confidence": "high"}
+{"c": "zombie.vehicles.VehiclePart", "purpose": "One part of a vehicle: its condition, children, container, door, window, light and devices.", "confidence": "high"}
+{"c": "zombie.vehicles.VehicleType", "purpose": "A vehicle type for random spawns: its spawn rates, burnt or special chance, and vehicle list per zone.", "confidence": "high"}
+{"c": "zombie.vehicles.VehicleWindow", "purpose": "One vehicle window: whether it is open or openable, its health and damage, saved with the part.", "confidence": "high"}
+{"c": "zombie.vehicles.VirtualVehicle", "purpose": "A stand-in for a vehicle that is not loaded in the world, exposing its state such as engine, lights and alarms.", "confidence": "high"}
+{"c": "zombie.world.moddata.ModData", "purpose": "Stores and reads mod data attached to game objects, with named tables, and sends it to the server when needed.", "confidence": "high"}
+{"c": "zombie.worldMap.UIWorldMap", "purpose": "The world map UI element: draws map symbols, text labels and markers, and exposes the map API.", "confidence": "high"}
+{"c": "zombie.worldMap.UIWorldMapV1", "purpose": "The first version of the world map: its map data, styles, markers, zoom and view movement.", "confidence": "high"}
+{"c": "zombie.worldMap.UIWorldMapV2", "purpose": "The second world map version: adds the v2 symbol API and can dim unshared symbols.", "confidence": "high"}
+{"c": "zombie.worldMap.UIWorldMapV3", "purpose": "The third world map version: adds the image pyramid, streets, zoom limit and displayed area.", "confidence": "high"}
+{"c": "zombie.worldMap.WorldMapRenderer$WorldMapBooleanOption", "purpose": "A true-or-false world map option, a setting for the map renderer.", "confidence": "high"}
+{"c": "zombie.worldMap.WorldMapRenderer$WorldMapDoubleOption", "purpose": "A decimal world map option, a number setting for the map renderer.", "confidence": "high"}
+{"c": "zombie.worldMap.WorldMapSettings", "purpose": "Loads and saves the in-game map settings, boolean and decimal options, to InGameMap.ini.", "confidence": "high"}
+{"c": "zombie.worldMap.WorldMapVisited", "purpose": "Tracks which map squares the player has visited or knows, and saves and loads that record.", "confidence": "high"}
+{"c": "zombie.worldMap.WorldMapVisitedServer", "purpose": "Server side of the world map visited data: loads, saves, updates and sends it per user.", "confidence": "high"}
+{"c": "zombie.worldMap.editor.WorldMapEditorState", "purpose": "The in-game world map editor state: shows its UI, saves, exits and writes map annotations.", "confidence": "high"}
+{"c": "zombie.worldMap.markers.WorldMapGridSquareMarker", "purpose": "A world map marker for a grid square, drawn as a circle highlight that can blink.", "confidence": "high"}
+{"c": "zombie.worldMap.markers.WorldMapMarkers", "purpose": "Holds and draws the world map markers, such as grid square markers.", "confidence": "high"}
+{"c": "zombie.worldMap.network.WorldMapClient", "purpose": "Client side of world map symbols: sends add, modify, remove and share requests to the server.", "confidence": "high"}
+{"c": "zombie.worldMap.streets.StreetPoints", "purpose": "A list of street map points with bounds and length, used to draw roads on the world map.", "confidence": "high"}
+{"c": "zombie.worldMap.streets.WorldMapStreet", "purpose": "One street on the world map: its points, label, width, and how it is drawn and picked.", "confidence": "high"}
+{"c": "zombie.worldMap.symbols.MapSymbolDefinitions", "purpose": "The list of world map symbol definitions, with their textures, tabs and sizes.", "confidence": "high"}
+{"c": "zombie.worldMap.symbols.MapSymbolDefinitions$MapSymbolDefinition", "purpose": "One world map symbol definition: its id, texture path, tab, width and height.", "confidence": "high"}

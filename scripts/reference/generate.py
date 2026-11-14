@@ -1030,7 +1030,9 @@ def main():
     purposes = {}
     if os.path.isfile(a.purposes):
         for r in jl(a.purposes):
-            purposes[r['c']] = r['purpose']
+            # Lines marked low confidence wait for a reading of the source; they are not published.
+            if r.get('confidence', 'high') != 'low':
+                purposes[r['c']] = r['purpose']
     J = gen_java(D, purposes)
     finish_java_cats(J['cat_pkgs'], J['by_pkg'])
     lua_idx = gen_lua(D)
