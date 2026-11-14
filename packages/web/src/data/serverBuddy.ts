@@ -12,10 +12,10 @@
  * SERVERBUDDY_BYTES and SERVERBUDDY_DATE here, rebuild and deploy the site.
  */
 
-export const SERVERBUDDY_VERSION = '0.1.0'
-/** SHA-256 of ServerBuddy-0.1.0.exe (ServerBuddy commit f7c5087, built 2026-11-13). */
-export const SERVERBUDDY_SHA256 = '38EBABAB5EED0814AF6F383827A9B0D903EFBB0CD12AFAF588E49AC5D20BA456'
-export const SERVERBUDDY_BYTES = 11352576
+export const SERVERBUDDY_VERSION = '0.1.1'
+/** SHA-256 of ServerBuddy-0.1.1.exe (ServerBuddy commit c11f150, built 2026-11-13). */
+export const SERVERBUDDY_SHA256 = '4B784CCC42ECBBD758B54EDBA8C2CE445FFD240C260AD8E1BC18020F43F8F6F1'
+export const SERVERBUDDY_BYTES = 11353600
 /** When this build was made, ISO date. */
 export const SERVERBUDDY_DATE = '2026-11-13'
 
