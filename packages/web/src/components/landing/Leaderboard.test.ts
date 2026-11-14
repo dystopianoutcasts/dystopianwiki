@@ -72,13 +72,16 @@ function panel(node: ReactNode, tab: TabId) {
   return p
 }
 
+/** Boone's kill marks after a name (BooneDetails.test.ts covers them): a hidden picture, not the name. */
+const KILL_MARKS = /<svg class="boone-killmarks".*?<\/svg>/g
+
 /** The visible panel's rows as [rank cell text, name, value]. */
 function rowsOf(html: string, tab: TabId): string[][] {
   const m = html.match(new RegExp(`<div class="lb-panel" role="tabpanel" id="lb-panel-${tab}"[^>]*>(.*?)</div>`))
   assert.ok(m, `no panel html for ${tab}`)
   return [...m[1].matchAll(/<tr><td class="lb-rank">(.*?)<\/td><td class="lb-name">(.*?)<\/td><td class="lb-value">(.*?)<\/td><\/tr>/g)].map((r) => [
     r[1].replace(/<[^>]+>/g, ''),
-    r[2],
+    r[2].replace(KILL_MARKS, ''),
     r[3],
   ])
 }

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { CURRENT_SOTS } from '../../data/sots';
+import { Tape } from './BooneDetails';
 import '../../styles/components/sots-callout.css';
 
 /**
@@ -11,15 +12,19 @@ export function SotsCallout() {
   return (
     <section className="sots-callout" aria-labelledby="sots-callout-title">
       <div className="sots-callout__inner">
-        <img
-          className="sots-callout__cover"
-          src={issue.cover}
-          alt=""
-          width={480}
-          height={621}
-          loading="lazy"
-          decoding="async"
-        />
+        <span className="sots-callout__cover-wrap">
+          <img
+            className="sots-callout__cover"
+            src={issue.cover}
+            alt=""
+            width={480}
+            height={621}
+            loading="lazy"
+            decoding="async"
+          />
+          <Tape side="left" />
+          <Tape side="right" />
+        </span>
         <div className="sots-callout__text">
           <p className="sots-callout__kicker">New &middot; {issue.season}</p>
           <h2 id="sots-callout-title" className="sots-callout__title">

@@ -1,0 +1,38 @@
+/**
+ * Boone in the site header: hovering or focusing the home link makes his cracked goggle lens
+ * glint once (BooneDetails.tsx lists the other details). CSS only, on the shared header's own
+ * classes, so the live map's copy of the header is unchanged. Nothing moves for reduced motion.
+ * The lens sits at about x 17-27, y 13-22 of the 40 px logo, which is centered in the link.
+ */
+
+.site-header__brand {
+  position: relative;
+}
+
+.site-header__brand::after {
+  content: '';
+  position: absolute;
+  left: 16px;
+  top: calc(50% - 8px);
+  width: 12px;
+  height: 10px;
+  border-radius: 45%;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.9) 50%, transparent 70%) 120% 0 / 300% 100% no-repeat;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.site-header__brand:hover::after,
+.site-header__brand:focus-visible::after {
+  animation: boone-glint 0.75s ease-out 1;
+}
+
+@keyframes boone-glint {
+  0% { opacity: 1; background-position: 120% 0; }
+  100% { opacity: 1; background-position: -20% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header__brand:hover::after,
+  .site-header__brand:focus-visible::after { animation: none; }
+}

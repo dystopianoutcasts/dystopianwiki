@@ -19,7 +19,7 @@ const BUILD_COUNT = VERSIONS.length;
 
 export function AboutSection() {
   return (
-    <section className="about-section fade fade--green-right">
+    <section className="about-section fade fade--green-right boone-rivets">
       <DogTag />
       <div className="about-section__content">
         <h2 className="about-section__title">About Dystopian Outcasts</h2>

@@ -179,3 +179,122 @@
     height: 150px;
   }
 }
+
+/* ---- Spent casings under the strafing run ---------------------------------- */
+
+.boone-strafe__casing-shadow { fill: var(--boone-hole-scorch); opacity: 0.6; }
+
+@media (max-width: 1024px) {
+  .boone-strafe__casing { display: none; }
+}
+
+/* ---- Rivets: a faint row along the top and bottom of each faded section ---- */
+
+:root {
+  --boone-rivet: rgba(150, 156, 162, 0.22);
+  --boone-rivet-edge: rgba(0, 0, 0, 0.5);
+  --boone-rivet-hi: rgba(255, 255, 255, 0.28);
+}
+
+[data-theme="light"] {
+  --boone-rivet: rgba(120, 126, 132, 0.4);
+  --boone-rivet-edge: rgba(60, 64, 68, 0.35);
+  --boone-rivet-hi: rgba(255, 255, 255, 0.95);
+}
+
+.boone-rivets {
+  position: relative;
+}
+
+.boone-rivets::before,
+.boone-rivets::after {
+  content: '';
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  height: 7px;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 46% 36%, var(--boone-rivet-hi) 0 0.8px, transparent 1.2px) 0 0 / 34px 7px repeat-x,
+    radial-gradient(circle, var(--boone-rivet) 0 2.2px, var(--boone-rivet-edge) 2.4px 2.9px, transparent 3.2px) 0 0 / 34px 7px repeat-x;
+}
+
+.boone-rivets::before { top: 10px; }
+.boone-rivets::after { bottom: 10px; }
+
+/* ---- Kill marks on the kill leaderboards ----------------------------------- */
+
+.boone-killmarks {
+  display: inline-block;
+  margin-left: 0.6em;
+  vertical-align: -3px;
+}
+
+.boone-killmarks path { fill: var(--color-accent-400); fill-rule: evenodd; opacity: 0.85; }
+
+/* ---- RINGTAIL squadron patch on Join --------------------------------------- */
+
+.home-section--join {
+  position: relative;
+}
+
+.boone-patch {
+  position: absolute;
+  top: 36px;
+  left: max(16px, calc((100% - 1100px) / 2 - 168px));
+  width: 136px;
+  height: 136px;
+  transform: rotate(-8deg);
+  filter: drop-shadow(2px 4px 4px rgba(0, 0, 0, 0.45));
+  pointer-events: none;
+}
+
+.boone-patch__cloth { fill: #33402a; stroke: #26301f; stroke-width: 3; }
+.boone-patch__stitch { fill: none; stroke: #cbbd94; stroke-width: 1.6; stroke-dasharray: 3 2.4; }
+.boone-patch__center { fill: #24262a; stroke: #cbbd94; stroke-width: 1.2; }
+.boone-patch__face { image-rendering: pixelated; }
+
+.boone-patch__text {
+  fill: #e6dcc6;
+  font-family: var(--font-family-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+}
+
+.boone-patch__text--small { font-size: 8.5px; letter-spacing: 1.2px; }
+
+/* Below 1400 px the cards reach the edge of the section: no room beside them. */
+@media (max-width: 1399px) {
+  .boone-patch { display: none; }
+}
+
+/* ---- Tape on the State of the Server cover --------------------------------- */
+
+.sots-callout__cover-wrap {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.boone-tape {
+  position: absolute;
+  top: -6px;
+  width: 62px;
+  height: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 45%, rgba(0, 0, 0, 0.12)),
+    rgba(91, 107, 72, 0.85);
+  clip-path: polygon(3% 0, 97% 0, 100% 18%, 96% 36%, 100% 54%, 96% 72%, 100% 90%, 97% 100%, 3% 100%, 0 82%, 4% 64%, 0 46%, 4% 28%, 0 10%);
+  pointer-events: none;
+}
+
+.boone-tape--left { left: -20px; transform: rotate(-36deg); }
+.boone-tape--right { right: -20px; transform: rotate(34deg); }
+
+[data-theme="light"] .boone-tape {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.25), transparent 45%, rgba(0, 0, 0, 0.08)),
+    rgba(122, 154, 85, 0.75);
+}

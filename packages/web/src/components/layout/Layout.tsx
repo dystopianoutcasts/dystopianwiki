@@ -1,5 +1,6 @@
 import { WikiHeader } from './WikiHeader';
 import { Footer } from './Footer';
+import '../../styles/components/boone-header.css';
 import { AuthErrorFlash } from '../auth/AuthErrorFlash';
 
 interface LayoutProps {

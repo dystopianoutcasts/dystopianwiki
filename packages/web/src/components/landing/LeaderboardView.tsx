@@ -19,6 +19,7 @@ import {
   type TabId,
 } from '../../lib/leaderboard';
 import type { NameMode } from '../../lib/nameMode';
+import { KillMarks, killMarkCount } from './BooneDetails';
 
 // The home page leaderboard as DystopianQoL's in-game window shows it (T66): Kills
 // (current character), All-Time Kills (the game's own Kills order), Deaths and Survival
@@ -109,7 +110,10 @@ function Panel({ tab, prefix, selected, rows, expanded, onToggle }: PanelProps) 
               {shown.map((r) => (
                 <tr key={r.key}>
                   <RankCell row={r} />
-                  <td className="lb-name">{r.name}</td>
+                  <td className="lb-name">
+                    {r.name}
+                    <KillMarks count={killMarkCount(tab, r.medal)} />
+                  </td>
                   <td className="lb-value">{r.value}</td>
                 </tr>
               ))}

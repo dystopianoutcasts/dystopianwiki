@@ -4,6 +4,7 @@ import { joiningText } from '../../lib/homeSummary';
 import { DISCORD_URL, JOIN_SECTION_ID, SERVER_IP, SERVER_PORT } from '../../lib/links';
 import { CopyField } from './CopyField';
 import { GetTheModsStep } from './GetTheModsStep';
+import { SquadronPatch } from './BooneDetails';
 
 // "Join in three steps". Step 1 links the Workshop collection (owner, 2026-10-03;
 // GetTheModsStep, ids in lib/links.ts); the address is the owner's (lib/links.ts); the
@@ -21,9 +22,10 @@ export function JoinSteps() {
   return (
     <section
       id={JOIN_SECTION_ID}
-      className="home-section home-section--alt home-section--anchor home-section--join fade fade--green-left"
+      className="home-section home-section--alt home-section--anchor home-section--join fade fade--green-left boone-rivets"
       aria-labelledby={titleId}
     >
+      <SquadronPatch />
       <div className="home-section__inner">
         <h2 className="home-section__title" id={titleId} tabIndex={-1}>
           Join in three steps

@@ -1,11 +1,14 @@
 /**
- * Small details from Boone's story (DystopianOutcasts repo, DOCS/LORE/Boone.md): a strafing run on
- * Longest survivors, his dog tag on About, a cracked lens on the live map (owner, 2026-11-14:
- * "lean into the Boone mythology").
+ * Small details from Boone's story (DystopianOutcasts repo, DOCS/LORE/Boone.md; owner, 2026-11-14:
+ * "lean into the Boone mythology", then "I need more details like this"): a strafing run with
+ * spent casings on Longest survivors, his dog tag on About, a cracked lens on the live map, kill
+ * marks on the leaderboard, his squadron patch on Join, and tape on the State of the Server cover.
+ * Rivets on the faded sections and the goggle glint in the header are CSS only
+ * (boone-details.css, boone-header.css).
  *
- * All three are pictures only: aria-hidden, never under text, never in the way of a click or a
- * drag. They hold still for prefers-reduced-motion. Colors come from boone-details.css, so the
- * light theme can retune them; HomePage imports that stylesheet, so this file stays loadable in
+ * All are pictures only: aria-hidden, never under text, never in the way of a click or a drag.
+ * They hold still for prefers-reduced-motion. Colors come from boone-details.css, so the light
+ * theme can retune them; the pages import that stylesheet, so this file stays loadable in
  * node:test. Hook-free, so staticMarkup can render them.
  */
 
@@ -38,6 +41,14 @@ const STRAFE: [number, number, number, number][] = [
   [78, 278, 1.6, 265],
 ];
 
+/** Spent brass under the burst: [x, y, rotation]. Hidden on narrow screens with the extra holes. */
+const CASINGS: [number, number, number][] = [
+  [150, 300, 68],
+  [178, 311, -18],
+  [124, 313, 14],
+  [200, 297, 112],
+];
+
 export function StrafingRun() {
   return (
     <svg className="boone-strafe" viewBox="0 0 220 320" aria-hidden="true" focusable="false">
@@ -67,6 +78,19 @@ export function StrafingRun() {
           <circle className="boone-strafe__core" r="5.4" />
           <path className="boone-strafe__glint" d="M -3.8 2.6 A 4.6 4.6 0 0 0 3.8 2.6" />
         </g>
+        <linearGradient id="boone-strafe-brass" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#8a6532" />
+          <stop offset="0.35" stopColor="#e2c27f" />
+          <stop offset="0.6" stopColor="#b48a4a" />
+          <stop offset="1" stopColor="#6e4f24" />
+        </linearGradient>
+        <g id="boone-strafe-casing">
+          <ellipse className="boone-strafe__casing-shadow" cx="1" cy="3.2" rx="8" ry="1.6" />
+          <rect x="-6" y="-2.1" width="10" height="4.2" rx="0.6" fill="url(#boone-strafe-brass)" />
+          <path d="M4 -2.1 L6.2 -1.4 L6.2 1.4 L4 2.1 Z" fill="url(#boone-strafe-brass)" />
+          <rect x="-7.2" y="-2.6" width="1.4" height="5.2" rx="0.3" fill="#8a6532" />
+          <ellipse cx="6.2" cy="0" rx="0.5" ry="1.3" fill="#3b2a14" />
+        </g>
       </defs>
       {STRAFE.map(([x, y, s, r], i) => (
         <use
@@ -74,6 +98,14 @@ export function StrafingRun() {
           href="#boone-strafe-hole"
           className={i < 2 ? 'boone-strafe__hole' : 'boone-strafe__hole boone-strafe__hole--extra'}
           transform={`translate(${x} ${y}) rotate(${r}) scale(${s})`}
+        />
+      ))}
+      {CASINGS.map(([x, y, r], i) => (
+        <use
+          key={`c${i}`}
+          href="#boone-strafe-casing"
+          className="boone-strafe__casing"
+          transform={`translate(${x} ${y}) rotate(${r})`}
         />
       ))}
     </svg>
@@ -232,4 +264,78 @@ export function CrackedLens() {
       <circle className="boone-crack__impact" cx={IMPACT[0]} cy={IMPACT[1]} r="3.2" />
     </svg>
   );
+}
+
+/**
+ * Kill marks after a name on the kill leaderboards, the way pilots painted their kills under the
+ * cockpit: five for first, four for second, three for third. Other tabs and ranks get none.
+ */
+export function killMarkCount(tab: string, medal: 'gold' | 'silver' | 'bronze' | null): number {
+  if (tab !== 'kills' && tab !== 'alltime') return 0;
+  return medal === 'gold' ? 5 : medal === 'silver' ? 4 : medal === 'bronze' ? 3 : 0;
+}
+
+/** A stenciled zombie head with X eyes and a torn neck, cut out with evenodd. */
+const KILL_MARK =
+  'M6 1C9.6 1 11 3.6 11 6.6C11 9 10.1 10.4 9 11L9 13.4L7.5 12.3L6 13.6L4.5 12.3L3 13.4L3 11C1.9 10.4 1 9 1 6.6C1 3.6 2.4 1 6 1Z' +
+  'M2.9 5.3L3.6 4.6L4.3 5.3L5 4.6L5.7 5.3L5 6L5.7 6.7L5 7.4L4.3 6.7L3.6 7.4L2.9 6.7L3.6 6Z' +
+  'M6.3 5.3L7 4.6L7.7 5.3L8.4 4.6L9.1 5.3L8.4 6L9.1 6.7L8.4 7.4L7.7 6.7L7 7.4L6.3 6.7L7 6Z' +
+  'M4 9L8 9L8 9.9L4 9.9Z';
+
+export function KillMarks({ count }: { count: number }) {
+  if (count <= 0) return null;
+  return (
+    <svg
+      className="boone-killmarks"
+      viewBox={`0 0 ${count * 14} 15`}
+      width={count * 15}
+      height={16}
+      aria-hidden="true"
+      focusable="false"
+    >
+      {Array.from({ length: count }, (_, i) => (
+        <path key={i} d={KILL_MARK} fillRule="evenodd" transform={`translate(${i * 14 + 1} 0)`} />
+      ))}
+    </svg>
+  );
+}
+
+/** The RINGTAIL squadron patch: stitched edge, his face in the middle, the name and motto around it. */
+export function SquadronPatch() {
+  return (
+    <svg className="boone-patch" viewBox="0 0 140 140" aria-hidden="true" focusable="false">
+      <defs>
+        <path id="boone-patch-top" d="M22 70 A48 48 0 0 1 118 70" />
+        <path id="boone-patch-bottom" d="M12 70 A58 58 0 0 0 128 70" />
+        <radialGradient id="boone-patch-wear" cx="0.38" cy="0.32" r="0.75">
+          <stop offset="0" stopColor="#ffffff" stopOpacity="0.07" />
+          <stop offset="0.7" stopColor="#000000" stopOpacity="0" />
+          <stop offset="1" stopColor="#000000" stopOpacity="0.3" />
+        </radialGradient>
+      </defs>
+      <circle cx="70" cy="70" r="67" className="boone-patch__cloth" />
+      <circle cx="70" cy="70" r="63" className="boone-patch__stitch" />
+      <circle cx="70" cy="70" r="43" className="boone-patch__center" />
+      <image
+        href="/assets/branding/boone/boone-48.png"
+        x="46"
+        y="45"
+        width="48"
+        height="48"
+        className="boone-patch__face"
+      />
+      <text className="boone-patch__text">
+        <textPath href="#boone-patch-top" startOffset="50%" textAnchor="middle">RINGTAIL SQUADRON</textPath>
+      </text>
+      <text className="boone-patch__text boone-patch__text--small">
+        <textPath href="#boone-patch-bottom" startOffset="50%" textAnchor="middle">ALONE &#183; LIVING &#183; SURVIVING</textPath>
+      </text>
+      <circle cx="70" cy="70" r="67" fill="url(#boone-patch-wear)" />
+    </svg>
+  );
+}
+
+/** A strip of olive tape over one top corner of a card or picture. */
+export function Tape({ side }: { side: 'left' | 'right' }) {
+  return <span className={`boone-tape boone-tape--${side}`} aria-hidden="true" />;
 }
