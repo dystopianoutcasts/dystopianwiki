@@ -16,7 +16,31 @@ const RING_R = 158;
 /** The ring text is stretched to exactly one turn, so the last pipe sits as far from the first word as every other gap. */
 const RING_LENGTH = Math.round(2 * Math.PI * RING_R);
 
-export function BooneSeal() {
+/**
+ * Extra cracks for his cracked lens, one set per tap (owner, 2026-11-14: "add the glint and extra
+ * cracks to the large boone"), in the art's own 512 px coordinates. They run out from the old
+ * impact at (288, 228) and stay inside the glass (clipped to it).
+ */
+export const LENS_CRACKS: string[][] = [
+  ['M288 228 L300 205 L306 190', 'M288 228 L318 240 L332 238'],
+  [
+    'M288 228 L262 222 L238 214',
+    'M288 228 L296 258 L300 276',
+    'M262 205 L276 198 L292 200',
+    'M305 246 L296 254 L280 256',
+  ],
+  [
+    'M306 190 L318 186 L330 194',
+    'M238 214 L226 200 L222 186',
+    'M332 238 L342 228',
+    'M262 222 L250 236 L236 244',
+    'M300 276 L312 270',
+  ],
+];
+
+/** The seal: the ring, his face, and on his cracked lens a glint and `cracks` extra sets of cracks. */
+export function BooneSeal({ cracks = 0 }: { cracks?: number }) {
+  const runs = LENS_CRACKS.slice(0, Math.max(0, Math.min(cracks, LENS_CRACKS.length))).flat();
   return (
     <div className="boone-seal">
       <svg className="boone-seal__ring" viewBox="0 0 400 400" aria-hidden="true" focusable="false">
@@ -37,6 +61,25 @@ export function BooneSeal() {
         </g>
       </svg>
       <img className="boone-seal__face" src="/assets/branding/boone/boone-512.png" alt="" width={512} height={512} />
+      {runs.length > 0 && (
+        <svg className="boone-seal__cracks" viewBox="0 0 512 512" aria-hidden="true" focusable="false">
+          <defs>
+            <clipPath id="boone-seal-glass">
+              <ellipse cx="282" cy="222" rx="66" ry="58" />
+            </clipPath>
+          </defs>
+          <g clipPath="url(#boone-seal-glass)">
+            {runs.map((d) => (
+              <path key={`o${d}`} className="boone-seal__crack-edge" d={d} />
+            ))}
+            {runs.map((d) => (
+              <path key={d} className="boone-seal__crack" d={d} />
+            ))}
+          </g>
+        </svg>
+      )}
+      {/* Keyed on the crack count, so every new crack replays the glint at once. */}
+      <span key={`glint-${cracks}`} className="boone-seal__glint" />
     </div>
   );
 }

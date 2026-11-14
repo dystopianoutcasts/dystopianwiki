@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url'
 import { test } from 'node:test'
 import { createElement } from 'react'
 import { staticMarkup } from '../landing/staticMarkup'
-import { CoffeeRing, FiledStamp, panelCode, StencilCode } from './PageDetails'
+import { CertifiedStamp, CoffeeRing, FiledStamp, panelCode, StencilCode, TallyMarks } from './PageDetails'
 
 const read = (rel: string) => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8')
 const css = read('../../styles/components/page-details.css').replace(/\/\*[\s\S]*?\*\//g, '')
@@ -32,10 +32,12 @@ test('the stamp reads FILED | season, with a pipe', () => {
 })
 
 test('every detail is hidden from screen readers and takes no clicks', () => {
-  assert.match(staticMarkup(createElement(FiledStamp, { label: 'x' })), /^<span class="filed-stamp" aria-hidden="true">/)
+  assert.match(staticMarkup(createElement(FiledStamp, { label: 'x' })), /^<span class="ink-stamp filed-stamp" aria-hidden="true">/)
+  assert.match(staticMarkup(createElement(CertifiedStamp)), /^<span class="ink-stamp certified-stamp" aria-hidden="true">.*CERTIFIED/)
+  assert.match(staticMarkup(createElement(TallyMarks, { count: 3 })), /^<svg class="tally-marks"[^>]*aria-hidden="true"/)
   assert.match(staticMarkup(createElement(CoffeeRing)), /^<svg class="coffee-ring"[^>]*aria-hidden="true"/)
   assert.match(staticMarkup(createElement(StencilCode, { code: 'MOD-02' })), /^<span class="stencil-code" aria-hidden="true">MOD-02<\/span>$/)
-  for (const s of ['.filed-stamp', '.coffee-ring', '.stencil-code']) assert.match(rule(s), /pointer-events:\s*none/, s)
+  for (const s of ['.ink-stamp', '.coffee-ring', '.stencil-code', '.tally-marks']) assert.match(rule(s), /pointer-events:\s*none/, s)
 })
 
 test('State of the Server and the section pages carry their details', () => {
@@ -46,4 +48,21 @@ test('State of the Server and the section pages carry their details', () => {
   const section = read('../../pages/SectionPage.tsx')
   assert.match(section, /<StencilCode code=\{panelCode\(section, sectionIndex\)\} \/>/)
   assert.match(section, /<StencilCode code=\{panelCode\(section, sectionIndex, categoryIndex\)\} small \/>/)
+})
+
+test('tally marks: one line per ballot, the fifth of each group struck across, none past 40', () => {
+  const lines = (n: number) => (staticMarkup(createElement(TallyMarks, { count: n })).match(/<line /g) ?? []).length
+  assert.equal(lines(12), 12)
+  assert.equal(lines(5), 5)
+  assert.equal(lines(41), 40)
+  assert.equal(staticMarkup(createElement(TallyMarks, { count: 0 })), '')
+})
+
+test('the mascot vote and the build pages carry their details', () => {
+  const vote = read('../../pages/MascotVotePage.tsx')
+  assert.match(vote, /<CertifiedStamp \/>/)
+  assert.match(vote, /<TallyMarks count=\{result\.totalBallots\} \/>/)
+  const build = read('../../pages/VersionPage.tsx')
+  assert.match(build, /FLIGHT MANUAL \| /)
+  assert.match(build, /<StencilCode code=\{panelCode\(section\.id, sectionIndex\)\} small \/>/)
 })

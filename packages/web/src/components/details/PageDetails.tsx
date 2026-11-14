@@ -1,18 +1,52 @@
 /**
  * Small details for the site's main pages beyond the home page (owner, 2026-11-14: "add little
- * things like this on other main pages"): a FILED stamp and a coffee ring for State of the Server,
- * and stenciled panel codes for the wiki's section pages, like the markings on an aircraft's
- * panels. Pictures only: aria-hidden, no clicks taken (page-details.css). Hook-free, so
- * staticMarkup can render them.
+ * things like this on other main pages"): a FILED stamp and a coffee ring for State of the Server;
+ * stenciled panel codes for the wiki's build and section pages, like the markings on an aircraft's
+ * panels; a CERTIFIED stamp and pencil tally marks for the mascot vote. Pictures only: aria-hidden,
+ * no clicks taken (page-details.css). Hook-free, so staticMarkup can render them.
  */
 
 /** A one-ink stamp (BRAND.md: stamps use Moss Stamp ink), with Boone's one-color mark. */
 export function FiledStamp({ label }: { label: string }) {
   return (
-    <span className="filed-stamp" aria-hidden="true">
-      <span className="filed-stamp__mark" />
-      <span className="filed-stamp__text">FILED | {label.toUpperCase()}</span>
+    <span className="ink-stamp filed-stamp" aria-hidden="true">
+      <span className="ink-stamp__mark" />
+      <span>FILED | {label.toUpperCase()}</span>
     </span>
+  );
+}
+
+/** Stamped on the winning entry's art: the count is certified. */
+export function CertifiedStamp() {
+  return (
+    <span className="ink-stamp certified-stamp" aria-hidden="true">
+      <span className="ink-stamp__mark" />
+      <span>CERTIFIED</span>
+    </span>
+  );
+}
+
+/** Pencil tally marks, in groups of five with the fifth struck across. Nothing past 40. */
+export function TallyMarks({ count }: { count: number }) {
+  const n = Math.min(Math.max(0, Math.floor(count)), 40);
+  if (n === 0) return null;
+  const marks = [];
+  for (let i = 0; i < n; i++) {
+    const group = Math.floor(i / 5);
+    const k = i % 5;
+    const gx = group * 34;
+    if (k < 4) {
+      const x = gx + 4 + k * 6;
+      marks.push(<line key={i} x1={x} y1={3 + (k % 2)} x2={x + 1} y2={27 - (k % 2)} />);
+    } else {
+      marks.push(<line key={i} x1={gx} y1={22} x2={gx + 28} y2={8} />);
+    }
+  }
+  const width = Math.ceil(n / 5) * 34;
+  return (
+    <svg className="tally-marks" viewBox={`-2 0 ${width} 30`} width={width} height={30} aria-hidden="true" focusable="false">
+      {marks}
+    </svg>
   );
 }
 

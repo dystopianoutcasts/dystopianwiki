@@ -9,10 +9,8 @@
   position: relative;
 }
 
-.filed-stamp {
-  position: absolute;
-  top: 6px;
-  right: 2%;
+/* Every stamp: one ink, Moss Stamp on Lichen Paper, with Boone's one-color mark. */
+.ink-stamp {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -24,11 +22,17 @@
   font-family: var(--font-family-display);
   font-size: 13px;
   letter-spacing: 0.06em;
-  transform: rotate(8deg);
   pointer-events: none;
 }
 
-.filed-stamp__mark {
+.filed-stamp {
+  position: absolute;
+  top: 6px;
+  right: 2%;
+  transform: rotate(8deg);
+}
+
+.ink-stamp__mark {
   width: 22px;
   height: 20px;
   background: #3f5a2c;
@@ -123,4 +127,58 @@
 
 @media (max-width: 639px) {
   .section-page__header .stencil-code { position: static; margin-bottom: var(--spacing-3); }
+}
+
+/* ---- The wiki's build page: a manual stencil and the section panel codes ---- */
+
+.version-page__header,
+.version-page__section-card {
+  position: relative;
+}
+
+.version-page__header .stencil-code {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+@media (max-width: 639px) {
+  .version-page__header .stencil-code { position: static; margin-bottom: var(--spacing-3); }
+}
+
+/* ---- The mascot vote: CERTIFIED on the winner, tally marks by the ballots ---- */
+
+.mascot-vote__frame-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.certified-stamp {
+  position: absolute;
+  right: -18px;
+  bottom: 18px;
+  transform: rotate(-12deg);
+}
+
+.mascot-vote__panel--ballots {
+  position: relative;
+}
+
+.tally-marks {
+  position: absolute;
+  top: var(--spacing-5, 1.25rem);
+  right: var(--spacing-6);
+  pointer-events: none;
+}
+
+.tally-marks line {
+  stroke: var(--color-text-secondary);
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0.7;
+}
+
+/* Narrow: the marks would crowd the heading; they go under the paragraph that counts the ballots. */
+@media (max-width: 639px) {
+  .tally-marks { position: static; display: block; margin: var(--spacing-2) 0; }
 }

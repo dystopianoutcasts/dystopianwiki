@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FuzzySearchBar } from '../search/FuzzySearchBar';
 import { useHomeSummary } from '../../hooks/useHomeSummary';
@@ -79,6 +80,7 @@ function HeroBadges({ summary }: { summary: HomeSummary | null }) {
 
 export function HeroSection() {
   const navigate = useNavigate();
+  const [cracks, setCracks] = useState(0);
   const { summary } = useHomeSummary();
   const description = typeof summary?.settings.PublicDescription === 'string'
     ? summary.settings.PublicDescription.trim()
@@ -95,8 +97,19 @@ export function HeroSection() {
       <div className="hero__gradient fade fade--green-orange" />
 
       <div className="hero__layout">
-        <div className="hero__seal" aria-hidden="true">
-          <BooneSeal />
+        <div className="hero__seal-wrap">
+          <div className="hero__seal" aria-hidden="true">
+            <BooneSeal cracks={cracks} />
+          </div>
+          {/* Just for fun: each tap on his cracked goggle glints it and cracks it a little more (three
+              times at most), for this visit only. */}
+          <button
+            type="button"
+            className="hero__goggle"
+            aria-label="Tap Boone's cracked goggle"
+            title="Tap Boone's cracked goggle"
+            onClick={() => setCracks((n) => n + 1)}
+          />
         </div>
 
         <div className="hero__content">

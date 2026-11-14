@@ -4,7 +4,9 @@ import { WikiLayout } from '../components/layout/WikiLayout';
 import { SEOHead } from '../components/seo/SEOHead';
 import { getVersion, DEFAULT_VERSION } from '../config/versions.generated';
 import { resolveIcon } from '../components/icons/Icon';
+import { panelCode, StencilCode } from '../components/details/PageDetails';
 import '../styles/pages/version-page.css';
+import '../styles/components/page-details.css';
 
 // Section icons resolve through the shared resolveIcon (the drawn icon set keyed by
 // the icon words written into _section.json and _category.json, contract C2), so a
@@ -48,6 +50,7 @@ export function VersionPage() {
       <WikiLayout>
         <div className="version-page">
           <header className="version-page__header">
+            <StencilCode code={`FLIGHT MANUAL | ${versionInfo.name.toUpperCase()}`} />
             <div className="version-page__badge">
               <span className={`version-page__status version-page__status--${versionInfo.status}`}>
                 {statusLabels[versionInfo.status] || versionInfo.status}
@@ -67,7 +70,7 @@ export function VersionPage() {
               </p>
             ) : (
               <div className="version-page__sections-grid">
-                {versionInfo.sections.map((section) => {
+                {versionInfo.sections.map((section, sectionIndex) => {
                   const totalArticles = section.categories.reduce(
                     (sum, category) => sum + category.articleCount,
                     0
@@ -101,6 +104,7 @@ export function VersionPage() {
                         </span>
                       </div>
                       <span className="version-page__section-arrow">→</span>
+                      <StencilCode code={panelCode(section.id, sectionIndex)} small />
                     </Link>
                   );
                 })}

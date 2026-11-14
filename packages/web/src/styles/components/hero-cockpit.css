@@ -249,6 +249,75 @@
   image-rendering: pixelated;
 }
 
+/* ---- His cracked lens: a glint every few seconds, more cracks per tap --------- */
+
+.hero__seal-wrap {
+  position: relative;
+  flex: none;
+}
+
+/* Over the glass of his cracked lens (x 215-345, y 165-280 of the 512 px art, which fills the middle half of the seal). */
+.boone-seal__glint {
+  position: absolute;
+  left: 46%;
+  top: 41.1%;
+  width: 12.7%;
+  height: 11.2%;
+  border-radius: 42%;
+  background: linear-gradient(115deg, transparent 32%, rgba(255, 255, 255, 0.85) 50%, transparent 68%) 130% 0 / 300% 100% no-repeat;
+  opacity: 0;
+  pointer-events: none;
+  animation: boone-big-glint 9s ease-out 1.5s infinite;
+}
+
+@keyframes boone-big-glint {
+  0% { opacity: 1; background-position: 130% 0; }
+  9% { opacity: 1; background-position: -30% 0; }
+  9.1%, 100% { opacity: 0; background-position: -30% 0; }
+}
+
+@keyframes boone-big-glint-once {
+  0% { opacity: 1; background-position: 130% 0; }
+  100% { opacity: 1; background-position: -30% 0; }
+}
+
+.hero__seal-wrap:hover .boone-seal__glint,
+.hero__seal-wrap:has(.hero__goggle:focus-visible) .boone-seal__glint {
+  animation: boone-big-glint-once 0.8s ease-out 1;
+}
+
+.boone-seal__cracks {
+  position: absolute;
+  left: 25%;
+  top: 25%;
+  width: 50%;
+  height: 50%;
+  pointer-events: none;
+}
+
+.boone-seal__crack-edge { fill: none; stroke: #111314; stroke-width: 9; stroke-linecap: square; stroke-linejoin: miter; }
+.boone-seal__crack { fill: none; stroke: #d6dadd; stroke-width: 4.5; stroke-linecap: square; stroke-linejoin: miter; }
+
+/* The button over the lens: at least 44 px square, centered on the lens; the art shows through. */
+.hero__goggle {
+  position: absolute;
+  left: 52.4%;
+  top: 46.6%;
+  width: max(14%, 44px);
+  height: max(13%, 44px);
+  transform: translate(-50%, -50%);
+  padding: 0;
+  border: 0;
+  border-radius: 45%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.hero__goggle:focus-visible {
+  outline: 3px solid var(--color-focus-ring, #9cc56b);
+  outline-offset: 2px;
+}
+
 /* ---- His service files, splayed beside About -------------------------------- */
 
 /* The stage is drawn at 380 x 470 and scaled to fit (--files-scale). */
@@ -414,5 +483,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .cockpit__tape-strip,
-  .boone-seal__turn { animation: none; }
+  .boone-seal__turn,
+  .boone-seal__glint,
+  .hero__seal-wrap:hover .boone-seal__glint,
+  .hero__seal-wrap:has(.hero__goggle:focus-visible) .boone-seal__glint { animation: none; }
 }

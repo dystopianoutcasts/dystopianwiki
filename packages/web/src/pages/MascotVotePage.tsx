@@ -45,7 +45,10 @@ import {
   type PublicBallots,
 } from '../lib/mascotVoteLogic'
 import { ballotsToCsv, countRankedChoice, winnerSentence } from '../lib/rankedChoice'
+import { CertifiedStamp, TallyMarks } from '../components/details/PageDetails'
 import '../styles/pages/mascot-vote.css'
+import '../styles/components/boone-details.css'
+import '../styles/components/page-details.css'
 
 function nameOf(id: string): string {
   return getMascotEntry(id)?.label ?? id
@@ -1110,8 +1113,11 @@ function Results({ election, api, settled = false }: { election: Election; api: 
           </h2>
           {result.winner && winnerEntry ? (
             <div className="mascot-vote__winner">
-              <div className="mascot-vote__frame mascot-vote__frame--winner">
-                <ArtImage entry={winnerEntry} alt={winnerEntry.alt} />
+              <div className="mascot-vote__frame-wrap">
+                <div className="mascot-vote__frame mascot-vote__frame--winner">
+                  <ArtImage entry={winnerEntry} alt={winnerEntry.alt} />
+                </div>
+                <CertifiedStamp />
               </div>
               <p className="mascot-vote__winner-text">{winnerSentence(result.winner, winnerEntry.label)}</p>
             </div>
@@ -1144,10 +1150,12 @@ function Results({ election, api, settled = false }: { election: Election; api: 
         )}
       </section>
 
-      <section className="mascot-vote__panel" aria-labelledby={`${ids}-ballots`}>
+      <section className="mascot-vote__panel mascot-vote__panel--ballots" aria-labelledby={`${ids}-ballots`}>
         <h2 id={`${ids}-ballots`} className="mascot-vote__panel-title">
           {settled ? 'The first vote: the ballots' : 'The ballots'}
         </h2>
+        {/* One pencil mark per counted ballot; the sentence below says the number. */}
+        <TallyMarks count={result.totalBallots} />
         <p>
           {result.totalBallots} {result.totalBallots === 1 ? 'ballot was' : 'ballots were'} counted.{' '}
           {data.excluded} {data.excluded === 1 ? 'ballot was' : 'ballots were'} excluded and are not in any figure on this
