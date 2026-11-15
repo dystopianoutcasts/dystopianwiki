@@ -59,6 +59,7 @@ export const ICON_SHAPES = {
   activity: ['M22 12h-4l-3 9L9 3l-3 9H2'],
   bug: ['M8 10a4 4 0 0 1 8 0v5a4 4 0 0 1-8 0z', 'M12 10v9', 'M10 6.5L8.5 3.5', 'M14 6.5l1.5-3', 'M8 12H4', 'M16 12h4', 'M8 16l-3 2', 'M16 16l3 2', 'M8.5 8.5L5 7', 'M15.5 8.5L19 7'],
   gamepad: ['M7 7h10a5 5 0 0 1 5 5v3a3 3 0 0 1-5.5 1.6L15 15H9l-1.5 1.6A3 3 0 0 1 2 15v-3a5 5 0 0 1 5-5z', 'M7 10v4', 'M5 12h4', 'M16 11h.01', 'M18 13h.01'],
+  volume: ['M11 5L6 9H2v6h4l5 4z', 'M15.5 8.5a5 5 0 0 1 0 7', 'M19 5a10 10 0 0 1 0 14'],
 } as const satisfies Record<string, readonly string[]>
 
 export type IconName = keyof typeof ICON_SHAPES
