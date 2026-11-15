@@ -13,11 +13,9 @@ tags:
   - moddata
   - timed-actions
   - multiplayer
-excerpt: >-
-  What changed: In 42.13.0, The Indie Stone introduced a formal identifier +
-  registry system for script elements. This is significant enough that an
-  official Modding Migration Guide (42.13) exists...
+excerpt: 'Merged into media/registries.lua: the new B42 identifier file.'
 last_updated: '2026-11-15'
+superseded_by: /pz/build-42/modding/foundations/media-registries-lua-the-new-b42-identifier-file
 related_articles:
   - tl-dr-the-5-things-that-will-break-your-b41-mod
   - b42-status-and-versioning
@@ -35,21 +33,5 @@ related_articles:
   - debugging-lua-in-b42
   - recommended-tooling
 ---
-# registries.lua: the new B42.13 identifier system  [CONFIRMED it exists / API UNCERTAIN]
-
-> Source: 03_LUA_API_AND_ENGINE.md (compiled 2026-07-29, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
-
-**What changed:** In **42.13.0**, The Indie Stone introduced a formal **identifier + registry system** for script elements. This is significant enough that an official **Modding Migration Guide (42.13)** exists on the Indie Stone forums (with a `testmod_registries.zip` example and a Migration Guide PDF).
-
-**How it works (from accessible snippets):**
-- Identifiers are declared in a file that **must** be named exactly **`media/registries.lua`** (directly under `media/`, NOT under `media/lua/`). **[CONFIRMED in 42.22: the engine looks for `media/registries.lua` in the mod's version folder first, then the common folder (`zombie/scripting/objects/ModRegistries.java:16-31`)]**
-- This file is **loaded before all other Lua files and scripts**, making it the correct place for identifier registration and early init. **[CONFIRMED in 42.22: `ModRegistries.init` runs before scripts load (`zombie/GameWindow.java:208`); see [Editing items at load](/pz/build-42/modding/changing-vanilla/editing-items-at-load)]**
-- The recommended pattern: a module in `media/lua/shared/` (uniquely named to your mod) that **returns a global table populated by `media/registries.lua`**. So `registries.lua` fills a registry, and your shared module exposes it. **[LIKELY]**
-
-**Why it matters:** if your mod defines new script identifiers (items, recipes, fluids, animal defs, etc.), B42.13+ expects them registered here so the engine's registry can resolve them consistently across client/server and across the multi-build layout.
-
-> **[UNCERTAIN]** The exact registration function signatures (what you call inside `registries.lua`) were not recoverable from the pzwiki cache used for this enrichment (the cache covers Lua (API), events, ModData, networking, timed actions, derive, and typing — not the Registries page). The authoritative example is the `testmod_registries.zip` attached to the 42.13 migration guide on the Indie Stone forums (download in a browser). Confirm the API there, and/or fetch the pzwiki `Registries` page into the cache, before relying on it.
-
----
-
-<a name="6-events"></a>
+> **This page was merged into [media/registries.lua: the new B42 identifier file](/pz/build-42/modding/foundations/media-registries-lua-the-new-b42-identifier-file)** on
+> 2026-11-15, with its facts checked against Project Zomboid 42.22.
