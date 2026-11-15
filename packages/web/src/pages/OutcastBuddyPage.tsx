@@ -170,7 +170,7 @@ export function OutcastBuddyPage() {
             <dd>
               The first installer ({BROKEN_INSTALLER_VERSION}) could stop the game from starting if you already had
               Steam launch options, like a memory setting. We're sorry about that! Download the new
-              installer above, run it, and click <strong>Repair or apply memory</strong> (or{' '}
+              installer above, run it, and click <strong>Update or apply memory</strong> (or{' '}
               <strong>Uninstall</strong>). Either one fixes it.
             </dd>
             <dt>Updates</dt>
