@@ -5,7 +5,7 @@
 // and a router Link would route inside the wrong one (the map runs a HashRouter, where "/"
 // becomes "#/"). The wiki may pass onLinkClick to route its own paths without a reload.
 import type { MouseEvent, ReactNode } from 'react'
-import { HOME_HREF, LIVE_MAP_HREF, LIVE_MAP_ID } from './nav'
+import { BUDDY_HREF, BUDDY_ID, HOME_HREF, LIVE_MAP_HREF, LIVE_MAP_ID } from './nav'
 import type { SiteSection } from './nav'
 import type { MemberDisplay } from './profile'
 import { THEME_CHOICES, THEME_LABELS } from './theme'
@@ -164,7 +164,7 @@ function linkHandler(onLinkClick: LinkClick | undefined, href: string, then?: ()
   }
 }
 
-/** The section links, then Live Map; `aria-current="page"` marks the current one. */
+/** The section links, then Live Map, then Buddy; `aria-current="page"` marks the current one. */
 export function SiteLinks({
   sections,
   current,
@@ -198,6 +198,14 @@ export function SiteLinks({
         onClick={linkHandler(onLinkClick, LIVE_MAP_HREF, onNavigate)}
       >
         Live Map
+      </a>
+      <a
+        href={BUDDY_HREF}
+        className={className}
+        aria-current={current === BUDDY_ID ? 'page' : undefined}
+        onClick={linkHandler(onLinkClick, BUDDY_HREF, onNavigate)}
+      >
+        Buddy
       </a>
     </>
   )

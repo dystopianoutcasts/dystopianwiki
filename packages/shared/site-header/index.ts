@@ -6,7 +6,7 @@
 // vitest (packages/aurora/vite.config.ts includes them).
 export { SiteHeader } from './SiteHeader'
 export type { AccountInput, SiteHeaderProps } from './SiteHeader'
-export { LIVE_MAP_HREF, LIVE_MAP_ID, currentFor, isMapPath, loginHrefFor } from './nav'
+export { BUDDY_HREF, BUDDY_ID, LIVE_MAP_HREF, LIVE_MAP_ID, currentFor, isMapPath, loginHrefFor } from './nav'
 export type { SiteSection } from './nav'
 export { memberDisplay } from './profile'
 export type { MemberDisplay, UserLike } from './profile'

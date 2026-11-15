@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { runInNewContext } from 'node:vm'
 import { describe, expect, it } from 'vitest'
 import { panelKeyAction, triggerKeyAction } from './menuKeys'
-import { LIVE_MAP_ID, currentFor, isMapPath, loginHrefFor } from './nav'
+import { BUDDY_ID, LIVE_MAP_ID, currentFor, isMapPath, loginHrefFor } from './nav'
 import { avatarUrl, displayName, memberDisplay } from './profile'
 import { THEME_CHOICES, THEME_STORAGE_KEY, parseThemeChoice, readThemeChoice, resolveTheme, writeThemeChoice } from './theme'
 import { THEME_BOOT_SCRIPT, THEME_BOOT_TAG, THEME_STORAGE_KEY as BOOT_KEY, themeBootPlugin } from './themeBoot'
@@ -208,6 +208,11 @@ describe('the current link and the login link', () => {
   it('Live Map is current on the map', () => {
     expect(currentFor('/map/', sections)).toBe(LIVE_MAP_ID)
     expect(isMapPath('/mapping')).toBe(false)
+  })
+  it('Buddy is current on /buddy, not on a longer sibling', () => {
+    expect(currentFor('/buddy', sections)).toBe(BUDDY_ID)
+    expect(currentFor('/buddy/', sections)).toBe(BUDDY_ID)
+    expect(currentFor('/buddyx', sections)).toBeNull()
   })
   it('"Log in" carries this page as next, encoded', () => {
     expect(loginHrefFor('/pz/build-42/modding?x=1')).toBe('/login?next=%2Fpz%2Fbuild-42%2Fmodding%3Fx%3D1')

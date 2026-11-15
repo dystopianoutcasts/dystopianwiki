@@ -6,7 +6,7 @@ import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import { fakePopup, markup } from './markup'
 import type { SiteSection } from './nav'
-import { LIVE_MAP_ID } from './nav'
+import { BUDDY_ID, LIVE_MAP_ID } from './nav'
 import { ACCOUNT_MENU_ID, AccountMenuView, SITE_MENU_ID, SiteHeaderView, THEME_MENU_ID, ThemeMenuView, accountOptions } from './views'
 import type { AccountView, SiteHeaderViewProps, ThemeView } from './views'
 
@@ -191,11 +191,11 @@ describe('the bar', () => {
     expect(tag(header(), 'site-header__brand')).toMatch(/^<a href="\/" class="site-header__brand" aria-label="Dystopian Outcasts, home">/)
   })
 
-  it('section links then Live Map, in the bar and again in the menu, both labelled "Site"', () => {
+  it('section links then Live Map and Buddy, in the bar and again in the menu, both labelled "Site"', () => {
     const html = header()
     expect(html.match(/<nav[^>]*aria-label="Site"/g)).toHaveLength(2)
     const bar = html.slice(html.indexOf('site-header__nav'), html.indexOf('site-header__search'))
-    expect([...bar.matchAll(/class="site-header__link"[^>]*>([^<]+)</g)].map((m) => m[1])).toEqual(['Modding', 'Running a Server', 'Live Map'])
+    expect([...bar.matchAll(/class="site-header__link"[^>]*>([^<]+)</g)].map((m) => m[1])).toEqual(['Modding', 'Running a Server', 'Live Map', 'Buddy'])
   })
 
   it('the current page is aria-current="page", in the bar and the menu', () => {
@@ -203,6 +203,9 @@ describe('the bar', () => {
     expect(html.match(/<a href="\/map\/" class="site-header__(link|menu-link)" aria-current="page">Live Map<\/a>/g)).toHaveLength(2)
     expect(html.match(/aria-current/g)).toHaveLength(2)
     expect(header({ current: null })).not.toMatch(/aria-current/)
+    const buddy = header({ current: BUDDY_ID })
+    expect(buddy.match(/<a href="\/buddy" class="site-header__(link|menu-link)" aria-current="page">Buddy<\/a>/g)).toHaveLength(2)
+    expect(buddy.match(/aria-current/g)).toHaveLength(2)
   })
 
   it('the app\'s own search goes in the search slot', () => {
@@ -228,7 +231,7 @@ describe('the folding site menu', () => {
     expect(tag(open, `id="${SITE_MENU_ID}"`)).not.toMatch(/ hidden/)
   })
 
-  it('lists Home, the sections and Live Map, then the three theme choices as radios, then the app\'s extras', () => {
+  it('lists Home, the sections, Live Map and Buddy, then the three theme choices as radios, then the app\'s extras', () => {
     const html = header({ menuExtras: createElement('div', { className: 'wiki-extras' }) })
     const panel = html.slice(html.indexOf(`id="${SITE_MENU_ID}"`))
     expect([...panel.matchAll(/class="site-header__menu-link"[^>]*>([^<]+)</g)].map((m) => m[1])).toEqual([
@@ -236,6 +239,7 @@ describe('the folding site menu', () => {
       'Modding',
       'Running a Server',
       'Live Map',
+      'Buddy',
     ])
     expect([...panel.matchAll(/<input type="radio" name="site-theme" value="(\w+)"( checked)?>/g)].map((m) => m[1] + (m[2] ? '*' : ''))).toEqual([
       'system*',
