@@ -15,6 +15,17 @@
 -- address is never stored. The limit is 5 reports an hour per account, or per address hash
 -- when signed out.
 --
+-- What the limits protect against: the form is open to everyone, so without them one script
+-- could fill the table and the admins' list with junk. The per-sender limit stops one person
+-- or script from flooding. The sender key is an address the caller cannot set: Cloudflare's
+-- cf-connecting-ip when present, otherwise the RIGHTMOST x-forwarded-for entry (the hop the
+-- platform added; the left entries are whatever the caller sent, so keying on them would let a
+-- script pick a fresh bucket per request, or burn someone else's). A global cap of 60 signed-out
+-- reports an hour stops a script that has many addresses; it answers 'busy', and the site asks
+-- the reader to sign in, because signed-in reports are limited per account and not by the cap.
+-- The page's slug, title and version are read from public.articles by id, never trusted from
+-- the caller; an unknown id is 'invalid'.
+--
 -- ORDER: apply after 024. Until it is applied the site's dialog answers "Reports are not
 -- switched on yet." (the RPC is missing).
 
@@ -35,7 +46,8 @@ CREATE TABLE IF NOT EXISTS public.article_reports (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at      timestamptz NOT NULL DEFAULT now(),
   article_id      text NOT NULL CHECK (char_length(article_id) BETWEEN 1 AND 100),
-  article_slug    text NOT NULL CHECK (article_slug ~ '^[a-z0-9][a-z0-9-]{0,119}$'),
+  -- Article slugs may carry capitals (vanilla-newBags).
+  article_slug    text NOT NULL CHECK (article_slug ~ '^[A-Za-z0-9][A-Za-z0-9_.-]{0,119}$'),
   -- The article's last_updated as the reader saw it (an ISO date or timestamp, as text).
   article_version text CHECK (article_version IS NULL OR char_length(article_version) BETWEEN 1 AND 40),
   article_title   text NOT NULL CHECK (char_length(article_title) BETWEEN 1 AND 300),
@@ -50,7 +62,10 @@ CREATE TABLE IF NOT EXISTS public.article_reports (
   status          text NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'confirmed', 'fixed', 'not_a_problem')),
   admin_note      text NOT NULL DEFAULT '' CHECK (char_length(admin_note) <= 2000),
   reviewed_by     uuid REFERENCES auth.users (id) ON DELETE SET NULL,
-  reviewed_at     timestamptz
+  reviewed_at     timestamptz,
+  -- Who last changed the admin note, and when (a note edit is not a status change).
+  note_updated_by uuid REFERENCES auth.users (id) ON DELETE SET NULL,
+  note_updated_at timestamptz
 );
 
 CREATE INDEX IF NOT EXISTS article_reports_status_created_idx ON public.article_reports (status, created_at DESC);
@@ -68,18 +83,17 @@ REVOKE ALL ON public.article_report_config, public.article_reports FROM PUBLIC, 
 -- EVERYONE: send a report
 -- ============================================================================
 
--- Returns 'ok', 'rate_limited' or 'invalid'. Never raises to the caller for an ordinary
--- refusal. Only the reader's text and the page they were on come from the caller.
+-- Returns 'ok', 'rate_limited', 'busy' or 'invalid'. Never raises to the caller for an
+-- ordinary refusal. From the caller come only the article id, the page path, the part, the kind
+-- and the reader's text; the article's slug, title and version are read from public.articles.
+-- 'invalid' means a field is refused or the article id is unknown.
 CREATE OR REPLACE FUNCTION public.submit_article_report(
-  p_article_id      text,
-  p_article_slug    text,
-  p_article_version text,
-  p_article_title   text,
-  p_article_url     text,
-  p_section         text,
-  p_kind            text,
-  p_message         text,
-  p_evidence        text DEFAULT ''
+  p_article_id  text,
+  p_article_url text,
+  p_section     text,
+  p_kind        text,
+  p_message     text,
+  p_evidence    text DEFAULT ''
 )
 RETURNS text
 LANGUAGE plpgsql
@@ -89,43 +103,57 @@ SET search_path = ''
 AS $$
 DECLARE
   v_uid      uuid := auth.uid();
-  v_id       text := btrim(p_article_id);
-  v_slug     text := btrim(p_article_slug);
-  v_version  text := nullif(btrim(p_article_version), '');
-  v_title    text := btrim(p_article_title);
-  v_url      text := btrim(p_article_url);
-  v_section  text := nullif(btrim(p_section), '');
-  v_message  text := btrim(p_message);
-  v_evidence text := btrim(coalesce(p_evidence, ''));
+  v_id       text := btrim(p_article_id, E' \t\r\n');
+  v_url      text := btrim(p_article_url, E' \t\r\n');
+  v_section  text := nullif(btrim(p_section, E' \t\r\n'), '');
+  v_message  text := btrim(p_message, E' \t\r\n');
+  v_evidence text := btrim(coalesce(p_evidence, ''), E' \t\r\n');
+  v_art      record;
   v_headers  jsonb;
+  v_xff      text[];
   v_ip       text;
   v_hash     text;
   v_recent   integer;
 BEGIN
-  -- Validate every field. A control character other than a line break or tab is refused.
+  -- Validate every field. A control character other than a line break or tab is refused, and
+  -- so are Unicode format and bidi characters (zero-width, direction marks and overrides).
   IF v_id IS NULL OR v_id !~ '^[A-Za-z0-9_:.-]{1,100}$'
-     OR v_slug IS NULL OR v_slug !~ '^[a-z0-9][a-z0-9-]{0,119}$'
      OR v_url IS NULL OR v_url !~ '^/[A-Za-z0-9][A-Za-z0-9/_.-]{0,299}$'
-     OR v_title IS NULL OR char_length(v_title) NOT BETWEEN 1 AND 300 OR v_title ~ '[[:cntrl:]]'
-     OR (v_version IS NOT NULL AND (char_length(v_version) > 40 OR v_version !~ '^[0-9A-Za-z:.+ -]+$'))
-     OR (v_section IS NOT NULL AND (char_length(v_section) > 200 OR v_section ~ '[[:cntrl:]]'))
+     OR (v_section IS NOT NULL AND (char_length(v_section) > 200 OR v_section ~ '[[:cntrl:]]'
+                                    OR v_section ~ '[\u200B-\u200F\u202A-\u202E\u2066-\u2069]'))
      OR p_kind IS NULL OR p_kind NOT IN ('wrong_fact', 'out_of_date', 'unclear', 'broken_link', 'other')
      OR v_message IS NULL OR char_length(v_message) NOT BETWEEN 10 AND 2000
      OR translate(v_message, E'\n\r\t', '') ~ '[[:cntrl:]]'
+     OR v_message ~ '[\u200B-\u200F\u202A-\u202E\u2066-\u2069]'
      OR char_length(v_evidence) > 1000
-     OR translate(v_evidence, E'\n\r\t', '') ~ '[[:cntrl:]]' THEN
+     OR translate(v_evidence, E'\n\r\t', '') ~ '[[:cntrl:]]'
+     OR v_evidence ~ '[\u200B-\u200F\u202A-\u202E\u2066-\u2069]' THEN
     RETURN 'invalid';
   END IF;
 
-  -- The client address, hashed with the server salt. PostgREST puts the request headers in
-  -- a setting; the first x-forwarded-for entry is the client. Missing means one shared
-  -- bucket ('unknown'), never an unlimited one.
+  -- The page: its slug, title and version come from the table, not from the caller. The path
+  -- must end in the article's own slug.
+  SELECT a.slug, a.title, a.last_updated INTO v_art FROM public.articles a WHERE a.id = v_id;
+  IF NOT FOUND
+     OR v_art.slug !~ '^[A-Za-z0-9][A-Za-z0-9_.-]{0,119}$'
+     OR right(v_url, char_length(v_art.slug) + 1) <> '/' || v_art.slug THEN
+    RETURN 'invalid';
+  END IF;
+
+  -- The sender key: an address the caller cannot set. Cloudflare's cf-connecting-ip, else the
+  -- rightmost x-forwarded-for entry (added by the platform). Missing means one shared bucket
+  -- ('unknown'), never an unlimited one.
   BEGIN
     v_headers := nullif(current_setting('request.headers', true), '')::jsonb;
   EXCEPTION WHEN others THEN
     v_headers := NULL;
   END;
-  v_ip := coalesce(nullif(btrim(split_part(coalesce(v_headers ->> 'x-forwarded-for', ''), ',', 1)), ''), 'unknown');
+  v_ip := nullif(btrim(coalesce(v_headers ->> 'cf-connecting-ip', '')), '');
+  IF v_ip IS NULL THEN
+    v_xff := string_to_array(coalesce(v_headers ->> 'x-forwarded-for', ''), ',');
+    v_ip := nullif(btrim(v_xff[array_upper(v_xff, 1)]), '');
+  END IF;
+  v_ip := coalesce(v_ip, 'unknown');
   v_hash := encode(sha256(convert_to(v_ip || (SELECT c.salt FROM public.article_report_config c), 'UTF8')), 'hex');
 
   -- One report at a time per account (or address), so two requests cannot both pass the count.
@@ -142,11 +170,21 @@ BEGIN
     RETURN 'rate_limited';
   END IF;
 
+  -- The global cap on signed-out reports, across every sender.
+  IF v_uid IS NULL THEN
+    PERFORM pg_advisory_xact_lock(hashtextextended('article_reports_anonymous', 48));
+    IF (SELECT count(*) FROM public.article_reports r
+         WHERE r.reporter_id IS NULL AND r.created_at > now() - interval '1 hour') >= 60 THEN
+      RETURN 'busy';
+    END IF;
+  END IF;
+
   BEGIN
     INSERT INTO public.article_reports
       (article_id, article_slug, article_version, article_title, article_url, section, kind, message, evidence, reporter_id, reporter_hash)
     VALUES
-      (v_id, v_slug, v_version, v_title, v_url, v_section, p_kind, v_message, v_evidence, v_uid, v_hash);
+      (v_id, v_art.slug, to_char(v_art.last_updated AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
+       left(v_art.title, 300), v_url, v_section, p_kind, v_message, v_evidence, v_uid, v_hash);
   EXCEPTION WHEN foreign_key_violation THEN
     -- A still-valid session for an account deleted a moment ago.
     RETURN 'invalid';
@@ -179,7 +217,9 @@ RETURNS TABLE (
   status           text,
   admin_note       text,
   reviewed_by_name text,
-  reviewed_at      timestamptz
+  reviewed_at      timestamptz,
+  note_updated_by_name text,
+  note_updated_at  timestamptz
 )
 LANGUAGE plpgsql
 STABLE
@@ -201,17 +241,22 @@ BEGIN
          r.status, r.admin_note,
          CASE WHEN r.reviewed_by IS NULL THEN NULL
               ELSE coalesce(nullif(btrim(a.raw_user_meta_data ->> 'username'), ''), 'an admin') END,
-         r.reviewed_at
+         r.reviewed_at,
+         CASE WHEN r.note_updated_by IS NULL THEN NULL
+              ELSE coalesce(nullif(btrim(n.raw_user_meta_data ->> 'username'), ''), 'an admin') END,
+         r.note_updated_at
     FROM public.article_reports r
     LEFT JOIN auth.users u ON u.id = r.reporter_id
     LEFT JOIN auth.users a ON a.id = r.reviewed_by
+    LEFT JOIN auth.users n ON n.id = r.note_updated_by
    WHERE p_status = 'all' OR r.status = p_status
    ORDER BY r.created_at DESC, r.id
    LIMIT greatest(1, least(coalesce(p_limit, 200), 500));
 END;
 $$;
 
--- Returns 'ok', 'denied', 'invalid' or 'not_found'. A changed status records who and when.
+-- Returns 'ok', 'denied', 'invalid' or 'not_found'. A changed status records who and when; so does a
+-- changed note (note_updated_by, note_updated_at).
 CREATE OR REPLACE FUNCTION public.article_report_update(p_id uuid, p_status text, p_note text)
 RETURNS text
 LANGUAGE plpgsql
@@ -220,8 +265,9 @@ SECURITY DEFINER
 SET search_path = ''
 AS $$
 DECLARE
-  v_note text := btrim(coalesce(p_note, ''));
+  v_note text := btrim(coalesce(p_note, ''), E' \t\r\n');
   v_old  text;
+  v_old_note text;
 BEGIN
   IF NOT public.site_is_admin() THEN
     RETURN 'denied';
@@ -231,7 +277,7 @@ BEGIN
     RETURN 'invalid';
   END IF;
 
-  SELECT r.status INTO v_old FROM public.article_reports r WHERE r.id = p_id FOR UPDATE;
+  SELECT r.status, r.admin_note INTO v_old, v_old_note FROM public.article_reports r WHERE r.id = p_id FOR UPDATE;
   IF NOT FOUND THEN
     RETURN 'not_found';
   END IF;
@@ -240,7 +286,9 @@ BEGIN
      SET status      = p_status,
          admin_note  = v_note,
          reviewed_by = CASE WHEN p_status IS DISTINCT FROM v_old THEN auth.uid() ELSE reviewed_by END,
-         reviewed_at = CASE WHEN p_status IS DISTINCT FROM v_old THEN now() ELSE reviewed_at END
+         reviewed_at = CASE WHEN p_status IS DISTINCT FROM v_old THEN now() ELSE reviewed_at END,
+         note_updated_by = CASE WHEN v_note IS DISTINCT FROM v_old_note THEN auth.uid() ELSE note_updated_by END,
+         note_updated_at = CASE WHEN v_note IS DISTINCT FROM v_old_note THEN now() ELSE note_updated_at END
    WHERE id = p_id;
   RETURN 'ok';
 END;
@@ -282,12 +330,12 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.submit_article_report(text, text, text, text, text, text, text, text, text) FROM PUBLIC, anon, authenticated, service_role;
+REVOKE ALL ON FUNCTION public.submit_article_report(text, text, text, text, text, text) FROM PUBLIC, anon, authenticated, service_role;
 REVOKE ALL ON FUNCTION public.article_reports_admin(text, integer) FROM PUBLIC, anon, authenticated, service_role;
 REVOKE ALL ON FUNCTION public.article_report_update(uuid, text, text) FROM PUBLIC, anon, authenticated, service_role;
 REVOKE ALL ON FUNCTION public.article_report_delete(uuid) FROM PUBLIC, anon, authenticated, service_role;
 REVOKE ALL ON FUNCTION public.article_reports_new_count() FROM PUBLIC, anon, authenticated, service_role;
-GRANT EXECUTE ON FUNCTION public.submit_article_report(text, text, text, text, text, text, text, text, text) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.submit_article_report(text, text, text, text, text, text) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.article_reports_admin(text, integer) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.article_report_update(uuid, text, text) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.article_report_delete(uuid) TO authenticated;
@@ -297,8 +345,8 @@ COMMENT ON TABLE public.article_reports IS
   'Reader reports about an article (migration 048). No client access: read and written only through the article_report* functions.';
 COMMENT ON TABLE public.article_report_config IS
   'Internal (migration 048). The salt for article_reports.reporter_hash. No client access.';
-COMMENT ON FUNCTION public.submit_article_report(text, text, text, text, text, text, text, text, text) IS
-  'Everyone: report a problem with an article. Returns ok, rate_limited (5 an hour per account, or per hashed address when signed out) or invalid. The reporter comes from auth.uid(), not the caller.';
+COMMENT ON FUNCTION public.submit_article_report(text, text, text, text, text, text) IS
+  'Everyone: report a problem with an article. Returns ok, rate_limited (5 an hour per account, or per hashed address when signed out), busy (60 an hour across all signed-out senders) or invalid. The reporter comes from auth.uid(), not the caller.';
 COMMENT ON FUNCTION public.article_reports_admin(text, integer) IS
   'Admins: reports newest first, filtered by status (or all). Zero rows for anyone else.';
 COMMENT ON FUNCTION public.article_report_update(uuid, text, text) IS
