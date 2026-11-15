@@ -16,7 +16,7 @@ tags:
   - sandbox
 excerpt: >-
   Read the climate from Lua, hook the weather events, start and stop weather and build your own stage, with worked examples (not run in a game) and which side must do each in multiplayer.
-last_updated: '2026-11-14'
+last_updated: '2026-11-15'
 related_articles:
   - how-weather-works
   - seasons-and-day-length
@@ -137,7 +137,7 @@ Line by line:
 - `Temperature.getTemperatureString(celsius)` writes it in the unit the player chose, with the unit sign :cite[(`zombie/iso/weather/Temperature.java:65-74`)]. The emergency radio script uses it the same way :cite[(`media/lua/server/radio/ISWeatherChannel.lua:209`)].
 - `getClimateMoon():getPhaseName()` is "New", "Full" and the others :cite[(`ClimateMoon.java:48-50`)].
 - `setHaloNote(text)` shows green floating text over the character on this machine only :cite[(`zombie/characters/IsoGameCharacter.java:6998-7016`)].
-- `Events.OnKeyPressed.Add(fn)` calls `fn(keyNumber)` on every key press. Vanilla does the same :cite[(`media/lua/client/Chat/ISChat.lua:1178`)].
+- `Events.OnKeyPressed.Add(fn)` calls `fn(keyNumber)` when a key is released, despite its name; `OnKeyStartPressed` is the key-down event :cite[(`zombie/input/GameKeyboard.java:43-58`)]. Vanilla listens the same way :cite[(`media/lua/client/Chat/ISChat.lua:1178`)].
 
 **What you should see:** load a save, press F9, and a green line appears above your head, for example `Early Summer, 24.6 C, clear, wind 11 km/h, moon: Waxing gibbous`. It also appears in `console.txt` with the `[WeatherReport]` tag. If nothing happens, search the console log for errors; a likely cause is a wrong folder layout (for example a missing `common/` folder), so the mod never loads.
 
