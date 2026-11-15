@@ -57,6 +57,7 @@ export const ICON_SHAPES = {
   fish: ['M3 12c3-5 8-6 12-4l3 4-3 4c-4 2-9 1-12-4z', 'M18 12l4-4v8z', 'M7 11h.01', 'M11 9c1 2 1 4 0 6'],
   film: ['M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z', 'M7 3v18', 'M17 3v18', 'M3 8h4', 'M3 12h4', 'M3 16h4', 'M17 8h4', 'M17 12h4', 'M17 16h4'],
   activity: ['M22 12h-4l-3 9L9 3l-3 9H2'],
+  gamepad: ['M7 7h10a5 5 0 0 1 5 5v3a3 3 0 0 1-5.5 1.6L15 15H9l-1.5 1.6A3 3 0 0 1 2 15v-3a5 5 0 0 1 5-5z', 'M7 10v4', 'M5 12h4', 'M16 11h.01', 'M18 13h.01'],
 } as const satisfies Record<string, readonly string[]>
 
 export type IconName = keyof typeof ICON_SHAPES
