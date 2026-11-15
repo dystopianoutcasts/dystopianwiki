@@ -3,184 +3,97 @@
  * reports in its heading, a status filter (New by default), the list, and one report opened in a
  * dialog where an admin sets its status and note, or deletes it (asked by name first).
  *
- * The database is the gate: the functions return nothing to anyone but an admin. Before
- * migration 048 is applied the section says so instead of showing an empty list.
+ * This file only connects things: the behavior (filters, save, delete, a hung request, where
+ * focus goes next) is in lib/reportsStore.ts, the words in lib/articleReportsAdmin.ts, the
+ * layout in ReportsViews.tsx. The database is the gate: its functions return nothing to anyone
+ * but an admin. Before migration 048 is applied the section says so.
  */
-import { useCallback, useEffect, useId, useState } from 'react'
+import { useEffect, useId, useMemo, useSyncExternalStore } from 'react'
 import { MascotDialog } from '../mascot/MascotDialog'
 import { reportsApi } from '../../lib/articleReportsClient'
-import {
-  DEFAULT_FILTER,
-  EMPTY_TEXT,
-  REPORTS_FAILURE_TEXT,
-  sectionLabel,
-  type AdminReport,
-  type ReportFilter,
-  type ReportStatus,
-  type ReportsApi,
-  type ReportsFailure,
-} from '../../lib/articleReportsAdmin'
+import { EMPTY_TEXT, REPORTS_FAILURE_TEXT, sectionLabel, type ReportsApi } from '../../lib/articleReportsAdmin'
+import { createReportsStore, type AdminFocus } from '../../lib/reportsStore'
 import { ReportDetailView, ReportFiltersView, ReportsTable, type SaveNote } from './ReportsViews'
 
-type Load = { state: 'loading' } | { state: 'error'; reason: ReportsFailure } | { state: 'ready'; reports: AdminReport[] }
-
 export function ReportsSection({ api = reportsApi }: { api?: ReportsApi }) {
-  const [filter, setFilter] = useState<ReportFilter>(DEFAULT_FILTER)
-  const [load, setLoad] = useState<Load>({ state: 'loading' })
-  const [newCount, setNewCount] = useState<number | null>(null)
-  const [key, setKey] = useState(0)
-  const [flash, setFlash] = useState<string | null>(null)
-  const [open, setOpen] = useState<AdminReport | null>(null)
-  const [status, setStatus] = useState<ReportStatus>('new')
-  const [note, setNote] = useState('')
-  const [saving, setSaving] = useState(false)
-  const [saveNote, setSaveNote] = useState<SaveNote>(null)
-  const [confirming, setConfirming] = useState(false)
-  const [deleting, setDeleting] = useState(false)
-  const [deleteError, setDeleteError] = useState<string | null>(null)
   const headingId = useId()
   const filterLabelId = useId()
-  const ids = { title: useId(), status: useId(), note: useId() }
+  const titleId = useId()
+  const statusId = useId()
+  const noteId = useId()
+  const keepId = useId()
+  const deleteId = useId()
+  const flashId = useId()
 
-  const reload = useCallback(() => setKey((k) => k + 1), [])
+  const store = useMemo(
+    () =>
+      createReportsStore(api, (target: AdminFocus) =>
+        window.setTimeout(() => document.getElementById(target === 'keep' ? keepId : target === 'deleteButton' ? deleteId : flashId)?.focus(), 0),
+      ),
+    [api, keepId, deleteId, flashId],
+  )
+  const s = useSyncExternalStore(store.subscribe, store.getState)
 
   useEffect(() => {
-    let cancelled = false
-    setLoad({ state: 'loading' })
-    void api.fetchReports(filter).then((r) => {
-      if (!cancelled) setLoad(r.ok ? { state: 'ready', reports: r.value } : { state: 'error', reason: r.reason })
-    })
-    void api.fetchNewCount().then((r) => {
-      if (!cancelled) setNewCount(r.ok ? r.value : null)
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [api, filter, key])
+    void store.reload()
+  }, [store])
 
-  const openReport = (r: AdminReport) => {
-    setOpen(r)
-    setStatus(r.status)
-    setNote(r.adminNote)
-    setSaveNote(null)
-    setConfirming(false)
-    setDeleteError(null)
-  }
-
-  const closeReport = () => {
-    if (saving || deleting) return
-    setOpen(null)
-    setConfirming(false)
-  }
-
-  const save = async () => {
-    if (!open || saving) return
-    setSaving(true)
-    setSaveNote(null)
-    const r = await api.updateReport(open.id, status, note)
-    setSaving(false)
-    if (!r.ok) {
-      setSaveNote({ kind: 'error', text: REPORTS_FAILURE_TEXT[r.reason] })
-      return
-    }
-    setSaveNote({ kind: 'saved' })
-    setFlash(null)
-    // The open copy follows what was saved, so "last changed" and the fields agree with the list.
-    setOpen({
-      ...open,
-      status,
-      adminNote: note.trim(),
-      ...(status !== open.status ? { reviewedByName: 'you', reviewedAt: new Date().toISOString() } : {}),
-    })
-    reload()
-  }
-
-  const remove = async () => {
-    if (!open || deleting) return
-    setDeleting(true)
-    setDeleteError(null)
-    const r = await api.deleteReport(open.id)
-    setDeleting(false)
-    if (!r.ok) {
-      setDeleteError(REPORTS_FAILURE_TEXT[r.reason])
-      return
-    }
-    setOpen(null)
-    setConfirming(false)
-    setFlash('Report deleted.')
-    reload()
-  }
+  const saveNote: SaveNote = s.saveNote?.kind === 'error' ? { kind: 'error', text: REPORTS_FAILURE_TEXT[s.saveNote.reason] } : s.saveNote
 
   return (
     <section className="mascot-vote__panel" aria-labelledby={headingId}>
       <h2 id={headingId} className="mascot-vote__panel-title">
-        {sectionLabel(newCount)}
+        {sectionLabel(s.newCount)}
       </h2>
       <p>Problems readers reported on wiki pages. Open one to read it, set its status or delete it.</p>
 
       <p id={filterLabelId} className="mascot-vote__meta">
         Show
       </p>
-      <ReportFiltersView
-        value={filter}
-        labelId={filterLabelId}
-        onPick={(f) => {
-          setFilter(f)
-          setFlash(null)
-        }}
-      />
+      <ReportFiltersView value={s.filter} labelId={filterLabelId} onPick={(f) => void store.setFilter(f)} />
 
-      {flash && (
-        <p className="mascot-vote__hint" role="status">
-          {flash}
+      {s.flash && (
+        <p id={flashId} className="mascot-vote__hint" role="status" tabIndex={-1}>
+          {s.flash}
         </p>
       )}
-      {load.state === 'loading' && <p role="status">Loading reports...</p>}
-      {load.state === 'error' && (
+      {s.load.state === 'loading' && <p role="status">Loading reports...</p>}
+      {s.load.state === 'error' && (
         <>
-          <p role="alert">{REPORTS_FAILURE_TEXT[load.reason]}</p>
-          {load.reason !== 'missing' && (
-            <button type="button" className="mascot-vote__btn mascot-vote__btn--primary" onClick={reload}>
+          <p role="alert">{REPORTS_FAILURE_TEXT[s.load.reason]}</p>
+          {s.load.reason !== 'missing' && (
+            <button type="button" className="mascot-vote__btn mascot-vote__btn--primary" onClick={() => void store.reload()}>
               Try again
             </button>
           )}
         </>
       )}
-      {load.state === 'ready' &&
-        (load.reports.length === 0 ? (
-          <p>{EMPTY_TEXT[filter]}</p>
+      {s.load.state === 'ready' &&
+        (s.load.reports.length === 0 ? (
+          <p>{EMPTY_TEXT[s.filter]}</p>
         ) : (
-          <ReportsTable reports={load.reports} onOpen={openReport} labelledBy={headingId} />
+          <ReportsTable reports={s.load.reports} onOpen={(r) => store.openReport(r)} labelledBy={headingId} />
         ))}
 
-      <MascotDialog open={open !== null} onClose={closeReport} labelledBy={ids.title} locked={saving || deleting} className="admin__report-dialog">
-        {open && (
+      <MascotDialog open={s.open !== null} onClose={() => store.close()} labelledBy={titleId} className="admin__report-dialog">
+        {s.open && (
           <ReportDetailView
-            report={open}
-            ids={ids}
-            status={status}
-            note={note}
-            saving={saving}
+            report={s.open}
+            ids={{ title: titleId, status: statusId, note: noteId, keep: keepId, deleteButton: deleteId }}
+            status={s.status}
+            note={s.note}
+            saving={s.saving}
             saveNote={saveNote}
-            confirming={confirming}
-            deleting={deleting}
-            deleteError={deleteError}
-            onStatus={(s) => {
-              setStatus(s)
-              setSaveNote(null)
-            }}
-            onNote={(n) => {
-              setNote(n)
-              setSaveNote(null)
-            }}
-            onSave={() => void save()}
-            onClose={closeReport}
-            onAskDelete={() => {
-              setDeleteError(null)
-              setConfirming(true)
-            }}
-            onKeep={() => setConfirming(false)}
-            onDelete={() => void remove()}
+            confirming={s.confirming}
+            deleting={s.deleting}
+            deleteError={s.deleteError ? REPORTS_FAILURE_TEXT[s.deleteError] : null}
+            onStatus={(v) => store.setStatus(v)}
+            onNote={(n) => store.setNote(n)}
+            onSave={() => void store.save()}
+            onClose={() => store.close()}
+            onAskDelete={() => store.askDelete()}
+            onKeep={() => store.keep()}
+            onDelete={() => void store.remove()}
           />
         )}
       </MascotDialog>

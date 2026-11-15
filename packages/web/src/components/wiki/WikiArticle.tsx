@@ -85,8 +85,8 @@ export function WikiArticle({
     return { choices, ids };
   }, [tocItems]);
   const reportPage = useMemo(
-    () => ({ articleId: article.id, slug: article.slug, title: article.title, url: pathname, version: article.lastUpdated }),
-    [article.id, article.slug, article.title, article.lastUpdated, pathname]
+    () => ({ articleId: article.id, title: article.title, url: pathname }),
+    [article.id, article.title, pathname]
   );
 
   // The ::field-notes marker also draws the header as a cover (field-notes.css)

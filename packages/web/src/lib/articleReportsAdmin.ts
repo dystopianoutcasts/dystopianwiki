@@ -4,6 +4,8 @@
  * the tab label and the delete question. Nothing here touches the network or React.
  */
 
+import { runAbortable } from './abortable'
+
 export const REPORT_STATUSES = [
   { value: 'new', label: 'New' },
   { value: 'confirmed', label: 'Confirmed' },
@@ -52,6 +54,9 @@ export interface AdminReport {
   adminNote: string
   reviewedByName: string | null
   reviewedAt: string | null
+  /** Who last changed the admin note, and when; null when it was never edited. */
+  noteUpdatedByName: string | null
+  noteUpdatedAt: string | null
 }
 
 export function statusLabel(status: string): string {
@@ -83,7 +88,9 @@ export function parseReports(data: unknown): ParseResult<AdminReport[]> {
       !str(r.id) || !str(r.created_at) || !str(r.article_id) || !str(r.article_slug) || !str(r.article_title) ||
       !str(r.article_url) || !isSitePath(r.article_url) || !str(r.kind) || !str(r.message) ||
       !strOrNull(r.article_version) || !strOrNull(r.section) || !strOrNull(r.reporter_name) ||
-      !strOrNull(r.reviewed_by_name) || !strOrNull(r.reviewed_at) || !isReportStatus(r.status)
+      !strOrNull(r.reviewed_by_name) || !strOrNull(r.reviewed_at) || !isReportStatus(r.status) ||
+      !(r.note_updated_by_name === undefined || strOrNull(r.note_updated_by_name)) ||
+      !(r.note_updated_at === undefined || strOrNull(r.note_updated_at))
     ) {
       return { ok: false }
     }
@@ -104,6 +111,8 @@ export function parseReports(data: unknown): ParseResult<AdminReport[]> {
       adminNote: str(r.admin_note) ? r.admin_note : '',
       reviewedByName: r.reviewed_by_name,
       reviewedAt: r.reviewed_at,
+      noteUpdatedByName: typeof r.note_updated_by_name === 'string' ? r.note_updated_by_name : null,
+      noteUpdatedAt: typeof r.note_updated_at === 'string' ? r.note_updated_at : null,
     })
   }
   return { ok: true, value: out }
@@ -156,6 +165,12 @@ export function reviewedLine(r: Pick<AdminReport, 'reviewedByName' | 'reviewedAt
   return `Status last changed by ${r.reviewedByName ?? 'an admin'} on ${when(r.reviewedAt)}.`
 }
 
+/** "The note was last edited by <name> on <date>.", or null when the note was never edited. */
+export function noteLine(r: Pick<AdminReport, 'noteUpdatedByName' | 'noteUpdatedAt'>, when: (iso: string) => string): string | null {
+  if (!r.noteUpdatedAt) return null
+  return `Note last edited by ${r.noteUpdatedByName ?? 'an admin'} on ${when(r.noteUpdatedAt)}.`
+}
+
 /** What the database answered to an update or a delete. */
 export type MutationAnswer = 'ok' | 'denied' | 'invalid' | 'not_found' | 'unknown'
 
@@ -164,7 +179,7 @@ export function parseMutationAnswer(data: unknown): MutationAnswer {
 }
 
 /** Why a change was not saved, in words. `missing` is the migration not being applied. */
-export type ReportsFailure = 'login' | 'network' | 'malformed' | 'denied' | 'invalid' | 'not_found' | 'missing'
+export type ReportsFailure = 'login' | 'network' | 'malformed' | 'denied' | 'invalid' | 'not_found' | 'missing' | 'cancelled'
 
 export const REPORTS_FAILURE_TEXT: Readonly<Record<ReportsFailure, string>> = {
   login: 'Your session has ended. Log in again with an admin account.',
@@ -174,6 +189,7 @@ export const REPORTS_FAILURE_TEXT: Readonly<Record<ReportsFailure, string>> = {
   invalid: 'The database refused that change. Check the note is 2,000 characters or fewer.',
   not_found: 'That report no longer exists. Reload the list.',
   missing: 'Reports are not switched on yet. Apply migration 048.',
+  cancelled: 'Cancelled.',
 }
 
 export function failureFor(answer: MutationAnswer): ReportsFailure {
@@ -187,7 +203,7 @@ export function failureFor(answer: MutationAnswer): ReportsFailure {
 export type ReportsResult<T> = { ok: true; value: T } | { ok: false; reason: ReportsFailure }
 
 type RpcError = { code?: unknown; message?: unknown; status?: unknown } | null | undefined
-export type ReportsRpc = (name: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: RpcError }>
+export type ReportsRpc = (name: string, args?: Record<string, unknown>, signal?: AbortSignal) => Promise<{ data: unknown; error: RpcError }>
 
 /** Maps a failed call to its reason: a missing function is "not switched on", 42501 is a lost session. */
 export function failureOf(error: RpcError): ReportsFailure {
@@ -203,16 +219,24 @@ function isMissing(error: RpcError): boolean {
   return /could not find the function|schema cache|function .* does not exist/i.test(message)
 }
 
-export function createReportsApi(call: ReportsRpc) {
-  const run = async (name: string, args?: Record<string, unknown>) => {
+export function createReportsApi(call: ReportsRpc, options: { timeoutMs?: number } = {}) {
+  /** One call that gives up after the timeout (a network failure) or when `signal` fires (cancelled). */
+  const run = async (
+    name: string,
+    args?: Record<string, unknown>,
+    signal?: AbortSignal,
+  ): Promise<{ data: unknown; error: RpcError; cancelled?: true }> => {
     try {
-      return await call(name, args)
+      const r = await runAbortable((s) => call(name, args, s), signal, options.timeoutMs)
+      if (!r.aborted) return r.value
+      return r.reason === 'cancelled' ? { data: null, error: null, cancelled: true } : { data: null, error: { message: 'network' } }
     } catch {
-      return { data: null, error: { message: 'network' } as RpcError }
+      return { data: null, error: { message: 'network' } }
     }
   }
-  const mutation = async (name: string, args: Record<string, unknown>): Promise<ReportsResult<null>> => {
-    const { data, error } = await run(name, args)
+  const mutation = async (name: string, args: Record<string, unknown>, signal?: AbortSignal): Promise<ReportsResult<null>> => {
+    const { data, error, cancelled } = await run(name, args, signal)
+    if (cancelled) return { ok: false, reason: 'cancelled' }
     if (error) return { ok: false, reason: failureOf(error) }
     const answer = parseMutationAnswer(data)
     return answer === 'ok' ? { ok: true, value: null } : { ok: false, reason: failureFor(answer) }
@@ -230,9 +254,9 @@ export function createReportsApi(call: ReportsRpc) {
       const n = parseCount(data)
       return n === null ? { ok: false, reason: 'malformed' } : { ok: true, value: n }
     },
-    updateReport: (id: string, status: ReportStatus, note: string) =>
-      mutation('article_report_update', { p_id: id, p_status: status, p_note: note }),
-    deleteReport: (id: string) => mutation('article_report_delete', { p_id: id }),
+    updateReport: (id: string, status: ReportStatus, note: string, signal?: AbortSignal) =>
+      mutation('article_report_update', { p_id: id, p_status: status, p_note: note }, signal),
+    deleteReport: (id: string, signal?: AbortSignal) => mutation('article_report_delete', { p_id: id }, signal),
   }
 }
 

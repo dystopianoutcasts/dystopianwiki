@@ -35,13 +35,15 @@ const report: AdminReport = {
   adminNote: '',
   reviewedByName: null,
   reviewedAt: null,
+  noteUpdatedByName: null,
+  noteUpdatedAt: null,
 }
 
 const detail = (patch: Partial<ReportDetailProps> = {}): string =>
   staticMarkup(
     createElement(ReportDetailView, {
       report,
-      ids: { title: 't', status: 's', note: 'n' },
+      ids: { title: 't', status: 's', note: 'n', keep: 'k', deleteButton: 'd' },
       status: 'new',
       note: '',
       saving: false,
@@ -114,7 +116,10 @@ test('J3: a Status select, an Admin note box and a Save button; "Saved" and "Not
   assert.match(detail({ saveNote: { kind: 'saved' } }), /<p class="mascot-vote__hint">Saved<\/p>/)
   const failed = detail({ saveNote: { kind: 'error', text: 'We could not reach the server.' } })
   assert.match(failed, /role="alert">Not saved: We could not reach the server\./)
-  assert.match(detail({ saving: true }), /Saving\.\.\./)
+  assert.match(detail({ saving: true }), /aria-disabled="true">Saving\.\.\./, 'Save stays focusable while saving')
+  assert.match(detail({ saving: true }), />Cancel saving<\/button>/, 'and Close becomes Cancel saving, still enabled')
+  assert.match(detail({ report: { ...report, noteUpdatedByName: 'rp_admin', noteUpdatedAt: '2026-11-15T12:00:00Z' } }), /Note last edited by rp_admin on /)
+  assert.doesNotMatch(detail(), /Note last edited/)
   assert.match(detail({ report: { ...report, status: 'fixed', reviewedByName: 'rp_admin', reviewedAt: '2026-11-15T12:00:00Z' } }), /Status last changed by rp_admin on /)
 })
 
@@ -125,18 +130,13 @@ test('J4: Delete report is a visible button beside Save; it asks by name with De
   assert.match(ask, />Keep<\/button>/)
   assert.match(ask, />Delete<\/button>/)
   assert.doesNotMatch(ask, />Delete report<\/button>/)
-  assert.match(detail({ confirming: true, deleting: true }), /Deleting\.\.\./)
+  assert.match(detail({ confirming: true, deleting: true }), /aria-disabled="true">Deleting\.\.\./)
+  assert.match(ask, /<button id="k" type="button"[^>]*>Keep<\/button>/, 'Keep has the id the focus goes to')
+  assert.match(detail(), /<button id="d" type="button"[^>]*>Delete report<\/button>/, 'Delete report has the id focus returns to')
   assert.match(detail({ confirming: true, deleteError: 'That report no longer exists.' }), /role="alert">That report no longer exists\./)
 })
 
-test('the section: heading with the count, "Report deleted." after a delete, a not-switched-on message, empty states, and the dashboard mounts it', () => {
-  const section = code('components/admin/ReportsSection.tsx')
-  assert.match(section, /\{sectionLabel\(newCount\)\}/)
-  assert.match(section, /setFlash\('Report deleted\.'\)/)
-  assert.match(section, /EMPTY_TEXT\[filter\]/)
-  assert.match(section, /REPORTS_FAILURE_TEXT\[load\.reason\]/)
-  assert.match(section, /useState<ReportFilter>\(DEFAULT_FILTER\)/)
-  assert.match(section, /locked=\{saving \|\| deleting\}/, 'Escape cannot drop a save in flight')
+test('the dashboard mounts the Reports section', () => {
   assert.match(code('pages/AdminDashboardPage.tsx'), /<ReportsSection \/>/)
   assert.match(code('pages/AdminDashboardPage.tsx'), /import \{ ReportsSection \} from '\.\.\/components\/admin\/ReportsSection'/)
 })

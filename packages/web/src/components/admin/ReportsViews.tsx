@@ -11,6 +11,7 @@ import {
   deleteQuestion,
   formatDay,
   formatVersion,
+  noteLine,
   reporterText,
   reviewedLine,
   snippet,
@@ -92,7 +93,7 @@ export type SaveNote = { kind: 'saved' } | { kind: 'error'; text: string } | nul
 
 export interface ReportDetailProps {
   report: AdminReport
-  ids: { title: string; status: string; note: string }
+  ids: { title: string; status: string; note: string; keep: string; deleteButton: string }
   status: ReportStatus
   note: string
   saving: boolean
@@ -126,10 +127,10 @@ export function ReportDetailView(p: ReportDetailProps) {
           </p>
         )}
         <div className="mascot-dialog__actions">
-          <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary" disabled={p.deleting} onClick={p.onKeep}>
+          <button id={p.ids.keep} type="button" className="mascot-vote__btn mascot-vote__btn--secondary" onClick={p.onKeep}>
             Keep
           </button>
-          <button type="button" className="mascot-vote__btn mascot-vote__btn--primary" disabled={p.deleting} onClick={p.onDelete}>
+          <button type="button" className="mascot-vote__btn mascot-vote__btn--primary" aria-disabled={p.deleting ? true : undefined} onClick={p.onDelete}>
             {p.deleting ? 'Deleting...' : 'Delete'}
           </button>
         </div>
@@ -179,6 +180,7 @@ export function ReportDetailView(p: ReportDetailProps) {
         <textarea id={p.ids.note} className="admin__textarea" rows={3} maxLength={2000} value={p.note} disabled={p.saving} onChange={(e) => p.onNote(e.target.value)} />
       </div>
       <p className="mascot-vote__meta">{reviewedLine(report, formatWhen)}</p>
+      {noteLine(report, formatWhen) && <p className="mascot-vote__meta">{noteLine(report, formatWhen)}</p>}
 
       <div aria-live="polite">
         {p.saveNote?.kind === 'saved' && <p className="mascot-vote__hint">Saved</p>}
@@ -190,14 +192,14 @@ export function ReportDetailView(p: ReportDetailProps) {
       </div>
 
       <div className="admin__report-actions">
-        <button type="button" className="mascot-vote__btn mascot-vote__btn--primary" disabled={p.saving} onClick={p.onSave}>
+        <button type="button" className="mascot-vote__btn mascot-vote__btn--primary" aria-disabled={p.saving ? true : undefined} onClick={p.onSave}>
           {p.saving ? 'Saving...' : 'Save'}
         </button>
-        <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary" disabled={p.saving} onClick={p.onAskDelete}>
+        <button id={p.ids.deleteButton} type="button" className="mascot-vote__btn mascot-vote__btn--secondary" disabled={p.saving} onClick={p.onAskDelete}>
           Delete report
         </button>
-        <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary" disabled={p.saving} onClick={p.onClose}>
-          Close
+        <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary" onClick={p.onClose}>
+          {p.saving ? 'Cancel saving' : 'Close'}
         </button>
       </div>
     </div>

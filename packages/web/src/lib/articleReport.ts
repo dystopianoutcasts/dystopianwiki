@@ -7,6 +7,8 @@
  * run it directly.
  */
 
+import { runAbortable } from './abortable'
+
 export const REPORT_KINDS = [
   { value: 'wrong_fact', label: 'A fact is wrong' },
   { value: 'out_of_date', label: 'Out of date for the current game version' },
@@ -39,15 +41,15 @@ export interface ReportDraft {
 
 export const EMPTY_DRAFT: ReportDraft = { kind: '', section: WHOLE_PAGE, message: '', evidence: '', honeypot: '' }
 
-/** The page being reported, as the database wants it. */
+/**
+ * The page being reported. The database reads the slug, title and version from its own copy of
+ * the article by id; only the id and the path are sent, and the title is for the dialog's "On:" line.
+ */
 export interface ReportPage {
   articleId: string
-  slug: string
   title: string
   /** The site path, such as /pz/build-42/server/setup/getting-started. */
   url: string
-  /** The article's last_updated as the reader saw it. */
-  version: string
 }
 
 /** The words a person gets for a refused field, keyed by field. */
@@ -70,9 +72,14 @@ export function validateDraft(draft: ReportDraft): DraftProblems {
   else if (n > MESSAGE_MAX) problems.message = `Shorten this to ${MESSAGE_MAX} characters or fewer.`
   if (countChars(draft.evidence) > EVIDENCE_MAX) problems.evidence = `Shorten this to ${EVIDENCE_MAX} characters or fewer.`
   // The database refuses control characters other than a line break and a tab.
-  if (hasControlCharacters(draft.message)) problems.message = 'Remove the unusual characters from this text.'
-  if (hasControlCharacters(draft.evidence)) problems.evidence = 'Remove the unusual characters from this text.'
+  if (hasControlCharacters(draft.message) || hasHiddenFormatCharacters(draft.message)) problems.message = 'Remove the unusual or invisible characters from this text.'
+  if (hasControlCharacters(draft.evidence) || hasHiddenFormatCharacters(draft.evidence)) problems.evidence = 'Remove the unusual or invisible characters from this text.'
   return problems
+}
+
+/** Zero-width, direction-mark and bidi override or isolate characters: the database refuses them too. */
+export function hasHiddenFormatCharacters(text: string): boolean {
+  return /[​-‏‪-‮⁦-⁩]/.test(text)
 }
 
 export function hasControlCharacters(text: string): boolean {
@@ -105,15 +112,17 @@ export function evidenceCounter(text: string): { text: string; over: boolean } {
 // ---------------------------------------------------------------------------
 
 /** Why a send did not go through. */
-export type RefusedReason = 'rate_limited' | 'not_enabled' | 'network' | 'invalid'
+export type RefusedReason = 'rate_limited' | 'busy' | 'not_enabled' | 'network' | 'invalid'
 
 export type SendOutcome = { ok: true } | { ok: false; reason: RefusedReason }
 
 export const REFUSED_TEXT: Readonly<Record<RefusedReason, string>> = {
   rate_limited: 'Too many reports from you in the last hour. Please try again later.',
+  busy: 'Too many reports right now. Please sign in to send yours, or try again later.',
   not_enabled: 'Reports are not switched on yet.',
   network: 'Could not send. Check your connection and try again.',
-  invalid: 'The wiki could not accept that report. Check what you wrote and try again.',
+  // The form checks the reader's text itself, so the database refusing means the page, not the words.
+  invalid: 'This page cannot take reports. Please tell us on Discord.',
 }
 
 type RpcError = { code?: unknown; message?: unknown; status?: unknown } | null | undefined
@@ -135,20 +144,18 @@ export function classifyAnswer(data: unknown, error: RpcError): SendOutcome {
   if (error) return { ok: false, reason: isMissingFunction(error) ? 'not_enabled' : 'network' }
   if (data === 'ok') return { ok: true }
   if (data === 'rate_limited') return { ok: false, reason: 'rate_limited' }
+  if (data === 'busy') return { ok: false, reason: 'busy' }
   if (data === 'invalid') return { ok: false, reason: 'invalid' }
   // Anything else is an answer this page does not know: treat it as a failure to send.
   return { ok: false, reason: 'network' }
 }
 
-export type RpcCall = (name: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: RpcError }>
+export type RpcCall = (name: string, args: Record<string, unknown>, signal?: AbortSignal) => Promise<{ data: unknown; error: RpcError }>
 
 /** The arguments of submit_article_report. The reader's text is trimmed; empty optional fields are empty strings. */
 export function reportArgs(page: ReportPage, draft: ReportDraft): Record<string, unknown> {
   return {
     p_article_id: page.articleId,
-    p_article_slug: page.slug,
-    p_article_version: page.version.slice(0, 40),
-    p_article_title: Array.from(page.title.trim()).slice(0, 300).join(''),
     p_article_url: page.url,
     p_section: draft.section === WHOLE_PAGE ? null : Array.from(draft.section.trim()).slice(0, 200).join(''),
     p_kind: draft.kind,
@@ -159,13 +166,20 @@ export function reportArgs(page: ReportPage, draft: ReportDraft): Record<string,
 
 /**
  * Sends a report through `call`. A filled honeypot gets the success answer without anything
- * being sent. A call that throws is a network failure.
+ * being sent. A call that throws, takes longer than the timeout (15 s) or is cancelled is a
+ * network failure; a cancelled send is the caller's to ignore.
  */
-export async function sendReport(call: RpcCall, page: ReportPage, draft: ReportDraft): Promise<SendOutcome> {
+export async function sendReport(
+  call: RpcCall,
+  page: ReportPage,
+  draft: ReportDraft,
+  options: { signal?: AbortSignal; timeoutMs?: number } = {},
+): Promise<SendOutcome> {
   if (draft.honeypot.trim() !== '') return { ok: true }
   try {
-    const { data, error } = await call('submit_article_report', reportArgs(page, draft))
-    return classifyAnswer(data, error)
+    const result = await runAbortable((signal) => call('submit_article_report', reportArgs(page, draft), signal), options.signal, options.timeoutMs)
+    if (result.aborted) return { ok: false, reason: 'network' }
+    return classifyAnswer(result.value.data, result.value.error)
   } catch {
     return { ok: false, reason: 'network' }
   }

@@ -5,8 +5,12 @@
  * it; Escape closes it; the dialog is named by the element `labelledBy` points at.
  * Focus goes to `initialFocusRef` when given (otherwise the browser picks the first
  * control) and returns to whatever was focused when it opened.
+ *
+ * The decisions (when to open and close, what Escape and the backdrop do, where focus goes
+ * back to) are in dialogBehavior.ts, which the tests drive directly.
  */
 import { useEffect, useRef } from 'react'
+import { afterClose, onBackdropClick, onCancel, syncOpen } from './dialogBehavior'
 
 interface MascotDialogProps {
   open: boolean
@@ -22,18 +26,13 @@ interface MascotDialogProps {
 
 export function MascotDialog({ open, onClose, labelledBy, initialFocusRef, locked = false, className, children }: MascotDialogProps) {
   const ref = useRef<HTMLDialogElement>(null)
-  const opener = useRef<Element | null>(null)
+  const opener = useRef<unknown>(null)
 
   useEffect(() => {
     const dialog = ref.current
     if (!dialog) return
-    if (open && !dialog.open) {
-      opener.current = document.activeElement
-      dialog.showModal()
-      initialFocusRef?.current?.focus()
-    } else if (!open && dialog.open) {
-      dialog.close()
-    }
+    const opened = syncOpen(dialog, open, document.activeElement, () => initialFocusRef?.current?.focus())
+    if (opened) opener.current = opened.opener
     // initialFocusRef is a stable ref object.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
@@ -42,8 +41,7 @@ export function MascotDialog({ open, onClose, labelledBy, initialFocusRef, locke
   const handleClose = () => {
     const target = opener.current
     opener.current = null
-    if (target instanceof HTMLElement && target.isConnected) target.focus()
-    onClose()
+    afterClose(target, onClose)
   }
 
   return (
@@ -53,11 +51,10 @@ export function MascotDialog({ open, onClose, labelledBy, initialFocusRef, locke
       aria-labelledby={labelledBy}
       onClose={handleClose}
       onCancel={(e) => {
-        if (locked) e.preventDefault()
+        onCancel(locked, e)
       }}
       onClick={(e) => {
-        // A click on the backdrop lands on the <dialog> itself, not on its content.
-        if (!locked && e.target === e.currentTarget) e.currentTarget.close()
+        onBackdropClick(locked, e)
       }}
     >
       {open && <div className="mascot-dialog__body">{children}</div>}

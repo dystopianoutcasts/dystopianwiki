@@ -2,7 +2,8 @@
 import { api } from './supabase'
 import { createReportsApi } from './articleReportsAdmin'
 
-export const reportsApi = createReportsApi(async (name, args) => {
-  const { data, error } = await api.getClient().rpc(name, args)
+export const reportsApi = createReportsApi(async (name, args, signal) => {
+  const request = api.getClient().rpc(name, args)
+  const { data, error } = await (signal ? request.abortSignal(signal) : request)
   return { data, error: error as { code?: unknown; message?: unknown; status?: unknown } | null }
 })

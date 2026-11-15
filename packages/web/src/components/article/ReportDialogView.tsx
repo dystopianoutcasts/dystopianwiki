@@ -221,7 +221,7 @@ function ReportFields({ ids, pageTitle, draft, state, sections, sender, onChange
       <div className="report-trap" aria-hidden="true">
         <label>
           Leave this field empty
-          <input type="text" name="website" tabIndex={-1} autoComplete="off" value={draft.honeypot} onChange={(e) => onChange({ honeypot: e.target.value })} />
+          <input type="text" name="q7_trap" tabIndex={-1} autoComplete="off" value={draft.honeypot} onChange={(e) => onChange({ honeypot: e.target.value })} />
         </label>
       </div>
 
@@ -239,10 +239,11 @@ function ReportFields({ ids, pageTitle, draft, state, sections, sender, onChange
       </div>
 
       <div className="report-actions">
-        <button type="button" className="report-btn report-btn--secondary" disabled={sending} onClick={onCancel}>
-          Cancel
+        <button type="button" className="report-btn report-btn--secondary" onClick={onCancel}>
+          {sending ? 'Cancel sending' : 'Cancel'}
         </button>
-        <button type="submit" className="report-btn report-btn--primary" disabled={sending}>
+        {/* aria-disabled, not disabled: a disabled button drops keyboard focus to the page behind the dialog. */}
+        <button type="submit" className="report-btn report-btn--primary" aria-disabled={sending ? true : undefined}>
           {sending ? 'Sending...' : 'Send report'}
         </button>
       </div>

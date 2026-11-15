@@ -30,7 +30,7 @@ import {
   type SendState,
 } from './articleReport'
 
-const PAGE: ReportPage = { articleId: 'a1', slug: 'getting-started', title: 'Getting started', url: '/pz/build-42/server/setup/getting-started', version: '2026-11-01T00:00:00Z' }
+const PAGE: ReportPage = { articleId: 'a1', title: 'Getting started', url: '/pz/build-42/server/setup/getting-started' }
 const GOOD: ReportDraft = { ...EMPTY_DRAFT, kind: 'wrong_fact', message: 'The page says five, the game uses seven.' }
 
 test('the five choices are the five the spec names, in order', () => {
@@ -80,9 +80,6 @@ test('the arguments carry the page, the trimmed text, and NULL for the whole pag
   const a = reportArgs(PAGE, { ...GOOD, message: '  spaced out message here  ', evidence: ' ', section: '' })
   assert.deepEqual(a, {
     p_article_id: 'a1',
-    p_article_slug: 'getting-started',
-    p_article_version: '2026-11-01T00:00:00Z',
-    p_article_title: 'Getting started',
     p_article_url: '/pz/build-42/server/setup/getting-started',
     p_section: null,
     p_kind: 'wrong_fact',
@@ -90,7 +87,7 @@ test('the arguments carry the page, the trimmed text, and NULL for the whole pag
     p_evidence: '',
   })
   assert.equal(reportArgs(PAGE, { ...GOOD, section: 'Setup' }).p_section, 'Setup')
-  assert.equal(String(reportArgs({ ...PAGE, title: 'T'.repeat(400) }, GOOD).p_article_title).length, 300)
+  assert.equal('p_article_title' in a || 'p_article_slug' in a || 'p_article_version' in a, false, 'the slug, title and version are read by the database, not sent')
   assert.equal(Object.keys(reportArgs(PAGE, GOOD)).some((k) => /reporter|user|ip/i.test(k)), false, 'the caller never names the reporter')
 })
 
@@ -98,6 +95,7 @@ test('every answer of the database maps to one outcome', () => {
   assert.deepEqual(classifyAnswer('ok', null), { ok: true })
   assert.deepEqual(classifyAnswer('rate_limited', null), { ok: false, reason: 'rate_limited' })
   assert.deepEqual(classifyAnswer('invalid', null), { ok: false, reason: 'invalid' })
+  assert.deepEqual(classifyAnswer('busy', null), { ok: false, reason: 'busy' })
   assert.deepEqual(classifyAnswer('something else', null), { ok: false, reason: 'network' })
   assert.deepEqual(classifyAnswer(null, null), { ok: false, reason: 'network' })
   assert.deepEqual(classifyAnswer(null, { message: 'Failed to fetch' }), { ok: false, reason: 'network' })
@@ -119,6 +117,8 @@ test('a missing function (migration 048 not applied) is "not switched on yet"', 
   assert.equal(REFUSED_TEXT.not_enabled, 'Reports are not switched on yet.')
   assert.equal(REFUSED_TEXT.rate_limited, 'Too many reports from you in the last hour. Please try again later.')
   assert.equal(REFUSED_TEXT.network, 'Could not send. Check your connection and try again.')
+  assert.equal(REFUSED_TEXT.busy, 'Too many reports right now. Please sign in to send yours, or try again later.')
+  assert.match(REFUSED_TEXT.invalid, /^This page cannot take reports\. Please tell us on Discord\.$/, 'a database refusal blames the page, not the reader')
 })
 
 test('sendReport calls submit_article_report once; a missing function, a throw and a rate limit come back as reasons', async () => {
@@ -137,6 +137,24 @@ test('sendReport calls submit_article_report once; a missing function, a throw a
     throw new TypeError('Failed to fetch')
   }
   assert.deepEqual(await sendReport(down, PAGE, GOOD), { ok: false, reason: 'network' })
+})
+
+test('a request that hangs gives up at the timeout as a network failure; cancelling does too (the caller drops it)', async () => {
+  const hang: RpcCall = () => new Promise(() => {})
+  assert.deepEqual(await sendReport(hang, PAGE, GOOD, { timeoutMs: 20 }), { ok: false, reason: 'network' })
+  const c = new AbortController()
+  const pending = sendReport(hang, PAGE, GOOD, { signal: c.signal, timeoutMs: 5000 })
+  c.abort()
+  assert.deepEqual(await pending, { ok: false, reason: 'network' })
+})
+
+test('hidden direction and zero-width characters are refused in the message and the evidence', () => {
+  for (const code of [0x200b, 0x200e, 0x200f, 0x202a, 0x202e, 0x2066, 0x2069]) {
+    const bad = 'long enough text' + String.fromCodePoint(code) + 'more'
+    assert.ok(validateDraft({ ...GOOD, message: bad }).message, code.toString(16))
+    assert.ok(validateDraft({ ...GOOD, evidence: bad }).evidence, code.toString(16))
+  }
+  assert.equal(validateDraft({ ...GOOD, message: 'plain accents: caf\u00e9 and an emoji ' + String.fromCodePoint(0x1f600) }).message, undefined)
 })
 
 test('a filled honeypot shows success and sends nothing', async () => {
@@ -166,7 +184,7 @@ test('state machine: idle -> sending -> sent, and each refusal keeps the reader 
   assert.deepEqual(sendReducer(sent, { type: 'submit', draft: GOOD }), { phase: 'sent' }, 'sent stays sent')
   assert.deepEqual(sendReducer(sent, { type: 'answer', outcome: { ok: false, reason: 'network' } }), { phase: 'sent' })
 
-  for (const reason of ['rate_limited', 'not_enabled', 'network', 'invalid'] as const) {
+  for (const reason of ['rate_limited', 'busy', 'not_enabled', 'network', 'invalid'] as const) {
     const refused = sendReducer(s, { type: 'answer', outcome: { ok: false, reason } })
     assert.deepEqual(refused, { phase: 'refused', reason })
     assert.deepEqual(sendReducer(refused, { type: 'submit', draft: GOOD }), { phase: 'sending' }, `${reason}: sending again is allowed`)

@@ -57,9 +57,6 @@ test('J1.2: the dialog is titled "Report a problem" and names the page', () => {
   const html = form()
   assert.match(html, /<h2 id="r-title" class="report-dialog__title">Report a problem<\/h2>/)
   assert.match(html, /On: <strong>Getting started<\/strong>/)
-  const dialog = code('components/article/ReportDialog.tsx')
-  assert.match(dialog, /labelledBy=\{ids\.title\}/)
-  assert.match(dialog, /<MascotDialog /)
 })
 
 test('J1.3: five labeled radio choices, none picked at first; the picked one is checked', () => {
@@ -103,21 +100,17 @@ test('J1.7: the note, and "Sent as <name>" signed in or "Sent without your name.
   assert.match(form({ sender: 'rp_reader' }), /Do not include passwords or personal details\. Sent as rp_reader\./)
 })
 
-test('J1.8: Send report is the main button; Cancel closes without sending; Escape and focus return come from the dialog', () => {
+test('J1.8: Send report is the main button and Cancel is beside it', () => {
   const html = form()
-  assert.match(html, /<button type="button" class="report-btn report-btn--secondary" disabled="false">Cancel<\/button>/)
-  assert.match(html, /<button type="submit" class="report-btn report-btn--primary" disabled="false">Send report<\/button>/)
-  const dialog = readFileSync(join(SRC, 'components/mascot/MascotDialog.tsx'), 'utf8')
-  assert.match(dialog, /showModal\(\)/, 'a modal: everything behind it is inert, so focus is trapped')
-  assert.match(dialog, /target\.focus\(\)/, 'focus returns to the opener')
-  assert.match(dialog, /onClose=\{handleClose\}/, 'Escape closes it')
-  assert.match(code('components/article/ReportDialog.tsx'), /locked=\{state\.phase === 'sending'\}/, 'but not while a report is going out')
+  assert.match(html, /<button type="button" class="report-btn report-btn--secondary">Cancel<\/button>/)
+  assert.match(html, /<button type="submit" class="report-btn report-btn--primary">Send report<\/button>/)
 })
 
-test('J1.9: while sending the button reads "Sending..." and is disabled; the form is locked', () => {
+test('J1.9: while sending the button reads "Sending..." and is aria-disabled (it keeps focus); Cancel stays available and says what it does', () => {
   const html = withState({ phase: 'sending' })
-  assert.match(html, /<button type="submit" class="report-btn report-btn--primary" disabled="true">Sending\.\.\.<\/button>/)
-  assert.match(html, /<button type="button" class="report-btn report-btn--secondary" disabled="true">Cancel/)
+  assert.match(html, /<button type="submit" class="report-btn report-btn--primary" aria-disabled="true">Sending\.\.\.<\/button>/)
+  assert.doesNotMatch(html, /<button type="submit"[^>]*[^-]disabled=/, 'a disabled Send would drop keyboard focus to the page behind the dialog')
+  assert.match(html, /<button type="button" class="report-btn report-btn--secondary">Cancel sending<\/button>/)
   assert.match(html, /<textarea id="r-message"[^>]*disabled="true"/)
 })
 
@@ -126,10 +119,6 @@ test('J1.9: on success the dialog shows the thanks and a Close button, and no fo
   assert.match(html, /Thanks, your report was sent\. We review every report by hand\./)
   assert.match(html, />Close<\/button>/)
   assert.doesNotMatch(html, /<textarea|<form|Send report/)
-})
-
-test('a refusal on a small screen is scrolled into view', () => {
-  assert.match(code('components/article/ReportDialog.tsx'), /state\.phase === 'refused'\) document\.getElementById\(ids\.live\)\?\.scrollIntoView/)
 })
 
 test('J1.10: each failure says why in words, and keeps what the reader typed', () => {
@@ -159,7 +148,8 @@ test('a press with a missing field names the problem next to the field and in an
 test('the honeypot is out of sight and the tab order, hidden from screen readers, and empty by default', () => {
   const html = form()
   assert.match(html, /<div class="report-trap" aria-hidden="true">/)
-  assert.match(html, /<input type="text" name="website" tabindex="-1" autoComplete="off" value=""/i)
+  assert.match(html, /<input type="text" name="q7_trap" tabindex="-1" autoComplete="off" value=""/i)
+  assert.doesNotMatch(html, /name="(website|url|email|phone|name)"/, 'a name browsers autofill would drop a real report')
   const css = readFileSync(join(SRC, 'styles/components/report-dialog.css'), 'utf8')
   assert.match(css, /\.report-trap \{[^}]*position: absolute;[^}]*left: -10000px/)
   assert.doesNotMatch(css, /\.report-trap \{[^}]*display: none/)
