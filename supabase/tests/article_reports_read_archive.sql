@@ -64,7 +64,9 @@ $$;
 
 -- The backfill: the same statement the migration runs once when it adds the columns, applied to
 -- rows that start with read_at NULL (as old rows did). Triaged (status not new) start read, new ones
--- start unread. These rows are removed again before the real fixtures are used.
+-- start unread. These rows are removed again before the real fixtures are used. The UPDATE is
+-- limited to these two rows: unlimited, it also marked fixture ra...a4 ('fixed') read, and the
+-- next check failed with "a refused call still changed a report" (owner's first run, 2026-11-15).
 INSERT INTO public.article_reports (id, created_at, article_id, article_slug, article_title, article_url, kind, message, reporter_hash, status, reviewed_at)
 VALUES
   ('d0000000-0000-4000-8000-0000000000b1', now() - interval '9 hours', 'ra-b1', 'ra-b-one', 'B1', '/pz/ra-b-one', 'other', 'old new report', 'h', 'new', NULL),
@@ -72,7 +74,8 @@ VALUES
 UPDATE public.article_reports
    SET read_at = coalesce(reviewed_at, created_at),
        read_by = reviewed_by
- WHERE status <> 'new' AND read_at IS NULL;
+ WHERE status <> 'new' AND read_at IS NULL
+   AND id IN ('d0000000-0000-4000-8000-0000000000b1', 'd0000000-0000-4000-8000-0000000000b2');
 DO $$
 BEGIN
   IF (SELECT read_at FROM public.article_reports WHERE id = 'd0000000-0000-4000-8000-0000000000b1') IS NOT NULL THEN
