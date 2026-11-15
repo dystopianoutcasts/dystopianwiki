@@ -13,9 +13,9 @@
  */
 
 /** The release tag on dystopianoutcasts/OutcastBuddy-Installer, without the leading "v". */
-export const INSTALLER_VERSION = '3.0.0-beta10'
+export const INSTALLER_VERSION = '3.0.0-beta11'
 /** SHA-256 of OutcastBuddyInstaller.exe in that release (checked 2026-11-15 against GitHub's digest). */
-export const INSTALLER_SHA256 = '1154263128ACCE404F02649A482E9CB86EB9C63D71EB6ED9B909F5A35667C6FD'
+export const INSTALLER_SHA256 = '3A49F4AFAD408420225FFC1ACBB7ED0CD1F87E60F869614ECAF2A75075D0CB45'
 export const INSTALLER_BYTES = 9174528
 /** When the release was published, ISO date. */
 export const INSTALLER_DATE = '2026-11-15'
