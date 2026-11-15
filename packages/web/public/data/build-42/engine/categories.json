@@ -63,6 +63,14 @@
       "icon": "activity",
       "articleCount": 7,
       "displayOrder": 8
+    },
+    {
+      "id": "input-and-controls",
+      "name": "Input and Controls",
+      "description": "How Build 42.22 reads the keyboard, mouse and controllers: default keys, rebinding, the input events, mod keybinds, joypad windows, aiming and a full reference.",
+      "icon": "gamepad",
+      "articleCount": 6,
+      "displayOrder": 9
     }
   ]
 }

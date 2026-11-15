@@ -2504,6 +2504,118 @@
     "difficulty": "advanced"
   },
   {
+    "id": "build-42-controllers-and-joypads",
+    "title": "Controllers and joypads",
+    "slug": "controllers-and-joypads",
+    "url": "/pz/build-42/engine/input-and-controls/controllers-and-joypads",
+    "version": "build-42",
+    "section": "engine",
+    "category": "input-and-controls",
+    "tags": [
+      "engine",
+      "input",
+      "controller",
+      "ui",
+      "modding",
+      "lua"
+    ],
+    "excerpt": "How a controller drives the interface in Build 42.22: joypad focus, the calls a UI element receives, the OnJoypad events, and how to make a mod window usable with a controller.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-how-controls-and-keybinds-work",
+    "title": "How controls and keybinds work",
+    "slug": "how-controls-and-keybinds-work",
+    "url": "/pz/build-42/engine/input-and-controls/how-controls-and-keybinds-work",
+    "version": "build-42",
+    "section": "engine",
+    "category": "input-and-controls",
+    "tags": [
+      "engine",
+      "input",
+      "keybinds",
+      "controller",
+      "aiming"
+    ],
+    "excerpt": "The default keys, how to change them and where they are saved, what a controller can do, why two actions can share a key, and how aiming works with a mouse or a stick.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-input-reference",
+    "title": "Input reference",
+    "slug": "input-reference",
+    "url": "/pz/build-42/engine/input-and-controls/input-reference",
+    "version": "build-42",
+    "section": "engine",
+    "category": "input-and-controls",
+    "tags": [
+      "engine",
+      "input",
+      "reference",
+      "events",
+      "keybinds",
+      "controller"
+    ],
+    "excerpt": "Every input event with its arguments and where it fires, every default key binding, every KeybindId, the default controller bindings and the Lua-callable input methods in Build 42.22.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-inside-input",
+    "title": "Inside input",
+    "slug": "inside-input",
+    "url": "/pz/build-42/engine/input-and-controls/inside-input",
+    "version": "build-42",
+    "section": "engine",
+    "category": "input-and-controls",
+    "tags": [
+      "engine",
+      "input",
+      "events",
+      "modding",
+      "controller"
+    ],
+    "excerpt": "How a key press, a mouse click or a controller button becomes a Lua event in Build 42.22: the per-frame states, who fires what, in what order, and which events carry which arguments.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-keys-events-and-mod-keybinds",
+    "title": "Keys, events and mod keybinds",
+    "slug": "keys-events-and-mod-keybinds",
+    "url": "/pz/build-42/engine/input-and-controls/keys-events-and-mod-keybinds",
+    "version": "build-42",
+    "section": "engine",
+    "category": "input-and-controls",
+    "tags": [
+      "engine",
+      "input",
+      "keybinds",
+      "events",
+      "modding",
+      "lua"
+    ],
+    "excerpt": "Which key event to use, how to read a binding, and how to add a key to your mod that players can rebind, with a complete example from an empty folder.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-mouse-and-aiming",
+    "title": "Mouse and aiming",
+    "slug": "mouse-and-aiming",
+    "url": "/pz/build-42/engine/input-and-controls/mouse-and-aiming",
+    "version": "build-42",
+    "section": "engine",
+    "category": "input-and-controls",
+    "tags": [
+      "engine",
+      "input",
+      "mouse",
+      "aiming",
+      "modding",
+      "lua"
+    ],
+    "excerpt": "How Build 42.22 turns mouse clicks into world and menu events, why the UI gets the click first, and how the aiming modes and the reticle follow the mouse or a stick.",
+    "difficulty": "advanced"
+  },
+  {
     "id": "build-42-hit-reactions-and-ballistics",
     "title": "Hit reactions and ballistics",
     "slug": "hit-reactions-and-ballistics",
