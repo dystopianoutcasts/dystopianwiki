@@ -196,14 +196,6 @@ export function OutcastBuddyPage() {
               Go to <strong>Options</strong>, then <strong>Mods</strong>, then{' '}
               <strong>Outcast Buddy</strong>, and uncheck "Show the Outcast loading screen".
             </dd>
-            <dt>On a Mac or Linux?</dt>
-            <dd>
-              The installer is for Windows. Message us on{' '}
-              <a href={DISCORD_URL} target="_blank" rel="noopener noreferrer">
-                our Discord
-              </a>{' '}
-              and we'll gladly help you set it up by hand.
-            </dd>
           </dl>
         </section>
 
