@@ -13,7 +13,7 @@
 --   reader  ...21  an ordinary member (username rp_reader)
 --   other   ...22  a second member (rate limit is per account)
 --   admin   ...23  aurora_admin (username rp_admin)
--- Fixture articles: rp-art-1 (slug sample-article), rp-art-camel (slug vanilla-newBags)
+-- Fixture articles: rp-art-1 (slug rp-sample-article), rp-art-camel (slug rp-Camel-Slug)
 
 BEGIN;
 
@@ -31,8 +31,8 @@ VALUES
 
 INSERT INTO public.articles (id, slug, title, content, game, version, section, category)
 VALUES
-  ('rp-art-1', 'sample-article', 'A sample article', 'x', 'pz', 'build-42', 'modding', 'lua'),
-  ('rp-art-camel', 'vanilla-newBags', 'Vanilla newBags', 'x', 'pz', 'build-41', 'modding', 'vanilla-reference');
+  ('rp-art-1', 'rp-sample-article', 'A sample article', 'x', 'pz', 'build-42', 'modding', 'lua'),
+  ('rp-art-camel', 'rp-Camel-Slug', 'A camel-case slug', 'x', 'pz', 'build-41', 'modding', 'vanilla-reference');
 
 -- Live reports may exist; these tests count rows, so start from an empty table (this transaction only).
 DELETE FROM public.article_reports;
@@ -90,7 +90,7 @@ DO $$
 DECLARE
   r text;
   i integer;
-  u constant text := '/pz/build-42/modding/lua/sample-article';
+  u constant text := '/pz/build-42/modding/lua/rp-sample-article';
   m constant text := 'a long enough message';
 BEGIN
   r := public.submit_article_report('rp-art-1', u, 'Setup', 'wrong_fact', 'The page says 5 but the game uses 7.', 'Build 42.13, file X line 9');
@@ -114,10 +114,10 @@ BEGIN
 
   -- The page is looked up by id: an unknown id is invalid, and a slug with capitals works.
   IF public.submit_article_report('no-such-article', u, NULL, 'other', m, '') <> 'invalid' THEN RAISE EXCEPTION 'FAIL: an unknown article id was accepted'; END IF;
-  IF public.submit_article_report('rp-art-camel', '/pz/build-41/modding/vanilla-reference/vanilla-newBags', NULL, 'other', 'A real article with a capital in its slug.', '') <> 'ok' THEN
+  IF public.submit_article_report('rp-art-camel', '/pz/build-41/modding/vanilla-reference/rp-Camel-Slug', NULL, 'other', 'A real article with a capital in its slug.', '') <> 'ok' THEN
     RAISE EXCEPTION 'FAIL: an article whose slug has a capital letter was refused';
   END IF;
-  RAISE NOTICE 'PASS the article is looked up by id; unknown ids are invalid; vanilla-newBags is accepted';
+  RAISE NOTICE 'PASS the article is looked up by id; unknown ids are invalid; rp-Camel-Slug is accepted';
 
   -- Input cleaning: padding is trimmed before the length check, and format or bidi characters are refused.
   IF public.submit_article_report('rp-art-1', u, NULL, 'other', E'\t\r\n   short   \n\t', '') <> 'invalid' THEN RAISE EXCEPTION 'FAIL: tabs and line breaks counted toward the length'; END IF;
@@ -145,7 +145,7 @@ $$;
 SELECT set_config('request.headers', '{"x-forwarded-for":"198.51.100.9"}', TRUE);
 DO $$
 BEGIN
-  IF public.submit_article_report('rp-art-1', '/pz/build-42/modding/lua/sample-article', NULL, 'unclear', 'This part is hard to follow.', '') <> 'ok' THEN
+  IF public.submit_article_report('rp-art-1', '/pz/build-42/modding/lua/rp-sample-article', NULL, 'unclear', 'This part is hard to follow.', '') <> 'ok' THEN
     RAISE EXCEPTION 'FAIL: a different address was rate limited by the first';
   END IF;
   RAISE NOTICE 'PASS another address has its own limit';
@@ -156,7 +156,7 @@ $$;
 DO $$
 DECLARE
   i integer;
-  u constant text := '/pz/build-42/modding/lua/sample-article';
+  u constant text := '/pz/build-42/modding/lua/rp-sample-article';
 BEGIN
   FOR i IN 1..5 LOOP
     PERFORM set_config('request.headers', format('{"x-forwarded-for":"10.9.9.%s, 192.0.2.50"}', i), TRUE);
@@ -213,10 +213,10 @@ BEGIN
   IF EXISTS (SELECT 1 FROM public.article_reports WHERE reporter_id IS NOT NULL) THEN
     RAISE EXCEPTION 'FAIL: a signed-out report carries a reporter';
   END IF;
-  IF EXISTS (SELECT 1 FROM public.article_reports WHERE article_id = 'rp-art-1' AND (article_slug <> 'sample-article' OR article_title <> 'A sample article')) THEN
+  IF EXISTS (SELECT 1 FROM public.article_reports WHERE article_id = 'rp-art-1' AND (article_slug <> 'rp-sample-article' OR article_title <> 'A sample article')) THEN
     RAISE EXCEPTION 'FAIL: the slug or title was not taken from the article row';
   END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.article_reports WHERE article_slug = 'vanilla-newBags' AND article_version ~ '^\d{4}-\d\d-\d\dT') THEN
+  IF NOT EXISTS (SELECT 1 FROM public.article_reports WHERE article_slug = 'rp-Camel-Slug' AND article_version ~ '^\d{4}-\d\d-\d\dT') THEN
     RAISE EXCEPTION 'FAIL: the camel-case slug or the version was not stored';
   END IF;
   RAISE NOTICE 'PASS the address is stored only as a SHA-256 digest; signed-out reports have no reporter; the page columns come from the table';
@@ -234,7 +234,7 @@ SELECT set_config('request.headers', '{"x-forwarded-for":"203.0.113.7"}', TRUE);
 DO $$
 DECLARE
   i integer;
-  u constant text := '/pz/build-42/modding/lua/sample-article';
+  u constant text := '/pz/build-42/modding/lua/rp-sample-article';
 BEGIN
   -- Same address as an exhausted anon one: the account has its own limit.
   FOR i IN 1..5 LOOP
@@ -252,7 +252,7 @@ $$;
 SELECT set_config('request.jwt.claims', '{"sub":"d0000000-0000-4000-8000-000000000022","role":"authenticated"}', TRUE);
 DO $$
 BEGIN
-  IF public.submit_article_report('rp-art-1', '/pz/build-42/modding/lua/sample-article', NULL, 'other', 'A different account is not limited.', '') <> 'ok' THEN
+  IF public.submit_article_report('rp-art-1', '/pz/build-42/modding/lua/rp-sample-article', NULL, 'other', 'A different account is not limited.', '') <> 'ok' THEN
     RAISE EXCEPTION 'FAIL: a second account was limited by the first';
   END IF;
   -- A non-admin gets nothing from the admin functions.
@@ -350,7 +350,7 @@ RESET ROLE;
 
 -- 60 signed-out reports in the last hour, from 60 different senders.
 INSERT INTO public.article_reports (article_id, article_slug, article_title, article_url, kind, message, reporter_hash)
-SELECT 'rp-art-1', 'sample-article', 'A sample article', '/pz/build-42/modding/lua/sample-article', 'other',
+SELECT 'rp-art-1', 'rp-sample-article', 'A sample article', '/pz/build-42/modding/lua/rp-sample-article', 'other',
        'filler report number ' || g, encode(sha256(convert_to('filler-' || g, 'UTF8')), 'hex')
   FROM generate_series(1, 60) g;
 
@@ -359,7 +359,7 @@ SELECT set_config('request.jwt.claims', '', TRUE);
 SELECT set_config('request.headers', '{"x-forwarded-for":"192.0.2.200"}', TRUE);
 DO $$
 BEGIN
-  IF public.submit_article_report('rp-art-1', '/pz/build-42/modding/lua/sample-article', NULL, 'other', 'a brand new sender, but the cap is global', '') <> 'busy' THEN
+  IF public.submit_article_report('rp-art-1', '/pz/build-42/modding/lua/rp-sample-article', NULL, 'other', 'a brand new sender, but the cap is global', '') <> 'busy' THEN
     RAISE EXCEPTION 'FAIL: the global signed-out cap did not refuse';
   END IF;
   RAISE NOTICE 'PASS 60 signed-out reports an hour in all: the next one is busy';
@@ -372,7 +372,7 @@ SET LOCAL ROLE authenticated;
 SELECT set_config('request.jwt.claims', '{"sub":"d0000000-0000-4000-8000-000000000022","role":"authenticated"}', TRUE);
 DO $$
 BEGIN
-  IF public.submit_article_report('rp-art-1', '/pz/build-42/modding/lua/sample-article', NULL, 'other', 'signed in is not held by the anonymous cap', '') <> 'ok' THEN
+  IF public.submit_article_report('rp-art-1', '/pz/build-42/modding/lua/rp-sample-article', NULL, 'other', 'signed in is not held by the anonymous cap', '') <> 'ok' THEN
     RAISE EXCEPTION 'FAIL: a signed-in member was refused by the signed-out cap';
   END IF;
   RAISE NOTICE 'PASS the global cap does not apply to signed-in members';
