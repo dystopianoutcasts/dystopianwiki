@@ -53,7 +53,7 @@ When you finish, the MODS screen shows **Recipe Demo Skeleton** with a poster, a
 
 **A few small files and two folders make a mod the game can load.**
 
-The tree below is the whole mod, starting at `Zomboid/mods/`. The `common` folder is optional and stays empty here; the loader does not need anything in it. The test mod keeps it as an empty folder, which needs no placeholder file.
+The tree below is the whole mod, starting at `Zomboid/mods/`. The `common` folder is optional and stays empty here; the loader does not need anything in it, except that a mod with a map must put it under `common/media/maps/` (see the [map recipe](/pz/build-42/modding/cookbook/map-building-basement)). :cite[(`zombie/MapGroups.java:123-150`)] The test mod keeps it as an empty folder, which needs no placeholder file.
 
 ```
 Zomboid/mods/RecipeDemoSkeleton/
