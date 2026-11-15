@@ -64,7 +64,7 @@ When the action begins, `create` makes a `LuaTimedActionNew` Java object and sto
 
 The action's file goes in `media/lua/shared`, because the server finds the class by its global name and so must load the file. :cite[(`zombie/core/NetTimedAction.java:156-157`)] Vanilla's `ISHandcraftAction` is a global defined in a `shared` file for that reason. :cite[(`media/lua/shared/Entity/TimedActions/ISHandcraftAction.lua:1-3`)]
 
-A mod you can try has this layout, in a folder `MyTimedAction` inside the `mods` folder of your game's cache directory. :cite[(`zombie/ZomboidFileSystem.java:1403-1405`)]
+A mod you can try has this layout, in a folder `MyTimedAction` inside the `mods` folder of your game's cache directory. :cite[(`zombie/ZomboidFileSystem.java:548-552`)]
 
 ```
 MyTimedAction/
