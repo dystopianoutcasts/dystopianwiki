@@ -1,0 +1,284 @@
+/* "Report a problem": the two buttons on an article and the dialog they open.
+   Tokens only, so the light and dark themes both work. Targets are 44 px or more except the
+   small text button under the title, which is 32 px tall and has room around it. */
+
+.report-open {
+  font: inherit;
+  cursor: pointer;
+}
+
+.report-open:focus-visible,
+.report-btn:focus-visible,
+.report-input:focus-visible,
+.report-radio input:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Under the title: a text button, quiet, but plainly a button. */
+.report-open--link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  margin: var(--spacing-1) 0 0;
+  padding: 0 var(--spacing-2);
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-md);
+  background: transparent;
+  color: var(--color-link);
+  font-size: var(--font-size-sm);
+  text-decoration: underline;
+}
+
+.report-open--link:hover {
+  color: var(--color-link-hover);
+  background: var(--color-surface);
+}
+
+/* At the end of the article: a full button. */
+.report-open--block {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--spacing-5);
+  border: 2px solid var(--color-control-border);
+  border-radius: var(--border-radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.report-open--block:hover {
+  background: var(--color-surface-elevated);
+}
+
+.wiki-article__report {
+  margin-top: var(--spacing-8);
+  padding-top: var(--spacing-6);
+  border-top: 1px solid var(--color-border);
+}
+
+.wiki-article__report-text {
+  margin: 0 0 var(--spacing-3);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* ---- The dialog (a native <dialog>; its own rules, so it needs no other page's CSS) ---- */
+
+.report-dialog {
+  width: min(94vw, 600px);
+  max-height: 92vh;
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  border: 2px solid var(--color-accent-500);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-xl);
+}
+
+.report-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.report-dialog .mascot-dialog__body {
+  padding: var(--spacing-5);
+  line-height: var(--line-height-relaxed);
+}
+
+.report-dialog__title {
+  margin: 0 0 var(--spacing-2);
+  font-size: var(--font-size-2xl);
+}
+
+.report-form__page {
+  margin: 0 0 var(--spacing-4);
+  overflow-wrap: anywhere;
+}
+
+.report-fieldset {
+  min-width: 0;
+  margin: 0 0 var(--spacing-4);
+  padding: 0;
+  border: 0;
+}
+
+.report-field {
+  margin: 0 0 var(--spacing-4);
+}
+
+.report-label {
+  display: block;
+  margin: 0 0 var(--spacing-2);
+  padding: 0;
+  font-weight: 600;
+}
+
+.report-required,
+.report-optional {
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
+.report-radio {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  min-height: 44px;
+  padding: 0 var(--spacing-2);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+}
+
+.report-radio:hover {
+  background: var(--color-surface-elevated);
+}
+
+.report-radio input {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: var(--color-accent-600);
+}
+
+.report-input {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 2px solid var(--color-control-border);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font: inherit;
+}
+
+.report-textarea {
+  resize: vertical;
+}
+
+.report-input[aria-invalid='true'] {
+  border-color: var(--color-brand-600);
+}
+
+.report-hint {
+  margin: var(--spacing-1) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.report-hint--warn {
+  color: var(--color-text-primary);
+}
+
+.report-error {
+  margin: var(--spacing-2) 0 0;
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+/* An error is never colour alone: a bar and the word say it. */
+.report-error::before {
+  content: 'Problem: ';
+}
+
+.report-error--box {
+  padding: var(--spacing-3);
+  border: 2px solid var(--color-brand-600);
+  border-radius: var(--border-radius-md);
+  background: var(--color-surface-elevated);
+}
+
+.report-note {
+  margin: 0 0 var(--spacing-3);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.report-status {
+  margin: 0;
+  font-weight: 600;
+}
+
+.report-live {
+  min-height: 0;
+  /* The buttons stick to the bottom of the dialog; keep a scrolled-to refusal clear of them. */
+  scroll-margin-bottom: 11rem;
+}
+
+/* The trap field: out of sight and out of the tab order, but not display:none (some scripts skip those). */
+.report-trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.report-actions {
+  position: sticky;
+  bottom: calc(-1 * var(--spacing-5));
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--spacing-3);
+  margin: var(--spacing-4) calc(-1 * var(--spacing-5)) calc(-1 * var(--spacing-5));
+  padding: var(--spacing-3) var(--spacing-5) var(--spacing-5);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.report-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0 var(--spacing-5);
+  border: 2px solid transparent;
+  border-radius: var(--border-radius-md);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.report-btn--primary {
+  background: var(--color-accent-400);
+  color: var(--color-on-accent);
+}
+
+.report-btn--primary:hover:not(:disabled) {
+  background: var(--color-accent-500);
+}
+
+.report-btn--secondary {
+  background: var(--color-surface-elevated);
+  border-color: var(--color-primary-400);
+  color: var(--color-text-primary);
+}
+
+.report-btn--secondary:hover:not(:disabled) {
+  background: var(--color-border);
+}
+
+.report-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.report-done__text {
+  margin: 0 0 var(--spacing-3);
+}
+
+.report-done__text:focus {
+  outline: none;
+}
+
+@media (min-width: 560px) {
+  .report-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}

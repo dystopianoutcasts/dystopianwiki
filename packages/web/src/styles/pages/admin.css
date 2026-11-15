@@ -578,3 +578,62 @@
 .admin__download details li + li {
   margin-top: var(--spacing-2);
 }
+
+/* ---- Reports (migration 048) ---- */
+
+.admin__reports-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-4);
+}
+
+.admin__filter textarea,
+.admin__textarea {
+  padding: var(--spacing-2) var(--spacing-3);
+  font: inherit;
+  color: var(--color-text-primary);
+  background: var(--color-background);
+  border: 1px solid var(--color-primary-400);
+  border-radius: var(--border-radius-md);
+  resize: vertical;
+}
+
+.admin__filter textarea:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.admin__report-dialog {
+  width: min(94vw, 680px);
+}
+
+.admin__report-facts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--spacing-1);
+  margin: 0;
+}
+
+.admin__report-facts dt {
+  margin-top: var(--spacing-2);
+  font-weight: var(--font-weight-bold);
+}
+
+.admin__report-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* The reader's words: shown as plain text, line breaks kept. */
+.admin__report-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.admin__report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-4);
+}

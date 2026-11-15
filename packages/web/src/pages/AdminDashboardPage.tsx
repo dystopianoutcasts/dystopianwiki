@@ -5,7 +5,7 @@
  * admins. The page itself is a convenience: every section's data comes from database
  * functions that refuse anyone without the right flag (migrations 024 and 025).
  *
- * Sections: the live map link; members (superadmin only); the vote's controls; the
+ * Sections: the live map link; reader reports of problems (migration 048); members (superadmin only); the vote's controls; the
  * results so far (chart, round table); every ballot with a Counted checkbox.
  */
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom'
 import { Layout } from '../components/layout/Layout'
 import { SEOHead } from '../components/seo/SEOHead'
 import { MascotDialog } from '../components/mascot/MascotDialog'
+import { ReportsSection } from '../components/admin/ReportsSection'
 import { ArtImage } from '../components/mascot/ArtImage'
 import { RoundTable } from '../components/mascot/RoundTable'
 import {
@@ -222,6 +223,8 @@ function Dashboard({ superadmin, selfId }: { superadmin: boolean; selfId: string
           Open the live map
         </a>
       </section>
+
+      <ReportsSection />
 
       <ServerBuddySection />
 

@@ -1,5 +1,5 @@
-import { useMemo, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useMemo, useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import type { WikiArticle as WikiArticleType, Difficulty } from '../../types/wiki';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { hasFieldNotesMarker } from './fieldNotes';
@@ -11,6 +11,9 @@ import { TableOfContents, extractTOCFromMarkdown } from './TableOfContents';
 import { RelatedArticles } from './RelatedArticles';
 import { OutcastInvitation } from './OutcastInvitation';
 import { BookmarkButton } from '../article/BookmarkButton';
+import { ReportDialog } from '../article/ReportDialog';
+import { ReportProblemButton } from '../article/ReportDialogView';
+import { sectionChoices } from '../../lib/articleReport';
 import { useArticleContext } from '../../context/ArticleContext';
 import { categoryLabel } from './categoryLabel';
 import '../../styles/components/wiki-article.css';
@@ -58,6 +61,8 @@ export function WikiArticle({
   learningPath,
 }: WikiArticleProps) {
   const { setTocItems, clearTocItems } = useArticleContext();
+  const [reportOpen, setReportOpen] = useState(false);
+  const { pathname } = useLocation();
 
   // Extract TOC from markdown content
   const tocItems = useMemo(
@@ -72,6 +77,17 @@ export function WikiArticle({
     setTocItems(tocItems);
     return () => clearTocItems();
   }, [tocItems, setTocItems, clearTocItems]);
+
+  // "Report a problem": the headings a reader can point at, in page order, with their element ids
+  const reportSections = useMemo(() => {
+    const choices = sectionChoices(tocItems);
+    const ids = choices.map((text) => tocItems.find((i) => i.text.trim() === text)?.id ?? '');
+    return { choices, ids };
+  }, [tocItems]);
+  const reportPage = useMemo(
+    () => ({ articleId: article.id, slug: article.slug, title: article.title, url: pathname, version: article.lastUpdated }),
+    [article.id, article.slug, article.title, article.lastUpdated, pathname]
+  );
 
   // The ::field-notes marker also draws the header as a cover (field-notes.css)
   const fieldNotes = useMemo(() => hasFieldNotesMarker(article.content), [article.content]);
@@ -127,6 +143,8 @@ export function WikiArticle({
             )}
 
             <p className="wiki-article__updated">Last updated: {formattedDate}</p>
+
+            <ReportProblemButton variant="link" onOpen={() => setReportOpen(true)} />
 
             {article.tags.length > 0 && (
               <div className="wiki-article__tags">
@@ -259,6 +277,19 @@ export function WikiArticle({
         {relatedArticles.length > 0 && (
           <RelatedArticles articles={relatedArticles} />
         )}
+
+        {/* Report a problem: the second button; the dialog below serves both */}
+        <div className="wiki-article__report">
+          <p className="wiki-article__report-text">Spot something wrong or out of date on this page?</p>
+          <ReportProblemButton variant="block" onOpen={() => setReportOpen(true)} />
+        </div>
+        <ReportDialog
+          open={reportOpen}
+          onClose={() => setReportOpen(false)}
+          page={reportPage}
+          sections={reportSections.choices}
+          sectionIds={reportSections.ids}
+        />
 
         {/* Navigation */}
         {(prevArticle || nextArticle) && (
