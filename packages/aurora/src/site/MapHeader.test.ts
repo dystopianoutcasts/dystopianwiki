@@ -58,12 +58,13 @@ describe('KB15: the map mounts the shared site header', () => {
     expect(mapPagePath('/link')).toBe('/map/#/link')
   })
 
-  it('the published navigation still has the seven header links the 1280 px breakpoint was measured for', () => {
-    // The file the header reads at runtime, /data/versions.json (repo root data/).
+  it('the published navigation has the header links the 1350 px breakpoint was measured for', () => {
+    // The file the header reads at runtime, /data/versions.json (repo root data/). The breakpoint was
+    // measured for 7 sections + Live Map = 8. Until the Engine section is published into this file it
+    // holds 6 sections (7 links); after that deploy it holds 7 sections (8 links). Any other count means
+    // a section was added or removed: re-measure the header and move the breakpoint.
     const published = JSON.parse(readFileSync(here('../../../../data/versions.json'), 'utf8'))
-    expect(
-      (sectionsFrom(published) ?? []).length + 1,
-      'sections + Live Map. A section was added or removed: re-measure the header and move the breakpoint',
-    ).toBe(7)
+    const links = (sectionsFrom(published) ?? []).length + 1
+    expect([7, 8], `sections + Live Map = ${links}`).toContain(links)
   })
 })

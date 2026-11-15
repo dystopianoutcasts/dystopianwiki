@@ -266,7 +266,7 @@
 .site-header__sublink--level-3 { padding-left: 24px; }
 .site-header__sublink--level-4 { padding-left: 36px; }
 
-/* 1350 px: the header links (seven sections, Live Map, Buddy) give way to the folding menu at one single width. Measured 2026-11-15 in headless Edge: with the eight links the bar leaves the search box 218 px at 1350 px, as seven links left 215 px at 1281 px. */
+/* 1350 px: the bar's links give way to the folding menu at one single width. Seven sections and Live Map (the eight the tests count) plus the Buddy link make nine in the bar. Measured 2026-11-15 in headless Edge: with all nine the bar leaves the search box 218 px at 1350 px, as one section fewer left 215 px at 1281 px. */
 @media (max-width: 1350px) {
   .site-header__nav { display: none; }
   .site-header__menu { display: block; }
