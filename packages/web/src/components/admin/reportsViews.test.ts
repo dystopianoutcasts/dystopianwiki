@@ -13,7 +13,7 @@ import { test } from 'node:test'
 import { createElement } from 'react'
 import { staticMarkup } from '../landing/staticMarkup'
 import type { AdminReport } from '../../lib/articleReportsAdmin'
-import { ReportDetailView, ReportFiltersView, ReportsTable, type ReportDetailProps } from './ReportsViews'
+import { MarkAllView, ReportBoxView, ReportDetailView, ReportFiltersView, ReportsTable, type ReportDetailProps, type ReportsTableProps } from './ReportsViews'
 
 const SRC = fileURLToPath(new URL('../../', import.meta.url))
 const code = (rel: string) => readFileSync(join(SRC, rel), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
@@ -37,7 +37,24 @@ const report: AdminReport = {
   reviewedAt: null,
   noteUpdatedByName: null,
   noteUpdatedAt: null,
+  readAt: null,
+  archivedAt: null,
 }
+
+const table = (reports: AdminReport[], patch: Partial<ReportsTableProps> = {}): string =>
+  staticMarkup(
+    createElement(ReportsTable, {
+      reports,
+      box: 'inbox',
+      acting: false,
+      onOpen: () => {},
+      onRead: () => {},
+      onArchive: () => {},
+      onMoveBack: () => {},
+      labelledBy: 'h',
+      ...patch,
+    }),
+  )
 
 const detail = (patch: Partial<ReportDetailProps> = {}): string =>
   staticMarkup(
@@ -51,6 +68,11 @@ const detail = (patch: Partial<ReportDetailProps> = {}): string =>
       confirming: false,
       deleting: false,
       deleteError: null,
+      acting: false,
+      actionError: null,
+      onToggleRead: () => {},
+      onArchive: () => {},
+      onMoveBack: () => {},
       onStatus: () => {},
       onNote: () => {},
       onSave: () => {},
@@ -70,8 +92,8 @@ test('the filters are five buttons; the picked one says so with aria-pressed', (
 })
 
 test('the list shows status, what is wrong, the page link, the part, the message start, the date and the sender', () => {
-  const html = staticMarkup(createElement(ReportsTable, { reports: [report], onOpen: () => {}, labelledBy: 'h' }))
-  for (const header of ['Status', 'What is wrong', 'Page', 'Part', 'Message', 'Sent', 'From', 'Open']) assert.match(html, new RegExp(`>${header}</th>`))
+  const html = table([report])
+  for (const header of ['Read', 'Status', 'What is wrong', 'Page', 'Part', 'Message', 'Sent', 'From', 'Actions']) assert.match(html, new RegExp(`>${header}</th>`))
   assert.match(html, /<span class="admin__cell-value">New<\/span>/)
   assert.match(html, /A fact is wrong/)
   assert.match(html, /Setup/)
@@ -85,7 +107,7 @@ test('the list shows status, what is wrong, the page link, the part, the message
 
 test('a reader\'s text is escaped, never markup', () => {
   const evil: AdminReport = { ...report, message: '<img src=x onerror=alert(1)> **bold** [x](javascript:alert(1))', title: '<b>T</b>', evidence: '<script>alert(1)</script>' }
-  const list = staticMarkup(createElement(ReportsTable, { reports: [evil], onOpen: () => {}, labelledBy: 'h' }))
+  const list = table([evil])
   const open = detail({ report: evil })
   for (const html of [list, open]) {
     assert.doesNotMatch(html, /<img|<script|<b>/)
@@ -139,4 +161,68 @@ test('J4: Delete report is a visible button beside Save; it asks by name with De
 test('the dashboard mounts the Reports section (under its own tab, which shows the new count)', () => {
   assert.match(code('pages/AdminDashboardPage.tsx'), /<ReportsSection onNewCount=\{setNewReports\} \/>/)
   assert.match(code('pages/AdminDashboardPage.tsx'), /import \{ ReportsSection \} from '\.\.\/components\/admin\/ReportsSection'/)
+})
+
+test('an unread report says so in words and in bold; a read one says Read in plain text', () => {
+  const unread = table([report])
+  assert.match(unread, /<strong>Unread<\/strong>/)
+  assert.match(unread, /<strong>It says five\. It is seven\.<\/strong>/, 'the message is bold too')
+  const read = table([{ ...report, readAt: '2026-11-15T16:00:00Z' }])
+  assert.doesNotMatch(read, /<strong>/)
+  assert.match(read, />Read</)
+  assert.doesNotMatch(read, />Unread</)
+})
+
+test('each row has Mark as read (Mark as unread once read) and Archive, as words, never opening on their own', () => {
+  assert.match(table([report]), />Mark as read<span class="sr-only"> the report about Getting started<\/span><\/button>/)
+  assert.match(table([report]), />Archive<span class="sr-only"> the report about Getting started<\/span><\/button>/)
+  assert.match(table([{ ...report, readAt: '2026-11-15T16:00:00Z' }]), />Mark as unread</)
+  assert.match(table([report], { acting: true }), /disabled="true"[^>]*>Mark as read/)
+})
+
+test('in the archive each row says Move back to inbox, and there is no Archive button', () => {
+  const html = table([{ ...report, archivedAt: '2026-11-15T17:00:00Z' }], { box: 'archived' })
+  assert.match(html, />Move back to inbox</)
+  assert.doesNotMatch(html, />Archive</)
+})
+
+test('the Inbox / Archive switch is two buttons with words and counts, one pressed', () => {
+  const html = staticMarkup(createElement(ReportBoxView, { value: 'inbox', counts: { unread: 2, inbox: 5, archived: 1 }, onPick: () => {}, labelId: 'l' }))
+  assert.match(html, /aria-pressed="true"[^>]*>Inbox \(5, 2 unread\)</)
+  assert.match(html, /aria-pressed="false"[^>]*>Archive \(1\)</)
+  assert.match(staticMarkup(createElement(ReportBoxView, { value: 'archived', counts: null, onPick: () => {}, labelId: 'l' })), /aria-pressed="true"[^>]*>Archive</)
+})
+
+test('Mark all says how many it will change, counts only unread, and is absent when none are unread', () => {
+  const read = { ...report, id: 'r2', readAt: '2026-11-15T16:00:00Z' }
+  const mk = (reports: AdminReport[]) => staticMarkup(createElement(MarkAllView, { reports, acting: false, onMarkAll: () => {} }))
+  assert.match(mk([report, { ...report, id: 'r3' }, read]), />Mark all 2 shown as read</)
+  assert.equal(mk([read]), '')
+})
+
+test('the open report has Mark as read and Archive buttons, shows its state, and Archive becomes Move back to inbox', () => {
+  const open = detail()
+  assert.match(open, />Mark as read<\/button>/)
+  assert.match(open, />Archive<\/button>/)
+  assert.match(open, /<dt>Read<\/dt><dd aria-live="polite">Unread<\/dd>/)
+  assert.match(open, /In the inbox/)
+  const archived = detail({ report: { ...report, readAt: '2026-11-15T16:00:00Z', archivedAt: '2026-11-15T17:00:00Z' } })
+  assert.match(archived, />Mark as unread<\/button>/)
+  assert.match(archived, />Move back to inbox<\/button>/)
+  assert.doesNotMatch(archived, />Archive<\/button>/)
+  assert.match(archived, /In the archive/)
+  assert.match(detail({ actionError: 'That report no longer exists. Reload the list.' }), /role="alert">That report no longer exists/)
+})
+
+test('the delete question says it cannot be undone and points to Archive as the way to put it away', () => {
+  assert.match(detail({ confirming: true }), /cannot be undone\. To put a report away without losing it, choose Keep, then Archive/)
+})
+
+test('the section shows the Undo line after archiving, and never marks a report read just by opening it', () => {
+  const section = code('components/admin/ReportsSection.tsx')
+  assert.match(section, /Archived\. It is in Archive, not deleted\./)
+  assert.match(section, />\s*Undo\s*</)
+  const store = code('lib/reportsStore.ts')
+  const open = store.slice(store.indexOf('openReport('), store.indexOf('setStatus('))
+  assert.doesNotMatch(open, /markRead|api\./, 'opening a report must not mark it read')
 })

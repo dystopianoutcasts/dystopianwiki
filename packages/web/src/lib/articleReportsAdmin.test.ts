@@ -10,7 +10,12 @@ import {
   EMPTY_TEXT,
   REPORT_FILTERS,
   REPORTS_FAILURE_TEXT,
+  boxLabel,
   createReportsApi,
+  markAllLabel,
+  parseBoxCounts,
+  readLabel,
+  unreadIn,
   deleteQuestion,
   failureOf,
   isSitePath,
@@ -40,6 +45,8 @@ const row = {
   admin_note: '',
   reviewed_by_name: null,
   reviewed_at: null,
+  read_at: null,
+  archived_at: null,
 }
 
 test('the filters are New, Confirmed, Fixed, Not a problem, All; New is the default; each has an empty state', () => {
@@ -49,9 +56,9 @@ test('the filters are New, Confirmed, Fixed, Not a problem, All; New is the defa
   for (const f of REPORT_FILTERS) assert.ok(EMPTY_TEXT[f.value].length > 5, f.value)
 })
 
-test('the tab label carries the count of new reports', () => {
-  assert.equal(sectionLabel(3), 'Reports (3 new)')
-  assert.equal(sectionLabel(0), 'Reports (0 new)')
+test('the tab label carries the count of unread reports', () => {
+  assert.equal(sectionLabel(3), 'Reports (3 unread)')
+  assert.equal(sectionLabel(0), 'Reports (0 unread)')
   assert.equal(sectionLabel(null), 'Reports')
   assert.equal(parseCount(3), 3)
   assert.equal(parseCount('3'), null)
@@ -124,7 +131,7 @@ test('fetchReports asks for the filter and returns parsed rows; the count has it
   const { api, calls } = fake((name) => (name === 'article_reports_new_count' ? { data: 4 } : { data: [row] }))
   const r = await api.fetchReports('confirmed')
   assert.equal(r.ok && r.value.length, 1)
-  assert.deepEqual(calls[0], { name: 'article_reports_admin', args: { p_status: 'confirmed', p_limit: 200 } })
+  assert.deepEqual(calls[0], { name: 'article_reports_admin', args: { p_status: 'confirmed', p_limit: 200, p_box: 'inbox' } })
   const c = await api.fetchNewCount()
   assert.deepEqual(c, { ok: true, value: 4 })
 })
@@ -159,4 +166,46 @@ test('a call that throws is a network failure, not a crash', async () => {
   })
   assert.deepEqual(await api.fetchReports('new'), { ok: false, reason: 'network' })
   assert.deepEqual(await api.deleteReport('r1'), { ok: false, reason: 'network' })
+})
+
+test('fetchReports can ask for the archive; read_at and archived_at are parsed and must be present', async () => {
+  const { api, calls } = fake(() => ({ data: [{ ...row, read_at: '2026-11-15T11:00:00Z', archived_at: '2026-11-15T12:00:00Z' }] }))
+  const r = await api.fetchReports('all', 'archived')
+  assert.deepEqual(calls[0].args, { p_status: 'all', p_limit: 200, p_box: 'archived' })
+  assert.equal(r.ok && r.value[0].readAt, '2026-11-15T11:00:00Z')
+  assert.equal(r.ok && r.value[0].archivedAt, '2026-11-15T12:00:00Z')
+  const { read_at: _a, ...noRead } = row
+  assert.equal(parseReports([noRead]).ok, false, 'a row without read_at is refused, not guessed')
+  assert.equal(parseReports([{ ...row, archived_at: 5 }]).ok, false)
+})
+
+test('the box counts: one row of three whole numbers, else malformed', async () => {
+  assert.deepEqual(parseBoxCounts([{ unread: 2, inbox: 5, archived: 1 }]), { unread: 2, inbox: 5, archived: 1 })
+  assert.equal(parseBoxCounts([]), null)
+  assert.equal(parseBoxCounts([{ unread: -1, inbox: 5, archived: 1 }]), null)
+  assert.equal(parseBoxCounts([{ unread: 1, inbox: 5 }]), null)
+  const { api } = fake(() => ({ data: [{ unread: 2, inbox: 5, archived: 1 }] }))
+  assert.deepEqual(await api.fetchBoxCounts(), { ok: true, value: { unread: 2, inbox: 5, archived: 1 } })
+  assert.equal(boxLabel('inbox', { unread: 2, inbox: 5, archived: 1 }), 'Inbox (5, 2 unread)')
+  assert.equal(boxLabel('archived', { unread: 2, inbox: 5, archived: 1 }), 'Archive (1)')
+  assert.equal(boxLabel('archived', null), 'Archive')
+})
+
+test('mark read, mark all, archive: the right function and arguments; each answer maps to a reason', async () => {
+  const { api, calls } = fake((name) => ({ data: name === 'article_report_archive' ? 'not_found' : 'ok' }))
+  assert.deepEqual(await api.markRead('r1', true), { ok: true, value: null })
+  assert.deepEqual(calls[0], { name: 'article_report_mark_read', args: { p_id: 'r1', p_read: true } })
+  assert.deepEqual(await api.markAllRead(['r1', 'r2']), { ok: true, value: null })
+  assert.deepEqual(calls[1], { name: 'article_reports_mark_all_read', args: { p_ids: ['r1', 'r2'] } })
+  assert.deepEqual(await api.archiveReport('r1', true), { ok: false, reason: 'not_found' })
+  assert.deepEqual(calls[2], { name: 'article_report_archive', args: { p_id: 'r1', p_archived: true } })
+  const denied = fake(() => ({ data: 'denied' }))
+  assert.deepEqual(await denied.api.markRead('r1', false), { ok: false, reason: 'denied' })
+})
+
+test('words: Unread and Read, the unread count of a list, and the Mark all button says how many', () => {
+  assert.equal(readLabel({ readAt: null }), 'Unread')
+  assert.equal(readLabel({ readAt: '2026-11-15T10:00:00Z' }), 'Read')
+  assert.equal(unreadIn([{ readAt: null }, { readAt: 'x' }, { readAt: null }]), 2)
+  assert.equal(markAllLabel(3), 'Mark all 3 shown as read')
 })

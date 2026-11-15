@@ -11,9 +11,9 @@
 import { useEffect, useId, useMemo, useSyncExternalStore } from 'react'
 import { MascotDialog } from '../mascot/MascotDialog'
 import { reportsApi } from '../../lib/articleReportsClient'
-import { EMPTY_TEXT, REPORTS_FAILURE_TEXT, sectionLabel, type ReportsApi } from '../../lib/articleReportsAdmin'
+import { EMPTY_TEXT, REPORTS_FAILURE_TEXT, sectionLabel, type AdminReport, type ReportsApi } from '../../lib/articleReportsAdmin'
 import { createReportsStore, type AdminFocus } from '../../lib/reportsStore'
-import { ReportDetailView, ReportFiltersView, ReportsTable, type SaveNote } from './ReportsViews'
+import { MarkAllView, ReportBoxView, ReportDetailView, ReportFiltersView, ReportsTable, type SaveNote } from './ReportsViews'
 
 export function ReportsSection({
   api = reportsApi,
@@ -25,6 +25,7 @@ export function ReportsSection({
 }) {
   const headingId = useId()
   const filterLabelId = useId()
+  const boxLabelId = useId()
   const titleId = useId()
   const statusId = useId()
   const noteId = useId()
@@ -56,7 +57,15 @@ export function ReportsSection({
       <h2 id={headingId} className="mascot-vote__panel-title">
         {sectionLabel(s.newCount)}
       </h2>
-      <p>Problems readers reported on wiki pages. Open one to read it, set its status or delete it.</p>
+      <p>
+        Problems readers reported on wiki pages. Open one to read it and set its status. Mark a report as read when you have looked
+        at it, and archive it to put it away: an archived report is kept, and you can move it back to the inbox.
+      </p>
+
+      <p id={boxLabelId} className="mascot-vote__meta">
+        Box
+      </p>
+      <ReportBoxView value={s.box} counts={s.counts} labelId={boxLabelId} onPick={(b) => void store.setBox(b)} />
 
       <p id={filterLabelId} className="mascot-vote__meta">
         Show
@@ -66,6 +75,19 @@ export function ReportsSection({
       {s.flash && (
         <p id={flashId} className="mascot-vote__hint" role="status" tabIndex={-1}>
           {s.flash}
+        </p>
+      )}
+      {s.undo && (
+        <p id={flashId} className="mascot-vote__hint" role="status" tabIndex={-1}>
+          Archived. It is in Archive, not deleted.{' '}
+          <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary admin__row-btn" disabled={s.acting} onClick={() => void store.undoArchive()}>
+            Undo
+          </button>
+        </p>
+      )}
+      {s.actionError && s.open === null && (
+        <p className="mascot-vote__notice" role="alert">
+          {REPORTS_FAILURE_TEXT[s.actionError]}
         </p>
       )}
       {s.load.state === 'loading' && <p role="status">Loading reports...</p>}
@@ -81,9 +103,21 @@ export function ReportsSection({
       )}
       {s.load.state === 'ready' &&
         (s.load.reports.length === 0 ? (
-          <p>{EMPTY_TEXT[s.filter]}</p>
+          <p>{s.box === 'archived' ? (s.filter === 'all' ? 'The archive is empty.' : 'No archived reports match this status.') : EMPTY_TEXT[s.filter]}</p>
         ) : (
-          <ReportsTable reports={s.load.reports} onOpen={(r) => store.openReport(r)} labelledBy={headingId} />
+          <>
+            <MarkAllView reports={s.load.reports} acting={s.acting} onMarkAll={() => void store.markAllRead()} />
+            <ReportsTable
+              reports={s.load.reports}
+              box={s.box}
+              acting={s.acting}
+              onOpen={(r) => store.openReport(r)}
+              onRead={(r, read) => void store.markRead(r, read)}
+              onArchive={(r) => void store.archive(r)}
+              onMoveBack={(r) => void store.moveBack(r)}
+              labelledBy={headingId}
+            />
+          </>
         ))}
 
       <MascotDialog open={s.open !== null} onClose={() => store.close()} labelledBy={titleId} className="admin__report-dialog">
@@ -98,6 +132,11 @@ export function ReportsSection({
             confirming={s.confirming}
             deleting={s.deleting}
             deleteError={s.deleteError ? REPORTS_FAILURE_TEXT[s.deleteError] : null}
+            acting={s.acting}
+            actionError={s.actionError ? REPORTS_FAILURE_TEXT[s.actionError] : null}
+            onToggleRead={() => void store.markRead(s.open as AdminReport, s.open?.readAt === null)}
+            onArchive={() => void store.archive(s.open as AdminReport)}
+            onMoveBack={() => void store.moveBack(s.open as AdminReport)}
             onStatus={(v) => store.setStatus(v)}
             onNote={(n) => store.setNote(n)}
             onSave={() => void store.save()}

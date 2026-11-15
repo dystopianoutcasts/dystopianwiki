@@ -7,6 +7,12 @@
  */
 import {
   REPORT_FILTERS,
+  boxLabel,
+  markAllLabel,
+  readLabel,
+  unreadIn,
+  type BoxCounts,
+  type ReportBox,
   REPORT_STATUSES,
   deleteQuestion,
   formatDay,
@@ -42,7 +48,40 @@ export function ReportFiltersView({ value, onPick, labelId }: { value: ReportFil
   )
 }
 
+/** The Inbox / Archive switch: two buttons with words and counts, the open one pressed. */
+export function ReportBoxView({ value, counts, onPick, labelId }: { value: ReportBox; counts: BoxCounts | null; onPick: (b: ReportBox) => void; labelId: string }) {
+  return (
+    <div className="admin__reports-filters" role="group" aria-labelledby={labelId}>
+      {(['inbox', 'archived'] as const).map((b) => (
+        <button
+          key={b}
+          type="button"
+          className={`mascot-vote__btn admin__row-btn ${b === value ? 'mascot-vote__btn--primary' : 'mascot-vote__btn--secondary'}`}
+          aria-pressed={b === value}
+          onClick={() => onPick(b)}
+        >
+          {boxLabel(b, counts)}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+/** "Mark all N shown as read": says how many it will change; absent when none are unread. */
+export function MarkAllView({ reports, acting, onMarkAll }: { reports: readonly AdminReport[]; acting: boolean; onMarkAll: () => void }) {
+  const unread = unreadIn(reports)
+  if (unread === 0) return null
+  return (
+    <p>
+      <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary admin__row-btn" disabled={acting} onClick={onMarkAll}>
+        {markAllLabel(unread)}
+      </button>
+    </p>
+  )
+}
+
 export const REPORT_COLUMNS: readonly FitColumn[] = [
+  { label: 'Read', kind: 'short' },
   { label: 'Status', kind: 'short' },
   { label: 'What is wrong', kind: 'text' },
   { label: 'Page', kind: 'break' },
@@ -50,7 +89,7 @@ export const REPORT_COLUMNS: readonly FitColumn[] = [
   { label: 'Message', kind: 'text' },
   { label: 'Sent', kind: 'text' },
   { label: 'From', kind: 'break' },
-  { label: 'Open', kind: 'action' },
+  { label: 'Actions', kind: 'action' },
 ]
 
 /** The link to the reported page: the site path, a new tab, and a hidden note saying so. */
@@ -63,7 +102,21 @@ export function PageLink({ report }: { report: Pick<AdminReport, 'url' | 'title'
   )
 }
 
-export function ReportsTable({ reports, onOpen, labelledBy }: { reports: readonly AdminReport[]; onOpen: (r: AdminReport) => void; labelledBy: string }) {
+export interface ReportsTableProps {
+  reports: readonly AdminReport[]
+  box: ReportBox
+  acting: boolean
+  onOpen: (r: AdminReport) => void
+  onRead: (r: AdminReport, read: boolean) => void
+  onArchive: (r: AdminReport) => void
+  onMoveBack: (r: AdminReport) => void
+  labelledBy: string
+}
+
+/** An unread report: the word "Unread" in bold, and its message in bold; a read one is plain. */
+const unreadText = (r: Pick<AdminReport, 'readAt'>, text: string) => (r.readAt === null ? <strong>{text}</strong> : text)
+
+export function ReportsTable({ reports, box, acting, onOpen, onRead, onArchive, onMoveBack, labelledBy }: ReportsTableProps) {
   return (
     <FitTable
       labelledBy={labelledBy}
@@ -72,17 +125,35 @@ export function ReportsTable({ reports, onOpen, labelledBy }: { reports: readonl
       rows={reports.map((r) => ({
         key: r.id,
         cells: [
+          unreadText(r, readLabel(r)),
           statusLabel(r.status),
           kindLabel(r.kind),
           <PageLink key="page" report={r} />,
           r.section ?? 'Whole page',
-          snippet(r.message),
+          unreadText(r, snippet(r.message)),
           formatDay(r.createdAt),
           reporterText(r),
-          <button key="open" type="button" className="mascot-vote__btn mascot-vote__btn--secondary admin__row-btn" onClick={() => onOpen(r)}>
-            Open
-            <span className="sr-only"> the report about {r.title}</span>
-          </button>,
+          <span key="actions" className="admin__report-actions">
+            <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary admin__row-btn" onClick={() => onOpen(r)}>
+              Open
+              <span className="sr-only"> the report about {r.title}</span>
+            </button>
+            <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary admin__row-btn" disabled={acting} onClick={() => onRead(r, r.readAt === null)}>
+              {r.readAt === null ? 'Mark as read' : 'Mark as unread'}
+              <span className="sr-only"> the report about {r.title}</span>
+            </button>
+            {box === 'inbox' ? (
+              <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary admin__row-btn" disabled={acting} onClick={() => onArchive(r)}>
+                Archive
+                <span className="sr-only"> the report about {r.title}</span>
+              </button>
+            ) : (
+              <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary admin__row-btn" disabled={acting} onClick={() => onMoveBack(r)}>
+                Move back to inbox
+                <span className="sr-only"> the report about {r.title}</span>
+              </button>
+            )}
+          </span>,
         ],
       }))}
     />
@@ -101,6 +172,13 @@ export interface ReportDetailProps {
   confirming: boolean
   deleting: boolean
   deleteError: string | null
+  /** A read or archive call is running. */
+  acting: boolean
+  /** Why the last read or archive action was refused, in words. */
+  actionError: string | null
+  onToggleRead: () => void
+  onArchive: () => void
+  onMoveBack: () => void
   onStatus: (s: ReportStatus) => void
   onNote: (n: string) => void
   onSave: () => void
@@ -120,7 +198,7 @@ export function ReportDetailView(p: ReportDetailProps) {
           Delete this report?
         </h2>
         <p>{deleteQuestion(report, formatDay)}</p>
-        <p className="mascot-vote__hint">This cannot be undone.</p>
+        <p className="mascot-vote__hint">This cannot be undone. To put a report away without losing it, choose Keep, then Archive.</p>
         {p.deleteError && (
           <p className="mascot-vote__notice" role="alert">
             {p.deleteError}
@@ -151,6 +229,10 @@ export function ReportDetailView(p: ReportDetailProps) {
         </dd>
         <dt>Part</dt>
         <dd>{report.section ?? 'The whole page'}</dd>
+        <dt>Read</dt>
+        <dd aria-live="polite">{readLabel(report)}</dd>
+        <dt>Where</dt>
+        <dd>{report.archivedAt ? 'In the archive' : 'In the inbox'}</dd>
         <dt>Sent</dt>
         <dd>
           {formatWhen(report.createdAt)} by {reporterText(report)}
@@ -188,6 +270,27 @@ export function ReportDetailView(p: ReportDetailProps) {
           <p className="mascot-vote__notice" role="alert">
             Not saved: {p.saveNote.text}
           </p>
+        )}
+      </div>
+
+      {p.actionError && (
+        <p className="mascot-vote__notice" role="alert">
+          {p.actionError}
+        </p>
+      )}
+
+      <div className="admin__report-actions">
+        <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary" disabled={p.acting} onClick={p.onToggleRead}>
+          {report.readAt === null ? 'Mark as read' : 'Mark as unread'}
+        </button>
+        {report.archivedAt ? (
+          <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary" disabled={p.acting} onClick={p.onMoveBack}>
+            Move back to inbox
+          </button>
+        ) : (
+          <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary" disabled={p.acting} onClick={p.onArchive}>
+            Archive
+          </button>
         )}
       </div>
 

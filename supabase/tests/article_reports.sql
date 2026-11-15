@@ -1,7 +1,7 @@
 -- Article report tests (migration 048, docs/planning/REPORT-FORM-SPEC.md)
 -- Created: 2026-11-15
 --
--- Needs 024, 048 and 049 applied. Run the whole file as `postgres`: the SQL editor, or
+-- Needs 024, 048, 049 and 050 applied. Run the whole file as `postgres`: the SQL editor, or
 --   psql "<connection string>" -v ON_ERROR_STOP=1 -f supabase/tests/article_reports.sql
 --
 -- It seeds fixtures, asserts, and ROLLS BACK. Nothing is left behind. Every assertion RAISEs on
@@ -45,7 +45,7 @@ DO $$
 DECLARE
   f text;
 BEGIN
-  FOREACH f IN ARRAY ARRAY['public.article_reports_admin(text, integer)', 'public.article_report_update(uuid, text, text)',
+  FOREACH f IN ARRAY ARRAY['public.article_reports_admin(text, integer, text)', 'public.article_report_update(uuid, text, text)',
                            'public.article_report_delete(uuid)', 'public.article_reports_new_count()'] LOOP
     IF has_function_privilege('anon', f, 'EXECUTE') OR has_function_privilege('service_role', f, 'EXECUTE') THEN
       RAISE EXCEPTION 'FAIL: anon or service_role can execute %', f;
@@ -318,7 +318,8 @@ BEGIN
   IF v_row.admin_note <> 'Checked against the engine.' THEN RAISE EXCEPTION 'FAIL: the note was not trimmed and saved: [%]', v_row.admin_note; END IF;
   IF v_row.reviewed_by_name <> 'rp_admin' OR v_row.reviewed_at IS NULL THEN RAISE EXCEPTION 'FAIL: who and when were not recorded'; END IF;
   IF v_row.note_updated_by_name <> 'rp_admin' OR v_row.note_updated_at IS NULL THEN RAISE EXCEPTION 'FAIL: who and when the note changed were not recorded'; END IF;
-  IF public.article_reports_new_count() <> v_total - 1 THEN RAISE EXCEPTION 'FAIL: the new count did not drop'; END IF;
+  -- Since 050 the count is unread inbox reports; a status change does not mark a report read.
+  IF public.article_reports_new_count() <> v_total THEN RAISE EXCEPTION 'FAIL: a status change moved the unread count'; END IF;
   v_first_review := v_row.reviewed_at;
 
   -- A note-only change keeps the status review time and records the note edit. (now() is the

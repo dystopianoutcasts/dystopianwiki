@@ -45,8 +45,8 @@ test('the Reports tab carries the count of new reports once it is known', () => 
   const reports = ADMIN_TABS.find((t) => t.id === 'reports')!
   const vote = ADMIN_TABS.find((t) => t.id === 'vote')!
   assert.equal(adminTabLabel(reports, null), 'Reports')
-  assert.equal(adminTabLabel(reports, 0), 'Reports (0 new)')
-  assert.equal(adminTabLabel(reports, 3), 'Reports (3 new)')
+  assert.equal(adminTabLabel(reports, 0), 'Reports (0 unread)')
+  assert.equal(adminTabLabel(reports, 3), 'Reports (3 unread)')
   assert.equal(adminTabLabel(vote, 3), 'Mascot vote')
 })
 

@@ -202,7 +202,7 @@ function Dashboard({ superadmin, selfId }: { superadmin: boolean; selfId: string
   const tab = tabFromParam(params.get(ADMIN_TAB_PARAM), superadmin)
   const current = tabs.find((t) => t.id === tab) ?? tabs[0]
 
-  // The Reports tab says how many reports are new, so an admin sees them from any tab.
+  // The Reports tab says how many reports are unread, so an admin sees them from any tab.
   // The Reports section keeps it current after a status change.
   const [newReports, setNewReports] = useState<number | null>(null)
   useEffect(() => {

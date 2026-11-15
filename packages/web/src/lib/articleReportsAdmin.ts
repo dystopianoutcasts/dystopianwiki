@@ -24,6 +24,19 @@ export const REPORT_FILTERS: readonly { value: ReportFilter; label: string }[] =
 
 export const DEFAULT_FILTER: ReportFilter = 'new'
 
+/** The two boxes: the inbox (not archived) and the archive (put away, never deleted). */
+export type ReportBox = 'inbox' | 'archived'
+
+/** What the archive view shows by default: every status, since a put-away report may be in any. */
+export const ARCHIVE_FILTER: ReportFilter = 'all'
+
+/** The numbers on the Inbox / Archive switch (unread is the part of inbox not yet read). */
+export interface BoxCounts {
+  unread: number
+  inbox: number
+  archived: number
+}
+
 export const EMPTY_TEXT: Readonly<Record<ReportFilter, string>> = {
   new: 'No new reports.',
   confirmed: 'No confirmed reports.',
@@ -57,6 +70,10 @@ export interface AdminReport {
   /** Who last changed the admin note, and when; null when it was never edited. */
   noteUpdatedByName: string | null
   noteUpdatedAt: string | null
+  /** null: not read yet. */
+  readAt: string | null
+  /** null: in the inbox. */
+  archivedAt: string | null
 }
 
 export function statusLabel(status: string): string {
@@ -90,7 +107,8 @@ export function parseReports(data: unknown): ParseResult<AdminReport[]> {
       !strOrNull(r.article_version) || !strOrNull(r.section) || !strOrNull(r.reporter_name) ||
       !strOrNull(r.reviewed_by_name) || !strOrNull(r.reviewed_at) || !isReportStatus(r.status) ||
       !(r.note_updated_by_name === undefined || strOrNull(r.note_updated_by_name)) ||
-      !(r.note_updated_at === undefined || strOrNull(r.note_updated_at))
+      !(r.note_updated_at === undefined || strOrNull(r.note_updated_at)) ||
+      !strOrNull(r.read_at) || !strOrNull(r.archived_at)
     ) {
       return { ok: false }
     }
@@ -113,6 +131,8 @@ export function parseReports(data: unknown): ParseResult<AdminReport[]> {
       reviewedAt: r.reviewed_at,
       noteUpdatedByName: typeof r.note_updated_by_name === 'string' ? r.note_updated_by_name : null,
       noteUpdatedAt: typeof r.note_updated_at === 'string' ? r.note_updated_at : null,
+      readAt: r.read_at,
+      archivedAt: r.archived_at,
     })
   }
   return { ok: true, value: out }
@@ -123,9 +143,36 @@ export function parseCount(data: unknown): number | null {
   return typeof data === 'number' && Number.isInteger(data) && data >= 0 ? data : null
 }
 
-/** The heading and tab label: "Reports (3 new)", or plain "Reports" while the count is unknown. */
-export function sectionLabel(newCount: number | null): string {
-  return newCount === null ? 'Reports' : `Reports (${newCount} new)`
+/** The answer of article_reports_box_counts: one row of three whole numbers, else null. */
+export function parseBoxCounts(data: unknown): BoxCounts | null {
+  const row = Array.isArray(data) && data.length === 1 ? data[0] : null
+  if (typeof row !== 'object' || row === null) return null
+  const r = row as Record<string, unknown>
+  const unread = parseCount(r.unread)
+  const inbox = parseCount(r.inbox)
+  const archived = parseCount(r.archived)
+  return unread === null || inbox === null || archived === null ? null : { unread, inbox, archived }
+}
+
+/** The heading and tab label: "Reports (3 unread)", or plain "Reports" while the count is unknown. */
+export function sectionLabel(unreadCount: number | null): string {
+  return unreadCount === null ? 'Reports' : `Reports (${unreadCount} unread)`
+}
+
+/** The Inbox / Archive switch's button words, with the count when it is known. */
+export function boxLabel(box: ReportBox, counts: BoxCounts | null): string {
+  if (box === 'inbox') return counts ? `Inbox (${counts.inbox}, ${counts.unread} unread)` : 'Inbox'
+  return counts ? `Archive (${counts.archived})` : 'Archive'
+}
+
+/** How many of these reports are unread (what "Mark all as read" would change). */
+export function unreadIn(reports: readonly Pick<AdminReport, 'readAt'>[]): number {
+  return reports.filter((r) => r.readAt === null).length
+}
+
+/** The words of the "Mark all as read" button: it says how many it will change. */
+export function markAllLabel(unread: number): string {
+  return `Mark all ${unread} shown as read`
 }
 
 /** The start of a message for a table cell, cut at a space when it can be. */
@@ -140,6 +187,11 @@ export function snippet(text: string, max = 90): string {
 
 export function reporterText(r: Pick<AdminReport, 'reporterName'>): string {
   return r.reporterName ?? ANONYMOUS
+}
+
+/** What a report's state is, in words (never by weight or color alone). */
+export function readLabel(r: Pick<AdminReport, 'readAt'>): string {
+  return r.readAt === null ? 'Unread' : 'Read'
 }
 
 /** The delete question, naming the report: Delete the report about 'Title' from Nov 15, 2026? */
@@ -186,9 +238,9 @@ export const REPORTS_FAILURE_TEXT: Readonly<Record<ReportsFailure, string>> = {
   network: 'We could not reach the server. Check your connection and try again.',
   malformed: 'The server sent something this page could not read. Please try again later.',
   denied: 'This account is not allowed to change reports.',
-  invalid: 'The database refused that change. Check the note is 2,000 characters or fewer.',
+  invalid: 'The database refused that change. If you were saving a note, check it is 2,000 characters or fewer.',
   not_found: 'That report no longer exists. Reload the list.',
-  missing: 'Reports are not switched on yet. Apply migration 048.',
+  missing: 'Reports are not switched on yet. Apply migrations 048 to 050.',
   cancelled: 'Cancelled.',
 }
 
@@ -242,8 +294,8 @@ export function createReportsApi(call: ReportsRpc, options: { timeoutMs?: number
     return answer === 'ok' ? { ok: true, value: null } : { ok: false, reason: failureFor(answer) }
   }
   return {
-    async fetchReports(filter: ReportFilter): Promise<ReportsResult<AdminReport[]>> {
-      const { data, error } = await run('article_reports_admin', { p_status: filter, p_limit: 200 })
+    async fetchReports(filter: ReportFilter, box: ReportBox = 'inbox'): Promise<ReportsResult<AdminReport[]>> {
+      const { data, error } = await run('article_reports_admin', { p_status: filter, p_limit: 200, p_box: box })
       if (error) return { ok: false, reason: failureOf(error) }
       const parsed = parseReports(data)
       return parsed.ok ? { ok: true, value: parsed.value } : { ok: false, reason: 'malformed' }
@@ -254,6 +306,16 @@ export function createReportsApi(call: ReportsRpc, options: { timeoutMs?: number
       const n = parseCount(data)
       return n === null ? { ok: false, reason: 'malformed' } : { ok: true, value: n }
     },
+    async fetchBoxCounts(): Promise<ReportsResult<BoxCounts>> {
+      const { data, error } = await run('article_reports_box_counts')
+      if (error) return { ok: false, reason: failureOf(error) }
+      const c = parseBoxCounts(data)
+      return c === null ? { ok: false, reason: 'malformed' } : { ok: true, value: c }
+    },
+    markRead: (id: string, read: boolean, signal?: AbortSignal) => mutation('article_report_mark_read', { p_id: id, p_read: read }, signal),
+    markAllRead: (ids: readonly string[], signal?: AbortSignal) => mutation('article_reports_mark_all_read', { p_ids: [...ids] }, signal),
+    archiveReport: (id: string, archived: boolean, signal?: AbortSignal) =>
+      mutation('article_report_archive', { p_id: id, p_archived: archived }, signal),
     updateReport: (id: string, status: ReportStatus, note: string, signal?: AbortSignal) =>
       mutation('article_report_update', { p_id: id, p_status: status, p_note: note }, signal),
     deleteReport: (id: string, signal?: AbortSignal) => mutation('article_report_delete', { p_id: id }, signal),

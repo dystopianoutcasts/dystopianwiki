@@ -44,8 +44,8 @@ export function adminTabHref(id: AdminTabId): string {
   return id === DEFAULT_ADMIN_TAB ? '/admin' : `/admin?${ADMIN_TAB_PARAM}=${id}`
 }
 
-/** A tab's words in the side menu: the Reports tab carries its count of new reports once known. */
+/** A tab's words in the side menu: the Reports tab carries its count of unread reports once known. */
 export function adminTabLabel(tab: AdminTab, newReports: number | null): string {
-  if (tab.id === 'reports' && newReports !== null) return `${tab.label} (${newReports} new)`
+  if (tab.id === 'reports' && newReports !== null) return `${tab.label} (${newReports} unread)`
   return tab.label
 }
