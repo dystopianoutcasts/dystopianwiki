@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS public.article_reports (
   -- The article's last_updated as the reader saw it (an ISO date or timestamp, as text).
   article_version text CHECK (article_version IS NULL OR char_length(article_version) BETWEEN 1 AND 40),
   article_title   text NOT NULL CHECK (char_length(article_title) BETWEEN 1 AND 300),
-  article_url     text NOT NULL CHECK (article_url ~ '^/[A-Za-z0-9][A-Za-z0-9/_.-]{0,299}$'),
+  article_url     text NOT NULL CHECK (char_length(article_url) <= 300 AND article_url ~ '^/[A-Za-z0-9][A-Za-z0-9/_.-]*$'),
   section         text CHECK (section IS NULL OR char_length(section) BETWEEN 1 AND 200),
   kind            text NOT NULL CHECK (kind IN ('wrong_fact', 'out_of_date', 'unclear', 'broken_link', 'other')),
   message         text NOT NULL CHECK (char_length(message) BETWEEN 10 AND 2000),
@@ -118,7 +118,7 @@ BEGIN
   -- Validate every field. A control character other than a line break or tab is refused, and
   -- so are Unicode format and bidi characters (zero-width, direction marks and overrides).
   IF v_id IS NULL OR v_id !~ '^[A-Za-z0-9_:.-]{1,100}$'
-     OR v_url IS NULL OR v_url !~ '^/[A-Za-z0-9][A-Za-z0-9/_.-]{0,299}$'
+     OR v_url IS NULL OR char_length(v_url) > 300 OR v_url !~ '^/[A-Za-z0-9][A-Za-z0-9/_.-]*$'
      OR (v_section IS NOT NULL AND (char_length(v_section) > 200 OR v_section ~ '[[:cntrl:]]'
                                     OR v_section ~ '[\u200B-\u200F\u202A-\u202E\u2066-\u2069]'))
      OR p_kind IS NULL OR p_kind NOT IN ('wrong_fact', 'out_of_date', 'unclear', 'broken_link', 'other')

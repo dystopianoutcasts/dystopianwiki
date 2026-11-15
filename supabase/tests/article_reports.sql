@@ -1,7 +1,7 @@
 -- Article report tests (migration 048, docs/planning/REPORT-FORM-SPEC.md)
 -- Created: 2026-11-15
 --
--- Needs 024 and 048 applied. Run the whole file as `postgres`: the SQL editor, or
+-- Needs 024, 048 and 049 applied. Run the whole file as `postgres`: the SQL editor, or
 --   psql "<connection string>" -v ON_ERROR_STOP=1 -f supabase/tests/article_reports.sql
 --
 -- It seeds fixtures, asserts, and ROLLS BACK. Nothing is left behind. Every assertion RAISEs on
@@ -104,6 +104,7 @@ BEGIN
   IF public.submit_article_report('rp-art-1', u, NULL, 'bogus', m, '') <> 'invalid' THEN RAISE EXCEPTION 'FAIL: an unknown kind was accepted'; END IF;
   IF public.submit_article_report('rp-art-1', 'https://evil.example/x', NULL, 'other', m, '') <> 'invalid' THEN RAISE EXCEPTION 'FAIL: an absolute URL was accepted'; END IF;
   IF public.submit_article_report('rp-art-1', '//evil.example/x', NULL, 'other', m, '') <> 'invalid' THEN RAISE EXCEPTION 'FAIL: a protocol-relative URL was accepted'; END IF;
+  IF public.submit_article_report('rp-art-1', '/' || repeat('a', 300) || '/rp-sample-article', NULL, 'other', m, '') <> 'invalid' THEN RAISE EXCEPTION 'FAIL: a URL over 300 characters was accepted'; END IF;
   IF public.submit_article_report('rp-art-1', '/pz/other-article', NULL, 'other', m, '') <> 'invalid' THEN RAISE EXCEPTION 'FAIL: a path that does not end in the article slug was accepted'; END IF;
   IF public.submit_article_report('rp-art-1', u, NULL, 'other', 'a long enough' || chr(7) || ' message', '') <> 'invalid' THEN RAISE EXCEPTION 'FAIL: a control character was accepted'; END IF;
   IF public.submit_article_report(NULL, u, NULL, 'other', m, '') <> 'invalid' THEN RAISE EXCEPTION 'FAIL: a NULL article id was accepted'; END IF;
