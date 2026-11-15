@@ -58,13 +58,13 @@ function maxWidthsFor(selector: string, decl: RegExp): number[] {
   return found
 }
 
-describe('where the seven links fold into the menu', () => {
+describe('where the header links fold into the menu', () => {
   const navHidden = maxWidthsFor('.site-header__nav', /display:\s*none/)
   const menuShown = maxWidthsFor('.site-header__menu', /display:\s*block/)
 
-  it('the nav hides and the menu shows at one single width, the xl breakpoint 1280 px', () => {
-    expect(navHidden).toEqual([1280])
-    expect(menuShown).toEqual([1280])
+  it('the nav hides and the menu shows at one single width, the 1350 px breakpoint', () => {
+    expect(navHidden).toEqual([1350])
+    expect(menuShown).toEqual([1350])
   })
 
   it('above it the menu is not displayed, so only one "Site" navigation is exposed', () => {
@@ -73,7 +73,7 @@ describe('where the seven links fold into the menu', () => {
   })
 
   it('the defaults come before the @media block, so the block wins', () => {
-    const block = css.indexOf('@media (max-width: 1280px)')
+    const block = css.indexOf('@media (max-width: 1350px)')
     expect(css.slice(0, block)).toMatch(/(?:^|\})\s*\.site-header__menu\s*\{[^}]*display:\s*none/)
     expect(css.slice(block)).not.toMatch(/(?:^|\})\s*\.site-header__menu\s*\{[^}]*display:\s*none/)
   })

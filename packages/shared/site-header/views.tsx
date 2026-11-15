@@ -461,7 +461,7 @@ export function SiteHeaderView(props: SiteHeaderViewProps) {
           <span className="site-header__brand-text">{SITE_NAME}</span>
         </a>
 
-        {/* Wider than 1280 px. At and below it the site menu carries these links. */}
+        {/* Wider than 1350 px. At and below it the site menu carries these links. */}
         <nav className="site-header__nav" aria-label="Site">
           <SiteLinks sections={sections} current={current} className="site-header__link" onLinkClick={onLinkClick} />
         </nav>

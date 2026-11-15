@@ -104,7 +104,7 @@
 .site-header__brand-image { display: block; flex: none; width: 40px; height: 40px; border-radius: 8px; }
 .site-header__brand-text { font-size: 1.125rem; font-weight: 700; white-space: nowrap; }
 
-/* ---- section links (wider than 1280 px) ---- */
+/* ---- section links (wider than 1350 px) ---- */
 /* flex: none and nowrap: the links keep one line; the search box is what gives way. */
 .site-header__nav { display: flex; flex: none; align-items: center; gap: 4px; }
 .site-header__link {
@@ -218,7 +218,7 @@
 .site-header__item-note { margin-left: auto; padding-left: 12px; color: var(--sh-text-2); font-size: 0.875rem; }
 .site-header__error { margin: 8px 12px 4px; font-size: 0.875rem; color: var(--sh-error); }
 
-/* ---- the folding site menu (1280 px and below) ---- */
+/* ---- the folding site menu (1350 px and below) ---- */
 .site-header__menu { display: none; }
 .site-header__menu-panel {
   display: flex; flex-direction: column; gap: 4px; min-width: 240px;
@@ -266,8 +266,8 @@
 .site-header__sublink--level-3 { padding-left: 24px; }
 .site-header__sublink--level-4 { padding-left: 36px; }
 
-/* xl, 1280 px: the seven links give way to the folding menu at one single width. */
-@media (max-width: 1280px) {
+/* 1350 px: the header links (seven sections, Live Map, Buddy) give way to the folding menu at one single width. Measured 2026-11-15 in headless Edge: with the eight links the bar leaves the search box 218 px at 1350 px, as seven links left 215 px at 1281 px. */
+@media (max-width: 1350px) {
   .site-header__nav { display: none; }
   .site-header__menu { display: block; }
 }

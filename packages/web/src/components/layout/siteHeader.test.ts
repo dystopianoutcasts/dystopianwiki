@@ -89,11 +89,11 @@ test('header links to wiki pages route in the app; the map and modified clicks a
   assert.match(body, /navigate\(href\)/)
 })
 
-test('the header carries the seven links the 1280 px breakpoint was measured for', () => {
+test('the header carries the eight links the 1350 px breakpoint was measured for (measured 2026-11-15, headless Edge: seven sections + Live Map; 218 px left for search at 1350 px)', () => {
   const sections = (getVersion(DEFAULT_VERSION)?.sections ?? []).filter((s) => s.categories.some((c) => c.articleCount > 0))
   assert.equal(
     sections.length + 1,
-    7,
+    8,
     `header links: ${sections.length} sections + Live Map. A section was added or removed: re-measure the header and move the breakpoint in packages/shared/site-header/site-header.css`,
   )
 })
