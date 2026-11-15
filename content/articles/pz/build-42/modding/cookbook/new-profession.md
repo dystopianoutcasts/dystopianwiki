@@ -15,7 +15,7 @@ tags:
 excerpt: >-
   What you build: a selectable occupation with a point cost, XP boosts, granted
   traits, and granted recipes.
-last_updated: '2026-09-29'
+last_updated: '2026-11-15'
 related_articles:
   - project-skeleton
   - new-item
@@ -47,22 +47,22 @@ related_articles:
 
 **What you build:** a selectable occupation with a point cost, XP boosts, granted traits, and granted recipes.
 
-**Files + placement:** register in `42/media/registries.lua` (`CharacterProfession.register("mymod:prof")`); define in `42/media/scripts/professions.txt`; translations in `UI_EN.txt`; icon referenced by `IconPathName`.
+**Files + placement:** register in `42/media/registries.lua` (`CharacterProfession.register("mymod:prof")`); define in `42/media/scripts/professions.txt`; translations in `42/media/lua/shared/Translate/EN/UI.json` (B42 translations are JSON); icon referenced by `IconPathName`.
 
-The ScriptsDocs `character_profession_definition.txt` ships a canonical example (reproduced verbatim); all fields CONFIRMED.
+The ScriptsDocs `character_profession_definition.txt` ships a canonical example (edited here: namespaced ids and `/* */` comments); all fields CONFIRMED.
 
 ```
 module YourModule
 {
     character_profession_definition mymod:example_profession
     {
-        CharacterProfession = mymod:example_profession,  -- links to registries id
-        Cost                = -6,                         -- NEGATIVE removes points, positive adds
+        CharacterProfession = mymod:example_profession,  /* links to registries id */
+        Cost                = -6,                         /* NEGATIVE removes points, positive adds */
         UIName              = UI_prof_MetalWorker,
         UIDescription       = UI_profdesc_metalworker,
         IconPathName        = profession_metalworker,
-        XPBoosts            = MetalWelding=4,             -- Skill=level ; separated
-        GrantedTraits       = NimbleFingers;Brave,        -- trait ids ; separated
+        XPBoosts            = MetalWelding=4,             /* Skill=level ; separated */
+        GrantedTraits       = mymod:NimbleFingers;base:brave,        /* trait ids ; separated */
         GrantedRecipes      = Advanced_Forge;Blast_Furnace,
     }
 }
@@ -78,7 +78,7 @@ module YourModule
 | `GrantedTraits` | `;`-separated trait IDs granted with the profession. | CONFIRMED |
 | `GrantedRecipes` | `;`-separated `craftRecipe` IDs granted. | CONFIRMED |
 
-**Gotchas.** Profession IDs **cannot contain spaces** (trait IDs can). Must be `.register()`-ed in registries.lua. Use B42 skill internal names in `XPBoosts`. Note the vanilla rename: "Unemployed" is now "Custom" occupation.
+**Gotchas.** Profession IDs **cannot contain spaces** (trait IDs can). Must be `.register()`-ed in registries.lua. Use B42 skill internal names in `XPBoosts`. Note the vanilla rename: "Unemployed" is now the "Custom Occupation" in the English translation. Script comments are `/* ... */` only: the loader splits values at commas and treats a `--` as part of the value.
 
 **Deep reference:** `_raw_scriptsdocs/character_profession_definition.txt`; doc 05 (professions).
 
