@@ -7,6 +7,7 @@
  * fix and moves focus there, instead of leaving a dead button.
  */
 import type { ChangeEvent, FormEvent } from 'react'
+import { Icon } from '../icons/Icon'
 import {
   EVIDENCE_MAX,
   MESSAGE_MAX,
@@ -41,18 +42,33 @@ export function reportIds(prefix: string) {
 
 export type ReportIds = ReturnType<typeof reportIds>
 
-/** The button that opens the dialog. Both placements say the same words. */
+/** What every button that opens the dialog says. */
+export const REPORT_OPEN_LABEL = 'Report a problem with this page'
+
+/** The button that opens the dialog. Every placement says the same words. */
 export function ReportProblemButton({
   onOpen,
   variant,
 }: {
   onOpen: () => void
-  /** link: the small text button under the title; block: the one at the end of the article */
-  variant: 'link' | 'block'
+  /**
+   * link: the small text button under the title; block: the one at the end of the article;
+   * float: the bug icon pinned to the bottom right of the screen. Its words are its own text
+   * (so screen readers say them) and show beside it on hover and keyboard focus.
+   */
+  variant: 'link' | 'block' | 'float'
 }) {
+  if (variant === 'float') {
+    return (
+      <button type="button" className="report-open report-open--float" onClick={onOpen}>
+        <Icon name="bug" className="report-open__icon" />
+        <span className="report-open__tip">{REPORT_OPEN_LABEL}</span>
+      </button>
+    )
+  }
   return (
     <button type="button" className={`report-open report-open--${variant}`} onClick={onOpen}>
-      Report a problem with this page
+      {REPORT_OPEN_LABEL}
     </button>
   )
 }
@@ -84,7 +100,7 @@ function ReportSentView({ ids, onClose }: { ids: ReportIds; onClose: () => void 
         Report sent
       </h2>
       <p id={ids.done} className="report-done__text" tabIndex={-1} role="status">
-        Thanks, your report was sent. We review every report by hand.
+        Thanks, we got it! A real person on the wiki team reads every report and checks the page.
       </p>
       <div className="report-actions">
         <button type="button" className="report-btn report-btn--primary" onClick={onClose}>
@@ -125,7 +141,7 @@ function ReportFields({ ids, pageTitle, draft, state, sections, sender, onChange
         aria-invalid={problems.kind ? true : undefined}
       >
         <legend className="report-label">
-          What is wrong? <span className="report-required">(required)</span>
+          What's wrong? <span className="report-required">(required)</span>
         </legend>
         {REPORT_KINDS.map((k) => (
           <label key={k.value} className="report-radio">
@@ -169,7 +185,7 @@ function ReportFields({ ids, pageTitle, draft, state, sections, sender, onChange
 
       <div className="report-field">
         <label htmlFor={ids.message} className="report-label">
-          What did you see, and what should it say? <span className="report-required">(required)</span>
+          What did you spot, and what should it say instead? <span className="report-required">(required)</span>
         </label>
         <textarea
           id={ids.message}
@@ -194,7 +210,7 @@ function ReportFields({ ids, pageTitle, draft, state, sections, sender, onChange
 
       <div className="report-field">
         <label htmlFor={ids.evidence} className="report-label">
-          How do you know? <span className="report-optional">(optional)</span>
+          Got a source? <span className="report-optional">(optional)</span>
         </label>
         <textarea
           id={ids.evidence}
@@ -208,7 +224,7 @@ function ReportFields({ ids, pageTitle, draft, state, sections, sender, onChange
           onChange={(e: ChangeEvent<HTMLTextAreaElement>) => onChange({ evidence: e.target.value })}
         />
         <p id={ids.evidenceHint} className={`report-hint${evidence.over ? ' report-hint--warn' : ''}`}>
-          A game version, a file and line, or a test you ran. {evidence.text}
+          A game version, a file and line, or something you tried in game. No worries if not: we check every report. {evidence.text}
         </p>
         {problems.evidence && (
           <p id={ids.evidenceError} className="report-error" role="alert">
@@ -226,7 +242,7 @@ function ReportFields({ ids, pageTitle, draft, state, sections, sender, onChange
       </div>
 
       <p id={ids.note} className="report-note">
-        Reports are read by the wiki team. Do not include passwords or personal details. {senderLine(sender)}
+        The wiki team reads every report. Please leave out passwords and personal info. {senderLine(sender)}
       </p>
 
       <div id={ids.live} className="report-live" aria-live="polite">

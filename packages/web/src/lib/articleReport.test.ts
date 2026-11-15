@@ -71,9 +71,9 @@ test('the live counter shows the count and says why sending is refused', () => {
   assert.match(evidenceCounter('x'.repeat(1001)).text, /Too long/)
 })
 
-test('the reader is told "Sent as <name>" or "Sent without your name."', () => {
-  assert.equal(senderLine('rp_reader'), 'Sent as rp_reader.')
-  assert.equal(senderLine(null), 'Sent without your name.')
+test('the reader is told who the report comes from: their name, or without one', () => {
+  assert.equal(senderLine('rp_reader'), "You're signed in as rp_reader, so we'll know who to thank.")
+  assert.equal(senderLine(null), "You're not signed in, so this goes in without a name. That's fine too.")
 })
 
 test('the arguments carry the page, the trimmed text, and NULL for the whole page', () => {
@@ -115,10 +115,10 @@ test('a missing function (migration 048 not applied) is "not switched on yet"', 
   assert.equal(isMissingFunction({ code: '42501' }), false)
   assert.equal(isMissingFunction(null), false)
   assert.equal(REFUSED_TEXT.not_enabled, 'Reports are not switched on yet.')
-  assert.equal(REFUSED_TEXT.rate_limited, 'Too many reports from you in the last hour. Please try again later.')
-  assert.equal(REFUSED_TEXT.network, 'Could not send. Check your connection and try again.')
-  assert.equal(REFUSED_TEXT.busy, 'Too many reports right now. Please sign in to send yours, or try again later.')
-  assert.match(REFUSED_TEXT.invalid, /^This page cannot take reports\. Please tell us on Discord\.$/, 'a database refusal blames the page, not the reader')
+  assert.equal(REFUSED_TEXT.rate_limited, "That's the limit for this hour (5 reports). Please try again a little later.")
+  assert.equal(REFUSED_TEXT.network, "Couldn't send that. Check your connection and try again.")
+  assert.equal(REFUSED_TEXT.busy, "We're getting a lot of reports right now. Sign in to send yours, or try again a little later.")
+  assert.match(REFUSED_TEXT.invalid, /^This page can't take reports\. Please tell us on Discord\.$/, 'a database refusal blames the page, not the reader')
 })
 
 test('sendReport calls submit_article_report once; a missing function, a throw and a rate limit come back as reasons', async () => {

@@ -40,10 +40,22 @@ test('J1.1: both buttons say "Report a problem with this page"; one is a small t
   assert.match(block, /<button type="button" class="report-open report-open--block">Report a problem with this page<\/button>/)
 })
 
+test('the pinned bug icon: a round button whose own text says the same words, the icon hidden from screen readers', () => {
+  const float = staticMarkup(createElement(ReportProblemButton, { variant: 'float', onOpen: () => {} }))
+  assert.match(float, /^<button type="button" class="report-open report-open--float"><svg class="icon report-open__icon"[^>]*aria-hidden="true"/)
+  assert.match(float, /<span class="report-open__tip">Report a problem with this page<\/span><\/button>$/)
+  assert.doesNotMatch(float, /aria-label/, 'the visible words are the name; no second label to drift from them')
+  const css = readFileSync(join(SRC, 'styles/components/report-dialog.css'), 'utf8')
+  assert.match(css, /\.report-open--float \{[^}]*position: fixed;[^}]*right: [^;]*;[^}]*bottom: [^;]*;[^}]*width: 56px;[^}]*height: 56px/)
+  assert.match(css, /\.report-open--float:hover \.report-open__tip,\s*\.report-open--float:focus-visible \.report-open__tip \{[^}]*opacity: 1/, 'the words show on hover and on keyboard focus')
+  assert.doesNotMatch(css, /\.report-open__tip \{[^}]*display: none/, 'hidden by opacity only, so screen readers still say it')
+})
+
 test('J1.1: the button is on every article page, under the title and at the end, and one dialog serves both', () => {
   const src = code('components/wiki/WikiArticle.tsx')
   assert.equal(src.match(/<ReportProblemButton variant="link"/g)?.length, 1)
   assert.equal(src.match(/<ReportProblemButton variant="block"/g)?.length, 1)
+  assert.equal(src.match(/<ReportProblemButton variant="float"/g)?.length, 1)
   assert.equal(src.match(/<ReportDialog$/gm)?.length, 1)
   assert.ok(src.indexOf('variant="link"') < src.indexOf('wiki-article__content'), 'the first button is above the content')
   assert.ok(src.indexOf('variant="block"') > src.indexOf('wiki-article__content'), 'the second is below it')
@@ -67,7 +79,7 @@ test('J1.3: five labeled radio choices, none picked at first; the picked one is 
     ['A fact is wrong', 'Out of date for the current game version', 'Hard to understand', 'A link or page is broken', 'Something else'],
   )
   assert.ok(radios.every((m) => /type="radio"/.test(m[1]) && !/checked="true"/.test(m[1])))
-  assert.match(html, /<legend class="report-label">What is wrong\? <span class="report-required">\(required\)<\/span><\/legend>/)
+  assert.match(html, /<legend class="report-label">What's wrong\? <span class="report-required">\(required\)<\/span><\/legend>/)
   const picked = form({ draft: { ...EMPTY_DRAFT, kind: 'unclear' } })
   assert.equal(picked.match(/checked="true"/g)?.length, 1)
   assert.match(picked, /value="unclear" checked="true"/)
@@ -82,7 +94,7 @@ test('J1.4: "Which part?" lists the headings after "The whole page" and is optio
 
 test('J1.5: the message box is labeled, required, and has a live counter that says why sending is refused', () => {
   const html = form()
-  assert.match(html, /<label htmlFor="r-message" class="report-label">What did you see, and what should it say\?/)
+  assert.match(html, /<label htmlFor="r-message" class="report-label">What did you spot, and what should it say instead\?/)
   assert.match(html, /<textarea id="r-message"[^>]*aria-describedby="r-message-hint"/)
   assert.match(html, /<p id="r-message-hint" class="report-hint report-hint--warn">0 of 2,000\. At least 10 characters\.<\/p>/)
   const ok = form({ draft: { ...EMPTY_DRAFT, message: 'It says five, it is seven.' } })
@@ -91,13 +103,13 @@ test('J1.5: the message box is labeled, required, and has a live counter that sa
 
 test('J1.6: the evidence box is labeled optional with its own limit', () => {
   const html = form()
-  assert.match(html, /<label htmlFor="r-evidence" class="report-label">How do you know\? <span class="report-optional">\(optional\)<\/span><\/label>/)
-  assert.match(html, /A game version, a file and line, or a test you ran\. 0 of 1,000\./)
+  assert.match(html, /<label htmlFor="r-evidence" class="report-label">Got a source\? <span class="report-optional">\(optional\)<\/span><\/label>/)
+  assert.match(html, /A game version, a file and line, or something you tried in game\. No worries if not: we check every report\. 0 of 1,000\./)
 })
 
-test('J1.7: the note, and "Sent as <name>" signed in or "Sent without your name." signed out', () => {
-  assert.match(form(), /Reports are read by the wiki team\. Do not include passwords or personal details\. Sent without your name\./)
-  assert.match(form({ sender: 'rp_reader' }), /Do not include passwords or personal details\. Sent as rp_reader\./)
+test('J1.7: the note, and who the report comes from: the signed-in name, or without a name', () => {
+  assert.match(form(), /The wiki team reads every report\. Please leave out passwords and personal info\. You're not signed in, so this goes in without a name\. That's fine too\./)
+  assert.match(form({ sender: 'rp_reader' }), /Please leave out passwords and personal info\. You're signed in as rp_reader, so we'll know who to thank\./)
 })
 
 test('J1.8: Send report is the main button and Cancel is beside it', () => {
@@ -116,7 +128,7 @@ test('J1.9: while sending the button reads "Sending..." and is aria-disabled (it
 
 test('J1.9: on success the dialog shows the thanks and a Close button, and no form', () => {
   const html = withState({ phase: 'sent' })
-  assert.match(html, /Thanks, your report was sent\. We review every report by hand\./)
+  assert.match(html, /Thanks, we got it! A real person on the wiki team reads every report and checks the page\./)
   assert.match(html, />Close<\/button>/)
   assert.doesNotMatch(html, /<textarea|<form|Send report/)
 })
@@ -137,8 +149,8 @@ test('J1.10: each failure says why in words, and keeps what the reader typed', (
 })
 
 test('a press with a missing field names the problem next to the field and in an alert, and marks the field invalid', () => {
-  const html = withState({ phase: 'idle', problems: { kind: 'Pick what is wrong.', message: 'Write at least 10 characters about what you saw.' } })
-  assert.match(html, /<p id="r-kind-error" class="report-error" role="alert">Pick what is wrong\.<\/p>/)
+  const html = withState({ phase: 'idle', problems: { kind: "Pick what's wrong.", message: 'Write at least 10 characters about what you saw.' } })
+  assert.match(html, /<p id="r-kind-error" class="report-error" role="alert">Pick what's wrong\.<\/p>/)
   assert.match(html, /<p id="r-message-error" class="report-error" role="alert">Write at least 10 characters about what you saw\.<\/p>/)
   assert.match(html, /<textarea id="r-message"[^>]*aria-describedby="r-message-hint r-message-error"[^>]*aria-invalid="true"/)
   assert.match(html, /<fieldset id="r-kind" class="report-fieldset" aria-describedby="r-kind-error" aria-invalid="true">/)

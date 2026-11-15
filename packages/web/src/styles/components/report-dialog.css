@@ -52,6 +52,70 @@
   background: var(--color-surface-elevated);
 }
 
+/* Pinned to the bottom right: a round bug icon (56 px), so the form is one click away anywhere
+   on the page. Its words sit beside it, shown on hover and keyboard focus; they are the button's
+   own text either way, so screen readers say them. Below the sidebar overlay (z-index 39). */
+.report-open--float {
+  position: fixed;
+  right: calc(var(--spacing-4) + env(safe-area-inset-right, 0px));
+  bottom: calc(var(--spacing-4) + env(safe-area-inset-bottom, 0px));
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 2px solid var(--color-surface);
+  border-radius: 50%;
+  background: var(--color-accent-500);
+  color: var(--color-on-accent);
+  box-shadow: var(--shadow-lg);
+}
+
+.report-open__icon {
+  width: 28px;
+  height: 28px;
+}
+
+.report-open--float:hover {
+  filter: brightness(1.08);
+}
+
+.report-open__tip {
+  position: absolute;
+  right: calc(100% + var(--spacing-2));
+  top: 50%;
+  translate: 0 -50%;
+  padding: var(--spacing-1) var(--spacing-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background: var(--color-surface-elevated);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.report-open--float:hover .report-open__tip,
+.report-open--float:focus-visible .report-open__tip {
+  opacity: 1;
+}
+
+@media print {
+  .report-open--float {
+    display: none;
+  }
+}
+
+/* Room under the article so the pinned icon never sits on its last lines. */
+.wiki-article {
+  padding-bottom: 72px;
+}
+
 .wiki-article__report {
   margin-top: var(--spacing-8);
   padding-top: var(--spacing-6);

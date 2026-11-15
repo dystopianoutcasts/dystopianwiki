@@ -66,7 +66,7 @@ export function countChars(text: string): number {
 
 export function validateDraft(draft: ReportDraft): DraftProblems {
   const problems: DraftProblems = {}
-  if (!REPORT_KINDS.some((k) => k.value === draft.kind)) problems.kind = 'Pick what is wrong.'
+  if (!REPORT_KINDS.some((k) => k.value === draft.kind)) problems.kind = "Pick what's wrong."
   const n = countChars(draft.message)
   if (n < MESSAGE_MIN) problems.message = `Write at least ${MESSAGE_MIN} characters about what you saw.`
   else if (n > MESSAGE_MAX) problems.message = `Shorten this to ${MESSAGE_MAX} characters or fewer.`
@@ -117,12 +117,12 @@ export type RefusedReason = 'rate_limited' | 'busy' | 'not_enabled' | 'network' 
 export type SendOutcome = { ok: true } | { ok: false; reason: RefusedReason }
 
 export const REFUSED_TEXT: Readonly<Record<RefusedReason, string>> = {
-  rate_limited: 'Too many reports from you in the last hour. Please try again later.',
-  busy: 'Too many reports right now. Please sign in to send yours, or try again later.',
+  rate_limited: "That's the limit for this hour (5 reports). Please try again a little later.",
+  busy: "We're getting a lot of reports right now. Sign in to send yours, or try again a little later.",
   not_enabled: 'Reports are not switched on yet.',
-  network: 'Could not send. Check your connection and try again.',
+  network: "Couldn't send that. Check your connection and try again.",
   // The form checks the reader's text itself, so the database refusing means the page, not the words.
-  invalid: 'This page cannot take reports. Please tell us on Discord.',
+  invalid: "This page can't take reports. Please tell us on Discord.",
 }
 
 type RpcError = { code?: unknown; message?: unknown; status?: unknown } | null | undefined
@@ -258,7 +258,9 @@ export function sectionChoices(items: readonly { id: string; text: string; level
   return out
 }
 
-/** "Sent as <name>" or "Sent without your name." */
+/** Who the report comes from, said the friendly way: the signed-in name, or that it goes in without one. */
 export function senderLine(username: string | null): string {
-  return username ? `Sent as ${username}.` : 'Sent without your name.'
+  return username
+    ? `You're signed in as ${username}, so we'll know who to thank.`
+    : "You're not signed in, so this goes in without a name. That's fine too."
 }

@@ -283,6 +283,8 @@ export function WikiArticle({
           <p className="wiki-article__report-text">Spot something wrong or out of date on this page?</p>
           <ReportProblemButton variant="block" onOpen={() => setReportOpen(true)} />
         </div>
+        {/* The third: a bug icon pinned to the bottom right, so the form is one click away anywhere on the page */}
+        <ReportProblemButton variant="float" onOpen={() => setReportOpen(true)} />
         <ReportDialog
           open={reportOpen}
           onClose={() => setReportOpen(false)}
