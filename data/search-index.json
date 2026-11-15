@@ -1878,6 +1878,1118 @@
     "difficulty": "beginner"
   },
   {
+    "id": "build-42-action-groups-and-states",
+    "title": "Action groups and states",
+    "slug": "action-groups-and-states",
+    "url": "/pz/build-42/engine/animation-system/action-groups-and-states",
+    "version": "build-42",
+    "section": "engine",
+    "category": "animation-system",
+    "tags": [
+      "engine",
+      "animation",
+      "actiongroups",
+      "xml",
+      "multiplayer",
+      "modding"
+    ],
+    "excerpt": "The Build 42.22 actiongroups XML: groups, states, transitions, conditions and tags, how a character moves between states, and how timed actions enter and leave one.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-animation-reference",
+    "title": "Animation reference",
+    "slug": "animation-reference",
+    "url": "/pz/build-42/engine/animation-system/animation-reference",
+    "version": "build-42",
+    "section": "engine",
+    "category": "animation-system",
+    "tags": [
+      "engine",
+      "animation",
+      "reference",
+      "animsets",
+      "action-groups"
+    ],
+    "excerpt": "Lookup tables for Build 42.22 animation data: every action group and AnimSet with its state count, the XML elements of nodes, transitions, events and conditions with defaults, and the variables in the shipped data.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-animation-variables-and-events",
+    "title": "Animation variables and events",
+    "slug": "animation-variables-and-events",
+    "url": "/pz/build-42/engine/animation-system/animation-variables-and-events",
+    "version": "build-42",
+    "section": "engine",
+    "category": "animation-system",
+    "tags": [
+      "engine",
+      "animation",
+      "variables",
+      "events",
+      "lua",
+      "multiplayer",
+      "modding"
+    ],
+    "excerpt": "Build 42.22 animation variables (slot types, callback variables, setting and reading from Lua) and animation events (XML tags, when they fire, and how the character, a timed action and Lua receive them).",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-animsets-nodes-and-transitions",
+    "title": "AnimSets, nodes and transitions",
+    "slug": "animsets-nodes-and-transitions",
+    "url": "/pz/build-42/engine/animation-system/animsets-nodes-and-transitions",
+    "version": "build-42",
+    "section": "engine",
+    "category": "animation-system",
+    "tags": [
+      "engine",
+      "animation",
+      "animsets",
+      "xml",
+      "multiplayer",
+      "modding"
+    ],
+    "excerpt": "The Build 42.22 AnimSets XML: how a state folder of node files is built, every field a node reads, conditions, blending, transitions, 2D blends, bone masks and how mods add or replace nodes.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-how-character-animation-works",
+    "title": "How character animation works",
+    "slug": "how-character-animation-works",
+    "url": "/pz/build-42/engine/animation-system/how-character-animation-works",
+    "version": "build-42",
+    "section": "engine",
+    "category": "animation-system",
+    "tags": [
+      "engine",
+      "animation",
+      "timed-actions",
+      "combat",
+      "multiplayer"
+    ],
+    "excerpt": "Why actions, swings and getting up take the time they do, when the animation and not a timer decides it, and what you see when the animation and the game disagree.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-inside-the-animation-system",
+    "title": "Inside the animation system",
+    "slug": "inside-the-animation-system",
+    "url": "/pz/build-42/engine/animation-system/inside-the-animation-system",
+    "version": "build-42",
+    "section": "engine",
+    "category": "animation-system",
+    "tags": [
+      "engine",
+      "animation",
+      "animsets",
+      "actiongroups",
+      "multiplayer",
+      "modding"
+    ],
+    "excerpt": "The whole Build 42.22 animation pipeline in one page: action states, the animator, AnimSet nodes picked by variables, the animation player, and how events and timed actions fit in.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-modding-animations",
+    "title": "Modding animations",
+    "slug": "modding-animations",
+    "url": "/pz/build-42/engine/animation-system/modding-animations",
+    "version": "build-42",
+    "section": "engine",
+    "category": "animation-system",
+    "tags": [
+      "engine",
+      "animation",
+      "modding",
+      "timed-actions",
+      "multiplayer",
+      "how-to"
+    ],
+    "excerpt": "A step-by-step how-to for Build 42.22: add a clip to a mod, play it from a timed action, change an AnimSet node, see what other players get in multiplayer, and avoid the reload, junction and load-order traps.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-skinned-models-and-clips",
+    "title": "Skinned models and clips",
+    "slug": "skinned-models-and-clips",
+    "url": "/pz/build-42/engine/animation-system/skinned-models-and-clips",
+    "version": "build-42",
+    "section": "engine",
+    "category": "animation-system",
+    "tags": [
+      "engine",
+      "animation",
+      "skeleton",
+      "clips",
+      "fbx",
+      "modding"
+    ],
+    "excerpt": "How Build 42.22 loads animation clip files, binds them to the character skeleton by bone name, picks a winner when mods share a clip, attaches models to bones, and what makes a clip fail to load.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-building-and-moveables-reference",
+    "title": "Building and moveables: the numbers",
+    "slug": "building-and-moveables-reference",
+    "url": "/pz/build-42/engine/building-and-moveables/building-and-moveables-reference",
+    "version": "build-42",
+    "section": "engine",
+    "category": "building-and-moveables",
+    "tags": [
+      "engine",
+      "building",
+      "moveables",
+      "reference",
+      "sandbox",
+      "health"
+    ],
+    "excerpt": "Every number from the building and moveables pages in tables, each with its capture citation: health, thump damage, timers, moveable tools, scrap chances, events and sandbox options.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-building-recipes-by-skill",
+    "title": "Building recipes by skill: what each level unlocks",
+    "slug": "building-recipes-by-skill",
+    "url": "/pz/build-42/engine/building-and-moveables/building-recipes-by-skill",
+    "version": "build-42",
+    "section": "engine",
+    "category": "building-and-moveables",
+    "tags": [
+      "engine",
+      "building",
+      "carpentry",
+      "welding",
+      "masonry",
+      "recipes"
+    ],
+    "excerpt": "Every build recipe in 42.22 by skill and level: Carpentry 1 to 7, Welding 2 to 10, Masonry 1 to 5, plus what needs no skill. Materials, tools, XP and which recipes must be learned from a magazine.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-built-object-health-table",
+    "title": "Built object health table",
+    "slug": "built-object-health-table",
+    "url": "/pz/build-42/engine/building-and-moveables/built-object-health-table",
+    "version": "build-42",
+    "section": "engine",
+    "category": "building-and-moveables",
+    "tags": [
+      "engine",
+      "building",
+      "health",
+      "reference"
+    ],
+    "excerpt": "The health of every buildable object in 42.22, computed from its script: base value, per-skill-level value and bonus, at the needed level and at level 10.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-built-objects-health-and-zombies",
+    "title": "Built objects: health, zombies and damage",
+    "slug": "built-objects-health-and-zombies",
+    "url": "/pz/build-42/engine/building-and-moveables/built-objects-health-and-zombies",
+    "version": "build-42",
+    "section": "engine",
+    "category": "building-and-moveables",
+    "tags": [
+      "engine",
+      "building",
+      "thumpable",
+      "zombies",
+      "health",
+      "repair",
+      "multiplayer"
+    ],
+    "excerpt": "How many hit points built walls, doors and furniture get, how zombies thump them down (one zombie barely scratches a wall), what comes back when one breaks, plus repair, fire and vehicles.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-how-building-works",
+    "title": "How building works: from the Build button to a finished wall",
+    "slug": "how-building-works",
+    "url": "/pz/build-42/engine/building-and-moveables/how-building-works",
+    "version": "build-42",
+    "section": "engine",
+    "category": "building-and-moveables",
+    "tags": [
+      "engine",
+      "building",
+      "carpentry",
+      "construction",
+      "entities",
+      "multiplayer"
+    ],
+    "excerpt": "Click Build, pick a recipe, place the ghost, wait for the bar. Which recipes you see, what placement checks, how long it takes, the XP, and which side (client or server) does each step.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-modding-building-and-moveables",
+    "title": "Modding building and moveables",
+    "slug": "modding-building-and-moveables",
+    "url": "/pz/build-42/engine/building-and-moveables/modding-building-and-moveables",
+    "version": "build-42",
+    "section": "engine",
+    "category": "building-and-moveables",
+    "tags": [
+      "engine",
+      "modding",
+      "building",
+      "moveables",
+      "entities",
+      "multiplayer",
+      "lua"
+    ],
+    "excerpt": "Add a buildable object with an entity script and a little Lua, make a tile moveable, change health or thump behavior, hook events, and see what needs Java. One small working mod.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-moveables-pick-up-place-and-scrap",
+    "title": "Moveables: pick up, place, rotate, break and scrap",
+    "slug": "moveables-pick-up-place-and-scrap",
+    "url": "/pz/build-42/engine/building-and-moveables/moveables-pick-up-place-and-scrap",
+    "version": "build-42",
+    "section": "engine",
+    "category": "building-and-moveables",
+    "tags": [
+      "engine",
+      "moveables",
+      "furniture",
+      "scrapping",
+      "disassemble",
+      "multiplayer"
+    ],
+    "excerpt": "Which furniture you can pick up and with what tool, its weight, the chance it breaks when lifted, place and rotate rules, and what scrapping yields and costs, with XP.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-how-character-stats-work",
+    "title": "How character stats work",
+    "slug": "how-character-stats-work",
+    "url": "/pz/build-42/engine/character-stats/how-character-stats-work",
+    "version": "build-42",
+    "section": "engine",
+    "category": "character-stats",
+    "tags": [
+      "engine",
+      "stats",
+      "multiplayer",
+      "saving"
+    ],
+    "excerpt": "What the 24 hidden numbers behind your survivor are, what moves them, why the server owns them in multiplayer, how they reach other players, and how they are saved.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-how-moodles-work",
+    "title": "How moodles work",
+    "slug": "how-moodles-work",
+    "url": "/pz/build-42/engine/character-stats/how-moodles-work",
+    "version": "build-42",
+    "section": "engine",
+    "category": "character-stats",
+    "tags": [
+      "engine",
+      "moodles",
+      "stats",
+      "ui"
+    ],
+    "excerpt": "How the icons on the right of your screen are worked out from your stats, when they change, what each level does, and which moodles can never reach their top level.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-hunger-thirst-and-nutrition",
+    "title": "Hunger, thirst and nutrition: the real numbers",
+    "slug": "hunger-thirst-and-nutrition",
+    "url": "/pz/build-42/engine/character-stats/hunger-thirst-and-nutrition",
+    "version": "build-42",
+    "section": "engine",
+    "category": "character-stats",
+    "tags": [
+      "engine",
+      "stats",
+      "hunger",
+      "thirst",
+      "nutrition",
+      "weight"
+    ],
+    "excerpt": "How many game hours until you feel hungry or thirsty, what eating and drinking do to each stat, and how calories and body weight work behind the scenes.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-modding-stats-and-moodles",
+    "title": "Modding stats and moodles",
+    "slug": "modding-stats-and-moodles",
+    "url": "/pz/build-42/engine/character-stats/modding-stats-and-moodles",
+    "version": "build-42",
+    "section": "engine",
+    "category": "character-stats",
+    "tags": [
+      "engine",
+      "modding",
+      "stats",
+      "moodles",
+      "lua",
+      "multiplayer"
+    ],
+    "excerpt": "How to read and change hunger, panic, pain and the rest from Lua, which side must do it in multiplayer, and why a custom moodle cannot work without Java.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-sickness-pain-and-other-stats",
+    "title": "Sickness, pain, drunkenness and the other stats",
+    "slug": "sickness-pain-and-other-stats",
+    "url": "/pz/build-42/engine/character-stats/sickness-pain-and-other-stats",
+    "version": "build-42",
+    "section": "engine",
+    "category": "character-stats",
+    "tags": [
+      "engine",
+      "stats",
+      "sickness",
+      "pain",
+      "intoxication",
+      "poison"
+    ],
+    "excerpt": "What makes you Sick, how pain follows your wounds, how drunkenness builds and fades in real minutes, and what the other stats do, including four that do almost nothing.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-stats-and-moodles-reference",
+    "title": "Stats and moodles: the reference tables",
+    "slug": "stats-and-moodles-reference",
+    "url": "/pz/build-42/engine/character-stats/stats-and-moodles-reference",
+    "version": "build-42",
+    "section": "engine",
+    "category": "character-stats",
+    "tags": [
+      "engine",
+      "stats",
+      "moodles",
+      "reference"
+    ],
+    "excerpt": "Look-up tables for every character stat (range, default, what updates it) and every moodle (each level, its threshold and its effects), for readers who want the exact number.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-stress-panic-boredom-and-unhappiness",
+    "title": "Stress, panic, boredom and unhappiness: the real numbers",
+    "slug": "stress-panic-boredom-and-unhappiness",
+    "url": "/pz/build-42/engine/character-stats/stress-panic-boredom-and-unhappiness",
+    "version": "build-42",
+    "section": "engine",
+    "category": "character-stats",
+    "tags": [
+      "engine",
+      "stats",
+      "stress",
+      "panic",
+      "boredom",
+      "unhappiness"
+    ],
+    "excerpt": "What raises and lowers stress, panic, boredom and unhappiness, with the real rates, and what each does to your survivor: worse aim, weaker swings and slower actions.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-electricity-and-generators",
+    "title": "Electricity: the grid, generators and lights",
+    "slug": "electricity-and-generators",
+    "url": "/pz/build-42/engine/fire-water-and-power/electricity-and-generators",
+    "version": "build-42",
+    "section": "engine",
+    "category": "fire-water-and-power",
+    "tags": [
+      "engine",
+      "electricity",
+      "generators",
+      "lights",
+      "sandbox",
+      "multiplayer"
+    ],
+    "excerpt": "When the power grid dies, how a generator decides what to power, what it costs in fuel and condition, how loud and dangerous it is, and how light switches and bulbs work.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-fighting-fire",
+    "title": "Fighting fire, and fires you control",
+    "slug": "fighting-fire",
+    "url": "/pz/build-42/engine/fire-water-and-power/fighting-fire",
+    "version": "build-42",
+    "section": "engine",
+    "category": "fire-water-and-power",
+    "tags": [
+      "engine",
+      "fire",
+      "campfire",
+      "multiplayer"
+    ],
+    "excerpt": "How to put out a fire in Project Zomboid and what it costs, why some fires cannot be put out by hand, and how a campfire, fireplace or barbecue differs from a wild fire.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-fire-water-and-power-reference",
+    "title": "Fire, water and power: the numbers",
+    "slug": "fire-water-and-power-reference",
+    "url": "/pz/build-42/engine/fire-water-and-power/fire-water-and-power-reference",
+    "version": "build-42",
+    "section": "engine",
+    "category": "fire-water-and-power",
+    "tags": [
+      "engine",
+      "reference",
+      "fire",
+      "water",
+      "electricity",
+      "sandbox"
+    ],
+    "excerpt": "Every number from the fire, water and power pages in one place: options, fire life and spread, extinguishing, shutoff rolls, rain rates, generator draws and wear, bulbs, events and packets.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-how-fire-works",
+    "title": "How fire works",
+    "slug": "how-fire-works",
+    "url": "/pz/build-42/engine/fire-water-and-power/how-fire-works",
+    "version": "build-42",
+    "section": "engine",
+    "category": "fire-water-and-power",
+    "tags": [
+      "engine",
+      "fire",
+      "sandbox",
+      "multiplayer"
+    ],
+    "excerpt": "What starts a fire in Project Zomboid, how it spreads, how long a square burns, what the flames destroy and hurt, and which machine decides it all in multiplayer.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-modding-fire-water-and-power",
+    "title": "Modding fire, water and power",
+    "slug": "modding-fire-water-and-power",
+    "url": "/pz/build-42/engine/fire-water-and-power/modding-fire-water-and-power",
+    "version": "build-42",
+    "section": "engine",
+    "category": "fire-water-and-power",
+    "tags": [
+      "engine",
+      "modding",
+      "fire",
+      "water",
+      "electricity",
+      "multiplayer",
+      "lua"
+    ],
+    "excerpt": "How a mod starts and stops fire, reads and changes water and power, adds a fuel or a generator, which side must act in multiplayer, and one small working mod you can run.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-water-and-plumbing",
+    "title": "Water, plumbing and rain collection",
+    "slug": "water-and-plumbing",
+    "url": "/pz/build-42/engine/fire-water-and-power/water-and-plumbing",
+    "version": "build-42",
+    "section": "engine",
+    "category": "fire-water-and-power",
+    "tags": [
+      "engine",
+      "water",
+      "plumbing",
+      "rain",
+      "sandbox",
+      "multiplayer"
+    ],
+    "excerpt": "When the taps run dry and how that day is rolled, what still gives water afterward, how to plumb a sink to a barrel upstairs, how fast rain fills a container, and which water is tainted.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-fish-and-where-to-find-them",
+    "title": "Fish and where to find them",
+    "slug": "fish-and-where-to-find-them",
+    "url": "/pz/build-42/engine/fishing-and-trapping/fish-and-where-to-find-them",
+    "version": "build-42",
+    "section": "engine",
+    "category": "fishing-and-trapping",
+    "tags": [
+      "engine",
+      "fishing",
+      "fish",
+      "zones"
+    ],
+    "excerpt": "Which fish you can catch in Project Zomboid 42.22, which bait suits each, where schools are, why they move daily, how fishing thins them, and how chum helps.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-fishing-and-trapping-reference",
+    "title": "Fishing and trapping reference",
+    "slug": "fishing-and-trapping-reference",
+    "url": "/pz/build-42/engine/fishing-and-trapping/fishing-and-trapping-reference",
+    "version": "build-42",
+    "section": "engine",
+    "category": "fishing-and-trapping",
+    "tags": [
+      "engine",
+      "fishing",
+      "trapping",
+      "reference"
+    ],
+    "excerpt": "Every number from the fishing and trapping pages in one place, with its source line: timers, chances, sizes, schools, chum, nets, traps, animals, explosives and options.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-fishing-nets-and-other-methods",
+    "title": "Fishing nets and other methods",
+    "slug": "fishing-nets-and-other-methods",
+    "url": "/pz/build-42/engine/fishing-and-trapping/fishing-nets-and-other-methods",
+    "version": "build-42",
+    "section": "engine",
+    "category": "fishing-and-trapping",
+    "tags": [
+      "engine",
+      "fishing",
+      "nets",
+      "multiplayer"
+    ],
+    "excerpt": "How a fishing net works in Project Zomboid 42.22: what it catches while you are away, how long to leave it, when it breaks, what bait does, and the other ways fish reach your pack.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-how-fishing-works",
+    "title": "How fishing works",
+    "slug": "how-fishing-works",
+    "url": "/pz/build-42/engine/fishing-and-trapping/how-fishing-works",
+    "version": "build-42",
+    "section": "engine",
+    "category": "fishing-and-trapping",
+    "tags": [
+      "engine",
+      "fishing",
+      "survival",
+      "multiplayer"
+    ],
+    "excerpt": "How fishing works in Project Zomboid 42.22: the cast, what makes a bite, the tension minigame, what snaps a line, fish size, skill and XP, and who runs each part in multiplayer.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-how-trapping-works",
+    "title": "How trapping works",
+    "slug": "how-trapping-works",
+    "url": "/pz/build-42/engine/fishing-and-trapping/how-trapping-works",
+    "version": "build-42",
+    "section": "engine",
+    "category": "fishing-and-trapping",
+    "tags": [
+      "engine",
+      "trapping",
+      "animals",
+      "explosives",
+      "multiplayer"
+    ],
+    "excerpt": "How animal traps catch animals in Project Zomboid 42.22, why they only roll while nobody is near, what bait and skill do, and how explosive, flame, smoke and noise traps work.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-modding-fishing-and-trapping",
+    "title": "Modding fishing and trapping",
+    "slug": "modding-fishing-and-trapping",
+    "url": "/pz/build-42/engine/fishing-and-trapping/modding-fishing-and-trapping",
+    "version": "build-42",
+    "section": "engine",
+    "category": "fishing-and-trapping",
+    "tags": [
+      "engine",
+      "fishing",
+      "trapping",
+      "modding",
+      "multiplayer"
+    ],
+    "excerpt": "How to add a fish, a bait and a trap animal through plain Lua tables, with complete mod files, events, the multiplayer rules and what only a Java patch can change.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-controllers-and-joypads",
+    "title": "Controllers and joypads",
+    "slug": "controllers-and-joypads",
+    "url": "/pz/build-42/engine/input-and-controls/controllers-and-joypads",
+    "version": "build-42",
+    "section": "engine",
+    "category": "input-and-controls",
+    "tags": [
+      "engine",
+      "input",
+      "controller",
+      "ui",
+      "modding",
+      "lua"
+    ],
+    "excerpt": "How a controller drives the interface in Build 42.22: joypad focus, the calls a UI element receives, the OnJoypad events, and how to make a mod window usable with a controller.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-how-controls-and-keybinds-work",
+    "title": "How controls and keybinds work",
+    "slug": "how-controls-and-keybinds-work",
+    "url": "/pz/build-42/engine/input-and-controls/how-controls-and-keybinds-work",
+    "version": "build-42",
+    "section": "engine",
+    "category": "input-and-controls",
+    "tags": [
+      "engine",
+      "input",
+      "keybinds",
+      "controller",
+      "aiming"
+    ],
+    "excerpt": "The default keys, how to change them and where they are saved, what a controller can do, why two actions can share a key, and how aiming works with a mouse or a stick.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-input-reference",
+    "title": "Input reference",
+    "slug": "input-reference",
+    "url": "/pz/build-42/engine/input-and-controls/input-reference",
+    "version": "build-42",
+    "section": "engine",
+    "category": "input-and-controls",
+    "tags": [
+      "engine",
+      "input",
+      "reference",
+      "events",
+      "keybinds",
+      "controller"
+    ],
+    "excerpt": "Every input event with its arguments and where it fires, every default key binding, every KeybindId, the default controller bindings and the Lua-callable input methods in Build 42.22.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-inside-input",
+    "title": "Inside input",
+    "slug": "inside-input",
+    "url": "/pz/build-42/engine/input-and-controls/inside-input",
+    "version": "build-42",
+    "section": "engine",
+    "category": "input-and-controls",
+    "tags": [
+      "engine",
+      "input",
+      "events",
+      "modding",
+      "controller"
+    ],
+    "excerpt": "How a key press, a mouse click or a controller button becomes a Lua event in Build 42.22: the per-frame states, who fires what, in what order, and which events carry which arguments.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-keys-events-and-mod-keybinds",
+    "title": "Keys, events and mod keybinds",
+    "slug": "keys-events-and-mod-keybinds",
+    "url": "/pz/build-42/engine/input-and-controls/keys-events-and-mod-keybinds",
+    "version": "build-42",
+    "section": "engine",
+    "category": "input-and-controls",
+    "tags": [
+      "engine",
+      "input",
+      "keybinds",
+      "events",
+      "modding",
+      "lua"
+    ],
+    "excerpt": "Which key event to use, how to read a binding, and how to add a key to your mod that players can rebind, with a complete example from an empty folder.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-mouse-and-aiming",
+    "title": "Mouse and aiming",
+    "slug": "mouse-and-aiming",
+    "url": "/pz/build-42/engine/input-and-controls/mouse-and-aiming",
+    "version": "build-42",
+    "section": "engine",
+    "category": "input-and-controls",
+    "tags": [
+      "engine",
+      "input",
+      "mouse",
+      "aiming",
+      "modding",
+      "lua"
+    ],
+    "excerpt": "How Build 42.22 turns mouse clicks into world and menu events, why the UI gets the click first, and how the aiming modes and the reticle follow the mouse or a stick.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-hit-reactions-and-ballistics",
+    "title": "Hit reactions and ballistics",
+    "slug": "hit-reactions-and-ballistics",
+    "url": "/pz/build-42/engine/physics-and-ragdolls/hit-reactions-and-ballistics",
+    "version": "build-42",
+    "section": "engine",
+    "category": "physics-and-ragdolls",
+    "tags": [
+      "engine",
+      "physics",
+      "ballistics",
+      "combat",
+      "ragdolls",
+      "modding"
+    ],
+    "excerpt": "How a Build 42.22 shot picks a body part and a reaction, how the physics hit reaction script turns that into a push on a ragdoll, and what the ballistics controller asks the native library.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-how-physics-and-ragdolls-work",
+    "title": "How physics and ragdolls work",
+    "slug": "how-physics-and-ragdolls-work",
+    "url": "/pz/build-42/engine/physics-and-ragdolls/how-physics-and-ragdolls-work",
+    "version": "build-42",
+    "section": "engine",
+    "category": "physics-and-ragdolls",
+    "tags": [
+      "engine",
+      "physics",
+      "ragdolls",
+      "multiplayer",
+      "options"
+    ],
+    "excerpt": "When a zombie falls as a physics ragdoll in Build 42.22 and when it plays a canned fall, the two options that switch it, what a server owner can and cannot set, and what we do not know about cost.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-inside-the-physics-engine",
+    "title": "Inside the physics engine",
+    "slug": "inside-the-physics-engine",
+    "url": "/pz/build-42/engine/physics-and-ragdolls/inside-the-physics-engine",
+    "version": "build-42",
+    "section": "engine",
+    "category": "physics-and-ragdolls",
+    "tags": [
+      "engine",
+      "physics",
+      "bullet",
+      "ragdolls",
+      "multiplayer",
+      "modding"
+    ],
+    "excerpt": "How Build 42.22 runs physics: the native Bullet library, the Java bridge around it, the 10 ms step, what the world feeds it, and which side (client, server, single player) simulates what.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-modding-physics-and-ragdolls",
+    "title": "Modding physics and ragdolls",
+    "slug": "modding-physics-and-ragdolls",
+    "url": "/pz/build-42/engine/physics-and-ragdolls/modding-physics-and-ragdolls",
+    "version": "build-42",
+    "section": "engine",
+    "category": "physics-and-ragdolls",
+    "tags": [
+      "engine",
+      "physics",
+      "ragdolls",
+      "modding",
+      "scripts",
+      "lua"
+    ],
+    "excerpt": "Step by step from an empty folder: what a Build 42.22 mod can change in physics and ragdolls through scripts and Lua, how to test it, and what it cannot reach. Ragdolls run only in single player.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-physics-reference",
+    "title": "Physics reference",
+    "slug": "physics-reference",
+    "url": "/pz/build-42/engine/physics-and-ragdolls/physics-reference",
+    "version": "build-42",
+    "section": "engine",
+    "category": "physics-and-ragdolls",
+    "tags": [
+      "engine",
+      "physics",
+      "ragdolls",
+      "reference",
+      "modding"
+    ],
+    "excerpt": "Every table for Build 42.22 physics and ragdolls, counted by script from the game files: ragdoll script blocks, hit reaction values, physics shapes, options, Lua-callable methods and vehicle physics packets.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-physics-shapes-and-objects",
+    "title": "Physics shapes and objects",
+    "slug": "physics-shapes-and-objects",
+    "url": "/pz/build-42/engine/physics-and-ragdolls/physics-shapes-and-objects",
+    "version": "build-42",
+    "section": "engine",
+    "category": "physics-and-ragdolls",
+    "tags": [
+      "engine",
+      "physics",
+      "modding",
+      "vehicles",
+      "models"
+    ],
+    "excerpt": "How Build 42.22 turns a model file into a collision shape for tiles and vehicles, and what the separate Java-only IsoPhysicsObject class is for.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-ragdolls",
+    "title": "Ragdolls",
+    "slug": "ragdolls",
+    "url": "/pz/build-42/engine/physics-and-ragdolls/ragdolls",
+    "version": "build-42",
+    "section": "engine",
+    "category": "physics-and-ragdolls",
+    "tags": [
+      "engine",
+      "physics",
+      "ragdolls",
+      "animation",
+      "zombies",
+      "modding"
+    ],
+    "excerpt": "How a Build 42.22 ragdoll starts, runs and ends: the animation node that asks for it, the controller that simulates it, how it hands back to the animation system, and every field in the four ragdoll script files.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-every-vanilla-stash",
+    "title": "Every vanilla stash",
+    "slug": "every-vanilla-stash",
+    "url": "/pz/build-42/engine/stash-and-annotated-maps/every-vanilla-stash",
+    "version": "build-42",
+    "section": "engine",
+    "category": "stash-and-annotated-maps",
+    "tags": [
+      "engine",
+      "stash",
+      "maps",
+      "loot",
+      "reference"
+    ],
+    "excerpt": "All 125 vanilla stash maps in Build 42.22: name, town, map item, building coordinates, loot table, zombies, boarded doors and special containers, with counts per town and how we counted.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-how-stash-maps-work",
+    "title": "How stash maps work",
+    "slug": "how-stash-maps-work",
+    "url": "/pz/build-42/engine/stash-and-annotated-maps/how-stash-maps-work",
+    "version": "build-42",
+    "section": "engine",
+    "category": "stash-and-annotated-maps",
+    "tags": [
+      "engine",
+      "stash",
+      "maps",
+      "loot",
+      "multiplayer"
+    ],
+    "excerpt": "What a map with notes on it is, where it drops, how often it points to a real cache, what the cache holds, and why you sometimes walk into an empty house.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-inside-the-stash-system",
+    "title": "Inside the stash system",
+    "slug": "inside-the-stash-system",
+    "url": "/pz/build-42/engine/stash-and-annotated-maps/inside-the-stash-system",
+    "version": "build-42",
+    "section": "engine",
+    "category": "stash-and-annotated-maps",
+    "tags": [
+      "engine",
+      "stash",
+      "maps",
+      "lua",
+      "multiplayer",
+      "modding"
+    ],
+    "excerpt": "The full life of a stash in Build 42.22: loading the Lua table, naming a map, arming a building, filling it at chunk load, what is saved, and which side runs each step.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-modding-stashes",
+    "title": "Modding stashes",
+    "slug": "modding-stashes",
+    "url": "/pz/build-42/engine/stash-and-annotated-maps/modding-stashes",
+    "version": "build-42",
+    "section": "engine",
+    "category": "stash-and-annotated-maps",
+    "tags": [
+      "engine",
+      "stash",
+      "maps",
+      "modding",
+      "lua",
+      "multiplayer"
+    ],
+    "excerpt": "Build a complete mod that adds one stash map in Build 42.22, test it with the stash debug panel, run it on a dedicated server, and change or remove vanilla stashes. Includes what needs Java.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-paper-maps-and-annotations",
+    "title": "Paper maps and annotations",
+    "slug": "paper-maps-and-annotations",
+    "url": "/pz/build-42/engine/stash-and-annotated-maps/paper-maps-and-annotations",
+    "version": "build-42",
+    "section": "engine",
+    "category": "stash-and-annotated-maps",
+    "tags": [
+      "engine",
+      "maps",
+      "stash",
+      "lua",
+      "ui",
+      "debug"
+    ],
+    "excerpt": "How a paper map item is drawn in Build 42.22, how a stash's stamps and notes reach it, the 91 stamp symbols, and how to preview and test it with the map editor and the stash debug panel.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-stash-and-maps-reference",
+    "title": "Stash and maps reference",
+    "slug": "stash-and-maps-reference",
+    "url": "/pz/build-42/engine/stash-and-annotated-maps/stash-and-maps-reference",
+    "version": "build-42",
+    "section": "engine",
+    "category": "stash-and-annotated-maps",
+    "tags": [
+      "engine",
+      "stash",
+      "maps",
+      "lua",
+      "reference",
+      "sandbox",
+      "modding"
+    ],
+    "excerpt": "Lookup tables for Build 42.22 stashes: what Lua can call, every StashDescriptions key, every StashUtil function, the AnnotatedMapChance option, the saved lists and the ReadAnnotedMap packet.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-how-weather-works",
+    "title": "How weather works",
+    "slug": "how-weather-works",
+    "url": "/pz/build-42/engine/weather-and-climate/how-weather-works",
+    "version": "build-42",
+    "section": "engine",
+    "category": "weather-and-climate",
+    "tags": [
+      "engine",
+      "weather",
+      "climate",
+      "multiplayer",
+      "lua"
+    ],
+    "excerpt": "Where rain, fog, wind and temperature come from, how often the game updates them, why the server decides the weather in multiplayer, and what is saved.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-modding-weather",
+    "title": "Modding weather: read it, hook it, change it",
+    "slug": "modding-weather",
+    "url": "/pz/build-42/engine/weather-and-climate/modding-weather",
+    "version": "build-42",
+    "section": "engine",
+    "category": "weather-and-climate",
+    "tags": [
+      "engine",
+      "modding",
+      "weather",
+      "lua",
+      "multiplayer",
+      "sandbox"
+    ],
+    "excerpt": "Read the climate from Lua, hook the weather events, start and stop weather and build your own stage, with worked examples (not run in a game) and which side must do each in multiplayer.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-rain-snow-fog-and-wind",
+    "title": "Rain, snow, fog, wind and storms",
+    "slug": "rain-snow-fog-and-wind",
+    "url": "/pz/build-42/engine/weather-and-climate/rain-snow-fog-and-wind",
+    "version": "build-42",
+    "section": "engine",
+    "category": "weather-and-climate",
+    "tags": [
+      "engine",
+      "weather",
+      "rain",
+      "snow",
+      "fog",
+      "wind",
+      "storms"
+    ],
+    "excerpt": "When rain, snow, fog, wind and storms happen in Build 42.22, how strong each gets, how long it lasts, and what thunder and lightning really do.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-seasons-and-day-length",
+    "title": "Seasons, day length, dawn and dusk",
+    "slug": "seasons-and-day-length",
+    "url": "/pz/build-42/engine/weather-and-climate/seasons-and-day-length",
+    "version": "build-42",
+    "section": "engine",
+    "category": "weather-and-climate",
+    "tags": [
+      "engine",
+      "seasons",
+      "daylight",
+      "moon",
+      "sandbox"
+    ],
+    "excerpt": "When each season starts, how many real minutes a game day takes, when dawn and dusk fall through the year, how dark nights get, and the traps in the season names.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-temperature-outdoors",
+    "title": "Temperature outdoors: season, hour, weather and wind chill",
+    "slug": "temperature-outdoors",
+    "url": "/pz/build-42/engine/weather-and-climate/temperature-outdoors",
+    "version": "build-42",
+    "section": "engine",
+    "category": "weather-and-climate",
+    "tags": [
+      "engine",
+      "weather",
+      "temperature",
+      "wind-chill",
+      "indoors"
+    ],
+    "excerpt": "How the outdoor air temperature is built from the season, the air mass, the hour and the weather, what wind chill does, and why rooms are 22 C while the power is on.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-the-forecast-and-weather-ui",
+    "title": "The forecast, the emergency radio and the weather tools",
+    "slug": "the-forecast-and-weather-ui",
+    "url": "/pz/build-42/engine/weather-and-climate/the-forecast-and-weather-ui",
+    "version": "build-42",
+    "section": "engine",
+    "category": "weather-and-climate",
+    "tags": [
+      "engine",
+      "weather",
+      "forecast",
+      "radio",
+      "admin",
+      "debug"
+    ],
+    "excerpt": "How far ahead the emergency radio can see the weather, how accurate it is, and what the admin and debug weather windows and commands can do.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-what-weather-does",
+    "title": "What weather does: players, zombies, plants, vehicles and the world",
+    "slug": "what-weather-does",
+    "url": "/pz/build-42/engine/weather-and-climate/what-weather-does",
+    "version": "build-42",
+    "section": "engine",
+    "category": "weather-and-climate",
+    "tags": [
+      "engine",
+      "weather",
+      "gameplay",
+      "zombies",
+      "farming",
+      "vehicles"
+    ],
+    "excerpt": "What rain, fog, wind, snow, cold and storms cost you in Build 42.22: wet clothes, worse shooting, blinder and deafer zombies, crops, vehicles and radios, with the numbers.",
+    "difficulty": "intermediate"
+  },
+  {
     "id": "build-42-fatigue-sleep-and-endurance",
     "title": "Fatigue, sleep and endurance: how fast they drain and recover",
     "slug": "fatigue-sleep-and-endurance",
@@ -2664,6 +3776,135 @@
     "difficulty": "intermediate"
   },
   {
+    "id": "build-42-changing-loot",
+    "title": "Changing loot: add, remove and reweight what vanilla containers hold",
+    "slug": "changing-loot",
+    "url": "/pz/build-42/modding/changing-vanilla/changing-loot",
+    "version": "build-42",
+    "section": "modding",
+    "category": "changing-vanilla",
+    "tags": [
+      "loot",
+      "distributions",
+      "lua",
+      "events",
+      "multiplayer"
+    ],
+    "excerpt": "How to add, remove and reweight what vanilla containers hold, what the chance numbers really mean, when the game reads the tables, and why old containers keep their loot.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-changing-recipes-and-crafting",
+    "title": "Changing recipes and crafting: time, inputs, outputs, and the traps",
+    "slug": "changing-recipes-and-crafting",
+    "url": "/pz/build-42/modding/changing-vanilla/changing-recipes-and-crafting",
+    "version": "build-42",
+    "section": "modding",
+    "category": "changing-vanilla",
+    "tags": [
+      "crafting",
+      "craftrecipe",
+      "scripts",
+      "overriding",
+      "merge"
+    ],
+    "excerpt": "How to change a vanilla craftRecipe in 42.22: edit its time, add outputs or inputs, why repeating a whole recipe doubles its ingredients, and why enabled = false logs an error.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-changing-vanilla-start-here",
+    "title": "Changing vanilla: start here",
+    "slug": "changing-vanilla-start-here",
+    "url": "/pz/build-42/modding/changing-vanilla/changing-vanilla-start-here",
+    "version": "build-42",
+    "section": "modding",
+    "category": "changing-vanilla",
+    "tags": [
+      "overriding",
+      "patching",
+      "compatibility",
+      "sandbox",
+      "lua",
+      "java"
+    ],
+    "excerpt": "How to pick the lightest way to change something the base game already does, from a sandbox setting up to a Java patch, and how to keep your change from breaking other mods.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-editing-items-at-load",
+    "title": "Editing items at load: DoParam, the right moment, and tags",
+    "slug": "editing-items-at-load",
+    "url": "/pz/build-42/modding/changing-vanilla/editing-items-at-load",
+    "version": "build-42",
+    "section": "modding",
+    "category": "changing-vanilla",
+    "tags": [
+      "items",
+      "lua",
+      "doparam",
+      "timing",
+      "multiplayer",
+      "tags"
+    ],
+    "excerpt": "How to change an existing item's stats from Lua with DoParam, which start-up moment works, why a server-only file can silently never run, and what a mod can do with item tags.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-overriding-scripts",
+    "title": "Overriding scripts: what happens when you redefine a vanilla item or recipe",
+    "slug": "overriding-scripts",
+    "url": "/pz/build-42/modding/changing-vanilla/overriding-scripts",
+    "version": "build-42",
+    "section": "modding",
+    "category": "changing-vanilla",
+    "tags": [
+      "scripts",
+      "items",
+      "recipes",
+      "modules",
+      "merge",
+      "load-order"
+    ],
+    "excerpt": "What happens when your script defines an item or recipe that vanilla already defines: which types merge, which replace, which file wins, and the one typo that deletes a vanilla item.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-patching-vanilla-lua",
+    "title": "Patching vanilla Lua: wrap it, never replace it",
+    "slug": "patching-vanilla-lua",
+    "url": "/pz/build-42/modding/changing-vanilla/patching-vanilla-lua",
+    "version": "build-42",
+    "section": "modding",
+    "category": "changing-vanilla",
+    "tags": [
+      "lua",
+      "patching",
+      "load-order",
+      "events",
+      "compatibility"
+    ],
+    "excerpt": "How to change a vanilla Lua function by keeping the original and calling it, where your file must sit, what happens if a mod ships a vanilla path, and how to remove a handler.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-what-needs-java-and-what-is-impossible",
+    "title": "What needs Java, and what is impossible",
+    "slug": "what-needs-java-and-what-is-impossible",
+    "url": "/pz/build-42/modding/changing-vanilla/what-needs-java-and-what-is-impossible",
+    "version": "build-42",
+    "section": "modding",
+    "category": "changing-vanilla",
+    "tags": [
+      "java",
+      "classpath",
+      "native",
+      "limits",
+      "engine"
+    ],
+    "excerpt": "When a change needs a loose Java class and what that costs, which native libraries no mod can reach, and how to tell the two cases apart before you spend a week on the wrong one.",
+    "difficulty": "advanced"
+  },
+  {
     "id": "build-42-cookbook-index",
     "title": "Mod creation cookbook",
     "slug": "cookbook-index",
@@ -3051,7 +4292,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: localized display names and UI text for your mod.",
+    "excerpt": "A quick recipe for giving your mod translated item names, recipes and UI text, with the file layout, skeletons and the traps to avoid.",
     "difficulty": "beginner"
   },
   {
@@ -4970,6 +6211,24 @@
     "difficulty": "intermediate"
   },
   {
+    "id": "build-42-workshop-collection-from-server-mods",
+    "title": "Turn a server's mod list into a Workshop collection",
+    "slug": "workshop-collection-from-server-mods",
+    "url": "/pz/build-42/modding/multiplayer/workshop-collection-from-server-mods",
+    "version": "build-42",
+    "section": "modding",
+    "category": "multiplayer",
+    "tags": [
+      "multiplayer",
+      "server",
+      "workshop",
+      "collection",
+      "steam"
+    ],
+    "excerpt": "A server with hundreds of mods and no collection makes every new player sit through a long download at join time. This builds a Steam collection from the server's WorkshopItems= line in about three minutes, instead of hundreds of clicks.",
+    "difficulty": "beginner"
+  },
+  {
     "id": "build-42-lua-class-directory",
     "title": "Lua Class Directory (Build 42.21)",
     "slug": "lua-class-directory",
@@ -5917,6 +7176,108 @@
     ],
     "excerpt": "Pre-upload checks for OutcastLib specifically. OutcastLib ships no scripts, recipes or translations, so this validator is deliberately smaller than the other mods' validators, and focuses on the...",
     "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-adding-a-language",
+    "title": "Adding a language: a second language, or a brand-new one",
+    "slug": "adding-a-language",
+    "url": "/pz/build-42/modding/translation/adding-a-language",
+    "version": "build-42",
+    "section": "modding",
+    "category": "translation",
+    "tags": [
+      "translation",
+      "languages",
+      "mod-packaging"
+    ],
+    "excerpt": "How to ship French or any other language beside your English files, the 29 language codes the game ships, and what a mod can and cannot add.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-gettext-in-lua",
+    "title": "getText in Lua: placeholders, missing keys and item names",
+    "slug": "gettext-in-lua",
+    "url": "/pz/build-42/modding/translation/gettext-in-lua",
+    "version": "build-42",
+    "section": "modding",
+    "category": "translation",
+    "tags": [
+      "translation",
+      "lua",
+      "gettext",
+      "placeholders"
+    ],
+    "excerpt": "Why getText prints the raw key on screen, how %1 placeholders work, what comes back for a missing key, and how an item's DisplayName relates to ItemName.json.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-how-translation-works",
+    "title": "How translation works: languages, files and fallback",
+    "slug": "how-translation-works",
+    "url": "/pz/build-42/modding/translation/how-translation-works",
+    "version": "build-42",
+    "section": "modding",
+    "category": "translation",
+    "tags": [
+      "translation",
+      "localization",
+      "engine",
+      "json",
+      "multiplayer"
+    ],
+    "excerpt": "How the game finds its languages, picks yours, falls back to English, decides which mod wins a duplicate string, and what a server does when a mod asks it for text.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-translating-your-mod",
+    "title": "Translate your mod: a first working example",
+    "slug": "translating-your-mod",
+    "url": "/pz/build-42/modding/translation/translating-your-mod",
+    "version": "build-42",
+    "section": "modding",
+    "category": "translation",
+    "tags": [
+      "translation",
+      "how-to",
+      "beginner",
+      "json"
+    ],
+    "excerpt": "How to give your mod an English name for an item, a sandbox option and a UI string in about ten minutes, and how to tell in game whether it worked.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-translation-file-types",
+    "title": "Translation file types: what each file holds",
+    "slug": "translation-file-types",
+    "url": "/pz/build-42/modding/translation/translation-file-types",
+    "version": "build-42",
+    "section": "modding",
+    "category": "translation",
+    "tags": [
+      "translation",
+      "reference",
+      "json",
+      "keys"
+    ],
+    "excerpt": "Which translation file a string belongs in, how its key must start, and what in the game reads it, with one real English key for each file.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-translation-troubleshooting",
+    "title": "Translation troubleshooting: when the text will not show up",
+    "slug": "translation-troubleshooting",
+    "url": "/pz/build-42/modding/translation/translation-troubleshooting",
+    "version": "build-42",
+    "section": "modding",
+    "category": "translation",
+    "tags": [
+      "translation",
+      "troubleshooting",
+      "json",
+      "debugging"
+    ],
+    "excerpt": "Why a raw key shows on screen, a JSON error appears, a file is silently ignored, old B41 .txt files do nothing or text will not update, each with its cause and fix.",
+    "difficulty": "beginner"
   },
   {
     "id": "build-42-replacing-a-vanilla-window",
