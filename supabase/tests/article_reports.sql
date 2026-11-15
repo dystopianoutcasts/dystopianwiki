@@ -381,6 +381,7 @@ END;
 $$;
 RESET ROLE;
 
-DO $$ BEGIN RAISE NOTICE 'ALL ARTICLE REPORT TESTS PASSED'; END; $$;
+-- The SQL editor shows only the last result, and not the notices: this row is the pass mark.
+SELECT 'ALL ARTICLE REPORT TESTS PASSED' AS result;
 
 ROLLBACK;
