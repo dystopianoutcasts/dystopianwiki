@@ -12,7 +12,7 @@ tags:
   - engine
   - vehicles
 excerpt: 'Everything this mod depends on, with the line it was read from. Sources:'
-last_updated: '2026-10-04'
+last_updated: '2026-11-15'
 ---
 # Outcast Upright -- engine notes
 
@@ -70,6 +70,8 @@ settling. Anything that lerps must stop at a ≥1° epsilon.
 **`setWorldTransform` does nothing for physics on a dedicated server.** `:4060`
 guards `Bullet.teleportVehicle` behind `!GameServer.server`; `createPhysics`
 (`:846`) is guarded the same way. Only `jniTransform` is updated server-side.
+
+> **Correction for 42.22:** the `setWorldTransform` guard still holds but moved from `:4060` to `:4094` (`zombie/vehicles/BaseVehicle.java:4090-4094`). `createPhysics` is not guarded as a whole: only `WorldSimulation.create()` is (`zombie/vehicles/BaseVehicle.java:841-843`), and `new CarController(this)` runs on every side (`:852`).
 
 ---
 

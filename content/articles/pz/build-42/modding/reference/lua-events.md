@@ -12,7 +12,7 @@ tags:
   - reference
   - generated
 excerpt: 'Every Lua event in Build 42.21, generated from the code: where each one is fired, on which side, and with which arguments.'
-last_updated: '2026-10-04'
+last_updated: '2026-11-15'
 related_articles:
   - lua-reference
   - lua-global-functions
@@ -1968,6 +1968,6 @@ The game registers these names at start-up, so `Events.Name.Add` works, but in t
 
 ## Hooks are not events
 
-The game also keeps 8 hooks in `LuaHookManager`: `AutoDrink`, `UseItem`, `Attack`, `CalculateStats`, `ContextualAction`, `WeaponHitCharacter`, `WeaponSwing`, `WeaponSwingHitPoint`. A hook gives an answer back: `LuaHookManager.TriggerHook` returns true or false from the Lua handlers, and the Java code that called it branches on that answer. An event returns nothing. They are listed here so you can tell the two apart; they are not in the event list.
+The game also keeps 8 hooks in `LuaHookManager`: `AutoDrink`, `UseItem`, `Attack`, `CalculateStats`, `ContextualAction`, `WeaponHitCharacter`, `WeaponSwing`, `WeaponSwingHitPoint`. Correction for 42.22: a hook handler does not return an answer to Java. `Event.trigger` calls each handler with `protectedCallVoid`, which discards what the handler returns, and `TriggerHook` returns only true when at least one handler is registered and false when none is (`zombie/Lua/Event.java:32-75`, `zombie/Lua/LuaHookManager.java:30-38`). Like an event, a hook handler returns nothing to the game. They are listed here so you can tell the two apart; they are not in the event list.
 
 > **Proof:** Code. zombie.Lua.LuaHookManager#AddEvents and #TriggerHook. Build 42.21 (revision 4a0e9546ec).

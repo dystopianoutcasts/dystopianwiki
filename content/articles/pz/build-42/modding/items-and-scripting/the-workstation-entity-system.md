@@ -17,7 +17,7 @@ excerpt: >-
   [CONFIRMED] Workstations are entity blocks made of components. The
   crafting-relevant one is CraftBench, whose Recipes = ... value lists tags that
   recipes must carry to appear at this station.
-last_updated: '2026-09-29'
+last_updated: '2026-11-15'
 related_articles:
   - the-big-picture
   - script-file-anatomy
@@ -36,7 +36,7 @@ related_articles:
 
 **[CONFIRMED]** Workstations are `entity` blocks made of **components**. The crafting-relevant one is `CraftBench`, whose `Recipes = ...` value lists tags that recipes must carry to appear at this station.
 
-Real vanilla entity (from `entities/agricultural/workstations/entity_stone_mill.txt`) `[CONFIRMED]`:
+Real vanilla entity (from `entities/agricultural/workstations/entity_stone_mill.txt`) `[CONFIRMED]`. **Correction for 42.22:** the file now also has a `SpriteConfig` and a `CraftRecipe` component, so the mill is itself built from the build menu (`entities/agricultural/workstations/entity_stone_mill.txt:3-44`); see [Building recipes by skill](/pz/build-42/engine/building-and-moveables/building-recipes-by-skill). The listing below is the older, shorter form:
 
 ```
 entity Stone_Mill
@@ -65,4 +65,4 @@ Other components seen (some commented-out / WIP in the shipped tree) `[CONFIRMED
 
 **Workstation-binding tags observed:** `PrimitiveForge`, `Stone_Mill`, `Stone_Quern`, `ChurnBucket`, `Scutching`, `DryLeatherLarge/Medium/Small`, `TanLeather`. Recipes with `AnySurfaceCraft`/`InHandCraft` need no station.
 
-**[NOTE]** A large set of forge/furnace/kiln entities ship under a `tempNotWorking/` folder in the vanilla tree (e.g. `entity_forge_i.txt`, `entity_charcoal_pit.txt`, `entity_arc_furnace.txt`) — evidence that some advanced stations were still being finalized around the stable cutoff. Check the shipped 42.20 files before depending on a specific advanced station. `[CONFIRMED folder exists; live status per-station UNCERTAIN]`
+**[NOTE]** Correction for 42.22: there is no `tempNotWorking` folder in the vanilla tree any more. Older text: a large set of forge/furnace/kiln entities shipped under a `tempNotWorking/` folder in the vanilla tree (e.g. `entity_forge_i.txt`, `entity_charcoal_pit.txt`, `entity_arc_furnace.txt`) — evidence that some advanced stations were still being finalized around the stable cutoff. Check the shipped 42.20 files before depending on a specific advanced station. `[CONFIRMED folder exists; live status per-station UNCERTAIN]`

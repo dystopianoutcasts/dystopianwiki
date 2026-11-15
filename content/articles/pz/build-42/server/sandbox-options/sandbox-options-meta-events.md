@@ -12,7 +12,7 @@ tags:
   - sandbox
   - generated
 excerpt: 'The helicopter, distant gunshots and other meta events, generators, annotated maps and the randomised stories in houses, on roads and in zones. Every option with its default, the presets that change it, and where Build 42.21 reads it.'
-last_updated: '2026-10-04'
+last_updated: '2026-11-15'
 related_articles:
   - running-a-server
   - sandbox-options-directory
@@ -104,7 +104,7 @@ The helicopter, distant gunshots and other meta events, generators, annotated ma
 - **Default:** `4` ("Sometimes"). Other presets: Outbreak `5` ("Often"), Extinction `2` ("Extremely Rare").
 - **The game's description:** "How often a looted map will have notes on it, written by a deceased survivor."
 - **Read in:** `zombie.core.stash.StashSystem#checkStashItem` (line 102).
-- **Set (not read) in:** `media/lua/client/LastStand/` (2 files, 2 places).
+- **Set (not read) in:** `media/lua/client/Challenge/28MinutesLater.lua` (set to 1) and `media/lua/client/Challenge/TopOfTheWorld.lua` (set to 4), not a `LastStand` folder (`client/Challenge/28MinutesLater.lua:83`, `client/Challenge/TopOfTheWorld.lua:90`). It is also listed on the server settings screen (`client/OptionScreens/ServerSettingsScreen.lua:4945`).
 
 ### HoursForCorpseRemoval
 

@@ -19,7 +19,7 @@ excerpt: >-
   one clock that ticks every ten game minutes. How the erosion clock works,
   why your base does not change while you stand in it, how multiplayer keeps
   every client growing the same plants, and what a mod can and cannot touch.
-last_updated: '2026-10-04'
+last_updated: '2026-11-15'
 related_articles:
   - randomized-stories
   - procedural-world-generation
@@ -168,7 +168,7 @@ Traps:
 
 - **Erosion Speed is fixed when the world is created.** `ErosionMain#initConfig` applies Erosion Speed and the Months-since-the-Apocalypse head start only when the save has no `erosion.ini` yet; when the file exists, it reads it and returns before that code. The clock writes the file every ten game minutes. So changing Erosion Speed on a running save does nothing, while Erosion Days, read live, does.
 - **Erosion Days throws away the head start.** In that mode the clock is recomputed from the ticks counted since the world began, so the starting value from Months since the Apocalypse is replaced on the first ten-minute tick, and switching a running save to Erosion Days drops the clock to whatever its tick counter gives. We read this; we have not watched it.
-- **`OnInitSeasons` fires on every side.** `ErosionMain#start` runs in single player, on the server and on each client, so a season mod belongs in a shared file and must compute the same values everywhere. Which side's season decides what a multiplayer player feels is Unknown: the test is to change the latitude on the server only and compare dawn and dusk times on a client.
+- **`OnInitSeasons` fires on every side.** `ErosionMain#start` runs in single player, on the server and on each client, so a season mod belongs in a shared file and must compute the same values everywhere. For weather, the answer in 42.22 is the server's: only the server and single player run the climate simulation, while each client builds its own `ErosionSeason` (`ErosionMain.java:392-413`); see [Seasons and day length](/pz/build-42/engine/weather-and-climate/seasons-and-day-length). Which side's season drives other things a multiplayer player sees (dawn and dusk times, for example) is still Unknown: the test is to change the latitude on the server only and compare dawn and dusk times on a client.
 - **Editing the seeds in `erosion.ini` changes growth on every square not yet classified.** Squares already classified keep their saved record. The server sends its settings to clients at connect, so on a server, edit the server's copy, never a client's.
 - **Do not wait for erosion inside a base you are standing in** (single player). Leave the area until the chunks unload, and they catch up when they load again.
 

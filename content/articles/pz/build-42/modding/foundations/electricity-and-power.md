@@ -17,7 +17,7 @@ excerpt: >-
   There is no player-built wire-by-wire circuit network in vanilla. The core
   model is the generator power bubble, plus the pre-existing world grid that
   goes down after the in-game power shutoff.
-last_updated: '2026-09-29'
+last_updated: '2026-11-15'
 related_articles:
   - orientation
   - combat-and-animation
@@ -48,7 +48,7 @@ read the "How to Use Generators" magazine, OR an occupation that grants it
 (Electrician/Engineer). Reaching Electrical 3 auto-learns it.
 
 **LIKELY** -- Placing a generator inside an existing (map-authored) structure reduces
-its noise radius (e.g. 20 -> 15 tiles); player-built structures give no noise reduction.
+its noise radius; player-built structures give no noise reduction. **Correction for 42.22:** the radius is halved indoors (20 becomes 10, not 15) (`zombie/iso/objects/IsoGenerator.java:192-194`).
 Noise matters because generators attract zombies.
 
 ### 3.2 Generator types and stats
@@ -66,6 +66,8 @@ Note: sources agree all generators weigh 40 EXCEPT the lighter one (30) -- the "
 Valutech unit. Exact model names and noise figures should be reconfirmed on 42.20.
 
 ### 3.3 Fuel, load, and condition
+
+**Correction for 42.22:** the idle draw is 0.002 L an hour (2 mL, not 20 mL) at the default multiplier (`zombie/iso/objects/IsoGenerator.java:285`, `:498-500`); see [Electricity and generators](/pz/build-42/engine/fire-water-and-power/electricity-and-generators). Older text follows.
 
 **CONFIRMED / LIKELY** -- Base draw with no load is on the order of ~20 ml/hour
 (sources also cite an Apocalypse baseline near 0.1 fuel/hr scaled by device count --
@@ -99,8 +101,8 @@ power sources or a custom wiring/circuit graph. The practical, LIKELY-supported 
 for a mod is:
 - Add new appliance items that participate in the existing generator-bubble system
   (the item is "electrical" and consumes when inside a powered bubble).
-- Add new generator variants as `vehicle`/item-style scripts mirroring vanilla
-  generator definitions.
+- Add new generator variants as item scripts mirroring vanilla generator
+  definitions. (42.22: a generator is an item script with the `base:generator` tag and a `WorldObjectSprite`, not a vehicle script (`zombie/iso/objects/IsoGenerator.java:142-165`); the API is listed on [Modding fire, water and power](/pz/build-42/engine/fire-water-and-power/modding-fire-water-and-power).)
 - Use Lua hooks on `IsoGenerator`-style objects for behavior (community mods such as
   "Generator Powered Buildings" demonstrate Lua-level control over what a generator
   powers), but a true custom power-grid simulation is not a documented vanilla feature.

@@ -17,7 +17,7 @@ excerpt: >-
   B42 foraging is a category + search-focus system. Items belong to categories;
   categories belong to broader groups; each category has per-biome spawn
   weights, weather and time-of-day modifiers...
-last_updated: '2026-09-29'
+last_updated: '2026-11-15'
 related_articles:
   - orientation-what-changed-in-b42
   - the-three-farming-skills
@@ -52,4 +52,4 @@ Three cached categories touch food/animals:
 - **`focus_chance`, `chance_to_create_icon`, `chance_to_move_icon`, `valid_floors`, `sprite_affinity`** are category-level fields shown in the infoboxes; their exact runtime formula is not spelled out in the cached text. [UNCERTAIN on precise math]
 
 ### 6.3 Trapping and other animal sources (context) [CONFIRMED]
-Wild vertebrates are mainly obtained by **trapping**, not foraging (dead rats/mice also appear in kitchen counters/containers). The Animal page documents trap+bait pairings: Mouse/Rat -> Mouse Trap (cheese, peanut butter, chocolate, etc.); Rabbit/Squirrel -> Trap Box/Crate/Snare/Cage (carrots, lettuce, etc.); Bird -> Stick Trap (bread, worms, corn). Fish come from fishing; insects from foraging/containers/digging grass. This matters for husbandry mods because trapping is the "wild input" side of the animal economy.
+Wild vertebrates are mainly obtained by **trapping**, not foraging (dead rats/mice also appear in kitchen counters/containers). The Animal page documents trap+bait pairings: Mouse/Rat -> Mouse Trap (cheese, peanut butter, chocolate, etc.); Rabbit/Squirrel -> Trap Box/Crate/Snare/Cage (carrots, lettuce, etc.); Raccoon is a full trapping animal too, in the same traps as rabbit and squirrel (42.22 (`server/Traps/TrapDefinition.lua:279-336`); see [How trapping works](/pz/build-42/engine/fishing-and-trapping/how-trapping-works)); Bird -> Stick Trap (bread, worms, corn). Fish come from fishing; insects from foraging/containers/digging grass. This matters for husbandry mods because trapping is the "wild input" side of the animal economy.

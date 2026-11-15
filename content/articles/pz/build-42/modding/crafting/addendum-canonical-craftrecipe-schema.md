@@ -16,7 +16,7 @@ excerpt: >-
   Enriched from pzwiki cache (canonical). Source: pzwiki.net/wiki/CraftRecipe,
   page-version 42.19.0, revid 1441679. NOTE: the "PZwiki (403 ... snippets
   only)" caveat above is now SUPERSEDED for the...
-last_updated: '2026-09-29'
+last_updated: '2026-11-15'
 related_articles:
   - the-new-craftrecipe-block
   - craftrecipe-inputs-in-depth
@@ -41,7 +41,7 @@ Multiple entries are separated with `;`. Skills come from `PerkFactory.Perks` (o
 - `SkillRequired = skill:level`  (e.g. `SkillRequired = Carving:6`)
 - `AutoLearnAll = skill:level`   (learns when ALL listed thresholds met)
 - `AutoLearnAny = skill:level`   (learns when ANY listed threshold met)
-- `needTobeLearn = true`  -- exact casing is `needTobeLearn` (recipe must be learned, not auto-known).
+- `needTobeLearn = true`  -- the recipe must be learned, not auto-known. Correction for 42.22: the casing does not matter, the key is compared case-insensitively (`needToBeLearn` works too) (`zombie/scripting/entity/components/crafting/CraftRecipe.java:397`).
 
 ### Timing + hooks [CONFIRMED]
 - `time` / `Time` = <seconds> (B42 crafting time is in seconds; both casings appear in vanilla).

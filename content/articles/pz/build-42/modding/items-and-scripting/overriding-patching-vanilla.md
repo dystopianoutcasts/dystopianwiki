@@ -14,7 +14,7 @@ tags:
   - tech-tiers
   - timedaction
 excerpt: '[CONFIRMED / standard PZ mechanics]'
-last_updated: '2026-09-29'
+last_updated: '2026-11-15'
 related_articles:
   - the-big-picture
   - script-file-anatomy
@@ -33,7 +33,7 @@ related_articles:
 
 **[CONFIRMED / standard PZ mechanics]**
 
-- **Redefining an existing ID** (same `module Base` + same `item`/`craftRecipe` name) in a mod loaded after vanilla **overrides** it. Load order (mod list order + `require` in `mod.info`) decides who wins. Last loaded wins.
+- **Redefining an existing ID** (same `module Base` + same `item`/`craftRecipe` name) in a mod loaded after vanilla **overrides** it. **Correction for 42.22:** this is not "last loaded wins". Items and craftRecipes **merge** (your keys land on top of vanilla's block), and between mods the script file path, not the mod list order, decides which body is parsed last (`zombie/scripting/ScriptManager.java:1658-1676`, `zombie/scripting/ScriptBucket.java:98-163`). See [Overriding scripts](/pz/build-42/modding/changing-vanilla/overriding-scripts).
 - **Prefer additive over override:** because ingredients are tags, the cleanest B42 integration is to (a) add your items with the right vanilla `Tags` so they slot into existing recipes, and (b) add NEW `craftRecipe`s tagged to the appropriate station — no vanilla edits needed. This survives vanilla updates far better than overriding recipe blocks.
 - **Adding recipes to a vanilla station:** give your recipe a `tags = <StationTag>` that matches the vanilla entity's `CraftBench.Recipes` list (e.g. `tags = PrimitiveForge,`). No need to touch the entity.
 - **Teaching your recipe:** add a magazine item with `TeachedRecipes = YourRecipeId`, or set `AutoLearnAll`/`AutoLearnAny`, or put `ResearchableRecipes` on a relevant item.

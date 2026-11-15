@@ -18,7 +18,7 @@ excerpt: >-
   survivor in the bathroom are all placed by one Java system the first time a
   chunk loads. How the five kinds of story are rolled, what the sandbox options
   really do to the odds, what Lua can tune, and the traps we found in the code.
-last_updated: '2026-10-04'
+last_updated: '2026-11-15'
 related_articles:
   - erosion
   - procedural-world-generation
@@ -150,7 +150,7 @@ The story classes are exposed, and so is the world that holds the lists. From Lu
 
 Events: there is no event for the roll itself. `OnInitWorld` fires after the lists are built and before chunks load, which makes it the moment to tune them. See the class pages for [RandomizedWorldBase](/pz/build-42/modding/reference/lua-classes-world-4#randomizedworldbase), [RandomizedBuildingBase](/pz/build-42/modding/reference/lua-classes-world-3#randomizedbuildingbase), [RandomizedDeadSurvivorBase](/pz/build-42/modding/reference/lua-classes-world-3#randomizeddeadsurvivorbase), [RandomizedVehicleStoryBase](/pz/build-42/modding/reference/lua-classes-world-4#randomizedvehiclestorybase), [RandomizedZoneStoryBase](/pz/build-42/modding/reference/lua-classes-world-4#randomizedzonestorybase), [IsoWorld](/pz/build-42/modding/reference/lua-classes-world-2#isoworld) and the event [OnInitWorld](/pz/build-42/modding/reference/lua-events#oninitworld).
 
-Stashes are the one part that is plain data. `StashSystem.init` reads the global Lua table `StashDescriptions` when the world starts, on single player and on the server. Vanilla fills it from `media/lua/shared/StashDescriptions/*.lua` with `StashUtil.newStash(name, type, item, customName)` and then `addStamp` or `addContainer` on the result. A mod can add its own stash the same way, in a shared Lua file.
+Stashes are the one part that is plain data. `StashSystem.init` reads the global Lua table `StashDescriptions` when the world starts. Correction for 42.22: this is not limited to single player and the server. The call in `IsoWorld` has no `!GameClient.client` guard and `ServerMap` calls it too, so clients run it as well (`IsoWorld.java:2068`, `ServerMap.java:221`); see [Inside the stash system](/pz/build-42/engine/stash-and-annotated-maps/inside-the-stash-system). Vanilla fills it from `media/lua/shared/StashDescriptions/*.lua` with `StashUtil.newStash(name, type, item, customName)` and then `addStamp` or `addContainer` on the result. A mod can add its own stash the same way, in a shared Lua file.
 
 > **Proof:** Code. `zombie.Lua.LuaManager` (story classes exposed); `media/lua/client/DebugUIs/DebugContextMenu.lua` (`getWorld():getRandomizedVehicleStoryList()`, `RBBasic:doRandomDeadSurvivorStory`, `randomizeVehicleStory`); `RandomizedBuildingBase#setChance`, `RandomizedVehicleStoryBase#setChance`, `RandomizedZoneStoryBase` (public `chance` field, no setter); `IsoWorld#init` (lists filled before `triggerEvent("OnInitWorld")`); `zombie.core.stash.StashSystem#init` and `#initAllStashes` (reads `StashDescriptions`), called from `IsoWorld#init` under `!GameClient.client`; `media/lua/shared/StashDescriptions/StashUtil.lua`. Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
 

@@ -18,7 +18,7 @@ excerpt: >-
   one Java system with a Lua front end. Where the map data comes from, how the
   fog of discovery is stored and synced, who owns a symbol on a server, and
   how a mod adds a paper map, a stamp or a reveal that survives a reconnect.
-last_updated: '2026-10-04'
+last_updated: '2026-11-15'
 related_articles:
   - in-game-map-worldmap-generation
   - missing-minimap-check-the-sandbox-first
@@ -83,6 +83,7 @@ Discovery is stored in blocks of 32 by 32 squares, eight per cell side, with two
 - **The widget:** `UIWorldMap` and its three API objects; vanilla's windows are good examples of driving them.
 - **Stamps:** `MapSymbolDefinitions.getInstance():addTexture(id, path, tab)`, as vanilla does in a shared file.
 - **Paper maps:** an item script with `Map = <id>`, and a function `LootMaps.Init.<id> = function(mapUI) ... end` in client Lua that loads data, sets the bounds and style and adds overlays. `LootMaps.callLua` looks the function up by the item's stash name first, then its map id.
+- **Stash icons:** the world map draws one map icon for each stash map the player has already read, at the center of that stash's drawing rectangle, while the print media toggle is on (`ISWorldMap.lua:597-625`); see [Paper maps and annotations](/pz/build-42/engine/stash-and-annotated-maps/paper-maps-and-annotations).
 - **Sandbox:** `Map.AllowMiniMap` (off by default), `Map.AllowWorldMap`, `Map.MapAllKnown`, `Map.MapNeedsLight`.
 
 See [UIWorldMap](/pz/build-42/modding/reference/lua-classes-world-4#uiworldmap), [WorldMapVisited](/pz/build-42/modding/reference/lua-classes-world-4#worldmapvisited), [WorldMapVisitedServer](/pz/build-42/modding/reference/lua-classes-world-4#worldmapvisitedserver), [MapSymbolDefinitions](/pz/build-42/modding/reference/lua-classes-world-4#mapsymboldefinitions), [MapItem](/pz/build-42/modding/reference/lua-classes-items#mapitem) and [SandboxOptions](/pz/build-42/modding/reference/lua-classes-game-and-core-2#sandboxoptions). No Lua event is fired by the map system itself.

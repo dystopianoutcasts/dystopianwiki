@@ -17,7 +17,7 @@ excerpt: >-
   Crops start ~50 health, modified by moon phase (below). Range 0-100; 0 kills
   the crop. Updated every 3 hours. Every 10 health above 50 at harvest = +1
   extra vegetable.
-last_updated: '2026-09-29'
+last_updated: '2026-11-15'
 related_articles:
   - orientation-what-changed-in-b42
   - the-three-farming-skills
@@ -50,7 +50,7 @@ related_articles:
 
 **Moon phase initial health [CONFIRMED]:** Ascending 47-53; Full 57-64; Descending 37-44.
 
-**Weather effect on health [CONFIRMED]:** Sunny +1; Not sunny +0.25; Temp below 10 deg C -0.25 (cold-hardy crops are immune to the cold penalty).
+**Weather effect on health [CONFIRMED]:** Sunny +1; Not sunny +0.25; Temp below 10 deg C -0.25 (cold-hardy crops are immune to the cold penalty). **Correction for 42.22:** crops never react to the real temperature. The farming Lua reads `season.currentTemp`, which starts at -1 and is never updated, so every crop that is not cold-hardy takes the cold penalty on every health tick (`season.lua:10`, `SFarmingSystem.lua:203`). See [What weather does](/pz/build-42/engine/weather-and-climate/what-weather-does).
 
 ### 4.2 Water [CONFIRMED]
 Water a crop in 10-unit increments with a fluid container (watering can, backpack sprayer) via context menu. Rain adds water by intensity. A newly planted crop starts at water level 0.
@@ -86,7 +86,7 @@ Each crop has a **minimum water level** (see crop table). Effects:
 Four diseases: **mildew, pest flies, slugs, aphids.**
 - Disease is rolled on reaching a new growth phase. Base 2% chance. Bonus yield halves it; weeds or cursed status doubles it. Sandbox "plant resilience" shifts the odds. (An unused function would add +1% per point below minimum water.)
 - **Spreads to adjacent crops** (1 tile any direction), checked once per diseased neighbor, at each crop's own chance.
-- No pest flies / slugs / aphids in winter or at temps <=10 deg C.
+- No pest flies / slugs / aphids in winter or at temps <=10 deg C. (42.22: the temperature test reads the frozen `season.currentTemp`, so the "warm enough" check is never true (`SPlantGlobalObject.lua:261`, `:295`, `:327`).)
 - Untreated, disease level rises every 2 hours: +0.5 (mildew/flies/slugs, well watered), +1 (mildew/flies/slugs, underwatered), +1 (aphids, well watered).
 
 | Disease level | Effect |

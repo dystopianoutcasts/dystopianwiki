@@ -16,7 +16,7 @@ tags:
 excerpt: >-
   Each crop has a planting season (with poor and best months), a growing season,
   and bad months.
-last_updated: '2026-09-29'
+last_updated: '2026-11-15'
 related_articles:
   - orientation-what-changed-in-b42
   - the-three-farming-skills
@@ -45,7 +45,7 @@ Each crop has a planting season (with poor and best months), a growing season, a
 | Best Months | Chance to increase yield |
 | Bad Months | On day 1 of a crop's first bad month, ALL crops of that kind globally become cursed; crops planted in bad months suffer the same. Not shown in the info menu. Bad-month-hardy crops are spared if they've reached their hardy growth phase. |
 | Growing Season | Non-overlapping months: existing crops are fine, but newly planted crops become cursed |
-| Winter (Dec-Feb) | On day 1 of winter, ALL crops globally become cursed. Cold-hardy crops are spared. |
+| Winter (not Dec-Feb: about Nov 3 to Feb 11 on default settings, and it moves each year; see [Seasons and day length](/pz/build-42/engine/weather-and-climate/seasons-and-day-length)) | On day 1 of winter, ALL crops globally become cursed. Cold-hardy crops are spared. |
 
 Planting season is viewable in-game: Character Info -> Info -> Discovered Recipes and Media -> Agriculture (after learning it). Growing seasons can be turned off entirely in sandbox. [CONFIRMED]
 

@@ -17,7 +17,7 @@ excerpt: >-
   What changed: In 42.13.0, The Indie Stone introduced a formal identifier +
   registry system for script elements. This is significant enough that an
   official Modding Migration Guide (42.13) exists...
-last_updated: '2026-09-29'
+last_updated: '2026-11-15'
 related_articles:
   - tl-dr-the-5-things-that-will-break-your-b41-mod
   - b42-status-and-versioning
@@ -42,8 +42,8 @@ related_articles:
 **What changed:** In **42.13.0**, The Indie Stone introduced a formal **identifier + registry system** for script elements. This is significant enough that an official **Modding Migration Guide (42.13)** exists on the Indie Stone forums (with a `testmod_registries.zip` example and a Migration Guide PDF).
 
 **How it works (from accessible snippets):**
-- Identifiers are declared in a file that **must** be named exactly **`media/registries.lua`** (directly under `media/`, NOT under `media/lua/`). **[LIKELY — name + location from community snippets; the pzwiki cache used here does not include the Registries page]**
-- This file is **loaded before all other Lua files and scripts**, making it the correct place for identifier registration and early init. **[LIKELY]**
+- Identifiers are declared in a file that **must** be named exactly **`media/registries.lua`** (directly under `media/`, NOT under `media/lua/`). **[CONFIRMED in 42.22: the engine looks for `media/registries.lua` in the mod's version folder first, then the common folder (`zombie/scripting/objects/ModRegistries.java:16-31`)]**
+- This file is **loaded before all other Lua files and scripts**, making it the correct place for identifier registration and early init. **[CONFIRMED in 42.22: `ModRegistries.init` runs before scripts load (`zombie/GameWindow.java:208`); see [Editing items at load](/pz/build-42/modding/changing-vanilla/editing-items-at-load)]**
 - The recommended pattern: a module in `media/lua/shared/` (uniquely named to your mod) that **returns a global table populated by `media/registries.lua`**. So `registries.lua` fills a registry, and your shared module exposes it. **[LIKELY]**
 
 **Why it matters:** if your mod defines new script identifiers (items, recipes, fluids, animal defs, etc.), B42.13+ expects them registered here so the engine's registry can resolve them consistently across client/server and across the multi-build layout.

@@ -17,7 +17,7 @@ excerpt: >-
   CONFIRMED (42.20) -- Firearms were completely overhauled: new 3D models, new
   animations, muzzle effects, new/expanded ammunition types, and new SFX. New
   guns added to the library include the L92...
-last_updated: '2026-09-29'
+last_updated: '2026-11-15'
 related_articles:
   - orientation
   - electricity-and-power
@@ -80,6 +80,12 @@ animations rather than replacing the pipeline wholesale.
   the human models only `Bob/` and `Kate/` are scanned, and filenames must be prefixed
   `Bob_` / `Kate_`. (This is stricter than B41's broader scan -- a common porting
   break for animation mods.)
+  **Correction for 42.22:** the human mesh lists three folders, `Bob`, `Kate` and `Zombie`, and
+  the `Zombie` folder takes no prefix; an empty prefix list passes any file name
+  (`media/scripts/generated/animations_meshes.txt:3-9`, `zombie/core/skinnedmodel/ModelManager.java:249-253`).
+  Other subfolders or loose files in a mod's `anims_X` also load onto the human mesh
+  (`zombie/core/skinnedmodel/ModelManager.java:1811-1856`). See
+  [Skinned models and clips](/pz/build-42/engine/animation-system/skinned-models-and-clips).
 - Animation nodes are defined via XML in the `AnimSets/` folder and control triggering,
   playback speed, etc.; the same node can map to different animations per model.
 - `AnimSets` are collections of `AnimStates`, usually associated with an entity (player,

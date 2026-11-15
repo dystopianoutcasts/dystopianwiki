@@ -19,7 +19,7 @@ excerpt: >-
   reaches your client in packets every half second to two seconds. How it fits
   together, what Lua can change, and the call that infects the player when you
   meant to heal a bite.
-last_updated: '2026-10-04'
+last_updated: '2026-11-15'
 related_articles:
   - body-temperature-and-the-thermoregulator
   - what-runs-on-the-server-in-build-42-multiplayer
@@ -51,7 +51,7 @@ The parts, in their index order: left and right hand, forearm, upper arm; upper 
 
 ## One tick of the body
 
-`IsoGameCharacter#updateInternal` calls `BodyDamage#Update` once per tick for players (zombies and animals return straight away). In order, it:
+`IsoGameCharacter#updateInternal` calls `BodyDamage#Update` once per tick for players (zombies and animals return straight away). On a multiplayer client, `Update` itself returns at once for any living player, so the list below runs on the server and in single player, not on a client (`BodyDamage.java:2106-2114`); see [How character stats work](/pz/build-42/engine/character-stats/how-character-stats-work). In order, it:
 
 1. updates the thermoregulator, then wetness, cold, boredom, strength, panic, temperature effects, discomfort and illness;
 2. checks every part for infection and, the first time one is infected, marks the whole body infected and starts the infection clock;

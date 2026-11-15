@@ -19,7 +19,7 @@ excerpt: >-
   Hypothermia and Hyperthermia moodles read, why Hyperthermia cannot pass level
   2 in 42.21, and why the work your timed action does may never reach the
   server's copy of the model.
-last_updated: '2026-10-04'
+last_updated: '2026-11-15'
 related_articles:
   - body-damage-wounds-and-infection
   - cabin-climate-windchill
@@ -40,7 +40,7 @@ You get cold in the rain and the wind, warm when you run or chop wood, too hot i
 | The model | `zombie.characters.BodyDamage.Thermoregulator` | One per player, created by `BodyDamage` (zombies and animals have none) |
 | The nodes | `Thermoregulator.ThermalNode` | One per body part, 17 in all; the upper torso is the core |
 | Work rates | `zombie.characters.BodyDamage.Metabolics` (enum) | Activities in MET, from `Sleeping` 0.8 to `MAX` 10.3 |
-| Air temperature | `zombie.iso.weather.ClimateManager#getAirTemperatureForCharacter` | The air around the player, indoors, in a vehicle, with or without wind chill |
+| Air temperature | `zombie.iso.weather.ClimateManager#getAirTemperatureForCharacter` | The air around the player, indoors, in a vehicle, with or without wind chill. Indoors it is exactly 22 C in any room while the power grid is on, whatever the weather (42.22, see [Temperature outdoors](/pz/build-42/engine/weather-and-climate/temperature-outdoors)) (`ClimateManager.java:722-736`) |
 | Clothing values | `zombie.iso.weather.Temperature#getTrueInsulationValue`, `#getTrueWindresistanceValue` | Turn an item's script values into model units |
 | The moodles | `zombie.characters.Moodles.Moodle` | Hypothermia and Hyperthermia levels from the core temperature stat |
 

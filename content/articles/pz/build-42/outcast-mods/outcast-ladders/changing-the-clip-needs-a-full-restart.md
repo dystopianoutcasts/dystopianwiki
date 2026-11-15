@@ -12,7 +12,7 @@ tags:
   - animation
   - clips
 excerpt: A Lua reload does nothing. Neither does refreshAnimSets.
-last_updated: '2026-10-04'
+last_updated: '2026-11-15'
 related_articles:
   - how-it-is-selected
   - the-clip
@@ -28,6 +28,8 @@ related_articles:
 > Source: OutcastLadders/docs/ANIMATION.md (compiled 2026-08-04, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
 <a id="reload"></a>
+
+> **Correction for 42.22 (read in code, not tested in game):** "clips are never re-read" is too strong. Mod `media` folders are file-watched (`zombie/ZomboidFileSystem.java:495-510`), and the watcher polls when `Core.debug || !GameClient.client` (`zombie/DebugFileWatcher.java:143`), so changed clips and AnimSets should reload in single player and on a server, and on a multiplayer client only in debug mode (`zombie/core/skinnedmodel/ModelManager.java:1880-1935`). Our own observation below, that the old clip kept playing, is not explained by this and stays as written. Separately, `refreshAnimSets` and `reloadActionGroups` cannot be called from Lua: they have no `@LuaMethod` and are marked `lua:false` (`zombie/Lua/LuaManager.java:6049-6053`, `:6091`). See [Modding animations](/pz/build-42/engine/animation-system/modding-animations).
 
 A Lua reload does nothing. Neither does `refreshAnimSets`.
 

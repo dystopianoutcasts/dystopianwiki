@@ -16,7 +16,7 @@ excerpt: >-
   What you build: a custom moodle (the top-right status indicators). This recipe
   is PARTIAL / UNCERTAIN -- the cached Moodle.wiki.txt is a player-facing
   reference, not a creation guide, so the...
-last_updated: '2026-09-29'
+last_updated: '2026-11-15'
 related_articles:
   - project-skeleton
   - new-item
@@ -61,10 +61,12 @@ MoodleType.register("mymod:Focused")
 ```
 ```json
 // media/lua/shared/Translate/EN/Moodles.json
-{ "Moodles_mymod_Focused_lvl1": "Focused", "Moodles_mymod_Focused_desc1": "You are dialed in." }
+{ "Moodles_mymod:Focused_lvl1": "Focused", "Moodles_mymod:Focused_desc_lvl1": "You are dialed in." }
 ```
 
-**Gotchas / GAP.** The cache does **not** contain the "create a custom moodle" behavior mechanism -- whether via engine-native `MoodleType` + icon set + `getMoodles():getMoodle(...)` Lua, or a community `MoodleFramework`. Treat the icon/threshold/effect wiring as **UNCERTAIN**; source a dedicated MoodleFramework / `ISMoodles` reference before shipping. Register the type in registries.lua and prepare `Moodles.json` strings + icons in the meantime.
+**Correction for 42.22 (read from code, not tested):** a custom moodle can never show without Java. `Moodle.Update` has no branch for a custom type, so its level stays 0, and there is no icon for it (`Moodle.java:90-579`, `zombie/ui/MoodleTextureSet.java:28-57`). `getMoodles():getMoodle(...)` does not exist (`Moodles.java:32-63`). The translation keys are `Moodles_<id>_lvl<N>` and `Moodles_<id>_desc_lvl<N>`, where `<id>` is the registered string with its colon (`Moodles.java:80`, `:91`, `MoodleType.java:68`). Full explanation: [Modding stats and moodles](/pz/build-42/engine/character-stats/modding-stats-and-moodles).
+
+**Gotchas / GAP (older text, see the correction above).** The cache does **not** contain the "create a custom moodle" behavior mechanism -- whether via engine-native `MoodleType` + icon set + `getMoodles():getMoodle(...)` Lua, or a community `MoodleFramework`. Treat the icon/threshold/effect wiring as **UNCERTAIN**; source a dedicated MoodleFramework / `ISMoodles` reference before shipping. Register the type in registries.lua and prepare `Moodles.json` strings + icons in the meantime.
 
 **Deep reference:** `_raw_pzwiki_sources/08_creation_toolkit/Moodle.wiki.txt` (player reference), `Translation.wiki.txt` (Moodles type); doc 01 sec 6 (registries), doc 05. GAP: custom-moodle behavior mechanism not in cache.
 

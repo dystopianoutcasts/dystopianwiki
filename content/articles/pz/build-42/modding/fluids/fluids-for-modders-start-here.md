@@ -15,7 +15,7 @@ excerpt: >-
   The five things to know before you mod Build 42 fluids, where each trap is
   explained, and which of our older fluid pages said something wrong. The
   front door to the fluids section.
-last_updated: '2026-10-04'
+last_updated: '2026-11-15'
 ---
 # Fluids for modders: start here
 
@@ -25,11 +25,11 @@ Welcome, Outcast. Build 42 replaced the old "empty bottle, half bottle, full bot
 
 1. **A fluid lives on an item, never on a vehicle part or a script object of its own.** Items can carry a `FluidContainer` component; vehicle scripts have no component support, and the method that adds a component is not reachable from a mod. If your car needs oil, the oil sits in an item: the part's fitted item, or an item in the part's container.
 2. **A container holds up to eight fluids and mixes them for free.** Pouring moves every fluid in proportion. You do not write mixing code.
-3. **Nothing goes stale on its own.** The only fluid simulation the game runs over time is rain filling rain catchers, plus heat (which purifies tainted water). Clean oil turning dirty, milk going off in a jug: if you want it, you write it.
+3. **Nothing goes stale on its own.** The only fluid simulation the game runs over time is rain filling rain catchers, plus heat (which purifies tainted water), plus one more: petrol in a rain-catching container that can be emptied evaporates a little every tick (`FluidContainerUpdateSystem.java:61-74`); see [Water and plumbing](/pz/build-42/engine/fire-water-and-power/water-and-plumbing). Clean oil turning dirty, milk going off in a jug: if you want it, you write it.
 4. **Several calls lie by name.** Read [FluidContainer calls that do not do what their names say](/pz/build-42/modding/fluids/fluid-container-calls-that-lie) before your first line of fluid code.
 5. **The vanilla pour actions work in multiplayer.** What decides whether a change reaches other players is where the container sits. See [fluids in multiplayer](/pz/build-42/modding/fluids/fluids-in-multiplayer).
 
-> **Proof:** Code. `zombie.entity.GameEntity#addComponent` is package-private (`final boolean addComponent(Component)`); `zombie.scripting.objects.VehicleScript` reads no components; `zombie.entity.components.fluids.FluidContainer#canAddFluid` (eight fluids) and `#Transfer` (proportional); the fluid update system only processes containers with `isQualifiesForMetaStorage()`, which is `getRainCatcher() > 0.0F`, and skips clients. Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+> **Proof:** Code. `zombie.entity.GameEntity#addComponent` is package-private (`final boolean addComponent(Component)`); `zombie.scripting.objects.VehicleScript` reads no components; `zombie.entity.components.fluids.FluidContainer#canAddFluid` (eight fluids) and `#Transfer` (proportional); the fluid update system only processes containers with `isQualifiesForMetaStorage()`, which is `getRainCatcher() > 0.0F`, and skips clients. Build 42.21, engine revision 4a0e9546ec (Steam build 25485521); the petrol rule above was read in 42.22 (capture B42_3d39148846).
 
 ## The fluids section, in reading order
 

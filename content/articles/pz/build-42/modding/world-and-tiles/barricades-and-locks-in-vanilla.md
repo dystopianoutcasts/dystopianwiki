@@ -18,7 +18,7 @@ excerpt: >-
   standing, stops a door opening from either side, and anyone can take any
   barricade down. How barricades take damage, and the lock hardware the game
   already has. Read from the 42.21 code.
-last_updated: '2026-10-04'
+last_updated: '2026-11-15'
 ---
 # Barricades and locks in vanilla: what the code really does
 
@@ -57,7 +57,7 @@ A door counts as barricaded when a barricade object exists on **either** face, w
 
 ## Building and removing
 
-- **Planks** need a hammer equipped, a plank and two nails. **Metal** needs a blowtorch with a sheet of metal, or three metal bars.
+- **Planks** need a hammer equipped, a plank and one nail (42.22; not two nails) (`barricades/entity_barricade_planks.txt:46-60`). **Metal** needs Welding 3, a blowtorch and welding rods, with a sheet of metal or three metal bars (`barricades/entity_barricade_metalsheet.txt:46-61`, `barricades/entity_barricade_metalbar.txt:46-61`); see [Building recipes by skill](/pz/build-42/engine/building-and-moveables/building-recipes-by-skill).
 - The barricade action's `complete()` runs on the server in multiplayer, so the server builds the barricade.
 - **Anyone can take any barricade down.** The unbarricade action takes planks or metal off the barricade on the player's own side and never asks who built it. Tools tagged `base:removebarricade` (hammer, axe, crowbar) do it.
 - Barricade sprites placed by a map maker are turned into real barricade objects when the map loads.

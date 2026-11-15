@@ -17,7 +17,7 @@ excerpt: >-
   Relevant because farming/animal mods often add seeds, produce, feed, or animal
   products to world loot. ProceduralDistributions governs container loot.
   [CONFIRMED]
-last_updated: '2026-09-29'
+last_updated: '2026-11-15'
 related_articles:
   - orientation-what-changed-in-b42
   - the-three-farming-skills
@@ -40,7 +40,7 @@ Relevant because farming/animal mods often add seeds, produce, feed, or animal p
 
 ### 12.1 How it works [CONFIRMED]
 - Containers roll from distribution lists on load (or respawn if sandbox allows).
-- Each distribution has `rolls` and an `items` list of alternating `"ItemName", chance` pairs. **The chance value is NOT a weight and NOT a percentage** -- base your numbers on existing vanilla entries.
+- Each distribution has `rolls` and an `items` list of alternating `"ItemName", chance` pairs. **The chance value is not a weight.** Correction for 42.22: before the sandbox multipliers it behaves like a percentage per roll (a chance of 10 is about one in ten per pass), and the default category multiplier of 0.6 scales it down (`zombie/inventory/ItemPickerJava.java:2097-2116`, `SandboxOptions.java:92-99`). See [Changing loot](/pz/build-42/modding/changing-vanilla/changing-loot).
 - `junk` sub-table: ignores zombie density, x1.4 chance multiplier.
 - `OnFillContainer` fires when loot spawns, letting you modify/add items.
 - Vanilla file: `media/lua/server/Items/ProceduralDistributions.lua`; entries go in `ProceduralDistributions.list`.

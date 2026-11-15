@@ -17,7 +17,7 @@ excerpt: >-
   Enriched from pzwiki cache (canonical). Sources: pzwiki.net/wiki/Generator
   (page-version 42.13.1, revid 1441065) and pzwiki.net/wiki/Electricity. Cached
   at...
-last_updated: '2026-09-29'
+last_updated: '2026-11-15'
 related_articles:
   - orientation
   - electricity-and-power
@@ -36,7 +36,7 @@ Enriched from pzwiki cache (canonical). Sources: pzwiki.net/wiki/Generator (page
 - Generators run on **gasoline** (fluid). Tank holds ~1 gas can (~10 L); fillable only while off; no siphon-out.
 - Must be **placed on the ground, connected, fueled, and turned on**. Carried (not inventoried) -> encumbers the player (40, or 30 for ValuTech).
 - **Connecting to a building's power** requires electrical level 3, OR the electrician/engineer occupation, OR having read the "How to Use Generators" magazine. This is the gate a power mod must respect.
-- **Exhaust indoors damages health fast** (down to 1) -- interior placement is a design hazard.
+- **Exhaust indoors damages health fast** -- interior placement is a design hazard. Correction for 42.22: there is no floor of 1; a body part can go down to 0 (`zombie/characters/BodyDamage/BodyPart.java:523-525`, `zombie/characters/IsoGameCharacter.java:9034-9046`). See [Electricity and generators](/pz/build-42/engine/fire-water-and-power/electricity-and-generators).
 - Sandbox option **"Generator Working In Exterior"** allows hooking generators to arbitrary world buildings (e.g. gas-station pumps).
 
 ### Fuel/load [CONFIRMED]
