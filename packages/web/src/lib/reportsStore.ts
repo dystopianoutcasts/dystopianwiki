@@ -26,7 +26,7 @@ import {
   type ReportsFailure,
 } from './articleReportsAdmin'
 
-export type AdminFocus = 'keep' | 'deleteButton' | 'flash'
+export type AdminFocus = 'keep' | 'deleteButton' | 'flash' | 'undo'
 
 export type Load = { state: 'loading' } | { state: 'error'; reason: ReportsFailure } | { state: 'ready'; reports: AdminReport[] }
 export type SaveNote = { kind: 'saved' } | { kind: 'error'; reason: ReportsFailure } | null
@@ -98,7 +98,11 @@ export function createReportsStore(api: ReportsApi, focus: (target: AdminFocus) 
   }
 
   /** One read or archive call: refuse a second while one runs, say why on a refusal, refresh quietly after. */
-  async function act(call: () => Promise<{ ok: true } | { ok: false; reason: ReportsFailure }>, done: () => Partial<ReportsState>): Promise<boolean> {
+  async function act<T>(
+    call: () => Promise<{ ok: true; value: T } | { ok: false; reason: ReportsFailure }>,
+    done: (value: T) => Partial<ReportsState>,
+    focusTarget: AdminFocus = 'flash',
+  ): Promise<boolean> {
     if (state.acting) return false
     set({ acting: true, actionError: null })
     const r = await call()
@@ -106,9 +110,9 @@ export function createReportsStore(api: ReportsApi, focus: (target: AdminFocus) 
       set({ acting: false, actionError: r.reason === 'cancelled' ? null : r.reason })
       return false
     }
-    set({ acting: false, ...done() })
+    set({ acting: false, ...done(r.value) })
     await reload(true)
-    focus('flash')
+    focus(focusTarget)
     return true
   }
 
@@ -152,7 +156,7 @@ export function createReportsStore(api: ReportsApi, focus: (target: AdminFocus) 
       if (ids.length === 0) return
       await act(
         () => api.markAllRead(ids),
-        () => ({ flash: ids.length === 1 ? 'Marked 1 report as read.' : `Marked ${ids.length} reports as read.`, undo: null }),
+        (changed) => ({ flash: changed === 1 ? 'Marked 1 report as read.' : `Marked ${changed} reports as read.`, undo: null }),
       )
     },
 
@@ -161,6 +165,7 @@ export function createReportsStore(api: ReportsApi, focus: (target: AdminFocus) 
       await act(
         () => api.archiveReport(r.id, true),
         () => ({ open: state.open?.id === r.id ? null : state.open, flash: null, undo: { id: r.id, title: r.title } }),
+        'undo',
       )
     },
 

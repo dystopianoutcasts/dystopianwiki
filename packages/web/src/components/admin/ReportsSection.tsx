@@ -32,13 +32,14 @@ export function ReportsSection({
   const keepId = useId()
   const deleteId = useId()
   const flashId = useId()
+  const undoId = useId()
 
   const store = useMemo(
     () =>
       createReportsStore(api, (target: AdminFocus) =>
-        window.setTimeout(() => document.getElementById(target === 'keep' ? keepId : target === 'deleteButton' ? deleteId : flashId)?.focus(), 0),
+        window.setTimeout(() => document.getElementById(target === 'keep' ? keepId : target === 'deleteButton' ? deleteId : target === 'undo' ? undoId : flashId)?.focus(), 0),
       ),
-    [api, keepId, deleteId, flashId],
+    [api, keepId, deleteId, flashId, undoId],
   )
   const s = useSyncExternalStore(store.subscribe, store.getState)
 
@@ -78,7 +79,7 @@ export function ReportsSection({
         </p>
       )}
       {s.undo && (
-        <p id={flashId} className="mascot-vote__hint" role="status" tabIndex={-1}>
+        <p id={undoId} className="mascot-vote__hint" role="status" tabIndex={-1}>
           Archived. It is in Archive, not deleted.{' '}
           <button type="button" className="mascot-vote__btn mascot-vote__btn--secondary admin__row-btn" disabled={s.acting} onClick={() => void store.undoArchive()}>
             Undo

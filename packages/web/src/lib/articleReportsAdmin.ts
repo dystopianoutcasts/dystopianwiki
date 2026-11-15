@@ -313,7 +313,16 @@ export function createReportsApi(call: ReportsRpc, options: { timeoutMs?: number
       return c === null ? { ok: false, reason: 'malformed' } : { ok: true, value: c }
     },
     markRead: (id: string, read: boolean, signal?: AbortSignal) => mutation('article_report_mark_read', { p_id: id, p_read: read }, signal),
-    markAllRead: (ids: readonly string[], signal?: AbortSignal) => mutation('article_reports_mark_all_read', { p_ids: [...ids] }, signal),
+    /** How many reports the server changed (-1 denied and -2 invalid are refusals, not counts). */
+    async markAllRead(ids: readonly string[], signal?: AbortSignal): Promise<ReportsResult<number>> {
+      const { data, error, cancelled } = await run('article_reports_mark_all_read', { p_ids: [...ids] }, signal)
+      if (cancelled) return { ok: false, reason: 'cancelled' }
+      if (error) return { ok: false, reason: failureOf(error) }
+      if (data === -1) return { ok: false, reason: 'denied' }
+      if (data === -2) return { ok: false, reason: 'invalid' }
+      const n = parseCount(data)
+      return n === null ? { ok: false, reason: 'malformed' } : { ok: true, value: n }
+    },
     archiveReport: (id: string, archived: boolean, signal?: AbortSignal) =>
       mutation('article_report_archive', { p_id: id, p_archived: archived }, signal),
     updateReport: (id: string, status: ReportStatus, note: string, signal?: AbortSignal) =>

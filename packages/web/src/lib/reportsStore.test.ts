@@ -55,8 +55,9 @@ function fake(opts: { hang?: Set<string>; timeoutMs?: number } = {}) {
     }
     if (name === 'article_reports_mark_all_read') {
       const ids = args?.p_ids as string[]
+      const before = rows.filter((r) => r.read_at === null && ids.includes(String(r.id))).length
       rows = rows.map((r) => (ids.includes(String(r.id)) && r.read_at === null ? { ...r, read_at: '2026-11-15T20:00:00Z' } : r))
-      return Promise.resolve({ data: 'ok', error: null })
+      return Promise.resolve({ data: before, error: null })
     }
     if (name === 'article_report_archive') {
       rows = rows.map((r) => (r.id === args?.p_id ? { ...r, archived_at: args?.p_archived ? '2026-11-15T20:00:00Z' : null } : r))
@@ -271,7 +272,7 @@ test('Archive removes the report from the inbox at once, offers Undo, and the ar
   assert.equal(s.load.state === 'ready' && s.load.reports.some((r) => r.id === 'r1'), false)
   assert.deepEqual(s.counts, { unread: 1, inbox: 2, archived: 1 })
   assert.equal(s.newCount, 1, 'an archived unread report leaves the tab count')
-  assert.deepEqual(focus, ['flash'], 'focus lands on the Archived line')
+  assert.deepEqual(focus, ['undo'], 'focus lands on the Archived line')
   await store.setBox('archived')
   s = store.getState()
   assert.equal(s.filter, 'all')

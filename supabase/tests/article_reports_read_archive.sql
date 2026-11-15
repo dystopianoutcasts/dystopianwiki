@@ -62,6 +62,31 @@ $$;
 -- 2. COLUMNS (the backfill ran once, inside the migration, on the rows that existed then)
 -- ============================================================================
 
+-- The backfill: the same statement the migration runs once when it adds the columns, applied to
+-- rows that start with read_at NULL (as old rows did). Triaged (status not new) start read, new ones
+-- start unread. These rows are removed again before the real fixtures are used.
+INSERT INTO public.article_reports (id, created_at, article_id, article_slug, article_title, article_url, kind, message, reporter_hash, status, reviewed_at)
+VALUES
+  ('d0000000-0000-4000-8000-0000000000b1', now() - interval '9 hours', 'ra-b1', 'ra-b-one', 'B1', '/pz/ra-b-one', 'other', 'old new report', 'h', 'new', NULL),
+  ('d0000000-0000-4000-8000-0000000000b2', now() - interval '8 hours', 'ra-b2', 'ra-b-two', 'B2', '/pz/ra-b-two', 'other', 'old triaged report', 'h', 'fixed', now() - interval '7 hours');
+UPDATE public.article_reports
+   SET read_at = coalesce(reviewed_at, created_at),
+       read_by = reviewed_by
+ WHERE status <> 'new' AND read_at IS NULL;
+DO $$
+BEGIN
+  IF (SELECT read_at FROM public.article_reports WHERE id = 'd0000000-0000-4000-8000-0000000000b1') IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: the backfill marked a new report read';
+  END IF;
+  IF (SELECT read_at FROM public.article_reports WHERE id = 'd0000000-0000-4000-8000-0000000000b2') IS DISTINCT FROM
+     (SELECT reviewed_at FROM public.article_reports WHERE id = 'd0000000-0000-4000-8000-0000000000b2') THEN
+    RAISE EXCEPTION 'FAIL: the backfill did not set read_at = reviewed_at on a triaged report';
+  END IF;
+  RAISE NOTICE 'PASS backfill: triaged reports start read, new ones unread';
+END;
+$$;
+DELETE FROM public.article_reports WHERE id IN ('d0000000-0000-4000-8000-0000000000b1', 'd0000000-0000-4000-8000-0000000000b2');
+
 DO $$
 BEGIN
   IF (SELECT count(*) FROM public.article_reports WHERE archived_at IS NOT NULL) <> 0 THEN
@@ -81,7 +106,7 @@ SELECT set_config('request.jwt.claims', '{"sub":"d0000000-0000-4000-8000-0000000
 DO $$
 BEGIN
   IF public.article_report_mark_read('d0000000-0000-4000-8000-0000000000a1', true) <> 'denied' THEN RAISE EXCEPTION 'FAIL: a member marked a report read'; END IF;
-  IF public.article_reports_mark_all_read(ARRAY['d0000000-0000-4000-8000-0000000000a1']::uuid[]) <> 'denied' THEN RAISE EXCEPTION 'FAIL: a member marked reports read in bulk'; END IF;
+  IF public.article_reports_mark_all_read(ARRAY['d0000000-0000-4000-8000-0000000000a1']::uuid[]) <> -1 THEN RAISE EXCEPTION 'FAIL: a member marked reports read in bulk'; END IF;
   IF public.article_report_archive('d0000000-0000-4000-8000-0000000000a1', true) <> 'denied' THEN RAISE EXCEPTION 'FAIL: a member archived a report'; END IF;
   IF (SELECT count(*) FROM public.article_reports_admin('all', 100, 'inbox')) <> 0 THEN RAISE EXCEPTION 'FAIL: a member read the inbox'; END IF;
   IF (SELECT count(*) FROM public.article_reports_admin('all', 100, 'archived')) <> 0 THEN RAISE EXCEPTION 'FAIL: a member read the archive'; END IF;
@@ -131,22 +156,29 @@ BEGIN
   IF public.article_report_mark_read(v_a1, true) <> 'ok' THEN RAISE EXCEPTION 'FAIL: mark read refused'; END IF;
   SELECT * INTO v_row FROM public.article_reports_admin('all', 100, 'inbox') WHERE id = v_a1;
   IF v_row.read_at IS NULL THEN RAISE EXCEPTION 'FAIL: read_at not set'; END IF;
+  RESET ROLE;
   IF (SELECT r.read_by FROM public.article_reports r WHERE r.id = v_a1) IS NULL THEN RAISE EXCEPTION 'FAIL: read_by not set'; END IF;
+  SET LOCAL ROLE authenticated;
   IF public.article_reports_new_count() <> 3 THEN RAISE EXCEPTION 'FAIL: the count did not drop to 3 after mark read'; END IF;
   IF public.article_report_mark_read(v_a1, false) <> 'ok' THEN RAISE EXCEPTION 'FAIL: mark unread refused'; END IF;
+  RESET ROLE;
   IF (SELECT r.read_at FROM public.article_reports r WHERE r.id = v_a1) IS NOT NULL
      OR (SELECT r.read_by FROM public.article_reports r WHERE r.id = v_a1) IS NOT NULL THEN
     RAISE EXCEPTION 'FAIL: mark unread did not clear read_at and read_by';
   END IF;
+  SET LOCAL ROLE authenticated;
   IF public.article_reports_new_count() <> 4 THEN RAISE EXCEPTION 'FAIL: the count did not return to 4'; END IF;
   RAISE NOTICE 'PASS admin: mark read and unread, with the count';
 
   -- Mark several read: only unread ones change; unknown ids are skipped.
   PERFORM public.article_report_mark_read(v_a3, true);
-  IF public.article_reports_mark_all_read(ARRAY[v_a1, v_a2, v_a3, 'd0000000-0000-4000-8000-0000000000ff']::uuid[]) <> 'ok' THEN RAISE EXCEPTION 'FAIL: mark all refused'; END IF;
+  -- a1 and a2 are unread, a3 is read, the last id does not exist: two change.
+  IF public.article_reports_mark_all_read(ARRAY[v_a1, v_a2, v_a3, 'd0000000-0000-4000-8000-0000000000ff']::uuid[]) <> 2 THEN RAISE EXCEPTION 'FAIL: mark all did not report 2 changed'; END IF;
+  IF public.article_reports_mark_all_read(ARRAY[v_a1, v_a2]::uuid[]) <> 0 THEN RAISE EXCEPTION 'FAIL: marking already-read reports changed some'; END IF;
   IF public.article_reports_new_count() <> 1 THEN RAISE EXCEPTION 'FAIL: after mark all the count is not 1 (the fourth report was not listed)'; END IF;
-  IF public.article_reports_mark_all_read(NULL) <> 'invalid' THEN RAISE EXCEPTION 'FAIL: a null list was accepted'; END IF;
-  IF public.article_reports_mark_all_read(ARRAY[v_a1, NULL]::uuid[]) <> 'invalid' THEN RAISE EXCEPTION 'FAIL: a list with a null id was accepted'; END IF;
+  IF public.article_reports_mark_all_read(NULL) <> -2 THEN RAISE EXCEPTION 'FAIL: a null list was accepted'; END IF;
+  IF public.article_reports_mark_all_read(ARRAY[[v_a1, v_a2], [v_a3, v_a1]]) <> -2 THEN RAISE EXCEPTION 'FAIL: a two-dimensional list was accepted'; END IF;
+  IF public.article_reports_mark_all_read(ARRAY[v_a1, NULL]::uuid[]) <> -2 THEN RAISE EXCEPTION 'FAIL: a list with a null id was accepted'; END IF;
   RAISE NOTICE 'PASS admin: mark all read changes only the listed unread reports';
 
   -- Archive and unarchive.
@@ -154,7 +186,9 @@ BEGIN
   IF EXISTS (SELECT 1 FROM public.article_reports_admin('all', 100, 'inbox') WHERE id = v_a2) THEN RAISE EXCEPTION 'FAIL: an archived report is still in the inbox'; END IF;
   SELECT * INTO v_row FROM public.article_reports_admin('all', 100, 'archived') WHERE id = v_a2;
   IF NOT FOUND OR v_row.archived_at IS NULL THEN RAISE EXCEPTION 'FAIL: an archived report is not in the archive list'; END IF;
+  RESET ROLE;
   IF (SELECT r.archived_by FROM public.article_reports r WHERE r.id = v_a2) IS NULL THEN RAISE EXCEPTION 'FAIL: archived_by not set'; END IF;
+  SET LOCAL ROLE authenticated;
   SELECT * INTO v_row FROM public.article_reports_box_counts();
   IF v_row.inbox <> 3 OR v_row.archived <> 1 THEN RAISE EXCEPTION 'FAIL: box counts after archive were % / %', v_row.inbox, v_row.archived; END IF;
   -- a2 was read above, so the unread count is still 1; archiving an UNREAD report lowers it.
@@ -162,10 +196,12 @@ BEGIN
   IF public.article_reports_new_count() <> 1 THEN RAISE EXCEPTION 'FAIL: an archived unread report still counts as unread'; END IF;
   IF public.article_report_archive(v_a2, false) <> 'ok' THEN RAISE EXCEPTION 'FAIL: move back refused'; END IF;
   IF NOT EXISTS (SELECT 1 FROM public.article_reports_admin('all', 100, 'inbox') WHERE id = v_a2) THEN RAISE EXCEPTION 'FAIL: the report did not come back to the inbox'; END IF;
+  RESET ROLE;
   IF (SELECT r.archived_at FROM public.article_reports r WHERE r.id = v_a2) IS NOT NULL
      OR (SELECT r.archived_by FROM public.article_reports r WHERE r.id = v_a2) IS NOT NULL THEN
     RAISE EXCEPTION 'FAIL: unarchive did not clear archived_at and archived_by';
   END IF;
+  SET LOCAL ROLE authenticated;
   IF public.article_reports_new_count() <> 2 THEN RAISE EXCEPTION 'FAIL: the unread count did not return after moving back'; END IF;
   RAISE NOTICE 'PASS admin: archive and move back, lists, box counts and the unread count';
 
@@ -180,7 +216,9 @@ BEGIN
   PERFORM public.article_report_archive(v_a1, true);
   PERFORM public.article_report_archive(v_a2, true);
   PERFORM public.article_report_archive(v_a3, true);
+  RESET ROLE;
   IF (SELECT count(*) FROM public.article_reports) <> 4 THEN RAISE EXCEPTION 'FAIL: archiving removed a row'; END IF;
+  SET LOCAL ROLE authenticated;
   RAISE NOTICE 'PASS admin: archive deletes nothing';
 END;
 $$;

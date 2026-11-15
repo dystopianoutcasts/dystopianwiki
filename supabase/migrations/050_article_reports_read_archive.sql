@@ -18,30 +18,41 @@
 -- * article_reports_new_count keeps its name and signature so the dashboard tab keeps working.
 --   It now counts UNREAD INBOX reports (not read, not archived), whatever their status.
 -- * article_reports_box_counts() gives the three numbers the Inbox / Archive switch shows.
--- * article_reports_mark_all_read(uuid[]) marks the reports on screen in one statement.
+-- * article_reports_mark_all_read(uuid[]) marks the reports on screen in one statement and returns
+--   how many it changed (-1 denied, -2 invalid).
 -- * Archiving never deletes. article_report_delete is unchanged.
 --
+-- The script re-runs safely: the columns and the backfill happen once, the rest is CREATE OR REPLACE.
 -- Run it whole in the SQL editor, then NOTIFY pgrst, 'reload schema';
 
 -- ============================================================================
 -- COLUMNS, INDEX, BACKFILL
 -- ============================================================================
 
-ALTER TABLE public.article_reports
-  ADD COLUMN IF NOT EXISTS read_at     timestamptz,
-  ADD COLUMN IF NOT EXISTS read_by     uuid REFERENCES auth.users (id) ON DELETE SET NULL,
-  ADD COLUMN IF NOT EXISTS archived_at timestamptz,
-  ADD COLUMN IF NOT EXISTS archived_by uuid REFERENCES auth.users (id) ON DELETE SET NULL;
+-- The columns and the backfill run only when read_at does not exist yet, so running this script
+-- again never marks read again a report an admin has since marked unread.
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                  WHERE table_schema = 'public' AND table_name = 'article_reports' AND column_name = 'read_at') THEN
+    ALTER TABLE public.article_reports
+      ADD COLUMN read_at     timestamptz,
+      ADD COLUMN read_by     uuid REFERENCES auth.users (id) ON DELETE SET NULL,
+      ADD COLUMN archived_at timestamptz,
+      ADD COLUMN archived_by uuid REFERENCES auth.users (id) ON DELETE SET NULL;
+
+    -- Reports already triaged count as read.
+    UPDATE public.article_reports
+       SET read_at = coalesce(reviewed_at, created_at),
+           read_by = reviewed_by
+     WHERE status <> 'new' AND read_at IS NULL;
+  END IF;
+END;
+$$;
 
 -- The inbox list: not archived, newest first.
 CREATE INDEX IF NOT EXISTS article_reports_inbox_idx
   ON public.article_reports (created_at DESC) WHERE archived_at IS NULL;
-
--- Reports already triaged count as read.
-UPDATE public.article_reports
-   SET read_at = coalesce(reviewed_at, created_at),
-       read_by = reviewed_by
- WHERE status <> 'new' AND read_at IS NULL;
 
 -- ============================================================================
 -- ADMINS: list (inbox or archive), counts, mark read, archive
@@ -177,26 +188,30 @@ BEGIN
 END;
 $$;
 
--- Returns 'ok', 'denied' or 'invalid'. Marks every listed report that is still unread as read, in
--- one statement. Ids that no longer exist are skipped. At most 500 ids.
+-- Marks every listed report that is still unread as read, in one statement, and returns how many it
+-- changed (0 or more). Returns -1 for a non-admin ('denied') and -2 for a bad list ('invalid': null,
+-- a null id, more than 500 ids, or more than one dimension). Ids that no longer exist are skipped.
 CREATE OR REPLACE FUNCTION public.article_reports_mark_all_read(p_ids uuid[])
-RETURNS text
+RETURNS integer
 LANGUAGE plpgsql
 VOLATILE
 SECURITY DEFINER
 SET search_path = ''
 AS $$
+DECLARE
+  v_changed integer;
 BEGIN
   IF NOT public.site_is_admin() THEN
-    RETURN 'denied';
+    RETURN -1;
   END IF;
-  IF p_ids IS NULL OR cardinality(p_ids) > 500 OR array_position(p_ids, NULL) IS NOT NULL THEN
-    RETURN 'invalid';
+  IF p_ids IS NULL OR coalesce(array_ndims(p_ids), 1) > 1 OR cardinality(p_ids) > 500 OR array_position(p_ids, NULL) IS NOT NULL THEN
+    RETURN -2;
   END IF;
   UPDATE public.article_reports r
      SET read_at = now(), read_by = auth.uid()
    WHERE r.id = ANY (p_ids) AND r.read_at IS NULL;
-  RETURN 'ok';
+  GET DIAGNOSTICS v_changed = ROW_COUNT;
+  RETURN v_changed;
 END;
 $$;
 
@@ -249,6 +264,6 @@ COMMENT ON FUNCTION public.article_reports_box_counts() IS
 COMMENT ON FUNCTION public.article_report_mark_read(uuid, boolean) IS
   'Admins: mark a report read or unread. Returns ok, denied, invalid or not_found.';
 COMMENT ON FUNCTION public.article_reports_mark_all_read(uuid[]) IS
-  'Admins: mark the listed reports read (up to 500). Returns ok, denied or invalid.';
+  'Admins: mark the listed reports read (up to 500). Returns how many changed, -1 (denied) or -2 (invalid).';
 COMMENT ON FUNCTION public.article_report_archive(uuid, boolean) IS
   'Admins: put a report in the archive, or back in the inbox. Never deletes. Returns ok, denied, invalid or not_found.';
