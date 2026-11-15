@@ -5,15 +5,19 @@
  * admins. The page itself is a convenience: every section's data comes from database
  * functions that refuse anyone without the right flag (migrations 024 and 025).
  *
- * Sections: the live map link; reader reports of problems (migration 048); members (superadmin only); the vote's controls; the
- * results so far (chart, round table); every ballot with a Counted checkbox.
+ * A side menu of tabs (lib/adminTabs.ts), one open at a time, each its own link (/admin?tab=...):
+ * Server tools (the live map link, ServerBuddy, the Aurora world, the map tiles); Reports (reader
+ * reports, migration 048); People and documents (members for the superadmin, executives, EYES ONLY
+ * documents for the superadmin); Mascot vote (controls, results, every ballot with a Counted checkbox).
  */
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Layout } from '../components/layout/Layout'
 import { SEOHead } from '../components/seo/SEOHead'
 import { MascotDialog } from '../components/mascot/MascotDialog'
 import { ReportsSection } from '../components/admin/ReportsSection'
+import { reportsApi } from '../lib/articleReportsClient'
+import { ADMIN_TAB_PARAM, adminTabHref, adminTabLabel, tabFromParam, visibleAdminTabs } from '../lib/adminTabs'
 import { ArtImage } from '../components/mascot/ArtImage'
 import { RoundTable } from '../components/mascot/RoundTable'
 import {
@@ -193,6 +197,83 @@ export function AdminDashboardPage() {
 // ---------------------------------------------------------------------------
 
 function Dashboard({ superadmin, selfId }: { superadmin: boolean; selfId: string }) {
+  const [params] = useSearchParams()
+  const tabs = visibleAdminTabs(superadmin)
+  const tab = tabFromParam(params.get(ADMIN_TAB_PARAM), superadmin)
+  const current = tabs.find((t) => t.id === tab) ?? tabs[0]
+
+  // The Reports tab says how many reports are new, so an admin sees them from any tab.
+  // The Reports section keeps it current after a status change.
+  const [newReports, setNewReports] = useState<number | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    void reportsApi.fetchNewCount().then((r) => {
+      if (!cancelled && r.ok) setNewReports(r.value)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  return (
+    <div className="admin__layout">
+      <nav className="admin__tabs" aria-label="Dashboard sections">
+        <ul className="admin__tab-list">
+          {tabs.map((t) => (
+            <li key={t.id}>
+              <Link
+                to={adminTabHref(t.id)}
+                className={`admin__tab${t.id === current.id ? ' admin__tab--current' : ''}`}
+                aria-current={t.id === current.id ? 'page' : undefined}
+              >
+                {adminTabLabel(t, newReports)}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <div className="admin__panel">
+        {current.id === 'tools' && (
+          <>
+            <section className="mascot-vote__panel" aria-labelledby="ad-map">
+              <h2 id="ad-map" className="mascot-vote__panel-title">
+                Live map
+              </h2>
+              <p>The server map, with the admin panel for admins.</p>
+              <a className="mascot-vote__btn mascot-vote__btn--secondary" href="/map/">
+                Open the live map
+              </a>
+            </section>
+
+            <ServerBuddySection />
+
+            <WorldSection />
+
+            <MapSection />
+          </>
+        )}
+
+        {current.id === 'reports' && <ReportsSection onNewCount={setNewReports} />}
+
+        {current.id === 'people' && (
+          <>
+            {superadmin && <MembersSection selfId={selfId} />}
+
+            <ExecutivesSection selfId={selfId} />
+
+            {superadmin && <EyesOnlySection />}
+          </>
+        )}
+
+        {current.id === 'vote' && <VoteTab />}
+      </div>
+    </div>
+  )
+}
+
+/** The mascot vote: loaded only when its tab is open. */
+function VoteTab() {
   const [election, setElection] = useState<Load<Election | null>>({ state: 'loading' })
   const [ballots, setBallots] = useState<Load<AdminBallot[]>>({ state: 'loading' })
   const [key, setKey] = useState(0)
@@ -214,30 +295,6 @@ function Dashboard({ superadmin, selfId }: { superadmin: boolean; selfId: string
 
   return (
     <>
-      <section className="mascot-vote__panel" aria-labelledby="ad-map">
-        <h2 id="ad-map" className="mascot-vote__panel-title">
-          Live map
-        </h2>
-        <p>The server map, with the admin panel for admins.</p>
-        <a className="mascot-vote__btn mascot-vote__btn--secondary" href="/map/">
-          Open the live map
-        </a>
-      </section>
-
-      <ReportsSection />
-
-      <ServerBuddySection />
-
-      <WorldSection />
-
-      <MapSection />
-
-      {superadmin && <MembersSection selfId={selfId} />}
-
-      <ExecutivesSection selfId={selfId} />
-
-      {superadmin && <EyesOnlySection />}
-
       {election.state === 'loading' && (
         <p className="mascot-vote__loading" role="status">
           Loading the mascot vote...

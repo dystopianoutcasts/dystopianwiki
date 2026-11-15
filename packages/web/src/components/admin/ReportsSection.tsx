@@ -15,7 +15,14 @@ import { EMPTY_TEXT, REPORTS_FAILURE_TEXT, sectionLabel, type ReportsApi } from 
 import { createReportsStore, type AdminFocus } from '../../lib/reportsStore'
 import { ReportDetailView, ReportFiltersView, ReportsTable, type SaveNote } from './ReportsViews'
 
-export function ReportsSection({ api = reportsApi }: { api?: ReportsApi }) {
+export function ReportsSection({
+  api = reportsApi,
+  onNewCount,
+}: {
+  api?: ReportsApi
+  /** Told the count of new reports each time it is fetched, so the dashboard's Reports tab keeps it current. */
+  onNewCount?: (count: number) => void
+}) {
   const headingId = useId()
   const filterLabelId = useId()
   const titleId = useId()
@@ -37,6 +44,10 @@ export function ReportsSection({ api = reportsApi }: { api?: ReportsApi }) {
   useEffect(() => {
     void store.reload()
   }, [store])
+
+  useEffect(() => {
+    if (s.newCount !== null) onNewCount?.(s.newCount)
+  }, [s.newCount, onNewCount])
 
   const saveNote: SaveNote = s.saveNote?.kind === 'error' ? { kind: 'error', text: REPORTS_FAILURE_TEXT[s.saveNote.reason] } : s.saveNote
 

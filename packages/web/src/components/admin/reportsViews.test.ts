@@ -136,7 +136,7 @@ test('J4: Delete report is a visible button beside Save; it asks by name with De
   assert.match(detail({ confirming: true, deleteError: 'That report no longer exists.' }), /role="alert">That report no longer exists\./)
 })
 
-test('the dashboard mounts the Reports section', () => {
-  assert.match(code('pages/AdminDashboardPage.tsx'), /<ReportsSection \/>/)
+test('the dashboard mounts the Reports section (under its own tab, which shows the new count)', () => {
+  assert.match(code('pages/AdminDashboardPage.tsx'), /<ReportsSection onNewCount=\{setNewReports\} \/>/)
   assert.match(code('pages/AdminDashboardPage.tsx'), /import \{ ReportsSection \} from '\.\.\/components\/admin\/ReportsSection'/)
 })

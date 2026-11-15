@@ -637,3 +637,76 @@
   gap: var(--spacing-3);
   margin-top: var(--spacing-4);
 }
+
+/* Side tabs: a menu on the left from 900 px, one row of buttons above the content below that.
+   Each tab is a link; the open one is filled (and aria-current), so it reads without color too. */
+.admin__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--spacing-6);
+}
+
+.admin__tab-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin__tab {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: var(--spacing-2) var(--spacing-4);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.admin__tab:hover {
+  background: var(--color-surface-elevated);
+}
+
+.admin__tab:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.admin__tab--current {
+  border-color: var(--color-accent-400);
+  background: var(--color-accent-400);
+  color: var(--color-on-accent);
+}
+
+.admin__tab--current:hover {
+  background: var(--color-accent-400);
+  filter: brightness(1.08);
+}
+
+.admin__panel {
+  min-width: 0;
+}
+
+@media (min-width: 900px) {
+  .admin {
+    max-width: 1280px;
+  }
+
+  .admin__layout {
+    grid-template-columns: 220px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .admin__tabs {
+    position: sticky;
+    top: var(--spacing-6);
+  }
+
+  .admin__tab-list {
+    flex-direction: column;
+  }
+}
