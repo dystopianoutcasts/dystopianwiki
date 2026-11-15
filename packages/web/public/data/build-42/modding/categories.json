@@ -109,7 +109,7 @@
       "name": "Multiplayer",
       "description": "Server-authoritative facts and the traps that only surface in a dedicated-server round.",
       "icon": "plug",
-      "articleCount": 5,
+      "articleCount": 6,
       "displayOrder": 14
     },
     {
@@ -127,6 +127,22 @@
       "icon": "gear",
       "articleCount": 11,
       "displayOrder": 16
+    },
+    {
+      "id": "changing-vanilla",
+      "name": "Changing Vanilla Features",
+      "description": "How a Build 42 mod changes the game's own items, recipes, loot and Lua, which method to reach for first, and what no mod can change.",
+      "icon": "wrench",
+      "articleCount": 7,
+      "displayOrder": 17
+    },
+    {
+      "id": "translation",
+      "name": "The Translation System",
+      "description": "How Build 42 loads languages and translation files, which key goes in which file, how getText finds it, and how to translate your own mod.",
+      "icon": "globe",
+      "articleCount": 6,
+      "displayOrder": 17
     }
   ]
 }

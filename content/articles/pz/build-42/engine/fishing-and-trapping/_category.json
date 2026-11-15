@@ -1,0 +1,6 @@
+{
+  "name": "Fishing and Trapping",
+  "description": "How fishing and trapping work in Build 42.22, number by number: casting, bites, the tension minigame, fish schools, chum, nets, animal traps, explosive and noise traps, and how a mod adds a fish, a bait or a trap animal.",
+  "icon": "fish",
+  "displayOrder": 4
+}

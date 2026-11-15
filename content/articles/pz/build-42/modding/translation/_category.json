@@ -1,0 +1,6 @@
+{
+  "name": "The Translation System",
+  "description": "How Build 42 loads languages and translation files, which key goes in which file, how getText finds it, and how to translate your own mod.",
+  "icon": "globe",
+  "displayOrder": 17
+}

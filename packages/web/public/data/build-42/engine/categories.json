@@ -1,0 +1,68 @@
+{
+  "categories": [
+    {
+      "id": "character-stats",
+      "name": "Character Stats and Moodles",
+      "description": "Hunger, thirst, stress, panic, pain and the rest: every character stat in Build 42.22, how it changes each tick, and how moodles turn the numbers into what you see.",
+      "icon": "heart-pulse",
+      "articleCount": 7,
+      "displayOrder": 1
+    },
+    {
+      "id": "weather-and-climate",
+      "name": "Weather, Climate and Seasons",
+      "description": "How Build 42.22 makes weather: the climate model, the year and the length of a day, rain, snow, fog, wind and storms, outdoor temperature, what weather does to players, zombies and the world, the forecast, and what a mod can read or change.",
+      "icon": "cloud-rain",
+      "articleCount": 7,
+      "displayOrder": 2
+    },
+    {
+      "id": "fire-water-and-power",
+      "name": "Fire, Water and Power",
+      "description": "How fire starts, spreads and is put out; how the water and the power go off and what still works after; how plumbing, rain barrels and generators behave. Build 42.22, number by number.",
+      "icon": "flame",
+      "articleCount": 6,
+      "displayOrder": 3
+    },
+    {
+      "id": "fishing-and-trapping",
+      "name": "Fishing and Trapping",
+      "description": "How fishing and trapping work in Build 42.22, number by number: casting, bites, the tension minigame, fish schools, chum, nets, animal traps, explosive and noise traps, and how a mod adds a fish, a bait or a trap animal.",
+      "icon": "fish",
+      "articleCount": 6,
+      "displayOrder": 4
+    },
+    {
+      "id": "building-and-moveables",
+      "name": "Building, Carpentry and Moveables",
+      "description": "How players build in Build 42.22: the build menu and recipes, placement rules, skill and tool gates, how built objects take damage from zombies, and how moveables are picked up, placed, rotated, broken and scrapped.",
+      "icon": "hammer",
+      "articleCount": 7,
+      "displayOrder": 5
+    },
+    {
+      "id": "stash-and-annotated-maps",
+      "name": "Stash and Annotated Maps",
+      "description": "How annotated stash maps work in Build 42.22: where they drop, the odds, what a stash holds, the code behind it, every vanilla stash, and how a mod adds or changes one.",
+      "icon": "map",
+      "articleCount": 6,
+      "displayOrder": 6
+    },
+    {
+      "id": "animation-system",
+      "name": "Animation System",
+      "description": "How Build 42.22 animates characters, zombies and animals: action groups, AnimSets, variables and events, skeletons and clips, and how a mod adds or changes an animation.",
+      "icon": "film",
+      "articleCount": 8,
+      "displayOrder": 7
+    },
+    {
+      "id": "physics-and-ragdolls",
+      "name": "Physics and Ragdolls",
+      "description": "How Build 42.22 runs physics: when a body falls as a ragdoll, the Bullet bridge, hit reactions and ballistics, physics shapes, how a mod changes them, and every table counted from the game files.",
+      "icon": "activity",
+      "articleCount": 7,
+      "displayOrder": 8
+    }
+  ]
+}
