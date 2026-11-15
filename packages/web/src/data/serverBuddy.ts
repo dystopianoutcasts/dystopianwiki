@@ -1,6 +1,6 @@
 /**
  * ServerBuddy: the admins' Windows program for managing our game servers from outside
- * (status, Outcast Buddy setup, files, logs, console). Downloaded only from the admin
+ * (status, logs, console, restarts, stats, settings, mods, players, Outcast Buddy setup, files). Downloaded only from the admin
  * dashboard (/admin), never from a public link.
  *
  * The file lives in the private Storage bucket `admin-tools` (migration 047). Storage gives a
@@ -12,12 +12,12 @@
  * SERVERBUDDY_BYTES and SERVERBUDDY_DATE here, rebuild and deploy the site.
  */
 
-export const SERVERBUDDY_VERSION = '0.1.3'
-/** SHA-256 of ServerBuddy-0.1.3.exe (ServerBuddy commit 309e8f2, built 2026-11-14): stripes icon, own title bar, Fill from a saved file, plain-words Set up tab. */
-export const SERVERBUDDY_SHA256 = 'FD961144924236CE9259F8CDBB2DFEB9023573206F557BA98F1C805C2CFA0CFE'
-export const SERVERBUDDY_BYTES = 11436032
+export const SERVERBUDDY_VERSION = '0.5.3'
+/** SHA-256 of ServerBuddy-0.5.3.exe (ServerBuddy commit 2b58567, built 2026-11-15): live logs, console, restarts with warnings, schedules, restart on mod update, crash restarts, stats, settings, mods, players, the sb command line. */
+export const SERVERBUDDY_SHA256 = 'C29BECA8665C7B900781D6462446173E01440E44DBF7CFD0479E8DE963A6C9CA'
+export const SERVERBUDDY_BYTES = 14927360
 /** When this build was made, ISO date. */
-export const SERVERBUDDY_DATE = '2026-11-14'
+export const SERVERBUDDY_DATE = '2026-11-15'
 
 export const SERVERBUDDY_BUCKET = 'admin-tools'
 export const SERVERBUDDY_FILE = `ServerBuddy-${SERVERBUDDY_VERSION}.exe`
