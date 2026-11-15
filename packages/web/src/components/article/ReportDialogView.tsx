@@ -210,7 +210,7 @@ function ReportFields({ ids, pageTitle, draft, state, sections, sender, onChange
 
       <div className="report-field">
         <label htmlFor={ids.evidence} className="report-label">
-          Got a source? <span className="report-optional">(optional)</span>
+          How did you find out? <span className="report-optional">(optional)</span>
         </label>
         <textarea
           id={ids.evidence}
@@ -224,7 +224,7 @@ function ReportFields({ ids, pageTitle, draft, state, sections, sender, onChange
           onChange={(e: ChangeEvent<HTMLTextAreaElement>) => onChange({ evidence: e.target.value })}
         />
         <p id={ids.evidenceHint} className={`report-hint${evidence.over ? ' report-hint--warn' : ''}`}>
-          A game version, a file and line, or something you tried in game. No worries if not: we check every report. {evidence.text}
+          Your game version, something you tried in game, or a file and line from the game's code. Fine to skip. {evidence.text}
         </p>
         {problems.evidence && (
           <p id={ids.evidenceError} className="report-error" role="alert">

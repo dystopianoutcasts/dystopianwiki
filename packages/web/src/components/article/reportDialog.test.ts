@@ -103,8 +103,8 @@ test('J1.5: the message box is labeled, required, and has a live counter that sa
 
 test('J1.6: the evidence box is labeled optional with its own limit', () => {
   const html = form()
-  assert.match(html, /<label htmlFor="r-evidence" class="report-label">Got a source\? <span class="report-optional">\(optional\)<\/span><\/label>/)
-  assert.match(html, /A game version, a file and line, or something you tried in game\. No worries if not: we check every report\. 0 of 1,000\./)
+  assert.match(html, /<label htmlFor="r-evidence" class="report-label">How did you find out\? <span class="report-optional">\(optional\)<\/span><\/label>/)
+  assert.match(html, /Your game version, something you tried in game, or a file and line from the game's code\. Fine to skip\. 0 of 1,000\./)
 })
 
 test('J1.7: the note, and who the report comes from: the signed-in name, or without a name', () => {
