@@ -12,10 +12,10 @@
  * SERVERBUDDY_BYTES and SERVERBUDDY_DATE here, rebuild and deploy the site.
  */
 
-export const SERVERBUDDY_VERSION = '0.5.3'
-/** SHA-256 of ServerBuddy-0.5.3.exe (ServerBuddy commit 2b58567, built 2026-11-15): live logs, console, restarts with warnings, schedules, restart on mod update, crash restarts, stats, settings, mods, players, the sb command line. */
-export const SERVERBUDDY_SHA256 = 'C29BECA8665C7B900781D6462446173E01440E44DBF7CFD0479E8DE963A6C9CA'
-export const SERVERBUDDY_BYTES = 14927360
+export const SERVERBUDDY_VERSION = '0.6.0'
+/** SHA-256 of ServerBuddy-0.6.0.exe (ServerBuddy commit c66a807, built 2026-11-15): the at-a-glance dashboard (All servers, Overview with Restart/Stop/Message/Update, What happened, Performance graphs), Java mod approvals for the pack, and the 0.5 tools (logs, console, restarts, schedules, settings, mods, players, the sb command line). */
+export const SERVERBUDDY_SHA256 = '6A159EA9F99F701B73FC806DFD1C78B412DA6058845D4309A39ADB1FB148BF64'
+export const SERVERBUDDY_BYTES = 15523840
 /** When this build was made, ISO date. */
 export const SERVERBUDDY_DATE = '2026-11-15'
 
