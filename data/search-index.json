@@ -5178,7 +5178,7 @@
       "foraging",
       "husbandry"
     ],
-    "excerpt": "The core loop (all [CONFIRMED]): obtain seeds -> plow furrows -> sow -> tend (water/weed/fertilize) -> harvest.",
+    "excerpt": "The farming loop in 42.22: where seeds come from, where a furrow can go, what sowing, watering and harvesting do, what destroys a plant, and how a harvest is counted.",
     "difficulty": "intermediate"
   },
   {
@@ -5267,7 +5267,7 @@
       "foraging",
       "husbandry"
     ],
-    "excerpt": "Crops start ~50 health, modified by moon phase (below). Range 0-100; 0 kills the crop. Updated every 3 hours. Every 10 health above 50 at harvest = +1 extra vegetable.",
+    "excerpt": "What a 42.22 crop's health, water and disease numbers really do: the 2-hour health tick, water loss and rain, fertilizer limits, and why only mildew can start. Real time given.",
     "difficulty": "intermediate"
   },
   {
@@ -5285,7 +5285,7 @@
       "foraging",
       "husbandry"
     ],
-    "excerpt": "Farming, foraging and animals, in 13 parts: Orientation: what changed in B42, The three farming skills, Agriculture basics: from seed to harvest, Crop health, water, disease, Seasons, curses, and...",
+    "excerpt": "The 42.22 map of crops, foraging and animals: what each of the 13 pages covers, which side of a server runs each system, and where the deeper engine and cookbook pages are.",
     "difficulty": "intermediate"
   },
   {
@@ -5303,12 +5303,12 @@
       "foraging",
       "husbandry"
     ],
-    "excerpt": "B42 foraging is a category + search-focus system. Items belong to categories; categories belong to broader groups; each category has per-biome spawn weights, weather and time-of-day modifiers...",
+    "excerpt": "How 42.22 Search Mode fills a zone with spots, what Search Focus really does, which 27 categories exist, what the Farmer bonus is, and how a multiplayer server runs it. Crops and animals in detail.",
     "difficulty": "intermediate"
   },
   {
     "id": "build-42-modding-procedural-distributions",
-    "title": "MODDING: procedural distributions",
+    "title": "MODDING: procedural distributions (loot)",
     "slug": "modding-procedural-distributions",
     "url": "/pz/build-42/modding/farming-and-animals/modding-procedural-distributions",
     "version": "build-42",
@@ -5321,7 +5321,7 @@
       "foraging",
       "husbandry"
     ],
-    "excerpt": "Relevant because farming/animal mods often add seeds, produce, feed, or animal products to world loot. ProceduralDistributions governs container loot. [CONFIRMED]",
+    "excerpt": "How a farming or animal mod puts seeds, produce or feed into world loot in 42.22: the lists, the 18 optional list keys, the slider seeds use, and a seed-packet example.",
     "difficulty": "intermediate"
   },
   {
@@ -5357,8 +5357,8 @@
       "foraging",
       "husbandry"
     ],
-    "excerpt": "The cached farming sources describe crop behavior (seasons, water, disease, phases) and the crafting recipes that surround crops, but do not contain the crop script/data schema itself (the file...",
-    "difficulty": "intermediate"
+    "excerpt": "A crop in 42.22 is a Lua table entry, not a script. The 17 keys every crop sets, the optional keys and what reads them, how to change a vanilla crop, and where to start on a new animal breed.",
+    "difficulty": "advanced"
   },
   {
     "id": "build-42-modding-the-animaldefinitions-global-table",
@@ -5393,7 +5393,7 @@
       "foraging",
       "husbandry"
     ],
-    "excerpt": "Build 42 turned Project Zomboid's food loop from \"loot until it runs out, then plant a few crops\" into a genuine homesteading system. The major B42-era additions and renames relevant to this track:",
+    "excerpt": "What Build 42 added to crops, skills, foraging and animals compared with Build 41, checked against both builds' files, with one old claim corrected: the foraging category system is not new.",
     "difficulty": "intermediate"
   },
   {
@@ -5411,8 +5411,8 @@
       "foraging",
       "husbandry"
     ],
-    "excerpt": "Each crop has a planting season (with poor and best months), a growing season, and bad months.",
-    "difficulty": "intermediate"
+    "excerpt": "When a 42.22 crop gets cursed and what a curse does, how sow, best, risk and bad months work, and a table of all 55 vanilla crops with water, days to harvest and months, checked against the code.",
+    "difficulty": "advanced"
   },
   {
     "id": "build-42-the-three-farming-skills",
@@ -5429,7 +5429,7 @@
       "foraging",
       "husbandry"
     ],
-    "excerpt": "B42 splits food production across three skills (all under the \"Farming\" skill group in the character sheet). [CONFIRMED]",
+    "excerpt": "Agriculture, Animal Care and Butchering sit in one skill group in 42.22. What Agriculture changes, level by level, how its XP is earned, and what each level shows you.",
     "difficulty": "intermediate"
   },
   {
