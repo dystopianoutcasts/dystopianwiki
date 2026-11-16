@@ -14,52 +14,126 @@ tags:
   - workshop-upload
   - debug-mode
 excerpt: >-
-  Decide scope: B42-only (recommended for crafting-heavy mods) or dual-build
-  (keep flat media/ beside common/ + 42/). [CONFIRMED layout] Restructure
-  folders: create common/ (mandatory, even if...
-last_updated: '2026-09-29'
+  What a Build 41 mod runs into in 42.22, area by area, with what the code does, then ten steps to port it. The folder, mod.info, registries, craftRecipe and server-list steps are checked.
+last_updated: '2026-11-16'
 related_articles:
   - tl-dr-what-a-b41-modder-must-change-first
-  - b42-status-versioning-and-the-compatibility-model
+  - practical-b42-readiness-checklist
   - the-b42-mod-project-structure
   - the-versioned-layout-common-build-folders
+  - b42-status-versioning-and-the-compatibility-model
   - mod-info-fields-and-the-versioning-compatibility-system
   - media-registries-lua-the-new-b42-identifier-file
   - lua-folder-load-order
   - in-game-debug-mode-and-dev-tools
-  - mapping-toolchain-status
   - packaging-and-workshop-upload-for-b42
   - multiplayer-status-in-42-20-stable
 ---
-# B41 -> B42 porting: what breaks + a concrete checklist
+::field-notes
 
-> Source: 01_MODDING_FOUNDATIONS_AND_TOOLCHAIN.md (compiled 2026-07-29, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-16.
 
-### What breaks (foundation/toolchain layer)
+**Who this page is for:** a Build 41 modder who is porting a mod and wants every step in order. The short version is [the TL;DR](/pz/build-42/modding/foundations/tl-dr-what-a-b41-modder-must-change-first), and the list of things to test is [the readiness checklist](/pz/build-42/modding/foundations/practical-b42-readiness-checklist).
 
-| Area | B41 | B42 | Severity |
-|------|-----|-----|----------|
-| Folder layout | flat `mod.info` + `media/` | `common/` (mandatory) + `42/` build folder with `mod.info` + build `media/` | **Breaking** -- no B42 build folder -> silent world-load fail. **[CONFIRMED]** |
-| Identifiers | none | `media/registries.lua`, loaded before all Lua + scripts; `.register("mod:id")` per type | **Breaking** for custom traits/professions/tags/moodles/ammo/etc. **[CONFIRMED]** |
-| Crafting | `recipe` blocks | new `craftRecipe` model (see `02_SCRIPTING_ITEMS_AND_CRAFTING.md`) | **Breaking** -- old recipes silently fail or error. **[CONFIRMED]** |
-| MP authority | client ran inventory/timed actions | server runs inventory + all timed actions; anti-cheat | **Breaking** for client-trusted mods. **[CONFIRMED]** |
-| Server config | `Mods=` plain IDs | `Mods=` backslash-prefixed IDs | **Breaking** for server lists. **[CONFIRMED via hosting KBs]** |
-| Tiles/maps | old tiledefs | tiledefs valid but tools/tilesheets differ; unpack B42 `texturepacks` | **Partial** -- re-verify tiledef numbers (<8190). **[LIKELY]** |
-| Saves | B41 saves | incompatible; also 42.19 -> 42.20 incompatible | **Breaking** for anything reading save data. **[CONFIRMED]** |
+:::callout[The 1-minute version]{kind=key}
+- Do the folder step first: a mod without `mod.info` in `common/` or in a `42/` folder is not listed at all.
+- `mod.info` keys are matched in lowercase, so `Name=` is not read as `name=`. A `tiledef=` line outside 100 to 8189 makes the game reject the whole file.
+- Add `media/registries.lua` only if the mod adds identifiers of its own.
+- Rewrite crafting as `craftRecipe`. Vanilla 42.22 has no old-style `recipe` block, and whether the old block still works was not tested.
+- On a server the `Mods=` line takes ids split on `;`, and a backslash in front of an id is removed, not required.
+- Test with a fresh world and read `console.txt` for the named error.
+:::
 
-### Concrete porting checklist
+:::facts
+- **Lowest version folder** `42` (42.0)
+- **`tiledef=` file number** 100 to 8189
+- **Preview image** square, 256 or 512 pixels, at most 1,024,000 bytes
+- **Vanilla `craftRecipe` blocks** 965, no `recipe` blocks
+:::
 
-1. **Decide scope:** B42-only (recommended for crafting-heavy mods) or dual-build (keep flat `media/` beside `common/` + `42/`). **[CONFIRMED layout]**
-2. **Restructure folders:** create `common/` (mandatory, even if empty) for large static assets; create a `42/` build folder holding `media/` (lua, scripts, ...), `mod.info`, and `poster.png`. For dual-build, keep the old flat `media/` at the mod root. **[CONFIRMED]**
-3. **Update `mod.info`:** confirm lowercase `id`, `name`, `description`, `poster`, `icon`, `author`, `require`; add game-version min/max fields; place `mod.info` in the version folder. **[CONFIRMED]**
-4. **Create `media/registries.lua`** if the mod adds any custom identifiers, and port B41 registration logic to `.register("mod:id")` calls for the matching type (CharacterTrait, CharacterProfession, ItemTag, MoodleType, AmmoType, etc.). Reference the string ID in scripts, the returned object in Lua. **[CONFIRMED]**
-5. **Rewrite crafting:** convert every B41 `recipe` block to the B42 `craftRecipe` schema (per `02_SCRIPTING_ITEMS_AND_CRAFTING.md`). This is where most silent failures hide. **[CONFIRMED]**
-6. **Audit event bindings:** ensure `Events.X.Add(func)` uses bare references; remove any `if object.method then` guards or `pcall` wrappers that mask missing methods; confirm renamed/removed events (see `03_LUA_API_AND_ENGINE.md`). **[CONFIRMED]**
-7. **Make MP-safe:** move inventory mutations and timed actions to be server-authoritative; route item grants / teleports / combat effects through server commands so anti-cheat does not reject them. **[CONFIRMED]**
-8. **Fix server config:** rewrite `Mods=` to the B42 backslash format; verify `WorkshopItems=` uses Workshop IDs; order dependencies first. **[CONFIRMED via hosting KBs]**
-9. **Test with `-debug`:** launch with `-debug`, load a **fresh** world, watch the bug icon (green = active), and read `console.txt` for named script/Lua load errors; fix until clean. Use F11 hot reloading to iterate. **[CONFIRMED]**
-10. **Repackage + upload:** stage the versioned layout under `Zomboid/Workshop/<Item>/Contents/mods/...`, let the in-game uploader generate `workshop.txt`, add a 256x256 `preview.png`, and push via **Workshop -> "Create and update items."** **[CONFIRMED]**
+## 1. What breaks
 
----
+**The folder layout, `mod.info`, identifiers and crafting are the four areas where the 42.22 code differs from what a Build 41 mod expects.**
 
-<a name="13-gaps"></a>
+:::chips[Areas in the table]
+Folder layout
+Identifiers
+Crafting
+Multiplayer authority
+Server config
+Tiles and maps
+Saves
+:::
+
+| Area | B41 | B42 (42.22) | Checked | Code |
+|------|-----|-------------|---------|------|
+| Folder layout | flat `mod.info` and `media/` | `mod.info` in `common/` or in a `42/` folder, and `media/` in either | Yes. A flat mod is not listed. | `zombie/ZomboidFileSystem.java:493-498`, `zombie/gameStates/ChooseGameInfo.java:45` |
+| Identifiers | none | `media/registries.lua`, run before the scripts load | Yes | `zombie/scripting/objects/ModRegistries.java:16-31`, `zombie/GameWindow.java:208-210` |
+| Crafting | `recipe` blocks | `craftRecipe` blocks | The script types exist, the old block's runtime result is not tested | `zombie/scripting/ScriptType.java:23`, `zombie/scripting/ScriptType.java:45` |
+| Multiplayer authority | client ran inventory and timed actions | see the pages on timed actions and anti-cheat | Not re-checked on this page | none |
+| Server config | `Mods=` plain ids | ids split on `;`, backslashes removed | Yes. Backslashes are allowed, not required. | `zombie/network/GameServer.java:667-675` |
+| Tiles and maps | old tiledefs | `tiledef=` file number must be 100 to 8189 | Yes for the range | `zombie/gameStates/ChooseGameInfo.java:305-326` |
+| Saves | B41 saves | B41 saves are incompatible | Not verified here | none |
+
+The multiplayer row is covered by [Timed actions and items over the network](/pz/build-42/engine/networking-and-packets/timed-actions-and-items-over-the-network) and [Anti-cheat and mods](/pz/build-42/engine/anti-cheat/anti-cheat-and-mods).
+
+## 2. The ten steps
+
+**Work down the steps in order, and test after the folder step, the `mod.info` step and the crafting step.**
+
+:::flow[The port, in order]
+- Choose B42-only or dual-build
+- Make the folders
+- Fix `mod.info`
+- Add `registries.lua`
+- Rewrite crafting
+- Check events
+- Make it server-safe
+- Fix the server list
+- Test with `-debug`
+- Package and upload
+:::
+
+### Step 1. Decide the scope
+
+A Build 42-only mod is the simplest. A dual-build upload keeps a flat `media/` and a `mod.info` at the mod's top folder for Build 41, beside `common/` and `42/`, and the 42.22 loader does not read the flat part. :cite[(`zombie/ZomboidFileSystem.java:470-498`)] What Build 41 does with that layout was not checked.
+
+### Step 2. Make the folders
+
+Create `42/` with `mod.info`, `poster.png` and `media/`. Add `common/media` for large assets that do not change with the game. The version folder is the highest name that is at least 42.0 and not above the game. :cite[(`zombie/ZomboidFileSystem.java:470-486`)] See [the versioned layout](/pz/build-42/modding/foundations/the-versioned-layout-common-build-folders).
+
+### Step 3. Fix `mod.info`
+
+The loader reads the file line by line and matches each key with its lowercase spelling: `name=`, `poster=`, `description=`, `require=`, `author=`, `icon=`, `id=`. :cite[(`zombie/gameStates/ChooseGameInfo.java:211-259`)] The `id=` line must start the line, and `versionMin=` and `versionMax=` must too. :cite[(`zombie/gameStates/ChooseGameInfo.java:243-247`, `zombie/gameStates/ChooseGameInfo.java:329-340`)] A `tiledef=` line takes a file name and a number from 100 to 8189, and a number outside that range makes the game reject the whole `mod.info`. :cite[(`zombie/gameStates/ChooseGameInfo.java:305-326`)] The full field list is in [mod.info fields](/pz/build-42/modding/foundations/mod-info-fields-and-the-versioning-compatibility-system).
+
+### Step 4. Add `registries.lua`
+
+Do this only when the mod adds identifiers such as traits, tags, moodles or ammo. Register each id as `yourmod:name` and use the string in scripts. :cite[(`zombie/scripting/objects/RegistryReset.java:22-29`)] See [media/registries.lua](/pz/build-42/modding/foundations/media-registries-lua-the-new-b42-identifier-file).
+
+### Step 5. Rewrite crafting
+
+Write each recipe as a `craftRecipe` block, which is the only kind vanilla 42.22 uses. :cite[(`zombie/scripting/ScriptType.java:45`)] The block is on [The new craftRecipe block](/pz/build-42/modding/crafting/the-new-craftrecipe-block). The older page called this where most silent failures hide, which was not tested.
+
+### Step 6. Check event bindings
+
+Pass the function itself to `Add`, as in `Events.OnGameStart.Add(TopOfTheWorld.OnGameStart)`. :cite[(`media/lua/client/Challenge/TopOfTheWorld.lua:279`)] The older advice to remove `pcall` wrappers and `if object.method then` guards is not an engine rule. See [The events system](/pz/build-42/modding/lua-api/the-events-system) for which events exist.
+
+### Step 7. Make it server-safe
+
+Read [Timed actions and items over the network](/pz/build-42/engine/networking-and-packets/timed-actions-and-items-over-the-network) and [Multiplayer command patterns](/pz/build-42/modding/lua-api/multiplayer-command-patterns). The `media/lua/server/` folder also loads on a multiplayer client. :cite[(`zombie/gameStates/GameLoadingState.java:155-156`)]
+
+### Step 8. Fix the server list
+
+Write `Mods=` as ids split on `;`. A backslash is removed before the split, so the Build 41 form also reads. `WorkshopItems=` is split on `;` and keeps only valid Steam ids. :cite[(`zombie/network/GameServer.java:667-675`, `zombie/network/GameServer.java:693-701`)] Put a required mod's id in `require=`, because a mod is placed after the mods it requires. :cite[(`zombie/ZomboidFileSystem.java:826-852`)]
+
+### Step 9. Test with `-debug`
+
+Start the game with `-debug` and a new world. :cite[(`zombie/gameStates/MainScreenState.java:242-243`)] The game sends its output to `console.txt` in the `Zomboid` cache folder. :cite[(`zombie/gameStates/MainScreenState.java:183-186`)] The screen for an unexpected load error also draws that path. :cite[(`zombie/gameStates/GameLoadingState.java:613`)] A script error that stops the world prints "World loading could not proceed, there are script load errors." and the cause is in earlier log lines. :cite[(`zombie/iso/IsoWorld.java:2461-2465`)] See [debug mode](/pz/build-42/modding/foundations/in-game-debug-mode-and-dev-tools).
+
+### Step 10. Package and upload
+
+Stage the mod as `Zomboid/Workshop/<Item>/Contents/mods/<ModId>/`, with `workshop.txt` and `preview.png` in the item folder. :cite[(`zombie/core/znet/SteamWorkshopItem.java:57-59`, `zombie/core/znet/SteamWorkshopItem.java:194-196`)] The preview must be a readable square PNG of 256 or 512 pixels, at most 1,024,000 bytes. :cite[(`zombie/core/znet/SteamWorkshopItem.java:494-519`)] In `workshop.txt`, `visibility` takes `public`, `friendsOnly`, `private` or `unlisted`, and anything else publishes the item public. :cite[(`zombie/core/znet/SteamWorkshopItem.java:128-138`)] The rest is on [Packaging and Workshop upload](/pz/build-42/modding/foundations/packaging-and-workshop-upload-for-b42).
+
+:::callout[How we know]{kind=proof}
+Read from the 42.22 decompiled Java and vanilla Lua; no game was run. The block counts are across vanilla `media/scripts`. Not verified: that B41 saves cannot load, that the multiplayer authority change breaks a mod (see the linked pages), that F11 hot reloading and a green bug icon work as the older page said, whether the in-game uploader writes `workshop.txt` for you, and whether a legacy `recipe` block still works.
+:::
