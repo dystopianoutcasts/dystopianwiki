@@ -5616,7 +5616,7 @@
       "workshop-upload",
       "debug-mode"
     ],
-    "excerpt": "Decide scope: B42-only (recommended for crafting-heavy mods) or dual-build (keep flat media/ beside common/ + 42/). [CONFIRMED layout] Restructure folders: create common/ (mandatory, even if...",
+    "excerpt": "What a Build 41 mod runs into in 42.22, area by area, with what the code does, then ten steps to port it. The folder, mod.info, registries, craftRecipe and server-list steps are checked.",
     "difficulty": "beginner"
   },
   {
@@ -5706,7 +5706,7 @@
       "workshop-upload",
       "debug-mode"
     ],
-    "excerpt": "Modding foundations and toolchain, in 12 parts: TL;DR: what a B41 modder must change first, B42 status, versioning, and the compatibility model, The B42 mod PROJECT STRUCTURE, The versioned...",
+    "excerpt": "The index of the Build 42 (42.22) modding foundations: thirteen pages on folders, mod.info, registries, Lua load order, debug, mapping, packaging, multiplayer and porting.",
     "difficulty": "beginner"
   },
   {
@@ -5742,7 +5742,7 @@
       "workshop-upload",
       "debug-mode"
     ],
-    "excerpt": "Within media/lua/ the three subfolders load in a defined order. The three folders (shared, client, server) are confirmed present in the B42 structure by pzwiki Mod structure (rev 1443271); the...",
+    "excerpt": "In Build 42 (42.22) the Lua in shared and client loads when the game starts, server loads when a world starts, and each folder runs vanilla first, then each mod, in alphabetical order.",
     "difficulty": "beginner"
   },
   {
@@ -5850,8 +5850,8 @@
       "power",
       "misc-systems"
     ],
-    "excerpt": "CONFIRMED -- Build 42 (v42.20) shipped to the public/stable Steam branch on Wednesday 2026-07-29. It is the largest content update in the game's history and it overhauled the modding framework...",
-    "difficulty": "intermediate"
+    "excerpt": "Where to start for Build 42.22 mods that touch vehicles, power, combat and animation: the folder layout the game reads, what the older notes said about the build, and which pages cover each system.",
+    "difficulty": "beginner"
   },
   {
     "id": "build-42-packaging-and-workshop-upload-for-b42",
@@ -5886,12 +5886,12 @@
       "power",
       "misc-systems"
     ],
-    "excerpt": "Restructure the mod into common/media, 42/media, (optional) 41/media with a 42/mod.info. Re-author all scripts against current vanilla B42 scripts -- especially crafting (recipe format is...",
-    "difficulty": "intermediate"
+    "excerpt": "A checklist of eight things to confirm before a ported mod is ready to test in Build 42.22: folders, scripts, animations, server checks, the server list, the version range, vehicles and power.",
+    "difficulty": "beginner"
   },
   {
     "id": "build-42-the-b42-mod-project-structure",
-    "title": "The B42 mod PROJECT STRUCTURE",
+    "title": "The B42 mod PROJECT STRUCTURE (basics)",
     "slug": "the-b42-mod-project-structure",
     "url": "/pz/build-42/modding/foundations/the-b42-mod-project-structure",
     "version": "build-42",
@@ -5904,7 +5904,7 @@
       "workshop-upload",
       "debug-mode"
     ],
-    "excerpt": "A modern B42 mod is a versioned project. Local mods are recognized in two cache-folder locations, each with its own rules [CONFIRMED] (pzwiki Mod structure rev 1443271): Zomboid/mods/ -- for...",
+    "excerpt": "Where Build 42 (42.22) looks for your mod, which folders inside it are read, when a mod is listed, and which copy wins when two folders hold the same mod id.",
     "difficulty": "beginner"
   },
   {
@@ -5922,7 +5922,7 @@
       "workshop-upload",
       "debug-mode"
     ],
-    "excerpt": "The point of the versioned layout is one upload, multiple game versions, plus keeping bulky assets out of every version copy. [CONFIRMED] (pzwiki Mod structure rev 1443271)",
+    "excerpt": "How Build 42 (42.22) turns a version folder name like 42 or 42.1.5 into a number, which folder it picks, and how that folder and common combine. Includes what a 41 folder does.",
     "difficulty": "beginner"
   },
   {
@@ -5940,7 +5940,7 @@
       "workshop-upload",
       "debug-mode"
     ],
-    "excerpt": "The five highest-impact things for a modder getting B42-stable ready:",
+    "excerpt": "The five first moves for a Build 41 modder in 42.22: the folder layout, how a Build 41 mod fails, registries.lua, craftRecipe, and the server Mods= line. Each says what the code does.",
     "difficulty": "beginner"
   },
   {
@@ -5976,7 +5976,7 @@
       "craftrecipe",
       "build-42"
     ],
-    "excerpt": "Build 42 is stable now. It is NOT save-compatible or mod-compatible with Build 41:",
+    "excerpt": "Your first page for Build 42.22 modding: what to read in what order, where each kind of mod is built, the six-step workflow, and the Build 41 differences that the code confirms.",
     "difficulty": "beginner"
   },
   {
