@@ -6022,19 +6022,19 @@
   },
   {
     "id": "build-42-item-block-merge-behaviour",
-    "title": "B42 resource weight reduction -- candidate item audit",
+    "title": "Item block merging, and the weight audit that proved it",
     "slug": "item-block-merge-behaviour",
     "url": "/pz/build-42/modding/items-and-scripting/item-block-merge-behaviour",
     "version": "build-42",
     "section": "modding",
     "category": "items-and-scripting",
     "tags": [
+      "item-scripts",
       "items",
-      "scripting",
-      "resource-weights",
-      "item-blocks"
+      "merge",
+      "weights"
     ],
-    "excerpt": "Build: B42 stable, Steam buildid 24449119 Source of truth: media/scripts/generated/items/*.txt in the installed game Scope agreed: all raw crafting materials (wood + metal...",
+    "excerpt": "In 42.22 a mod item block with only a Weight line changes the weight and leaves the rest of the vanilla item alone. The page shows why, how to try it, and the weight audit behind Outcast Light Load.",
     "difficulty": "intermediate"
   },
   {
@@ -6046,12 +6046,11 @@
     "section": "modding",
     "category": "items-and-scripting",
     "tags": [
-      "tags",
       "itemtag",
       "lua-api",
       "items"
     ],
-    "excerpt": "In Build 42 an item tag is an ItemTag object, not a string. Here is how to get one from Lua, why ItemTag.register is the wrong tool for that, why there is no hasTag(String), and why tags beat DisplayCategory when you sort items. Read from the 42.21 code.",
+    "excerpt": "In Build 42.22 an item tag is an ItemTag object, not a string. How to get one from Lua, why ItemTag.register is not a lookup, why hasTag takes no string, and why tags beat categories for sorting.",
     "difficulty": "intermediate"
   },
   {
@@ -6082,12 +6081,11 @@
     "category": "items-and-scripting",
     "tags": [
       "item-scripts",
-      "tags",
-      "workstation",
-      "tech-tiers",
-      "timedaction"
+      "items",
+      "itemtype",
+      "tags"
     ],
-    "excerpt": "A real vanilla Build 42 item, from media/scripts/generated/items/normal.txt, and why Build 42 writes ItemType = base:normal where Build 41 wrote Type = Normal.",
+    "excerpt": "What a Build 42.22 item block looks like, why it says ItemType = base:normal instead of Type = Normal, the 16 item types, and which keys the item loader reads.",
     "difficulty": "intermediate"
   },
   {
@@ -6118,12 +6116,11 @@
     "category": "items-and-scripting",
     "tags": [
       "item-scripts",
+      "overrides",
       "tags",
-      "workstation",
-      "tech-tiers",
-      "timedaction"
+      "recipes"
     ],
-    "excerpt": "[CONFIRMED / standard PZ mechanics]",
+    "excerpt": "When to change a vanilla item or recipe in Build 42.22 and when to add new ones beside it: redefining merges, new items join recipes by tag, and recipes join a workstation by tag.",
     "difficulty": "intermediate"
   },
   {
@@ -6136,12 +6133,11 @@
     "category": "items-and-scripting",
     "tags": [
       "item-scripts",
-      "tags",
-      "workstation",
-      "tech-tiers",
-      "timedaction"
+      "scripts",
+      "modules",
+      "syntax"
     ],
-    "excerpt": "[CONFIRMED] Scripts live in media/scripts/ (game) or /media/scripts/ (mod), and in B42 the vanilla tree is heavily reorganized into subfolders, notably media/scripts/entities// containing three...",
+    "excerpt": "How a Build 42.22 script file is read: which folders and files the game loads, the module and block layout, the comma rule, comments, imports, and the trap of a missing comma on the last line.",
     "difficulty": "intermediate"
   },
   {
@@ -6173,11 +6169,10 @@
     "tags": [
       "item-scripts",
       "tags",
-      "workstation",
-      "tech-tiers",
-      "timedaction"
+      "crafting",
+      "itemtag"
     ],
-    "excerpt": "[CONFIRMED] Tags are the join key of the whole B42 crafting system. Three places they appear:",
+    "excerpt": "Tags are the words that join items to recipes in Build 42.22. Where they appear (items, recipe inputs, recipes), how a mod item joins vanilla recipes by carrying a tag, and where to read about Lua.",
     "difficulty": "intermediate"
   },
   {
