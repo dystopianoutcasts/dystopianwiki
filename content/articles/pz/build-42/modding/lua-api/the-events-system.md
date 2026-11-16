@@ -14,118 +14,162 @@ tags:
   - timed-actions
   - multiplayer
 excerpt: >-
-  The event model is unchanged in shape from B41: you attach a function
-  reference (an observer) to a named event via the Events object.
-last_updated: '2026-09-29'
+  How a Build 42.22 mod hooks a named event with Events.X.Add, the arguments of the common events and the side that fires them, and how to make an event of your own.
+last_updated: '2026-11-16'
 related_articles:
-  - tl-dr-the-5-things-that-will-break-your-b41-mod
-  - b42-status-and-versioning
-  - the-b42-mod-folder-model
-  - lua-load-order-and-the-three-lua-folders
-  - registries-lua-the-new-b42-13-identifier-system
   - key-globals-and-classes
-  - moddata
+  - lua-load-order-and-the-three-lua-folders
   - multiplayer-command-patterns
-  - timed-actions
-  - ui
-  - engine-internals-calling-exposed-java-from-lua
-  - b41-b42-breaking-changes
+  - moddata
+  - when-lua-reloads-leaving-a-game-and-resets
+  - lua-gameplay-mod
   - hooks-for-new-b42-systems
-  - debugging-lua-in-b42
-  - recommended-tooling
 ---
-# The Events system  [CONFIRMED — pzwiki Lua event, revid 1390441 (v42.13.0); event catalog from demiurgeQuantified PZEventStubs, v42.13.0]
+::field-notes
 
-> Source: 03_LUA_API_AND_ENGINE.md (compiled 2026-07-29, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-16.
 
-The event model is unchanged in shape from B41: you attach a **function reference** (an observer) to a named event via the `Events` object.
+**Who this page is for:** modders who write Lua for Build 42. A complete mod that makes its own event is [Lua gameplay mod](/pz/build-42/modding/cookbook/lua-gameplay-mod).
+
+:::callout[The 1-minute version]{kind=key}
+- Hook an event with `Events.OnSomething.Add(handlerFunction)`. Pass the function itself, never the result of calling it.
+- Your handler gets the event's arguments in order, so its parameter list has to match the table below. Handlers run in the order they were added, and an error in one is logged and the next still runs.
+- `Add` and `Remove` take only a Lua function. `Add(fn())` registers nothing when `fn()` returns nothing, and it raises no error.
+- Some events fire on one side only. `OnGameStart` does not fire on a dedicated server, which has `OnServerStarted`; `OnClientCommand` fires on the server and in single player.
+- To make your own event, call `LuaEventManager.AddEvent("Name")` in a shared file, hook it with `Events.Name.Add`, and fire it with `triggerEvent("Name", a, b)`.
+:::
+
+:::facts
+- **Events registered in Java** 263
+- **Hooks** 8, on the separate `Hook` table
+- **`triggerEvent` arguments from Lua** up to 4 after the name
+- **Reload effect** a Lua reset clears every handler
+:::
+
+## 1. Hooking an event
+
+**An event is a table with `Add` and `Remove`, and both take a Lua function.**
 
 ```lua
-local function yourFunction(player)   -- params must match the event's output
-    -- your code here
+local function onCreatePlayer(playerNum, player)   -- parameters match the event's arguments
+    print("player " .. tostring(playerNum) .. " loaded")
 end
-Events.OnCreatePlayer.Add(yourFunction)    -- register (hook)
-Events.OnCreatePlayer.Remove(yourFunction) -- unregister (needs the SAME reference)
+Events.OnCreatePlayer.Add(onCreatePlayer)      -- register
+Events.OnCreatePlayer.Remove(onCreatePlayer)   -- unregister: needs the same function
 ```
 
-**Two rules the wiki makes explicit:**
-1. `Add`/`Remove` take a **reference** to your function, not a call. `Events.X.Add(fn())` executes `fn` immediately and registers its *return value* — a classic bug. **[CONFIRMED — pzwiki Lua event, revid 1390441]**
-2. Your handler's **parameter list must match the event's output.** E.g. `OnCreatePlayer` passes `player`, so the handler signature is `function(player)`. Mismatched arg order is the usual cause of a handler "misbehaving" after a port. **[CONFIRMED — pzwiki Lua event, revid 1390441]**
+`Add` stores the function only when the argument is a Lua function, and otherwise does nothing. :cite[(`zombie/Lua/Event.java:105-107`)] So `Events.OnTick.Add(onTick())` runs `onTick` at once and registers its return value if that is a function, or nothing at all if it returns nothing. `Remove` looks the function up by identity, so an anonymous function cannot be removed later. :cite[(`zombie/Lua/Event.java:127-129`)] Adding the same function twice stores it twice, because `Add` does not look for a duplicate. :cite[(`zombie/Lua/Event.java:105-107`)]
 
-**Custom events.** The pzwiki `Lua event` page documents the vanilla `Events.X.Add/.Remove` mechanism and, for *adding your own* events, points to community libraries (Events Plus API by Dismellion, Starlit Library by Albion, Doggy's Library) rather than a first-party `AddEvent` call. The raw `LuaEventManager.AddEvent("Name")` + `triggerEvent("Name", ...)` pattern below is the long-standing engine API and still works in B42, but note the pzwiki cache confirms only the hook/remove mechanism, not this pair:
+When the event fires, the engine calls the handlers in the order they were added, and an error in one is logged and the loop goes on to the next. :cite[(`zombie/Lua/Event.java:59-70`)] A handler may remove itself while the event runs. :cite[(`zombie/Lua/Event.java:68-70`)]
+
+An event triggered from a thread other than the main Lua thread is queued and runs later on the main thread. :cite[(`zombie/Lua/LuaEventManager.java:244-256`)]
+
+## 2. The events you will use most
+
+**Each row gives the arguments in order and the line that fires the event.**
+
+| Event | Arguments | Fires when | Code |
+|---|---|---|---|
+| `OnGameBoot` | none | The game starts, after a Lua reset, after leaving a game, and when a dedicated server starts | :cite[(`zombie/GameWindow.java:666`, `zombie/core/Core.java:3560`, `zombie/gameStates/IngameState.java:1085`, `zombie/network/GameServer.java:1544`)] |
+| `OnGameStart`, `OnLoad` | none | A world has loaded, in single player and on a multiplayer client | :cite[(`zombie/gameStates/IngameState.java:775-776`)] |
+| `OnServerStarted` | none | A dedicated server has started | :cite[(`zombie/network/GameServer.java:1581`)] |
+| `OnInitGlobalModData` | `isNewGame` | Global mod data has loaded | :cite[(`zombie/world/moddata/GlobalModData.java:61`)] |
+| `OnCreatePlayer` | `playerNum`, `player` | A local player is created; also fires from a Lua global and when a split-screen player joins | :cite[(`zombie/gameStates/GameLoadingState.java:441`, `zombie/Lua/LuaManager.java:3980`, `zombie/util/AddCoopPlayer.java:169`)] |
+| `OnNewGame` | `player`, `square` | A new character starts. It fires from four places, and the server's one, for a player who joins, passes a nil square | :cite[(`zombie/iso/IsoWorld.java:2305`, `zombie/iso/IsoWorld.java:2416`, `zombie/Lua/LuaManager.java:6485`, `zombie/network/packets/character/CreatePlayerPacket.java:308`)] |
+| `OnTick` | update count | Each game update, on the server too unless it is paused | :cite[(`zombie/gameStates/IngameState.java:1525-1527`, `zombie/gameStates/IngameState.java:1571`, `zombie/network/GameServer.java:1068`)] |
+| `OnRenderTick` | none | Each rendered frame | :cite[(`zombie/GameWindow.java:758`)] |
+| `EveryOneMinute`, `EveryTenMinutes`, `EveryHours`, `EveryDays` | none | Each in-game minute, ten minutes, hour or day | :cite[(`zombie/GameTime.java:643`, `zombie/GameTime.java:637`, `zombie/GameTime.java:611`, `zombie/GameTime.java:665`)] |
+| `OnPlayerUpdate` | `player` | A player updates | :cite[(`zombie/characters/IsoPlayer.java:2298`)] |
+| `OnPlayerDeath` | `player` | A local player dies | :cite[(`zombie/characters/IsoPlayer.java:6581-6583`)] |
+| `OnCharacterDeath` | `character` | A character's death handler runs, for players, zombies and animals | :cite[(`zombie/characters/IsoGameCharacter.java:4915-4917`, `zombie/characters/animals/IsoAnimal.java:1143-1145`)] |
+| `OnZombieDead` | `zombie` | A zombie dies; it also fires from two other places in the character class | :cite[(`zombie/characters/IsoZombie.java:5394`, `zombie/characters/IsoGameCharacter.java:5992`, `zombie/characters/IsoGameCharacter.java:6504`)] |
+| `OnHitZombie` | `zombie`, `attacker`, `bodyPart`, `weapon` | A zombie is hit | :cite[(`zombie/characters/IsoZombie.java:1364`)] |
+| `OnWeaponHitCharacter` | `attacker`, `target`, `weapon`, `damage` | A weapon hits a character | :cite[(`zombie/characters/IsoGameCharacter.java:6127`)] |
+| `AddXP` | `character`, `perk`, `amount` | A character gains experience | :cite[(`zombie/characters/IsoGameCharacter.java:17944`)] |
+| `LevelPerk` | `character`, `perk`, `level`, `increased` | A skill level changes. `increased` is `false` on the paths that reset or load a level and `true` on the level-up paths | :cite[(`zombie/characters/IsoGameCharacter.java:4831`, `zombie/characters/IsoGameCharacter.java:4836`, `zombie/characters/IsoGameCharacter.java:4862`, `zombie/characters/IsoGameCharacter.java:4875`)] |
+| `LoadGridsquare` | `square` | A square loads | :cite[(`zombie/iso/IsoChunk.java:3841`)] |
+| `OnFillWorldObjectContextMenu` | `player`, `context`, `worldobjects`, `test` | The world right-click menu is built; `player` is the player index | :cite[(`media/lua/client/ISUI/ISWorldObjectContextMenu.lua:213`)] |
+| `OnFillInventoryObjectContextMenu` | `player`, `context`, `items` | An inventory item menu is built | :cite[(`media/lua/client/ISUI/ISInventoryPaneContextMenu.lua:935`)] |
+| `OnClientCommand` | `module`, `command`, `player`, `args` | A client command reaches the server, and in single player; the player-first `sendClientCommand` also fires it directly when called on a server | :cite[(`zombie/network/GameServer.java:2343`, `zombie/spnetwork/SinglePlayerServer.java:204`, `zombie/Lua/LuaManager.java:8884`)] |
+| `OnServerCommand` | `module`, `command`, `args` | A server command reaches a multiplayer client, and in single player | :cite[(`zombie/network/GameClient.java:1000`, `zombie/spnetwork/SinglePlayerClient.java:149`)] |
+| `OnReceiveGlobalModData` | `tag`, `table` or `false` | A mod data packet arrives | :cite[(`zombie/network/packets/service/GlobalModDataPacket.java:56`, `zombie/network/packets/service/GlobalModDataPacket.java:62`)] |
+| `OnConnected`, `OnDisconnect` | none | A client has connected, or has lost its server | :cite[(`zombie/gameStates/ConnectToServerState.java:173`, `zombie/network/GameClient.java:355`)] |
+| `OnSave` | none | Every full save on a client or in single player: leaving, sleep (single player only), the Lua `save()` global and one dialog. A dedicated server's own save fires neither this nor `OnPostSave` | :cite[(`zombie/GameWindow.java:1014`, `zombie/GameWindow.java:1041`, `zombie/ai/sadisticAIDirector/SleepingEvent.java:485-490`, `zombie/ai/sadisticAIDirector/SleepingEvent.java:500`, `zombie/Lua/LuaManager.java:3718`, `zombie/ui/ModalDialog.java:107`)] |
+| `OnPostSave` | none | Only when leaving the game, after the save: the normal exit, the crash path and the window close. A mid-game save fires `OnSave` only | :cite[(`zombie/gameStates/IngameState.java:1388`, `zombie/gameStates/IngameState.java:1613`, `zombie/GameWindow.java:793`, `zombie/GameWindow.java:801`)] |
+| `OnResetLua` | `reason` | After a Lua reset | :cite[(`zombie/core/Core.java:3562`)] |
+
+Every event on this page exists at 42.22. `OnClientCommand` is covered on [Multiplayer command patterns](/pz/build-42/modding/lua-api/multiplayer-command-patterns), mod data events on [ModData](/pz/build-42/modding/lua-api/moddata), and the save and reset events on [When your Lua reloads](/pz/build-42/modding/lua-api/when-lua-reloads-leaving-a-game-and-resets).
+
+The Java registers 263 events, one call each in the method that sets them up. :cite[(`zombie/Lua/LuaEventManager.java:598-860`)] Lua files can add more, and vanilla does: its search and foraging code registers `onToggleSearchMode`, `onEnableSearchMode` and `onDisableSearchMode`. :cite[(`media/lua/client/Foraging/ISSearchManager.lua:34-36`)]
+
+### More events
+
+These exist at 42.22 too, with the arguments shown.
+
+| Event | Arguments | Code |
+|---|---|---|
+| `OnGameTimeLoaded`, `OnMainMenuEnter` | none | :cite[(`zombie/gameStates/GameLoadingState.java:322`, `zombie/core/Core.java:3561`)] |
+| `OnPlayerMove` | `player` | :cite[(`zombie/characters/IsoPlayer.java:2242`)] |
+| `OnEquipPrimary`, `OnEquipSecondary` | `character`, `item` | :cite[(`zombie/characters/IsoGameCharacter.java:3413`, `zombie/characters/IsoGameCharacter.java:3771`)] |
+| `OnClimateManagerInit`, `OnClimateTick` | `climateManager` | :cite[(`zombie/iso/weather/ClimateManager.java:251`, `zombie/iso/weather/ClimateManager.java:870`)] |
+| `OnFillContainer` | `roomName`, `containerType`, `container` | :cite[(`zombie/inventory/ItemPickerJava.java:598`)] |
+| `OnDynamicMovableRecipe` | `sprite`, `recipe`, `item`, `character` | :cite[(`zombie/inventory/RecipeManager.java:154`)] |
+| `OnGamepadConnect` | controller id | :cite[(`zombie/core/input/Input.java:188`)] |
+
+The other events (weather stages, foraging, joypad, chat, trading and more) are in the capture's event index, `api/events.jsonl`, which is generated from the engine and not published on the wiki; the 42.21 page's long catalog was dropped for that reason.
+
+## 3. Which side fires what
+
+**The same game start fires different events on a dedicated server than in single player or on a client.**
+
+`OnGameStart` and `OnLoad` come from the state a world loads into, and the dedicated server runs that state's update but never enters it, so they do not fire there. :cite[(`zombie/gameStates/IngameState.java:775-776`, `zombie/network/GameServer.java:1068`)] The server has `OnServerStarted` and `OnGameBoot` instead. :cite[(`zombie/network/GameServer.java:1544`, `zombie/network/GameServer.java:1581`)]
+
+`OnPlayerDeath` fires only for a local player. :cite[(`zombie/characters/IsoPlayer.java:6581-6583`)] `OnCharacterDeath` fires from the death handler that `DoDeath` calls, and a player's `onKilled` has a server-only branch before it calls `DoDeath`, so it is the event to try for a death on a server; that it fires there for a remote player was read from those callers and not run. :cite[(`zombie/characters/IsoGameCharacter.java:2071-2072`, `zombie/characters/IsoPlayer.java:6567-6568`, `zombie/characters/IsoPlayer.java:8393-8412`)] The two command events are one per side. :cite[(`zombie/network/GameServer.java:2343`, `zombie/network/GameClient.java:1000`)]
+
+Whether `OnPlayerUpdate` and the combat events fire on a client, the server or both was not traced here, so a mod that must run on one side checks `isClient()` or `isServer()` itself. See [Lua load order](/pz/build-42/modding/lua-api/lua-load-order-and-the-three-lua-folders#6-guards-for-client-server-and-single-player).
+
+## 4. Your own event
+
+**Call `LuaEventManager.AddEvent` once to create the event, then fire it with the global `triggerEvent`.**
+
 ```lua
-LuaEventManager.AddEvent("MyCustomEvent")   -- declare (put in shared/)
-Events.MyCustomEvent.Add(handler)
-triggerEvent("MyCustomEvent", arg1, arg2)   -- fire
+-- in a shared file, so both sides have the event
+LuaEventManager.AddEvent("MyModThingHappened")
+
+Events.MyModThingHappened.Add(function(thing, amount)
+    print("thing happened: " .. tostring(thing) .. " " .. tostring(amount))
+end)
+
+triggerEvent("MyModThingHappened", "door", 3)
 ```
-**[LIKELY — AddEvent/triggerEvent not covered by the pzwiki cache; verify against LuaDocs or vanilla source]**
 
-demiurgeQuantified's B42 event stubs document **400+ events for 42.13.0**. Selected events with B42 signatures (from PZEventStubs `Events.lua` — **[CONFIRMED via demiurge stubs, not the pzwiki cache]**):
+`AddEvent` makes the event and its `Events.<name>` table, and returns the existing event when the name is taken. :cite[(`zombie/Lua/LuaEventManager.java:579-593`)] Vanilla's Lua uses it the same way. :cite[(`media/lua/client/Foraging/forageClient.lua:47`)] The global `triggerEvent` takes the name and up to four arguments. :cite[(`zombie/Lua/LuaManager.java:5278-5316`)]
 
-### Lifecycle / boot
-- `Events.OnGameBoot()` — game startup complete.
-- `Events.OnGameStart()` — finished loading, entering the game.
-- `Events.OnInitGlobalModData(newGame:boolean)` — sandbox/global ModData load phase; good place to init ModData tables (see [Section 8](/pz/build-42/modding/lua-api/lua-api-and-engine-overview)).
-- `Events.OnGameTimeLoaded()` — GameTime ready.
-- `Events.OnMainMenuEnter` / `Events.OnFETick()` — main-menu frame loop.
+Firing an event nobody hooked runs nothing, and firing a name that was never added creates that event and logs a line. :cite[(`zombie/Lua/LuaEventManager.java:234-242`)] Run `AddEvent` at file scope so it is made again after every Lua reset, because a reset clears all events. :cite[(`zombie/Lua/LuaEventManager.java:885-892`)]
 
-### Time
-- `Events.EveryOneMinute()`, `Events.EveryTenMinutes()`, `Events.EveryHours()`, `Events.EveryDays()` — in-game clock ticks.
-- `Events.OnTick()`, `Events.OnRenderTick()` — per game tick / per render frame.
+## 5. Hooks are a second table
 
-### Player / character
-- `Events.OnCreatePlayer(playerNum:integer, player:IsoPlayer)` — local player loads into the world.
-- `Events.OnNewGame(player, square)` — first-time character creation.
-- `Events.OnPlayerUpdate(player)` — per tick, per local player.
-- `Events.OnPlayerMove(player)`.
-- `Events.OnPlayerDeath(player)` / `Events.OnCharacterDeath(character:IsoGameCharacter)` (latter covers players, zombies, animals).
-- `Events.OnCreateLivingCharacter(character:IsoLivingCharacter, desc:SurvivorDesc)`.
+**Eight names live on a separate `Hook` table, with the same `Add` and `Remove`.**
 
-### Combat / damage / XP
-- `Events.OnHitZombie(zombie:IsoZombie, attacker:IsoGameCharacter, bodyPart:BodyPartType, weapon:HandWeapon)`.
-- `Events.OnWeaponSwing`, `Events.OnWeaponSwingHitPoint`, `Events.OnWeaponHitCharacter(attacker, target, weapon, damage)`, `Events.OnWeaponHitTree`, `Events.OnWeaponHitXp`.
-- `Events.OnPlayerGetDamage`.
-- `Events.AddXP(character:IsoGameCharacter, perk:PerkFactory.Perk, amount:float)`.
-- `Events.LevelPerk(character, perk, level:integer, increased:boolean)`.
+The hook manager registers each of them with one call, in one method. :cite[(`zombie/Lua/LuaHookManager.java:128-136`)]
 
-### Inventory / equipment / context menus
-- `Events.OnEquipPrimary(character, item:InventoryItem)` / `Events.OnEquipSecondary(...)`.
-- `Events.OnClothingUpdated(character)`.
-- `Events.OnFillInventoryObjectContextMenu(playerNum:integer, context:ISContextMenu, items:table)`.
-- `Events.OnFillWorldObjectContextMenu(playerNum:integer, context:ISContextMenu, worldobjects:table, test:boolean)`.
-- `Events.OnFillInventoryContextMenuNoItems(playerNum, context, isLoot:boolean)`.
-- `Events.OnFillContainer(roomType:string, containerType:string, container:ItemContainer)` — loot distribution hook.
+:::chips
+- `AutoDrink`
+- `UseItem`
+- `Attack`
+- `CalculateStats`
+- `ContextualAction`
+- `WeaponHitCharacter`
+- `WeaponSwing`
+- `WeaponSwingHitPoint`
+:::
 
-### World / objects
-- `Events.OnInitWorld()`.
-- `Events.LoadGridsquare(square:IsoGridSquare)` — after a square loads (note the name; some docs also list `OnLoadGridsquare`).
-- `Events.OnObjectAdded`, `Events.OnObjectAboutToBeRemoved`.
-- `Events.OnContainerUpdate(object)` — container added/removed from world.
-- `Events.OnDestroyIsoThumpable(object:IsoThumpable)`.
-- `Events.OnGridBurnt(square)`, `Events.OnNewFire`.
-- `Events.OnWaterAmountChange` — fluid/water level change (relevant to B42 fluids).
+Vanilla hooks one with `Hook.Attack.Add(...)`. :cite[(`media/lua/shared/TimedActions/ISReloadWeaponAction.lua:544`)] The new-system hooks are on [Hooks for new B42 systems](/pz/build-42/modding/lua-api/hooks-for-new-b42-systems).
 
-### Multiplayer / ModData sync (see [Section 8](/pz/build-42/modding/lua-api/lua-api-and-engine-overview) and [Section 9](/pz/build-42/modding/lua-api/lua-api-and-engine-overview))
-- `Events.OnClientCommand(module:string, command:string, player:IsoPlayer, args:table)` — **server-side**, receives client commands. **[CONFIRMED — pzwiki Networking, revid 1436101]**
-- `Events.OnServerCommand(module:string, command:string, args:table)` — **client-side**, receives server commands. **[CONFIRMED — pzwiki Networking, revid 1436101]**
-- `Events.OnReceiveGlobalModData(key:string, modData:table)` — intercepts a `ModData.transmit(...)` payload. **[CONFIRMED — pzwiki Mod data, revid 1317225]**
-- `Events.OnConnected()`, `Events.OnConnectFailed(message:string)`, `Events.OnConnectionStateChanged(...)`, `Events.OnDisconnect()`.
-- `Events.OnAddMessage(message:ChatMessage, tabId:short)` — chat.
+:::callout[How we know]{kind=proof}
+Read from the 42.22 decompiled Java and the vanilla Lua; no game was run. The 263 comes from counting the `AddEvent("...")` calls in `AddEvents`.
 
-### Climate / weather (expanded in B42)
-- `Events.OnClimateManagerInit(climateManager:ClimateManager)`, `Events.OnClimateTick(climateManager)`.
-- `Events.OnWeatherPeriodStart/Stage/Complete`, `Events.OnThunderEvent`.
-- `Events.OnInitModdedWeatherStage(...)`, `Events.OnUpdateModdedWeatherStage(...)` — **new B42 modded-weather hooks**.
-- `Events.OnInitSeasons(season:ErosionSeason)`.
+Corrected from the 42.21 page: it quoted "400+ events" from a third-party stub list for 42.13, which 42.22 does not match, and it listed `OnLoadGridsquare` as an alternative name; no such event exists at 42.22, only `LoadGridsquare`.
 
-### Zombies / AI, Foraging, Controller, Crafting
-- `Events.OnZombieCreate/Dead/Update`, `Events.OnAIStateChange(character, currentState:State, previousState:State)`.
-- `Events.onEnableSearchMode`/`onDisableSearchMode`/`onToggleSearchMode`, `Events.onAddForageDefs`, `Events.preAddForageDefs`, `Events.onFillSearchIconContextMenu` — reworked B42 foraging/search.
-- `Events.OnGamepadConnect/Disconnect`, `Events.OnJoypad*` and `Before*` variants; new `OnDoTileBuilding2` (KB/mouse build cursor) vs `OnDoTileBuilding3` (controller build cursor) split.
-- `Events.OnDynamicMovableRecipe(sprite:string, recipe:MoveableRecipe, item:Moveable, character:IsoGameCharacter)` — movable scrapping recipe.
-
-> **B42 event caveat:** event **names are largely stable** from B41, but some handler **argument lists changed** and a number of new events were added. If an old handler misbehaves, check the arg signature against PZEventStubs / LuaDocs rather than assuming the B41 order. **[LIKELY]**
-
----
-
-<a name="7-globals"></a>
+Dropped as unverifiable: the claim that handler argument lists changed from Build 41. Not verified: which side fires `OnPlayerUpdate` and the combat events, and whether the 8 hooks pass the arguments their names suggest.
+:::

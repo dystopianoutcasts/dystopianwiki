@@ -13,86 +13,122 @@ tags:
   - moddata
   - timed-actions
   - multiplayer
-excerpt: 'Which folders load in which mode (canonical table from the wiki):'
-last_updated: '2026-10-04'
+excerpt: >-
+  In Build 42.22, which of the client, server and shared Lua folders run in single player, on a multiplayer client and on a dedicated server, and the order the files run in.
+last_updated: '2026-11-16'
 related_articles:
-  - tl-dr-the-5-things-that-will-break-your-b41-mod
-  - b42-status-and-versioning
+  - lua-folder-load-order
   - the-b42-mod-folder-model
-  - registries-lua-the-new-b42-13-identifier-system
   - the-events-system
   - key-globals-and-classes
-  - moddata
   - multiplayer-command-patterns
-  - timed-actions
-  - ui
-  - engine-internals-calling-exposed-java-from-lua
-  - b41-b42-breaking-changes
-  - hooks-for-new-b42-systems
-  - debugging-lua-in-b42
-  - recommended-tooling
+  - when-lua-reloads-leaving-a-game-and-resets
 ---
-# Lua load order and the three lua folders  [CONFIRMED — pzwiki Lua (API), revid 1390433]
+::field-notes
 
-> Source: 03_LUA_API_AND_ENGINE.md (compiled 2026-07-29, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-16.
 
-**Which folders load in which mode** (canonical table from the wiki):
+**Who this page is for:** modders who write Lua for Build 42. The short beginner version is [Lua folder load order](/pz/build-42/modding/foundations/lua-folder-load-order). This page adds the table per mode, the guards, `require`, and what happens when a mod file has the same path as a vanilla file.
 
-| Folder | Singleplayer | MP client side | MP server side |
-|---|:---:|:---:|:---:|
-| `client` | yes | yes | **no** |
-| `server` | yes | yes | yes |
-| `shared` | yes | yes | yes |
+:::callout[The 1-minute version]{kind=key}
+- `shared` and `client` load when the game starts. `server` loads when a world starts, and it loads in single player and on a multiplayer client as well as on a dedicated server.
+- A dedicated server adds the `client` files to the network checksum and does not run them, so `client/` is the one folder a dedicated server never executes.
+- Because `server/` also runs on a multiplayer client, a server file that must run only on the server starts with `if isClient() then return end`.
+- Inside one folder, vanilla's files run first, then each mod's files in mod-list order, and each list is sorted by lower-case path. So `A_Thing.lua` runs before `B_Thing.lua`, whatever depends on what.
+- A mod file at the same path as a vanilla file runs once, in vanilla's slot, and the mod's copy is the one that runs.
+- Do not call into another file at file scope. Wait for an event, or load the file with `require` first.
+:::
 
-So `client/` is the **only** folder that never executes on a dedicated server. Any authoritative or MP-relevant logic must live in `shared/` or `server/`. This did not change from B41 but remains the most common MP mistake. **[CONFIRMED]**
+:::facts
+- **Lua folders** 3: `client`, `server`, `shared`
+- **Dedicated server** `shared` runs, `client` is checksummed only, `server` runs
+- **Sort** each folder's list by lower-case path, with a case-insensitive compare
+- **Guards** `isClient()` is true only on a multiplayer client, `isServer()` only on a dedicated server
+:::
 
-**Exact load sequence** (corrected — the wiki interleaves vanilla and mod files per stage, and `server/` is deferred until a save loads):
+## 1. Which folders run in which mode
 
-1. Shared — **vanilla** files
-2. Shared — **mod** files
-3. Client — **vanilla** files
-4. Client — **mod** files
+**Single player and a multiplayer client run all three folders, and a dedicated server runs `shared` and `server` only.**
 
-The `server/` subfolder is loaded **only when a save is actually launched** (not at the main menu); whenever Lua is loaded/reloaded, server files are unloaded until a save is loaded. When a save loads:
+| Folder | Single player | Multiplayer client | Dedicated server | Code |
+|---|:---:|:---:|:---:|---|
+| `client` | runs | runs | checksum only | :cite[(`zombie/Lua/LuaManager.java:1253-1257`, `zombie/network/GameServer.java:1518`, `zombie/Lua/LuaManager.java:1214-1216`)] |
+| `server` | runs | runs | runs | :cite[(`zombie/gameStates/GameLoadingState.java:155-156`, `zombie/network/GameServer.java:1519`)] |
+| `shared` | runs | runs | runs | :cite[(`zombie/Lua/LuaManager.java:1253-1256`, `zombie/network/GameServer.java:1517`)] |
 
-5. Server — **vanilla** files
-6. Server — **mod** files
+The game start loads `shared` and then `client`. :cite[(`zombie/Lua/LuaManager.java:1253-1257`)] The `server` folder is loaded later, by the loading screen of a world, and that call does not test whether the game is a multiplayer client. :cite[(`zombie/gameStates/GameLoadingState.java:155-156`)]
 
-Within each stage the order **is alphabetical**, and we have the crash to prove it. The engine collects vanilla's files and sorts them by path, ignoring case; then, for each mod in turn, it collects that mod's files and sorts them the same way. So inside your mod, `shared/MyMod/A_Thing.lua` runs before `shared/MyMod/B_Thing.lua`, whatever depends on what. A file-scope call into a module whose file sorts later finds `nil`: one of our mods failed to load for every player because `OCP_Contract.lua` called into `OCP_Log` at file scope, and `OCP_Contract` sorts first. Never call into another file at file scope; resolve the dependency inside an event handler, or `require` it explicitly.
+A dedicated server has no start-up screen, so it loads all three in one go, with the `client` call flagged as checksum-only. :cite[(`zombie/network/GameServer.java:1517-1519`)] With that flag the file is added to the checksum and the call that runs it is skipped. :cite[(`zombie/Lua/LuaManager.java:1214-1223`)] Anything that must hold in multiplayer therefore lives in `shared` or `server`.
 
-> **Proof:** Code. `zombie.Lua.LuaManager#LoadDirBase(String, boolean)` sorts each list with `Collections.sort(..., String.CASE_INSENSITIVE_ORDER)`, vanilla first, then each mod. Build 42.21.0 (revision 4a0e9546ec).
+## 2. The load sequence
 
-**A mod file with the same path as a vanilla file replaces it, and runs in vanilla's place.** The order above is a list of relative paths (`media/lua/client/ISUI/ISInventoryPane.lua`, for example), and each path runs once. When your mod ships a file at a path vanilla also has, the game runs your file instead of vanilla's, at vanilla's turn: early, among the vanilla files, before every other mod file. When your mod's own turn comes, that path has already run and is skipped. So an override file cannot rely on anything from other mods, or from vanilla files that sort after it, at file scope. The same goes for two mods shipping one path: only the copy from the mod loaded last runs, at the turn of the first one that has it.
+**Lua loads in two steps: `shared` then `client` at game start, and `server` when a world starts.**
 
-> **Proof:** Code. `zombie.Lua.LuaManager#LoadDirBase(String, boolean)` (vanilla's relative paths, then each mod's, in one list; a `HashSet` named `done` runs each path once; each path is resolved with `ZomboidFileSystem#getAbsolutePath`); `zombie.ZomboidFileSystem#getAbsolutePath` (looks the path up in `activeFileMap`) and `#loadMod` (puts each mod file into `activeFileMap` over any earlier entry, logging `mod "<id>" overrides <path>`). Build 42.21.0 (revision 4a0e9546ec).
+:::flow[Single player and a multiplayer client]
+- Registries file, then scripts
+- `shared`: vanilla files, then mod files
+- `client`: vanilla files, then mod files
+- Main menu
+- A world starts: `server`, vanilla files then mod files
+:::
 
-**Cross-mod load order** is controlled by the order of ids in `Mods=` (and the workshop load-order tools). If mod B depends on mod A's shared tables, A must load first. **[CONFIRMED]**
+The registries file and the scripts load before any Lua. :cite[(`zombie/GameWindow.java:208-210`, `zombie/GameWindow.java:986-989`)]
 
-**Client/server/singleplayer guards.** The wiki documents a canonical way to skip a whole file (or block) based on environment — place at the very top of a file:
+When Lua is reloaded (a mod list change, leaving a game), the server files go with the rest of the Lua environment and come back only when a world loads again. :cite[(`zombie/Lua/LuaManager.java:1087-1119`, `zombie/core/Core.java:3508`, `zombie/core/Core.java:3547`)] What causes a reload is on [When your Lua reloads](/pz/build-42/modding/lua-api/when-lua-reloads-leaving-a-game-and-resets).
+
+## 3. The order inside a folder
+
+**Within one folder the game runs vanilla's files first, then each mod's files, and each list is sorted by lower-case path.**
+
+The loader collects vanilla's files for the folder and sorts them with a case-insensitive compare. :cite[(`zombie/Lua/LuaManager.java:1200`)] It then walks the mods in the order of the game's mod list, collects each mod's files (its `common` folder and its version folder together) and sorts that list the same way. :cite[(`zombie/Lua/LuaManager.java:1159-1196`)] The mod lists are appended after vanilla's. :cite[(`zombie/Lua/LuaManager.java:1200-1202`)]
+
+Every path is made lower case before it is stored, so the sort compares lower-case paths. :cite[(`zombie/Lua/LuaManager.java:1266-1269`)] Inside your mod, `shared/MyMod/A_Thing.lua` runs before `shared/MyMod/B_Thing.lua`.
+
+On a dedicated server the mod list is the server's `Mods=` line, and a client uses the list the server sends. :cite[(`zombie/network/GameServer.java:667-674`, `zombie/network/GameServer.java:1463`, `zombie/ZomboidFileSystem.java:759-763`)] A mod that names another in `require=` is placed after it. :cite[(`zombie/ZomboidFileSystem.java:826-852`)] If mod B needs mod A's shared tables, give B a `require=` for A. The fields are in [mod.info fields](/pz/build-42/modding/foundations/mod-info-fields-and-the-versioning-compatibility-system).
+
+## 4. A mod file at a vanilla path replaces it
+
+**A mod file with the same relative path as a vanilla file runs once, at vanilla's turn, and it is the mod's copy that runs.**
+
+Each relative path, such as `media/lua/client/ISUI/ISInventoryPane.lua`, runs once, because a set of paths already run skips the repeat. :cite[(`zombie/Lua/LuaManager.java:1204-1217`)] The path is then turned into a file by a lookup that holds the last mod's copy for that path. :cite[(`zombie/ZomboidFileSystem.java:382-385`, `zombie/ZomboidFileSystem.java:656-695`)] The mod loader logs `mod "<id>" overrides <path>` when it replaces an entry. :cite[(`zombie/ZomboidFileSystem.java:673`, `zombie/ZomboidFileSystem.java:690`)]
+
+So an override file runs early, among vanilla's files, before every other mod file. At file scope it cannot rely on other mods, or on vanilla files that sort after it. When two mods ship the same path, the copy from the mod loaded last is the one that runs, at the turn of the first one that has the path.
+
+Nest your own Lua in a folder named after your mod (`media/lua/shared/MyMod/foo.lua`, where `shared/` is the Lua folder), so your paths never meet vanilla's.
+
+## 5. File scope and `require`
+
+**A file runs from top to bottom as it loads, so a call into another file works only if that file has already run.**
+
+The call `require("Name")` runs the file it finds in the Lua folders registered so far, searched in the order they were registered, and a file runs once however often it is required. :cite[(`zombie/Lua/LuaManager.java:5711-5727`, `zombie/Lua/LuaManager.java:1357-1359`)] Each folder is registered when its load starts, so a `shared` file cannot `require` a `client` file while Lua first loads. :cite[(`zombie/Lua/LuaManager.java:1145-1148`)] A failed `require` logs a warning and returns nothing. :cite[(`zombie/Lua/LuaManager.java:5725-5726`)]
+
+Two patterns are safe. Require a file you depend on from a folder that loads earlier or at the same time, or resolve the dependency inside an event handler such as `OnGameStart`, when every file has run.
+
+## 6. Guards for client, server and single player
+
+**Put one line at the top of a file to skip it in the modes it is not for.**
+
+`isClient()` is true on a multiplayer client, `isServer()` is true on a dedicated server, and both are false in single player. :cite[(`zombie/Lua/LuaManager.java:4415-4437`)] `isMultiplayer()` is true when either is. :cite[(`zombie/Lua/LuaManager.java:4439-4445`)]
+
 ```lua
--- load only on server side or in singleplayer (skip on MP client)
+-- run on the server and in single player (skip on a multiplayer client)
 if isClient() then return end
 
--- load only on client side or in singleplayer (skip on MP server)
+-- run on a client and in single player (skip on a dedicated server)
 if isServer() then return end
 
--- load only on MP client (not singleplayer)
+-- run only on a multiplayer client
 if not isClient() then return end
 
--- load only on MP server (not singleplayer)
+-- run only on a dedicated server
 if not isServer() then return end
 
--- load only in singleplayer
-if isClient() or isServer() then return end
+-- run only in single player
+if isMultiplayer() then return end
 ```
-`isSinglePlayer()` is not a built-in; the wiki's helper is `return not isClient() and not isServer()`. **[CONFIRMED — pzwiki Networking, revid 1436101]**
 
----
+There is no global `isSinglePlayer()`; use `not isMultiplayer()`. :cite[(`api/lua_globals.jsonl`)] Vanilla's own server files start with `if isClient() then return end`. :cite[(`media/lua/server/ClientCommands.lua:1`)] Do not use `isServer()` to mean "not a client": it is false in single player.
 
-<a name="5-registries"></a>
-
----
-
-*Corrected 2026-10-04: files load alphabetically within each lua folder (LoadDirBase sorts by path, ignoring case); this is confirmed, not uncertain.*
-
-*Updated 2026-10-04: a mod file with the same path as a vanilla file replaces it and runs at vanilla's turn; the mod's own turn skips it.*
+:::callout[How we know]{kind=proof}
+Read from the 42.22 decompiled Java and the vanilla Lua; no game was run. Not verified: how a hosted game (a server process that the host also joins as a client) loads its folders; that is in [Who owns what](/pz/build-42/engine/networking-and-packets/who-owns-what). The 42.21 page told of a mod that failed for every player because a file called into a later-sorting file at file scope; that story could not be checked and is dropped, and the sort rule above is read from the code.
+:::

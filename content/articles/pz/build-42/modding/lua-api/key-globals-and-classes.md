@@ -14,65 +14,114 @@ tags:
   - timed-actions
   - multiplayer
 excerpt: >-
-  The global functions below are defined by LuaManager.GlobalObject and are
-  exposed as bare Lua globals (not as SomeClass.method). The wiki confirms this
-  special exposure and shows getPlayer() /...
-last_updated: '2026-09-29'
+  The global functions and Java classes a Build 42.22 Lua mod uses most, what each returns, which side it works on, and three classes older notes list that are no longer exposed.
+last_updated: '2026-11-16'
 related_articles:
-  - tl-dr-the-5-things-that-will-break-your-b41-mod
-  - b42-status-and-versioning
-  - the-b42-mod-folder-model
-  - lua-load-order-and-the-three-lua-folders
-  - registries-lua-the-new-b42-13-identifier-system
   - the-events-system
   - moddata
   - multiplayer-command-patterns
-  - timed-actions
-  - ui
+  - lua-load-order-and-the-three-lua-folders
   - engine-internals-calling-exposed-java-from-lua
-  - b41-b42-breaking-changes
-  - hooks-for-new-b42-systems
-  - debugging-lua-in-b42
-  - recommended-tooling
 ---
-# Key globals and classes  [Bridge mechanism CONFIRMED — pzwiki Lua (API), revid 1390433; full method signatures remain a gap]
+::field-notes
 
-> Source: 03_LUA_API_AND_ENGINE.md (compiled 2026-07-29, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-16.
 
-The global functions below are defined by **`LuaManager.GlobalObject`** and are exposed as bare Lua globals (not as `SomeClass.method`). The wiki confirms this special exposure and shows `getPlayer()` / `getCell()` as canonical examples. **[CONFIRMED — pzwiki Lua (API), revid 1390433]**
+**Who this page is for:** modders who write Lua for Build 42 and want the everyday calls in one table. The map of the section is [Lua API and engine reference](/pz/build-42/modding/lua-api/lua-api-and-engine-overview). How a Java method is called from Lua is on [Engine internals](/pz/build-42/modding/lua-api/engine-internals-calling-exposed-java-from-lua).
 
-| Global | Returns / purpose |
-|---|---|
-| `getPlayer()` | The single local player (SP or the client's own player). **Can return `nil`** (e.g. when the player is dead) — always nil-check. Cache it outside loops. **[CONFIRMED nil-return — pzwiki EmmyLua, revid 1388079]** |
-| `getSpecificPlayer(n)` | Player by local index `n` (0-based); used for splitscreen and by many context-menu callbacks. **[CONFIRMED still present]** |
-| `getPlayerByOnlineID(id)` | Resolve an `IsoPlayer` from its network `onlineID` (server-side player lookup for commands). **[CONFIRMED — pzwiki Networking, revid 1436101]** |
-| `getWorld()` | The `World` singleton (sandbox options, map name, etc.). |
-| `getCell()` | The current `IsoCell` (grid squares, objects). |
-| `getGameTime()` | The live `GameTime` **instance**. NOTE: `GameTime.instance` (accessed statically from Lua) is **not** the same object and carries the class defaults — use `getGameTime()` for real time/date. **[CONFIRMED — pzwiki Game time, revid 1388773]** |
-| `getSandboxOptions()` | Sandbox var access. |
-| `ModData.getOrCreate(key)` | Persistent global ModData (see [Section 8](/pz/build-42/modding/lua-api/lua-api-and-engine-overview)). |
-| `sendClientCommand(...)` / `sendServerCommand(...)` | MP command RPC (see [Section 9](/pz/build-42/modding/lua-api/lua-api-and-engine-overview)). |
-| `ZombRand(n)` | Engine RNG (use instead of `math.random` for determinism/MP). |
-| `instanceof(obj, "ClassName")` | Runtime type check for Java objects. |
-| `isClient()` / `isServer()` / `isAdmin()` | Environment + admin checks (see [Section 9](/pz/build-42/modding/lua-api/lua-api-and-engine-overview)). **[CONFIRMED — pzwiki Networking, revid 1436101]** |
+:::callout[The 1-minute version]{kind=key}
+- The engine adds global functions to Lua, such as `getPlayer()`, `getCell()` and `isClient()`. You call them bare, not as `SomeClass.method`.
+- `getPlayer()` returns the local player and can return `nil`, for example at the main menu, so check it. `getSpecificPlayer(n)` takes a 0-based slot, for split screen.
+- Some globals work on one side only: `isAdmin()` and the global `getAccessLevel()` are client calls, and `sendServerCommand` and `syncPlayerStats` act only on a server.
+- `getGameTime()` and `GameTime.instance` are the same object at 42.22. The accessor for global mod data is `ModData.getOrCreate("key")`; `getGameModData()` does not exist.
+- `IsoLivingCharacter`, `InventoryItemFactory` and `Random` are not exposed to Lua at 42.22. Use `instanceItem("Base.Axe")` to make an item.
+:::
 
-> **Correction:** earlier notes listed `getGameModData()` as the global-ModData accessor. The pzwiki-canonical accessor is **`ModData.getOrCreate("key")`** (from the `zombie.world.moddata.ModData` class). Use that. `getGameModData()` is not documented on the current pzwiki ModData page. **[CONFIRMED — pzwiki Mod data, revid 1317225]**
+:::facts
+- **Global function names** 725 (757 declarations, counting each overload)
+- **Classes in the list below** 21, all exposed
+- **`ZombRand(n)`** a whole number from 0 up to `n - 1`
+:::
 
-**Key Java classes exposed to Lua** (the wiki's `Java object` index lists these as usable from the API — **[CONFIRMED present — pzwiki Java object, revid 1389755]**): `IsoPlayer`, `IsoGameCharacter`, `IsoLivingCharacter`, `IsoZombie`, `IsoAnimal`, `IsoMovingObject`, `IsoGridSquare`, `IsoCell`, `IsoChunk`, `IsoBuilding`, `IsoRoom`, `IsoDeadBody`, `IsoLightSource`, `InventoryItem`, `InventoryItemFactory`, `ItemContainer`, `ItemVisual(s)`, `HumanVisual`, `ClimateManager`, `CharacterActionAnims`, `Stats`, `ArrayList`, `Random`.
+## 1. The globals you will use most
 
-**Class hierarchy matters.** Every exposed class is a subclass of another and inherits its parents' public methods/fields. Example chain the wiki gives for `IsoZombie`:
-```
-java.lang.Object
-└── zombie.entity.GameEntity
-    └── zombie.iso.IsoObject
-        └── zombie.iso.IsoMovingObject
-            └── zombie.characters.IsoGameCharacter
-                └── zombie.characters.IsoZombie
-```
-When hunting for a method, walk up the parent chain in the JavaDocs. **[CONFIRMED — pzwiki Lua (API), revid 1390433]**
+**The engine adds each global function to Lua from one class, and the table lists the common ones with what they return.**
 
-> **[UNCERTAIN]** No accessible source enumerates the full B42 *method signatures* for these classes. The authoritative references are the **Unofficial JavaDocs (Build 42)**, the alternative `geromet.github.io/PZJavaDocs` (Build 42.15) source viewer, and demiurgeQuantified's LuaDocs. Reading the game's own `media/lua/` for real usage remains the community consensus ("official docs are sparse; read the code").
+The globals are the methods of `LuaManager.GlobalObject` marked as global, 725 names in all. :cite[(`zombie/Lua/LuaManager.java:3896-3904`)] The count is of distinct names, because 757 declarations include overloads.
 
----
+| Global | Returns or does | Code |
+|---|---|---|
+| `getPlayer()` | The current player instance. It is `nil` when none is set, for example at the main menu, so check it. | :cite[(`zombie/Lua/LuaManager.java:3899-3904`, `zombie/characters/IsoPlayer.java:843-845`, `zombie/gameStates/IngameState.java:984`)] |
+| `getSpecificPlayer(n)` | The player in local slot `n` (0-based), read straight from the player array. | :cite[(`zombie/Lua/LuaManager.java:4190-4195`)] |
+| `getPlayerByOnlineID(id)` | The player with that network id (the `onlineID`) from the server's or the client's own id map, and `nil` in single player. | :cite[(`zombie/Lua/LuaManager.java:3963-3971`)] |
+| `getWorld()` | The `IsoWorld`. | :cite[(`zombie/Lua/LuaManager.java:5787-5792`)] |
+| `getCell()` | The world's current `IsoCell`. | :cite[(`zombie/Lua/LuaManager.java:5795-5800`)] |
+| `getGameTime()` | The `GameTime` instance, the same object as `GameTime.instance`. | :cite[(`zombie/Lua/LuaManager.java:5738-5743`, `zombie/GameTime.java:76`)] |
+| `getSandboxOptions()` | The sandbox options object. | :cite[(`zombie/Lua/LuaManager.java:5843-5848`)] |
+| `ModData.getOrCreate(key)` | The global mod data table for the key, made empty if missing. `ModData` is the class `zombie.world.moddata.ModData`. See [ModData](/pz/build-42/modding/lua-api/moddata). | :cite[(`zombie/world/moddata/ModData.java:27-29`)] |
+| `sendClientCommand(...)`, `sendServerCommand(...)` | The command calls. See [Multiplayer command patterns](/pz/build-42/modding/lua-api/multiplayer-command-patterns). | :cite[(`zombie/Lua/LuaManager.java:8863-8916`)] |
+| `ZombRand(n)` | A whole number from 0 up to `n - 1`, and 0 when `n` is 0. `ZombRand(min, max)` takes two bounds. | :cite[(`zombie/Lua/LuaManager.java:7007-7015`, `zombie/Lua/LuaManager.java:7027-7033`, `zombie/core/random/RandAbstract.java:22-31`)] |
+| `instanceof(obj, "ClassName")` | True when the object is an instance of that exposed class, and false for `nil`. | :cite[(`zombie/Lua/LuaManager.java:2981-2989`)] |
+| `isClient()`, `isServer()`, `isMultiplayer()` | The mode checks. See [Lua load order](/pz/build-42/modding/lua-api/lua-load-order-and-the-three-lua-folders#6-guards-for-client-server-and-single-player). | :cite[(`zombie/Lua/LuaManager.java:4415-4445`)] |
+| `isAdmin()` | True only on a client whose role is the default admin role. It is false on a server. | :cite[(`zombie/Lua/LuaManager.java:8979-8984`)] |
+| `instanceItem(type)` | A new inventory item of that type, for example `instanceItem("Base.Axe")`. | :cite[(`zombie/Lua/LuaManager.java:5632-5666`)] |
 
-<a name="8-moddata"></a>
+`getGameTime()` returns `GameTime.instance`, so the two are the same object. The 42.21 page said `GameTime.instance` from Lua is a different object that carries class defaults; the code does not show that. :cite[(`zombie/Lua/LuaManager.java:5738-5743`)]
+
+The 42.21 page also named `getGameModData()` as an older accessor. There is no global with that name at 42.22. :cite[(`api/lua_globals.jsonl`)]
+
+## 2. Which side each call works on
+
+**A global may exist on every side and still do something on only one.**
+
+`getPlayer()` and `getSpecificPlayer(n)` hand back local players, so they are for client and single-player code. :cite[(`zombie/Lua/LuaManager.java:3899-3904`, `zombie/Lua/LuaManager.java:4190-4195`)] `getPlayerByOnlineID` resolves in the id map of whichever side calls it. :cite[(`zombie/Lua/LuaManager.java:3963-3971`)]
+
+`isAdmin()` and the global `getAccessLevel()` read the client's own connection and role, so a server asks `player:getRole():hasCapability(...)` instead. :cite[(`zombie/Lua/LuaManager.java:4457-4462`, `zombie/Lua/LuaManager.java:8979-8984`, `media/lua/server/ClientCommands.lua:11`)] `syncPlayerStats(player, syncParams)` acts only on a server. :cite[(`zombie/Lua/LuaManager.java:11894-11900`)]
+
+## 3. Classes exposed to Lua
+
+**Lua can see only the Java classes the engine exposes, and 21 of the common ones are exposed at 42.22.**
+
+:::chips
+- `IsoPlayer`
+- `IsoGameCharacter`
+- `IsoZombie`
+- `IsoAnimal`
+- `IsoMovingObject`
+- `IsoGridSquare`
+- `IsoCell`
+- `IsoChunk`
+- `IsoBuilding`
+- `IsoRoom`
+- `IsoDeadBody`
+- `IsoLightSource`
+- `InventoryItem`
+- `ItemContainer`
+- `ItemVisual`
+- `ItemVisuals`
+- `HumanVisual`
+- `ClimateManager`
+- `CharacterActionAnims`
+- `Stats`
+- `ArrayList`
+:::
+
+The loader marks each class with `setExposed` in one method, and the capture's class index lists every class it exposes. :cite[(`zombie/Lua/LuaManager.java:1700-1713`, `api/lua_exposed.jsonl`)] Three names in the 42.21 list are not exposed at 42.22: `IsoLivingCharacter`, `InventoryItemFactory` and `Random`. A global replaces the factory: `instanceItem` calls it for you. :cite[(`zombie/Lua/LuaManager.java:5632-5666`)]
+
+The classes form chains, and the wiki's advice is that a Lua call on an object finds its parents' public methods too; how the exposing code does that was not read. The chain for a zombie is `GameEntity`, `IsoObject`, `IsoMovingObject`, `IsoGameCharacter`, `IsoZombie`. :cite[(`zombie/entity/GameEntity.java:55`, `zombie/iso/IsoObject.java:181`, `zombie/iso/IsoMovingObject.java:97`, `zombie/characters/IsoGameCharacter.java:366-367`, `zombie/characters/IsoZombie.java:190`)] The chain for a player is `IsoLivingCharacter`, then `IsoPlayer`, and an `IsoAnimal` extends `IsoPlayer`. :cite[(`zombie/characters/IsoLivingCharacter.java:22`, `zombie/characters/IsoPlayer.java:278`, `zombie/characters/animals/IsoAnimal.java:131`)]
+
+When you look for a method, check the parent classes as well. An `IsoAnimal` is also an `IsoPlayer`, so a check such as `instanceof(obj, "IsoPlayer")` is true for an animal. :cite[(`zombie/characters/animals/IsoAnimal.java:131`, `zombie/Lua/LuaManager.java:2981-2989`)]
+
+## 4. Finding a method name
+
+**The game's own Lua is the reference that is always right for the build you run.**
+
+Search `media/lua/` for a class you want to use and copy how vanilla calls it. A call from Lua into Java is described on [Engine internals](/pz/build-42/modding/lua-api/engine-internals-calling-exposed-java-from-lua).
+
+:::callout[How we know]{kind=proof}
+Read from the 42.22 decompiled Java and the vanilla Lua; no game was run.
+
+The 725 is a count of distinct `name` values in `@LuaMethod(... global = true)` annotations in `LuaManager.java`, counted by a script that was run once and deleted.
+
+Dropped from the 42.21 page: the advice to use `ZombRand` instead of `math.random` for determinism, the `World` row, and the third-party doc sites. Corrected from the 42.21 page: `getGameTime()` versus `GameTime.instance`, the three unexposed class names, and the claim that `getPlayer()` is nil when the player is dead (the code shows nil when no instance is set; the dead case was not checked). Not verified: that an exposed class lets Lua call its parents' methods (the exposing code is in the Kahlua jar), and the third-party JavaDoc and LuaDoc sites the 42.21 page recommended.
+:::
