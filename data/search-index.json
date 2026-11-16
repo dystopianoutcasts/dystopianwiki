@@ -8885,7 +8885,7 @@
   },
   {
     "id": "build-42-admin-commands",
-    "title": "Admin commands (Build 42.21)",
+    "title": "Admin commands (Build 42.22)",
     "slug": "admin-commands",
     "url": "/pz/build-42/server/admin-commands/admin-commands",
     "version": "build-42",
@@ -8897,7 +8897,7 @@
       "commands",
       "generated"
     ],
-    "excerpt": "All 67 Build 42.21 server commands: their forms, the capability each needs, the roles that have it, and the game's help text.",
+    "excerpt": "All 67 Build 42.22 server commands: their forms, the capability each needs, the roles that have it, and the game's help text.",
     "difficulty": "beginner"
   },
   {
@@ -8914,7 +8914,7 @@
       "admin",
       "logs"
     ],
-    "excerpt": "Where a Build 42.21 server keeps its numbers: the statistics period, who may see the statistics, the /stats command, and the perk and action logs. What the numbers mean is in our separate article.",
+    "excerpt": "Where a Build 42.22 server keeps its numbers: the statistics period, who may see the statistics, the /stats command, and the perk and action logs. What the numbers mean is in our separate article.",
     "difficulty": "beginner"
   },
   {
@@ -8931,12 +8931,12 @@
       "sandbox-options",
       "admin"
     ],
-    "excerpt": "The Outcast server owner's handbook for Build 42.21: your server's files, every server option, sandbox option, admin command and role, what surprised us in the code, and how these pages are made.",
+    "excerpt": "The server owner's handbook for Build 42.22: your server's files, every option, command and role, the things in the code that surprised us, and how the reference pages are made.",
     "difficulty": "beginner"
   },
   {
     "id": "build-42-server-roles-and-capabilities",
-    "title": "Roles and capabilities (Build 42.21)",
+    "title": "Roles and capabilities (Build 42.22)",
     "slug": "server-roles-and-capabilities",
     "url": "/pz/build-42/server/roles-and-access/server-roles-and-capabilities",
     "version": "build-42",
@@ -8948,12 +8948,12 @@
       "roles",
       "generated"
     ],
-    "excerpt": "The 7 built-in roles of Build 42.21, what each may do, and all 98 capabilities with the commands that need them.",
+    "excerpt": "The 7 built-in roles of Build 42.22, what each may do, and all 98 capabilities with the commands that need them.",
     "difficulty": "beginner"
   },
   {
     "id": "build-42-where-each-capability-is-checked",
-    "title": "Where each capability is checked (Build 42.21)",
+    "title": "Where each capability is checked (Build 42.22)",
     "slug": "where-each-capability-is-checked",
     "url": "/pz/build-42/server/roles-and-access/where-each-capability-is-checked",
     "version": "build-42",
@@ -8966,7 +8966,7 @@
       "reference",
       "generated"
     ],
-    "excerpt": "Every Build 42.21 capability with the Java and Lua code that checks it.",
+    "excerpt": "Every Build 42.22 capability with the Java and Lua code that checks it.",
     "difficulty": "advanced"
   },
   {
@@ -8983,12 +8983,12 @@
       "sandbox",
       "generated"
     ],
-    "excerpt": "Character creation points, injuries, needs, reading, weapons and the XP multipliers for every skill. Every option with its default, the presets that change it, and where Build 42.21 reads it.",
+    "excerpt": "Character creation points, injuries, needs, reading, weapons and the XP multipliers for every skill. Every option with its default, the presets that change it, and where Build 42.22 reads it.",
     "difficulty": "beginner"
   },
   {
     "id": "build-42-sandbox-options-directory",
-    "title": "Sandbox options A to Z (Build 42.21)",
+    "title": "Sandbox options A to Z (Build 42.22)",
     "slug": "sandbox-options-directory",
     "url": "/pz/build-42/server/sandbox-options/sandbox-options-directory",
     "version": "build-42",
@@ -9001,7 +9001,7 @@
       "reference",
       "generated"
     ],
-    "excerpt": "All 269 Build 42.21 sandbox options A to Z, how the SandboxVars file and the presets work, and which options the code never reads.",
+    "excerpt": "All 269 Build 42.22 sandbox options A to Z, how the SandboxVars file and the presets work, and which options the code never reads.",
     "difficulty": "beginner"
   },
   {
@@ -9018,7 +9018,7 @@
       "sandbox",
       "generated"
     ],
-    "excerpt": "How much loot there is, of each kind, how it respawns and how already-looted the world looks as time passes. Every option with its default, the presets that change it, and where Build 42.21 reads it.",
+    "excerpt": "How much loot there is, of each kind, how it respawns and how already-looted the world looks as time passes. Every option with its default, the presets that change it, and where Build 42.22 reads it.",
     "difficulty": "beginner"
   },
   {
@@ -9035,7 +9035,7 @@
       "sandbox",
       "generated"
     ],
-    "excerpt": "The helicopter, distant gunshots and other meta events, generators, annotated maps and the randomised stories in houses, on roads and in zones. Every option with its default, the presets that change it, and where Build 42.21 reads it.",
+    "excerpt": "The helicopter, distant gunshots and other meta events, generators, annotated maps and the randomised stories in houses, on roads and in zones. Every option with its default, the presets that change it, and where Build 42.22 reads it.",
     "difficulty": "beginner"
   },
   {
@@ -9052,7 +9052,7 @@
       "sandbox",
       "generated"
     ],
-    "excerpt": "Farming, foraging, fishing, erosion and the animals. Every option with its default, the presets that change it, and where Build 42.21 reads it.",
+    "excerpt": "Farming, foraging, fishing, erosion and the animals. Every option with its default, the presets that change it, and where Build 42.22 reads it.",
     "difficulty": "beginner"
   },
   {
@@ -9069,7 +9069,7 @@
       "sandbox",
       "generated"
     ],
-    "excerpt": "These sandbox options exist in the code and in the SandboxVars file but on no page of the settings screen, or only in debug mode. Every option with its default, the presets that change it, and where Build 42.21 reads it.",
+    "excerpt": "These sandbox options exist in the code and in the SandboxVars file but on no page of the settings screen, or only in debug mode. Every option with its default, the presets that change it, and where Build 42.22 reads it.",
     "difficulty": "beginner"
   },
   {
@@ -9086,7 +9086,7 @@
       "sandbox",
       "generated"
     ],
-    "excerpt": "When the world starts, how long a day lasts, when the water and power go off, alarms, locked houses, the weather and the look of the world. Every option with its default, the presets that change it, and where Build 42.21 reads it.",
+    "excerpt": "When the world starts, how long a day lasts, when the water and power go off, alarms, locked houses, the weather and the look of the world. Every option with its default, the presets that change it, and where Build 42.22 reads it.",
     "difficulty": "beginner"
   },
   {
@@ -9103,7 +9103,7 @@
       "sandbox",
       "generated"
     ],
-    "excerpt": "How many cars there are, their fuel, condition, locks and alarms, and what a crash does. Every option with its default, the presets that change it, and where Build 42.21 reads it.",
+    "excerpt": "How many cars there are, their fuel, condition, locks and alarms, and what a crash does. Every option with its default, the presets that change it, and where Build 42.22 reads it.",
     "difficulty": "beginner"
   },
   {
@@ -9120,7 +9120,7 @@
       "sandbox",
       "generated"
     ],
-    "excerpt": "How many zombies, how they spread and respawn, and the Zombie Lore: speed, strength, infection, senses and behaviour. Every option with its default, the presets that change it, and where Build 42.21 reads it.",
+    "excerpt": "How many zombies, how they spread and respawn, and the Zombie Lore: speed, strength, infection, senses and behaviour. Every option with its default, the presets that change it, and where Build 42.22 reads it.",
     "difficulty": "beginner"
   },
   {
@@ -9137,7 +9137,7 @@
       "multiplayer",
       "generated"
     ],
-    "excerpt": "Chat, voice, remote control (RCON), the Discord bridge, UPnP, vehicles and the settings screen's \"Other\" page. Every option with its default, range and where Build 42.21 reads it.",
+    "excerpt": "Chat, voice, remote control (RCON), the Discord bridge, UPnP, vehicles and the settings screen's \"Other\" page. Every option with its default, range and where Build 42.22 reads it.",
     "difficulty": "beginner"
   },
   {
@@ -9154,12 +9154,12 @@
       "multiplayer",
       "generated"
     ],
-    "excerpt": "The options on the first pages of the server settings screen: the server's name and port, the password, Steam, and the automatic backups. Every option with its default, range and where Build 42.21 reads it.",
+    "excerpt": "The options on the first pages of the server settings screen: the server's name and port, the password, Steam, and the automatic backups. Every option with its default, range and where Build 42.22 reads it.",
     "difficulty": "beginner"
   },
   {
     "id": "build-42-server-options-directory",
-    "title": "Server options A to Z (Build 42.21)",
+    "title": "Server options A to Z (Build 42.22)",
     "slug": "server-options-directory",
     "url": "/pz/build-42/server/server-options/server-options-directory",
     "version": "build-42",
@@ -9171,7 +9171,7 @@
       "reference",
       "generated"
     ],
-    "excerpt": "All 144 options of the Build 42.21 server ini file, A to Z, with type, default and settings page, and how the game reads the file.",
+    "excerpt": "All 144 options of the Build 42.22 server ini file, A to Z, with type, default and settings page, and how the game reads the file.",
     "difficulty": "beginner"
   },
   {
@@ -9188,7 +9188,7 @@
       "multiplayer",
       "generated"
     ],
-    "excerpt": "These options are in the server's ini file but on no page of the settings screen: anti-cheat, the bad-word filter, spawn points, towing and more. You change them by editing the file, or with `/changeoption`. Every option with its default, range and where Build 42.21 reads it.",
+    "excerpt": "These options are in the server's ini file but on no page of the settings screen: anti-cheat, the bad-word filter, spawn points, towing and more. You change them by editing the file, or with `/changeoption`. Every option with its default, range and where Build 42.22 reads it.",
     "difficulty": "beginner"
   },
   {
@@ -9205,7 +9205,7 @@
       "multiplayer",
       "generated"
     ],
-    "excerpt": "Who can join, how many, what players see of each other, sleeping, respawning, and what admins are shown. Every option with its default, range and where Build 42.21 reads it.",
+    "excerpt": "Who can join, how many, what players see of each other, sleeping, respawning, and what admins are shown. Every option with its default, range and where Build 42.22 reads it.",
     "difficulty": "beginner"
   },
   {
@@ -9222,7 +9222,7 @@
       "multiplayer",
       "generated"
     ],
-    "excerpt": "Everything that decides how players treat each other: PVP and its damage, safehouses, factions, the war system, fire and loot respawn in safehouses. Every option with its default, range and where Build 42.21 reads it.",
+    "excerpt": "Everything that decides how players treat each other: PVP and its damage, safehouses, factions, the war system, fire and loot respawn in safehouses. Every option with its default, range and where Build 42.22 reads it.",
     "difficulty": "beginner"
   },
   {

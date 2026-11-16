@@ -600,7 +600,7 @@ export const VERSIONS: VersionInfo[] = [
           {
             id: 'server-options',
             name: 'Server Options',
-            description: 'Generated from the Build 42.21 code: all 144 server ini options with default, range and where the game reads each.',
+            description: 'Generated from the Build 42.22 code: all 144 server ini options with default, range and where the game reads each.',
             icon: 'settings',
             displayOrder: 2,
             articleCount: 6,
@@ -608,7 +608,7 @@ export const VERSIONS: VersionInfo[] = [
           {
             id: 'sandbox-options',
             name: 'Sandbox Options',
-            description: 'Generated from the Build 42.21 code: all 269 sandbox options with defaults, presets and where the game reads each.',
+            description: 'Generated from the Build 42.22 code: all 269 sandbox options with defaults, presets and where the game reads each.',
             icon: 'globe',
             displayOrder: 3,
             articleCount: 9,
@@ -616,7 +616,7 @@ export const VERSIONS: VersionInfo[] = [
           {
             id: 'admin-commands',
             name: 'Admin Commands',
-            description: 'Generated from the Build 42.21 code: every server command, its forms and the capability it needs.',
+            description: 'Generated from the Build 42.22 code: every server command, its forms and the capability it needs.',
             icon: 'wrench',
             displayOrder: 4,
             articleCount: 1,
@@ -624,7 +624,7 @@ export const VERSIONS: VersionInfo[] = [
           {
             id: 'roles-and-access',
             name: 'Roles and Access',
-            description: 'Generated from the Build 42.21 code: the built-in roles and every capability, with where each is checked.',
+            description: 'Generated from the Build 42.22 code: the built-in roles and every capability, with where each is checked.',
             icon: 'scroll',
             displayOrder: 5,
             articleCount: 2,
