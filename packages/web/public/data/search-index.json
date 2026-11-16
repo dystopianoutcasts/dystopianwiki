@@ -5446,7 +5446,7 @@
       "poison",
       "silent-failure"
     ],
-    "excerpt": "A fluid named like a vanilla one replaces it, mod fluids share one flat namespace, a Poison block poisons nobody without a Properties block, and minAmount and diluteRatio are never read. What a fluid script really does, read from the 42.21 code.",
+    "excerpt": "What a fluid script really does in 42.22: a vanilla name replaces the vanilla fluid, a Poison block poisons nobody without a Properties block, and minAmount and diluteRatio are never used.",
     "difficulty": "intermediate"
   },
   {
@@ -5463,7 +5463,7 @@
       "tainted-water",
       "cooking"
     ],
-    "excerpt": "When the game offers Drink, when a double-click drinks a bottle without asking, why nobody drinks from a bucket, what boiling does to a mixture, why the item name can hide a poison, and why a recipe that wants Water refuses your bottle. Read from the 42.21 code.",
+    "excerpt": "When 42.22 offers Drink, when a double-click drinks without asking, what auto-drink picks, what heat does to tainted water, why a name can hide a poison, and why recipes refuse your bottle.",
     "difficulty": "intermediate"
   },
   {
@@ -5480,7 +5480,7 @@
       "lua",
       "silent-failure"
     ],
-    "excerpt": "adjustSpecificFluidAmount cannot create a fluid, addFluid does nothing within 1 mL of full, tiny amounts are deleted, getAmount rounds up to full, and a transfer can destroy fluid. One of these destroyed the oil in every game of our car mod for six weeks. Here is each trap, read from the 42.21 code.",
+    "excerpt": "FluidContainer traps in 42.22: adjustSpecificFluidAmount cannot create a fluid, addFluid fails silently, tiny amounts are deleted, getAmount rounds up to full, and a transfer can lose a trace.",
     "difficulty": "intermediate"
   },
   {
@@ -5546,7 +5546,7 @@
       "server",
       "sync"
     ],
-    "excerpt": "The vanilla pour and transfer actions DO work in multiplayer: their complete() runs on the server. What decides whether a fluid change reaches the players is where the container sits. The sync call for each place, and the mistake we published for six weeks.",
+    "excerpt": "In 42.22 the vanilla pour and transfer actions work in multiplayer because the server runs their complete(). What reaches players depends on where the container sits.",
     "difficulty": "advanced"
   },
   {
@@ -5579,7 +5579,7 @@
       "recipes",
       "vehicles"
     ],
-    "excerpt": "Your new fluid will not fuel a generator, light a campfire or fill a Molotov, however you categorise it: those paths name petrol. What a mod fluid gets for free, what it needs a recipe for, and which vanilla vessels can carry it. Read from the 42.21 scripts and Lua.",
+    "excerpt": "In 42.22 a new fluid will not fuel a generator, light a campfire or fill a Molotov: those paths name petrol. What a mod fluid gets for free, what needs a recipe, and which vessels hold it.",
     "difficulty": "intermediate"
   },
   {
