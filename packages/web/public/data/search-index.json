@@ -5646,13 +5646,11 @@
     "section": "modding",
     "category": "foundations",
     "tags": [
-      "electricity",
       "combat",
       "animation",
-      "power",
-      "misc-systems"
+      "weapons"
     ],
-    "excerpt": "CONFIRMED (42.20) -- Firearms were completely overhauled: new 3D models, new animations, muzzle effects, new/expanded ammunition types, and new SFX. New guns added to the library include the L92...",
+    "excerpt": "A signpost for modders in 42.22: what changed in firearms, melee weapons and animation files since Build 41, and which page explains each one.",
     "difficulty": "intermediate"
   },
   {
@@ -5718,13 +5716,10 @@
     "section": "modding",
     "category": "foundations",
     "tags": [
-      "mod-info",
-      "registries-lua",
-      "project-structure",
-      "workshop-upload",
-      "debug-mode"
+      "debug-mode",
+      "tools"
     ],
-    "excerpt": "[CONFIRMED] (pzwiki Debug mode rev 1442683, page version 42.18.0.) Debug mode is the primary modder dev toolkit -- \"a modified game state\" giving access to developer tools that spawn items, toggle...",
+    "excerpt": "How to turn on debug mode in Build 42.22 with the -debug launch option, what the debug menu's Main and Dev tabs hold, and where the Lua debugger key and debug-options.ini come from.",
     "difficulty": "beginner"
   },
   {
@@ -5754,13 +5749,11 @@
     "section": "modding",
     "category": "foundations",
     "tags": [
-      "mod-info",
-      "registries-lua",
-      "project-structure",
-      "workshop-upload",
-      "debug-mode"
+      "mapping",
+      "map-info",
+      "project-structure"
     ],
-    "excerpt": "Status as of 2026-07-29: WIP for official release; compilable now. [CONFIRMED]",
+    "excerpt": "What the Build 42.22 game code decides for a map mod: where it looks for maps, what map.info does, the 256-square cell and the lot files. Tool release status is not verified.",
     "difficulty": "beginner"
   },
   {
@@ -5790,13 +5783,13 @@
     "section": "modding",
     "category": "foundations",
     "tags": [
-      "electricity",
-      "combat",
-      "animation",
-      "power",
-      "misc-systems"
+      "misc-systems",
+      "multiplayer",
+      "fire",
+      "weather",
+      "sound"
     ],
-    "excerpt": "CONFIRMED -- Optimization was a headline theme: better/more efficient chunk caching for performance and visuals; extensive controller-support and new-map-area optimization; hundreds of bug fixes.",
+    "excerpt": "A signpost for modders in 42.22: what changed in multiplayer timed actions, fire, weather, sound and zombies, with a link to the page that explains each.",
     "difficulty": "intermediate"
   },
   {
@@ -5862,13 +5855,11 @@
     "section": "modding",
     "category": "foundations",
     "tags": [
-      "mod-info",
-      "registries-lua",
-      "project-structure",
       "workshop-upload",
-      "debug-mode"
+      "packaging",
+      "mod-info"
     ],
-    "excerpt": "[CONFIRMED] Workflow (in-game uploader path), corroborated by pzwiki Mod structure, Uploading mods, and Workshop.txt:",
+    "excerpt": "Where a Build 42.22 mod goes to be uploaded, which files the uploader sends, what the game writes into workshop.txt, and the keys in it. The checks and Steam limits are on the next page.",
     "difficulty": "beginner"
   },
   {
@@ -5958,7 +5949,7 @@
       "server",
       "mod-info"
     ],
-    "excerpt": "Every rule the in-game uploader enforces, the Steam limits that make an upload send nothing without an error, what is actually uploaded, how the game names your mod, and what a server and a joining client check. Read from the 42.21 code, with the mistakes that taught us each one.",
+    "excerpt": "Every rule the Build 42.22 uploader checks, what Steam can refuse without a dialog, what is uploaded, how the game names your mod, and what a server and a joining client check.",
     "difficulty": "intermediate"
   },
   {
