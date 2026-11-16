@@ -16,7 +16,7 @@ tags:
   - vehicles
 excerpt: >-
   What rain, fog, wind, snow, cold and storms cost you in Build 42.22: wet clothes, worse shooting, blinder and deafer zombies, crops, vehicles and radios, with the numbers.
-last_updated: '2026-11-14'
+last_updated: '2026-11-16'
 related_articles:
   - how-weather-works
   - seasons-and-day-length
@@ -201,7 +201,7 @@ The code is in `media/lua/server/Farming/`. The weather enters it in these place
 |---|---|
 | **Rain waters crops.** Each ten game minutes of rain, an outdoor plant gains `30 x precipitation / waterFactor` water (waterFactor is 2 when weeds are present). The same event updates plants. | :cite[(`SFarmingSystem.lua:127`, `:304-309`)] |
 | **Winter kills.** If "Plant Growing Seasons" is on, an outdoor plant that is not cold-hardy becomes cursed while the engine's season is `Winter`. Outdoor houseplants lose 1.5 health in winter. | :cite[(`SFarmingSystem.lua:173-178`, `:225-227`)] |
-| **No pests in winter.** Aphids, flies and slugs do not start outdoors in `Winter`. | :cite[(`SPlantGlobalObject.lua:261`, `:295`, `:327`)] |
+| **No pests in winter, as written.** Aphids, flies and slugs are meant not to start outdoors in `Winter`. In 42.22 they never start on their own in any season, because the same checks also need a temperature that is stuck at -1 (see "Four checks that look like weather and are not" below). | :cite[(`SPlantGlobalObject.lua:261`, `:295`, `:327`)] |
 | **Compost.** Worms are not made by outdoor compost in winter. | :cite[(`zombie/iso/objects/IsoCompost.java:127-128`)] |
 | **Digging up worms.** No worms in winter. Each square gives a worm at most once a week, with a base chance of 1 in 40. The first 2 hours after dawn and rain each **double** that chance (halving the number). | :cite[(`media/lua/shared/Farming/TimedActions/ISPlowAction.lua:158-175`)] |
 | **Holly.** Trees named holly drop extra in autumn and winter. | :cite[(`zombie/iso/objects/IsoTree.java:793-795`)] |
@@ -221,7 +221,7 @@ The functions in `media/lua/server/Seasons/season.lua` are commented out :cite[(
 | "Cold" health loss | `season.currentTemp <= 10` | Always true: the table starts at -1 and is never updated | :cite[(`:203`; `season.lua:10`)] |
 | "Warm enough" for pests | `season.currentTemp > 10` | Never true, so pests never begin on their own | :cite[(`SPlantGlobalObject.lua:261`, `:295`, `:327`)] |
 
-If that is right (it is code reading only), then in 42.22 every crop that is not cold-hardy takes the cold health penalty every health tick, whatever the real temperature, and the sunny bonus is always on, whatever the real weather. The published [crop health page](/pz/build-42/modding/farming-and-animals/crop-health-water-disease) lines about "temp below 10 C" and "no pests at temps of 10 C or less" describe the intent, not what the code does. A mod that sets `season.currentTemp` from `getClimateManager():getTemperature()` would restore the intent. Not tested in a game.
+If that is right (it is code reading only), then in 42.22 every crop that is not cold-hardy takes the cold health penalty every health tick, whatever the real temperature, and the sunny bonus is always on, whatever the real weather. The [crop health page](/pz/build-42/modding/farming-and-animals/crop-health-water-disease) gives the full farming side of this. A mod that sets `season.currentTemp` from `getClimateManager():getTemperature()` would restore the intent. Not tested in a game.
 
 ### Water collectors
 
