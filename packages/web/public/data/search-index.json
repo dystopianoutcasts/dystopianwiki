@@ -6381,7 +6381,7 @@
       "timed-actions",
       "multiplayer"
     ],
-    "excerpt": "The global functions below are defined by LuaManager.GlobalObject and are exposed as bare Lua globals (not as SomeClass.method). The wiki confirms this special exposure and shows getPlayer() /...",
+    "excerpt": "The global functions and Java classes a Build 42.22 Lua mod uses most, what each returns, which side it works on, and three classes older notes list that are no longer exposed.",
     "difficulty": "intermediate"
   },
   {
@@ -6399,7 +6399,7 @@
       "timed-actions",
       "multiplayer"
     ],
-    "excerpt": "Lua API and engine reference, in 16 parts: TL;DR: the 5 things that will break your B41 mod, B42 status and versioning, The B42 mod folder model, Lua load order and the three lua folders...",
+    "excerpt": "Where Build 42.22 Lua comes from and a map of the Lua API pages: folders, events, globals, mod data, commands, timed actions, reloads, debugging and porting.",
     "difficulty": "intermediate"
   },
   {
@@ -6417,7 +6417,7 @@
       "timed-actions",
       "multiplayer"
     ],
-    "excerpt": "Which folders load in which mode (canonical table from the wiki):",
+    "excerpt": "In Build 42.22, which of the client, server and shared Lua folders run in single player, on a multiplayer client and on a dedicated server, and the order the files run in.",
     "difficulty": "intermediate"
   },
   {
@@ -6453,12 +6453,12 @@
       "timed-actions",
       "multiplayer"
     ],
-    "excerpt": "ModData tables are plain Lua tables the game persists for you across sessions — no manual save call needed. Only plain-old data persists: strings, booleans, numbers, and (nested) tables. Do not...",
+    "excerpt": "How a Build 42.22 mod keeps data in object mod data and global mod data, which side saves it, and how it reaches other machines. Nothing syncs by itself.",
     "difficulty": "intermediate"
   },
   {
     "id": "build-42-multiplayer-command-patterns",
-    "title": "Multiplayer command patterns",
+    "title": "Multiplayer command patterns (client/server)",
     "slug": "multiplayer-command-patterns",
     "url": "/pz/build-42/modding/lua-api/multiplayer-command-patterns",
     "version": "build-42",
@@ -6471,7 +6471,7 @@
       "timed-actions",
       "multiplayer"
     ],
-    "excerpt": "B42 keeps the command RPC model. Commands are identified by a module (use your mod name) and a command name, and carry an args table. The transmitted args can only hold plain-old data (strings...",
+    "excerpt": "How a Build 42.22 mod sends a request to the server and an answer back with sendClientCommand and sendServerCommand, what the server must check, and the admin and sync calls around them.",
     "difficulty": "intermediate"
   },
   {
@@ -6525,7 +6525,7 @@
       "timed-actions",
       "multiplayer"
     ],
-    "excerpt": "B42 supports one upload serving multiple game builds. The versioned layout:",
+    "excerpt": "How a Build 42.22 mod folder is laid out: common and a version folder, where mod.info and registries.lua are found, which Lua folders exist, and what the server's Mods line needs.",
     "difficulty": "intermediate"
   },
   {
@@ -6543,7 +6543,7 @@
       "timed-actions",
       "multiplayer"
     ],
-    "excerpt": "The event model is unchanged in shape from B41: you attach a function reference (an observer) to a named event via the Events object.",
+    "excerpt": "How a Build 42.22 mod hooks a named event with Events.X.Add, the arguments of the common events and the side that fires them, and how to make an event of your own.",
     "difficulty": "intermediate"
   },
   {
@@ -6614,7 +6614,7 @@
       "lifecycle",
       "logging"
     ],
-    "excerpt": "Leaving a game wipes and reloads every Lua file and fires OnGameBoot, not OnResetLua. Your event handlers are removed before that happens, so there is no \"game is ending\" event to flush a file on. What actually fires, and where to save your state instead. Read from the 42.21 code.",
+    "excerpt": "In Build 42.22, leaving a game wipes and reloads every Lua file and fires OnGameBoot, not OnResetLua. There is no game-ending event, so flush on OnPostSave and close files often.",
     "difficulty": "intermediate"
   },
   {
