@@ -114,7 +114,7 @@ The helicopter, distant gunshots and other meta events, generators, annotated ma
 - **The game's description:** "How long, in hours, before dead zombie bodies disappear from the world. If 0, maggots will not spawn on corpses."
 - **Read in:** `zombie.iso.objects.IsoDeadBody#updateBodies` (line 1596).
 - **Set (not read) in:** `media/lua/client/Challenge/` (2 files, 2 places).
-- **What the code does with it:** 0 or less: the corpse pass does nothing. Otherwise each rot stage of a human corpse lasts a third of this many hours, and of an animal corpse a quarter, and a human corpse is removed at this age (a player's only when `RemovePlayerCorpsesOnCorpseRemoval` is true). The pass runs everywhere except on a multiplayer client.
+- **What the code does with it:** 0 or less: the corpse pass does nothing. Otherwise each rot stage of a human corpse lasts a third of this many hours, and of an animal corpse a quarter. A human corpse is removed at this age and a skeleton one rot stage later (a player's only when `RemovePlayerCorpsesOnCorpseRemoval` is true). Quirk: the pass sets the quarter-length stage at the first animal corpse and never sets it back, so human corpses handled after an animal in the same pass use a quarter instead of a third. The pass runs everywhere except on a multiplayer client.
 
 ### DecayingCorpseHealthImpact
 

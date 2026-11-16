@@ -29,7 +29,7 @@ Outcast, when your server feels slow, you will want numbers. This page says wher
 - The server option `MultiplayerStatisticsPeriod` sets how often the statistics update, in seconds. The default is 1, and 0 stops the update.
 - Only a player whose role has the `GetStatistic` capability, and whose connection has statistics enabled, is sent them. Of the built-in roles, `moderator` and `admin` have it.
 - `/stats` needs the same capability. `/stats list` lists the statistics and `/stats <statistic> all` prints one statistic's values.
-- `/players` lists who is connected. `/connections` would show every connection, but it is switched off in this build.
+- `/players` lists who is connected. `/connections` would list every connection, but it is switched off in this build.
 - `PerkLogs` is on by default. `ClientActionLogs` names the timed actions that are logged, and by default the list names `ISEnterVehicle`, `ISExitVehicle` and `ISTakeEngineParts`.
 - Both logs are written because each player's game sends the line to the server. Nothing here was tested on a live server.
 :::
@@ -55,7 +55,7 @@ The server updates its statistics once per period, and sends them only to player
 
 The command for who is connected is `/players`, and the one that would show every connection is switched off.
 
-[/players](/pz/build-42/server/admin-commands/admin-commands#players) needs the `SeePlayersConnected` capability and lists the connected players. :cite[(`zombie/commands/serverCommands/PlayersCommand.java:26-28`, `zombie/commands/serverCommands/PlayersCommand.java:35-60`)] `/connections` carries the `@DisabledCommand` marker, and the server skips marked commands when it looks a command up. :cite[(`zombie/commands/serverCommands/ConnectionsCommand.java:21`, `zombie/commands/CommandBase.java:172-175`)]
+[/players](/pz/build-42/server/admin-commands/admin-commands#players) needs the `SeePlayersConnected` capability and lists the connected players. :cite[(`zombie/commands/serverCommands/PlayersCommand.java:26-28`, `zombie/commands/serverCommands/PlayersCommand.java:35-60`)] `/connections` would list every connection :cite[(`zombie/commands/serverCommands/ConnectionsCommand.java:39-56`)], but it carries the `@DisabledCommand` marker, and the server skips marked commands when it looks a command up. :cite[(`zombie/commands/serverCommands/ConnectionsCommand.java:21`, `zombie/commands/CommandBase.java:172-175`)]
 
 ## 3. The logs
 
@@ -69,6 +69,6 @@ Because the lines come from each player's own game, the server cannot vouch that
 
 :::callout[How we know]{kind=proof}
 - Every line above was read in the 42.22 capture. Nothing on this page was run on a live server, and we have not timed the statistics period in a running game.
-- "Moderator and admin" is read from the built-in role definitions, which are marked read-only. A role you add yourself is not covered.
+- "Moderator and admin" is read from the built-in role definitions, which are marked read-only :cite[(`zombie/characters/Roles.java:469`, `zombie/characters/Roles.java:480`)]. A role you add yourself is not covered.
 - The `ClientActionLogs` match is read from `string.match` on the list text. We did not test which type names match one another in play.
 :::

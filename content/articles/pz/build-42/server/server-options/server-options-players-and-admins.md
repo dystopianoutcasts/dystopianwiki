@@ -76,7 +76,7 @@ Who can join, how many, what players see of each other, sleeping, respawning, an
 - **Settings screen:** the "Players" page. **Sent to joining players:** yes.
 - **The game's description:** "Ping limit, in milliseconds, before a player is kicked from the server. (Set to 0 to disable)"
 - **Read in:** `zombie.network.statistics.PingManager#doKickWhileLoading` (line 32); `zombie.network.statistics.PingManager#update` (line 75).
-- **What the code does with it:** 0 turns it off. Above 0, a player whose ping is higher than this value is kicked while loading, unless their role has `CantBeKickedIfTooLaggy`.
+- **What the code does with it:** 0 turns it off. Above 0, a player whose ping is higher than this value is kicked while loading, unless their role has `CantBeKickedIfTooLaggy`. A connected player is also kicked once at least 20 of their last 60 pings (one is taken per second) are above the limit and their average ping of those 60, each counted as at most 1000, is above it too.
 
 ### ServerPlayerID
 

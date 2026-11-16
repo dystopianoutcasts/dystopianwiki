@@ -6,7 +6,7 @@
       "site": "zombie.network.ServerOptions#getMaxPlayers"
     },
     "PingLimit": {
-      "effect": "0 turns it off. Above 0, a player whose ping is higher than this value is kicked while loading, unless their role has `CantBeKickedIfTooLaggy`.",
+      "effect": "0 turns it off. Above 0, a player whose ping is higher than this value is kicked while loading, unless their role has `CantBeKickedIfTooLaggy`. A connected player is also kicked once at least 20 of their last 60 pings (one is taken per second) are above the limit and their average ping of those 60, each counted as at most 1000, is above it too.",
       "site": "zombie.network.statistics.PingManager#doKickWhileLoading"
     },
     "SaveWorldEveryMinutes": {
@@ -42,7 +42,7 @@
       "site": "zombie.network.GameServer#startServer"
     },
     "ItemNumbersLimitPerContainer": {
-      "effect": "0 turns it off. Above 0, a multiplayer client shows the item count against the limit beside a container's weight, and the transfer action counts the destination's items against it (`ISInventoryTransferAction:isValid`); containers on a character are left out. All its read sites are client Lua.",
+      "effect": "0 turns it off. Above 0, a multiplayer client shows the item count against the limit beside a container's weight, except for the player's own main inventory. The transfer action counts the destination's items against the limit (`ISInventoryTransferAction:isValid`) and leaves out a destination that belongs to a character. All its read sites are client Lua.",
       "site": "client/ISUI/ISInventoryPage.lua#ISInventoryPage:prerender"
     },
     "FastForwardMultiplier": {
@@ -50,7 +50,7 @@
       "site": "zombie.GameTime#getMultiplier"
     },
     "SafehouseDaySurvivedToClaim": {
-      "effect": "0 turns it off. Above 0, and with `PlayerSafehouse` on, a player who has survived fewer than this many days (hours survived below the value times 24) cannot claim a safehouse. With `AdminSafehouse` on, `allowSafeHouse` ignores the days and asks only for the `CanSetupSafehouses` capability.",
+      "effect": "0 turns it off. Above 0, and with `PlayerSafehouse` on, a player who has survived fewer than this many days (hours survived below the value times 24) cannot claim a safehouse. The same rule blocks renaming a safehouse and handing it to a player who has not survived that long, and a role with `CanSetupSafehouses` skips it. With `AdminSafehouse` on, `allowSafeHouse` ignores the days and asks only for the `CanSetupSafehouses` capability.",
       "site": "zombie.iso.areas.SafeHouse#allowSafeHouse"
     },
     "FactionDaySurvivedToCreate": {
@@ -100,7 +100,7 @@
       "site": "zombie.characters.IsoGameCharacter$XP#AddXP"
     },
     "HoursForCorpseRemoval": {
-      "effect": "0 or less: the corpse pass does nothing. Otherwise each rot stage of a human corpse lasts a third of this many hours, and of an animal corpse a quarter, and a human corpse is removed at this age (a player's only when `RemovePlayerCorpsesOnCorpseRemoval` is true). The pass runs everywhere except on a multiplayer client.",
+      "effect": "0 or less: the corpse pass does nothing. Otherwise each rot stage of a human corpse lasts a third of this many hours, and of an animal corpse a quarter. A human corpse is removed at this age and a skeleton one rot stage later (a player's only when `RemovePlayerCorpsesOnCorpseRemoval` is true). Quirk: the pass sets the quarter-length stage at the first animal corpse and never sets it back, so human corpses handled after an animal in the same pass use a quarter instead of a third. The pass runs everywhere except on a multiplayer client.",
       "site": "zombie.iso.objects.IsoDeadBody#updateBodies"
     },
     "DaysForRottenFoodRemoval": {
