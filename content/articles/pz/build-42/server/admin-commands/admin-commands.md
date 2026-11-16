@@ -1,6 +1,6 @@
 ---
 slug: admin-commands
-title: 'Admin commands (Build 42.21)'
+title: 'Admin commands (Build 42.22)'
 game: pz
 version: build-42
 section: server
@@ -11,8 +11,8 @@ tags:
   - admin
   - commands
   - generated
-excerpt: 'All 67 Build 42.21 server commands: their forms, the capability each needs, the roles that have it, and the game''s help text.'
-last_updated: '2026-10-04'
+excerpt: 'All 67 Build 42.22 server commands: their forms, the capability each needs, the roles that have it, and the game''s help text.'
+last_updated: '2026-11-09'
 related_articles:
   - running-a-server
   - server-roles-and-capabilities
@@ -20,16 +20,16 @@ related_articles:
 ---
 # Admin commands
 
-> **Generated from the code.** This page is generated from Build 42.21 (revision 4a0e9546ec) by `npm run kb:gen-server`, not written by hand. When the game updates we re-extract the data and run it again, so the page always matches one exact build. How it is made is on [the handbook's first page](/pz/build-42/server/getting-started/running-a-server#how-these-pages-are-made).
+> **Generated from the code.** This page is generated from Build 42.22 (revision 3d39148846) by `npm run kb:gen-server`, not written by hand. When the game updates we re-extract the data and run it again, so the page always matches one exact build. How it is made is on [the handbook's first page](/pz/build-42/server/getting-started/running-a-server#how-these-pages-are-made).
 
-Outcast, these are the 67 commands the Build 42.21 server knows, in the order the server tries them. You type them in chat with a `/` in front, or in the server console without it. Each form of a command needs one capability; the built-in roles that hold it are listed with it, and [Roles and access](/pz/build-42/server/roles-and-access/server-roles-and-capabilities) says what each role holds.
+Outcast, these are the 67 commands the Build 42.22 server knows, in the order the server tries them. You type them in chat with a `/` in front, or in the server console without it. Each form of a command needs one capability; the built-in roles that hold it are listed with it, and [Roles and access](/pz/build-42/server/roles-and-access/server-roles-and-capabilities) says what each role holds.
 
 ## How the server reads a command
 
 - **Matching.** The server walks its command list in order and takes the first command whose name starts the line, ignoring case and stopping at a word boundary. A disabled command is skipped.
 - **Arguments.** The line is split at spaces; text in double quotes stays one argument (the quotes are removed). Each form of a command lists the arguments it takes; the first form that fits is used. When none fits, the server answers with the command's help text.
 - **Who may run it.** After the arguments fit, the server checks the capability that form needs against your role. Without it you get "no right to execute" and nothing happens.
-- **3 commands are disabled in 42.21:** `/connections`, `/addalltowhitelist`, `/addusertowhitelist`. They are in the list, but the server skips them.
+- **3 commands are disabled in 42.22:** `/connections`, `/addalltowhitelist`, `/addusertowhitelist`. They are in the list, but the server skips them.
 
 ## Quick list
 
@@ -598,4 +598,4 @@ The server also keeps a short help list for players, shown by `/help` to someone
 - `/card`: "If you have a card deck, you can draw a random card. Use: /card"
 - `/safehouse`: "Release a safehouse you own. Use /releasesafehouse"
 
-> **Proof:** Code. zombie.commands.CommandBase#findCommandCls (the order, case-insensitive match, disabled commands skipped), the CommandBase constructor (splitting the line), #parseCommand (the forms), #canBeExecuted and #PlayerSatisfyRequiredRights (the capability check), the annotations of each class in zombie.commands.serverCommands, zombie.network.ServerOptions#initClientCommandsHelp (the player help list), and the help strings in media/lua/shared/Translate/EN/UI.json. Build 42.21 (revision 4a0e9546ec).
+> **Proof:** Code. zombie.commands.CommandBase#findCommandCls (the order, case-insensitive match, disabled commands skipped), the CommandBase constructor (splitting the line), #parseCommand (the forms), #canBeExecuted and #PlayerSatisfyRequiredRights (the capability check), the annotations of each class in zombie.commands.serverCommands, zombie.network.ServerOptions#initClientCommandsHelp (the player help list), and the help strings in media/lua/shared/Translate/EN/UI.json. Build 42.22 (revision 3d39148846).

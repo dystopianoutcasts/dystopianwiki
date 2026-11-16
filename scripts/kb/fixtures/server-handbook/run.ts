@@ -17,8 +17,8 @@
  *  - the extractor's parsers read declarations, presets, pages, commands and roles correctly;
  *  - read sites, writes, computed reads, "named" and "read nowhere" are told apart;
  *  - two extractor runs write the same file (sha256).
- * On the real data (scripts/kb/data/server-surface-42.21.json):
- *  - the counts equal a recount of the 42.21 declarations (from the capture, when it is on this
+ * On the real data (scripts/kb/data/server-surface-42.22.json):
+ *  - the counts equal a recount of the 42.22 declarations (from the capture, when it is on this
  *    machine) and the numbers recorded when the data was made;
  *  - the committed pages are exactly what the data and notes give (--check);
  *  - the hand-written first page states the same numbers as the data.
@@ -53,13 +53,13 @@ const EXTRACT = path.join(REPO_ROOT, 'scripts', 'kb', 'extract', 'extract-server
 const FIX_DATA = path.join(HERE, 'surface.json')
 const FIX_NOTES = path.join(HERE, 'notes.json')
 const EXPECTED = path.join(HERE, 'expected')
-const REAL_DATA = path.join(REPO_ROOT, 'scripts', 'kb', 'data', 'server-surface-42.21.json')
-const REAL_NOTES = path.join(REPO_ROOT, 'scripts', 'kb', 'data', 'server-handbook-notes-42.21.json')
+const REAL_DATA = path.join(REPO_ROOT, 'scripts', 'kb', 'data', 'server-surface-42.22.json')
+const REAL_NOTES = path.join(REPO_ROOT, 'scripts', 'kb', 'data', 'server-handbook-notes-42.22.json')
 const REAL_OUT = path.join(REPO_ROOT, 'content', 'articles', 'pz', 'build-42', 'server')
 const REAL_INDEX = path.join(REAL_OUT, 'getting-started', 'running-a-server.md')
-const CAPTURE = 'R:/ZOMBOID/PZ_Engine_Records/B42_4a0e9546ec'
+const CAPTURE = 'R:/DystopianOutcasts/GAME/PZ_Engine_Records/B42_3d39148846'
 
-/** The 42.21 numbers recorded when the data was made (KB10, 2026-10-04). */
+/** The numbers recorded when the data was made (42.21, KB10, 2026-10-04; unchanged in 42.22, 2026-11-16). */
 const REAL = { serverOptions: 144, sandboxOptions: 269, commands: 67, roles: 7, capabilities: 98, serverReadNowhere: 1, sandboxReadNowhere: 4 }
 
 /** What the generator fixture holds; a change to the fixture must change these on purpose. */
@@ -639,9 +639,9 @@ function realTests(): void {
     const nRoles = (addStatic.match(/new Role\("/g) ?? []).length
     const capBody = /enum Capability\s*\{([^;]*);/.exec(src('zombie/characters/Capability.java'))![1]
     const nCaps = capBody.split(',').filter(x => x.trim()).length
-    check('real data counts equal a recount of the 42.21 capture', nServer === pc.serverOptions && nSandbox === pc.sandboxOptions && nCommands === pc.commands && nRoles === pc.roles && nCaps === pc.capabilities,
+    check('real data counts equal a recount of the 42.22 capture', nServer === pc.serverOptions && nSandbox === pc.sandboxOptions && nCommands === pc.commands && nRoles === pc.roles && nCaps === pc.capabilities,
       JSON.stringify({ nServer, nSandbox, nCommands, nRoles, nCaps }))
-  } else console.log(`[SKIP] the 42.21 capture is not on this machine; recount not run`)
+  } else console.log(`[SKIP] the 42.22 capture is not on this machine; recount not run`)
   const cur = run(GEN, ['--data', REAL_DATA, '--notes', REAL_NOTES, '--out', REAL_OUT, '--check'])
   check('committed handbook pages match the data (--check)', cur.status === 0, cur.out.trim().split('\n').slice(-3).join(' | '))
   if (fs.existsSync(REAL_INDEX)) {

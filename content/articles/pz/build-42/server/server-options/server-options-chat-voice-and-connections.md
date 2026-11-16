@@ -11,8 +11,8 @@ tags:
   - server-options
   - multiplayer
   - generated
-excerpt: 'Chat, voice, remote control (RCON), the Discord bridge, UPnP, vehicles and the settings screen''s "Other" page. Every option with its default, range and where Build 42.21 reads it.'
-last_updated: '2026-10-04'
+excerpt: 'Chat, voice, remote control (RCON), the Discord bridge, UPnP, vehicles and the settings screen''s "Other" page. Every option with its default, range and where Build 42.22 reads it.'
+last_updated: '2026-11-09'
 related_articles:
   - running-a-server
   - server-options-directory
@@ -21,7 +21,7 @@ related_articles:
 ---
 # Server options: chat, voice, RCON, Discord and the rest
 
-> **Generated from the code.** This page is generated from Build 42.21 (revision 4a0e9546ec) by `npm run kb:gen-server`, not written by hand. When the game updates we re-extract the data and run it again, so the page always matches one exact build. How it is made is on [the handbook's first page](/pz/build-42/server/getting-started/running-a-server#how-these-pages-are-made).
+> **Generated from the code.** This page is generated from Build 42.22 (revision 3d39148846) by `npm run kb:gen-server`, not written by hand. When the game updates we re-extract the data and run it again, so the page always matches one exact build. How it is made is on [the handbook's first page](/pz/build-42/server/getting-started/running-a-server#how-these-pages-are-made).
 
 Chat, voice, remote control (RCON), the Discord bridge, UPnP, vehicles and the settings screen's "Other" page.
 
@@ -39,7 +39,7 @@ Chat, voice, remote control (RCON), the Discord bridge, UPnP, vehicles and the s
 - **In the file:** `AnnounceDeath=false` is the default. Takes true or false.
 - **Settings screen:** the "Chat" page. **Sent to joining players:** yes.
 - **The game's description:** "If checked, every time a player dies a global message will be displayed in the chat"
-- **Read in:** `zombie.characters.IsoGameCharacter#DoDeath` (line 2040); `zombie.network.PVPLogTool#logKill` (line 58).
+- **Read in:** `zombie.characters.IsoGameCharacter#DoDeath` (line 2080); `zombie.network.PVPLogTool#logKill` (line 58).
 
 ### AnnounceAnimalDeath
 
@@ -53,7 +53,7 @@ Chat, voice, remote control (RCON), the Discord bridge, UPnP, vehicles and the s
 - **In the file:** `ServerWelcomeMessage=Welcome to Project Zomboid Multiplayer! <LINE> <LINE> To interact with the Chat panel: press Tab, T, or Enter. <LINE> <LINE> The Tab key will change the target stream of the message. <LINE> <LINE> Global Streams: /all <LINE> Local Streams: /say, /yell <LINE> Special Steams: /whisper, /safehouse, /faction. <LINE> <LINE> Press the Up arrow to cycle through your message history. Click the Gear icon to customize chat. <LINE> <LINE> Happy surviving!` is the default. Takes text.
 - **Settings screen:** the "Chat" page. **Sent to joining players:** yes.
 - **The game's description:** "The first welcome message visible in the chat panel. This will be displayed immediately after player login. you can use RGB colours to chance the colour of the welcome message. You can also use , without the space, to create a separate lines within your text. Use: \\\<RGB:1,0,0\> This message will show up red!"
-- **Read in:** `zombie.commands.serverCommands.ShowOptionsCommand#Command` (line 51); `zombie.network.packets.connection.ConnectedPacket#parse` (line 238).
+- **Read in:** `zombie.commands.serverCommands.ShowOptionsCommand#Command` (line 51); `zombie.network.packets.connection.ConnectedPacket#parse` (line 241).
 
 ### ChatMessageCharacterLimit
 
@@ -74,14 +74,14 @@ Chat, voice, remote control (RCON), the Discord bridge, UPnP, vehicles and the s
 - **In the file:** `RCONPort=27015` is the default. Takes a whole number from 0 to 65535.
 - **Settings screen:** the "RCON" page. **Sent to joining players:** no.
 - **The game's description:** "The port for the RCON (Remote Console)"
-- **Read in:** `zombie.network.GameServer#main` (line 859).
+- **Read in:** `zombie.network.GameServer#main` (line 870).
 
 ### RCONPassword
 
 - **In the file:** `RCONPassword=` is the default. Takes text.
 - **Settings screen:** the "RCON" page. **Sent to joining players:** no.
 - **The game's description:** "RCON password (Pick a strong password)"
-- **Read in:** `zombie.network.GameServer#main` (line 860).
+- **Read in:** `zombie.network.GameServer#main` (line 871).
 
 ## Discord
 
@@ -90,35 +90,35 @@ Chat, voice, remote control (RCON), the Discord bridge, UPnP, vehicles and the s
 - **In the file:** `DiscordEnable=false` is the default. Takes true or false.
 - **Settings screen:** the "Discord" page. **Sent to joining players:** yes.
 - **The game's description:** "Enables global text chat integration with a Discord channel"
-- **Read in:** `zombie.network.chat.ChatServer#init` (line 89); `zombie.network.GameServer#startServer` (line 1548).
+- **Read in:** `zombie.network.chat.ChatServer#init` (line 89); `zombie.network.GameServer#startServer` (line 1588).
 
 ### DiscordToken
 
 - **In the file:** `DiscordToken=` is the default. Takes text.
 - **Settings screen:** the "Discord" page. **Sent to joining players:** no.
 - **The game's description:** "Discord bot access token"
-- **Read in:** `zombie.network.GameServer#startServer` (line 1549).
+- **Read in:** `zombie.network.GameServer#startServer` (line 1589).
 
 ### DiscordChatChannel
 
 - **In the file:** `DiscordChatChannel=` is the default. Takes text.
 - **Settings screen:** the "Discord" page. **Sent to joining players:** no.
 - **The game's description:** "The Discord chat channel name"
-- **Read in:** `zombie.network.GameServer#startServer` (line 1550).
+- **Read in:** `zombie.network.GameServer#startServer` (line 1590).
 
 ### DiscordLogChannel
 
 - **In the file:** `DiscordLogChannel=` is the default. Takes text.
 - **Settings screen:** the "Discord" page. **Sent to joining players:** no.
 - **The game's description:** "The Discord logs channel name"
-- **Read in:** `zombie.network.GameServer#startServer` (line 1551).
+- **Read in:** `zombie.network.GameServer#startServer` (line 1591).
 
 ### DiscordCommandChannel
 
 - **In the file:** `DiscordCommandChannel=` is the default. Takes text.
 - **Settings screen:** the "Discord" page. **Sent to joining players:** no.
 - **The game's description:** "The Discord commands channel name"
-- **Read in:** `zombie.network.GameServer#startServer` (line 1552).
+- **Read in:** `zombie.network.GameServer#startServer` (line 1592).
 
 ## UPnP
 
@@ -127,7 +127,7 @@ Chat, voice, remote control (RCON), the Discord bridge, UPnP, vehicles and the s
 - **In the file:** `UPnP=true` is the default. Takes true or false.
 - **Settings screen:** the "UPnP" page. **Sent to joining players:** yes.
 - **The game's description:** "Attempt to configure a UPnP-enabled internet gateway to automatically setup port forwarding rules. The server will fall back to default ports if this fails"
-- **Read in:** `zombie.network.GameServer#main` (line 742).
+- **Read in:** `zombie.network.GameServer#main` (line 753).
 
 ## Other
 
@@ -136,14 +136,14 @@ Chat, voice, remote control (RCON), the Discord bridge, UPnP, vehicles and the s
 - **In the file:** `DoLuaChecksum=true` is the default. Takes true or false.
 - **Settings screen:** the "Other" page. **Sent to joining players:** yes.
 - **The game's description:** "Kick clients whose game files don't match the server's."
-- **Read in:** `zombie.iso.IsoWorld#init` (line 1915); `zombie.network.packets.connection.LoginPacket#processServer` (lines 102, 173).
+- **Read in:** `zombie.iso.IsoWorld#init` (line 1928); `zombie.network.packets.connection.LoginPacket#processServer` (lines 102, 173).
 
 ### AllowDestructionBySledgehammer
 
 - **In the file:** `AllowDestructionBySledgehammer=true` is the default. Takes true or false.
 - **Settings screen:** the "Other" page. **Sent to joining players:** yes.
 - **The game's description:** "Allow players to destroy world objects with sledgehammers"
-- **Read in:** `zombie.iso.ISWorldObjectContextMenuLogic#doDestroyMenu` (line 1158); `zombie.Lua.LuaManager$GlobalObject#sledgeDestroy` (line 4970); `zombie.network.packets.SledgehammerDestroyPacket#processServer` (line 27).
+- **Read in:** `zombie.iso.ISWorldObjectContextMenuLogic#doDestroyMenu` (line 1211); `zombie.Lua.LuaManager$GlobalObject#sledgeDestroy` (line 4985); `zombie.network.packets.SledgehammerDestroyPacket#processServer` (line 27).
 
 ### SledgehammerOnlyInSafehouse
 
@@ -157,7 +157,7 @@ Chat, voice, remote control (RCON), the Discord bridge, UPnP, vehicles and the s
 - **In the file:** `SaveWorldEveryMinutes=0` is the default. Takes a whole number from 0 to 2147483647.
 - **Settings screen:** the "Other" page. **Sent to joining players:** yes.
 - **The game's description:** "Loaded parts of the map are saved after this set number of real-world minutes have passed. (The map is usually saved only after clients leave a loaded area)"
-- **Read in:** `zombie.network.ServerMap#preupdate` (line 511).
+- **Read in:** `zombie.network.ServerMap#preupdate` (line 534).
 - **What the code does with it:** 0 turns it off. Above 0, once this many real minutes have passed since the last save the server queues a full save, and runs it when no backup is in progress.
 
 ### FastForwardMultiplier
@@ -165,7 +165,7 @@ Chat, voice, remote control (RCON), the Discord bridge, UPnP, vehicles and the s
 - **In the file:** `FastForwardMultiplier=40.0` is the default. Takes a number from 1.0 to 100.0.
 - **Settings screen:** the "Other" page. **Sent to joining players:** yes.
 - **The game's description:** "Governs how fast time passes while players sleep. Value multiplies the speed of the time that passes during sleeping."
-- **Read in:** `zombie.ai.states.ThumpState#getFastForwardDamageMultiplier` (lines 385, 387); `zombie.GameTime#getMultiplier` (lines 983, 985).
+- **Read in:** `zombie.ai.states.ThumpState#getFastForwardDamageMultiplier` (lines 385, 387); `zombie.GameTime#getMultiplier` (lines 976, 978).
 - **What the code does with it:** While the server is fast-forwarding, `GameTime#getMultiplier` uses this value divided by the length of a day in minutes.
 
 ### AllowNonAsciiUsername
@@ -181,7 +181,7 @@ Chat, voice, remote control (RCON), the Discord bridge, UPnP, vehicles and the s
 
 - **In the file:** `SpeedLimit=70.0` is the default. Takes a number from 10.0 to 150.0.
 - **Settings screen:** the "Vehicles" page. **Sent to joining players:** yes.
-- **Read in:** `zombie.core.physics.CarController#update` (line 148); `zombie.core.physics.CarController#control_Forward` (line 682); `zombie.core.physics.CarController#control_ForwardNew` (line 795); `zombie.network.anticheats.AntiCheatSpeed#validate` (line 34); `zombie.vehicles.BaseVehicle#getFakeSpeedModifier` (line 677).
+- **Read in:** `zombie.core.physics.CarController#update` (line 150); `zombie.core.physics.CarController#control_Forward` (line 681); `zombie.core.physics.CarController#control_ForwardNew` (line 794); `zombie.network.anticheats.AntiCheatSpeed#validate` (line 34); `zombie.vehicles.BaseVehicle#getFakeSpeedModifier` (line 684).
 - **What the code does with it:** On a multiplayer client the engine stops pushing a car forward once it reaches this speed in km/h. The speed anti-cheat also uses it as the limit for a player in a vehicle (`AntiCheatSpeed#validate`, 20 for a player on foot).
 
 ## Voice
@@ -214,4 +214,4 @@ Chat, voice, remote control (RCON), the Discord bridge, UPnP, vehicles and the s
 - **The game's description:** "Toggle directional audio for VOIP"
 - **Read in:** `zombie.core.raknet.VoiceManager#InitVMServer` (line 967).
 
-> **Proof:** Code. zombie.network.ServerOptions (each option's declaration: name, type, default, range), media/lua/shared/Translate/EN/UI.json (the descriptions), media/lua/client/OptionScreens/ServerSettingsScreen.lua (the settings pages), and the read sites named under each option. Build 42.21 (revision 4a0e9546ec).
+> **Proof:** Code. zombie.network.ServerOptions (each option's declaration: name, type, default, range), media/lua/shared/Translate/EN/UI.json (the descriptions), media/lua/client/OptionScreens/ServerSettingsScreen.lua (the settings pages), and the read sites named under each option. Build 42.22 (revision 3d39148846).

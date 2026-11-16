@@ -1,6 +1,6 @@
 ---
 slug: server-options-directory
-title: 'Server options A to Z (Build 42.21)'
+title: 'Server options A to Z (Build 42.22)'
 game: pz
 version: build-42
 section: server
@@ -11,8 +11,8 @@ tags:
   - server-options
   - reference
   - generated
-excerpt: 'All 144 options of the Build 42.21 server ini file, A to Z, with type, default and settings page, and how the game reads the file.'
-last_updated: '2026-10-04'
+excerpt: 'All 144 options of the Build 42.22 server ini file, A to Z, with type, default and settings page, and how the game reads the file.'
+last_updated: '2026-11-09'
 related_articles:
   - running-a-server
   - server-options-details-steam-and-backups
@@ -22,9 +22,9 @@ related_articles:
 ---
 # Server options A to Z
 
-> **Generated from the code.** This page is generated from Build 42.21 (revision 4a0e9546ec) by `npm run kb:gen-server`, not written by hand. When the game updates we re-extract the data and run it again, so the page always matches one exact build. How it is made is on [the handbook's first page](/pz/build-42/server/getting-started/running-a-server#how-these-pages-are-made).
+> **Generated from the code.** This page is generated from Build 42.22 (revision 3d39148846) by `npm run kb:gen-server`, not written by hand. When the game updates we re-extract the data and run it again, so the page always matches one exact build. How it is made is on [the handbook's first page](/pz/build-42/server/getting-started/running-a-server#how-these-pages-are-made).
 
-Outcast, these are all 144 options of the server's ini file in Build 42.21, A to Z. Click a name for its full entry: what the game says about it, where the code reads it, and what we found it does.
+Outcast, these are all 144 options of the server's ini file in Build 42.22, A to Z. Click a name for its full entry: what the game says about it, where the code reads it, and what we found it does.
 
 ## The file and how the game reads it
 
@@ -34,16 +34,16 @@ Outcast, these are all 144 options of the server's ini file in Build 42.21, A to
 - **What players can see.** All options except `Password`, `RCONPort`, `RCONPassword`, `DiscordToken`, `DiscordChatChannel`, `DiscordLogChannel`, `DiscordCommandChannel` are on the public list. The server writes the public list, names and values, into the data a player's game downloads when it joins.
 - **Not on the settings screen.** 45 options are on no page of the game's server settings screen. They are only in the file (and `/changeoption` can change them).
 
-> **Proof:** Code. zombie.network.ServerOptions#init, #loadServerTextFile, #saveServerTextFile and its constructor (the public list); zombie.config.ConfigFile#write (one line per option, the description as a comment); zombie.config.IntegerConfigOption#setValue and zombie.config.DoubleConfigOption#setValue (out-of-range values refused); zombie.config.BooleanConfigOption#parse; zombie.network.ConnectionDetails#writeServerOptions (the public list sent to a joining player); zombie.network.ServerSettingsManager#getSettingsFolder. Build 42.21 (revision 4a0e9546ec).
+> **Proof:** Code. zombie.network.ServerOptions#init, #loadServerTextFile, #saveServerTextFile and its constructor (the public list); zombie.config.ConfigFile#write (one line per option, the description as a comment); zombie.config.IntegerConfigOption#setValue and zombie.config.DoubleConfigOption#setValue (out-of-range values refused); zombie.config.BooleanConfigOption#parse; zombie.network.ConnectionDetails#writeServerOptions (the public list sent to a joining player); zombie.network.ServerSettingsManager#getSettingsFolder. Build 42.22 (revision 3d39148846).
 
 ## What we found
 
-- **143 of 144 options are read** somewhere in the Java or the vanilla Lua, at 376 read sites.
+- **143 of 144 options are read** somewhere in the Java or the vanilla Lua, at 372 read sites.
 - **1 option is read nowhere:** [BloodSplatLifespanDays](/pz/build-42/server/server-options/server-options-only-in-the-ini-file#bloodsplatlifespandays).
 
 ## How a read site is found
 
-Every "Read in" line on these pages comes from a search of the Build 42.21 Java and the vanilla Lua, by these rules:
+Every "Read in" line on these pages comes from a search of the Build 42.22 Java and the vanilla Lua, by these rules:
 
 1. Java, a server option: the option's field reached through ServerOptions.instance or ServerOptions.getInstance() (or a local variable holding one of them, inside the same method), the field reached with this. inside ServerOptions itself (its constructor, which only builds the public list, is left out), and a call getOption / getBoolean / getInteger / getFloat / getDouble / getOptionByName / putOption / putSaveOption / changeOption with the option's name written as text, on a ServerOptions receiver.
 2. Java, a sandbox option: the option's field reached through SandboxOptions.instance or SandboxOptions.getInstance() (for a nested group, through its group field, such as lore or zombieConfig), through a local variable holding SandboxOptions or one of its groups inside the same method, or with this. inside SandboxOptions; and getOptionByName with the option's name written as text. A getOptionByName whose name is built at run time ("MultiplierConfig." + a skill) is kept as a computed read for every option the prefix can reach, and so is an option the world generator's Lua data names as "Sandbox.Name", which ProbaString looks up by that name.

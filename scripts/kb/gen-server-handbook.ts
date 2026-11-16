@@ -22,7 +22,7 @@ import fs from 'fs'
 import path from 'path'
 
 const REPO_ROOT = path.resolve(__dirname, '..', '..')
-const DEFAULT_BUILD = '42.21'
+const DEFAULT_BUILD = '42.22'
 const SECTION = 'server'
 const SITE_BASE = `/pz/build-42/${SECTION}`
 const REGEN = 'npm run kb:gen-server'
@@ -1033,6 +1033,7 @@ export function generate(data: ServerSurface, notes: Notes): Output {
     JSON.stringify(
       {
         name: 'Running a Server',
+        navName: 'Servers',
         description: `For server owners: every server option, sandbox option, admin command and role in Build ${data.build.split('.')[0]}, generated from the code, with where the game reads each one.`,
         icon: 'database',
         displayOrder: 6,

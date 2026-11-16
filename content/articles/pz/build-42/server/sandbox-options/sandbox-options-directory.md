@@ -1,6 +1,6 @@
 ---
 slug: sandbox-options-directory
-title: 'Sandbox options A to Z (Build 42.21)'
+title: 'Sandbox options A to Z (Build 42.22)'
 game: pz
 version: build-42
 section: server
@@ -12,8 +12,8 @@ tags:
   - sandbox
   - reference
   - generated
-excerpt: 'All 269 Build 42.21 sandbox options A to Z, how the SandboxVars file and the presets work, and which options the code never reads.'
-last_updated: '2026-10-04'
+excerpt: 'All 269 Build 42.22 sandbox options A to Z, how the SandboxVars file and the presets work, and which options the code never reads.'
+last_updated: '2026-11-09'
 related_articles:
   - running-a-server
   - sandbox-options-time-and-world
@@ -23,9 +23,9 @@ related_articles:
 ---
 # Sandbox options A to Z
 
-> **Generated from the code.** This page is generated from Build 42.21 (revision 4a0e9546ec) by `npm run kb:gen-server`, not written by hand. When the game updates we re-extract the data and run it again, so the page always matches one exact build. How it is made is on [the handbook's first page](/pz/build-42/server/getting-started/running-a-server#how-these-pages-are-made).
+> **Generated from the code.** This page is generated from Build 42.22 (revision 3d39148846) by `npm run kb:gen-server`, not written by hand. When the game updates we re-extract the data and run it again, so the page always matches one exact build. How it is made is on [the handbook's first page](/pz/build-42/server/getting-started/running-a-server#how-these-pages-are-made).
 
-Outcast, the sandbox options are the flavour of your world: how many zombies, how fast, how much loot, how long the power stays on. Build 42.21 has 269 of them. Here they are A to Z; click a name for the full entry.
+Outcast, the sandbox options are the flavour of your world: how many zombies, how fast, how much loot, how long the power stays on. Build 42.22 has 269 of them. Here they are A to Z; click a name for the full entry.
 
 ## The file and the presets
 
@@ -34,22 +34,22 @@ Outcast, the sandbox options are the flavour of your world: how many zombies, ho
 - **The presets.** The sandbox screen offers "Apocalypse", "Outbreak", "Extinction", "Rising", "Six Months Later". Choosing one starts from the Apocalypse values and applies the preset file on top, so an option a preset file does not mention keeps the Apocalypse value. Each entry lists the presets that set a different value.
 - **A value out of range is refused,** exactly as for the server options: the game logs an error and keeps the value it had.
 
-> **Proof:** Code. zombie.SandboxOptions constructor (loadGameFile("Apocalypse") then setDefaultsToCurrentValues), #loadServerLuaFile, #saveServerLuaFile and #writeLuaFile (the file, the groups, the comments); media/lua/client/OptionScreens/SandboxOptions.lua SandboxOptionsScreen:loadPresets and addPresetToList (each preset is a fresh SandboxOptions with the preset file loaded on top); zombie.config.IntegerConfigOption#setValue and zombie.config.DoubleConfigOption#setValue. Build 42.21 (revision 4a0e9546ec).
+> **Proof:** Code. zombie.SandboxOptions constructor (loadGameFile("Apocalypse") then setDefaultsToCurrentValues), #loadServerLuaFile, #saveServerLuaFile and #writeLuaFile (the file, the groups, the comments); media/lua/client/OptionScreens/SandboxOptions.lua SandboxOptionsScreen:loadPresets and addPresetToList (each preset is a fresh SandboxOptions with the preset file loaded on top); zombie.config.IntegerConfigOption#setValue and zombie.config.DoubleConfigOption#setValue. Build 42.22 (revision 3d39148846).
 
 ## What we found
 
-- **224 options are read directly** by the Java or the vanilla Lua (611 read sites).
+- **224 options are read directly** by the Java or the vanilla Lua (612 read sites).
 - **37 are read through a name built elsewhere:** the XP multipliers (the code builds "MultiplierConfig." plus the skill name) and the options the world generator names in its data.
 - **4 have no read we could find, but their name appears as text:** [ZombieRespawn](/pz/build-42/server/sandbox-options/sandbox-options-zombies#zombierespawn), [ZombieMigrate](/pz/build-42/server/sandbox-options/sandbox-options-zombies#zombiemigrate), [Farming](/pz/build-42/server/sandbox-options/sandbox-options-not-on-the-settings-screen#farming), [NatureAbundance](/pz/build-42/server/sandbox-options/sandbox-options-nature-and-livestock#natureabundance). Each entry says where.
 - **4 are read nowhere:** [AlarmDecayModifier](/pz/build-42/server/sandbox-options/sandbox-options-not-on-the-settings-screen#alarmdecaymodifier), [PlantAbundance](/pz/build-42/server/sandbox-options/sandbox-options-not-on-the-settings-screen#plantabundance), [NightLength](/pz/build-42/server/sandbox-options/sandbox-options-not-on-the-settings-screen#nightlength), [Basement.SpawnFrequency](/pz/build-42/server/sandbox-options/sandbox-options-time-and-world#basementspawnfrequency).
-- **1,238 places set a sandbox value instead of reading it,** nearly all in the debug scenarios and the Last Stand challenges. Each entry lists them apart from the reads.
-- **Names the code uses that are not options in 42.21:** `LootRespawn` (20 places, first `media/lua/client/DebugUIs/Scenarios/AiteronScenario.lua` in `setSandbox` (line 38)); `Speed` (15 places, first `media/lua/client/DebugUIs/Scenarios/AiteronScenario.lua` in `setSandbox` (line 10)); `Survivors` (15 places, first `media/lua/client/DebugUIs/Scenarios/AiteronScenario.lua` in `setSandbox` (line 13)); `ThumpOnConstruction` (1 place, first `media/lua/client/Tutorial/Tutorial1.lua` in `Tutorial1.PreloadInit` (line 17)); `ZombiesRespawn` (3 places, first `media/lua/client/DebugUIs/Scenarios/BobKates.lua` in `setSandbox` (line 38)).
+- **1,235 places set a sandbox value instead of reading it,** nearly all in the debug scenarios and the Last Stand challenges. Each entry lists them apart from the reads.
+- **Names the code uses that are not options in 42.22:** `LootRespawn` (20 places, first `media/lua/client/Challenge/AReallyCDDAy.lua` in `CDDA.OnInitWorld` (line 46)); `Speed` (15 places, first `media/lua/client/DebugUIs/Scenarios/AiteronScenario.lua` in `setSandbox` (line 10)); `Survivors` (15 places, first `media/lua/client/DebugUIs/Scenarios/AiteronScenario.lua` in `setSandbox` (line 13)); `ThumpOnConstruction` (1 place, first `media/lua/client/Tutorial/Tutorial1.lua` in `Tutorial1.PreloadInit` (line 17)); `ZombiesRespawn` (3 places, first `media/lua/client/DebugUIs/Scenarios/BobKates.lua` in `setSandbox` (line 38)).
 - **The Six Months Later preset sets names that are not options:** `LootRespawn`, `XpMultiplier`. The game ignores them.
 - **The Six Months Later preset computes some values:** `ZombieConfig.PopulationMultiplier = tonumber(ZombiePopulationMultiplier.VeryHigh) = 1.6`; `ZombieConfig.PopulationStartMultiplier = tonumber(ZombiePopulationStartMultiplier.VeryHigh) = 2.0`; `ZombieConfig.PopulationPeakMultiplier = tonumber(ZombiePopulationPeakMultiplier.Normal) = 1.0` (the tables are set in `media/lua/shared/defines.lua`).
 
 ## How a read site is found
 
-Every "Read in" line on these pages comes from a search of the Build 42.21 Java and the vanilla Lua, by these rules:
+Every "Read in" line on these pages comes from a search of the Build 42.22 Java and the vanilla Lua, by these rules:
 
 1. Java, a server option: the option's field reached through ServerOptions.instance or ServerOptions.getInstance() (or a local variable holding one of them, inside the same method), the field reached with this. inside ServerOptions itself (its constructor, which only builds the public list, is left out), and a call getOption / getBoolean / getInteger / getFloat / getDouble / getOptionByName / putOption / putSaveOption / changeOption with the option's name written as text, on a ServerOptions receiver.
 2. Java, a sandbox option: the option's field reached through SandboxOptions.instance or SandboxOptions.getInstance() (for a nested group, through its group field, such as lore or zombieConfig), through a local variable holding SandboxOptions or one of its groups inside the same method, or with this. inside SandboxOptions; and getOptionByName with the option's name written as text. A getOptionByName whose name is built at run time ("MultiplierConfig." + a skill) is kept as a computed read for every option the prefix can reach, and so is an option the world generator's Lua data names as "Sandbox.Name", which ProbaString looks up by that name.

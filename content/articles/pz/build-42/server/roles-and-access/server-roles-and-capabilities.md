@@ -1,6 +1,6 @@
 ---
 slug: server-roles-and-capabilities
-title: 'Roles and capabilities (Build 42.21)'
+title: 'Roles and capabilities (Build 42.22)'
 game: pz
 version: build-42
 section: server
@@ -11,8 +11,8 @@ tags:
   - admin
   - roles
   - generated
-excerpt: 'The 7 built-in roles of Build 42.21, what each may do, and all 98 capabilities with the commands that need them.'
-last_updated: '2026-10-04'
+excerpt: 'The 7 built-in roles of Build 42.22, what each may do, and all 98 capabilities with the commands that need them.'
+last_updated: '2026-11-09'
 related_articles:
   - running-a-server
   - where-each-capability-is-checked
@@ -20,9 +20,9 @@ related_articles:
 ---
 # Roles and capabilities
 
-> **Generated from the code.** This page is generated from Build 42.21 (revision 4a0e9546ec) by `npm run kb:gen-server`, not written by hand. When the game updates we re-extract the data and run it again, so the page always matches one exact build. How it is made is on [the handbook's first page](/pz/build-42/server/getting-started/running-a-server#how-these-pages-are-made).
+> **Generated from the code.** This page is generated from Build 42.22 (revision 3d39148846) by `npm run kb:gen-server`, not written by hand. When the game updates we re-extract the data and run it again, so the page always matches one exact build. How it is made is on [the handbook's first page](/pz/build-42/server/getting-started/running-a-server#how-these-pages-are-made).
 
-Outcast, in Build 42.21 what a player may do on your server is a list of capabilities, and a role is a named set of them. The game ships 7 built-in roles. You give a player a role with `/setaccesslevel`, and admins can add their own roles in the game's Roles window.
+Outcast, in Build 42.22 what a player may do on your server is a list of capabilities, and a role is a named set of them. The game ships 7 built-in roles. You give a player a role with `/setaccesslevel`, and admins can add their own roles in the game's Roles window.
 
 ## How roles work
 
@@ -31,7 +31,7 @@ Outcast, in Build 42.21 what a player may do on your server is a list of capabil
 - **Default roles.** The server keeps a default role for each kind of account. Out of the box: `defaultForBanned` is `banned`, `defaultForNewUser` is `user`, `defaultForUser` is `user`, `defaultForPriorityUser` is `priority`, `defaultForObserver` is `observer`, `defaultForGM` is `gm`, `defaultForOverseer` is `gm`, `defaultForModerator` is `moderator`, `defaultForAdmin` is `admin`.
 - **Single player in debug mode** grants every capability; a dedicated server never does that.
 
-> **Proof:** Code. zombie.characters.Roles#addStatic (the built-in roles, their capabilities, descriptions and defaults), #init (built-in roles first, then the database), #addRole (a new role gets LoginOnServer); zombie.characters.Role#addCapability (does nothing on a read-only role), #hasCapability and #isUsingDebugMode. Build 42.21 (revision 4a0e9546ec).
+> **Proof:** Code. zombie.characters.Roles#addStatic (the built-in roles, their capabilities, descriptions and defaults), #init (built-in roles first, then the database), #addRole (a new role gets LoginOnServer); zombie.characters.Role#addCapability (does nothing on a read-only role), #hasCapability and #isUsingDebugMode. Build 42.22 (revision 3d39148846).
 
 ## The built-in roles
 
@@ -45,11 +45,11 @@ Outcast, in Build 42.21 what a player may do on your server is a list of capabil
 | `moderator` | "Can make all except edit roles, reload lua files, change server options." | all except `UseMovablesCheat`, `SaveWorld`, `QuitWorld`, `ChangeAndReloadServerOptions`, `ReloadLuaFiles`, `BypassLuaChecksum`, `RolesWrite`, `ConnectWithDebug` | `defaultForModerator` |
 | `admin` | "Have all capabilities." | all | `defaultForAdmin` |
 
-The help text of `/setaccesslevel` still names an "Overseer" level, but no built-in role is called that in 42.21: the default for overseers (`defaultForOverseer`) is `gm`.
+The help text of `/setaccesslevel` still names an "Overseer" level, but no built-in role is called that in 42.22: the default for overseers (`defaultForOverseer`) is `gm`.
 
 ## Which role has which capability
 
-Every capability in 42.21, the game's description of it, the built-in roles that hold it (Y), and the commands that need it. [Where each capability is checked](/pz/build-42/server/roles-and-access/where-each-capability-is-checked) lists the code that reads each one.
+Every capability in 42.22, the game's description of it, the built-in roles that hold it (Y), and the commands that need it. [Where each capability is checked](/pz/build-42/server/roles-and-access/where-each-capability-is-checked) lists the code that reads each one.
 
 | Capability | banned | user | priority | observer | gm | moderator | admin | Commands | The game's description |
 |---|---|---|---|---|---|---|---|---|---|
