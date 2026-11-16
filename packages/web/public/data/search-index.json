@@ -6065,10 +6065,9 @@
       "item-scripts",
       "tags",
       "workstation",
-      "tech-tiers",
-      "timedaction"
+      "skills"
     ],
-    "excerpt": "Items, tags and crafting overview, in 11 parts: The big picture, Script file anatomy, Items: the item block in B42, Tags, Skills, XP, and learning, The workstation / entity system, Tech tiers and...",
+    "excerpt": "A map of the Build 42.22 items and scripting pages: which page to open to write an item, a tag, a workstation, a skill gate, an override, and how to test them.",
     "difficulty": "intermediate"
   },
   {
@@ -6098,12 +6097,10 @@
     "category": "items-and-scripting",
     "tags": [
       "item-scripts",
-      "tags",
-      "workstation",
-      "tech-tiers",
-      "timedaction"
+      "craftrecipe",
+      "checklist"
     ],
-    "excerpt": "For \"B42-stable ready\" crafting content:",
+    "excerpt": "A checklist to run through before you call crafting content ready on Build 42.22: tags, models, craftRecipe keys, input modes, learning, skills, fluids, mappers and the log.",
     "difficulty": "intermediate"
   },
   {
@@ -6149,13 +6146,13 @@
     "section": "modding",
     "category": "items-and-scripting",
     "tags": [
-      "item-scripts",
-      "tags",
-      "workstation",
-      "tech-tiers",
-      "timedaction"
+      "craftrecipe",
+      "skills",
+      "xp",
+      "learning",
+      "recipes"
     ],
-    "excerpt": "All [CONFIRMED] from vanilla recipe files unless noted.",
+    "excerpt": "How a Build 42.22 craftRecipe asks for a skill, awards XP, and becomes known: SkillRequired, xpAward, NeedToBeLearn, the learning routes, skill books and the Lua hooks.",
     "difficulty": "intermediate"
   },
   {
@@ -6184,13 +6181,12 @@
     "section": "modding",
     "category": "items-and-scripting",
     "tags": [
-      "item-scripts",
-      "tags",
       "workstation",
       "tech-tiers",
-      "timedaction"
+      "craftrecipe",
+      "production"
     ],
-    "excerpt": "[CONFIRMED at a high level; exact taxonomy UNCERTAIN] B42 structures production as chains with tiered stations:",
+    "excerpt": "How Build 42.22 builds tiers out of tags: forges and furnaces list the tags of the bench below them, and the vanilla production chains run across benches, skills and learning.",
     "difficulty": "intermediate"
   },
   {
@@ -6202,13 +6198,12 @@
     "section": "modding",
     "category": "items-and-scripting",
     "tags": [
-      "item-scripts",
-      "tags",
-      "workstation",
-      "tech-tiers",
-      "timedaction"
+      "testing",
+      "console-log",
+      "load-errors",
+      "item-scripts"
     ],
-    "excerpt": "Testing loop [standard workflow]: Put scripts under /media/scripts/; ensure mod.info (and B42's /common/ or versioned folder layout) is correct. Enable the mod, start a new test save (B42 caches...",
+    "excerpt": "Where Build 42.22 writes its log, which script mistakes print a line and which fail silently, and how to check in game that an item or recipe loaded. Includes a break-it-on-purpose test mod.",
     "difficulty": "intermediate"
   },
   {
@@ -6221,12 +6216,12 @@
     "category": "items-and-scripting",
     "tags": [
       "item-scripts",
-      "tags",
+      "craftrecipe",
       "workstation",
-      "tech-tiers",
-      "timedaction"
+      "tags",
+      "skills"
     ],
-    "excerpt": "[CONFIRMED] B42 is a crafting/production overhaul first, everything-else second. The headline shift for a scripter:",
+    "excerpt": "What a Build 42.22 scripter should know first: crafting is written as craftRecipe blocks, matched by tag, tied to workstation entities, and gated by skill and learning.",
     "difficulty": "intermediate"
   },
   {
@@ -6238,13 +6233,12 @@
     "section": "modding",
     "category": "items-and-scripting",
     "tags": [
-      "item-scripts",
-      "tags",
       "workstation",
-      "tech-tiers",
-      "timedaction"
+      "entity",
+      "craftbench",
+      "craftrecipe"
     ],
-    "excerpt": "[CONFIRMED] Workstations are entity blocks made of components. The crafting-relevant one is CraftBench, whose Recipes = ... value lists tags that recipes must carry to appear at this station.",
+    "excerpt": "How a Build 42.22 workstation is an entity made of components, how the CraftBench Recipes list picks the recipes it shows, and which vanilla benches and tags exist.",
     "difficulty": "intermediate"
   },
   {
