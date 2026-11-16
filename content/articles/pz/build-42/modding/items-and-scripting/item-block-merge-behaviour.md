@@ -1,157 +1,158 @@
 ---
 id: build-42-item-block-merge-behaviour
 slug: item-block-merge-behaviour
-title: B42 resource weight reduction -- candidate item audit
+title: 'Item block merging, and the weight audit that proved it'
 game: pz
 version: build-42
 section: modding
 category: items-and-scripting
 difficulty: intermediate
 tags:
+  - item-scripts
   - items
-  - scripting
-  - resource-weights
-  - item-blocks
+  - merge
+  - weights
 excerpt: >-
-  Build: B42 stable, Steam buildid 24449119 Source of truth:
-  media/scripts/generated/items/*.txt in the installed game
-  Scope agreed: all raw crafting materials (wood + metal...
-last_updated: '2026-10-04'
+  In 42.22 a mod item block with only a Weight line changes the weight and leaves the rest of the vanilla item alone. The page shows why, how to try it, and the weight audit behind Outcast Light Load.
+last_updated: '2026-11-16'
+related_articles:
+  - overriding-patching-vanilla
+  - items-the-item-block-in-b42
+  - script-file-anatomy
+  - overriding-scripts
 ---
-# B42 resource weight reduction -- candidate item audit
+::field-notes
 
-> Source: CANDIDATE_ITEMS.md (compiled 2026-08-03, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-16.
 
-**Build:** B42 stable, Steam buildid `24449119`
-**Re-checked:** Build 42.21 (revision `4a0e9546ec`, Steam buildid `25485521`). The merge path below is unchanged, the vanilla item count is still 5,105, and the only `Weight` that 42.21 changed in any item script is `Mov_Brazier` (0.5 to 10.0).
-**Source of truth:** `media/scripts/generated/items/*.txt` in the installed game
-**Scope agreed:** all raw crafting materials (wood + metal core, plus fasteners, cordage, fiber, earth, glass, leather, fuel)
-**Method:** all 5,105 vanilla item blocks parsed to CSV, then filtered by `DisplayCategory` and ID keyword sweep. Every ID below was resolved against the live scripts -- 218/218 matched, zero invented IDs.
-**Status:** Audit complete. Tier 1 + Tier 2 shipped as the mod `OutcastLightLoad`
-at a flat x0.5 multiplier -- 110 items. Tiers 3 and 4
-remain unshipped and are still open decisions.
+**Who this page is for:** [modders changing one value on a vanilla item](#1-a-partial-item-block-merges-onto-vanilla) | [modders planning a weight or balance mod](#3-the-weight-audit-behind-outcast-light-load)
 
-**Engine fact established while building v1:** partial item blocks **merge** onto vanilla
-rather than replacing them. `ScriptType.Item` does carry `ResetExisting`
-(`ScriptType.java:117,124`), but neither `Item` nor `GameEntityScript` overrides
-`BaseScriptObject.reset()`, which is an empty no-op (`BaseScriptObject.java:197`), and
-`Item.Load` only calls `DoParam` for keys present in the block (`Item.java:1415-1442`).
-So shipping `Weight` alone is safe -- model, icon, combat stats and tags all survive.
-Full citation trail in the mod's README.
+:::callout[The 1-minute version]{kind=key}
+- A mod block `item Plank { Weight = 1.5, }` inside `module Base` changes the plank's weight and leaves its model, icon, tags and combat numbers as vanilla set them.
+- The engine loads only the keys a block contains, and the empty default `reset()` clears nothing between two blocks of the same item.
+- The merge applies to items. A short list of other script types replace instead; [Overriding scripts](/pz/build-42/modding/changing-vanilla/overriding-scripts) lists them.
+- If one body of the item fails to load, for example `Weight = heavy,`, the engine removes the whole item, vanilla's body included.
+- A weight sweep that only reads `DisplayCategory = Material` misses the plank, the bars and the pipe: they sit in `weapon.txt` as `MaterialWeapon`.
+:::
 
----
+:::facts
+- **Item blocks in vanilla** 5,105, under 5,092 distinct names
+- **Item files in vanilla** 15, split by `ItemType`
+- **Items Outcast Light Load changes** 110: 21 wood at x0.5, 82 bulk at x0.35, 7 fasteners at x0.1
+- **Vanilla `Weight` changes from 42.21 to 42.22** 1 (`WalkieTalkieMakeShift`, 1.0 to 5.0)
+:::
 
-## Where B42 keeps this data (read this before editing anything)
+## 1. A partial item block merges onto vanilla
 
-B42 no longer uses B41's `media/scripts/items.txt` / `newitems.txt` layout. Item definitions
-are split by `ItemType` into 15 generated files:
+**A second `item` block for a vanilla name sets only the keys it contains, so a block with `Weight` alone is safe.**
 
-| File | Holds | Relevance here |
-|---|---|---|
-| `normal.txt` | most raw materials | **primary target** |
-| `weapon.txt` | anything swingable | **Plank, Log-adjacent sticks, IronBar, MetalPipe live HERE** |
-| `drainable.txt` | uses-based items | buckets, tapes, glues, sandbags, wire |
-| `moveable.txt` | placeable pickups | hides, ore lumps, bellows |
-| `container.txt` / `food.txt` / `literature.txt` / `clothing.txt` | rest | mostly out of scope |
+The engine files every block under the item's name. A block whose name is already known is added as another body to the same entry, not as a new item. :cite[(`zombie/scripting/ScriptBucket.java:98-125`)] The bodies are loaded one after another into one object, vanilla's first. :cite[(`zombie/scripting/ScriptBucket.java:173-198`)]
 
-**Trap:** `Plank` (3.0), `IronBar` (2.0), `SteelBar` (2.0), `MetalBar` (1.5), `MetalPipe` (1.5),
-`Firewood` (1.5), `LongStick` (2.0), `LargeBranch` (6.0) are **`DisplayCategory = MaterialWeapon`
-in `weapon.txt`**, not in `normal.txt`. A mod that only sweeps the Material category will silently
-miss the single most-carried item in the game. This is the #1 thing that would have broken the mod.
+Between two bodies the engine calls `reset()` on the object, because items carry the reset flag. :cite[(`zombie/scripting/ScriptBucket.java:194-195`, `zombie/scripting/ScriptType.java:112-124`)] That call does nothing for an item: the base `reset()` is empty, and neither `Item` nor its parent `GameEntityScript` replaces it. :cite[(`zombie/scripting/objects/BaseScriptObject.java:197-198`, `zombie/scripting/objects/Item.java:75`, `zombie/scripting/entity/GameEntityScript.java:33`)] Then the item loader calls its key reader once for each key line in the body, and for no other key. :cite[(`zombie/scripting/objects/Item.java:1427-1436`)] A key you leave out keeps the value vanilla's body set.
 
----
+Two things hold the merge apart from "copy my block over theirs". `Tags` adds each tag to the item's set and never removes one. :cite[(`zombie/scripting/objects/Item.java:2353-2359`)] And a failed body removes the whole item: the loader drops the script when a body throws, and items carry the flag that allows it. :cite[(`zombie/scripting/ScriptBucket.java:198-203`, `zombie/scripting/ScriptType.java:112-124`)] [Overriding scripts](/pz/build-42/modding/changing-vanilla/overriding-scripts) covers both, and which file wins when two mods change the same item.
 
-## Balance observations found during the audit
+Vanilla itself defines 13 item names twice, for example `Mov_Lamp1` and `WatermelonSeed`. Those names go through the same path. :cite[(`media/scripts/generated/items/moveable.txt:2118`, `media/scripts/generated/items/moveable.txt:3575`, `media/scripts/generated/items/normal.txt:5414`, `media/scripts/generated/items/normal.txt:5434`)]
 
-These change what "reduce the weight" should even mean -- worth deciding before picking numbers.
+## 2. Try it: a lighter plank
 
-1. **Log stacking is already a 3x discount.** `Log` = 9.0 each, but `LogStacks2` = 6.0 (3.0/log),
-   `LogStacks3` = 9.0 (3.0/log), `LogStacks4` = 12.0 (3.0/log). So four stacked logs weigh 12.0
-   while four loose logs weigh 36.0. If you flat-cut `Log` without touching the stacks, you invert
-   the incentive and make stacking pointless. Recommend scaling the whole family together.
+**One script file with one line changes the plank's weight, and you can read the new weight in game.**
 
-2. **`IronOre` and `CopperOre` are 40.0** -- tied for the heaviest items in the audit alongside
-   `LargeStone`, `StoneAnvil`, `LargeBellows`. This is the real mining/smithing pain point, arguably
-   more than logging.
+1. Make the folder `Zomboid/mods/LightPlank/`, with `42/mod.info` and a `poster.png` copied from the [project skeleton](/pz/build-42/modding/cookbook/project-skeleton). Give `mod.info` both lines `name=Light Plank` and `id=LightPlank`, so the mod list shows the name Light Plank.
+2. Make the file `Zomboid/mods/LightPlank/42/media/scripts/LightPlank_items.txt` with this content. The file name is your own, so it never takes a vanilla file's path.
 
-3. **Carton > Box > loose is a clean existing ladder** for fasteners: `NailsCarton` 20.0 /
-   `NailsBox` 2.0 / `Nails` 0.05. Same for screws. Preserve the ratio rather than flattening it.
+```
+module Base
+{
+    item Plank
+    {
+        Weight = 1.5,
+    }
+}
+```
 
-4. **Quarter/Half/Full bar stock is already linear** (`SteelBarQuarter` 0.5, `SteelBarHalf` 1.0,
-   `SteelBar` 2.0). A percentage multiplier keeps this coherent; flat subtraction destroys it.
+3. Start the game with `-debug`, as the skeleton page shows. Check **Light Plank** in the mod list, accept, and start a new game.
+4. Open the debug **Items List**, as [New item](/pz/build-42/modding/cookbook/new-item) shows, search for `Plank`, and add one. Hover the plank in your inventory. Its weight should read 1.5 where vanilla reads 3.0. :cite[(`media/scripts/generated/items/weapon.txt:9255-9259`)]
+5. Check that the plank still has its vanilla icon, and that it still works as a weapon. Those keys were not in your block, so they stay.
 
-5. **Leather has ~120 near-duplicate entries** (species x fur/full x tan x wet x size). Group R
-   below lists only the large representatives. If leather is in scope, the mod should sweep them
-   by pattern, not by hand-listing, or the file becomes unmaintainable.
+This test has not been run in a game. If the weight does not change, search `console.txt` for `removing script due to load error` and for the name of your file.
 
----
+## 3. The weight audit behind Outcast Light Load
 
-## Recommended tiering (for the next decision, not yet applied)
+**The audit that found the merge rule also tells you where vanilla keeps weights, and why a flat cut can break the balance.**
 
-| Tier | Contents | Rationale |
-|---|---|---|
-| **Tier 1 -- core ask** | Groups A, D, E, F, G, H | Wood + refined metal. The stuff you haul while logging and scrapping. Highest impact, lowest balance risk. |
-| **Tier 2 -- strong fit** | Groups B, C, I, N | Ore, fuel, wire, fasteners. Fixes the mining/smithing haul. Ore at 40.0 is the biggest single win. |
-| **Tier 3 -- judgment call** | Groups J, K, L, M, O, P, Q, S | Masonry, earth, cordage, glass. Reasonable, but touches carpentry/farming balance. |
-| **Tier 4 -- flag before touching** | Groups R, T | Leather (120+ dupes, tailoring balance) and anvils/bellows/propane. `PropaneTank` and `GunPowder` weight is arguably intentional friction. |
+The audit was written for the Outcast Light Load mod, which cuts the weight of raw crafting materials. It parsed the item scripts, grouped the raw materials (wood and metal core, plus fasteners, cordage, fiber, earth, glass, leather and fuel), and listed 218 candidate items. The original audit ran on build 42.20; the vanilla weights quoted below were checked again on 42.22.
 
----
+### Where vanilla keeps the data
 
-## Full candidate list -- 218 items
+Vanilla item blocks sit in 15 files under `media/scripts/generated/items/`, one per `ItemType`. :cite[(`media/scripts/generated/items/normal.txt:891`, `media/scripts/generated/items/weapon.txt:9255`)] The trap is that several of the most carried materials are in `weapon.txt`, not in `normal.txt`, because they are also weapons. These eight are `DisplayCategory = MaterialWeapon` in `weapon.txt`. :cite[(`media/scripts/generated/items/weapon.txt:9255-9259`)]
 
-All weights below are **current vanilla values**, read directly from the B42 scripts.
+:::chips
+- Plank 3.0
+- IronBar 2.0
+- SteelBar 2.0
+- MetalBar 1.5
+- MetalPipe 1.5
+- Firewood 1.5
+- LongStick 2.0
+- LargeBranch 6.0
+:::
 
-<!-- GENERATED: see _groups_generated.md, produced by the parse+join scripts. -->
+A sweep that keeps only `DisplayCategory = Material` misses all eight. `Log`, `Nails`, `IronOre` and `SheetMetal` are `Material` items in `normal.txt`.
 
-See _groups_generated.md (local reference: _groups_generated.md) for the complete grouped tables (A through T).
+### What the numbers say about balance
 
-### Group index and counts
+Five vanilla patterns decide what "reduce the weight" should mean.
+
+1. **Stacked logs are already a 3x discount.** `Log` is 9.0, and `LogStacks2`, `LogStacks3` and `LogStacks4` weigh 6.0, 9.0 and 12.0, which is 3.0 per log each. Four loose logs weigh 36.0 and four stacked logs 12.0. Cutting `Log` alone would make stacking pointless, so the whole family has to move together.
+2. **Ore is the heaviest haul.** `IronOre` and `CopperOre` weigh 40.0, level with `LargeStone`, `StoneAnvil` and `LargeBellows`.
+3. **Fasteners form a ladder.** `NailsCarton` is 20.0, `NailsBox` 2.0 and `Nails` 0.05. A percentage cut keeps the ratios; a flat subtraction would not.
+4. **Bar stock is linear.** `SteelBarQuarter` is 0.5, `SteelBarHalf` 1.0 and `SteelBar` 2.0.
+5. **Leather has many near-duplicates** (species, fur or full, tanned, wet, size). The audit counted about 120 and recommended sweeping them by pattern, not by hand. That count was not re-made on 42.22.
+
+Vanilla `Weight` values for the items named above are unchanged from 42.21 to 42.22. Across all item scripts, one item's weight differs between the two builds: `WalkieTalkieMakeShift` went from 1.0 to 5.0. :cite[(`media/scripts/generated/items/radio.txt:143-147`)]
+
+### What shipped
+
+The audit proposed four tiers. The shipped mod, Outcast Light Load, uses three named tiers instead, each a flat multiplier so vanilla ratios inside the tier stay. Packed forms (stacks, bundles, boxes, cartons) take a further x0.8. Its generated script file is a set of `Weight`-only blocks, which is the merge rule from section 1 at work.
+
+| Tier | Multiplier | Items | Covers |
+|---|---|---|---|
+| WOOD | x0.5 | 21 | The logging and lumber chain |
+| BULK | x0.35 | 82 | Charcoal, ore, ingots, bars, blocks, sheet, scrap, wire, fittings |
+| FAST | x0.1 | 7 | Nails, screws and bolts |
+
+All 110 vanilla weights in the mod file match the 42.22 scripts. Ammunition is left alone on purpose, so guns get relatively more expensive to feed.
+
+### The 218-item candidate list
+
+The list below is the audit's group index. The counts come from the 2026-08 audit and were not re-counted on 42.22; the "Heaviest" values for groups A to L, N, O, P, S and T were checked against the 42.22 scripts. The values for M, Q and R (fired clay, plant fiber, leather) were not.
 
 | Group | Items | Heaviest | Notes |
 |---|---|---|---|
-| A. Wood -- logging + lumber chain | 21 | `LargePlank` 10.0 | The headline group. `Log` 9.0, `Plank` 3.0. |
-| B. Wood-derived fuel | 5 | `Charcoal` 0.8 | Low weight already; include for consistency. |
-| C. Metal -- ore + smelting feedstock | 9 | `IronOre` / `CopperOre` 40.0 | Biggest single pain point in B42. |
-| D. Metal -- ingots + precious bars | 10 | `GoldBar` 16.0 | Ingots all 5.0-6.0. |
-| E. Metal -- bars, rods, pipes | 13 | `IronBar` / `SteelBar` 2.0 | Lives in `weapon.txt`. |
-| F. Metal -- blocks, chunks, pieces | 11 | `IronBlock` 2.0 | Blacksmithing intermediates. |
-| G. Metal -- sheet stock | 6 | `SheetMetal` 2.0 | |
-| H. Metal -- scrap | 12 | `ScrapMetal` 1.0 | Already light; low priority. |
-| I. Metal -- wire, band, chain | 11 | `WireStack` / `BarbedWireStack` 10.0 | `HeavyChain_Hook` 12.5. |
-| J. Stone + masonry | 7 | `LargeStone` 40.0 | |
-| K. Bulk powders + wet mixes | 11 | Buckets 10.0 each | Drainables -- verify weight scales with uses. |
-| L. Earth + clay bags | 6 | `CompostBag` 5.0 | |
-| M. Fired clay goods | 8 | all 0.3 | Already trivial; probably skip. |
-| N. Fasteners | 13 | `NailsCarton` / `ScrewsCarton` 20.0 | Preserve carton/box/loose ratio. |
-| O. Adhesives + tape | 8 | `DuctTapeBox` 5.0 | |
-| P. Cordage + cloth bulk | 25 | `FabricRoll_*` 10.0 | |
-| Q. Plant fiber chain | 11 | all 0.2 | Already trivial; probably skip. |
-| R. Leather + hides (large only) | 12 | hides 5.0 | ~120 more variants exist -- pattern-sweep required. |
-| S. Glass + ceramics | 11 | `CeramicCrucible_Iron/Steel` 15.0 | |
-| T. Heavy workstation stock | 8 | anvils / bellows 40.0 | Flag: friction may be intentional. |
+| A. Wood, logging and lumber chain | 21 | `LargePlank` 10.0 | The headline group. `Log` 9.0, `Plank` 3.0. |
+| B. Wood-derived fuel | 5 | `Charcoal` 0.8 | Low weight already. |
+| C. Metal, ore and smelting feedstock | 9 | `IronOre` / `CopperOre` 40.0 | Biggest single pain point. |
+| D. Metal, ingots and precious bars | 10 | `GoldBar` 16.0 | Ingots all 5.0 to 6.0. |
+| E. Metal, bars, rods, pipes | 13 | `IronBar` / `SteelBar` 2.0 | Lives in `weapon.txt`. |
+| F. Metal, blocks, chunks, pieces | 11 | `IronBlock` 2.0 | Blacksmithing intermediates. |
+| G. Metal, sheet stock | 6 | `SheetMetal` 2.0 | |
+| H. Metal, scrap | 12 | `ScrapMetal` 1.0 | Already light. |
+| I. Metal, wire, band, chain | 11 | `WireStack` / `BarbedWireStack` 10.0 | `HeavyChain_Hook` 12.5. |
+| J. Stone and masonry | 7 | `LargeStone` 40.0 | |
+| K. Bulk powders and wet mixes | 11 | Buckets 10.0 each | Drainables: check that weight scales with uses. |
+| L. Earth and clay bags | 6 | `CompostBag` 5.0 | |
+| M. Fired clay goods | 8 | all 0.3 | Not re-checked. |
+| N. Fasteners | 13 | `NailsCarton` / `ScrewsCarton` 20.0 | Keep the carton, box and loose ratio. |
+| O. Adhesives and tape | 8 | `DuctTapeBox` 5.0 | |
+| P. Cordage and cloth bulk | 25 | `FabricRoll_*` 10.0 | |
+| Q. Plant fiber chain | 11 | all 0.2 | Not re-checked. |
+| R. Leather and hides (large only) | 12 | hides 5.0 | Not re-checked. About 120 more variants exist. |
+| S. Glass and ceramics | 11 | `CeramicCrucible_Iron` / `_Steel` 15.0 | |
+| T. Heavy workstation stock | 8 | anvils and bellows 40.0 | Friction may be intended. |
 
----
+The tier plan in the audit put groups A, D, E, F, G, H first, then B, C, I, N, left J, K, L, M, O, P, Q, S as judgment calls, and told the author to flag R and T before touching them: the leather is a tailoring-balance question, and the propane tank and gunpowder weights may be intended friction.
 
-## Open questions for the next session
-
-1. **Reduction method** -- flat percentage multiplier (keeps all existing ratios intact,
-   recommended) vs. per-item hand-tuned values vs. sandbox-configurable multiplier?
-2. **Which tiers ship in v1?** Recommend Tier 1 + Tier 2 as the initial release.
-   Tier 1 = 73 items, Tier 2 = 38 items, so 111 candidates; `Paperclip` drops out
-   as a no-op at the chosen multiplier, giving **110 shipped**.
-3. **Sandbox option or fixed?** A sandbox multiplier makes the mod survive balance arguments,
-   but B42 sandbox options are a separate file format and add scope.
-4. **Leather** -- in or out? If in, it needs a pattern sweep, not a hand list.
-5. **Compatibility** -- overriding vanilla item blocks conflicts with any other mod that
-   touches the same items. Need to decide override strategy before writing scripts.
-
----
-
-## Reproducing this audit
-
-Scripts used are in the session scratchpad and can be re-run against any build:
-
-- `parse_items.ps1` -- parses `generated/items/*.txt` into `b42_items.csv` (5,105 rows:
-  ItemID, DisplayCategory, Weight, Tags, ItemType, File)
-- `build_list.ps1` -- joins the curated ID list against the CSV, emits `_groups_generated.md`,
-  and hard-fails loudly on any ID that does not exist in the game files
+:::callout[How we know]{kind=proof}
+The merge rule and the load-error rule are read from the 42.22 engine code cited above, and the weights from the 42.22 scripts. No game was run for this page, and the plank try-it in section 2 has not been run. The 218-item list itself is not stored with this page, so the group counts are the audit's and were not re-counted; the audit's open questions (how to cut, whether to add a sandbox option, whether leather is in) were answered by the shipped mod only in part: it cuts by tier multiplier, and this page did not re-check which candidate groups it includes.
+:::

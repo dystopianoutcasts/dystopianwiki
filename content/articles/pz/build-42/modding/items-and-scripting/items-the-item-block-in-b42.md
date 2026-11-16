@@ -9,32 +9,47 @@ category: items-and-scripting
 difficulty: intermediate
 tags:
   - item-scripts
+  - items
+  - itemtype
   - tags
-  - workstation
-  - tech-tiers
-  - timedaction
 excerpt: >-
-  A real vanilla Build 42 item, from media/scripts/generated/items/normal.txt,
-  and why Build 42 writes ItemType = base:normal where Build 41 wrote
-  Type = Normal.
-last_updated: '2026-10-04'
+  What a Build 42.22 item block looks like, why it says ItemType = base:normal instead of Type = Normal, the 16 item types, and which keys the item loader reads.
+last_updated: '2026-11-16'
 related_articles:
-  - the-big-picture
   - script-file-anatomy
   - tags
-  - skills-xp-and-learning
-  - the-workstation-entity-system
-  - tech-tiers-and-production-chains
-  - timedaction-blocks
+  - item-tags-from-lua
+  - item-block-merge-behaviour
   - overriding-patching-vanilla
   - testing-loop-and-common-load-errors
-  - master-checklist
+  - new-item
 ---
-# Items: the `item` block in B42
+::field-notes
 
-> Source: 02_SCRIPTING_ITEMS_AND_CRAFTING.md (compiled 2026-07-29, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-16.
 
-A real vanilla Build 42 item, from `media/scripts/generated/items/normal.txt`:
+**Who this page is for:** modders writing or reading an item script, and anyone porting a Build 41 item. To make an item from nothing and see it in game, follow [New item](/pz/build-42/modding/cookbook/new-item).
+
+:::callout[The 1-minute version]{kind=key}
+- Write `ItemType = base:normal`, or another of the 16 vanilla types listed below. A Build 41 line `Type = Normal` is not read in 42.22.
+- An item with no usable `ItemType` loads without an error. The failure comes later, when the game tries to create one.
+- A key the item loader does not know is kept as mod data, with a warning only if a log channel that is off by default is on. A misspelled key therefore does nothing and says nothing.
+- `Tags` is the key recipes match on: a recipe input that names a tag accepts every item that carries it.
+- The Build 41 line `Recipes =` and the spelling `TeachedRecipes` are not read in 42.22; the key that teaches recipes is `LearnedRecipes`.
+:::
+
+:::facts
+- **Item blocks in vanilla** 5,105, under 5,092 distinct names
+- **Vanilla item files** 15, one per `ItemType` except `base:keyring`, which no item uses
+- **Item types the engine registers** 16
+- **Lines `Type = Normal` in vanilla scripts** 0
+:::
+
+## 1. What an item block looks like
+
+**An item is a block of `Key = value,` lines, and vanilla keeps every item in `media/scripts/generated/items/`.**
+
+This is a real vanilla item, a pair of crude wooden tongs. :cite[(`media/scripts/generated/items/normal.txt:891-905`)]
 
 ```
 item CrudeWoodenTongs
@@ -54,43 +69,9 @@ item CrudeWoodenTongs
 }
 ```
 
-Note `ItemType = base:normal`. Build 42 does **not** use B41's `Type = Normal`:
-the installed game has 1,099 items with `ItemType = base:normal`, all in
-`generated/items/normal.txt`, and not one `Type = Normal` anywhere in its
-scripts. The item parser reads `ItemType` and has no `Type` key, so an item
-written with `Type = Normal` registers but gets no type. We learned this the
-hard way: such an item can be looked up by name and still never be created.
+The loader reads the block one `Key = value,` line at a time and hands each pair to one method. :cite[(`zombie/scripting/objects/Item.java:1427-1436`)] Key names are compared without regard to case, which is why `Researchablerecipes` above works. :cite[(`zombie/scripting/objects/Item.java:2788`)]
 
-> **Proof:** Code. `zombie.scripting.objects.Item#DoParam` (reads `ItemType`, no `Type` key), revision 4a0e9546ec; count of `ItemType = base:normal` and `Type = Normal` in `media/scripts` of the installed game. Build 42.21.0.
-
-> **Proof:** Game test. Nineteen Outcast Motors items written with `Type = Normal` were found by `getScriptManager():getItem()`, but `InventoryItemFactory.CreateItem` returned nil for each. Build 42.20.
-
-On 42.21 the game at least says so, if you look in debug mode: an unknown item key, `Type` included, is logged as a warning that starts `adding unknown item param "Type" = "Normal"` and names the script and file. Outside debug mode that log channel is off by default, so do not count on seeing it. We read this in the code and have not re-run the test on 42.21.
-
-> **Proof:** Code. `zombie.scripting.objects.Item#DoParam` (falls through to `DebugType.DetailedInfo.warn("adding unknown item param ...")`); `zombie.debug.DebugType` (every channel starts at `LogSeverity.Off`); `zombie.debug.DebugLog#setDefaultLogSeverity` (the default severity is applied to `DetailedInfo` only when `Core.debug`). Build 42.21.0 (revision 4a0e9546ec).
-
-### Fields that matter in B42 (new / changed emphasis)
-
-| Field | Notes | Flag |
-|---|---|---|
-| `ItemType` | `base:normal`, `base:food`, `base:literature`, `base:weapon`, `base:clothing`, `base:drainable`, etc. Replaces B41's `Type = Normal`, which Build 42 does not read. | Code (proof above) |
-| `DisplayCategory` | Which tab/category the item shows under (e.g. `Tool`, `Material`, `SkillBook`, `WaterContainer`). Heavily used in B42. | CONFIRMED |
-| `Tags` | Semicolon-separated tag list. **This is the single most important field in B42** because recipes match on tags. | CONFIRMED |
-| `StaticModel` / `WorldStaticModel` | B42 pushes 3D models. `WorldStaticModel` = the on-ground model; `StaticModel` = in-hand/equipped. B41's `WorldObjectSprite` is legacy. | CONFIRMED **[BREAKING-ish]** |
-| `Icon` | Still the inventory icon. | CONFIRMED |
-| `TeachedRecipes` | (on Literature items) semicolon list of `craftRecipe` IDs this magazine teaches. | CONFIRMED |
-| `ResearchableRecipes` | semicolon list of recipe IDs the player can *learn by researching/disassembling this item*. | CONFIRMED |
-| `SkillTrained` / `LvlSkillTrained` / `NumLevelsTrained` / `NumberOfPages` | Skill-book fields (train a skill over a level band). | CONFIRMED |
-| `component FluidContainer { ... }` | NEW: makes the item hold fluids (see section 12). | CONFIRMED **[NEW]** |
-| `EatType` / `PourType` | Animation/interaction variant keys used with fluids & food. | CONFIRMED |
-| `IconFluidMask` | Mask overlay so the icon shows the fluid level/color. | CONFIRMED |
-| `ItemWhenDry` / `Wet` / `WetCooldown` | Wet/dry item state transitions (seen on crafted tools). | CONFIRMED |
-| `ConditionMax` / `ConditionLowerChanceOneIn` | Durability. `ConditionMax = 1` = one-use/fragile. | CONFIRMED |
-| `RequiresEquippedBothHands` | Heavy items (ore, blooms) need both hands. | CONFIRMED |
-
-**[BREAKING]** Note what is *gone or moved* from B41 item scripts: the old per-item `Recipes = ...` property (which auto-taught a recipe on pickup) is largely replaced by the learning system (`TeachedRecipes`/`ResearchableRecipes`/`AutoLearn`). The B41 recipe menu was flat and item-driven; B42 items participate in crafting almost entirely through **tags**.
-
-A "material" item is trivial (from `generated/items/normal.txt`):
+A plain material is shorter: iron ore has a weight, an icon, two models, tags and one flag. :cite[(`media/scripts/generated/items/normal.txt:919-928`)]
 
 ```
 item IronOre
@@ -106,8 +87,107 @@ item IronOre
 }
 ```
 
----
+## 2. ItemType: Build 42 reads `ItemType`, not `Type`
 
-*Corrected 2026-10-04: Build 42 items use ItemType = base:normal; B41's Type = Normal is not read, and the vanilla examples now quote a file that exists.*
+**The kind of item comes from `ItemType`, whose value must be one of 16 ids the engine registers; a Build 41 `Type = Normal` line gives the item no kind.**
 
-*Updated 2026-10-04: on 42.21 a `Type = Normal` line logs an `adding unknown item param` warning, in debug mode only (read in the code, not re-tested).*
+The item loader has a branch for the key `ItemType` and looks the value up in the item-type registry. :cite[(`zombie/scripting/objects/Item.java:1982-1983`)] The engine registers these 16 ids in the `base` namespace. :cite[(`zombie/scripting/objects/ItemType.java:14-29`)]
+
+:::chips
+- base:alarmclock
+- base:alarmclockclothing
+- base:animal
+- base:clothing
+- base:container
+- base:drainable
+- base:food
+- base:key
+- base:keyring
+- base:literature
+- base:map
+- base:moveable
+- base:normal
+- base:radio
+- base:weapon
+- base:weaponpart
+:::
+
+Vanilla spreads its 5,105 item blocks over 15 files, one per type, and each file name matches its type. Counting the `ItemType =` lines in `media/scripts` gives the table below. No vanilla item uses `base:keyring`, so that type has no file.
+
+| `ItemType` | Item blocks |
+|---|---|
+| `base:clothing` | 1,395 |
+| `base:normal` | 1,099 |
+| `base:food` | 722 |
+| `base:literature` | 561 |
+| `base:weapon` | 409 |
+| `base:moveable` | 393 |
+| `base:container` | 308 |
+| `base:drainable` | 150 |
+| `base:radio` | 17 |
+| `base:alarmclockclothing` | 16 |
+| `base:map` | 15 |
+| `base:weaponpart` | 11 |
+| `base:key` | 6 |
+| `base:alarmclock` | 2 |
+| `base:animal` | 1 |
+
+The line `Type = Normal` is not a key the loader knows, and it is not an error. The loader keeps an unknown key as mod data on the item. The warning starts `adding unknown item param "Type" = "Normal"`, and it appears only when the detailed-info log channel is enabled. :cite[(`zombie/scripting/objects/Item.java:2998-3015`)] 
+
+That channel starts off, and the game turns it on only in debug mode, so do not expect to see the warning otherwise. :cite[(`zombie/debug/DebugType.java:95`, `zombie/debug/DebugLog.java:83-91`)]
+
+The trouble comes later, when the game builds the item. The builder checks the item type against one branch per vanilla type, and no branch matches an item with no type or with a type you registered yourself. :cite[(`zombie/scripting/objects/Item.java:1494`, `zombie/scripting/objects/Item.java:1735-1736`)] The variable that should hold the new item stays empty, and the next lines call methods on it. :cite[(`zombie/scripting/objects/Item.java:1831-1835`)]
+
+So an item written with `Type = Normal` is found when you look it up by name, and then cannot be created. In a 42.20 test, nineteen items written this way were found by `getScriptManager():getItem()`, and `InventoryItemFactory.CreateItem` returned nil for each. The 42.22 code reads the same way, and the test was not run again. A custom `ItemType` fails at the same place; [the registries page](/pz/build-42/modding/foundations/media-registries-lua-the-new-b42-identifier-file) lists which identifiers a mod may register.
+
+## 3. The keys that matter in Build 42
+
+**The item loader reads each of these keys by name, and the table says what each one is for.**
+
+Where the table says "not verified", the loader reads the key, but this page did not check what the game does with the value.
+
+| Key | What it is for | Code |
+|---|---|---|
+| `ItemType` | Chooses the kind of item, such as `base:normal` or `base:food`. | `zombie/scripting/objects/Item.java:1982-1983` |
+| `DisplayCategory` | A plain text name that groups the item in lists, such as `Tool` or `Material`. | `zombie/scripting/objects/Item.java:2560-2561` |
+| `Tags` | A `;`-separated list of tag ids. Recipes match on tags; see section 4. | `zombie/scripting/objects/Item.java:2353-2359` |
+| `Icon` | The inventory icon. The game looks for the texture `Item_` plus this name. | `zombie/scripting/objects/Item.java:2000-2006` |
+| `StaticModel`, `WorldStaticModel` | Two separate model names. Which one the game uses where is not verified. | `zombie/scripting/objects/Item.java:2866-2871` |
+| `WorldObjectSprite` | A sprite name. The loader still reads it, and 421 lines in vanilla scripts still set it. | `zombie/scripting/objects/Item.java:2712-2713` |
+| `LearnedRecipes` | A `;`-separated list of recipe ids the item teaches. 199 lines in vanilla scripts use it. | `zombie/scripting/objects/Item.java:2777-2784` |
+| `ResearchableRecipes` | A `;`-separated list of recipe ids tied to researching the item. 955 lines in vanilla scripts use it. | `zombie/scripting/objects/Item.java:2788-2795` |
+| `SkillTrained`, `LvlSkillTrained`, `NumLevelsTrained`, `NumberOfPages` | The fields of a skill book. | `zombie/scripting/objects/Item.java:2497-2504` |
+| `ConditionMax`, `ConditionLowerChanceOneIn` | Durability numbers. What `ConditionMax = 1` does in play is not verified. | `zombie/scripting/objects/Item.java:2290-2299` |
+| `RequiresEquippedBothHands` | A flag that the equipped-item panel checks together with the two-hand weapon flag. | `zombie/scripting/objects/Item.java:2570-2571`, `media/lua/client/ISUI/ISEquippedItem.lua:319` |
+| `Wet`, `WetCooldown`, `ItemWhenDry` | Wet and dry state keys. Their effect is not verified. | `zombie/scripting/objects/Item.java:2578-2583` |
+| `EatType`, `PourType`, `IconFluidMask` | Variant keys for food and fluids. Their effect is not verified. | `zombie/scripting/objects/Item.java:2886-2889`, `zombie/scripting/objects/Item.java:2938` |
+| `component FluidContainer { ... }` | A nested block, not a key line. The item loader passes every `component` block on to a component loader. | `zombie/scripting/objects/Item.java:1443-1445` |
+
+Of the 15 vanilla item files, `normal.txt` holds 125 `component FluidContainer` blocks, `clothing.txt` four, and `container.txt` and `weapon.txt` two each; the other files hold none. For a worked fluid, see [New fluid](/pz/build-42/modding/cookbook/new-fluid).
+
+## 4. Tags are how items join recipes
+
+**A recipe input that names a tag accepts any item that carries it, so an item gets into vanilla recipes by carrying the right tag.**
+
+When the scripts finish loading, the engine builds a map from each tag to the items that carry it. :cite[(`zombie/inventory/ItemTags.java:22-30`, `zombie/scripting/ScriptManager.java:162`)] A recipe input line such as `item 1 tags[base:hammer]` then adds every item in that tag's list to the input. :cite[(`zombie/scripting/entity/components/crafting/InputScript.java:891-900`)] [Tags](/pz/build-42/modding/items-and-scripting/tags) covers the ids, and [Item tags from Lua](/pz/build-42/modding/items-and-scripting/item-tags-from-lua) covers asking an item for its tags in code.
+
+A tag id with no colon is read in the `base` namespace. :cite[(`zombie/scripting/objects/ResourceLocation.java:33-36`)]
+
+## 5. What changed from Build 41
+
+**The `Recipes =` line on an item and the spelling `TeachedRecipes` from Build 41 do nothing in 42.22.**
+
+The 42.22 item loader has no branch for `Recipes` or `TeachedRecipes`. Both would be kept as unknown keys, and no vanilla script uses either. The key that teaches recipes is `LearnedRecipes`. :cite[(`zombie/scripting/objects/Item.java:2777-2784`)] Craft recipes, not items, carry the keys `AutoLearnAll` and `AutoLearnAny`. :cite[(`zombie/scripting/entity/components/crafting/CraftRecipe.java:416`, `zombie/scripting/entity/components/crafting/CraftRecipe.java:431`)]
+
+## 6. Try it
+
+**Build the smallest item mod and spawn the item, then break the `ItemType` line and see what happens.**
+
+1. Follow [New item](/pz/build-42/modding/cookbook/new-item). It gives the folder, `mod.info`, the script file, the translation file, how to load the mod and how to spawn the item from the debug Items List.
+2. Once you can spawn **Demo Token**, change `ItemType = base:normal,` to `Type = Normal,` in `RecipeDemoItem_items.txt` and restart the game.
+3. Open the Items List again and check whether the item still appears and whether adding it to your inventory works. This check has not been run on 42.22; the 42.20 result was that creation failed.
+4. Put the line back and restart.
+
+:::callout[How we know]{kind=proof}
+The code claims come from the 42.22 engine source and scripts, and the counts (5,105 blocks, 5,092 distinct names, the per-type numbers, 15 files) were recounted from `media/scripts`. The nineteen-item test with `Type = Normal` is a 42.20 game test and was not repeated on 42.22. Not verified: what the keys marked "not verified" do in play, how `StaticModel` and `WorldStaticModel` are chosen between, and whether the failure to create an item with no type shows to Lua as nil or as an error.
+:::
