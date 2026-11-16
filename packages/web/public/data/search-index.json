@@ -3537,7 +3537,7 @@
       "weapons",
       "sandbox"
     ],
-    "excerpt": "Which zombie a bullet can reach is decided by the game's physics library; the hit chance on top of it is plain Java: the gun's HitChance plus 4 per Aiming level, a range bonus inside the gun's sight range, and penalties for moving, darkness, weather, moodles and headgear. A bullet does its damage roll x body part x 1.5 x 0.3, with criticals multiplying it again. The formulas and worked numbers from the Build 42.21 code.",
+    "excerpt": "How a 42.22 gun shot works: the hit chance and what a failed roll does, aim time and recoil in seconds, damage by body part, critical hits once per shot, shotguns and piercing rounds. Worked numbers.",
     "difficulty": "intermediate"
   },
   {
@@ -3590,7 +3590,7 @@
       "memory",
       "sandbox"
     ],
-    "excerpt": "When a zombie spots you it locks on for 15 seconds and knows where you are through walls and darkness. With Normal memory it forgets you about 17 seconds after it last really saw you or you last hit it. The timers, what breaks the lock, and what each Memory setting does, read from the Build 42.21 code.",
+    "excerpt": "A zombie that spots you locks on for 15 seconds, then forgets you about 17 seconds after it last really saw you or you hit it (Normal memory). The timers and each Memory setting, from 42.22.",
     "difficulty": "beginner"
   },
   {
@@ -3625,7 +3625,7 @@
       "noise",
       "sandbox"
     ],
-    "excerpt": "A zombie can only spot you inside its vision radius (20 tiles in clear daylight, never less than 10) and only while you are in its field of view; inside that, it rolls a chance every frame that light, facing, sneaking, traits and cover change. It hears any noise whose radius reaches it. The formulas, the default numbers and the noise table, read from the Build 42.21 code.",
+    "excerpt": "How far a zombie sees you (up to 20 tiles by day, never under 10), how its sight chance changes with light, facing and sneaking, and how far walking, fights and gunshots carry. 42.22 code.",
     "difficulty": "beginner"
   },
   {
@@ -3643,7 +3643,7 @@
       "zombies",
       "sandbox"
     ],
-    "excerpt": "A melee hit is the weapon's damage roll times about a dozen factors, ending in a fixed x0.15. Normal zombies have 1.5 to 1.8 health, and from the fourth hit on every blow is multiplied again (x3, x4.5, x6). A critical needs a roll against the weapon's crit chance plus 3 per skill level, multiplies damage by at least 2 and knocks the zombie down. The full chain from the Build 42.21 code, with worked examples.",
+    "excerpt": "How much damage a melee swing does in 42.22, how many hits a zombie takes (it gets harder from the fourth hit), and how critical hits work, with worked examples for the bat, axe, machete and knife.",
     "difficulty": "intermediate"
   },
   {
@@ -3660,7 +3660,7 @@
       "zombies",
       "sandbox"
     ],
-    "excerpt": "On the default sandbox the helicopter comes once, on a random day after 6 to 9 nights, starting between 9 AM and 6 PM in a window 1 to 4 hours long. It picks one player at random, flies in from 1,000 tiles away, hovers for at most a minute and makes a 500-tile noise about every ten seconds. Read from the 42.21 code.",
+    "excerpt": "When the helicopter comes in 42.22, who it follows, how long it stays over you, and why it brings a crowd: on the default setting, once, on a random day after 6 to 9 nights, with a 500-tile noise.",
     "difficulty": "beginner"
   },
   {
