@@ -1,0 +1,6 @@
+{
+  "name": "Saves and Persistence",
+  "description": "How Build 42.22 saves and loads a game: what is in a save folder, how the world, players and vehicles are written, how mod data persists, and what the world dictionary does when mods change.",
+  "icon": "database",
+  "displayOrder": 10
+}

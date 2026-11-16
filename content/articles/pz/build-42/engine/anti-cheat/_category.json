@@ -1,0 +1,6 @@
+{
+  "name": "Anti-Cheat",
+  "description": "How the Build 42.22 server's anti-cheat works: the 20 checks, the ten server options and their policies, how to read the log lines and lift bans, how mods trip it or work beside it, and what it leaves to handlers and mods.",
+  "icon": "shield",
+  "displayOrder": 13
+}

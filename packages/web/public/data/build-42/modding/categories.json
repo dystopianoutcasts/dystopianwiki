@@ -109,7 +109,7 @@
       "name": "Multiplayer",
       "description": "Server-authoritative facts and the traps that only surface in a dedicated-server round.",
       "icon": "plug",
-      "articleCount": 6,
+      "articleCount": 5,
       "displayOrder": 14
     },
     {
