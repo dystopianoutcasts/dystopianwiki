@@ -16,7 +16,7 @@ tags:
   - poison
 excerpt: >-
   What makes you Sick, how pain follows your wounds, how drunkenness builds and fades in real minutes, and what the other stats do, including four that do almost nothing.
-last_updated: '2026-11-14'
+last_updated: '2026-11-16'
 related_articles:
   - how-character-stats-work
   - hunger-thirst-and-nutrition
@@ -75,7 +75,7 @@ Two stats work as a pair: Poison is the toxin in your stomach, and Food Sickness
 | Tainted food | +20 x the part eaten, and pain of 10 / 6 | |
 | Raw food that is dangerous uncooked (and you are not already infected, and it is not burnt) | +15 x the part eaten. The "illness chance" the code works out is only checked for being above 0, so this is **not a dice roll**: eating it always poisons you. Eggs are the exception: chance 5, and 0 with Iron Gut | |
 | Spoiled food (past its rot age) | a dice roll against 100, scaled by how far past, then 5 x the food's hunger value x 10 x the part eaten; 2 x that if the roll fails. A player who is already infected gets **no** poison from spoiled food | :cite[(`BodyDamage.java:686-699`)] |
-| Tainted water and fluids | the fluid's poison, x0.75 for tainted water; Iron Gut sets tainted water to 0 and halves other poison; Weak Stomach x1.2 (tainted) or x2 | |
+| Tainted water and fluids | the fluid's poison, x0.75 for tainted water; Iron Gut sets tainted water to 0 and halves other poison, except when the main fluid is bleach, which Iron Gut leaves at full strength; Weak Stomach x1.2 (tainted) or x2 | :cite[(`IsoGameCharacter.java:5894`, `:5916-5921`)] |
 
 Food poison, tainted, raw and spoiled food are handled in `JustAteFood` :cite[(`BodyDamage.java:554-703`)], and fluids in the character class :cite[(`IsoGameCharacter.java:5911-5943`)].
 
