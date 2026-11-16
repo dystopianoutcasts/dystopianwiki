@@ -8,42 +8,62 @@ section: modding
 category: foundations
 difficulty: beginner
 tags:
-  - mod-info
-  - registries-lua
+  - mapping
+  - map-info
   - project-structure
-  - workshop-upload
-  - debug-mode
-excerpt: 'Status as of 2026-07-29: WIP for official release; compilable now. [CONFIRMED]'
-last_updated: '2026-09-29'
+excerpt: >-
+  What the Build 42.22 game code decides for a map mod: where it looks for maps, what map.info does, the 256-square cell and the lot files. Tool release status is not verified.
+last_updated: '2026-11-16'
 related_articles:
-  - tl-dr-what-a-b41-modder-must-change-first
-  - b42-status-versioning-and-the-compatibility-model
   - the-b42-mod-project-structure
   - the-versioned-layout-common-build-folders
-  - mod-info-fields-and-the-versioning-compatibility-system
-  - media-registries-lua-the-new-b42-identifier-file
-  - lua-folder-load-order
-  - in-game-debug-mode-and-dev-tools
-  - packaging-and-workshop-upload-for-b42
-  - multiplayer-status-in-42-20-stable
-  - b41-b42-porting-what-breaks-a-concrete-checklist
+  - tl-dr-what-a-b41-modder-must-change-first
 ---
-# Mapping toolchain status (TileZed / WorldEd / WorldZed)
+::field-notes
 
-> Source: 01_MODDING_FOUNDATIONS_AND_TOOLCHAIN.md (compiled 2026-07-29, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-16.
 
-**Status as of 2026-07-29: WIP for official release; compilable now. [CONFIRMED]**
+**Who this page is for:** modders who plan a map mod and want to know what the game itself requires before they open a mapping tool. The tools are outside the game code, so their status is marked not verified.
 
-- **No official B42 release of the mapping tools yet.** The Indie Stone's stated plan: once 42.20 hot-fixing settles, the **latest mapping tools (WorldZed, TileZed, etc.) will be released** as part of the post-stable rollout / the "Build 42 Support Update" running through the rest of 2026. **[CONFIRMED]**
-- **They are usable today by compiling from source.** The tools are a public GitHub project; anyone can compile them and they are "fully usable to make maps" for B42 right now, ahead of the official binary release. **[CONFIRMED]**
-- **You need the B42 tilesheets + tiledefs to render correctly.** Some tilesheets are packed inside the game's `texturepacks` and must be **unpacked** (via the Project Zomboid Modding Tools) before a project will render properly in WorldEd/TileZed. **[CONFIRMED]** (pzwiki *Mod structure* rev 1443271 documents the `texturepacks` media subfolder that "holds the tile sprites that you will need to unpack.")
-- **Reference project:** `Unjammer/PZ_Vanilla_map_b42` on GitHub exports the B42 vanilla map back into a WorldEd/TileZed-editable project -- useful as a working B42 map project to learn the pipeline. **[CONFIRMED]**
-- **Map-mod media folders [CONFIRMED]** (pzwiki *Mod structure*): map assets go under `media/maps`; the map itself is defined by a `map.info` file. See the pzwiki *Mapping*, *Tiledefs used by mods*, *Adding new tiles*, *Room definitions and item spawns*, and *Vehicle zones* pages (not in this cache) for depth.
+:::callout[The 1-minute version]{kind=key}
+- The game finds a mod's maps in `media/maps/` and only if that folder exists in the mod's `common` folder. A mod's version folder is read for maps only after that check passes.
+- A folder under `media/maps/` counts as a map only when it has a `map.info` file. Each `lots=` line in that file names another map folder to load with it.
+- A map is made of cell files. The game's code uses a cell size of 256 squares, and it reads one `.lotheader` and one `.lotpack` file per cell.
+- If the cell files give the grid no valid range, the game throws "Failed to find any .lotheader files".
+- Which version of TileZed or WorldEd works with 42.22, and whether they need compiling from source, is not verified on this page.
+:::
 
-**Tile load order (map/tile mods) [LIKELY -- from prior research; not in this pzwiki cache]:** recommended dependency order is **Maps -> Tile Packs -> Framework/Character mods -> Vehicle mods -> Everything else.** Tile packs must load *before* the maps that depend on them.
+:::facts
+- **Cell size** 256 squares
+- **Map folder** `media/maps/<name>/`, with a `map.info` file
+- **Cell files** `<x>_<y>.lotheader` and `world_<x>_<y>.lotpack`
+- **Tool release status** not verified, checked 2026-11-16
+:::
 
-**Takeaway for a B42-stable modder:** if your work is *code/item/crafting* modding, the toolchain is ready. If your work is *map* modding, budget for compiling the tools from source (or wait for the official binaries) and for unpacking B42 tilesheets. Track the official release announcement.
+## 1. Where the game looks for maps
 
----
+**A mod's maps are found under `media/maps/`, and only when that folder exists in the mod's `common` folder.**
 
-<a name="10-packaging"></a>
+For each active mod, the game checks for `media/maps/` in the mod's `common` folder first. :cite[(`zombie/MapGroups.java:123-150`)] Only inside that check does it also read `media/maps/` in the mod's version folder, so a map that lives only in a version folder is not found. :cite[(`zombie/MapGroups.java:140-150`)]
+
+Each folder found there is passed to the map loader, which skips it unless it has a `map.info` file. :cite[(`zombie/MapGroups.java:254-266`)] The folder name `challengemaps` is handled separately from the rest. :cite[(`zombie/MapGroups.java:128-130`)]
+
+## 2. What map.info does
+
+**The game reads `map.info` for one thing: the `lots=` lines that name other map folders to load with this one.**
+
+Each line that starts with `lots=` adds a folder name to the map's list. :cite[(`zombie/MapGroups.java:277-278`)] Maps that list each other, or share a folder, are put into one group. :cite[(`zombie/MapGroups.java:170-186`)] The other keys in `map.info` are read elsewhere; see [map files, map.info and the spawn points](/pz/build-42/modding/world-and-tiles/map-files-map-info-spawnpoints-lua-folder-structure) for them.
+
+## 3. Cells and lot files
+
+**A map is a grid of 256-square cells, and each cell is a `.lotheader` file and a `.lotpack` file.**
+
+The engine defines a cell as 256 squares. :cite[(`zombie/iso/IsoCell.java:127`)] The zone code divides a square's coordinate by 256 to find its cell. :cite[(`zombie/iso/IsoMetaGrid.java:212-213`)] The header file for a cell is named `<x>_<y>.lotheader`. :cite[(`zombie/iso/IsoMetaGrid.java:2203`)] The pack file is named `world_<x>_<y>.lotpack`. :cite[(`zombie/iso/IsoLot.java:123`)]
+
+The loader lists the map folder's files that end in `.lotheader`. :cite[(`zombie/MapGroups.java:360-368`)] When the cell files give the grid no valid range, the grid throws "Failed to find any .lotheader files". :cite[(`zombie/iso/IsoMetaGrid.java:1474-1498`)]
+
+Map tools are one way to make these files. For the order they run in, see [the map modding toolchain for B42](/pz/build-42/modding/world-and-tiles/map-modding-toolchain-for-b42).
+
+:::callout[How we know]{kind=proof}
+The map rules come from the 42.22 decompiled Java; no game was run. Not verified, dated 2026-11-16: whether an official release of TileZed, WorldEd or WorldZed exists for Build 42, whether they must be compiled from source, that some tilesheets must be unpacked from the game's `texturepacks` first, the `Unjammer/PZ_Vanilla_map_b42` reference project, and the advice to load Maps, then Tile Packs, then Framework mods, then Vehicle mods. None of these are decided by the game code read here. Not checked either: what the other keys in `map.info` do.
+:::

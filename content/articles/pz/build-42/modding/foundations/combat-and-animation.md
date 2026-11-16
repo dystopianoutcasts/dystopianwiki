@@ -8,89 +8,62 @@ section: modding
 category: foundations
 difficulty: intermediate
 tags:
-  - electricity
   - combat
   - animation
-  - power
-  - misc-systems
+  - weapons
 excerpt: >-
-  CONFIRMED (42.20) -- Firearms were completely overhauled: new 3D models, new
-  animations, muzzle effects, new/expanded ammunition types, and new SFX. New
-  guns added to the library include the L92...
-last_updated: '2026-11-15'
+  A signpost for modders in 42.22: what changed in firearms, melee weapons and animation files since Build 41, and which page explains each one.
+last_updated: '2026-11-16'
 related_articles:
   - orientation
-  - electricity-and-power
   - misc-catch-all-systems
   - practical-b42-readiness-checklist
-  - addendum-electricity-generator-power-model
 ---
-# Combat and Animation
+::field-notes
 
-> Source: 07_VEHICLES_POWER_COMBAT_MISC.md (compiled 2026-07-29, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-16.
 
-### 4.1 Firearm overhaul
+**Who this page is for:** modders who ported a weapon or an animation from Build 41 and want to know what to check first. It points to the pages that explain each system; it does not repeat them.
 
-**CONFIRMED (42.20)** -- Firearms were completely overhauled: new 3D models, new
-animations, muzzle effects, new/expanded ammunition types, and new SFX. New guns added
-to the library include the **L92 Lever Action Rifle** and **JS-3T Tactical Shotgun**.
-For weapon modders this means the weapon-model + animation + muzzle-FX + ammo pipeline
-all changed shape from B41; port and re-test rather than reuse.
+:::callout[The 1-minute version]{kind=key}
+- Firearm hit chance, point-blank range and jamming come from engine numbers and sandbox options. The Java default of the jam multiplier is 0, which turns jamming off, and the vanilla presets read for this page set it to 1.0 or 1.25.
+- Some melee weapons carry a separate head condition next to the handle condition, and a weapon script can set it.
+- A mod's own animation clips are read from `anims_X` folders, and in 42.22 the human mesh takes clips from `Bob`, `Kate` and `Zombie` with no file-name prefix required.
+- Combat numbers for players are on [the firearm page](/pz/build-42/gameplay/the-real-numbers/firearm-accuracy-and-damage) and [the melee page](/pz/build-42/gameplay/the-real-numbers/melee-damage-and-critical-hits). Animation files, nodes and variables are in the animation system pages.
+:::
 
-### 4.2 New aiming system
+:::facts
+- **Jam multiplier** 1.0 in the standard presets (Extinction 1.25); 0 turns jams off
+- **Human clip folders** `Bob`, `Kate`, `Zombie`
+- **Name prefix on human clips** none required
+:::
 
-**CONFIRMED (42.20)** -- A new firearm aiming system allows precise location targeting
-on zombies (aim at specific spots), rewarding careful aim while still reflecting the
-character's panic/stress/aiming-skill state. This is a feel-level combat change and a
-new axis of weapon balance.
+## 1. Firearms
 
-### 4.3 Melee weapon part / condition system
+**Firearm accuracy, range and jamming are engine numbers and sandbox options, not something a weapon mod writes.**
 
-**CONFIRMED (42.20)** -- Some melee weapons now track **Handle Condition** and **Head
-Condition** separately, plus the **Sharpness** of any attached blade. Consequences:
-- On some weapons the **head can fall off** as it degrades.
-- Some broken weapons remain usable as crude wooden clubs; a **Broken Spear** still
-  works as a weaker weapon.
-This implies new weapon-script fields governing multi-part condition and sharpness.
-Weapon modders must expect (and populate) these new fields where applicable -- confirm
-exact field names against vanilla weapon scripts.
+Jamming and hit chance come from engine numbers and the Firearm sandbox options. :cite[(`zombie/SandboxOptions.java:254-257`)] The jam rule is the weapon's chance times the multiplier, and no jam at 0. :cite[(`zombie/inventory/types/HandWeapon.java:2151-2153`)] The Java default of the multiplier is 0. :cite[(`zombie/SandboxOptions.java:254`)] The Apocalypse, Rising and Outbreak presets set it to 1.0 and Extinction sets 1.25, so jamming is on in those presets and off only at 0. :cite[(`media/lua/shared/Sandbox/Apocalypse.lua:177`, `media/lua/shared/Sandbox/Rising.lua:177`, `media/lua/shared/Sandbox/Outbreak.lua:177`, `media/lua/shared/Sandbox/Extinction.lua:177`)]
 
-### 4.4 Combat balance (jamming, moodles, point-blank)
+Every number, with the formula that joins them, is on [firearm accuracy and damage](/pz/build-42/gameplay/the-real-numbers/firearm-accuracy-and-damage). What a shot does to a ragdoll is on [hit reactions and ballistics](/pz/build-42/engine/physics-and-ragdolls/hit-reactions-and-ballistics).
 
-**CONFIRMED** -- A stability-era hotfix "significantly" reduced firearm jam rates.
-Specifics:
-- Weapons with a zero base jam rate no longer jam when manually racked.
-- Hit-chance penalties from negative moodles (e.g. panicked) were cut in half.
-- Point-blank threshold set to **3.5 movement tiles**; within that range previously
-  non-functional hit-chance modifiers (moodles, weather, lighting, headgear) now apply
-  correctly. A 42.20 fix also stopped point-blank shots missing because the muzzle
-  position was inside the target.
-- **Sandbox multipliers** were added to customize jamming rate, weather effect, and
-  moodle impact on hit chance -- relevant if your mod ships a sandbox preset.
+## 2. Melee weapons
 
-### 4.5 Animation system and modding
+**A melee weapon can have a head condition as well as a handle condition, and the item script sets it.**
 
-**CONFIRMED (foundation)** -- B41 rebuilt the animation system (player models, per-item
-models, updated combat). B42 continues on that foundation and adds new content
-animations rather than replacing the pipeline wholesale.
+The item tooltip shows "Handle" and "Head" condition bars for a weapon that has a head condition. :cite[(`zombie/inventory/types/HandWeapon.java:288-299`)] The script loader treats `HeadCondition` as an item attribute and sets a repair counter beside it. :cite[(`zombie/scripting/objects/Item.java:1955-1956`)]
 
-**CONFIRMED (B42 modding specifics)** -- Animation modding structure:
-- Animation files go in the mod's `anims_X` folder.
-- **B42 change:** only subfolders set by the model's `animationsMesh` are scanned. For
-  the human models only `Bob/` and `Kate/` are scanned, and filenames must be prefixed
-  `Bob_` / `Kate_`. (This is stricter than B41's broader scan -- a common porting
-  break for animation mods.)
-  **Correction for 42.22:** the human mesh lists three folders, `Bob`, `Kate` and `Zombie`, and
-  the `Zombie` folder takes no prefix; an empty prefix list passes any file name
-  (`media/scripts/generated/animations_meshes.txt:3-9`, `zombie/core/skinnedmodel/ModelManager.java:249-253`).
-  Other subfolders or loose files in a mod's `anims_X` also load onto the human mesh
-  (`zombie/core/skinnedmodel/ModelManager.java:1811-1856`). See
-  [Skinned models and clips](/pz/build-42/engine/animation-system/skinned-models-and-clips).
-- Animation nodes are defined via XML in the `AnimSets/` folder and control triggering,
-  playback speed, etc.; the same node can map to different animations per model.
-- `AnimSets` are collections of `AnimStates`, usually associated with an entity (player,
-  zombie, animal).
+How hard a swing hits, how a critical is rolled and how reach is worked out are on [melee damage and critical hits](/pz/build-42/gameplay/the-real-numbers/melee-damage-and-critical-hits). Every weapon's own numbers are in the weapon tables once they go live.
 
-**CONFIRMED (42.20 vocals)** -- Characters now audibly react to states (carrying heavy
-loads, sadness, being wounded) and can make vocal calls to communicate -- a new
-audio/animation-adjacent layer.
+## 3. Animation files
+
+**Clip files in a mod's `anims_X` folder are read by folder, and the human mesh takes three folders in 42.22.**
+
+The human mesh lists the folders `Bob`, `Kate` and `Zombie`, and lists no name prefix. :cite[(`media/scripts/generated/animations_meshes.txt:3-9`)] The mesh script reads a prefix only from an `animationPrefix` line. :cite[(`zombie/scripting/objects/AnimationsMesh.java:43-44`)] An empty prefix list accepts any file name. :cite[(`zombie/core/skinnedmodel/ModelManager.java:249-253`)]
+
+For the human mesh, a mod's other subfolders of `anims_X`, and loose files beside them, are also loaded. :cite[(`zombie/core/skinnedmodel/ModelManager.java:1811-1856`)]
+
+Clip format and naming are on [skinned models and clips](/pz/build-42/engine/animation-system/skinned-models-and-clips). Adding a working animation end to end is on [modding animations](/pz/build-42/engine/animation-system/modding-animations), and the node files are on [AnimSets, nodes and transitions](/pz/build-42/engine/animation-system/animsets-nodes-and-transitions).
+
+:::callout[How we know]{kind=proof}
+Read from the 42.22 decompiled Java and the vanilla scripts; no game was run. Not verified: what the Six Months Later preset sets for jamming (it does not set the option); that a weapon's head can fall off as it wears, that some broken weapons stay usable as a club, that a Broken Spear still works, and that characters make vocal calls. Earlier notes listed these, and this page found no code for them in the lines above.
+:::

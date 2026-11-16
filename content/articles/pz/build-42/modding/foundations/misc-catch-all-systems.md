@@ -8,113 +8,73 @@ section: modding
 category: foundations
 difficulty: intermediate
 tags:
-  - electricity
-  - combat
-  - animation
-  - power
   - misc-systems
+  - multiplayer
+  - fire
+  - weather
+  - sound
 excerpt: >-
-  CONFIRMED -- Optimization was a headline theme: better/more efficient chunk
-  caching for performance and visuals; extensive controller-support and
-  new-map-area optimization; hundreds of bug fixes.
-last_updated: '2026-09-29'
+  A signpost for modders in 42.22: what changed in multiplayer timed actions, fire, weather, sound and zombies, with a link to the page that explains each.
+last_updated: '2026-11-16'
 related_articles:
   - orientation
-  - electricity-and-power
   - combat-and-animation
   - practical-b42-readiness-checklist
-  - addendum-electricity-generator-power-model
 ---
-# Misc / Catch-all Systems
+::field-notes
 
-> Source: 07_VEHICLES_POWER_COMBAT_MISC.md (compiled 2026-07-29, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-16.
 
-### 5.1 Performance and threading
+**Who this page is for:** modders who want one list of the systems that changed since Build 41 and a link to the page for each. It keeps to what the 42.22 code shows and does not repeat those pages.
 
-**CONFIRMED** -- Optimization was a headline theme: better/more efficient chunk caching
-for performance and visuals; extensive controller-support and new-map-area optimization;
-hundreds of bug fixes.
+:::callout[The 1-minute version]{kind=key}
+- In multiplayer, a timed action takes part in the server's timed-action transaction only when its Lua class defines `complete` directly on its own class, not inherited. Otherwise the client runs it locally, and the mod can still send its own commands.
+- Fire spread is capped: the game keeps at most 75 wild fires alive at once.
+- The climate updates every ten game minutes, and the server decides the weather in multiplayer.
+- Risky actions such as climbing a fence or a window send a music intensity event to the soundtrack.
+- Each system below has its own page. Lighting, basements, the crafting window and the zombie spawn map are not covered here; the closing callout lists what was not verified.
+:::
 
-**CONFIRMED (multithreaded rendering)** -- The engine work included multi-threaded
-rendering; the team dug into the renderer to fix long-standing capability/performance
-problems (the core difficulty being a map of many unique tiles/shaders without a normal
-z-buffer optimization). So "B42 added multithreading" is accurate specifically in the
-rendering path.
+:::facts
+- **Wild fires alive at once** 75
+- **Climate update** every 10 game minutes
+- **Timed action sent to the server** only when `complete` is defined on the class itself, not inherited
+:::
 
-**CONFIRMED (server architecture / de-facto threading of logic)** -- The inventory
-system and ALL Timed Actions were moved to the server; clients now run only visuals.
-This improves fairness and prevents desyncs and stuck-animation bugs. For mod authors
-this is critical: **timed actions and inventory mutations now resolve server-side**, so
-client-only assumptions from B41 can break in multiplayer.
+## 1. Multiplayer and timed actions
 
-**CONFIRMED (42.20)** -- Multiplayer stackable-item transfers were reworked to cut
-transfer time; server-side anti-cheat was re-enabled.
+**In multiplayer a timed action joins the server's transaction only when its Lua class defines `complete` directly, not by inheriting it.**
 
-### 5.2 Fire and heat
+When a timed action is built, the engine checks the class table with `rawget`, which does not follow inheritance, and sets a flag when `complete` is not defined on the class itself. :cite[(`zombie/characters/CharacterTimedActions/LuaTimedActionNew.java:85-87`)] On a client, a set flag skips the call that creates the server transaction in `start`, and the action runs locally. :cite[(`zombie/characters/CharacterTimedActions/LuaTimedActionNew.java:138-141`)]
 
-**LIKELY / CONFIRMED (direction)** -- B42 reworked fire spread to account for
-**temperature, material type, volume, and surface area** when deciding spread speed and
-distance. Devs also worked toward the world "remembering" a spreading fire after players
-leave the area. Community feedback in the unstable period was that fire became very
-powerful/easy to spread -- expect balance tuning across point releases.
+A B41 mod whose timed action only inherits `complete` therefore does not go through the server transaction. A mod can still send its own commands from such an action. 
 
-### 5.3 Weather and temperature
+To have the server run it, define `complete` on the class and test in multiplayer. The request, the accept and the result are on [timed actions and items over the network](/pz/build-42/engine/networking-and-packets/timed-actions-and-items-over-the-network). Which machine owns what is on [who owns what](/pz/build-42/engine/networking-and-packets/who-owns-what).
 
-**CONFIRMED (system model)** -- Temperature is driven by season, time of day, wind
-strength, and air mass (which determines the weather front). Four seasons (summer,
-winter, autumn, spring), each with distinct weather/temperature traits.
+## 2. Fire
 
-**LIKELY (42.19 data)** -- Body-temperature moodles are more developed: Hyperthermia
-rises as core body temperature climbs; cool-down depends on insulation worn, ambient
-weather, activity level, and nearby heat sources. Cold side (hypothermia) rewards
-layering and heat sources.
+**Fire is a set of small objects on single squares, and the game keeps at most 75 of them alive.**
 
-### 5.4 Zombies and hordes
+The limit is a constant in the fire manager. :cite[(`zombie/iso/objects/IsoFireManager.java:55`)] How a fire starts, spreads and ends, and what it destroys, is on [how fire works](/pz/build-42/engine/fire-water-and-power/how-fire-works) and [fighting fire](/pz/build-42/engine/fire-water-and-power/fighting-fire). Generators and the power grid are on [electricity and generators](/pz/build-42/engine/fire-water-and-power/electricity-and-generators).
 
-**CONFIRMED (42.20)** -- New spawn-map system uses **Voronoi noise** to produce more
-urban-focused, natural-feeling hordes with believably random distribution across the
-Exclusion Zone. Zombie ragdoll on vehicle/gun/explosive impact. Zombie culling bug that
-caused population drops was fixed. Sandbox zombie deletion limit raised from 500 to
-5,000 (relevant if a mod ships high-population presets).
+## 3. Weather and temperature
 
-### 5.5 Sound and music
+**The climate has its own ten-minute update, and the weather pages explain what it feeds.**
 
-**CONFIRMED (42.20)** -- The OST was reworked into an **adaptive exploration soundtrack**
-with a real-time **music intensity parameter** that responds to in-game events. New
-firearm SFX (part of the firearm overhaul) and new character vocalizations.
+The game clock calls the climate manager's ten-minute update. :cite[(`zombie/GameTime.java:635-637`)] Where the weather and the outdoor temperature come from is on [how weather works](/pz/build-42/engine/weather-and-climate/how-weather-works) and [temperature outdoors](/pz/build-42/engine/weather-and-climate/temperature-outdoors).
 
-### 5.6 Inventory and UI
+## 4. Sound and music
 
-**CONFIRMED (42.20)** -- Major changes with modding implications:
-- **3D item placement:** items can be placed at any position within a tile; guns and
-  crafted melee weapons can be hung on walls for decoration.
-- **Crafting UI:** crafting inputs are selectable; recipes searchable by input OR output
-  item; craft multiple at once; intelligent right-click shortcuts when conditions are
-  met. (Pairs with the fully rewritten crafting *system* -- the old B41 `recipe` block
-  format does not carry over; define crafting with the new system and validate against
-  vanilla scripts.)
-- **Packing system:** canned food, boxes of nails, ammo, etc. can be packed into single
-  carton items for tighter storage/stacking, or found pre-packed.
-- Filter search boxes added to Discovered Recipes and Media UI; per-player ping shown in
-  lists.
+**Some actions tell the soundtrack how tense the moment is, and noise for zombies is a separate system.**
 
-### 5.7 Lighting
+Climbing a fence or through a window each trigger a music intensity event on the player. :cite[(`zombie/ai/states/ClimbOverFenceState.java:129`, `zombie/ai/states/ClimbThroughWindowState.java:93`)] How the music uses those events is on [music and ambience](/pz/build-42/engine/sound-and-noise/music-and-ambience), and what zombies hear is on [how sound and noise work](/pz/build-42/engine/sound-and-noise/how-sound-and-noise-work).
 
-**CONFIRMED** -- A full lighting pass: light bounces off walls and leaks through windows/
-doors; a 1990s-era bulb pass makes nights darker and more dangerous. Basements/tall
-floors have independent lighting.
+## 5. Zombies
 
-### 5.8 Basements and verticality
+**How far zombies see and hear you, and how long they remember you, are measured on the player pages.**
 
-**CONFIRMED** -- B42 broke the engine's old height limit, enabling basements and tall
-buildings for the first time -- underground bunkers/panic rooms and up to ~32 floors
-(Louisville skyscrapers). Some basements are map-authored (always same spot); others are
-world-seed-generated. Floors have independent lighting and temperature. Relevant to
-map/tile mods and to any Lua that reasons about z-levels.
+Those numbers are on [how zombies see and hear you](/pz/build-42/gameplay/the-real-numbers/how-zombies-see-and-hear-you) and [how long zombies remember you](/pz/build-42/gameplay/the-real-numbers/how-long-zombies-remember-you). Combat, ragdolls and animation are on [combat and animation](/pz/build-42/modding/foundations/combat-and-animation).
 
-### 5.9 Multiplayer / server authority
-
-See 5.1 -- inventory and all Timed Actions moved server-side; clients are visual-only.
-Multiplayer sync, registries, and exposed scripting methods changed. Server mod list now
-needs the backslash-prefixed Mod ID format. Re-test any B41 mod that mutated inventory or
-ran timed actions client-side.
+:::callout[How we know]{kind=proof}
+Read from the 42.22 decompiled Java; no game was run. Not verified in 42.22, so this page does not state them: that all timed actions and the whole inventory moved to the server (only classes that define `complete` on themselves take part in the server transaction), that stackable-item transfers were reworked, that anti-cheat was switched back on, that fire spread depends on temperature, material, volume and surface area, that the world remembers a fire after players leave, the Voronoi spawn map, the zombie deletion limit raised from 500 to 5,000, ragdolls from impacts, the adaptive soundtrack beyond the intensity events above, 3D item placement, hanging weapons on walls, the new crafting window and the packing system, the lighting pass, basements, the 32-floor height, and the backslash-prefixed mod ID in server mod lists.
+:::

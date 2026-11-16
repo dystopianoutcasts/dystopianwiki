@@ -8,52 +8,73 @@ section: modding
 category: foundations
 difficulty: beginner
 tags:
-  - mod-info
-  - registries-lua
-  - project-structure
-  - workshop-upload
   - debug-mode
+  - tools
 excerpt: >-
-  [CONFIRMED] (pzwiki Debug mode rev 1442683, page version 42.18.0.) Debug mode
-  is the primary modder dev toolkit -- "a modified game state" giving access to
-  developer tools that spawn items, toggle...
-last_updated: '2026-09-29'
+  How to turn on debug mode in Build 42.22 with the -debug launch option, what the debug menu's Main and Dev tabs hold, and where the Lua debugger key and debug-options.ini come from.
+last_updated: '2026-11-16'
 related_articles:
   - tl-dr-what-a-b41-modder-must-change-first
-  - b42-status-versioning-and-the-compatibility-model
   - the-b42-mod-project-structure
-  - the-versioned-layout-common-build-folders
-  - mod-info-fields-and-the-versioning-compatibility-system
-  - media-registries-lua-the-new-b42-identifier-file
   - lua-folder-load-order
-  - mapping-toolchain-status
-  - packaging-and-workshop-upload-for-b42
-  - multiplayer-status-in-42-20-stable
   - b41-b42-porting-what-breaks-a-concrete-checklist
 ---
-# In-game DEBUG mode and dev tools
+::field-notes
 
-> Source: 01_MODDING_FOUNDATIONS_AND_TOOLCHAIN.md (compiled 2026-07-29, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-16.
 
-**[CONFIRMED]** (pzwiki *Debug mode* rev 1442683, page version 42.18.0.) Debug mode is the primary modder dev toolkit -- "a modified game state" giving access to developer tools that spawn items, toggle cheats, teleport, and inspect/edit game state.
+**Who this page is for:** modders who want the debug tools while they build a mod. The load rules for your Lua are on [Lua folder load order](/pz/build-42/modding/foundations/lua-folder-load-order).
 
-**Enable it:**
-- Add `-debug` to the game's **startup parameters** before booting. On Steam: right-click Project Zomboid -> Properties -> **Launch Options** -> add `-debug`. **[CONFIRMED]**
+:::callout[The 1-minute version]{kind=key}
+- Add `-debug` to the game's launch options. That sets the game's debug flag, and the debug menu is built only when the debug flag is set.
+- With the flag on, the sidebar shows a debug button. It opens the debug menu, which has a Main tab and a Dev tab.
+- The Main tab holds the Cheats, Items List, Player's Stats, Craft Recipes and Sandbox Settings windows, among others. The Dev tab holds viewers and editors such as the Animation Viewer, Attachment Editor, Map Editor and Vehicle Editor.
+- F11 is the default key for Toggle Lua Debugger, and it only works while the debug flag is on.
+- Debug options you set are saved in `debug-options.ini` in the game's cache folder.
+:::
 
-**Using it in-game:**
-- A **gray bug icon** appears on the left of the HUD (below the map icon). **Clicking it turns it green and opens the debug menu.** **[CONFIRMED -- correction: it turns GREEN, not red as the earlier snippet research stated.]** (pzwiki *Debug mode*.)
-- **Debug menu (Main tab)** provides: General debuggers (Game / Blood / Body / Search Mode), a large **Cheats** panel (God Mode, No Clip, Invisible, Unlimited Carry/Endurance/Ammo, Know All Recipes, Build Cheat, Timed Action Instant, Animal Cheat, LootZed/LootLog, Brush Tool, and more), **Items List** (spawn any item), **Player's Stats** (traits/skills), plus stubs for Craft Recipes, Entities, Fluids, Recipe Monitor, Sandbox Settings, Script Manager, XUI Debugger. **[CONFIRMED]**
-- **Dev tab** adds advanced tools: Animation Viewer, Attachment Editor, Character/Chunk Debuggers, Global Mod Data/Objects, isoRegions, Map Editor, Vehicle Editor, Zombie Population, and more. **[CONFIRMED]**
-- **Debug scenarios**: a list on the main menu; double-click one to start a predefined scenario. Custom scenarios edit `ProjectZomboid\media\lua\client\DebugUIs\Scenarios\DebugScenario.lua`. **[CONFIRMED]**
-- **Lua Debugger**: press **F11** (rebindable) to break into the debugger at the next Lua entry point; shows all loaded Lua files. The **Map Debugger** (its "Map" button) lets you teleport to the cursor with **T** (no confirmation prompt). **[CONFIRMED]**
-- **Command console / Lua Console** is available in options. If a Lua-debugger option keeps crashing the client on launch, disable it in `%UserProfile%\Zomboid\debug-options.init` (`~/Zomboid/debug-options.init` on Linux and macOS). **[CONFIRMED]**
+:::facts
+- **Launch option** `-debug`
+- **Lua debugger key** F11, the default
+- **Debug options file** `debug-options.ini`, in the cache folder
+- **Debug menu tabs** Main and Dev
+:::
 
-**Hot reloading [CONFIRMED]** (pzwiki *Hot reloading* rev 1324301, page version 42.14.0): you can apply Lua / animation / model / script changes in-game without restarting, via the debug menu (F11) or, more manageably, the Community Debug Tools. Note the in-game "reload file" button is often unreliable for freshly edited code.
+## 1. Turning it on
 
-**Diagnosing the silent-B41 failure:** with `-debug` the console prints script and Lua load errors; combined with `console.txt` / `server-console.txt` (Section 2) this names the offending file. Running with `-debug` surfaces errors loudly instead of swallowing them -- desirable during porting; fix or disable the erroring mod rather than turning debug off. **[CONFIRMED]**
+**The launch option `-debug` sets the game's debug flag, and the flag is what every debug tool checks.**
 
-There is also a community `[B42]DebugMenu` Workshop mod that extends the debug UI, but the built-in `-debug` is sufficient for foundation work. **[CONFIRMED]**
+The game reads its start-up arguments and sets the debug flag when one is exactly `-debug`. :cite[(`zombie/gameStates/MainScreenState.java:242-243`)] The `-imgui` option sets the same flag, and so does `-imguidebugviewports`. :cite[(`zombie/gameStates/MainScreenState.java:245-250`)] In Steam, the Launch Options box is where you type it; that is a Steam step, not game code.
 
----
+Lua asks for the flag with the global `isDebugEnabled`. :cite[(`zombie/Lua/LuaManager.java:4257-4262`)] On the main screen, a game started with the flag shows the debug scenarios list. :cite[(`media/lua/client/OptionScreens/MainScreen.lua:762-764`)]
 
-<a name="9-mapping"></a>
+## 2. The debug menu
+
+**The sidebar's debug button opens a menu with a Main tab of general tools and a Dev tab of viewers and editors.**
+
+The sidebar builds the button when the debug flag is set, unless `ISDebugMenu.forceEnable` is set, which also shows it outside multiplayer. :cite[(`media/lua/client/DebugUIs/DebugMenu/ISDebugMenu.lua:8`, `media/lua/client/DebugUIs/DebugMenu/ISDebugMenu.lua:86`)] :cite[(`media/lua/client/ISUI/ISEquippedItem.lua:874-876`)] Its icon switches between an on and an off picture while the menu is open or closed. :cite[(`media/lua/client/ISUI/ISEquippedItem.lua:122-126`)] The same click handler opens the menu, or closes it when it is already open. :cite[(`media/lua/client/ISUI/ISEquippedItem.lua:453-457`)]
+
+::::cards
+:::card[Main tab]{accent=orange}
+General debuggers, Cheats, Climate debuggers, Craft Recipes, Player's Stats, Items List, Fluids, Entities, Script Manager, XUI Debugger, Recipe Monitor and Sandbox Settings.
+:::
+:::card[Dev tab]{accent=purple}
+Audio, IsoRegions, Zombie Population, Stash debuggers, Anim monitor, Zomboid Radio, Animation Viewer, Attachment Editor, Chunk Debugger, Global Objects, Map Editor, Vehicle Editor, World Flares, Global Mod Data, New UI, Unit Tests, Character Debug, Forget Recipes and Seam Editor.
+:::
+::::
+
+The menu code adds each button to the Main or the Dev tab, and the labels come from the English translation. :cite[(`media/lua/client/DebugUIs/DebugMenu/ISDebugMenu.lua:16-47`, `media/lua/shared/Translate/EN/IG_UI.json:5651-5681`)]
+
+## 3. The Lua debugger and debug options
+
+**F11 is the default key for the Lua debugger, and your debug options are saved to a file in the cache folder.**
+
+The key binding table gives Toggle Lua Debugger the key F11. :cite[(`media/lua/shared/keyBinding.lua:355-358`)] When the debug flag is on and that key is down, the game starts stepping into the Lua. :cite[(`zombie/GameWindow.java:719-724`)] The debug strip also has a toggle that sets whether the Lua debugger shows when a Lua error happens. :cite[(`media/lua/client/DebugUIs/DebugToolstrip.lua:28-30`)]
+
+The debug options are written to and read from `debug-options.ini` in the cache folder. :cite[(`zombie/debug/DebugOptions.java:380-392`)] The file name ends in `.ini`.
+
+Debug scenarios are Lua files in the folder `media/lua/client/DebugUIs/Scenarios/`, and `DebugScenario.lua` is one of them. :cite[(`media/lua/client/DebugUIs/Scenarios/DebugScenario.lua:1-2`)]
+
+:::callout[How we know]{kind=proof}
+Read from the 42.22 decompiled Java and the vanilla Lua; no game was run. Not verified: the color of the bug icon, the T key in the map debugger, whether the "reload file" button reliably applies a changed file, what `-debug` prints to the console, and the `[B42]DebugMenu` Workshop mod. Earlier notes named the options file `debug-options.init`; the code reads `debug-options.ini`.
+:::

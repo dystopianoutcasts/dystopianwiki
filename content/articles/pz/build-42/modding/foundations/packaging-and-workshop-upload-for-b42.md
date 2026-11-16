@@ -8,79 +8,89 @@ section: modding
 category: foundations
 difficulty: beginner
 tags:
-  - mod-info
-  - registries-lua
-  - project-structure
   - workshop-upload
-  - debug-mode
+  - packaging
+  - mod-info
 excerpt: >-
-  [CONFIRMED] Workflow (in-game uploader path), corroborated by pzwiki Mod
-  structure, Uploading mods, and Workshop.txt:
-last_updated: '2026-10-04'
+  Where a Build 42.22 mod goes to be uploaded, which files the uploader sends, what the game writes into workshop.txt, and the keys in it. The checks and Steam limits are on the next page.
+last_updated: '2026-11-16'
 related_articles:
-  - tl-dr-what-a-b41-modder-must-change-first
-  - b42-status-versioning-and-the-compatibility-model
+  - workshop-upload-what-the-uploader-checks
   - the-b42-mod-project-structure
   - the-versioned-layout-common-build-folders
   - mod-info-fields-and-the-versioning-compatibility-system
-  - media-registries-lua-the-new-b42-identifier-file
-  - lua-folder-load-order
-  - in-game-debug-mode-and-dev-tools
-  - mapping-toolchain-status
-  - multiplayer-status-in-42-20-stable
   - b41-b42-porting-what-breaks-a-concrete-checklist
 ---
-# Packaging and Workshop upload for B42
+::field-notes
 
-> Source: 01_MODDING_FOUNDATIONS_AND_TOOLCHAIN.md (compiled 2026-07-29, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-16.
 
-**[CONFIRMED]** Workflow (in-game uploader path), corroborated by pzwiki *Mod structure*, *Uploading mods*, and *Workshop.txt*:
+**Who this page is for:** modders about to upload a Build 42 mod for the first time. It covers the folder layout and the `workshop.txt` keys. Every rule the uploader enforces, and what a server and a joining client check, is on [Workshop upload and server deployment: what the game checks](/pz/build-42/modding/foundations/workshop-upload-what-the-uploader-checks).
 
-1. **Develop under `Zomboid/Workshop/`.** Your mod lives at `Zomboid/Workshop/<ItemName>/Contents/mods/YourMod/...` in the versioned layout (Section 3). Only the `Contents/` subtree is uploaded; anything at the `<ItemName>/` level beside `Contents/` (a `.git` folder, `.vscode`/`.idea`, `README.md`, raw assets) is **ignored by the game and not uploaded** -- so that folder can double as your git repo. **[CONFIRMED]** (pzwiki *Mod structure* rev 1443271)
-2. **`workshop.txt`** sits at the Workshop-item root (beside `Contents/`). **You do not create it by hand -- the in-game uploader generates it.** **[CONFIRMED]** (pzwiki *Workshop.txt* rev 1395233)
-3. **`preview.png`** at the item root is the Steam Workshop preview image. The game's uploader checks it: it must be a **square PNG, 256x256 or 512x512, and at most 1000 KB**. (The game's own error text says "exactly 256x256", but the check accepts 512 too.) This is distinct from each mod's `poster.png` (the in-menu preview inside the version folder).
+:::callout[The 1-minute version]{kind=key}
+- Put the item under `Zomboid/Workshop/<ItemName>/`, with your mod at `Contents/mods/<YourMod>/`. The game lists every folder in `Zomboid/Workshop/` as an item you can upload.
+- Only the `Contents/` folder and `preview.png` are sent to Steam. Anything else beside `Contents/` stays on your machine.
+- The uploader writes `workshop.txt` for you from the screens you fill in. Its keys are `version`, `id`, `title`, `description`, `tags` and `visibility`.
+- `visibility` must be the exact word `public`, `friendsOnly`, `private` or `unlisted`. Anything else, or a missing line, uploads the item as public.
+- The Mod ID is the `id=` line in `mod.info`, and a server's `Mods=` line uses it. The Workshop ID is the number Steam gives the item, and `WorkshopItems=` uses it.
+:::
 
-> **Proof:** Code. `zombie.core.znet.SteamWorkshopItem#validatePreviewImage` (square, width 256 or 512, at most 1,024,000 bytes, readable PNG). Build 42.20 (revision a2947723ca).
+:::facts
+- **Staging folder** `Zomboid/Workshop/`, one folder per item
+- **Sent to Steam** `Contents/` and `preview.png`
+- **Keys the game writes** `version`, `id`, `title`, `description`, `tags`, `visibility`
+- **Version folder name** `42` or a version such as `42.13`
+:::
 
-4. **Upload via the in-game uploader:** main menu -> **Workshop** menu -> **"Create and update items."** It lists every valid mod in your Workshop folder; you set title, description, tags, visibility, and a patch note, then "Upload to Steam Workshop now!" If no Workshop ID is set it offers to create a new item or reuse an existing one. **[CONFIRMED]** (pzwiki *Uploading mods* rev 1442321)
-5. **Alternative uploaders [CONFIRMED]:** **SteamCMD** (official CLI, uses a build-config file, most control), **SteamChangePreview** (non-square / higher-res / animated preview images), and the **Steam Uploader** project (update description/preview/content independently). (pzwiki *Uploading mods*, *SteamCMD* rev in cache.)
+## 1. The folder layout
 
-### `workshop.txt` keys **[CONFIRMED]** (upgraded from LIKELY -- pzwiki *Workshop.txt* rev 1395233)
+**An item is a folder in `Zomboid/Workshop/` with a `Contents/mods/<YourMod>/` tree, and only `Contents/` is uploaded.**
 
-| Key | Meaning |
-|-----|---------|
-| `version` | File-reader version. **Keep at `1`.** |
-| `id` | The **Workshop ID** of the mod. Set it to update an existing item you own/contribute to; remove the field to create a brand-new Workshop item. |
-| `title` | Steam Workshop page title. |
-| `description` | Steam Workshop page description. Each new line needs the parameter again (awkward -- the in-game description editor is easier). |
-| `tags` | Workshop tags (predefined by the PZ Workshop). |
-| `visibility` | One of the exact words `public`, `friendsOnly`, `private` or `unlisted` (case matters). Anything else, a number such as `2` included, or no `visibility` line at all, publishes the item **public**. The numbers 0-3 exist only inside the game's code. |
+The game takes the Workshop staging folder to be `Workshop` inside the game's cache folder, and it lists each folder in it as an item. :cite[(`zombie/core/znet/SteamWorkshop.java:98-100`, `zombie/core/znet/SteamWorkshop.java:102-118`)] The content sent to Steam is the item folder plus `Contents`, and the preview is the item folder plus `preview.png`. :cite[(`zombie/core/znet/SteamWorkshopItem.java:57-59`, `zombie/core/znet/SteamWorkshopItem.java:194-196`)]
 
-> **Proof:** Code. `zombie.core.znet.SteamWorkshopItem#readWorkshopTxt` (stores the text after `visibility=` as is), `SteamWorkshopItem#getVisibilityInteger` (returns 1, 2 or 3 only for `friendsOnly`, `private`, `unlisted`; 0, public, for anything else) and `zombie.core.znet.SteamWorkshop#SubmitWorkshopItem` (sends that integer to Steam). Build 42.20 (revision a2947723ca).
+So a `.git` folder, `.vscode`, a `README.md` or raw art beside `Contents/` is never sent, and the item folder can double as your git repository. Inside `Contents/` the uploader accepts only the folders `buildings`, `creative` and `mods`. The reasons and the error codes are on [the checks page](/pz/build-42/modding/foundations/workshop-upload-what-the-uploader-checks).
 
-> **Description overwrite warning [CONFIRMED]:** the in-game uploader **overwrites the entire Workshop description** with whatever is in `workshop.txt` / the uploader field. Copy your Steam description before uploading, and when re-copying it back, strip the trailing `Workshop ID:` / `Mod ID:` lines or you will duplicate them. (pzwiki *Workshop.txt*, *Uploading mods*.)
+Your mod sits in the versioned layout, with `common/` and a version folder such as `42/` inside `Contents/mods/<YourMod>/`. Name the version folder `42` or a version such as `42.13`, never `B42` or `4.2`: the uploader does not look inside those. See [the versioned layout](/pz/build-42/modding/foundations/the-versioned-layout-common-build-folders) for what goes in each folder.
 
-**B42-specific packaging notes:**
-- Ship the **versioned layout** (`common/` + `42/`) so B42 clients find the `42/` build folder + `mod.info`. Uploading a flat B41-shaped mod is what causes the silent-install/world-load failure for B42 subscribers (Section 2). **[CONFIRMED]**
-- To support both builds from one item, keep the flat B41 `media/` alongside `common/` + `42/` (Section 3/4). **[CONFIRMED]**
-- The **Mod ID** (`id` in `mod.info`) is what consumers put in server configs; the **Workshop ID** is assigned by Steam. Document both. **[CONFIRMED]**
-- **Name the version folder `42` (or a version such as `42.13`), never `B42` or `4.2`.** The uploader reads each folder beside `common/` as a game version and only looks inside the ones from 42.0 up to the running game. `B42` reads as 0 and `4.2` as 4.2, so neither is looked at, and if that is where your `mod.info` sits, the upload fails with `MissingModDotInfo` for a file that is right there.
-- **`require=` loads a dependency that is installed, even if `Mods=` leaves it out.** On a server, `Mods=` lists what is active, but each `require=` entry is looked up among the installed mods, not in `Mods=`. An installed library missing from `Mods=` is still loaded, just ahead of the mod that needs it. If it is not installed at all, the mod that requires it does not load and the log says `required mod "<id>" not found`.
+## 2. The preview image
 
-> **Proof:** Code. `zombie.core.znet.SteamWorkshopItem#validateModFolder` (`common` always; any other folder only when `ZomboidFileSystem#getGameVersionIntFromName` gives a value from `ChooseGameInfo.getMinRequiredVersion()`, 42.0, up to the running game; `MissingModDotInfo` when no `mod.info` was found); `zombie.ZomboidFileSystem#getGameVersionIntFromName` (`B42` parses as 0, `4.2` as 4002 against 42000). Build 42.21.0 (revision 4a0e9546ec).
+**`preview.png` sits at the item root, beside `Contents/`, and must be a square PNG that fits the size limits.**
 
-> **Proof:** Code. `zombie.ZomboidFileSystem#loadModAndRequired` (each `require=` entry through `ChooseGameInfo.getAvailableModDetails`, an installed-mods lookup, added to the order before the mod itself; a missing one logs `required mod "..." not found` and stops that mod) and `#loadMods`. Build 42.21.0 (revision 4a0e9546ec).
+The preview must be 256 or 512 pixels square and at most 1,024,000 bytes. :cite[(`zombie/core/znet/SteamWorkshopItem.java:494-517`)] The mod reader looks for a separate `poster` entry in `mod.info`; see [the mod.info fields](/pz/build-42/modding/foundations/mod-info-fields-and-the-versioning-compatibility-system). The preview rules are covered on [the checks page](/pz/build-42/modding/foundations/workshop-upload-what-the-uploader-checks).
 
-For everything the uploader checks before it sends anything, and Steam's own limits, see [Workshop upload and server deployment: what the game checks](/pz/build-42/modding/foundations/workshop-upload-what-the-uploader-checks).
+## 3. Uploading in the game
 
----
+**The main menu's Workshop screen has a "Create and update items" button, and it walks you through each item's fields.**
 
-<a name="11-multiplayer"></a>
+The button text comes from the translation file. :cite[(`media/lua/shared/Translate/EN/UI.json:989`)] Picking an item runs the folder check, and the next screen asks for title, description, tags and visibility. :cite[(`media/lua/client/OptionScreens/WorkshopSubmitScreen.lua:118-128`, `media/lua/client/OptionScreens/WorkshopSubmitScreen.lua:346-351`)] If the item has no Workshop id, the game asks Steam to create one, and then writes it into `workshop.txt`. :cite[(`media/lua/client/OptionScreens/WorkshopSubmitScreen.lua:1058-1068`, `media/lua/client/OptionScreens/WorkshopSubmitScreen.lua:1155-1158`)]
 
----
+Before the upload starts, the game shows an OK and Cancel box that names the title and the Workshop id. Cancel stops the upload. :cite[(`zombie/core/znet/SteamWorkshopItem.java:214-226`)] For a first upload from a bare folder, with the folder tree, the legal-agreement step, where to find the Workshop id and how to check a server loaded the mod, follow the walk on [the checks page](/pz/build-42/modding/foundations/workshop-upload-what-the-uploader-checks#1-your-first-upload-start-to-finish). The tags offered come from the game's `WorkshopTags.txt` file. :cite[(`zombie/core/znet/SteamWorkshopItem.java:145-148`)]
 
-*Corrected 2026-10-04: the Workshop preview may be 256x256 or 512x512, square, up to 1000 KB; 256x256 is not the only size accepted.*
+## 4. The workshop.txt keys
 
-*Corrected 2026-10-04: `visibility` in `workshop.txt` takes the words public, friendsOnly, private or unlisted, not the numbers 0-3; a number publishes the item public.*
+**The game writes `workshop.txt` itself, and it reads the same keys back.**
 
-*Updated 2026-10-04: the version folder name is checked by the uploader (`B42` or `4.2` gives `MissingModDotInfo`); `require=` loads an installed dependency even when `Mods=` omits it.*
+The writer produces `version=1`, `id=`, `title=`, one `description=` line per line of text, `tags=` joined with `;`, and `visibility=`. :cite[(`zombie/core/znet/SteamWorkshopItem.java:642-665`)] The reader skips empty lines and lines that start with `#` or `//`, and it understands `id=`, `description=`, `tags=`, `title=` and `visibility=`. :cite[(`zombie/core/znet/SteamWorkshopItem.java:604-619`)]
+
+| Key | What the game does with it | Code |
+|---|---|---|
+| `version` | Written as `1`; the reader ignores the line | `zombie/core/znet/SteamWorkshopItem.java:642`, `zombie/core/znet/SteamWorkshopItem.java:618` |
+| `id` | The Workshop id. With an id, the next upload updates that item. Without one, the game creates a new item | `zombie/core/znet/SteamWorkshopItem.java:605-607`, `zombie/core/znet/SteamWorkshop.java:127-133` |
+| `title` | The page title | `zombie/core/znet/SteamWorkshopItem.java:616-617` |
+| `description` | The page description. Each line of text is its own `description=` line, and the reader joins them with line breaks | `zombie/core/znet/SteamWorkshopItem.java:608-613`, `zombie/core/znet/SteamWorkshopItem.java:650` |
+| `tags` | Tags split on `;` | `zombie/core/znet/SteamWorkshopItem.java:614-615` |
+| `visibility` | One of the exact words `public`, `friendsOnly`, `private` or `unlisted`. Anything else, a number included, or no line at all, uploads as public | `zombie/core/znet/SteamWorkshopItem.java:128-136`, `zombie/core/znet/SteamWorkshopItem.java:618-619` |
+
+The upload replaces the whole Steam description with your description plus the lines the game adds: `Workshop ID:`, one `Mod ID:` per mod and one `Map Folder:` per map. :cite[(`zombie/core/znet/SteamWorkshop.java:143`, `zombie/core/znet/SteamWorkshopItem.java:171-188`)] If you copy that description back from Steam into the editor, strip the added lines first, or the game appends them a second time. That second step follows from the code above and was not run.
+
+## 5. Two ids, and the require line
+
+**The Mod ID is the `id=` line in `mod.info`, the Workshop ID is assigned by Steam, and a server needs both.**
+
+The mod reader takes the Mod ID from the `id=` line of `mod.info`. :cite[(`zombie/gameStates/ChooseGameInfo.java:243-247`)] A server reads Mod IDs from `Mods=` and Workshop IDs from `WorkshopItems=`. :cite[(`zombie/network/GameServer.java:667-675`, `zombie/network/GameServer.java:693-701`)] Write both in your item's description for your players.
+
+A mod's `require=` entry is looked up among the installed mods, and not in `Mods=`. :cite[(`zombie/ZomboidFileSystem.java:826-852`)] An installed library missing from `Mods=` still loads ahead of the mod that needs it, and a library that is not installed stops the mod that requires it from loading. The full rule is on [the checks page](/pz/build-42/modding/foundations/workshop-upload-what-the-uploader-checks).
+
+:::callout[How we know]{kind=proof}
+Read from the 42.22 decompiled Java and the vanilla Lua; no game or upload was run. Not verified: the other upload tools (SteamCMD, SteamChangePreview and the Steam Uploader project), which are outside the game code, dated 2026-11-16. Also not verified here: that a flat Build 41 mod uploaded alone makes a silent install failure for Build 42 subscribers, and that keeping a flat `media/` folder beside `common/` and `42/` serves both builds. The layout pages cover what the loader reads.
+:::
