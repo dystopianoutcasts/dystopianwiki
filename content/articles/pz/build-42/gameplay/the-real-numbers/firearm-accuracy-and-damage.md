@@ -26,7 +26,7 @@ related_articles:
 
 > Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-15.
 
-Outcast, guns in Build 42 feel very different from Build 41, and the arguments about them are louder. We read the 42.22 code. Most of the answer is plain arithmetic we can show you; one part lives in a library we cannot read, and we tell you which. Every gun's own numbers are on [Firearms: the numbers](/pz/build-42/gameplay/numbers-tables/tbl-firearms).
+Outcast, guns in Build 42 feel very different from Build 41, and the arguments about them are louder. We read the 42.22 code. Most of the answer is plain arithmetic we can show you; one part lives in a library we cannot read, and we tell you which.
 
 :::callout[The 1-minute version]{kind=key}
 - For the default settings (the Apocalypse preset: Firearms Use Damage Chance "Zombies only", the moodle and weather multipliers at 1, headgear effect on), every bullet at a zombie rolls a hit chance first. It is a percent: the gun's HitChance, plus 4 per Aiming level, plus a range bonus, minus penalties, kept between 5 and 100.
@@ -287,7 +287,6 @@ For a zombie target, the shooter's game rolls the hit, works out the damage and 
 
 ## Where to go next
 
-- [Firearms: the numbers](/pz/build-42/gameplay/numbers-tables/tbl-firearms): every gun's damage, range, hit chance, recoil, aiming time and noise.
 - [How melee damage and critical hits work](/pz/build-42/gameplay/the-real-numbers/melee-damage-and-critical-hits): the shared part of the damage chain.
 - [How far zombies see and hear you](/pz/build-42/gameplay/the-real-numbers/how-zombies-see-and-hear-you): the noise every shot makes.
 - [Hit reactions and ballistics](/pz/build-42/engine/physics-and-ragdolls/hit-reactions-and-ballistics): how a shot picks its body part, for the curious.

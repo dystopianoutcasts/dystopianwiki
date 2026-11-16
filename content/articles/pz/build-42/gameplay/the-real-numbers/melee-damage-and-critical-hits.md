@@ -25,7 +25,7 @@ related_articles:
 
 > Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-15.
 
-Outcast, the bat versus axe argument has gone on long enough. Here is what the 42.22 code does with every swing, from the weapon's numbers to the zombie hitting the floor, so you can settle it with arithmetic. Every weapon's own numbers are on [Melee weapons: the numbers](/pz/build-42/gameplay/numbers-tables/tbl-melee-weapons).
+Outcast, the bat versus axe argument has gone on long enough. Here is what the 42.22 code does with every swing, from the weapon's numbers to the zombie hitting the floor, so you can settle it with arithmetic.
 
 :::callout[The 1-minute version]{kind=key}
 - For the default settings (Weapon Multi Hit off, so one zombie per swing): on foot, melee never misses a target it reaches. There is no hit roll to lose; reach and angle decide whether a swing connects. :cite[(`zombie/CombatManager.java:2761-2763`)] From a vehicle the hit chance can be 0 for a target outside the allowed angle. :cite[(`zombie/CombatManager.java:2711-2713`)]
@@ -227,7 +227,6 @@ We have not measured how this plays out on a dedicated server, and whether multi
 ## Where to go next
 
 - [How firearm accuracy and damage work](/pz/build-42/gameplay/the-real-numbers/firearm-accuracy-and-damage): the same chain for guns, and where it differs.
-- [Melee weapons: the numbers](/pz/build-42/gameplay/numbers-tables/tbl-melee-weapons): every weapon's damage, reach and crit values, with [part 2](/pz/build-42/gameplay/numbers-tables/tbl-melee-weapons-2).
 - [Outcast Punch: engine notes](/pz/build-42/outcast-mods/outcast-punch/outcast-punch-engine): why bare-handed punches deal no damage in vanilla, and the same multiplier chain from a modder's side.
 - [How infection works](/pz/build-42/gameplay/the-real-numbers/how-infection-works): what the zombie is trying to do to you meanwhile.
 
