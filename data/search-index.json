@@ -4855,10 +4855,10 @@
     "tags": [
       "craftrecipe",
       "crafting",
-      "itemmapper",
+      "schema",
       "recipe-tags"
     ],
-    "excerpt": "Enriched from pzwiki cache (canonical). Source: pzwiki.net/wiki/CraftRecipe, page-version 42.19.0, revid 1441679. NOTE: the \"PZwiki (403 ... snippets only)\" caveat above is now SUPERSEDED for the...",
+    "excerpt": "Every top-level craftRecipe key, the 66 named recipe tags, the input and output line forms and what Lua can change, read from the Build 42.22 code, with a one-recipe example.",
     "difficulty": "intermediate"
   },
   {
@@ -4872,10 +4872,10 @@
     "tags": [
       "craftrecipe",
       "crafting",
-      "itemmapper",
-      "recipe-tags"
+      "recipe-inputs",
+      "input-flags"
     ],
-    "excerpt": "The inputs{} block is where B42's expressiveness lives. Each line is one ingredient requirement.",
+    "excerpt": "How one inputs line of a Build 42.22 craftRecipe is read: item lists, tags, any-item, amounts, the use, keep and destroy modes, the 69 flags, and fluid lines.",
     "difficulty": "intermediate"
   },
   {
@@ -4890,9 +4890,9 @@
       "craftrecipe",
       "crafting",
       "itemmapper",
-      "recipe-tags"
+      "recipe-outputs"
     ],
-    "excerpt": "item Base.ItemName — produces that many. Multiple output lines allowed. An empty outputs { } is valid — used when the recipe's effect is a state change / fluid transfer / opening a bottle (see...",
+    "excerpt": "How the outputs block and itemMapper blocks of a Build 42.22 craftRecipe work: plain and mapped results, counts, ranges, output flags, the default line, and what a bad line does.",
     "difficulty": "intermediate"
   },
   {
@@ -4906,10 +4906,9 @@
     "tags": [
       "craftrecipe",
       "crafting",
-      "itemmapper",
-      "recipe-tags"
+      "reference"
     ],
-    "excerpt": "craftRecipe reference, in 5 parts: The new craftRecipe block, craftRecipe inputs in depth, craftRecipe outputs and itemMappers, craftRecipe vs legacy recipe, ADDENDUM: Canonical craftRecipe schema.",
+    "excerpt": "A map of the Build 42.22 crafting pages: which one to read for the recipe block, inputs, outputs and itemMappers, the legacy recipe, the schema, and starting a craft from Lua.",
     "difficulty": "intermediate"
   },
   {
@@ -4923,10 +4922,10 @@
     "tags": [
       "craftrecipe",
       "crafting",
-      "itemmapper",
-      "recipe-tags"
+      "legacy-recipe",
+      "porting"
     ],
-    "excerpt": "[BREAKING] B41's recipe block and B42's craftRecipe are different systems.",
+    "excerpt": "In 42.22 vanilla has 965 craftRecipe blocks and no recipe blocks, and the old recipe parser reads only ingredient lines. What changed from Build 41, and how to move a recipe.",
     "difficulty": "intermediate"
   },
   {
@@ -4944,7 +4943,7 @@
       "lua",
       "silent-failure"
     ],
-    "excerpt": "Starting a vanilla craft from your own Lua: where its inputs may come from, how to pin the exact item, what happens on the client and on the server, why a failure on the server is silent, and the one field name that destroys every timed action you queue. Read from the 42.21 code.",
+    "excerpt": "Starting a vanilla craft from your own Lua in Build 42.22: where its inputs may come from, how to pin an exact item, what runs on the client and the server, and why a refused craft is silent.",
     "difficulty": "advanced"
   },
   {
@@ -4958,10 +4957,10 @@
     "tags": [
       "craftrecipe",
       "crafting",
-      "itemmapper",
-      "recipe-tags"
+      "scripts",
+      "recipe-time"
     ],
-    "excerpt": "Minimal real recipe (from entities/agricultural/workstations/entity_stone_mill.txt) [CONFIRMED]:",
+    "excerpt": "How a craftRecipe block reads in Build 42.22: the id, the 26 top-level keys, the comma rule, what time really means, and what the engine does with a bad line.",
     "difficulty": "intermediate"
   },
   {
