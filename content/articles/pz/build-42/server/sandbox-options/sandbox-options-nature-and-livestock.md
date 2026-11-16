@@ -134,7 +134,7 @@ Farming, foraging, fishing, erosion and the animals.
 - **The game's description:** "The abundance of items found in Foraging mode."
 - **No read found.** We found no read of the value. The name appears as text in: `media/lua/shared/Foraging/forageDefinitions.lua` in `<file>` (line 62); `media/lua/shared/Foraging/forageSkills.lua` in `<file>` (lines 560, 567, 574, 581, 609); `media/lua/shared/Foraging/forageSystem.lua` in `forageSystem.getRefillBonus` (line 1466); `media/lua/shared/Foraging/forageZones.lua` in `<file>` (lines 7, 14, 21, 31, 38, 45, 55, 62, 69, 76, 83, 95, 102, 114, 126, 133, 144).
 - **Set (not read) in:** `media/lua/client/Challenge/` (4 files, 4 places); `media/lua/client/DebugUIs/Scenarios/` (18 files, 18 places).
-- **What the code does with it:** Foraging reads it through a variable: `forageSystem.getRefillBonus` looks up `SandboxVars[abundanceSetting]`, and the forage zones and definitions set `abundanceSetting` to "NatureAbundance" (it is also the fallback). The refill bonus is 1 plus one hundredth of the matching entry in `forageSystem.abundanceSettings`.
+- **What the code does with it:** Foraging reads it through a variable: `forageSystem.getRefillBonus` looks up `SandboxVars[abundanceSetting]`, and the forage zones in `forageZones.lua` set `abundanceSetting` to "NatureAbundance" (it is also the fallback). The refill bonus is 1 plus one hundredth of the matching entry in `forageSystem.abundanceSettings`.
 
 ### PlantResilience
 

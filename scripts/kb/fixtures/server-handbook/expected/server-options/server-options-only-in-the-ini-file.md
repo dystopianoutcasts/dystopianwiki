@@ -30,14 +30,14 @@ These options are in the server's ini file but on no page of the settings screen
 - **In the file:** `AntiCheatFixture=2` is the default. Takes a choice from 1 to 3: 1 ban, 2 kick, 3 log.
 - **Settings screen:** not on any page. **Sent to joining players:** yes.
 - **The game's description:** "Fixture anti-cheat"
-- **Not read by the 42.21 code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.
+- **Not read by the game code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.
 
 ### ResetID
 
 - **In the file:** `ResetID=` followed by a value computed when the options are created: `Rand.Next(1000)`. Takes a whole number from 0 to 2147483647.
 - **Settings screen:** not on any page. **Sent to joining players:** yes.
 - **The game's description:** "Reset marker"
-- **Not read by the 42.21 code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.
+- **Not read by the game code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.
 - **What the code does with it:** Fixture: read nowhere.
 
 > **Proof:** Code. zombie.network.ServerOptions (each option's declaration: name, type, default, range), media/lua/shared/Translate/EN/UI.json (the descriptions), media/lua/client/OptionScreens/ServerSettingsScreen.lua (the settings pages), and the read sites named under each option. Build 9.99 (revision 0f0f0f0f0f).

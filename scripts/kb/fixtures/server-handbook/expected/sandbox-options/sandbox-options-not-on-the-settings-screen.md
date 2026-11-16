@@ -38,7 +38,7 @@ These sandbox options exist in the code and in the SandboxVars file but on no pa
 - **In the file:** `NightFixture = false`, read by Lua as `SandboxVars.NightFixture`. Takes true or false.
 - **Default:** `false`. Every preset keeps the default.
 - **The game's description:** "Longer nights"
-- **Not read by the 42.21 code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.
+- **Not read by the game code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.
 
 ### WaterFixture
 

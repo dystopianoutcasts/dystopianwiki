@@ -38,7 +38,7 @@ These sandbox options exist in the code and in the SandboxVars file but on no pa
 - **In the file:** `AlarmDecayModifier = 14`, read by Lua as `SandboxVars.AlarmDecayModifier`. Takes a whole number from -1 to 2147483647.
 - **Default:** `14`. Every preset keeps the default.
 - **The game's description:** "How long alarm batteries can last for after the power shuts off."
-- **Not read by the 42.21 code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.
+- **Not read by the game code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.
 - **Set (not read) in:** `media/lua/client/Challenge/` (2 files, 2 places).
 
 ### AnimalMetaStatsModifier
@@ -74,7 +74,7 @@ These sandbox options exist in the code and in the SandboxVars file but on no pa
 - **The game's description:** "The speed of plant growth."
 - **No read found.** We found no read of the value. The name appears as text in: `zombie.characters.skills.PerkFactory#init` (line 146); `zombie.characters.skills.PerkFactory$Perks#<field initializer>` (line 352); `zombie.core.Translator#<field initializer>` (line 149); `zombie.debug.debugWindows.ScenePanel#doPlayer` (line 229); `zombie.inventory.ItemPickerJava#<field initializer>` (line 123); `zombie.inventory.ItemPickerJava#getLootModifierFromType` (line 1527); `zombie.inventory.ItemPickerJava#getLootType` (line 1574); `zombie.scripting.objects.CraftRecipeCategory#<field initializer>` (line 20); `zombie.scripting.objects.CraftRecipeTag#<field initializer>` (line 35); `zombie.scripting.objects.EntityCategory#<field initializer>` (line 15); `media/lua/client/OptionScreens/SandboxOptions.lua` in `<file>` (line 53); `media/lua/client/PZAPI/ui/organisms/BuildUI.lua` in `<file>` (line 70); `media/lua/server/XpSystem/XPSystem_SkillBook.lua` in `<file>` (lines 51, 52, 53, 54, 55, 56, 57).
 - **Set (not read) in:** `media/lua/client/Challenge/` (4 files, 4 places); `media/lua/client/DebugUIs/Scenarios/` (18 files, 18 places).
-- **What the code does with it:** Not read: the only `SandboxVars.Farming` lines, in `media/lua/server/Farming/farming_vegetableconf.lua`, are commented out. Every "Farming" listed above is the skill, a loot type or a crafting category, not this option.
+- **What the code does with it:** Not read: the only `SandboxVars.Farming` lines that read it, in `media/lua/server/Farming/farming_vegetableconf.lua`, are commented out (challenge and debug scenario scripts only assign it). Every "Farming" listed above is the skill, a loot type or a crafting category, not this option.
 
 ### InsaneLootFactor
 
@@ -90,7 +90,7 @@ These sandbox options exist in the code and in the SandboxVars file but on no pa
 - **Choices:** 1 "Always Night", 2 "Long", 3 "Normal", 4 "Short", 5 "Always Day".
 - **Default:** `3` ("Normal"). Every preset keeps the default.
 - **The game's description:** "The time from dusk to dawn."
-- **Not read by the 42.21 code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.
+- **Not read by the game code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.
 - **Set (not read) in:** `media/lua/client/Challenge/` (2 files, 2 places).
 
 ### NormalLootFactor
@@ -107,7 +107,7 @@ These sandbox options exist in the code and in the SandboxVars file but on no pa
 - **Choices:** 1 "Very Poor", 2 "Poor", 3 "Normal", 4 "Abundant", 5 "Very Abundant".
 - **Default:** `3` ("Normal"). Every preset keeps the default.
 - **The game's description:** "The yield of plants when harvested."
-- **Not read by the 42.21 code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.
+- **Not read by the game code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.
 - **Set (not read) in:** `media/lua/client/Challenge/` (4 files, 4 places); `media/lua/client/DebugUIs/Scenarios/` (18 files, 18 places).
 
 ### RareLootFactor

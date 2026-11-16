@@ -128,7 +128,7 @@ These options are in the server's ini file but on no page of the settings screen
 - **In the file:** `BloodSplatLifespanDays=0` is the default. Takes a whole number from 0 to 365.
 - **Settings screen:** not on any page. **Sent to joining players:** yes.
 - **The game's description:** "Number of days before old blood splats are removed. Removal happens when map chunks are loaded. Zero means they will never disappear"
-- **Not read by the 42.21 code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.
+- **Not read by the game code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.
 - **What the code does with it:** This server option is read nowhere. The sandbox option with the same name, `BloodSplatLifespanDays`, is the one `IsoChunk` and `IsoObject` read.
 
 ### CarEngineAttractionModifier
@@ -137,7 +137,7 @@ These options are in the server's ini file but on no page of the settings screen
 - **Settings screen:** not on any page. **Sent to joining players:** yes.
 - **The game's description:** "Modify the range of zombie attraction to cars. (Lower values can help with lag.)"
 - **Read in:** `zombie.vehicles.VehicleEngine#updateWorldSounds` (lines 271, 272).
-- **What the code does with it:** On the server, the loudness of the world sound a running engine makes is multiplied by this value.
+- **What the code does with it:** On the server, the loudness of the world sound a running engine makes is multiplied by this value. The roll that decides whether a sound is made is also scaled by it (1 in 120 times the value, before the game-speed factor).
 
 ### ChatStreams
 

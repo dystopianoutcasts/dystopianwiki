@@ -98,7 +98,7 @@ The settings screen shows this page only on Steam servers.
 - **Settings screen:** the "Steam" page. **Sent to joining players:** yes.
 - **The game's description:** "Limits the number of different accounts a single Steam user may create on this server. Ignored when using the Hosts button."
 - **Read in:** `zombie.network.ServerWorldDatabase#isNewAccountAllowed` (line 1211).
-- **What the code does with it:** 0 or less turns it off, and so does a server not running in Steam mode. Otherwise the server counts the other accounts that use the same SteamID before it allows a new one.
+- **What the code does with it:** 0 or less turns it off, and so does a server not running in Steam mode. Otherwise the server counts the other accounts that use the same SteamID, in the whitelist and in the player database, and allows a new one only while both counts are below this value; a SteamID whose whitelist role has `PriorityLogin` is always allowed.
 
 ### SteamScoreboard
 

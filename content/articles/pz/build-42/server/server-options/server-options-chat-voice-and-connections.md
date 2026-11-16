@@ -166,7 +166,7 @@ Chat, voice, remote control (RCON), the Discord bridge, UPnP, vehicles and the s
 - **Settings screen:** the "Other" page. **Sent to joining players:** yes.
 - **The game's description:** "Governs how fast time passes while players sleep. Value multiplies the speed of the time that passes during sleeping."
 - **Read in:** `zombie.ai.states.ThumpState#getFastForwardDamageMultiplier` (lines 385, 387); `zombie.GameTime#getMultiplier` (lines 976, 978).
-- **What the code does with it:** While the server is fast-forwarding, `GameTime#getMultiplier` uses this value divided by the length of a day in minutes.
+- **What the code does with it:** While the server is fast-forwarding, `GameTime#getMultiplier` starts from this value times the day length in minutes divided by 30, then applies the usual speed and frame-rate factors. A multiplayer client does the same while it is fast-forwarding.
 
 ### AllowNonAsciiUsername
 

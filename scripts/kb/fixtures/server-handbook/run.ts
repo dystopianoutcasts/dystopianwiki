@@ -214,7 +214,7 @@ function generatorTests(): void {
 
   // content details ---------------------------------------------------------------------------
   check('a computed default is shown as computed', noPage.includes('`ResetID=` followed by a value computed when the options are created: `Rand.Next(1000)`'))
-  check('a read-nowhere option says so', noPage.includes('**Not read by the 42.21 code.**'))
+  check('a read-nowhere option says so', noPage.includes('**Not read by the game code.**'))
   check('the game\'s line-break tag becomes a space', pvpPage.content.includes('"Players can hurt other players"'))
   check('sites are grouped by method with their lines', pvpPage.content.includes('`zombie.fixture.Combat#hit` (lines 5, 9)'))
   check('a server note is printed', pvpPage.content.includes('**What the code does with it:** Fixture: players may hurt each other.'))

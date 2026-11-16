@@ -462,7 +462,7 @@ function serverKind(o: ServerOption): string {
 }
 
 function statusLines(status: Status, named: Site[], computed: Site[]): string[] {
-  if (status === 'none') return ['- **Not read by the 42.21 code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.']
+  if (status === 'none') return ['- **Not read by the game code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.']
   if (status === 'named') return [`- **No read found.** We found no read of the value. The name appears as text in: ${siteList(named)}.`]
   if (status === 'computed') return [`- **Read through a name built elsewhere:** ${siteList(computed)}.`]
   return []
@@ -712,7 +712,7 @@ function sandboxDirectoryPage(data: ServerSurface, related: string[]): Page {
     `- **${fmt(c.sandboxOptionsComputedOnly)} are read through a name built elsewhere:** the XP multipliers (the code builds "MultiplierConfig." plus the skill name) and the options the world generator names in its data.`,
     `- **${fmt(c.sandboxOptionsNamedOnly)} have no read we could find, but their name appears as text:** ${data.sandboxOptions.filter(o => o.status === 'named').map(link).join(', ')}. Each entry says where.`,
     `- **${fmt(c.sandboxOptionsReadNowhere)} are read nowhere:** ${data.sandboxOptions.filter(o => o.status === 'none').map(link).join(', ') || 'none'}.`,
-    `- **${fmt(c.sandboxWriteSites)} places set a sandbox value instead of reading it,** nearly all in the debug scenarios and the Last Stand challenges. Each entry lists them apart from the reads.`,
+    `- **${fmt(c.sandboxWriteSites)} places set a sandbox value instead of reading it,** nearly all in the debug scenarios and the challenge scenarios. Each entry lists them apart from the reads.`,
     ...(data.unknownSandboxNames.length ? [`- **Names the code uses that are not options in ${data.build}:** ${data.unknownSandboxNames.map(u => `${code(u.name)} (${plural(u.sites, 'place')}, first ${siteList([u.first])})`).join('; ')}.`] : []),
     ...data.presets.filter(p => p.unknownKeys.length).map(p => `- **The ${p.title ?? p.name} preset sets names that are not options:** ${p.unknownKeys.map(code).join(', ')}. The game ignores them.`),
     ...data.presets.filter(p => p.resolved.length).map(p => `- **The ${p.title ?? p.name} preset computes some values:** ${p.resolved.map(r => code(r)).join('; ')} (the tables are set in \`media/lua/shared/defines.lua\`).`),

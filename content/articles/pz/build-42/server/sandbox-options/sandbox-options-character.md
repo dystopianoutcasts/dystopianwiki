@@ -323,7 +323,7 @@ Character creation points, injuries, needs, reading, weapons and the XP multipli
 - **The game's description:** "The rate at which all skills level up."
 - **Read in:** `zombie.characters.IsoGameCharacter$XP#AddXP` (line 17868); `zombie.network.anticheats.AntiCheatXPUpdate#getMaxPerkXpMultiplier` (line 57).
 - **Set (not read) in:** `media/lua/client/Challenge/` (2 files, 2 places).
-- **What the code does with it:** Multiplies the XP gain in `IsoGameCharacter.XP#AddXP` while `MultiplierConfig.GlobalToggle` is true. The per-skill values are used only when it is false.
+- **What the code does with it:** Multiplies the XP gain in `IsoGameCharacter.XP#AddXP` while `MultiplierConfig.GlobalToggle` is true, for a gain that takes the XP boost. The per-skill values are used only when it is false.
 
 ### MultiplierConfig.GlobalToggle
 
@@ -333,7 +333,7 @@ Character creation points, injuries, needs, reading, weapons and the XP multipli
 - **The game's description:** "When enabled, all skills will use the Global Multiplier."
 - **Read in:** `zombie.characters.IsoGameCharacter$XP#AddXP` (line 17867); `zombie.network.anticheats.AntiCheatXPUpdate#getMaxPerkXpMultiplier` (line 56).
 - **Set (not read) in:** `media/lua/client/Challenge/` (2 files, 2 places).
-- **What the code does with it:** In `IsoGameCharacter.XP#AddXP`, when this is true the XP gain is multiplied by `MultiplierConfig.Global`; when it is false, by the skill's own `MultiplierConfig.<skill>` value.
+- **What the code does with it:** In `IsoGameCharacter.XP#AddXP`, for a gain that takes the XP boost (the ordinary `AddXP` call), when this is true the gain is multiplied by `MultiplierConfig.Global`; when it is false, by the skill's own `MultiplierConfig.<skill>` value.
 
 ### MultiplierConfig.Fitness
 

@@ -42,7 +42,7 @@ Outcast, the sandbox options are the flavour of your world: how many zombies, ho
 - **1 are read through a name built elsewhere:** the XP multipliers (the code builds "MultiplierConfig." plus the skill name) and the options the world generator names in its data.
 - **1 have no read we could find, but their name appears as text:** [WaterFixture](/pz/build-42/server/sandbox-options/sandbox-options-not-on-the-settings-screen#waterfixture). Each entry says where.
 - **1 are read nowhere:** [NightFixture](/pz/build-42/server/sandbox-options/sandbox-options-not-on-the-settings-screen#nightfixture).
-- **2 places set a sandbox value instead of reading it,** nearly all in the debug scenarios and the Last Stand challenges. Each entry lists them apart from the reads.
+- **2 places set a sandbox value instead of reading it,** nearly all in the debug scenarios and the challenge scenarios. Each entry lists them apart from the reads.
 - **Names the code uses that are not options in 9.99:** `LootRespawn` (2 places, first `media/lua/client/DebugUIs/Scenarios/A.lua` in `A.setSandbox` (line 9)).
 - **The Rising preset sets names that are not options:** `OldName`. The game ignores them.
 - **The Rising preset computes some values:** `Zombies = tonumber(Fix.High) = 2` (the tables are set in `media/lua/shared/defines.lua`).

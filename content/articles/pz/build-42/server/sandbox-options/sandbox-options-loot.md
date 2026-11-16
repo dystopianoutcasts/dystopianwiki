@@ -71,7 +71,7 @@ How much loot there is, of each kind, how it respawns and how already-looted the
 - **The game's description:** "The chance that any building will already be looted when found. Check the "Advanced" box below to use a custom number."
 - **Read in:** `zombie.SandboxOptions#getCurrentLootedChance` (line 1206).
 - **Set (not read) in:** `media/lua/client/Challenge/` (2 files, 2 places).
-- **What the code does with it:** The looted chance grows with the days since the world began: this value times the days, divided by `DaysUntilMaximumLooted`, with the days capped at that number. 0 turns it off, and a `DaysUntilMaximumLooted` of 0 gives the full value from the first day. A "Rich" square gets 1.5 times, and the result is at least 1.
+- **What the code does with it:** The looted chance grows with the whole days since the world began: this value times the days, divided by `DaysUntilMaximumLooted`, with the days capped at that number. 0 turns it off, and a `DaysUntilMaximumLooted` of 0 gives the full value from the first day, without the rural and Rich changes or the floor of 1. Otherwise a "Rich" square gets 1.5 times, and the result is at least 1.
 
 ### DaysUntilMaximumLooted
 
@@ -90,7 +90,7 @@ How much loot there is, of each kind, how it respawns and how already-looted the
 - **The game's description:** "The chance that any rural building will already be looted when found. Check the "Advanced" box below to use a custom number."
 - **Read in:** `zombie.SandboxOptions#getCurrentLootedChance` (line 1224); `zombie.SandboxOptions#getCurrentDiminishedLootPercentage` (line 1262).
 - **Set (not read) in:** `media/lua/client/Challenge/` (2 files, 2 places).
-- **What the code does with it:** On a square outside every town region, the looted chance is multiplied by this value after it is cut to a whole number: anything below 1.0 gives 0 (the chance then becomes its floor of 1), 1.0 to 1.99 leaves it unchanged, 2.0 doubles it. The diminished-loot percentage (`getCurrentDiminishedLootPercentage`) is cut the same way, and there below 1.0 means none.
+- **What the code does with it:** When `DaysUntilMaximumLooted` is above 0, on a square outside every town region the looted chance is multiplied by this value after it is cut to a whole number: anything below 1.0 gives 0 (the chance then becomes its floor of 1), 1.0 to 1.99 leaves it unchanged, 2.0 doubles it. The diminished-loot percentage (`getCurrentDiminishedLootPercentage`) is cut the same way, and there below 1.0 means none.
 
 ### MaximumDiminishedLoot
 

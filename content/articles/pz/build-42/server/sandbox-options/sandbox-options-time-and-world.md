@@ -255,7 +255,7 @@ When the world starts, how long a day lasts, when the water and power go off, al
 - **The game's description:** "Number of in-game days before rotten food is removed from the map. -1 means rotten food is never removed."
 - **Read in:** `zombie.inventory.types.Food#updateRotting` (lines 706, 712); `zombie.inventory.types.Food#finishupdate` (line 1340); `zombie.inventory.types.Food#shouldUpdateInWorld` (line 1362).
 - **Set (not read) in:** `media/lua/client/Challenge/` (2 files, 2 places).
-- **What the code does with it:** -1 turns it off. From 0 up, rotten food is destroyed once its age passes the age at which it rots (`OffAgeMax`) by this many days, unless it sits in a compost bin.
+- **What the code does with it:** -1 turns it off. From 0 up, rotten food is destroyed once its age passes the age at which it rots (`OffAgeMax`) by this many days, unless it sits in a compost bin. Food with a rotten replacement turns into that first, and a multiplayer client does none of this.
 
 ### WorldItemRemovalList
 
@@ -290,7 +290,7 @@ When the world starts, how long a day lasts, when the water and power go off, al
 - **Choices:** 1 "Never", 2 "Extremely Rare", 3 "Rare", 4 "Sometimes", 5 "Often", 6 "Very Often", 7 "Always".
 - **Default:** `4` ("Sometimes"). Every preset keeps the default.
 - **The game's description:** "How frequently basements spawn at random locations."
-- **Not read by the 42.21 code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.
+- **Not read by the game code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.
 - **Set (not read) in:** `media/lua/client/Challenge/` (2 files, 2 places).
 
 ### MaximumFireFuelHours

@@ -102,7 +102,7 @@ Everything that decides how players treat each other: PVP and its damage, safeho
 - **Settings screen:** the "Loot" page. **Sent to joining players:** yes.
 - **The game's description:** "Maximum number of items that can be placed in a container. Zero means there is no limit. (PLEASE NOTE: This includes individual small items such as nails. A limit of 50 will mean only 50 nails can be stored.)"
 - **Read in:** `media/lua/client/ISUI/ISInventoryPage.lua` in `ISInventoryPage:prerender` (line 641); `media/lua/client/ISUI/ISInventoryPaneContextMenu.lua` in `ISInventoryPaneContextMenu.canAddManyItems` (lines 2972, 2975); `media/lua/client/TimedActions/ISInventoryTransferAction.lua` in `ISInventoryTransferAction:isValid` (line 52).
-- **What the code does with it:** 0 turns it off. Above 0, a multiplayer client shows the item count against the limit under a container, and the transfer action counts the destination's items against it (`ISInventoryTransferAction:isValid`); containers on a character are left out. All its read sites are client Lua.
+- **What the code does with it:** 0 turns it off. Above 0, a multiplayer client shows the item count against the limit beside a container's weight, and the transfer action counts the destination's items against it (`ISInventoryTransferAction:isValid`); containers on a character are left out. All its read sites are client Lua.
 
 ## War
 
@@ -148,7 +148,7 @@ Everything that decides how players treat each other: PVP and its damage, safeho
 - **Settings screen:** the "Faction" page. **Sent to joining players:** yes.
 - **The game's description:** "Players must survive this number of in-game days before being allowed to create a faction"
 - **Read in:** `zombie.characters.Faction#canCreateFaction` (line 50); `media/lua/client/ISUI/UserPanel/ISCreateFactionUI.lua` in `ISCreateFactionUI:updateButtons` (line 67); `media/lua/client/ISUI/UserPanel/ISUserPanelUI.lua` in `ISUserPanelUI:create` (line 61); `media/lua/client/ISUI/UserPanel/ISUserPanelUI.lua` in `ISUserPanelUI:updateButtons` (line 127).
-- **What the code does with it:** 0 turns it off. Otherwise a player needs at least this many days survived (hours survived of at least the value times 24) to create a faction.
+- **What the code does with it:** 0 turns it off. Otherwise a player needs at least this many days survived (hours survived of at least the value times 24) to create a faction, unless their role has `FactionCheat`.
 
 ### FactionPlayersRequiredForTag
 
@@ -207,7 +207,7 @@ Everything that decides how players treat each other: PVP and its damage, safeho
 - **Settings screen:** the "Safehouse" page. **Sent to joining players:** yes.
 - **The game's description:** "Players must have survived this number of in-game days before they are allowed to claim a safehouse"
 - **Read in:** `zombie.iso.areas.SafeHouse#canBeSafehouse` (line 397); `zombie.iso.areas.SafeHouse#allowSafeHouse` (lines 571, 572); `zombie.iso.areas.SafeHouse#hasNotSurvivedEnoughToClaim` (line 863).
-- **What the code does with it:** 0 turns it off. Above 0, a player who has survived fewer than this many days (hours survived below the value times 24) cannot claim a safehouse.
+- **What the code does with it:** 0 turns it off. Above 0, and with `PlayerSafehouse` on, a player who has survived fewer than this many days (hours survived below the value times 24) cannot claim a safehouse. With `AdminSafehouse` on, `allowSafeHouse` ignores the days and asks only for the `CanSetupSafehouses` capability.
 
 ### SafeHouseRemovalTime
 
