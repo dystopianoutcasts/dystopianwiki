@@ -13,92 +13,111 @@ tags:
   - zombies
   - sandbox
 excerpt: >-
-  On the default sandbox the helicopter comes once, on a random day after 6 to
-  9 nights, starting between 9 AM and 6 PM in a window 1 to 4 hours long. It
-  picks one player at random, flies in from 1,000 tiles away, hovers for
-  at most a minute and makes a 500-tile noise about every ten seconds. Read from
-  the 42.21 code.
-last_updated: '2026-10-04'
+  When the helicopter comes in 42.22, who it follows, how long it stays over you, and why it brings a crowd: on the default setting, once, on a random day after 6 to 9 nights, with a 500-tile noise.
+last_updated: '2026-11-15'
+related_articles:
+  - how-zombies-see-and-hear-you
+  - how-long-zombies-remember-you
 ---
-# The helicopter event: how it picks its day and its target
+::field-notes
 
-Every Outcast remembers their first helicopter: the drone in the distance, then half the town on your doorstep. Here is how Build 42.21 decides when it comes, who it follows, and why it drags so many zombies with it.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-15.
 
-## The short answer
+Outcast, everyone remembers their first helicopter: the drone in the distance, then half the town on your doorstep. Here is when it comes, who it follows, and why the crowd arrives with it.
 
-- **Default setting: Once.** When the world is created the game picks a day **after 6 to 9 nights survived**, a start hour **from 9 AM to 6 PM**, and a window **1 to 4 hours** long.
-- **During that window it launches almost at once**, usually within a few in-game minutes of the start hour.
-- **It picks one player at random** (in single player, one who is alive). Where you are, what you are doing and how much noise you make do not matter. In multiplayer every connected player has the same chance.
-- **It appears 1,000 tiles east and 1,000 tiles south of that player** and flies straight at them, following them as they move: about a real minute to arrive at normal speed.
-- **Over you, it stays at most one real minute in total** at normal speed, then leaves. If you are indoors or in a forest for 15 seconds, it stops hovering and searches wider.
-- **About every ten real seconds while it flies, it makes a noise that carries 500 tiles.** That noise, not the helicopter itself, is what brings the horde.
-- **Sometimes** brings the next one 11 to 16 days after the last, **Often** 7 to 10 days after. **Never** turns it off.
+:::callout[The 1-minute version]{kind=key}
+- On the default setting ("Once"), the game picks the day when the world is created: after 6 to 9 nights survived, starting between 9 AM and 6 PM, in a window 1 to 4 hours long.
+- Once the window opens, it launches within a few in-game minutes on average, and it picks one player at random. Where you are and how much noise you make do not matter.
+- It appears 1,000 tiles east and 1,000 tiles south of that player and flies at them. It stays over them for at most about a minute at normal speed, then leaves.
+- About every ten real seconds while it is active (at the frame cap), it makes a noise that carries 500 tiles. That noise, not the helicopter itself, is what pulls the zombies toward you.
+- Being indoors or in a forest does not hide you from it. It only changes where it flies.
+- "Sometimes" brings the next one 11 to 16 days after the last, "Often" 7 to 10 days after, "Never" turns it off.
+:::
 
-## When it comes
+:::facts
+- **Day** after 6, 7, 8 or 9 nights survived (a night counts over at 7 AM)
+- **Start hour and window** 9 AM to 6 PM, then 1 to 4 hours long
+- **Launch** about 6 in 100 per real second once the window is open, so about 17 real seconds, or about 4 to 5 in-game minutes on the default 1 hour 30 minute day
+- **Flight in** about 1,414 tiles at about 22.5 tiles per real second, so about 63 seconds
+- **Stay** at most 60 seconds of hovering and searching in total
+- **Noise** radius 500, about once every 10 real seconds at the frame cap; a machine running below its cap gets fewer
+- **Whole visit** about 3 real minutes, about 50 in-game minutes on the default day
+:::
 
-When a new world starts, unless the setting is Never, the game rolls:
+## 1. When it comes
 
-| Roll | Range |
-|---|---|
-| Day | after 6, 7, 8 or 9 nights survived |
-| Start hour | 9, 10, ... 18 (9 AM to 6 PM) |
-| Window length | 1, 2, 3 or 4 hours |
+The game rolls the helicopter's day, hour and window once, when the world starts, and only if the setting is not "Never".
 
-A "night survived" ticks over at 7 AM, so day 6 runs from 7 AM after your sixth night to 7 AM the next morning.
+The day is after 6, 7, 8 or 9 nights survived, the start hour is 9 to 18 (9 AM to 6 PM), and the window is 1, 2, 3 or 4 hours long. :cite[(`zombie/GameTime.java:347-351`)] A night survived rolls over at 7 AM, so "day 6" runs from 7 AM after your sixth night to 7 AM the next morning. :cite[(`zombie/GameTime.java:572-573`)]
 
-On that day, while the clock is past the start hour and before the end of the window, the game rolls on every update, with a chance scaled to how much time that update covered. At normal speed that works out to about a 6% chance each real second, so on average about 17 real seconds (four or five in-game minutes on the default 90-minute day) after the start hour.
+On that day, while the clock is inside the window and no helicopter is active, the game rolls a 1-in-800 chance scaled by the game speed. :cite[(`zombie/GameTime.java:493-497`, `zombie/GameTime.java:1024-1026`)] At normal speed that works out to about a 6% chance per real second, wherever you play it: the frame rate cancels out on a client, and a dedicated server runs at 10 cycles per second with the same result. :cite[(`zombie/GameTime.java:986`, `zombie/FPSTracking.java:46`, `zombie/network/GameServer.java:859`, `zombie/network/GameServer.java:1166`)] The average wait is about 17 real seconds, which is four or five in-game minutes on the default 1 hour 30 minute day. :cite[(`media/lua/shared/Sandbox/Apocalypse.lua:8`, `media/lua/shared/Translate/EN/Sandbox.json:30`)]
 
-| Setting | What happens after a helicopter day |
-|---|---|
-| Never | no helicopter at all |
-| Once (default) | nothing: it never comes again |
-| Sometimes | the next one is 11 to 16 days after the last, at a new random hour and window |
-| Often | the next one is 7 to 10 days after the last, at a new random hour and window |
+| Setting | What happens after a helicopter day | Code |
+|---|---|---|
+| Never | no helicopter at all | `zombie/GameTime.java:347` |
+| Once (default) | nothing: it never comes again | `zombie/SandboxOptions.java:150` |
+| Sometimes | the next one is 11 to 16 days after the last, at a new random hour and window | `zombie/GameTime.java:502-513` |
+| Often | the next one is 7 to 10 days after the last, at a new random hour and window | `zombie/GameTime.java:502-513` |
 
-> **Proof:** Code. `zombie.GameTime#init` (`helicopterDay1 = Rand.Next(6, 10)`, `helicopterTime1Start = Rand.Next(9, 19)`, end = start + `Rand.Next(4) + 1`, skipped when Helicopter is 1); `zombie.GameTime#update` (launch when `nightsSurvived == helicopterDay1`, inside the window, not active, `Rand.Next((int)(800.0F * getInvMultiplier())) == 0`; once `nightsSurvived` passes the day, Sometimes sets it to `nightsSurvived + Rand.Next(10, 16)` and Often to `nightsSurvived + Rand.Next(6, 10)`; nights counted at 7.0); `zombie.SandboxOptions` (`Helicopter` default 2) and the option names in `media/lua/shared/Translate/EN/Sandbox.json` (Never, Once, Sometimes, Often). Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+The ranges in the last two rows are counted from the helicopter day itself: the game re-rolls on the first night after it, adding 10 to 15 (Sometimes) or 6 to 9 (Often) to that night count. :cite[(`zombie/GameTime.java:502-510`)] It does that whether or not the helicopter actually flew.
+
+The game's own presets set the option like this: Apocalypse, Outbreak and Six Months Later use "Once", Extinction uses "Sometimes", and Rising uses "Never". :cite[(`media/lua/shared/Sandbox/Apocalypse.lua:78`, `media/lua/shared/Sandbox/Outbreak.lua:78`, `media/lua/shared/Sandbox/SixMonthsLater.lua:52`, `media/lua/shared/Sandbox/Extinction.lua:78`, `media/lua/shared/Sandbox/Rising.lua:78`)] The 28 Minutes Later challenge turns it off and Top of the World uses "Once". :cite[(`media/lua/client/Challenge/28MinutesLater.lua:78`, `media/lua/client/Challenge/TopOfTheWorld.lua:85`)]
 
 ### It can come back the same afternoon
 
-After a launch the code tries to push the start of the window back by half an hour, but the start hour is stored as a whole number, so the half hour is lost and the window is unchanged. If the helicopter finishes its visit while the window is still open, the same check can launch it again.
+The helicopter can launch again on the same afternoon, because the code that is meant to push the window back does nothing.
 
-A visit takes roughly three real minutes (about a minute to arrive, up to a minute over you, a minute or so to fly out of range), which is about 50 in-game minutes on the default day. A window of 1 to 4 in-game hours can therefore hold more than one visit, each with a fresh random target.
+After a launch the code adds half an hour to the start hour, but the start hour is a whole number, so adding 0.5 and cutting back to a whole number gives the same hour. :cite[(`zombie/GameTime.java:95`, `zombie/GameTime.java:498`)] If the helicopter finishes its visit while the window is still open, the same roll can launch it again, and each visit has a fresh random target. :cite[(`zombie/GameTime.java:493-499`, `zombie/iso/Helicopter.java:305-319`)]
 
-We read this in the code; we have not timed it in a game. If you see the helicopter come back on its day, this is the reason.
+A visit takes roughly three real minutes (see "What it does"), which is about 50 in-game minutes on the default day, so a window of 1 to 4 in-game hours can hold more than one visit. We read this in the code and have not timed it in a game. If you see the helicopter come back on its day, this is the reason.
 
-> **Proof:** Code. `zombie.GameTime#update` (`this.helicopterTime1Start = (int)(this.helicopterTime1Start + 0.5F)` on an `int` field, so the value does not change; the bytecode, read with `javap` from the installed jar whose sha256 matches the capture, is `i2f`, `fadd 0.5f`, `f2i`, `putfield`; the launch check only needs `!IsoWorld.instance.helicopter.isActive()`); `zombie.iso.Helicopter#deactivate` (sets `active = false` when it leaves). Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+## 2. Who it picks
 
-## Who it picks
+It picks one player at random, and nothing about that player (position, noise, what you are doing) changes the odds.
 
-- **Single player and split screen:** one of the living local players, at random.
-- **Multiplayer:** one of the players connected to the server, at random, wherever they are on the map. It does not check whether that player is alive; if the pick is dead, the helicopter turns around and leaves.
-- **If nobody is there** (an empty server), nothing launches, and the check keeps trying for the rest of the window.
+- **Single player and split screen:** one of the living local players. :cite[(`zombie/iso/Helicopter.java:61-72`, `zombie/iso/Helicopter.java:79`)]
+- **Multiplayer:** one of the players connected to the server, wherever they are on the map. :cite[(`zombie/iso/Helicopter.java:58-60`, `zombie/network/GameServer.java:3590-3604`)] The list does not check whether a player is alive. If the pick is dead, the helicopter turns around and leaves. :cite[(`zombie/iso/Helicopter.java:120-136`)]
+- **If nobody is there** (an empty server), nothing launches, and the check keeps trying for the rest of the window. :cite[(`zombie/iso/Helicopter.java:75-78`)]
 
-> **Proof:** Code. `zombie.iso.Helicopter#pickRandomTarget` (local players with `isAlive()`, or `GameServer.getPlayers()`, then `Rand.Next(players.size())`; no players means `active = false`); `zombie.network.GameServer#getPlayers` (every connected player with an online id); `Helicopter#update` (a dead or missing target sends it to Leaving). Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+## 3. What it does
 
-## What it does
+The helicopter flies in, hovers over you for at most a minute, then flies out in a straight line.
 
-1. **Arriving.** It starts 1,000 tiles east and 1,000 tiles south of the target (about 1,414 tiles away) and flies at about 22 tiles per real second toward the target's current position, about a minute at normal speed.
-2. **Hovering.** Within 2 tiles of you, it starts circling: it picks points up to 50 tiles from you and flies between them.
-3. **Searching.** If you are not visible for 15 seconds, it searches instead, picking points up to 100 tiles from you. You are "not visible" when you are indoors (not on an outdoor square) or in a Forest or Deep Forest zone. If it sees you again, it goes back to hovering.
-4. **Leaving.** After 60 seconds of hovering and searching in total, it leaves in a straight line, and it switches off once no player is within 1,000 tiles of it.
+:::flow[One visit, at normal game speed]
+- Arriving: about 63 seconds
+- Hovering over you, searching if it loses you: 60 seconds in total at most
+- Leaving: about a minute, until no player is within 1,000 tiles
+:::
 
-In single player the timers count real seconds times your game speed, so fast-forwarding shortens them.
+1. **Arriving.** It starts 1,000 tiles east and 1,000 tiles south of the target, about 1,414 tiles away. :cite[(`zombie/iso/Helicopter.java:85-86`)] It heads for the target's current position at 0.75 tiles per step, and the engine takes 30 steps per real second at normal speed, so about 22.5 tiles per second, or about 63 seconds. :cite[(`zombie/iso/Helicopter.java:127-132`, `zombie/iso/Helicopter.java:218-219`, `zombie/GameTime.java:1032-1034`)]
+2. **Hovering.** Within 2 tiles of you it starts circling: it picks points up to 50 tiles from you and flies between them at half that speed. :cite[(`zombie/iso/Helicopter.java:121-125`, `zombie/iso/Helicopter.java:153-160`)]
+3. **Searching.** After 15 seconds in total of being hidden, it searches instead, picking points up to 100 tiles from you. :cite[(`zombie/iso/Helicopter.java:144-150`, `zombie/iso/Helicopter.java:166-181`)] You count as hidden when you are indoors (not on an outdoor square) or in a Forest or Deep Forest zone. :cite[(`zombie/iso/Helicopter.java:289-299`)] That 15 seconds adds up over the whole hover: stepping back into the open does not reset it. Only a search that finds you again does, and then it goes back to hovering. :cite[(`zombie/iso/Helicopter.java:171-173`)]
+4. **Leaving.** After 60 seconds of hovering and searching in total, it leaves in a straight line, and it switches off once no player is within 1,000 tiles of it. :cite[(`zombie/iso/Helicopter.java:141-143`, `zombie/iso/Helicopter.java:169-170`, `zombie/iso/Helicopter.java:186-211`)] It keeps the speed of its last state, half a tile per step when it was hovering or searching, so clearing 1,000 tiles takes about a minute. :cite[(`zombie/iso/Helicopter.java:159`, `zombie/iso/Helicopter.java:180`, `zombie/iso/Helicopter.java:218-228`)] On a server, the check counts every connected player, not only its target. :cite[(`zombie/iso/Helicopter.java:188-197`)]
 
-**The noise.** While it is active, on each update there is a small chance (tuned to about once every ten real seconds) that it makes a world sound at its position with a radius of 500 tiles. Zombies that hear it head for where the helicopter was. Because it hovers around you, those sounds land on and around you.
+In single player the hover and search timers run at your game speed, so fast-forwarding shortens them. On a dedicated server they always count real seconds. :cite[(`zombie/iso/Helicopter.java:109-116`, `zombie/iso/Helicopter.java:140`)]
 
-> **Proof:** Code. `zombie.iso.Helicopter#setTarget` (start at target + 1000, + 1000), `#update` (Arriving speed 0.75 and Hovering 0.5 per thirty-frame step; hover when within 2 tiles; points within 50 and 100 tiles; 15 seconds unseen; 60 seconds total; leave when no player within 1,000 tiles; `Rand.Next(Rand.AdjustForFramerate(300)) == 0` then `WorldSoundManager.instance.addSound(null, x, y, 0, 500, 500)`), `#isTargetVisible` (exterior square, not Forest or DeepForest); `zombie.core.random.RandInterface#AdjustForFramerate`. Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+**The noise.** On every update while it is active, there is a small chance, tuned to about once every ten real seconds at the frame cap, that it makes a world sound at its position with a radius of 500 tiles. :cite[(`zombie/iso/Helicopter.java:214-216`, `zombie/core/random/RandInterface.java:32-39`)] The chance is per frame, so game speed does not change it, and the frame-rate cap on a client or the 10 cycles per second on a server are already built into it. A client running below its cap makes the noise less often, because the chance is scaled by the cap and not by the frames it actually draws. :cite[(`zombie/core/random/RandInterface.java:32-39`)] The sound is sent to the other machines in multiplayer. :cite[(`zombie/WorldSoundManager.java:176-181`)] Zombies that hear it head for where the helicopter was, and because it hovers around you, those sounds land on and around you. How a zombie answers a sound is on [What makes noise, and how far it carries](/pz/build-42/engine/sound-and-noise/what-makes-noise-and-how-far).
 
-## So how do you lose it?
+## 4. So how do you lose it?
 
-From the code, you cannot: it follows its target wherever they go, and it leaves after a minute over them whatever they do. Being indoors or in a forest only changes its pattern, from points within 50 tiles of you to points within 100. The noise still carries 500 tiles, so the zombies still come your way. What you can choose is where you are on that day: the fewer zombies within 500 tiles, the smaller the crowd.
+You cannot hide from it: it follows its target wherever they go, and it leaves after a minute over them whatever they do.
 
-## Multiplayer
+Being indoors or in a forest only changes its pattern, from points within 50 tiles of you to points within 100. The noise still carries 500 tiles, so the zombies still come your way. What you can choose is where you are on that day: the fewer zombies within 500 tiles, the smaller the crowd.
 
-The server runs the whole event: it picks the day, rolls the launch, chooses the target and moves the helicopter, then tells every client where it is so they can hear it. There is one helicopter for the whole server, not one per player.
+## 5. Multiplayer
 
-> **Proof:** Code. `zombie.GameTime#update` (helicopter code runs when `GameServer.server || !GameClient.client`); `zombie.iso.Helicopter#update` (clients only play the sound; the server sends `GameServer.sendHelicopter`); `zombie.iso.IsoWorld` (one `helicopter` field). Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+The server runs the whole event, and there is one helicopter for the whole server, not one per player.
+
+The server rolls the launch, chooses the target and moves the helicopter, then sends its position to every client, which only plays the sound. :cite[(`zombie/GameTime.java:484`, `zombie/iso/Helicopter.java:105-107`, `zombie/iso/Helicopter.java:230-232`, `zombie/network/GameServer.java:1822-1833`, `zombie/iso/IsoWorld.java:332`)]
 
 ## Where to go next
 
 - [How loot is rolled, and when it respawns](/pz/build-42/gameplay/the-real-numbers/how-loot-is-rolled-and-respawns), for what is left in town after the horde has passed.
 - [Fatigue, sleep and endurance](/pz/build-42/gameplay/the-real-numbers/fatigue-sleep-and-endurance), for how long you can keep running from it.
+- [How far zombies see and hear you](/pz/build-42/gameplay/the-real-numbers/how-zombies-see-and-hear-you), for what a zombie does with a noise once it hears one.
+
+:::callout[How we know]{kind=proof}
+Everything above is read from the 42.22 code. We did not run a game to time a visit, so the three-minute visit, the same-afternoon return and the 6% launch chance are worked out from the code, not measured. 
+
+We have not watched this on a dedicated server. The conversion to real time uses 30 movement steps per real second and 48 game updates per real second at normal speed (the game caps its frame multiplier at 5, which only matters below about 12 frames per second). :cite[(`zombie/FPSTracking.java:46-49`)] :cite[(`zombie/GameTime.java:986`, `zombie/GameTime.java:1032-1034`)] The sandbox tooltip says the helicopter passes over "the Event Zone", but nothing in the helicopter or launch code reads a zone: the target is a player. :cite[(`media/lua/shared/Translate/EN/Sandbox.json:607`)] Whether any other code moves it is not verified.
+:::
