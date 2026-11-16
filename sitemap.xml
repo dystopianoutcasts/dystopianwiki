@@ -936,6 +936,26 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/saves-and-persistence</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/sound-and-noise</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/networking-and-packets</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/anti-cheat</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/engine/animation-system/action-groups-and-states</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -972,6 +992,41 @@
   </url>
   <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/engine/animation-system/skinned-models-and-clips</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/anti-cheat/anti-cheat-and-mods</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/anti-cheat/anti-cheat-reference</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/anti-cheat/anti-cheat-server-options</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/anti-cheat/how-anti-cheat-works</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/anti-cheat/reading-anti-cheat-logs-and-bans</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/anti-cheat/the-anti-cheat-checks</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/anti-cheat/what-anti-cheat-does-not-cover</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1136,6 +1191,41 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/networking-and-packets/client-and-server-commands</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/networking-and-packets/connecting-and-logging-in</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/networking-and-packets/how-multiplayer-works</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/networking-and-packets/networking-reference</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/networking-and-packets/the-packet-system</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/networking-and-packets/timed-actions-and-items-over-the-network</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/networking-and-packets/who-owns-what</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/engine/physics-and-ragdolls/hit-reactions-and-ballistics</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -1167,6 +1257,76 @@
   </url>
   <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/engine/physics-and-ragdolls/ragdolls</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/saves-and-persistence/how-saves-work</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/saves-and-persistence/how-the-world-is-saved</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/saves-and-persistence/inside-a-save-folder</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/saves-and-persistence/mod-data-that-survives-a-save</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/saves-and-persistence/players-and-vehicles-databases</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/saves-and-persistence/saves-reference</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/saves-and-persistence/the-world-dictionary-and-changing-mods</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/sound-and-noise/adding-and-replacing-sounds</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/sound-and-noise/how-sound-and-noise-work</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/sound-and-noise/how-the-game-plays-audio</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/sound-and-noise/music-and-ambience</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/sound-and-noise/sound-and-noise-reference</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/sound-and-noise/what-makes-noise-and-how-far</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dystopianoutcasts.online/pz/build-42/engine/sound-and-noise/world-sounds-and-what-hears-them</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2152,11 +2312,6 @@
   </url>
   <url>
     <loc>https://dystopianoutcasts.online/pz/build-42/modding/multiplayer/what-runs-on-the-server-in-build-42-multiplayer</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://dystopianoutcasts.online/pz/build-42/modding/multiplayer/workshop-collection-from-server-mods</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

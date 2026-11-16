@@ -2029,6 +2029,133 @@
     "difficulty": "advanced"
   },
   {
+    "id": "build-42-anti-cheat-and-mods",
+    "title": "Anti-cheat and mods",
+    "slug": "anti-cheat-and-mods",
+    "url": "/pz/build-42/engine/anti-cheat/anti-cheat-and-mods",
+    "version": "build-42",
+    "section": "engine",
+    "category": "anti-cheat",
+    "tags": [
+      "engine",
+      "multiplayer",
+      "anti-cheat",
+      "modding",
+      "lua"
+    ],
+    "excerpt": "How a Build 42.22 mod can trip the server's anti-cheat by doing ordinary things, how to do them the way the server expects, and why a mod's own commands need their own checks.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-anti-cheat-reference",
+    "title": "Anti-cheat reference",
+    "slug": "anti-cheat-reference",
+    "url": "/pz/build-42/engine/anti-cheat/anti-cheat-reference",
+    "version": "build-42",
+    "section": "engine",
+    "category": "anti-cheat",
+    "tags": [
+      "engine",
+      "multiplayer",
+      "anti-cheat",
+      "reference",
+      "server"
+    ],
+    "excerpt": "The Build 42.22 anti-cheat in tables, counted by script: the 20 checks, the ten server options, the packets that list each check, the userlog types, the exempting capabilities and the Lua calls.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-anti-cheat-server-options",
+    "title": "The anti-cheat server options",
+    "slug": "anti-cheat-server-options",
+    "url": "/pz/build-42/engine/anti-cheat/anti-cheat-server-options",
+    "version": "build-42",
+    "section": "engine",
+    "category": "anti-cheat",
+    "tags": [
+      "engine",
+      "multiplayer",
+      "anti-cheat",
+      "server",
+      "administration"
+    ],
+    "excerpt": "The ten Build 42.22 anti-cheat server options: key, default, values, the game's own labels and tooltips, which checks each one controls, how to set them, and how to choose a policy.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-how-anti-cheat-works",
+    "title": "How the anti-cheat works",
+    "slug": "how-anti-cheat-works",
+    "url": "/pz/build-42/engine/anti-cheat/how-anti-cheat-works",
+    "version": "build-42",
+    "section": "engine",
+    "category": "anti-cheat",
+    "tags": [
+      "engine",
+      "multiplayer",
+      "anti-cheat",
+      "server",
+      "administration"
+    ],
+    "excerpt": "What the Build 42.22 server's anti-cheat does when a check trips: the four policies, the counter and its cooldown, who is exempt, debug mode and hosted games, and what a kicked or banned player sees.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-reading-anti-cheat-logs-and-bans",
+    "title": "Reading anti-cheat logs and bans",
+    "slug": "reading-anti-cheat-logs-and-bans",
+    "url": "/pz/build-42/engine/anti-cheat/reading-anti-cheat-logs-and-bans",
+    "version": "build-42",
+    "section": "engine",
+    "category": "anti-cheat",
+    "tags": [
+      "engine",
+      "multiplayer",
+      "anti-cheat",
+      "server",
+      "administration"
+    ],
+    "excerpt": "How to read a Build 42.22 anti-cheat log line, where lines are written, what the userlog keeps, how to find a player's history, how anti-cheat bans are stored and how an admin lifts one.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-the-anti-cheat-checks",
+    "title": "The anti-cheat checks",
+    "slug": "the-anti-cheat-checks",
+    "url": "/pz/build-42/engine/anti-cheat/the-anti-cheat-checks",
+    "version": "build-42",
+    "section": "engine",
+    "category": "anti-cheat",
+    "tags": [
+      "engine",
+      "multiplayer",
+      "anti-cheat",
+      "server",
+      "administration"
+    ],
+    "excerpt": "Each of the 20 Build 42.22 anti-cheat checks: what it tests, which option controls it, its counter limit, the reason text it writes, and when an honest player can trip it.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-what-anti-cheat-does-not-cover",
+    "title": "What the anti-cheat does not cover",
+    "slug": "what-anti-cheat-does-not-cover",
+    "url": "/pz/build-42/engine/anti-cheat/what-anti-cheat-does-not-cover",
+    "version": "build-42",
+    "section": "engine",
+    "category": "anti-cheat",
+    "tags": [
+      "engine",
+      "multiplayer",
+      "anti-cheat",
+      "server",
+      "administration",
+      "modding"
+    ],
+    "excerpt": "What the Build 42.22 anti-cheat leaves to each packet's handler and to mods, and what a server owner and a modder can do about it: logs, roles, careful mods and backups.",
+    "difficulty": "intermediate"
+  },
+  {
     "id": "build-42-building-and-moveables-reference",
     "title": "Building and moveables: the numbers",
     "slug": "building-and-moveables-reference",
@@ -2616,6 +2743,134 @@
     "difficulty": "advanced"
   },
   {
+    "id": "build-42-client-and-server-commands",
+    "title": "Client and server commands",
+    "slug": "client-and-server-commands",
+    "url": "/pz/build-42/engine/networking-and-packets/client-and-server-commands",
+    "version": "build-42",
+    "section": "engine",
+    "category": "networking-and-packets",
+    "tags": [
+      "engine",
+      "multiplayer",
+      "networking",
+      "lua",
+      "modding"
+    ],
+    "excerpt": "How a Build 42.22 mod sends a request from a client to the server and an answer back: the four calls, the two events, what a table may hold, and a complete example mod with the server's checks.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-connecting-and-logging-in",
+    "title": "Connecting and logging in",
+    "slug": "connecting-and-logging-in",
+    "url": "/pz/build-42/engine/networking-and-packets/connecting-and-logging-in",
+    "version": "build-42",
+    "section": "engine",
+    "category": "networking-and-packets",
+    "tags": [
+      "engine",
+      "multiplayer",
+      "networking",
+      "login",
+      "server"
+    ],
+    "excerpt": "What happens between pressing Join and playing in Build 42.22: the password, the account, the login queue, the mod and Workshop checks, the checksum, the downloads, bans, and why a join fails.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-how-multiplayer-works",
+    "title": "How multiplayer works",
+    "slug": "how-multiplayer-works",
+    "url": "/pz/build-42/engine/networking-and-packets/how-multiplayer-works",
+    "version": "build-42",
+    "section": "engine",
+    "category": "networking-and-packets",
+    "tags": [
+      "engine",
+      "multiplayer",
+      "networking",
+      "server",
+      "lag"
+    ],
+    "excerpt": "What the server decides and what your own game decides in Build 42.22 multiplayer, how often things update, what lag and a busy server do, hosted games against dedicated servers, and voice chat.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-networking-reference",
+    "title": "Networking reference",
+    "slug": "networking-reference",
+    "url": "/pz/build-42/engine/networking-and-packets/networking-reference",
+    "version": "build-42",
+    "section": "engine",
+    "category": "networking-and-packets",
+    "tags": [
+      "engine",
+      "multiplayer",
+      "networking",
+      "packets",
+      "reference"
+    ],
+    "excerpt": "Counted tables for Build 42.22 multiplayer: the packet types, the network events, the network server options, and the Lua functions that reach the network.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-the-packet-system",
+    "title": "The packet system",
+    "slug": "the-packet-system",
+    "url": "/pz/build-42/engine/networking-and-packets/the-packet-system",
+    "version": "build-42",
+    "section": "engine",
+    "category": "networking-and-packets",
+    "tags": [
+      "engine",
+      "multiplayer",
+      "networking",
+      "packets",
+      "modding"
+    ],
+    "excerpt": "How a Build 42.22 multiplayer message is described, sent, checked and handled: the packet list, each packet's settings, the server's checks in order, what a refusal leaves in the log, and single player.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-timed-actions-and-items-over-the-network",
+    "title": "Timed actions and items over the network",
+    "slug": "timed-actions-and-items-over-the-network",
+    "url": "/pz/build-42/engine/networking-and-packets/timed-actions-and-items-over-the-network",
+    "version": "build-42",
+    "section": "engine",
+    "category": "networking-and-packets",
+    "tags": [
+      "engine",
+      "multiplayer",
+      "networking",
+      "timed-actions",
+      "items",
+      "modding"
+    ],
+    "excerpt": "How a Build 42.22 multiplayer server runs a timed action and moves items between containers: the request, the accept, the wait, the result, and what your own action class must do for it to work.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-who-owns-what",
+    "title": "Who owns what: players, zombies, animals, vehicles and the map",
+    "slug": "who-owns-what",
+    "url": "/pz/build-42/engine/networking-and-packets/who-owns-what",
+    "version": "build-42",
+    "section": "engine",
+    "category": "networking-and-packets",
+    "tags": [
+      "engine",
+      "multiplayer",
+      "networking",
+      "zombies",
+      "vehicles",
+      "modding"
+    ],
+    "excerpt": "In Build 42.22 multiplayer, which machine runs each part of the world: your own character, zombies handed to nearby clients, the driver's vehicle, animals, and the map chunks the server loads.",
+    "difficulty": "advanced"
+  },
+  {
     "id": "build-42-hit-reactions-and-ballistics",
     "title": "Hit reactions and ballistics",
     "slug": "hit-reactions-and-ballistics",
@@ -2743,6 +2998,266 @@
       "modding"
     ],
     "excerpt": "How a Build 42.22 ragdoll starts, runs and ends: the animation node that asks for it, the controller that simulates it, how it hands back to the animation system, and every field in the four ragdoll script files.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-how-saves-work",
+    "title": "How saves work",
+    "slug": "how-saves-work",
+    "url": "/pz/build-42/engine/saves-and-persistence/how-saves-work",
+    "version": "build-42",
+    "section": "engine",
+    "category": "saves-and-persistence",
+    "tags": [
+      "engine",
+      "saves",
+      "backups",
+      "multiplayer",
+      "server"
+    ],
+    "excerpt": "Where your saves live, when the game saves, what a crash does, how to back up and move a save, and what removing a mod does, for single players and server owners.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-how-the-world-is-saved",
+    "title": "How the world is saved",
+    "slug": "how-the-world-is-saved",
+    "url": "/pz/build-42/engine/saves-and-persistence/how-the-world-is-saved",
+    "version": "build-42",
+    "section": "engine",
+    "category": "saves-and-persistence",
+    "tags": [
+      "engine",
+      "saves",
+      "chunks",
+      "events",
+      "multiplayer",
+      "modding"
+    ],
+    "excerpt": "One chunk's life from load to save, the order of a full save, when OnSave and OnPostSave fire, how world versions work, and how a dedicated server saves differently from single player.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-inside-a-save-folder",
+    "title": "Inside a save folder",
+    "slug": "inside-a-save-folder",
+    "url": "/pz/build-42/engine/saves-and-persistence/inside-a-save-folder",
+    "version": "build-42",
+    "section": "engine",
+    "category": "saves-and-persistence",
+    "tags": [
+      "engine",
+      "saves",
+      "persistence",
+      "multiplayer",
+      "modding"
+    ],
+    "excerpt": "Every file and folder the game writes into a Build 42.22 save: what writes it, what reads it, and what happens when one is missing, so you know what is safe to touch.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-mod-data-that-survives-a-save",
+    "title": "Mod data that survives a save",
+    "slug": "mod-data-that-survives-a-save",
+    "url": "/pz/build-42/engine/saves-and-persistence/mod-data-that-survives-a-save",
+    "version": "build-42",
+    "section": "engine",
+    "category": "saves-and-persistence",
+    "tags": [
+      "engine",
+      "saves",
+      "moddata",
+      "lua",
+      "multiplayer",
+      "modding"
+    ],
+    "excerpt": "How a mod keeps its own numbers across a save and a restart: object mod data, global mod data, when each is written, how it reaches clients, and a complete example mod.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-players-and-vehicles-databases",
+    "title": "Players and vehicles databases",
+    "slug": "players-and-vehicles-databases",
+    "url": "/pz/build-42/engine/saves-and-persistence/players-and-vehicles-databases",
+    "version": "build-42",
+    "section": "engine",
+    "category": "saves-and-persistence",
+    "tags": [
+      "engine",
+      "saves",
+      "players",
+      "vehicles",
+      "multiplayer",
+      "modding"
+    ],
+    "excerpt": "The two database files in a Build 42.22 save: the tables and columns of players.db and vehicles.db, what writes them and when, and how single player, a server and a client each handle a player record.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-saves-reference",
+    "title": "Saves reference",
+    "slug": "saves-reference",
+    "url": "/pz/build-42/engine/saves-and-persistence/saves-reference",
+    "version": "build-42",
+    "section": "engine",
+    "category": "saves-and-persistence",
+    "tags": [
+      "engine",
+      "saves",
+      "reference",
+      "events",
+      "modding"
+    ],
+    "excerpt": "Look-up tables for saves: every file a save holds, the save events, the save and backup server options, and the mod data calls Lua can use.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-the-world-dictionary-and-changing-mods",
+    "title": "The world dictionary and changing mods",
+    "slug": "the-world-dictionary-and-changing-mods",
+    "url": "/pz/build-42/engine/saves-and-persistence/the-world-dictionary-and-changing-mods",
+    "version": "build-42",
+    "section": "engine",
+    "category": "saves-and-persistence",
+    "tags": [
+      "engine",
+      "saves",
+      "world-dictionary",
+      "mods",
+      "multiplayer",
+      "modding"
+    ],
+    "excerpt": "What the world dictionary records in a Build 42.22 save, why saved items carry a short number, what happens to saved items when a mod is removed or renamed, the backup and log files, and the errors it raises.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-adding-and-replacing-sounds",
+    "title": "Adding and replacing sounds",
+    "slug": "adding-and-replacing-sounds",
+    "url": "/pz/build-42/engine/sound-and-noise/adding-and-replacing-sounds",
+    "version": "build-42",
+    "section": "engine",
+    "category": "sound-and-noise",
+    "tags": [
+      "engine",
+      "sound",
+      "modding",
+      "lua",
+      "multiplayer"
+    ],
+    "excerpt": "A complete sound mod from an empty folder: a sound file, a sound script, Lua that plays it on a player and at a tile, a noise that draws zombies, and how to replace a vanilla sound.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-how-sound-and-noise-work",
+    "title": "How sound and noise work",
+    "slug": "how-sound-and-noise-work",
+    "url": "/pz/build-42/engine/sound-and-noise/how-sound-and-noise-work",
+    "version": "build-42",
+    "section": "engine",
+    "category": "sound-and-noise",
+    "tags": [
+      "engine",
+      "sound",
+      "noise",
+      "zombies",
+      "multiplayer"
+    ],
+    "excerpt": "What makes zombies come running, why a sound you hear is not always a noise they hear, how indoors and outdoors change it, and what a server can change.",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "build-42-how-the-game-plays-audio",
+    "title": "How the game plays audio",
+    "slug": "how-the-game-plays-audio",
+    "url": "/pz/build-42/engine/sound-and-noise/how-the-game-plays-audio",
+    "version": "build-42",
+    "section": "engine",
+    "category": "sound-and-noise",
+    "tags": [
+      "engine",
+      "sound",
+      "audio",
+      "fmod",
+      "modding",
+      "multiplayer"
+    ],
+    "excerpt": "How the game turns a sound name into something you hear: FMOD banks, sound scripts, clips, emitters, FMOD parameters, distance and occlusion, and what a server sends to clients.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-music-and-ambience",
+    "title": "Music and ambience",
+    "slug": "music-and-ambience",
+    "url": "/pz/build-42/engine/sound-and-noise/music-and-ambience",
+    "version": "build-42",
+    "section": "engine",
+    "category": "sound-and-noise",
+    "tags": [
+      "engine",
+      "sound",
+      "music",
+      "ambience",
+      "options"
+    ],
+    "excerpt": "What decides when the music swells, which options change it, where the random distant dog barks and screams come from, and how ambient hum, trees and flies are played.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-sound-and-noise-reference",
+    "title": "Sound and noise reference",
+    "slug": "sound-and-noise-reference",
+    "url": "/pz/build-42/engine/sound-and-noise/sound-and-noise-reference",
+    "version": "build-42",
+    "section": "engine",
+    "category": "sound-and-noise",
+    "tags": [
+      "engine",
+      "sound",
+      "noise",
+      "reference",
+      "fmod",
+      "modding"
+    ],
+    "excerpt": "Lookup tables for sound and noise in 42.22: sound scripts by folder, FMOD parameters, who adds world sounds, the sound packets, Lua-callable members, sound events and the options with defaults.",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "build-42-what-makes-noise-and-how-far",
+    "title": "What makes noise, and how far it carries",
+    "slug": "what-makes-noise-and-how-far",
+    "url": "/pz/build-42/engine/sound-and-noise/what-makes-noise-and-how-far",
+    "version": "build-42",
+    "section": "engine",
+    "category": "sound-and-noise",
+    "tags": [
+      "engine",
+      "sound",
+      "noise",
+      "zombies",
+      "weapons",
+      "multiplayer"
+    ],
+    "excerpt": "Which of your actions and which machines make a noise that zombies and animals can hear, how far each one carries, and which loud-sounding things make none.",
+    "difficulty": "intermediate"
+  },
+  {
+    "id": "build-42-world-sounds-and-what-hears-them",
+    "title": "World sounds and what hears them",
+    "slug": "world-sounds-and-what-hears-them",
+    "url": "/pz/build-42/engine/sound-and-noise/world-sounds-and-what-hears-them",
+    "version": "build-42",
+    "section": "engine",
+    "category": "sound-and-noise",
+    "tags": [
+      "engine",
+      "sound",
+      "noise",
+      "zombies",
+      "animals",
+      "multiplayer"
+    ],
+    "excerpt": "How the game keeps a list of noises with a place, a radius and a volume, how long one lasts, who is told about it, how zombies and animals score it, and what a server does with it.",
     "difficulty": "advanced"
   },
   {
@@ -3334,7 +3849,7 @@
       "biomemap",
       "lot-export"
     ],
-    "excerpt": "InGameMap > Generate Road Features on a cell selection derives polygons for primary/secondary/tertiary roads, trails and railways from recognized map tiles. [VERIFIED]",
+    "excerpt": "How the data behind the in-game map is made and what the game accepts when it loads it: the mapping tools' road-feature export, its rejection rules, and the file formats the 42.22 game reads.",
     "difficulty": "intermediate"
   },
   {
@@ -3521,7 +4036,7 @@
       "biomemap",
       "lot-export"
     ],
-    "excerpt": "World and cells, in 15 parts: The cell-size question, Coordinates: use B41 numbers, Authoring the world from PNGs, BMP to TMX, Script files that drive generation, Thumbnails, Trimming the world...",
+    "excerpt": "Start here for mapping: how big a cell is in 42.22, which files the game reads from a map folder, and a guide to the mapping pages and the map pages for modders.",
     "difficulty": "intermediate"
   },
   {
@@ -3918,7 +4433,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "Mod creation cookbook, in 24 parts: Project skeleton, New item, New food, New weapon, New clothing, New craftRecipe, New workstation or craft bench, New fluid, Item repair, Evolved or cooking...",
+    "excerpt": "Start here for the cookbook: build the project skeleton first, pick a recipe from the list, and test each one by reading console.txt.",
     "difficulty": "beginner"
   },
   {
@@ -3935,8 +4450,8 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: a custom moodle (the top-right status indicators). This recipe is PARTIAL / UNCERTAIN -- the cached Moodle.wiki.txt is a player-facing reference, not a creation guide, so the...",
-    "difficulty": "beginner"
+    "excerpt": "A real custom moodle cannot show without Java. Build the Lua substitute instead: a Quiet status badge that appears on the screen while your character sneaks.",
+    "difficulty": "intermediate"
   },
   {
     "id": "build-42-custom-ui",
@@ -3952,8 +4467,8 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: a custom on-screen panel/HUD via the ISUI Lua framework.",
-    "difficulty": "beginner"
+    "excerpt": "Build a mod that adds a small movable panel with a title, a counter and two buttons, opened from the world right-click menu, using the ISUI Lua classes.",
+    "difficulty": "intermediate"
   },
   {
     "id": "build-42-evolved-recipe",
@@ -3969,7 +4484,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: an evolved recipe (sandwich/soup/etc.) that combines a base item with opt-in ingredients into a result, optionally cookable.",
+    "excerpt": "Build a mod with an evolved recipe: right-click a Demo Crust, add up to three Demo Toppings, and it becomes a Demo Snack. Three food items, one recipe block and two translation files.",
     "difficulty": "beginner"
   },
   {
@@ -3986,7 +4501,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: a repair definition letting a material (and optional skill) restore an item's condition.",
+    "excerpt": "Build a mod with a fixing block that lets the player repair a vanilla baseball bat with nails, and see the Repair menu, its percentages and its cost.",
     "difficulty": "beginner"
   },
   {
@@ -4003,8 +4518,8 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: runtime behavior in Lua -- hooking engine events, persisting state in ModData, and doing server-authoritative work in multiplayer.",
-    "difficulty": "beginner"
+    "excerpt": "Build a mod with client and server Lua: a right-click entry sends a command, the server counts it in saved mod data and replies, and a custom Lua event announces the answer.",
+    "difficulty": "intermediate"
   },
   {
     "id": "build-42-map-building-basement",
@@ -4020,7 +4535,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: custom map cells, buildings, and semi-procedural basements. This recipe is pointer-oriented: map creation is a tool-driven pipeline, not a copy-paste script.",
+    "excerpt": "Build a map mod with no tool: a new start location on the vanilla map. Then see which files the mapping tools add for your own cells, buildings and basements.",
     "difficulty": "beginner"
   },
   {
@@ -4037,7 +4552,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: a new husbandry animal (or a breed variant of an existing one) via the AnimalDefinitions global Lua table.",
+    "excerpt": "Build a mod that adds a new rabbit breed with one Lua file, reusing the swamp rabbit's textures and sounds, and spawn one from the debug menu. A new species needs art and is not built here.",
     "difficulty": "beginner"
   },
   {
@@ -4054,8 +4569,8 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: a wearable clothing item bound to a body location, plus (for a fully custom garment) a model + clothing.xml entry.",
-    "difficulty": "beginner"
+    "excerpt": "Build a mod with two custom body locations: a second cap and a side bag that you can wear next to a vanilla hat and a vanilla backpack.",
+    "difficulty": "intermediate"
   },
   {
     "id": "build-42-new-craftrecipe",
@@ -4071,7 +4586,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: a crafting recipe in the B42 craftRecipe format (the replacement for the B41 recipe block).",
+    "excerpt": "Build a mod that adds one crafting recipe: two planks, a nail and a hammer make a Demo Bundle, and the recipe shows up in the in-hand crafting window.",
     "difficulty": "beginner"
   },
   {
@@ -4088,7 +4603,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: a plantable crop (seed item + growth behavior + farming recipes). This is YELLOW / partial -- the cached sources cover crop behavior thoroughly but do not contain the...",
+    "excerpt": "Build a mod that adds a crop, the Demo Carrot, with its own seed item. A crop is a Lua table of growth numbers and sprites in the vanilla farming files, which the mod fills in for its own name.",
     "difficulty": "beginner"
   },
   {
@@ -4105,7 +4620,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: a custom drinkable/industrial fluid and an item that can hold it.",
+    "excerpt": "Build a mod that adds a new drink, Demo Tea, and a glass flask that you can spawn already full of it and drink from. One fluid, one item and two translation files, with no Lua.",
     "difficulty": "beginner"
   },
   {
@@ -4122,7 +4637,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: an edible item with nutrition, freshness, and (optionally) cooking behavior.",
+    "excerpt": "Build a mod that adds a food, the Demo Spud, with hunger, nutrition, freshness and cooking, and spawn it with the debug Items List.",
     "difficulty": "beginner"
   },
   {
@@ -4139,7 +4654,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: a plain inventory item (no food/weapon/clothing behavior).",
+    "excerpt": "Build a mod that adds one plain item, the Demo Token, with a name, a weight, an icon and a model, and spawn it with the debug Items List.",
     "difficulty": "beginner"
   },
   {
@@ -4156,7 +4671,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: a selectable occupation with a point cost, XP boosts, granted traits, and granted recipes.",
+    "excerpt": "Build a mod that adds one profession, Demo Locksmith, to character creation: a point cost, skill boosts, a free trait and a granted recipe.",
     "difficulty": "beginner"
   },
   {
@@ -4173,8 +4688,8 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: a brand-new skill/perk (its own XP curve and UI category) referenceable as Perks.MyPerk.",
-    "difficulty": "beginner"
+    "excerpt": "Build a mod that adds one skill, Demo Crafting, in its own group on the skills panel, with its own XP curve and a small Lua file that trains it so you can watch it level.",
+    "difficulty": "intermediate"
   },
   {
     "id": "build-42-new-trait",
@@ -4190,7 +4705,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: a selectable character-creation trait with a point cost, XP boosts, and granted recipes.",
+    "excerpt": "Build a mod that adds one trait, Demo Cook, to character creation: a point cost, a Cooking boost, a granted recipe, and a bandage in the starting inventory.",
     "difficulty": "beginner"
   },
   {
@@ -4207,7 +4722,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: a melee weapon or a firearm (ItemType = base:weapon).",
+    "excerpt": "Build a mod that adds a melee weapon, the Demo Plank, modeled on the vanilla baseball bat, and spawn it with the debug Items List.",
     "difficulty": "beginner"
   },
   {
@@ -4224,7 +4739,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: a placeable workstation (an entity with components) that gates a set of craftRecipes behind a bench tag.",
+    "excerpt": "Build a mod with a placeable Demo Bench, built from planks and nails in the build window, and one recipe that only appears when you open that bench. Three scripts and a translation file.",
     "difficulty": "beginner"
   },
   {
@@ -4241,7 +4756,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: the versioned B42 project scaffold every other recipe drops files into.",
+    "excerpt": "Build the empty mod every other recipe starts from, enable it, and watch it write two lines into console.txt.",
     "difficulty": "beginner"
   },
   {
@@ -4258,7 +4773,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: a dynamic radio channel that airs broadcasts at runtime (unlike static, pre-scripted channels).",
+    "excerpt": "Build a mod that adds a radio channel and airs a three-line broadcast on it every game hour, then tune a walkie-talkie to it.",
     "difficulty": "beginner"
   },
   {
@@ -4275,7 +4790,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: a custom sound definition playable from scripts/Lua/vehicles.",
+    "excerpt": "Merged into Adding and replacing sounds.",
     "difficulty": "beginner"
   },
   {
@@ -4309,7 +4824,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "What you build: a drivable vehicle (vehicle script block with model, wheels, parts, passengers, physics).",
+    "excerpt": "Build a mod that adds a drivable small car, the Recipe Demo Car, from the vanilla small-car template, model and texture, and spawn it with the debug menu.",
     "difficulty": "beginner"
   },
   {
@@ -4326,7 +4841,7 @@
       "from-scratch",
       "skeletons"
     ],
-    "excerpt": "Verified against shipping B42 mods in ../13_WORKSHOP_ANALYSIS/patterns/clothing_content.md (Customizable Containers, Cheese's Functional Clothing). These fill/fix the clothing + body-location...",
+    "excerpt": "Merged into New clothing and Lua gameplay mod.",
     "difficulty": "beginner"
   },
   {
@@ -4628,7 +5143,7 @@
       "lua-api",
       "multiplayer"
     ],
-    "excerpt": "The map you open with M, the minimap, paper maps and the stamps you draw are one Java system with a Lua front end. Where the map data comes from, how the fog of discovery is stored and synced, who owns a symbol on a server, and how a mod adds a paper map, a stamp or a reveal that survives a reconnect.",
+    "excerpt": "How the Build 42 world map works: where its picture comes from, how the fog of discovery is stored and synced, who owns a symbol on a server, and what a mod can add or change.",
     "difficulty": "intermediate"
   },
   {
@@ -4982,7 +5497,7 @@
       "fluidcontainer",
       "liquids"
     ],
-    "excerpt": "The fluid system, in 1 parts: The fluid system.",
+    "excerpt": "Merged into The fluid system.",
     "difficulty": "intermediate"
   },
   {
@@ -4999,7 +5514,7 @@
       "outcast-motors",
       "containers"
     ],
-    "excerpt": "Written 2026-08-22. Answers the dive scoped in 05-state-and-next-build.md section 6. Every claim below is cited to our B42 decompile (revision a2947723ca...",
+    "excerpt": "Merged into The fluid system.",
     "difficulty": "advanced"
   },
   {
@@ -5015,7 +5530,7 @@
       "fluidcontainer",
       "overview"
     ],
-    "excerpt": "The five things to know before you mod Build 42 fluids, where each trap is explained, and which of our older fluid pages said something wrong. The front door to the fluids section.",
+    "excerpt": "How Build 42 fluids work for a modder, the five things to know first, and a complete small mod (a new fluid and a flask that holds it) that you can build from an empty folder.",
     "difficulty": "beginner"
   },
   {
@@ -5048,7 +5563,7 @@
       "fluidcontainer",
       "liquids"
     ],
-    "excerpt": "[CONFIRMED — NEW in B42, BREAKING vs B41.] B41 modeled liquids as many item variants (empty/half/full bottles, hairdye split items, etc.). B42 has one real fluid system.",
+    "excerpt": "The reference for Build 42 fluids: the fluid script syntax, the FluidContainer item component and its fields, fluids in recipes, the Lua calls, and what the engine already ships. Checked on 42.22.",
     "difficulty": "intermediate"
   },
   {
@@ -5083,7 +5598,7 @@
       "power",
       "misc-systems"
     ],
-    "excerpt": "Enriched from pzwiki cache (canonical). Sources: pzwiki.net/wiki/Generator (page-version 42.13.1, revid 1441065) and pzwiki.net/wiki/Electricity. Cached at...",
+    "excerpt": "Merged into Electricity: the grid, generators and lights.",
     "difficulty": "intermediate"
   },
   {
@@ -5106,7 +5621,7 @@
   },
   {
     "id": "build-42-b42-status-versioning-and-the-compatibility-model",
-    "title": "B42 status, versioning, and the compatibility model",
+    "title": "Build 42 status and versioning (42.22)",
     "slug": "b42-status-versioning-and-the-compatibility-model",
     "url": "/pz/build-42/modding/foundations/b42-status-versioning-and-the-compatibility-model",
     "version": "build-42",
@@ -5119,7 +5634,7 @@
       "workshop-upload",
       "debug-mode"
     ],
-    "excerpt": "42.20 is stable and public as of 2026-07-29. Multiplayer, the animal update, rebuilt/expanded maps, the new crafting system, lighting, and QoL are all now on the default branch. [CONFIRMED] Saves...",
+    "excerpt": "Which game version this wiki reads, which folder of your mod the game loads, how versionMin and versionMax decide if a mod is used, and what the server options say about multiplayer in 42.22.",
     "difficulty": "beginner"
   },
   {
@@ -5155,7 +5670,7 @@
       "power",
       "misc-systems"
     ],
-    "excerpt": "There is no player-built wire-by-wire circuit network in vanilla. The core model is the generator power bubble, plus the pre-existing world grid that goes down after the in-game power shutoff.",
+    "excerpt": "Merged into Electricity: the grid, generators and lights.",
     "difficulty": "intermediate"
   },
   {
@@ -5173,7 +5688,7 @@
       "power",
       "misc-systems"
     ],
-    "excerpt": "Electricity, power and combat, in 6 parts: Orientation, Electricity and Power, Combat and Animation, Misc / Catch-all Systems, Practical B42 readiness checklist, ADDENDUM: Electricity / generator...",
+    "excerpt": "Merged into Electricity: the grid, generators and lights.",
     "difficulty": "intermediate"
   },
   {
@@ -5263,7 +5778,7 @@
       "workshop-upload",
       "debug-mode"
     ],
-    "excerpt": "[CONFIRMED] (pzwiki Registries rev 1392729, page version 42.15.3.) Introduced in Build 42.13.0 as \"a new system to manage various script elements in a more structured way.\" This is the single...",
+    "excerpt": "How a mod adds its own traits, item tags, moodles and other identifiers in 42.22: where media/registries.lua goes, when it runs, which register calls Lua can make, and the id rules.",
     "difficulty": "beginner"
   },
   {
@@ -5299,7 +5814,7 @@
       "workshop-upload",
       "debug-mode"
     ],
-    "excerpt": "mod.info is a plain-text key=value file with a .info extension. It is the root descriptor of your mod and can be edited in any text editor. It is best kept in the version folder(s) (it works in...",
+    "excerpt": "Every key the 42.22 game reads from mod.info, what each one does, the defaults when a key is missing, and the traps in how the file is read line by line.",
     "difficulty": "beginner"
   },
   {
@@ -5317,7 +5832,7 @@
       "workshop-upload",
       "debug-mode"
     ],
-    "excerpt": "[CONFIRMED] Multiplayer is on the stable branch as of 42.20 (2026-07-29). Players no longer need the unstable beta to play B42 MP. MP first landed on unstable in 42.13 (Dec 11, 2025) and was...",
+    "excerpt": "Merged into Build 42 status and versioning (42.22).",
     "difficulty": "beginner"
   },
   {
@@ -5761,7 +6276,7 @@
       "tech-tiers",
       "timedaction"
     ],
-    "excerpt": "[CONFIRMED] timedAction is both a reference on a recipe (timedAction = MakingHammer_Surface) and its own script block type that defines the animation, hand props, sound, and player impact of an...",
+    "excerpt": "Merged into Timed actions.",
     "difficulty": "intermediate"
   },
   {
@@ -5797,7 +6312,7 @@
       "timed-actions",
       "multiplayer"
     ],
-    "excerpt": "Stable release: Build 42.20 hit the public branch 2026-07-29. [CONFIRMED] The 42.x unstable line ran for well over a year (42.0 late 2024 -> 42.19), with frequent modding-API churn. 42.20 was...",
+    "excerpt": "Merged into Build 42 status and versioning (42.22).",
     "difficulty": "intermediate"
   },
   {
@@ -6013,7 +6528,7 @@
       "timed-actions",
       "multiplayer"
     ],
-    "excerpt": "What changed: In 42.13.0, The Indie Stone introduced a formal identifier + registry system for script elements. This is significant enough that an official Modding Migration Guide (42.13) exists...",
+    "excerpt": "Merged into media/registries.lua: the new B42 identifier file.",
     "difficulty": "intermediate"
   },
   {
@@ -6067,7 +6582,7 @@
       "timed-actions",
       "multiplayer"
     ],
-    "excerpt": "Timed actions drive \"hold to do X\" interactions. They use ISBaseTimedAction (a subclass of ISBaseObject) as a base and are derived to make your own. Once instanced with new, add them to...",
+    "excerpt": "How to write a \"hold to do X\" timed action in 42.22: the class, its fields and callbacks, the queue, where complete() runs in multiplayer, and the timedAction script block recipes point at.",
     "difficulty": "intermediate"
   },
   {
@@ -6103,7 +6618,7 @@
       "timed-actions",
       "multiplayer"
     ],
-    "excerpt": "B42 UI still builds on the ISUI hierarchy (ISUIElement -> ISPanel -> ISCollapsableWindow, etc.), and these are Lua objects created via derive + new (same mechanism as timed actions, see Section...",
+    "excerpt": "Merged into UI overview.",
     "difficulty": "intermediate"
   },
   {
@@ -6209,24 +6724,6 @@
     ],
     "excerpt": "In Build 42 multiplayer a timed action's complete() runs on the server, the server folder loads on clients too, and a vehicle change reaches the client after the action says it is done. The facts that decide where your multiplayer code goes, read from the 42.21 code.",
     "difficulty": "intermediate"
-  },
-  {
-    "id": "build-42-workshop-collection-from-server-mods",
-    "title": "Turn a server's mod list into a Workshop collection",
-    "slug": "workshop-collection-from-server-mods",
-    "url": "/pz/build-42/modding/multiplayer/workshop-collection-from-server-mods",
-    "version": "build-42",
-    "section": "modding",
-    "category": "multiplayer",
-    "tags": [
-      "multiplayer",
-      "server",
-      "workshop",
-      "collection",
-      "steam"
-    ],
-    "excerpt": "A server with hundreds of mods and no collection makes every new player sit through a long download at join time. This builds a Steam collection from the server's WorkshopItems= line in about three minutes, instead of hundreds of clicks.",
-    "difficulty": "beginner"
   },
   {
     "id": "build-42-lua-class-directory",
@@ -6738,7 +7235,7 @@
       "xp",
       "craftrecipe-gating"
     ],
-    "excerpt": "B42 caveat -- verify before relying on the B41 route. The pzwiki profession-modding page was NOT part of this enrichment cache. Given that traits moved from TraitFactory (Lua) to a script...",
+    "excerpt": "A complete Build 42.22 profession mod from an empty folder: register the id, write the script block, add the text, enable it, and what to see in the character creator.",
     "difficulty": "intermediate"
   },
   {
@@ -6774,7 +7271,7 @@
       "xp",
       "craftrecipe-gating"
     ],
-    "excerpt": "MAJOR B42 CHANGE -- the old TraitFactory Lua route is superseded. B42 uses a script-based character_trait_definition plus a trait registry. This is [CONFIRMED via pzwiki \"Creating a trait mod\"...",
+    "excerpt": "A complete Build 42.22 trait mod from an empty folder: register the id, write the script block, add the text, react in Lua, and what changes if you add a trait while the game runs.",
     "difficulty": "intermediate"
   },
   {
@@ -6792,7 +7289,7 @@
       "xp",
       "craftrecipe-gating"
     ],
-    "excerpt": "Design shift (official). Occupations were reworked to give higher starting skills and adjusted point costs, so you \"feel like a professional from day one instead of an apprentice.\" Combined with...",
+    "excerpt": "Merged into Professions: reading them from Lua, and what they really unlock.",
     "difficulty": "intermediate"
   },
   {
@@ -6809,7 +7306,7 @@
       "mechanics",
       "gating"
     ],
-    "excerpt": "How to read a character's profession in Build 42 Lua, and why gating on the recipes a profession grants is only a delay: the same recipe names come from magazines. Read from the 42.21 scripts and code.",
+    "excerpt": "The 25 Build 42.22 professions with their cost, skills, traits and recipes, how to read a character's profession in Lua, and why gating on a profession's recipes is only a delay.",
     "difficulty": "intermediate"
   },
   {
@@ -6952,7 +7449,7 @@
       "gettraits",
       "engine-gotchas"
     ],
-    "excerpt": "Everything here was verified against the installed builds, not recalled:",
+    "excerpt": "Merged into Modding: add a TRAIT.",
     "difficulty": "intermediate"
   },
   {
@@ -6970,7 +7467,7 @@
       "xp",
       "craftrecipe-gating"
     ],
-    "excerpt": "Verified against \"More Traits\" (ToadTraits), which defines ~90 B42 traits -- analysis in ../13_WORKSHOP_ANALYSIS/libraries/more_traits.md. Fixes to the trait-modding guidance above:",
+    "excerpt": "Merged into Modding: add a TRAIT.",
     "difficulty": "intermediate"
   },
   {
@@ -6986,7 +7483,7 @@
       "mod-study",
       "dynamic-traits"
     ],
-    "excerpt": "Want traits you earn and lose by playing? Several mods already do it. A survey of the dynamic-trait and trait-content mods we found, how the best of them are built, and the design ideas worth learning from before you write your own.",
+    "excerpt": "Merged into Modding: add a TRAIT.",
     "difficulty": "intermediate"
   },
   {
@@ -7003,7 +7500,7 @@
       "vanilla-traits",
       "b42-traits"
     ],
-    "excerpt": "Machine-extracted from the installed game -- not from memory.",
+    "excerpt": "Every vanilla Build 42.22 trait: cost, XP boosts, exclusions and recipes, read from the game's own script and code, plus how the engine adds, removes and charges for them.",
     "difficulty": "intermediate"
   },
   {
@@ -7021,7 +7518,7 @@
       "xp",
       "craftrecipe-gating"
     ],
-    "excerpt": "What a trait is: a character-creator modifier with a point cost (negative number = costs points to take; positive number = refunds points) and optional effects -- starting-skill XP boosts, free...",
+    "excerpt": "Merged into Vanilla trait reference.",
     "difficulty": "intermediate"
   },
   {
@@ -7333,7 +7830,7 @@
   },
   {
     "id": "build-42-ui-overview",
-    "title": "UI research overview",
+    "title": "UI overview",
     "slug": "ui-overview",
     "url": "/pz/build-42/modding/ui/ui-overview",
     "version": "build-42",
@@ -7345,7 +7842,7 @@
       "vehicle-mechanics-ui",
       "engine-traps"
     ],
-    "excerpt": "Everything learned about Project Zomboid's Build 42 UI layer while building Outcast Motors UI, the vehicle mechanics window replacement.",
+    "excerpt": "How a Build 42.22 mod window is built from the ISUI classes, how to open one, and the three traps that cost the most time: anchors, the resize strip, and parked-car part updates.",
     "difficulty": "intermediate"
   },
   {
@@ -7595,7 +8092,7 @@
       "map-modding",
       "tiledefs"
     ],
-    "excerpt": "World, map and tiles, in 12 parts: Basics: what changed and why it matters to modders, The map expansion (Knox Country) + new towns, Multi-Z: the vertical engine change, Basements + the...",
+    "excerpt": "Merged into The world map: data, discovery and symbols.",
     "difficulty": "intermediate"
   },
   {

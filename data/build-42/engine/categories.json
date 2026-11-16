@@ -71,6 +71,38 @@
       "icon": "gamepad",
       "articleCount": 6,
       "displayOrder": 9
+    },
+    {
+      "id": "saves-and-persistence",
+      "name": "Saves and Persistence",
+      "description": "How Build 42.22 saves and loads a game: what is in a save folder, how the world, players and vehicles are written, how mod data persists, and what the world dictionary does when mods change.",
+      "icon": "database",
+      "articleCount": 7,
+      "displayOrder": 10
+    },
+    {
+      "id": "sound-and-noise",
+      "name": "Sound and Noise",
+      "description": "How Build 42.22 handles sound: the two separate systems (audio you hear and world sounds that zombies and animals hear), what makes noise and how far it carries, FMOD, sound scripts, music, and how a mod adds sounds.",
+      "icon": "volume",
+      "articleCount": 7,
+      "displayOrder": 11
+    },
+    {
+      "id": "networking-and-packets",
+      "name": "Networking and Packets",
+      "description": "How multiplayer works in Build 42.22: joining a server, the packet system, who owns players, zombies and vehicles, client and server commands for mods, timed actions and items over the network, and a counted reference.",
+      "icon": "globe",
+      "articleCount": 7,
+      "displayOrder": 12
+    },
+    {
+      "id": "anti-cheat",
+      "name": "Anti-Cheat",
+      "description": "How the Build 42.22 server's anti-cheat works: the 20 checks, the ten server options and their policies, how to read the log lines and lift bans, how mods trip it or work beside it, and what it leaves to handlers and mods.",
+      "icon": "shield",
+      "articleCount": 7,
+      "displayOrder": 13
     }
   ]
 }
