@@ -6273,7 +6273,7 @@
       "timed-actions",
       "multiplayer"
     ],
-    "excerpt": "This is the section to act on. Ordered by blast radius.",
+    "excerpt": "What breaks a Build 41 Lua mod in 42.22, in order of blast radius: the folder layout, crafting, registries, renamed methods, a replaced water system, removed events, and a timed-action rule.",
     "difficulty": "intermediate"
   },
   {
@@ -6309,7 +6309,7 @@
       "timed-actions",
       "multiplayer"
     ],
-    "excerpt": "Enable debug mode: launch with the -debug flag (Steam launch options). Adds the debug menus, item spawner, and the Lua debugger. In debug mode you can also manually trigger a Lua reload from the...",
+    "excerpt": "How to debug Lua in 42.22: start with -debug, where print and errors go, what the error messages say, why a Java error shows up as nothing, and why a handler may sit in the wrong folder.",
     "difficulty": "intermediate"
   },
   {
@@ -6327,7 +6327,7 @@
       "timed-actions",
       "multiplayer"
     ],
-    "excerpt": "PZ's API is two layers: Lua objects — tables using ISBaseObject + derive (timed actions, UI, your own classes). [CONFIRMED — pzwiki Lua object, revid 1390443] Java objects — direct links to...",
+    "excerpt": "How Lua calls Java in Build 42.22: dot or colon, which classes are exposed, why an instance field reads nil, why a Java error is logged and not raised, and how to patch a Java method from Lua.",
     "difficulty": "intermediate"
   },
   {
@@ -6345,7 +6345,7 @@
       "timed-actions",
       "multiplayer"
     ],
-    "excerpt": "New craftRecipe script block replaces B41 recipe. Supports item inputs, fluid inputs, alternative ingredients (/ OR-separator), keep for tools, OnTest/OnCreate Lua hooks, Category, and OnGiveXP...",
+    "excerpt": "Where a Lua mod can hook the crafting, fluid, animal, foraging and basement systems in 42.22: the five recipe call points, the events with their arguments and side, and the basement API.",
     "difficulty": "intermediate"
   },
   {
@@ -6363,7 +6363,7 @@
       "testing",
       "files"
     ],
-    "excerpt": "Project Zomboid runs Kahlua, a smaller Lua than the one on your computer. No next, no io, no table.pack, no math.random, no shutdown event, no file flush. The full list read from the 42.21 game, and the test-harness trap that let us ship code the game cannot run.",
+    "excerpt": "Build 42.22 runs Kahlua, a smaller Lua 5.1-style engine. It has no next, io, debug, table.pack or math.random, and no exit event. The full list from the code, and how to test without hiding it.",
     "difficulty": "intermediate"
   },
   {
@@ -6435,7 +6435,7 @@
       "xml",
       "silent-failure"
     ],
-    "excerpt": "Your Lua files run in alphabetical order, not dependency order. Splitting a file can turn its constants into nil globals. An invisible byte at the start of a file makes the game skip it without saying which. And XML comments may not contain a double hyphen. Checked against the 42.21 game.",
+    "excerpt": "Five file traps in 42.22: Lua runs in sorted order, a mod file can replace vanilla's, a split file turns constants into nil, a BOM breaks a Lua or script file, and -- breaks an XML comment.",
     "difficulty": "beginner"
   },
   {
@@ -6489,7 +6489,7 @@
       "timed-actions",
       "multiplayer"
     ],
-    "excerpt": "Typing / language server (B42 canonical setup). PZ Lua is Lua 5.1; type annotations use LuaCATS syntax (---@type, ---@param, ---@return, ---@class, ---@field, and EmmyLua-only ---@namespace). Two...",
+    "excerpt": "What the 42.22 game fixes for any editor setup: Lua 5.1 syntax, how require finds files, where the log goes. The outside tools (EmmyLua, Umbrella, JavaDocs sites) are listed as not verified.",
     "difficulty": "intermediate"
   },
   {
@@ -6579,7 +6579,7 @@
       "timed-actions",
       "multiplayer"
     ],
-    "excerpt": "These are the highest-impact B41 -> B42 breakages. Details in Section 13.",
+    "excerpt": "Five things in 42.22 that break a Build 41 Lua mod: the folder layout, crafting, renamed methods, removed events, and the by-name timed-action lookup, each checked against the code with what to do.",
     "difficulty": "intermediate"
   },
   {
