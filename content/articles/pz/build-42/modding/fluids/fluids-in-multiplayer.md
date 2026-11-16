@@ -13,21 +13,47 @@ tags:
   - server
   - sync
 excerpt: >-
-  The vanilla pour and transfer actions DO work in multiplayer: their
-  complete() runs on the server. What decides whether a fluid change reaches
-  the players is where the container sits. The sync call for each place, and
-  the mistake we published for six weeks.
-last_updated: '2026-10-04'
+  In 42.22 the vanilla pour and transfer actions work in multiplayer because the server runs their complete(). What reaches players depends on where the container sits.
+last_updated: '2026-11-16'
+related_articles:
+  - the-fluid-system
+  - fluids-for-modders-start-here
+  - fluid-container-calls-that-lie
+  - hot-items-in-multiplayer
+  - timed-actions
 ---
-# Fluids in multiplayer: what syncs, and the call for each place
+::field-notes
 
-Outcast, we owe you a correction first. For six weeks our own fluid research said "do not reuse the vanilla fluid transfer action, it does not work in multiplayer". That was wrong. We read the action's `update()` and `perform()`, saw a `--todo sync mp` comment and a block wrapped in `if not isClient()`, and stopped reading. The function that does the work, `complete()`, was a few lines further down. The old research page has been corrected; this page is the full story.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-16.
+
+**Who this page is for:** [modders who pour or transfer fluid](#1-the-vanilla-transfer-and-pour-actions-work-in-multiplayer) | [modders who change a fluid in code](#2-what-reaches-the-players-depends-on-where-the-container-is) | [server owners](#6-warnings-for-server-owners)
+
+Outcast, we owe you a correction first. Our own early fluid research said "do not reuse the vanilla fluid transfer action, it does not work in multiplayer". That was wrong.
+
+We read the action's `update()` and `perform()`, saw a `--todo sync mp` comment and a block wrapped in `if not isClient()`, and stopped reading. The function that does the work, `complete()`, was a few lines further down. This page is the full story, read from the 42.22 code.
 
 The rule to take away: **when an action "does nothing in multiplayer", look for `complete()` before you believe it.**
 
-## The vanilla transfer and pour actions work in multiplayer
+:::callout[The 1-minute version]{kind=key}
+- The vanilla transfer and pour actions define `complete()`, and the server runs it. Single player runs it too; a multiplayer client does not.
+- What reaches the players depends on where the container sits. The vanilla action syncs items in a player's inventory and world fluid objects; it does not send a change to a container inside a crate or a vehicle part.
+- For those, finish your server code with `sendItemStats(item)`. Every one of the server-side sync calls on this page does nothing unless it runs on the server, except `syncItemFields`, which also acts on a client.
+- A filled container that the server moves arrives filled on every client. A recipe `OnCreate` that changes a fluid runs after the outputs were sent, so send the change yourself.
+- A full inventory blocks a pour into a container that sits in that inventory.
+- Nothing on this page has been watched on a dedicated server; it is read from the code.
+:::
 
-`ISFluidTransferAction` (pour from one container into another) and `ISFluidEmptyAction` (pour on the ground) both define `complete()`. In Build 42, a Lua timed action that has a `complete()` is rebuilt on the server, and the server runs `complete()`. That is where the transfer happens, followed by a sync of both containers.
+:::facts
+- **Places in the sync table** 6 :cite[(`GameServer.java:3180-3209`, `InventoryItem.java:4428-4447`)]
+- **Fluids in one container** at most 8 :cite[(`FluidContainer.java:907`)]
+- **Who runs `complete()`** single player and the server, not a multiplayer client :cite[(`IsoGameCharacter.java:9192-9195`)]
+:::
+
+## 1. The vanilla transfer and pour actions work in multiplayer
+
+**`ISFluidTransferAction` and `ISFluidEmptyAction` both define `complete()`, and a Lua timed action with a `complete()` is run on the server.**
+
+The action loop calls `perform()` and then `complete()`, and the second call is skipped only on a multiplayer client :cite[(`IsoGameCharacter.java:9192-9195`)]. A Lua action with no `complete` in its table is marked for client-side sync only :cite[(`LuaTimedActionNew.java:85-87`)]. A client with a `complete` creates a net timed action when it starts :cite[(`LuaTimedActionNew.java:138-141`)]. The Lua `complete` is called only where the game is not a client :cite[(`LuaTimedActionNew.java:176-181`)]. The transfer happens there, followed by a sync of both containers:
 
 ```lua
 function ISFluidTransferAction:complete()
@@ -40,53 +66,80 @@ function ISFluidTransferAction:complete()
 end
 ```
 
-The `if not isClient()` block in `update()` is only the live progress you see while the bar fills.
+The code above is `media/lua/shared/Fluids/ISFluidTransferAction.lua:70-78`. The `if not isClient()` block in `update()` is the live progress while the bar fills, and it runs in single player and on the server, not on a client :cite[(`media/lua/shared/Fluids/ISFluidTransferAction.lua:24-31`)]. `ISFluidEmptyAction:complete` empties the container and syncs it the same way :cite[(`media/lua/shared/Fluids/ISFluidEmptyAction.lua:99-107`)].
 
-> **Proof:** Code. `media/lua/shared/Fluids/ISFluidTransferAction.lua` and `ISFluidEmptyAction.lua`, `complete`; `zombie.characters.CharacterTimedActions.LuaTimedActionNew`: the constructor marks an action with no `complete` for client-side sync only, `#start` creates the net timed action on a client, and `#complete` calls the Lua `complete` only where `!GameClient.client`. Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+| Part of the action | Single player | Multiplayer client | Dedicated server | Code |
+|---|---|---|---|---|
+| The `update()` progress block (`if not isClient()`) | Runs | Skipped | Runs | `ISFluidTransferAction.lua:24-31` |
+| `complete()` and the sync calls | Runs | Skipped | Runs | `IsoGameCharacter.java:9192-9195`, `LuaTimedActionNew.java:176-181` |
 
-## What reaches the players depends on where the container is
+The server column is read from the guards only: the server's own action loop was not traced.
 
-The vanilla action syncs through `ISFluidContainer:sync()`, and that only covers some places. Pick your call by where the container sits:
+## 2. What reaches the players depends on where the container is
 
-| Where the container is | Call (on the server) | Who receives it |
-|---|---|---|
-| In a player's inventory | `item:syncItemFields()` | Only when the item's outermost container belongs to a player; sent to that player |
-| Lying on the ground | `item:syncItemFields()` or `sendItemStats(item)` | Players near the square |
-| In a crate, a stove, or a vehicle part's container | `sendItemStats(item)` | Players near the container's square, or its parent object |
-| Fitted to a vehicle part (the part's own item) | `vehicle:transmitPartItem(part)` | Sends the whole fitted item, components included |
-| A world object such as a barrel | the object's `sync()` | What `ISFluidContainer:sync()` does for world objects |
-| An item whose fluid you changed in a recipe `OnCreate` | `item:sendSyncEntity(nil)` | Sends every component of the item |
+**The vanilla action syncs through `ISFluidContainer:sync()`, which covers only some places, so pick your call by where the container sits.**
 
-So the vanilla actions are fine for two items in a player's inventory and for world fluid objects. They do **not** replicate a change to a container inside a crate or a vehicle part, because `syncItemFields` sends nothing when the item's outermost container belongs to something other than a player. For those, run your own server command and finish with `sendItemStats`.
+`ISFluidContainer:sync()` returns at once on a client. On the server it calls the object's `sync()` for a world object, `syncItemFields()` for an inventory item, and prints "not implemented" for a fluid resource :cite[(`media/lua/shared/Fluids/ISFluidContainer.lua:96-108`)]. The calls below are for code that runs on the server:
 
-Two calls that look useful and are not: `transmitPartUsedDelta` only acts when the fitted item is an old-style drainable (`DrainableComboItem`), so it does nothing for a fluid container; and every one of these calls does nothing when run on a client.
+| Where the container is | Call (on the server) | Who receives it | Code |
+|---|---|---|---|
+| In a player's inventory | `item:syncItemFields()` | The player whose inventory holds it | `InventoryItem.java:4428-4436` |
+| Lying on the ground | `item:syncItemFields()` or `sendItemStats(item)` | Players near the square | `InventoryItem.java:4443-4446`, `GameServer.java:3183-3185` |
+| In a crate, a stove, or a vehicle part's container | `sendItemStats(item)` | Players near the container's square, or its parent object | `GameServer.java:3187-3203` |
+| Fitted to a vehicle part (the part's own item) | `vehicle:transmitPartItem(part)` | Sends the whole fitted item, components included | `BaseVehicle.java:8262-8269`, `VehiclePartItem.java:56-67` |
+| A world object such as a barrel | the object's `sync()` | What `ISFluidContainer:sync()` does for world objects | `ISFluidContainer.lua:101-102` |
+| An item whose fluid you changed in a recipe `OnCreate` | `item:sendSyncEntity(nil)` | Sends every component of the item | `GameEntity.java:666-693` |
 
-> **Proof:** Code. `media/lua/shared/Fluids/ISFluidContainer.lua`, `ISFluidContainer:sync`; `zombie.inventory.InventoryItem#syncItemFields`; `zombie.network.GameServer#sendItemStats` (owner, world item, source grid, then parent object); `zombie.vehicles.BaseVehicle#transmitPartItem` and `#transmitPartUsedDelta` (`instanceof DrainableComboItem`), both guarded by `GameServer.server`; `zombie.network.fields.vehicle.VehiclePartItem` writes the fitted item with `saveWithSize`; `zombie.entity.GameEntity#sendSyncEntity` (guarded by `GameServer.server`). Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+So the vanilla actions are fine for two items in a player's inventory and for world fluid objects. They do **not** replicate a change to a container inside a crate or a vehicle part, because `syncItemFields` sends nothing when the item's outermost container belongs to something other than a player and the item is not a world item :cite[(`InventoryItem.java:4428-4447`)]. For those, run your own server command and finish with `sendItemStats`.
 
-Everything in this table is read from the code. The one route we have not yet watched on a dedicated server is `sendItemStats` for an item inside a vehicle part's container, so treat that row as the best reading, not a promise.
+Two calls look useful and are not. `transmitPartUsedDelta` only acts when the fitted item is an old-style drainable (`DrainableComboItem`), so it does nothing for a fluid container :cite[(`BaseVehicle.java:8291-8300`)]. And the Lua global `sendItemStats` does nothing unless the game is the server, as do `transmitPartItem` and `sendSyncEntity` :cite[(`LuaManager.java:4365-4373`, `BaseVehicle.java:8262-8269`, `GameEntity.java:666-667`)]. `syncItemFields` is different: on a client it sends the item's fields, fluid state included, to the server when the item sits in the local player's inventory, and also for an item that is an inventory container (a bag) anywhere except a remote player's inventory :cite[(`InventoryItem.java:4430-4432`, `:4437-4439`)]. See the warning in section 6.
 
-> **Proof:** Unknown. The `sendItemStats` route for an item in a vehicle part's container is read from `GameServer#sendItemStats` only; no dedicated-server log yet. Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+The one route not yet watched on a dedicated server is `sendItemStats` for an item inside a vehicle part's container. Treat that row as the best reading, not a promise.
 
-## Moving a container carries its fluid with it
+## 3. Moving a container carries its fluid with it
 
-When the server adds an item to a container and tells the clients (`sendAddItemToContainer`), the packet carries the item's saved form, and that includes its components. So a filled container moved by the server arrives filled on every client with no extra call. Saving works the same way: a vehicle part saves its container, so fluids survive a save and reload.
+**When the server adds an item to a container and tells the clients, the packet carries the item's saved form, which includes its fluid.**
 
-> **Proof:** Code. `zombie.inventory.InventoryItem#save` calls `saveEntity` when the item `requiresEntitySave()`, which writes every component; read along the path `sendAddItemToContainer` to `AddInventoryItemToContainerPacket` in revision a2947723ca and spot-checked in 42.21. Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+`sendAddItemToContainer` sends the item to the container's owning player, or to players near the container's parent object or the world item that holds it :cite[(`GameServer.java:2435-2450`)].
 
-## Recipe OnCreate runs after the outputs were sent
+The packet writes the item with the shared item save and reads it back with the matching load :cite[(`AddInventoryItemToContainerPacket.java:65`, `:77`)]. An item with components saves them too, and a fluid container is one of those components :cite[(`InventoryItem.java:1833-1835`, `GameEntity.java:516-522`)]. So a filled container moved by the server arrives filled on every client with no extra call. A vehicle part saves its container the same way, so fluids survive a save and reload.
 
-A craft recipe's `OnCreate` function runs on the server in multiplayer, and only **after** the created items were added to the player and sent to the client. If your `OnCreate` changes the fluid in a created item (for example emptying a pre-filled container, see [the FluidContainer traps](/pz/build-42/modding/fluids/fluid-container-calls-that-lie)), the client still has the old fluid until you send it: call `item:sendSyncEntity(nil)` after the change.
+## 4. Recipe OnCreate runs after the outputs were sent
 
-> **Proof:** Code. `media/lua/shared/Entity/TimedActions/ISHandcraftAction.lua`, `ISHandcraftAction:performRecipe`: `Actions.addOrDropItem` for each created item, then `luaCallOnCreate`; `ISHandcraftAction:complete` runs `performRecipe` only when `isServer()`. Build 42.21, Steam build 25485521.
+**A craft recipe's `OnCreate` function runs on the server in multiplayer, and only after the created items were added to the player and sent to the client.**
 
-## A full inventory blocks a pour
+The hand-craft action adds or drops each created item, then calls `OnCreate`, then handles the destroyed and used items :cite[(`media/lua/shared/Entity/TimedActions/ISHandcraftAction.lua:225-238`)]. Adding an item to the player's inventory sends it at once :cite[(`media/lua/shared/ActionManager.lua:4-24`)]. In multiplayer `complete()` calls this on the server, and in single player `perform()` does :cite[(`media/lua/shared/Entity/TimedActions/ISHandcraftAction.lua:196`, `:207-217`)].
 
-`FluidContainer.CanTransfer` refuses when the **target** item sits in the inventory of a player whose inventory is full, even though the fluid is going into a container that is already there. It also refuses when the target cannot accept every fluid in the source (a blend list says no), or when the result would hold more than eight fluids. If your pour silently refuses, check those three.
+If your `OnCreate` changes the fluid in a created item (for example emptying a pre-filled container, see [the FluidContainer traps](/pz/build-42/modding/fluids/fluid-container-calls-that-lie)), the client still has the old fluid until you send it: call `item:sendSyncEntity(nil)` after the change :cite[(`GameEntity.java:666-693`)].
 
-> **Proof:** Code. `zombie.entity.components.fluids.FluidContainer#CanTransfer` (`player.hasFullInventory()`, `canAddFluid` for each source fluid, the eight-fluid total). Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+## 5. A full inventory blocks a pour
+
+**`FluidContainer.CanTransfer` refuses when the target item sits in the inventory of a player whose inventory is full.**
+
+That holds even though the fluid is going into a container that is already there :cite[(`FluidContainer.java:1124-1133`)]. It also refuses when the source is empty, the target is full or locked, the target cannot accept every fluid in the source (a blend list says no), or the result would hold more than eight fluids :cite[(`FluidContainer.java:1134-1153`)]. If your pour silently refuses, check those cases. The vanilla action's `isValid` calls `CanTransfer`, so the action itself will not start :cite[(`media/lua/shared/Fluids/ISFluidTransferAction.lua:5-10`)].
+
+## 6. Warnings for server owners
+
+**These are gaps in what the server checks, read from the code and not tested on a server.**
+
+:::callout[Warning: fluid state is accepted from clients]{kind=warn}
+A client can send the server a `SyncItemFields` packet for an item in its own inventory, and the packet carries the item's fluid container state :cite[(`InventoryItem.java:4430-4432`, `SyncItemFieldsPacket.java:236`)]. When the server reads it, the packet loads that state into the item named in the packet; the only check read is that the container and item exist :cite[(`SyncItemFieldsPacket.java:365-375`, `:631-633`)]. Do not treat the amount or kind of a fluid in a client-owned item as proof that the client got it honestly. A reward that depends on a fluid amount should be decided from server-side facts.
+:::
+
+The vanilla transfer, pour and `OnCreate` paths all run on the server, so a fluid change made through them is the server's own decision. A change a mod makes in a client command handler needs the same care: the handler should read the container on the server before it trusts the request.
 
 ## Where to go next
 
 - [Hot items in multiplayer](/pz/build-42/modding/multiplayer/hot-items-in-multiplayer): heat is the other half of fluids in multiplayer.
 - [Timed actions](/pz/build-42/modding/lua-api/timed-actions)
 - [Fluids for modders: start here](/pz/build-42/modding/fluids/fluids-for-modders-start-here)
+
+:::callout[How we know]{kind=proof}
+Every code reference was opened in the 42.22 capture. Nothing here was watched on a dedicated server.
+
+**Checked again for 42.22, and different from 42.21:**
+- `syncItemFields` does not do nothing on a client: for an item in the local player's inventory, or an inventory-container item not in a remote player's inventory, it sends a packet to the server. The other server-side calls do nothing off the server.
+- The table of which host runs which part of a timed action is new: the action loop runs `complete()` in single player and on the server, and skips it on a multiplayer client.
+
+**Not verified:** the `sendItemStats` row for an item inside a vehicle part's container (read from `GameServer.sendItemStats` only); what the dedicated server's own action loop does with a net timed action beyond the guards cited; whether the `SyncItemFields` path is limited by anything outside the packet class, such as a role check, beyond what was read there.
+:::
