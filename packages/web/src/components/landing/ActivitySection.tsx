@@ -1,6 +1,8 @@
 import { useId, useMemo } from 'react';
 import { useHomeSummary } from '../../hooks/useHomeSummary';
-import { BattleMetricsWidget } from './BattleMetricsWidget';
+import { BattleMetricsCard } from './BattleMetricsCard';
+import { useBattleMetrics } from '../../hooks/useBattleMetrics';
+import { formatRank } from '../../lib/battlemetrics';
 import { busiestHours, formatDuration, formatHour, TBD, type HourlyPoint } from '../../lib/homeSummary';
 
 // "When people play": the most players online in each hour of the last 7 days, from
@@ -41,6 +43,7 @@ function Tile({ value, label }: { value: string; label: string }) {
 
 export function ActivitySection() {
   const { summary } = useHomeSummary();
+  const { summary: bm } = useBattleMetrics();
   const titleId = useId();
   const now = useMemo(() => new Date(), [summary]);
   const data = useMemo(() => slots(summary?.hourly ?? [], now), [summary, now]);
@@ -88,7 +91,7 @@ export function ActivitySection() {
             value={summary?.upSince ? formatDuration(now.getTime() - summary.upSince.getTime()) : TBD}
             label="since the last restart"
           />
-          <Tile value={TBD} label="BattleMetrics rank" />
+          <Tile value={formatRank(bm?.rank) ?? TBD} label="BattleMetrics rank" />
         </ul>
 
         {hasData ? (
@@ -158,7 +161,7 @@ export function ActivitySection() {
           <p className="home-section__empty">Player history: {TBD}. It appears here once the server has reported in.</p>
         )}
 
-        <BattleMetricsWidget />
+        <BattleMetricsCard summary={bm} />
       </div>
     </section>
   );
