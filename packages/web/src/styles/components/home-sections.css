@@ -492,6 +492,59 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+/* BattleMetrics server card, under the hourly chart: a short blurb beside the card
+   on wide screens, stacked on narrow ones. The card is BattleMetrics' own fixed-width
+   page, dark in both themes; the component scales it down when the space is narrower. */
+.home-battlemetrics {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--spacing-8);
+  align-items: center;
+  margin-top: var(--spacing-12);
+  padding-top: var(--spacing-8);
+  border-top: 1px solid var(--color-border);
+}
+
+.home-battlemetrics__title {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-2);
+}
+
+.home-battlemetrics__lead {
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-3);
+  max-width: 34rem;
+}
+
+.home-battlemetrics__link {
+  color: var(--color-link);
+}
+
+.home-battlemetrics__box {
+  min-width: 0;
+}
+
+.home-battlemetrics__clip {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: #222222;
+}
+
+.home-battlemetrics__frame {
+  display: block;
+  border: 0;
+  transform-origin: 0 0;
+}
+
+@media (max-width: 900px) {
+  .home-battlemetrics {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacing-4);
+  }
+}
+
 /* ---- Join steps -------------------------------------------------------------- */
 
 .home-steps {

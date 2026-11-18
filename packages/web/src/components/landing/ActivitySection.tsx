@@ -1,5 +1,6 @@
 import { useId, useMemo } from 'react';
 import { useHomeSummary } from '../../hooks/useHomeSummary';
+import { BattleMetricsWidget } from './BattleMetricsWidget';
 import { busiestHours, formatDuration, formatHour, TBD, type HourlyPoint } from '../../lib/homeSummary';
 
 // "When people play": the most players online in each hour of the last 7 days, from
@@ -156,6 +157,8 @@ export function ActivitySection() {
         ) : (
           <p className="home-section__empty">Player history: {TBD}. It appears here once the server has reported in.</p>
         )}
+
+        <BattleMetricsWidget />
       </div>
     </section>
   );
