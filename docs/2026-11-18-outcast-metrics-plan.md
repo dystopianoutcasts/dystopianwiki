@@ -136,7 +136,30 @@ Sections, top to bottom:
 4. Hours played per day (bars).
 5. Unique and first-time players per day: two lines with a legend that says words, not just colors.
 6. Busiest hours: a heatmap of weekday by hour in the viewer's local time, with the time zone named.
-7. Most time played: top 10, with hours and minutes, for the selected range.
+7. Race to the top, Season 1. This is the ONLY playable chart (owner, 2026-11-18). It runs from the
+   season's start (`aurora.worlds` seq 1, `started_at` 2026-10-03 00:00 UTC, "server live 2026-10-02
+   20:00 ET") to today, whatever range is picked above.
+   - What it shows: each player's time played, added up day by day. Bars grow and swap places when
+     one player passes another, and a line calls out lead changes ("Nov 15: Boom passes Crusty for
+     first place").
+   - How it plays: it plays by itself once, at about 0.4 s a day. It has Pause/Play, Start over, and a
+     Day slider. With reduced motion it opens on today and stays still.
+   - The design is the canvas board "Round 3: Race to the top, Season 1":
+     https://claude.ai/artifact/GBTSkKfs4j93Xzas7egFTS. A repo copy is in
+     `R:\DystopianOutcasts\_DEV\_CANVASES\2026-11-18-outcast-metrics\project\RaceSeason.dc.html`.
+   - Every other chart on the page stays still: no draw-in and no replay. Hover readouts are fine.
+   - Data:
+     - From the day step 1 is applied (back to about 2026-11-11, from the 7 days of position history
+       still there), it comes from `metrics_player_hourly`.
+     - Days before that exist only at BattleMetrics. Pull them once with
+       `GET /players/{id}/time-played-history/{serverId}` (daily, at most 90 days back) for each player
+       on `GET /servers/{id}/relationships/leaderboards/time`.
+     - **Deadline:** the 90-day window starts losing the first season days on about
+       **2027-01-01**. The pull needs the BattleMetrics token, so do it as soon as the token works.
+     - Store those days as daily rows with a source column (`battlemetrics`), never mixed silently
+       with our own counts.
+     - With no token by then, the race starts on the first tracked day and says so ("Tracked from Nov
+       11; earlier play is not counted").
 8. Deaths and zombie kills per day.
 9. BattleMetrics: reuse `BattleMetricsCard` (7-day rank). Uptime and longer rank ranges come
    later, when the token works.
