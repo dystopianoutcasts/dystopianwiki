@@ -11,7 +11,8 @@
 --          -> ann 2 minutes, bob 3, 5 player minutes, 2 distinct, peak 2 (no health rows)
 --   11:00  ann 11:00:10 and health samples 2 and 4 -> avg 3, peak 4
 --   03-04 19:50 - 20:40 cat, 20:10 - 20:20 dan, no position rows (play_sessions fallback)
---   03-05 10:00 - 10:30 ann session (must NOT count: that hour has position rows)
+--   03-07 08:00: eve has 3 position minutes (08:05-08:07) and a 08:00-09:00 session -> 60 (union, overlap once);
+--          fay has a position row at 08:10 and a 08:10-08:20 session -> 10; hour = 70 minutes, 2 players, source both
 --   first seen: ann 03-05 10:05 (but 03-02 08:00 in an old world), bob 03-05 10:30, dan (old world only) 03-05 10:40, cat 03-06 09:00
 --   deaths: bob 03-05 10:15 (30.5 h), ann 03-03 15:00 (40 h) and 03-05 12:00 (55 h)
 --   kills: ann 2 and bob 1 at 03-05 10:xx; u01..u12 with 1..12 kills at 03-06 12:xx
@@ -45,6 +46,11 @@ INSERT INTO aurora.player_position_history (server_id, username, x, y, z, t) VAL
   ('mt-t', 'bob', 1, 1, 0, TIMESTAMPTZ '2026-03-05 10:02:30+00'),
   ('mt-t', 'bob', 1, 1, 0, TIMESTAMPTZ '2026-03-05 10:03:00+00'),
   ('mt-t', 'ann', 1, 1, 0, TIMESTAMPTZ '2026-03-05 11:00:10+00'),
+  ('mt-t', 'eve', 1, 1, 0, TIMESTAMPTZ '2026-03-07 08:05:10+00'),
+  ('mt-t', 'eve', 1, 1, 0, TIMESTAMPTZ '2026-03-07 08:05:40+00'),
+  ('mt-t', 'eve', 1, 1, 0, TIMESTAMPTZ '2026-03-07 08:06:10+00'),
+  ('mt-t', 'eve', 1, 1, 0, TIMESTAMPTZ '2026-03-07 08:07:10+00'),
+  ('mt-t', 'fay', 1, 1, 0, TIMESTAMPTZ '2026-03-07 08:10:30+00'),
   -- recent, for the 7-day range
   ('mt-t', 'ann', 1, 1, 0, date_trunc('hour', now(), 'UTC') - INTERVAL '2 hours' + INTERVAL '5 minutes');
 
@@ -55,7 +61,8 @@ INSERT INTO aurora.health_samples (server_id, t, players) VALUES
 INSERT INTO aurora.play_sessions (server_id, username, started_at, ended_at, source) VALUES
   ('mt-t', 'cat', TIMESTAMPTZ '2026-03-04 19:50:00+00', TIMESTAMPTZ '2026-03-04 20:40:00+00', 'server_log'),
   ('mt-t', 'dan', TIMESTAMPTZ '2026-03-04 20:10:00+00', TIMESTAMPTZ '2026-03-04 20:20:00+00', 'server_log'),
-  ('mt-t', 'ann', TIMESTAMPTZ '2026-03-05 10:00:00+00', TIMESTAMPTZ '2026-03-05 10:30:00+00', 'server_log');
+  ('mt-t', 'eve', TIMESTAMPTZ '2026-03-07 08:00:00+00', TIMESTAMPTZ '2026-03-07 09:00:00+00', 'server_log'),
+  ('mt-t', 'fay', TIMESTAMPTZ '2026-03-07 08:10:00+00', TIMESTAMPTZ '2026-03-07 08:20:00+00', 'server_log');
 
 INSERT INTO aurora.deaths (server_id, username, x, y, z, t, hours_survived) VALUES
   ('mt-t', 'bob', 1, 1, 0, TIMESTAMPTZ '2026-03-05 10:15:00+00', 30.5),
@@ -120,10 +127,16 @@ BEGIN
   ASSERT (SELECT minutes FROM aurora.metrics_player_hourly WHERE server_id = 'mt-t' AND username = 'cat'
             AND hour = TIMESTAMPTZ '2026-03-04 20:00:00+00') = 40,
     'cat 40 minutes in hour 20';
-  ASSERT NOT EXISTS (SELECT 1 FROM aurora.metrics_hourly WHERE server_id = 'mt-t'
-                      AND hour = TIMESTAMPTZ '2026-03-05 10:00:00+00' AND player_minutes <> 5),
-    'a session must not add minutes to an hour that has position rows';
-  RAISE NOTICE 'PASS play_sessions fill hours with no positions and never double an hour that has them'; INSERT INTO mt_results (result) VALUES ('PASS play_sessions fill hours with no positions and never double an hour that has them');
+  -- the union: 3 position minutes plus a 60-minute session count 60; a position minute inside a session counts once
+  SELECT * INTO h FROM aurora.metrics_hourly WHERE server_id = 'mt-t' AND hour = TIMESTAMPTZ '2026-03-07 08:00:00+00';
+  ASSERT h.player_minutes = 70 AND h.unique_players = 2 AND h.minutes_source = 'both' AND h.players_source = 'both',
+    'union hour: ' || to_jsonb(h)::TEXT;
+  ASSERT (SELECT minutes FROM aurora.metrics_player_hourly WHERE server_id = 'mt-t' AND username = 'eve'
+            AND hour = TIMESTAMPTZ '2026-03-07 08:00:00+00') = 60
+     AND (SELECT minutes FROM aurora.metrics_player_hourly WHERE server_id = 'mt-t' AND username = 'fay'
+            AND hour = TIMESTAMPTZ '2026-03-07 08:00:00+00') = 10,
+    'eve 60 (3 stray position minutes do not block the session), fay 10 (overlap counts once)';
+  RAISE NOTICE 'PASS minutes are the union of positions and sessions: sparse positions do not block a session, overlap counts once'; INSERT INTO mt_results (result) VALUES ('PASS minutes are the union of positions and sessions: sparse positions do not block a session, overlap counts once');
 
   -- 5. new players across both worlds, deaths, kills
   ASSERT (SELECT new_players FROM aurora.metrics_hourly WHERE server_id = 'mt-t' AND hour = TIMESTAMPTZ '2026-03-05 10:00:00+00') = 2,
@@ -146,7 +159,7 @@ BEGIN
   ASSERT v_digest_one = v_digest_two, 'the rollup is not idempotent';
   RAISE NOTICE 'PASS running the rollup twice gives the same rows'; INSERT INTO mt_results (result) VALUES ('PASS running the rollup twice gives the same rows');
 
-  -- 7. never downgrades: raw rows pruned, the session still overlapping, the measured hour stays
+  -- 7. raw rows pruned and no session for the hour: the hour keeps what it had
   DELETE FROM aurora.player_position_history WHERE server_id = 'mt-t' AND t < TIMESTAMPTZ '2026-03-05 10:30:00+00' AND t >= TIMESTAMPTZ '2026-03-05 10:00:00+00';
   PERFORM aurora.metrics_rollup(TIMESTAMPTZ '2026-03-05 10:00:00+00', TIMESTAMPTZ '2026-03-05 10:00:00+00');
   SELECT * INTO h FROM aurora.metrics_hourly WHERE server_id = 'mt-t' AND hour = TIMESTAMPTZ '2026-03-05 10:00:00+00';
@@ -167,9 +180,9 @@ BEGIN
      AND (d->>'deaths')::INT = 2 AND (d->>'kills')::INT = 3, 'daily 03-05: ' || d::TEXT;
   SELECT x INTO d FROM jsonb_array_elements(j->'daily') x WHERE x->>'day' = '2026-03-04';
   ASSERT (d->>'hours_played')::NUMERIC = 1.0 AND (d->>'unique_players')::INT = 2 AND (d->>'peak')::INT = 2 AND (d->>'avg')::NUMERIC > 0, 'daily 03-04 (from the session log): ' || d::TEXT;
-  SELECT x INTO d FROM jsonb_array_elements(j->'daily') x WHERE x->>'day' = '2026-03-07';
+  SELECT x INTO d FROM jsonb_array_elements(j->'daily') x WHERE x->>'day' = '2026-03-08';
   ASSERT d->'hours_played' = 'null'::JSONB AND (d->>'kills')::INT = 0 AND (d->>'deaths')::INT = 0, 'a day nothing measured: ' || d::TEXT;
-  ASSERT (j->'totals'->>'hours_played')::NUMERIC = 1.1 AND (j->'totals'->>'new_players')::INT = 4
+  ASSERT (j->'totals'->>'hours_played')::NUMERIC = 2.3 AND (j->'totals'->>'new_players')::INT = 4
      AND (j->'totals'->>'deaths')::INT = 3 AND (j->'totals'->>'kills')::INT = 81 AND (j->'totals'->>'peak')::INT = 4,
     'totals: ' || (j->'totals')::TEXT;
   ASSERT j->>'tracking_since' IS NOT NULL, 'tracking_since';
@@ -183,8 +196,8 @@ BEGIN
 
   -- 10. top time: top 10, ranked, display names fall back to the username
   ASSERT jsonb_array_length(j->'top_time') = 10, 'top_time length ' || jsonb_array_length(j->'top_time');
-  ASSERT j->'top_time'->0->>'username' = 'p12' AND (j->'top_time'->0->>'rank')::INT = 1 AND (j->'top_time'->0->>'minutes')::INT = 60
-     AND j->'top_time'->0->>'display_name' = 'p12' AND j->'top_time'->9->>'username' = 'p03' AND (j->'top_time'->9->>'rank')::INT = 10,
+  ASSERT j->'top_time'->0->>'username' = 'eve' AND (j->'top_time'->0->>'rank')::INT = 1 AND (j->'top_time'->0->>'minutes')::INT = 60
+     AND j->'top_time'->0->>'display_name' = 'eve' AND j->'top_time'->9->>'username' = 'p04' AND (j->'top_time'->9->>'rank')::INT = 10,
     'top_time order: ' || (j->'top_time')::TEXT;
   RAISE NOTICE 'PASS top_time is the top 10 by minutes'; INSERT INTO mt_results (result) VALUES ('PASS top_time is the top 10 by minutes');
 
@@ -243,8 +256,8 @@ BEGIN
 
   -- 15. races: time race top 10 with the hour series
   ASSERT jsonb_array_length(j->'time'->'players') = 10
-     AND j->'time'->'players'->0->>'username' = 'p12' AND (j->'time'->'players'->0->>'minutes')::INT = 60
-     AND j->'time'->'players'->0->'series' = '[216, 60]'::JSONB,
+     AND j->'time'->'players'->0->>'username' = 'eve' AND (j->'time'->'players'->0->>'minutes')::INT = 60
+     AND j->'time'->'players'->0->'series' = '[152, 60]'::JSONB,
     'time race: ' || left((j->'time')::TEXT, 400);
   j := aurora.metrics_races('mt-none');
   ASSERT j ?& ARRAY['season_start', 'now', 'kills', 'lives', 'time']
@@ -252,6 +265,18 @@ BEGIN
      AND j->'lives'->'players' = '[]'::JSONB AND j->'time'->'players' = '[]'::JSONB,
     'empty races';
   RAISE NOTICE 'PASS time race top 10, and an empty server gives empty races'; INSERT INTO mt_results (result) VALUES ('PASS time race top 10, and an empty server gives empty races');
+
+  -- 15b. the races are cached: the public call returns the cached row, and computes once when there is none
+  ASSERT EXISTS (SELECT 1 FROM aurora.metrics_races_cache WHERE server_id = 'mt-t'), 'the rollup refreshes the races cache';
+  ASSERT aurora.metrics_races('mt-t') = (SELECT body FROM aurora.metrics_races_cache WHERE server_id = 'mt-t'), 'races read the cache';
+  UPDATE aurora.metrics_races_cache SET body = jsonb_set(body, '{marker}', 'true'::JSONB) WHERE server_id = 'mt-t';
+  ASSERT (aurora.metrics_races('mt-t')->>'marker') = 'true', 'the public call must return the cached row, not recompute';
+  DELETE FROM aurora.metrics_races_cache WHERE server_id = 'mt-t';
+  j := aurora.metrics_races('mt-t');
+  ASSERT j ? 'season_start' AND NOT (j ? 'marker') AND (j->>'sessions_imported')::BOOLEAN = TRUE
+     AND (aurora.metrics_races('mt-none')->>'sessions_imported')::BOOLEAN = FALSE,
+    'no cache row: computed on the spot; sessions_imported says whether play_sessions has rows';
+  RAISE NOTICE 'PASS races are served from the cache and computed once when it is empty'; INSERT INTO mt_results (result) VALUES ('PASS races are served from the cache and computed once when it is empty');
 
   -- 16. who may call what
   ASSERT has_function_privilege('anon', 'aurora.metrics_summary(text,text)', 'EXECUTE')
@@ -262,6 +287,10 @@ BEGIN
      AND NOT has_function_privilege('authenticated', 'aurora.enable_metrics_cron()', 'EXECUTE')
      AND NOT has_function_privilege('authenticated', 'aurora.disable_metrics_cron()', 'EXECUTE'),
      'only the summary and the races are public';
+  ASSERT NOT has_function_privilege('anon', 'aurora.metrics_races_compute(text)', 'EXECUTE')
+     AND NOT has_function_privilege('anon', 'aurora.metrics_races_refresh()', 'EXECUTE')
+     AND NOT has_table_privilege('anon', 'aurora.metrics_races_cache', 'SELECT'),
+     'the races cache and its refresh are not public';
   ASSERT NOT has_table_privilege('anon', 'aurora.metrics_hourly', 'SELECT')
      AND NOT has_table_privilege('anon', 'aurora.metrics_player_hourly', 'SELECT')
      AND NOT has_table_privilege('anon', 'aurora.play_sessions', 'SELECT')

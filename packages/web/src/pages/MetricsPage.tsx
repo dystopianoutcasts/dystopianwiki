@@ -259,7 +259,7 @@ export function MetricsPage() {
           <p className="metrics__kicker">Dystopian Outcasts</p>
           <h1 className="metrics__title">Outcast Metrics</h1>
           <p className="metrics__lead">
-            How the server is doing, from our own records, updated every hour. Pick a range below and every chart changes with it.
+            How the server is doing, from our own records, updated every hour. Pick a range below to change the charts. The three races always cover the whole season.
           </p>
           <p className="metrics__back">
             <Link to="/">Back to the home page</Link>

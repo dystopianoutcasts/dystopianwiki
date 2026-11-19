@@ -107,9 +107,10 @@ function TimeRace({ feed }: { feed: RaceFeed }) {
   const step = playback.step
   const clock = clockWords(feed, step)
   const first = firstActiveStep(tracks)
+  // Never present partial data as the whole season: say so when the server logs are not in yet.
   const startNote =
-    first !== null && first > 24
-      ? `Play time is counted from ${clockAtStep(feed.seasonStart, first).shortDay}; earlier play is not counted.`
+    first !== null && (first > 24 || !feed.sessionsImported)
+      ? `Play time is counted from ${clockAtStep(feed.seasonStart, first).shortDay}${feed.sessionsImported ? '' : ', when the server began tracking positions'}; earlier play is not counted yet.`
       : null
   return (
     <RaceShell
@@ -201,7 +202,8 @@ function LivedRace({ feed }: { feed: RaceFeed }) {
     )
   }
   const step = playback.step
-  const t = Math.min(nowHour, step)
+  // At the last step the race ends at the real now (a partial hour), not the last whole hour.
+  const t = step >= feed.lastStep ? nowHour : Math.min(nowHour, step)
   const clock = clockWords(feed, step)
   const rows: LivedRow[] = players.map((p) => ({ username: p.username, displayName: p.displayName, lives: p.lives, state: lifeStateAt(p.lives, t, nowHour) }))
   const deaths = rows.reduce((n, r) => n + r.state.deaths, 0)
@@ -257,7 +259,7 @@ export function RacesSection({ feed, loading }: { feed: RaceFeed | null; loading
   return (
     <section className="metrics-section" aria-labelledby="metrics-races-title">
       <h2 className="metrics-section__title" id="metrics-races-title">
-        The races
+        The races <span className="metrics-section__always">Always the whole season</span>
       </h2>
       <p className="metrics-section__lead">
         Season 1, hour by hour, on the Eastern clock. These three are the only charts that move: press Pause, change the speed or drag the

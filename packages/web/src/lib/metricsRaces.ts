@@ -71,6 +71,8 @@ export interface RaceFeed {
   killTotals: number[]
   time: RaceTrack[]
   lives: LivesEntry[]
+  /** play_sessions (the server logs) has rows: time played reaches back to the season start. */
+  sessionsImported: boolean
 }
 
 function record(v: unknown): Record<string, unknown> | null {
@@ -179,6 +181,7 @@ export function parseRaces(raw: unknown): RaceFeed | null {
     killTotals: expandSparse(kills?.hourly_totals, length),
     time: parseTracks(time?.players, length),
     lives: entries,
+    sessionsImported: r.sessions_imported === true,
   }
 }
 

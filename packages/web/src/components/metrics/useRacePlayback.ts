@@ -69,12 +69,12 @@ export function useRacePlayback(lastStep: number, holdAfter?: (from: number, to:
     const id = window.setInterval(() => {
       if (Date.now() < holdUntil.current) return
       const from = stepRef.current
-      const next = from + 1
-      if (next >= lastStep) {
-        setStep(lastStep)
+      if (from >= lastStep) {
         setPlaying(false)
         return
       }
+      const next = from + 1
+      // The hold is checked before the end, so a big death in the very last step is still watched.
       const hold = holdAfter ? holdAfter(from, next) : 0
       if (hold > 0) holdUntil.current = Date.now() + hold
       setStep(next)

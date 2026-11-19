@@ -213,6 +213,7 @@ test('the feed parses: steps from the season start to now, sparse series, lives 
   const feed = parseRaces({
     season_start: '2026-10-03T00:00:00+00:00',
     now: '2026-10-03T05:30:00+00:00',
+    sessions_imported: true,
     kills: {
       players: [{ username: 'a', display_name: 'Alpha', total: 7, series: [1, 3, 4, 4] }, { username: '', series: [] }, 'x'],
       hourly_totals: [1, 3, 4, 4, 5, 9],
@@ -234,6 +235,7 @@ test('the feed parses: steps from the season start to now, sparse series, lives 
   })
   assert.ok(feed)
   assert.equal(feed.lastStep, 5)
+  assert.equal(feed.sessionsImported, true)
   assert.equal(feed.kills.length, 1)
   assert.deepEqual(feed.kills[0].perStep, [0, 3, 0, 0, 4, 0])
   assert.deepEqual(feed.killTotals, [0, 3, 0, 0, 4, 9])
@@ -249,6 +251,7 @@ test('an answer with no season start is not a feed; an empty feed has empty race
   const empty = parseRaces({ season_start: '2026-10-03T00:00:00Z', now: '2026-10-03T00:10:00Z' })
   assert.ok(empty)
   assert.equal(empty.lastStep, 0)
+  assert.equal(empty.sessionsImported, false)
   assert.deepEqual(empty.kills, [])
   assert.deepEqual(empty.lives, [])
   assert.deepEqual(empty.time, [])

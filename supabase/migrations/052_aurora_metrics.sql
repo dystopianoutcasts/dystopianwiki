@@ -1,4 +1,5 @@
 -- Migration 052: Outcast Metrics -- an hourly rollup that outlives the raw rows
+-- NOTE: migration 053 replaces metrics_minutes, metrics_rollup and metrics_races (union of positions and sessions, cached races). Apply 053 after this file.
 -- Created: 2026-11-18
 -- Description: the /metrics page ("Outcast Metrics") needs players online, time played,
 --              first-time players, deaths and kills over a week, a month and the whole
