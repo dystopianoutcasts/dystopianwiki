@@ -38,8 +38,10 @@ Follow-ups:
    the screen, not all three on page load (`d3cc5a0`, deployed `89f8baf`, chunk
    `index-SrmSX8Wt.js`). With no IntersectionObserver it starts at once as before; with reduced
    motion it never starts by itself. Tests in `useRacePlayback.test.ts`, both mutations caught.
-2. **Names:** the live races show character names only. The canvas showed the account name with
-   the character in brackets. Ask the owner which they want.
+2. **[COMPLETE 2026-11-19] Names:** owner's pick, "a switch like we do in the main page". The
+   races have the home page's Survivor name / Username switch, sharing its saved choice with the
+   home page and the live map (`4288ea0`, deployed `c4f1ba8`). The live map was rebuilt so its
+   header has the Metrics link too (`e8cc5eb`), which closes follow-up 4.
 3. **[PENDING owner go] Nov 1-4 kills.** `kill_events` has nothing from 2026-11-01 00:10:25 to
    2026-11-05 06:34:53 UTC: the live ingest stopped, the exporter did not.
    `scripts/metrics/recover-kill-gap.py` (`b6dd08f`) fetches the archived `Aurora.txt` files
