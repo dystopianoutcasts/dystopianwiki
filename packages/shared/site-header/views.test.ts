@@ -6,7 +6,7 @@ import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import { fakePopup, markup } from './markup'
 import type { SiteSection } from './nav'
-import { BUDDY_ID, LIVE_MAP_ID } from './nav'
+import { BUDDY_ID, LIVE_MAP_ID, WIKI_ID } from './nav'
 import { ACCOUNT_MENU_ID, AccountMenuView, SITE_MENU_ID, SiteHeaderView, THEME_MENU_ID, ThemeMenuView, accountOptions } from './views'
 import type { AccountView, SiteHeaderViewProps, ThemeView } from './views'
 
@@ -181,9 +181,10 @@ describe('theme menu', () => {
 
 describe('the bar', () => {
   it('every link is a plain <a href>, never a router link', () => {
-    const html = header({ current: 'modding' })
+    const html = header({ current: WIKI_ID })
     const hrefs = [...html.matchAll(/<a href="([^"]+)"/g)].map((m) => m[1])
-    expect(hrefs).toEqual(expect.arrayContaining(['/', '/pz/build-42/modding', '/pz/build-42/server', '/map/']))
+    expect(hrefs).toEqual(expect.arrayContaining(['/', '/pz/build-42', '/map/', '/metrics', '/buddy']))
+    expect(hrefs).not.toContain('/pz/build-42/modding')
     expect(html).not.toMatch(/<a(?![^>]*href)/)
   })
 
@@ -191,11 +192,14 @@ describe('the bar', () => {
     expect(tag(header(), 'site-header__brand')).toMatch(/^<a href="\/" class="site-header__brand" aria-label="Dystopian Outcasts, home">/)
   })
 
-  it('section links then Live Map, Metrics and Buddy, in the bar and again in the menu, both labelled "Site"', () => {
+  it('one Wiki link for every section, then Live Map, Metrics and Buddy, in the bar and again in the menu, both labelled "Site"', () => {
     const html = header()
     expect(html.match(/<nav[^>]*aria-label="Site"/g)).toHaveLength(2)
     const bar = html.slice(html.indexOf('site-header__nav'), html.indexOf('site-header__search'))
-    expect([...bar.matchAll(/class="site-header__link"[^>]*>([^<]+)</g)].map((m) => m[1])).toEqual(['Modding', 'Running a Server', 'Live Map', 'Metrics', 'Buddy'])
+    expect([...bar.matchAll(/class="site-header__link"[^>]*>([^<]+)</g)].map((m) => m[1])).toEqual(['Wiki', 'Live Map', 'Metrics', 'Buddy'])
+    expect(bar).toMatch(/<a href="\/pz\/build-42" class="site-header__link">Wiki<\/a>/)
+    const wiki = header({ current: WIKI_ID })
+    expect(wiki.match(/<a href="\/pz\/build-42" class="site-header__(link|menu-link)" aria-current="page">Wiki<\/a>/g)).toHaveLength(2)
   })
 
   it('the current page is aria-current="page", in the bar and the menu', () => {
@@ -231,13 +235,12 @@ describe('the folding site menu', () => {
     expect(tag(open, `id="${SITE_MENU_ID}"`)).not.toMatch(/ hidden/)
   })
 
-  it('lists Home, the sections, Live Map, Metrics and Buddy, then the three theme choices as radios, then the app\'s extras', () => {
+  it('lists Home, Wiki, Live Map, Metrics and Buddy, then the three theme choices as radios, then the app\'s extras', () => {
     const html = header({ menuExtras: createElement('div', { className: 'wiki-extras' }) })
     const panel = html.slice(html.indexOf(`id="${SITE_MENU_ID}"`))
     expect([...panel.matchAll(/class="site-header__menu-link"[^>]*>([^<]+)</g)].map((m) => m[1])).toEqual([
       'Home',
-      'Modding',
-      'Running a Server',
+      'Wiki',
       'Live Map',
       'Metrics',
       'Buddy',

@@ -5,7 +5,7 @@
 // and a router Link would route inside the wrong one (the map runs a HashRouter, where "/"
 // becomes "#/"). The wiki may pass onLinkClick to route its own paths without a reload.
 import type { MouseEvent, ReactNode } from 'react'
-import { BUDDY_HREF, BUDDY_ID, HOME_HREF, LIVE_MAP_HREF, LIVE_MAP_ID, METRICS_HREF, METRICS_ID } from './nav'
+import { BUDDY_HREF, BUDDY_ID, HOME_HREF, LIVE_MAP_HREF, LIVE_MAP_ID, METRICS_HREF, METRICS_ID, WIKI_ID, wikiHrefFor } from './nav'
 import type { SiteSection } from './nav'
 import type { MemberDisplay } from './profile'
 import { THEME_CHOICES, THEME_LABELS } from './theme'
@@ -164,7 +164,10 @@ function linkHandler(onLinkClick: LinkClick | undefined, href: string, then?: ()
   }
 }
 
-/** The section links, then Live Map, then Metrics, then Buddy; `aria-current="page"` marks the current one. */
+/**
+ * Wiki (one link for every section, to the wiki's front page), then Live Map, then Metrics,
+ * then Buddy; `aria-current="page"` marks the current one.
+ */
 export function SiteLinks({
   sections,
   current,
@@ -178,19 +181,17 @@ export function SiteLinks({
   onLinkClick?: LinkClick
   onNavigate?: () => void
 }) {
+  const wikiHref = wikiHrefFor(sections)
   return (
     <>
-      {sections.map((s) => (
-        <a
-          key={s.id}
-          href={s.href}
-          className={className}
-          aria-current={current === s.id ? 'page' : undefined}
-          onClick={linkHandler(onLinkClick, s.href, onNavigate)}
-        >
-          {s.name}
-        </a>
-      ))}
+      <a
+        href={wikiHref}
+        className={className}
+        aria-current={current === WIKI_ID ? 'page' : undefined}
+        onClick={linkHandler(onLinkClick, wikiHref, onNavigate)}
+      >
+        Wiki
+      </a>
       <a
         href={LIVE_MAP_HREF}
         className={className}

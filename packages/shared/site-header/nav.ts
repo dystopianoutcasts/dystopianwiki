@@ -23,21 +23,38 @@ export const METRICS_HREF = '/metrics'
 /** The `current` value that marks "Metrics" as the page being shown. */
 export const METRICS_ID = 'metrics'
 
+/**
+ * One "Wiki" link stands for every wiki section (owner, 2026-11-19: "The topbar is crowded.
+ * Can we condense all the wiki links to just Wiki?"). It opens the wiki's front page, whose
+ * "Browse Documentation" grid lists every section.
+ */
+export const WIKI_ID = 'wiki'
+/** The Build 42 front page, used when an app passes no sections. */
+export const WIKI_FALLBACK_HREF = '/pz/build-42'
+
+/** The wiki's front page for the sections an app passes in: /pz/<version>, from the first section's link. */
+export function wikiHrefFor(sections: readonly SiteSection[]): string {
+  const match = sections[0]?.href.match(/^(\/pz\/[a-z0-9][a-z0-9-]*)\//)
+  return match ? match[1] : WIKI_FALLBACK_HREF
+}
+
 /** True for the map's own paths, which must never be routed inside the wiki. */
 export function isMapPath(path: string): boolean {
   return path === '/map' || path.startsWith('/map/') || path.startsWith('/map?') || path.startsWith('/map#')
 }
 
 /**
- * Which header link is the current page for a pathname: a section when the path is that
- * section's page or anything below it, Live Map for the map, Metrics for /metrics, Buddy for /buddy, otherwise none.
+ * Which header link is the current page for a pathname: Wiki anywhere under /pz (every build,
+ * section and article) or on a section's page, Live Map for the map, Metrics for /metrics,
+ * Buddy for /buddy, otherwise none.
  */
 export function currentFor(pathname: string, sections: readonly SiteSection[]): string | null {
   if (isMapPath(pathname)) return LIVE_MAP_ID
   if (pathname === METRICS_HREF || pathname.startsWith(`${METRICS_HREF}/`)) return METRICS_ID
   if (pathname === BUDDY_HREF || pathname.startsWith(`${BUDDY_HREF}/`)) return BUDDY_ID
-  const hit = sections.find((s) => pathname === s.href || pathname.startsWith(`${s.href}/`))
-  return hit ? hit.id : null
+  if (pathname === '/pz' || pathname.startsWith('/pz/')) return WIKI_ID
+  const hit = sections.some((s) => pathname === s.href || pathname.startsWith(`${s.href}/`))
+  return hit ? WIKI_ID : null
 }
 
 /**

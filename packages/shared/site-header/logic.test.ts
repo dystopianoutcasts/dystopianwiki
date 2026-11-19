@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { runInNewContext } from 'node:vm'
 import { describe, expect, it } from 'vitest'
 import { panelKeyAction, triggerKeyAction } from './menuKeys'
-import { BUDDY_ID, LIVE_MAP_ID, METRICS_ID, currentFor, isMapPath, loginHrefFor } from './nav'
+import { BUDDY_ID, LIVE_MAP_ID, METRICS_ID, WIKI_FALLBACK_HREF, WIKI_ID, currentFor, isMapPath, loginHrefFor, wikiHrefFor } from './nav'
 import { avatarUrl, displayName, memberDisplay } from './profile'
 import { THEME_CHOICES, THEME_STORAGE_KEY, parseThemeChoice, readThemeChoice, resolveTheme, writeThemeChoice } from './theme'
 import { THEME_BOOT_SCRIPT, THEME_BOOT_TAG, THEME_STORAGE_KEY as BOOT_KEY, themeBootPlugin } from './themeBoot'
@@ -198,12 +198,20 @@ describe('the current link and the login link', () => {
     { id: 'mod', name: 'Mod', href: '/pz/build-42/mod' },
     { id: 'modding', name: 'Modding', href: '/pz/build-42/modding' },
   ]
-  it('a section is current on its page and below it, not on a longer sibling', () => {
-    expect(currentFor('/pz/build-42/modding', sections)).toBe('modding')
-    expect(currentFor('/pz/build-42/modding/lua/events', sections)).toBe('modding')
-    expect(currentFor('/pz/build-42/mod', sections)).toBe('mod')
-    expect(currentFor('/pz/build-41/modding', sections)).toBeNull()
+  it('Wiki is current anywhere in the wiki: its front page, every build, section and article', () => {
+    expect(currentFor('/pz/build-42', sections)).toBe(WIKI_ID)
+    expect(currentFor('/pz/build-42/modding', sections)).toBe(WIKI_ID)
+    expect(currentFor('/pz/build-42/modding/lua/events', sections)).toBe(WIKI_ID)
+    expect(currentFor('/pz/build-41/modding', sections)).toBe(WIKI_ID)
+    expect(currentFor('/pz', sections)).toBe(WIKI_ID)
+    expect(currentFor('/pzx', sections)).toBeNull()
     expect(currentFor('/', sections)).toBeNull()
+  })
+  it('the Wiki link opens the front page of the build the sections belong to', () => {
+    expect(wikiHrefFor(sections)).toBe('/pz/build-42')
+    expect(wikiHrefFor([{ id: 'modding', name: 'Modding', href: '/pz/build-41/modding' }])).toBe('/pz/build-41')
+    expect(wikiHrefFor([])).toBe(WIKI_FALLBACK_HREF)
+    expect(wikiHrefFor([{ id: 'x', name: 'X', href: 'https://elsewhere.example/pz/a/b' }])).toBe(WIKI_FALLBACK_HREF)
   })
   it('Live Map is current on the map', () => {
     expect(currentFor('/map/', sections)).toBe(LIVE_MAP_ID)
