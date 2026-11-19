@@ -329,7 +329,7 @@ COMMENT ON FUNCTION aurora.metrics_rollup(TIMESTAMPTZ, TIMESTAMPTZ) IS
 --   range, since (first day shown), season_start, tracking_since (first hour with minutes),
 --   players_since (first hour with a player count),
 --   hourly   [{t, avg, peak}]   only when the range is 7 days or less, else [],
---   daily    [{day, hours_played, unique_players, new_players, peak, deaths, kills}]  one per
+--   daily    [{day, hours_played, unique_players, new_players, avg, peak, deaths, kills}]  one per
 --            UTC day from since to today; hours_played / unique_players / peak are null for a
 --            day nothing measured them (the page says where tracking starts),
 --   heatmap  7 x 24 average players by UTC weekday (0 = Sunday) and hour; null = no sample,
@@ -401,6 +401,7 @@ BEGIN
              sum(h.player_minutes) AS minutes,
              sum(h.new_players) AS new_players,
              max(h.peak_players) AS peak,
+             avg(h.avg_players) FILTER (WHERE h.players_source IS NOT NULL) AS avg_players,
              sum(h.deaths) AS deaths,
              sum(h.kills) AS kills,
              max(u.n) AS uniq
@@ -414,6 +415,7 @@ BEGIN
              'hours_played',   CASE WHEN d.has_minutes THEN round(d.minutes / 60.0, 1) END,
              'unique_players', CASE WHEN d.has_minutes THEN coalesce(d.uniq, 0) END,
              'new_players',    coalesce(d.new_players, 0),
+             'avg',            CASE WHEN d.has_players THEN round(d.avg_players::NUMERIC, 2) END,
              'peak',           CASE WHEN d.has_players THEN d.peak END,
              'deaths',         coalesce(d.deaths, 0),
              'kills',          coalesce(d.kills, 0)) ORDER BY d.day), '[]'::JSONB)

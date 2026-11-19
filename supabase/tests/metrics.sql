@@ -166,7 +166,7 @@ BEGIN
   ASSERT (d->>'hours_played')::NUMERIC = 0.1 AND (d->>'unique_players')::INT = 2 AND (d->>'new_players')::INT = 2
      AND (d->>'deaths')::INT = 2 AND (d->>'kills')::INT = 3, 'daily 03-05: ' || d::TEXT;
   SELECT x INTO d FROM jsonb_array_elements(j->'daily') x WHERE x->>'day' = '2026-03-04';
-  ASSERT (d->>'hours_played')::NUMERIC = 1.0 AND (d->>'unique_players')::INT = 2 AND (d->>'peak')::INT = 2, 'daily 03-04 (from the session log): ' || d::TEXT;
+  ASSERT (d->>'hours_played')::NUMERIC = 1.0 AND (d->>'unique_players')::INT = 2 AND (d->>'peak')::INT = 2 AND (d->>'avg')::NUMERIC > 0, 'daily 03-04 (from the session log): ' || d::TEXT;
   SELECT x INTO d FROM jsonb_array_elements(j->'daily') x WHERE x->>'day' = '2026-03-07';
   ASSERT d->'hours_played' = 'null'::JSONB AND (d->>'kills')::INT = 0 AND (d->>'deaths')::INT = 0, 'a day nothing measured: ' || d::TEXT;
   ASSERT (j->'totals'->>'hours_played')::NUMERIC = 1.1 AND (j->'totals'->>'new_players')::INT = 4
