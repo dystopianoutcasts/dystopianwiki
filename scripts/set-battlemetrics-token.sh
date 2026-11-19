@@ -49,7 +49,7 @@ pick_cli() {
 }
 CLI="$(pick_cli)" || fail "no Supabase CLI with 'db query --remote' (version 3 or later) was found. Install it with: scoop install supabase"
 
-query_read() { "$CLI" db query --remote="$PROJECT" --read-only "$1" 2>&1 || true; }
+query_read() { "$CLI" db query --remote="$PROJECT" --yes "$1" 2>&1 || true; }  # SELECTs only; the read-only role may not call aurora.battlemetrics_token()
 query_file() { "$CLI" db query --remote="$PROJECT" --yes -f "$1" 2>&1 || true; }
 
 STATE_SQL="SELECT CASE WHEN aurora.battlemetrics_token() IS NOT NULL THEN 'TOKEN_SAVED'
