@@ -48,7 +48,7 @@ export function RaceShell({
   const id = useId()
   const sliderId = `${id}-hour`
   return (
-    <section className="metrics-race" aria-labelledby={`${id}-title`}>
+    <section ref={playback.viewRef} className="metrics-race" aria-labelledby={`${id}-title`}>
       <header className="metrics-race__head">
         <div className="metrics-race__titles">
           <h3 className="metrics-race__title" id={`${id}-title`}>
