@@ -219,7 +219,18 @@ Sections, top to bottom:
     - Canvas board "Round 5: Zombie kill race".
     - To check: Nov 1 to 4 show no kills at all. That is either an outage or a recording gap;
       compare with the server logs before the page ships.
-7b. Longest alive, Season 1: real data from `aurora.lives`.
+7. (all three races) One step per hour, not per day (owner, 2026-11-18: "too fast, break it down per hour").
+    - A season is about 1,128 hours.
+    - A clock shows the day and the hour ("Thu, Oct 22 / 1 PM to 2 PM", Eastern, following the Nov 1
+      clock change).
+    - Speed buttons Slow / Normal / Fast (160 / 70 / 25 ms per hour; Normal plays the season in about
+      80 s), plus an Hour slider.
+    - The kill race shows each player's kills in the current hour as a "+N" tag, and calls out an hour
+      of 250 or more.
+7b. Longest alive, Season 1: real deaths from `aurora.deaths` (time and hours survived; 24 deaths
+    among the top ten) and the current hours from `aurora.players`.
+    - Do NOT split lives from `aurora.lives` records: they also split on reconnects, and merging them
+      by hours hides short lives.
     - Bars are each character's days survived (in-game hours / 24). The thin line is their best life
       so far.
     - When a life ends, the bar shakes, breaks into pieces that fall and fade, a dust puff shows, and
