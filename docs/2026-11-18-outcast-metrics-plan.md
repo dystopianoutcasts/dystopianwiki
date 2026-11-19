@@ -33,13 +33,32 @@ What was built, all pushed to main:
   for the minute overcount. Security passed: anon can call only `metrics_summary` and
   `metrics_races`.
 
-Follow-ups, none started:
-1. **Races start playing on page load, all three at once, even off-screen.** Start each race when
-   it scrolls into view (IntersectionObserver), or start the first only.
+Follow-ups:
+1. **[COMPLETE 2026-11-19]** Each race now starts the first time its top is in the upper 70% of
+   the screen, not all three on page load (`d3cc5a0`, deployed `89f8baf`, chunk
+   `index-SrmSX8Wt.js`). With no IntersectionObserver it starts at once as before; with reduced
+   motion it never starts by itself. Tests in `useRacePlayback.test.ts`, both mutations caught.
 2. **Names:** the live races show character names only. The canvas showed the account name with
    the character in brackets. Ask the owner which they want.
-3. **Nov 1-4 kills were not recorded**, though players were on 61.6 h. The exporter's
-   `Aurora.txt` in those days' log folders may hold the kills; recover them into `kill_events`.
+3. **[PENDING owner go] Nov 1-4 kills.** `kill_events` has nothing from 2026-11-01 00:10:25 to
+   2026-11-05 06:34:53 UTC: the live ingest stopped, the exporter did not.
+   `scripts/metrics/recover-kill-gap.py` (`b6dd08f`) fetches the archived `Aurora.txt` files
+   through `sb` and writes 2,746 kill rows to
+   `R:\DystopianOutcasts\_LOCAL\server-logs\kill-gap-2026-11-01.sql`. Its `--apply`
+   inserts them (duplicates ignored), runs `metrics_rollup` over Nov 1-6 and
+   `metrics_races_refresh()`. The production write was held for the owner. What we found:
+   - Archived logs have holes (Oct 31 19:59 to Nov 1 01:06 is in no file; on Nov 5 the
+     09:24-10:34 kills the ingest stored are in no file), and file and folder names do not say
+     when a log ran. The script keeps each kill line by its own `t`.
+   - Kill lines are what the live ingest stores. Pootard's 2,075 gap kills are about 4x their
+     `zk` rise; they are spread over about 1,000 squares, a few seconds apart (driving through
+     zombies, most likely). Season-wide, Pootard's stored kill events already run 1.29x their
+     life kills, so the recovery matches how the rest of the race counts.
+   - To undo: `DELETE FROM aurora.kill_events WHERE server_id = 'outcasts-main' AND t >
+     '2026-11-01 00:10:25.475+00' AND t < '2026-11-05 06:34:53.037+00'` (nothing else is in that
+     window), then the same rollup and refresh.
+   - No page change is needed after applying: `killGapNote` (lib/metrics.ts) is worked out from
+     days with no kills, so the note goes away by itself once those days have kills.
 4. **The shared header** now has a "Metrics" link. The Live Map app picks it up at its next
    rebuild. Owner not yet asked to confirm.
 5. **BattleMetrics now works.** "Later" below can start: rank over 90 days, uptime, PZ-wide
