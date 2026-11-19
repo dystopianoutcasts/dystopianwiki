@@ -4,8 +4,51 @@ Owner ask, 2026-11-18: "Let's make an Outcast Metrics Page." It grew out of the 
 work. The owner wants graphs like the BattleMetrics server page (rank, time played, unique and
 first-time players, most time played), on our own site and in our own style.
 
-Status: PLANNED. Nothing is built yet. Start with step 1 below. Every day of delay loses a day
-of hourly history (see "Why step 1 is urgent").
+## Status: LIVE (2026-11-18) -- handoff
+
+**Live at https://dystopianoutcasts.online/metrics**, deploy commit `c314b83` (chunk
+`index-CwRiwHSx.js`). Checked live at 375 px and 1366 px, in light and dark:
+- no sideways scroll;
+- all three races play;
+- the BattleMetrics rank now fills (#1,856), so the token works.
+
+What was built, all pushed to main:
+
+| Commit | What |
+|---|---|
+| `c549cc8`, `30b6db1` | Migration 052: hourly rollup, `play_sessions`, `metrics_summary`, `metrics_races`, tests |
+| `ee02a30` | The `/metrics` page; "Metrics" in the shared header; "See all metrics" on home; sitemap |
+| `3592b54` | `scripts/metrics/import-play-sessions.py`: server-log sessions into `play_sessions` (names and times only) |
+| `9202c66` | Migration 053: minutes are the union of position and session minutes; races served from a cache refreshed by the hourly rollup; wording fixes |
+| `16b28e8` | Migration 054: a session covers a minute only with 30 s or more of it; the Nov 1-4 kill-gap note |
+
+- **Applied to production:** 052, 053 and 054. `supabase/tests/metrics.sql` passes 17 checks, and
+  mutation checks were caught.
+- **Season play time is imported** from the server logs: 1,689 sessions from 253 `user.txt` files.
+  The database's top 10 matches the log counter within 0.3%: One 218.0 h, Pootard 146.8, kitten
+  138.7, Squirrely 128.4, Fanfare 109.7.
+- **Raw logs** are in `R:\DystopianOutcasts\_LOCAL\server-logs\` (never committed: they hold Steam
+  IDs and IPs).
+- **Review:** one Sonnet reviewer. Its five findings were fixed in 053 and 054, plus a builder fix
+  for the minute overcount. Security passed: anon can call only `metrics_summary` and
+  `metrics_races`.
+
+Follow-ups, none started:
+1. **Races start playing on page load, all three at once, even off-screen.** Start each race when
+   it scrolls into view (IntersectionObserver), or start the first only.
+2. **Names:** the live races show character names only. The canvas showed the account name with
+   the character in brackets. Ask the owner which they want.
+3. **Nov 1-4 kills were not recorded**, though players were on 61.6 h. The exporter's
+   `Aurora.txt` in those days' log folders may hold the kills; recover them into `kill_events`.
+4. **The shared header** now has a "Metrics" link. The Live Map app picks it up at its next
+   rebuild. Owner not yet asked to confirm.
+5. **BattleMetrics now works.** "Later" below can start: rank over 90 days, uptime, PZ-wide
+   standing.
+6. **Per-player play time from now on** comes from position rows through the hourly rollup. The
+   log import is one-off. For a new season, run it again for any days the positions missed.
+7. **The fieldNotes test 164 failure** belongs to another session, not this work.
+
+The text below is the original plan, kept as written.
 
 ## What already exists (do not rebuild)
 
