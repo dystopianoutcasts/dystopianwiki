@@ -9,6 +9,7 @@
  * so every number is the same in every time zone; only the labels are Eastern.
  */
 import type { RpcCall } from './homeSummaryRpc'
+import { shownName, type NameMode } from './nameMode'
 
 export const METRICS_RACES_FN = 'metrics_races'
 
@@ -73,6 +74,16 @@ export interface RaceFeed {
   lives: LivesEntry[]
   /** play_sessions (the server logs) has rows: time played reaches back to the season start. */
   sessionsImported: boolean
+}
+
+/**
+ * The feed with every player's shown name set from the Survivor name / Username switch
+ * (lib/nameMode.ts, the same saved choice as the home page and the live map). Only
+ * displayName changes; username stays the key, so a switch never reorders or restarts a race.
+ */
+export function feedWithNames(feed: RaceFeed, mode: NameMode): RaceFeed {
+  const rename = <T extends { username: string; displayName: string }>(p: T): T => ({ ...p, displayName: shownName(p, mode) })
+  return { ...feed, kills: feed.kills.map(rename), time: feed.time.map(rename), lives: feed.lives.map(rename) }
 }
 
 function record(v: unknown): Record<string, unknown> | null {

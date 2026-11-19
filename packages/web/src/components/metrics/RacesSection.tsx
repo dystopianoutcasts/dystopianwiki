@@ -8,14 +8,16 @@
  * The numbers are real: kills from kill_events, deaths from deaths, time played from the
  * rollup (aurora.metrics_races, migration 052); the math is in lib/metricsRaces.ts.
  */
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { formatMinutes } from '../../lib/metrics'
+import { chooseNameMode, loadNameMode, NAME_MODE_STORAGE_KEY, subscribeNameMode, type NameMode } from '../../lib/nameMode'
 import {
   BIG_DEATH_HOLD_MS,
   bigDeathBetween,
   bigDeaths,
   buildLives,
   clockAtStep,
+  feedWithNames,
   formatDaysSurvived,
   leadership,
   lifeStateAt,
@@ -24,6 +26,7 @@ import {
   type RaceFeed,
   type RaceTrack,
 } from '../../lib/metricsRaces'
+import { NameModeSwitch } from '../landing/WhoIsOnNow'
 import { BarRaceBoard } from './BarRaceBoard'
 import { KillStills } from './KillStills'
 import { LivedRaceBoard, type LivedRow } from './LivedRaceBoard'
@@ -255,7 +258,24 @@ function LivedRace({ feed }: { feed: RaceFeed }) {
   )
 }
 
-export function RacesSection({ feed, loading }: { feed: RaceFeed | null; loading: boolean }) {
+/** The Survivor name / Username choice: saved, shared with the home page and the live map, and followed across tabs. */
+function useNameMode(): [NameMode, (mode: NameMode) => void] {
+  const [mode, setMode] = useState<NameMode>(() => loadNameMode())
+  useEffect(() => subscribeNameMode(setMode), [])
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === NAME_MODE_STORAGE_KEY) setMode(loadNameMode())
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
+  const change = useCallback((next: NameMode) => chooseNameMode(next, setMode), [])
+  return [mode, change]
+}
+
+export function RacesSection({ feed: rawFeed, loading }: { feed: RaceFeed | null; loading: boolean }) {
+  const [nameMode, setNameMode] = useNameMode()
+  const feed = useMemo(() => (rawFeed ? feedWithNames(rawFeed, nameMode) : null), [rawFeed, nameMode])
   return (
     <section className="metrics-section" aria-labelledby="metrics-races-title">
       <h2 className="metrics-section__title" id="metrics-races-title">
@@ -265,6 +285,14 @@ export function RacesSection({ feed, loading }: { feed: RaceFeed | null; loading
         Season 1, hour by hour, on the Eastern clock. These three are the only charts that move: press Pause, change the speed or drag the
         Hour slider whenever you like.
       </p>
+      {feed ? (
+        <div className="metrics-section__names">
+          <span className="metrics-section__names-label" aria-hidden="true">
+            Show names as
+          </span>
+          <NameModeSwitch mode={nameMode} onChange={setNameMode} />
+        </div>
+      ) : null}
       {loading && !feed ? <p className="metrics-card__empty">Loading the races...</p> : null}
       {!loading && !feed ? (
         <p className="metrics-card__empty">
