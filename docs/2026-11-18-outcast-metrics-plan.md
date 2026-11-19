@@ -165,7 +165,10 @@ Sections, top to bottom:
 4. Hours played per day (bars).
 5. Unique and first-time players per day: two lines with a legend that says words, not just colors.
 6. Busiest hours: a heatmap of weekday by hour in the viewer's local time, with the time zone named.
-7. Race to the top, Season 1. This is the ONLY playable chart (owner, 2026-11-18). It runs from the
+7. The races are the only playable charts (owner, 2026-11-18: "These races are fun"). There are
+   three; see 7a and 7b below for the other two.
+
+   Race to the top, Season 1, by time played. It runs from the
    season's start (`aurora.worlds` seq 1, `started_at` 2026-10-03 00:00 UTC, "server live 2026-10-02
    20:00 ET") to today, whatever range is picked above.
    - What it shows: each player's time played, added up day by day. Bars grow and swap places when
@@ -189,6 +192,43 @@ Sections, top to bottom:
        with our own counts.
      - With no token by then, the race starts on the first tracked day and says so ("Tracked from Nov
        11; earlier play is not counted").
+     - **Better source, found 2026-11-18:** the Main server's own join/leave logs.
+       - Every server session since July is archived in `server-data/Logs/logs_<date>/`, 310 folders
+         since Oct 2.
+       - Each holds `<stamp>_user.txt`, with lines like `[dd-mm-yy HH:MM:SS.mmm] <steamid> "Name" fully
+         connected (x,y,z).` and `... "Name" disconnected player (x,y,z).` The times are UTC.
+       - A session runs from "fully connected" to that player's "disconnected player". A session
+         still open when its log ends closes at the folder's last file write.
+       - That is exact play time per player for the whole season, with no token and no 90-day limit.
+         It also gives players online, hours played, players per day and busiest hours from day one.
+       - Pull with ServerBuddy's `sb files ls|get Main server-data/Logs/...`. Each call takes about
+         10 s, so a full pull takes about 1.5 hours.
+       - Raw logs hold Steam IDs and IPs: keep them in `R:\DystopianOutcasts\_LOCAL\server-logs\`,
+         never committed. Store only names and minutes in the database.
+       - A first pull and a counter ran on 2026-11-18; results are in the session's report.
+       - The rollup should take each player's sessions from these logs for the days before step 1
+         starts counting.
+     - **Correction:** the time-played totals on the Round 3 and Round 4 canvas boards are made up.
+       Never show survival hours as play time: at the server's 1.5-hour day, One's 3,388 in-game hours
+       would be 212 real hours, which does not fit the logs or BattleMetrics.
+
+7a. Zombie kill race, Season 1: real data from `aurora.kill_events`. That is 68,775 kills by 50
+    players from Oct 3 to Nov 18, at the minute, per player.
+    - Under it, two still charts: kills per day (the race's day highlighted) and kills by hour of the
+      day in Eastern Time, for the whole season.
+    - Canvas board "Round 5: Zombie kill race".
+    - To check: Nov 1 to 4 show no kills at all. That is either an outage or a recording gap;
+      compare with the server logs before the page ships.
+7b. Longest alive, Season 1: real data from `aurora.lives`.
+    - Bars are each character's days survived (in-game hours / 24). The thin line is their best life
+      so far.
+    - When a life ends, the bar shakes, breaks into pieces that fall and fade, a dust puff shows, and
+      a red "DIED after N days" tag flashes. Then the player starts over from zero.
+    - Life records whose hours carry on from the record before are the same character and are merged
+      (lives has split records at reconnects).
+    - A bar's growth between a life's start and its end is spread evenly until the rollup counts it
+      day by day.
+    - Canvas board "Round 5: Longest alive".
 8. Deaths and zombie kills per day.
 9. BattleMetrics: reuse `BattleMetricsCard` (7-day rank). Uptime and longer rank ranges come
    later, when the token works.
