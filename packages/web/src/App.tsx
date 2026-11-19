@@ -19,6 +19,7 @@ import { EyesOnlyPage } from './pages/EyesOnlyPage';
 import { EyesOnlyDocumentPage } from './pages/EyesOnlyDocumentPage';
 import { SotsPage } from './pages/SotsPage';
 import { OutcastBuddyPage } from './pages/OutcastBuddyPage';
+import { MetricsPage } from './pages/MetricsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { ArticleProvider } from './context/ArticleContext';
 import { LearningPathProvider } from './context/LearningPathContext';
@@ -85,6 +86,9 @@ function App() {
 
         {/* Outcast Buddy download and install steps. Above the /:version routes, which would capture it. */}
         <Route path="/buddy" element={<OutcastBuddyPage />} />
+
+        {/* Outcast Metrics. Above the /:version routes, which would capture it. */}
+        <Route path="/metrics" element={<MetricsPage />} />
 
         {/* EYES ONLY documents for executives. Above the /:version routes, which would capture it. */}
         <Route path="/eyes-only" element={<EyesOnlyPage />} />

@@ -1,4 +1,5 @@
 import { useId, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useHomeSummary } from '../../hooks/useHomeSummary';
 import { BattleMetricsCard } from './BattleMetricsCard';
 import { useBattleMetrics } from '../../hooks/useBattleMetrics';
@@ -160,6 +161,12 @@ export function ActivitySection() {
         ) : (
           <p className="home-section__empty">Player history: {TBD}. It appears here once the server has reported in.</p>
         )}
+
+        <p className="home-section__more">
+          <Link className="home-section__more-link" to="/metrics">
+            See all metrics
+          </Link>
+        </p>
 
         <BattleMetricsCard summary={bm} />
       </div>

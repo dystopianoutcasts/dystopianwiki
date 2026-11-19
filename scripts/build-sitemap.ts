@@ -82,6 +82,7 @@ function main(): void {
     { loc: '/vote', changefreq: 'weekly', priority: '0.6' },
     { loc: '/sots', changefreq: 'monthly', priority: '0.6' },
     { loc: '/buddy', changefreq: 'monthly', priority: '0.6' },
+    { loc: '/metrics', changefreq: 'daily', priority: '0.6' },
   ]
   const known = new Set(versionsFile.versions.map(v => v.id))
 

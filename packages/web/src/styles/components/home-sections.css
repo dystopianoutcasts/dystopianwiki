@@ -359,6 +359,28 @@
 
 /* ---- Activity: tiles and chart --------------------------------------------- */
 
+.home-section__more {
+  text-align: center;
+  margin: var(--spacing-4) 0 var(--spacing-6);
+}
+
+.home-section__more-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--spacing-6);
+  border: 1px solid var(--color-control-border);
+  border-radius: var(--border-radius-md);
+  color: var(--color-link);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.home-section__more-link:hover {
+  background: var(--color-surface-elevated);
+  text-decoration: underline;
+}
+
 .home-tiles {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
