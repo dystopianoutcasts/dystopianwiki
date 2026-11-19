@@ -301,3 +301,15 @@ export function trackedFromNote(since: string, firstData: Date | null): string |
   const first = `${firstData.getUTCFullYear()}-${String(firstData.getUTCMonth() + 1).padStart(2, '0')}-${String(firstData.getUTCDate()).padStart(2, '0')}`
   return first > since ? `tracked from ${utcDayLabel(firstData)}` : null
 }
+
+/**
+ * The Nov 1 to 4 kill gap: the server logs show players online those days, but no zombie kills
+ * were recorded. Given each day's kills (YYYY-MM-DD, any calendar), returns the plain sentence
+ * when all four days are present with no kills, else null.
+ */
+export function killGapNote(days: readonly { day: string; kills: number }[]): string | null {
+  const wanted = ['2026-11-01', '2026-11-02', '2026-11-03', '2026-11-04']
+  const found = wanted.map((w) => days.find((d) => d.day === w))
+  if (found.some((d) => !d || d.kills !== 0)) return null
+  return 'Nov 1 to 4: players were on, but their zombie kills were not recorded those days.'
+}

@@ -154,3 +154,15 @@ test('the busiest slot is the highest average, earliest on a tie, and null when 
   grid[6][1] = 1
   assert.deepEqual(busiestSlot(grid), { weekday: 2, hour: 9, average: 4 })
 })
+
+test('the Nov 1 to 4 kill gap is stated plainly, only when those four days are there with no kills', async () => {
+  const { killGapNote } = await import('./metrics')
+  const days = ['2026-10-31', '2026-11-01', '2026-11-02', '2026-11-03', '2026-11-04', '2026-11-05'].map((day, i) => ({
+    day,
+    kills: i === 0 || i === 5 ? 40 : 0,
+  }))
+  assert.equal(killGapNote(days), 'Nov 1 to 4: players were on, but their zombie kills were not recorded those days.')
+  assert.equal(killGapNote(days.map((d) => (d.day === '2026-11-03' ? { ...d, kills: 5 } : d))), null)
+  assert.equal(killGapNote(days.slice(0, 3)), null)
+  assert.equal(killGapNote([]), null)
+})

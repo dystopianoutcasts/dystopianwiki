@@ -62,7 +62,10 @@ INSERT INTO aurora.play_sessions (server_id, username, started_at, ended_at, sou
   ('mt-t', 'cat', TIMESTAMPTZ '2026-03-04 19:50:00+00', TIMESTAMPTZ '2026-03-04 20:40:00+00', 'server_log'),
   ('mt-t', 'dan', TIMESTAMPTZ '2026-03-04 20:10:00+00', TIMESTAMPTZ '2026-03-04 20:20:00+00', 'server_log'),
   ('mt-t', 'eve', TIMESTAMPTZ '2026-03-07 08:00:00+00', TIMESTAMPTZ '2026-03-07 09:00:00+00', 'server_log'),
-  ('mt-t', 'fay', TIMESTAMPTZ '2026-03-07 08:10:00+00', TIMESTAMPTZ '2026-03-07 08:20:00+00', 'server_log');
+  ('mt-t', 'fay', TIMESTAMPTZ '2026-03-07 08:10:00+00', TIMESTAMPTZ '2026-03-07 08:20:00+00', 'server_log'),
+  ('mt-t', 'gus', TIMESTAMPTZ '2026-03-09 10:00:30+00', TIMESTAMPTZ '2026-03-09 10:05:10+00', 'server_log'),
+  ('mt-t', 'hal', TIMESTAMPTZ '2026-03-09 11:00:10+00', TIMESTAMPTZ '2026-03-09 11:00:30+00', 'server_log'),
+  ('mt-t', 'ivy', TIMESTAMPTZ '2026-03-09 11:10:10+00', TIMESTAMPTZ '2026-03-09 11:10:50+00', 'server_log');
 
 INSERT INTO aurora.deaths (server_id, username, x, y, z, t, hours_survived) VALUES
   ('mt-t', 'bob', 1, 1, 0, TIMESTAMPTZ '2026-03-05 10:15:00+00', 30.5),
@@ -138,6 +141,14 @@ BEGIN
     'eve 60 (3 stray position minutes do not block the session), fay 10 (overlap counts once)';
   RAISE NOTICE 'PASS minutes are the union of positions and sessions: sparse positions do not block a session, overlap counts once'; INSERT INTO mt_results (result) VALUES ('PASS minutes are the union of positions and sessions: sparse positions do not block a session, overlap counts once');
 
+  -- 4c. a session covers a minute only with at least 30 s of it: 10:00:30-10:05:10 is 5 minutes,
+  --     a 20 s session counts 0, a 40 s session counts 1
+  ASSERT (SELECT minutes FROM aurora.metrics_player_hourly WHERE server_id = 'mt-t' AND username = 'gus' AND hour = TIMESTAMPTZ '2026-03-09 10:00:00+00') = 5
+     AND NOT EXISTS (SELECT 1 FROM aurora.metrics_player_hourly WHERE server_id = 'mt-t' AND username = 'hal')
+     AND (SELECT minutes FROM aurora.metrics_player_hourly WHERE server_id = 'mt-t' AND username = 'ivy') = 1,
+    'half-minute rule: gus 5, hal 0, ivy 1';
+  RAISE NOTICE 'PASS a session covers a minute only with 30 seconds of it'; INSERT INTO mt_results (result) VALUES ('PASS a session covers a minute only with 30 seconds of it');
+
   -- 5. new players across both worlds, deaths, kills
   ASSERT (SELECT new_players FROM aurora.metrics_hourly WHERE server_id = 'mt-t' AND hour = TIMESTAMPTZ '2026-03-05 10:00:00+00') = 2,
     'new players in hour 10 (bob and dan; ann was first seen in the old world on 03-02)';
@@ -182,7 +193,7 @@ BEGIN
   ASSERT (d->>'hours_played')::NUMERIC = 1.0 AND (d->>'unique_players')::INT = 2 AND (d->>'peak')::INT = 2 AND (d->>'avg')::NUMERIC > 0, 'daily 03-04 (from the session log): ' || d::TEXT;
   SELECT x INTO d FROM jsonb_array_elements(j->'daily') x WHERE x->>'day' = '2026-03-08';
   ASSERT d->'hours_played' = 'null'::JSONB AND (d->>'kills')::INT = 0 AND (d->>'deaths')::INT = 0, 'a day nothing measured: ' || d::TEXT;
-  ASSERT (j->'totals'->>'hours_played')::NUMERIC = 2.3 AND (j->'totals'->>'new_players')::INT = 4
+  ASSERT (j->'totals'->>'hours_played')::NUMERIC = 2.4 AND (j->'totals'->>'new_players')::INT = 4
      AND (j->'totals'->>'deaths')::INT = 3 AND (j->'totals'->>'kills')::INT = 81 AND (j->'totals'->>'peak')::INT = 4,
     'totals: ' || (j->'totals')::TEXT;
   ASSERT j->>'tracking_since' IS NOT NULL, 'tracking_since';

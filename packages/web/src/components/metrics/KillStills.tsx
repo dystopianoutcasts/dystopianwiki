@@ -5,6 +5,7 @@
  */
 import { useMemo } from 'react'
 import { clockAtStep, hourLabel, totalsByEasternDay, totalsByEasternHour, type RaceFeed } from '../../lib/metricsRaces'
+import { killGapNote } from '../../lib/metrics'
 import { ChartCard, SvgBars } from './charts'
 
 const fmt = (n: number) => n.toLocaleString('en-US')
@@ -12,6 +13,7 @@ const fmt = (n: number) => n.toLocaleString('en-US')
 export function KillStills({ feed, step }: { feed: RaceFeed; step: number }) {
   const days = useMemo(() => totalsByEasternDay(feed.seasonStart, feed.killTotals), [feed])
   const hours = useMemo(() => totalsByEasternHour(feed.seasonStart, feed.killTotals), [feed])
+  const gapNote = killGapNote(days.map((d) => ({ day: d.dayKey, kills: d.total })))
   const total = feed.killTotals.reduce((a, b) => a + b, 0)
   const clock = clockAtStep(feed.seasonStart, step)
   const dayIndex = Math.max(0, days.findIndex((d) => d.dayKey === clock.dayKey))
@@ -27,7 +29,7 @@ export function KillStills({ feed, step }: { feed: RaceFeed; step: number }) {
         className="metrics-card--wide"
         title="Zombie kills per day"
         summary={`Busiest day: ${busiestDay?.label ?? 'none'}, ${fmt(dayPeak)} kills. On ${days[dayIndex]?.label ?? 'the first day'}: ${fmt(days[dayIndex]?.total ?? 0)}.`}
-        note="The orange bar is the day the race is on. Days run on the Eastern clock. A run of days with no kills is a quiet server or a gap in recording."
+        note={`The orange bar is the day the race is on. Days run on the Eastern clock.${gapNote ? ` ${gapNote}` : ''}`}
         empty={emptyReason}
       >
         <SvgBars

@@ -28,6 +28,7 @@ import {
   formatCount,
   formatHoursPlayed,
   hourName,
+  killGapNote,
   localHeatmap,
   METRICS_RANGES,
   rangePhrase,
@@ -205,7 +206,7 @@ function Charts({
         <ChartCard
           title="Zombies killed per day"
           summary={`${formatCount(summary?.totals.kills ?? 0)} zombies killed over ${phrase}.`}
-          note="Recorded kills. Days are counted in UTC."
+          note={`Recorded kills. Days are counted in UTC.${killGapNote(daily.map((d) => ({ day: d.day, kills: d.kills }))) ? ` ${killGapNote(daily.map((d) => ({ day: d.day, kills: d.kills })))}` : ''}`}
           empty={emptyReason(loading, failed, hasEvents, 'No zombie kills have been recorded for this range yet. This fills in as players kill zombies.')}
         >
           <SvgBars
