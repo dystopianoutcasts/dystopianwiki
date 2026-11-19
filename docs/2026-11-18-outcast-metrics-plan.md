@@ -48,6 +48,30 @@ deleted after 7-8 days. A rollup that runs every hour, kept forever, fixes that.
 starts from whatever raw data is still there on the day step 1 is applied. First-time players,
 deaths and lives can be backfilled all the way to 2026-10-03 at any time.
 
+### Season 1 from the start (owner, 2026-11-18)
+
+Every stat should start at the season's start: `aurora.worlds` seq 1, 2026-10-03 00:00 UTC (Oct 2,
+8 PM ET). The database was checked on 2026-11-18.
+
+| Stat | From Oct 3 in our own records? | How it gets there |
+|---|---|---|
+| Zombie kills per day | **Yes**: `kill_events`, 68,774 rows from 2026-10-03 (kept until 30 days after the world ends) | step 1 backfill |
+| Deaths per day | **Yes**: `deaths`, 350 rows from 2026-10-03, kept forever | step 1 backfill |
+| Lives (length, kills per life) | **Yes**: `lives`, 239 rows from 2026-10-03, kept forever | read directly |
+| First-time players | **Yes**: `players.first_seen`, 62 players from 2026-10-03 | step 1 backfill |
+| Players online, peak, busiest hours | No: `health_samples` only from 2026-11-10 | BattleMetrics `player-count-history` (90 days) |
+| Hours played per day | No: positions only from 2026-11-11 | BattleMetrics `time-played-history` (server, 90 days) |
+| Different players per day | No: positions only from 2026-11-11 | BattleMetrics `unique-player-history` (90 days) |
+| Each player's time (the race) | No: positions only from 2026-11-11 | BattleMetrics `players/{id}/time-played-history/{serverId}` (90 days) |
+
+How to fill the gaps:
+- The BattleMetrics rows fill only the days before our own tracking starts. They are stored with a
+  `source` column (`battlemetrics`).
+- Our own counts win on any day both have.
+- One pull covers everything, and it needs the token. **It must happen before about 2027-01-01**,
+  when the 90-day window starts dropping the first season days.
+- Until it happens, each such chart says where its line starts.
+
 ## Step 1 -- migration 052: hourly rollup (database)
 
 New file `supabase/migrations/052_aurora_metrics.sql`. Follow 051's style: SECURITY DEFINER,
@@ -82,7 +106,8 @@ Schedule and backfill:
 - pg_cron job `metrics-rollup` at `10 * * * *` recomputes the last 3 hours, to catch late ingest.
   Add `enable_metrics_cron()` and `disable_metrics_cron()` like 051.
 - Backfill at the end of the migration: roll up from the earliest raw row to now.
-- In the same migration, add a one-off backfill of `new_players` and `deaths` from 2026-10-03.
+- In the same migration, add a one-off backfill of `new_players`, `deaths` and `kills` from
+  2026-10-03. For the days before `health_samples`, kills come from `kill_events`.
 
 Public read `aurora.metrics_summary(p_server text, p_days int) RETURNS jsonb`, granted to anon:
 - `p_days` is clamped to 1..3650 and the server must be known.
@@ -130,8 +155,12 @@ Code:
 Sections, top to bottom:
 1. Headline tiles: online now, peak this week, hours played this week, new players this week,
    and BattleMetrics rank (it already reads "TBD" without a token).
-2. Range picker, one control for the whole page: **7 days / 30 days / 90 days / All**. It shows
-   which range is active and says "Tracking since <date>" when a range reaches before the data.
+2. Range picker, one control for the whole page: **7 days / 30 days / Season 1**. Season 1 is the
+   default (owner, 2026-11-18: "take all our stats from the start of the season"). It shows which
+   range is active. Where a chart's own data starts later than the season (see "Season 1 from the
+   start" above), the chart says so ("Hours played: tracked from Nov 11").
+   - A later season adds a button per season. Season ranges come from `aurora.worlds`
+     (`started_at`, `ended_at`).
 3. Players online: the average, with a lighter peak line (hourly for 7 days, daily beyond).
 4. Hours played per day (bars).
 5. Unique and first-time players per day: two lines with a legend that says words, not just colors.
@@ -181,7 +210,8 @@ Phone width: charts stack, labels never overlap, and nothing scrolls sideways. C
    scrolling.
 3. Click "30 days". Every chart changes to 30 days, and "30 days" is shown as selected.
 4. Find which hours are busiest in your own time zone, from the heatmap, with its time zone shown.
-5. Find who played the most this month, from the "Most time played" list.
+5. Find who has played the most this season, from the race (it ends on today; or drag its Day slider
+   to the end).
 6. On a phone, read every chart with no sideways scrolling and no overlapping labels.
 7. Before any data exists, every chart says why it is empty and when it will fill.
 
