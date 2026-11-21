@@ -830,19 +830,14 @@ export const VERSIONS: VersionInfo[] = [
         displayOrder: 7,
         groups: [
           {
-            id: 'the-player',
-            name: 'The Player',
-            description: 'Character stats, animation, input and controls, and physics and ragdolls.',
-          },
-          {
-            id: 'the-world',
-            name: 'The World',
-            description: 'Weather, fire, water and power, building and moveables, fishing and trapping, sound, and stashes.',
+            id: 'in-the-game',
+            name: 'In the Game',
+            description: 'What players see and feel: stats and moodles, weather, fire, water and power, building, fishing and trapping, sound, and stashes.',
           },
           {
             id: 'under-the-hood',
             name: 'Under the Hood',
-            description: 'Networking and packets, anti-cheat, and how saves are written and read.',
+            description: 'The machinery behind it: animation, input, physics, networking, anti-cheat, and saves.',
           },
         ],
         categories: [
@@ -853,7 +848,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'heart-pulse',
             displayOrder: 1,
             articleCount: 7,
-            group: 'the-player',
+            group: 'in-the-game',
           },
           {
             id: 'weather-and-climate',
@@ -862,7 +857,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'cloud-rain',
             displayOrder: 2,
             articleCount: 7,
-            group: 'the-world',
+            group: 'in-the-game',
           },
           {
             id: 'fire-water-and-power',
@@ -871,7 +866,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'flame',
             displayOrder: 3,
             articleCount: 6,
-            group: 'the-world',
+            group: 'in-the-game',
           },
           {
             id: 'fishing-and-trapping',
@@ -880,7 +875,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'fish',
             displayOrder: 4,
             articleCount: 6,
-            group: 'the-world',
+            group: 'in-the-game',
           },
           {
             id: 'building-and-moveables',
@@ -889,7 +884,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'hammer',
             displayOrder: 5,
             articleCount: 7,
-            group: 'the-world',
+            group: 'in-the-game',
           },
           {
             id: 'stash-and-annotated-maps',
@@ -898,7 +893,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'map',
             displayOrder: 6,
             articleCount: 6,
-            group: 'the-world',
+            group: 'in-the-game',
           },
           {
             id: 'animation-system',
@@ -907,7 +902,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'film',
             displayOrder: 7,
             articleCount: 8,
-            group: 'the-player',
+            group: 'under-the-hood',
           },
           {
             id: 'physics-and-ragdolls',
@@ -916,7 +911,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'activity',
             displayOrder: 8,
             articleCount: 7,
-            group: 'the-player',
+            group: 'under-the-hood',
           },
           {
             id: 'input-and-controls',
@@ -925,7 +920,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'gamepad',
             displayOrder: 9,
             articleCount: 6,
-            group: 'the-player',
+            group: 'under-the-hood',
           },
           {
             id: 'saves-and-persistence',
@@ -943,7 +938,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'volume',
             displayOrder: 11,
             articleCount: 7,
-            group: 'the-world',
+            group: 'in-the-game',
           },
           {
             id: 'networking-and-packets',

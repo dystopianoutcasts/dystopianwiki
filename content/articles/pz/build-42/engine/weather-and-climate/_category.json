@@ -3,5 +3,5 @@
   "description": "How Build 42.22 makes weather: the climate model, the year and the length of a day, rain, snow, fog, wind and storms, outdoor temperature, what weather does to players, zombies and the world, the forecast, and what a mod can read or change.",
   "icon": "cloud-rain",
   "displayOrder": 2,
-  "group": "the-world"
+  "group": "in-the-game"
 }

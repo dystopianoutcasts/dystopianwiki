@@ -6,19 +6,14 @@
   "displayOrder": 7,
   "groups": [
     {
-      "id": "the-player",
-      "name": "The Player",
-      "description": "Character stats, animation, input and controls, and physics and ragdolls."
-    },
-    {
-      "id": "the-world",
-      "name": "The World",
-      "description": "Weather, fire, water and power, building and moveables, fishing and trapping, sound, and stashes."
+      "id": "in-the-game",
+      "name": "In the Game",
+      "description": "What players see and feel: stats and moodles, weather, fire, water and power, building, fishing and trapping, sound, and stashes."
     },
     {
       "id": "under-the-hood",
       "name": "Under the Hood",
-      "description": "Networking and packets, anti-cheat, and how saves are written and read."
+      "description": "The machinery behind it: animation, input, physics, networking, anti-cheat, and saves."
     }
   ]
 }

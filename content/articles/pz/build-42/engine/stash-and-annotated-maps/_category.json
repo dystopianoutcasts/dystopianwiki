@@ -3,5 +3,5 @@
   "description": "How annotated stash maps work in Build 42.22: where they drop, the odds, what a stash holds, the code behind it, every vanilla stash, and how a mod adds or changes one.",
   "icon": "map",
   "displayOrder": 6,
-  "group": "the-world"
+  "group": "in-the-game"
 }

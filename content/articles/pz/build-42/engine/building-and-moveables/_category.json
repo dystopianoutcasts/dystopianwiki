@@ -3,5 +3,5 @@
   "description": "How players build in Build 42.22: the build menu and recipes, placement rules, skill and tool gates, how built objects take damage from zombies, and how moveables are picked up, placed, rotated, broken and scrapped.",
   "icon": "hammer",
   "displayOrder": 5,
-  "group": "the-world"
+  "group": "in-the-game"
 }

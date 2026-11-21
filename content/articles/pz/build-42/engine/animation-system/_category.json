@@ -3,5 +3,5 @@
   "description": "How Build 42.22 animates characters, zombies and animals: action groups, AnimSets, variables and events, skeletons and clips, and how a mod adds or changes an animation.",
   "icon": "film",
   "displayOrder": 7,
-  "group": "the-player"
+  "group": "under-the-hood"
 }
