@@ -13,64 +13,75 @@ tags:
   - animation
   - animsets
 excerpt: >-
-  What the engine requires of a new animal type, measured from the B42 decompile
-  and the installed game files (PZ
-  42.19...
-last_updated: '2026-10-04'
+  What 42.22 needs for a new animal type: a rig of at most 60 bones, an AnimSet, an action group, clips tied to the mesh by an animationsMesh script, and a model script. With the traps found.
+last_updated: '2026-11-21'
+related_articles:
+  - animals-overview-the-b42-living-animal-system
+  - modding-the-animaldefinitions-global-table
+  - butchering-and-dead-animals
+  - modding-recipes-adding-a-crop-editing-an-animal-breed
 ---
-# How Build 42 loads and animates an animal
+::field-notes
 
-> Source: 09-pz-b42-animal-pipeline.md (compiled 2026-09-11, verified against Project Zomboid 42.19). Imported 2026-09-29. Confidence tags in the text are the original author's.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-21. Model, clip and shader files are not in the capture; they were read from the installed game of the same Steam build (26486631).
 
-What the engine requires of a new animal type, measured from the B42 decompile and the installed game files (PZ 42.19, the `media` folder in your Steam library's `ProjectZomboid` folder). The engine citations in sections 1, 3 and 4 were re-checked on Build 42.21 (revision 4a0e9546ec), and their line numbers point into that build.
+**Who this page is for:** [riggers and animators building a new animal](#1-the-bone-limit) | [modders wiring one up](#4-what-binds-an-animal-to-its-animations)
 
-Tags: `[VERIFIED]` read in code or shipped data, with the citation. `[DERIVED]` computed from verified values. `[GAP]` not established. `[INFERENCE]` reasoned but not proven.
+This page is for modders who want to add an animal that does not exist in vanilla. It says what the engine reads, what it refuses silently and what a first rig should look like. It does not teach modeling.
 
-> This replaces the Godot pipeline document (07) for everything engine-specific. 07's mesh, skin-weight and gait math still applies.
+:::callout[The 1-minute version]{kind=key}
+- Animated models are built around fixed arrays of 60 bones: a clip keeps keyframes for bone numbers 0 to 59 only, and the animal shader holds 60 matrices. Plan for at most 60 bones, though the vanilla maximum is 46. :cite[(`zombie/core/skinnedmodel/animation/AnimationClip.java:36`, `zombie/core/skinnedmodel/animation/AnimationClip.java:133-150`, `zombie/core/skinnedmodel/advancedanimation/AnimatedModel.java:1401-1412`)]
+- An animal type needs three things by name: an AnimSet folder, an action group folder and clips that an `animationsMesh` script ties to the mesh. The definition's `animset` field selects the first two. :cite[(`zombie/characters/animals/IsoAnimal.java:372-373`, `zombie/characters/animals/IsoAnimal.java:1509`, `zombie/characters/animals/IsoAnimal.java:1663`)]
+- AnimSets are read from the game and from every enabled mod. The action group reader we found looks only in the game's own folder, so a mod's own action group is an open question. :cite[(`zombie/core/skinnedmodel/advancedanimation/AnimationSet.java:55-65`, `zombie/characters/action/ActionGroup.java:39-44`)]
+- The vanilla raccoon runs on 13 clips, 19 AnimSet nodes and 11 states, and six clips are enough for the mandatory states (counted from the installed files; see sections 5 and 6).
+- 42.22 adds one bone check: a saved ragdoll corpse pose with more than 256 bones fails to load. :cite[(`zombie/iso/objects/IsoDeadBody.java:873-875`)]
+:::
 
-## Summary
+:::facts
+- **Bone arrays in the animation code** 60 :cite[(`zombie/core/skinnedmodel/animation/AnimationClip.java:36`, `zombie/core/skinnedmodel/animation/AnimationTrack.java:59`, `zombie/core/skinnedmodel/animation/AnimationPlayer.java:1844`, `zombie/core/skinnedmodel/advancedanimation/AnimatedModel.java:1404`)]
+- **Corpse pose limit, new in 42.22** 256 bones :cite[(`zombie/iso/objects/IsoDeadBody.java:154`, `zombie/iso/objects/IsoDeadBody.java:873-875`)]
+- **Influences per vertex** 4 (installed `animalEffect.vert`)
+- **animationsMesh scripts in vanilla** 23, one per mesh :cite[(`media/scripts/generated/animations_meshes.txt:1-163`)]
+- **Animal models using the `animalEffect` shader** 73 :cite[(`media/scripts/generated/models_animals.txt:218-231`)]
+:::
 
-- **There is no bone-count cap.** `MAX_BONES = 64` exists but is never used. Skinning runs through a storage buffer sized at runtime. The real hard limit is **4 influences per vertex**.
-- **Every vanilla skinned model, animals included, is a Character Studio biped**: `Dummy01` > `Bip01` > `Bip01_Pelvis`, plus a `Translation_Data` node. Vanilla rigs run 18-46 bones; the raccoon has 35 and the human 36.
-- **Vanilla animal meshes are very low-poly**: raccoon 387 vertices, cow 670, human 617-660. CompanionCat ships 6,193.
-- **An animal type needs three data trees**, all of which a mod can ship: `AnimSets/<name>/`, `actiongroups/<name>/`, and clips under `anims_X/`. `AnimalDefinitions.animset` selects all three by name.
-- **The raccoon runs on 13 clips across 11 states.** States can share a clip, so the clip count is a floor, not a wall.
+## 1. The bone limit
 
-## 1. Bone limit and vertex influences
+**The engine's animation arrays hold 60 bones, so a rig above 60 bones will not animate fully.**
 
-| Fact | Evidence |
-|---|---|
-| `MAX_BONES = 64` is declared and **never read**. A grep for it across `zombie/*` returns only the declaration. | `zombie\core\skinnedmodel\shader\Shader.java:96` `[VERIFIED]` |
-| Skinning uses a shader storage buffer with a runtime-length array and a `boneCount`, so bone count is a data value, not a compile-time bound. | `media\shaders\util\skinning.glsl:7-15`, `skinning.h:6` `[VERIFIED]` |
-| Exactly **4 influences per vertex**: the weights and indices are `vec4`, and the skin matrix sums four terms. | `media\shaders\util\skinning.glsl:5-6,18-24` `[VERIFIED]` |
-| Bone arrays are allocated per model from `skinningData.numBones()`, with no clamp. | `zombie\core\skinnedmodel\animation\AnimationPlayer.java:191-193` `[VERIFIED]` |
-| No "too many bones" check exists. A regex sweep for bone-count comparisons across `zombie` found nothing in 42.20. Build 42.21 adds one comparison, `AnimationPlayer#isBoneCountMismatched`: it checks that a corpse's saved pose has as many bones as its model before the corpse is drawn with that pose. It is an equality check, not a maximum. | `[VERIFIED]` (absence of evidence, not proof) |
+A clip sorts its keyframes into a table with one slot per bone, and the table has 60 slots. :cite[(`zombie/core/skinnedmodel/animation/AnimationClip.java:36`)] The routine that fills it loops from bone 0 to 59 only, so keyframes for a bone numbered 60 or higher are never indexed. :cite[(`zombie/core/skinnedmodel/animation/AnimationClip.java:133-150`)] A playing track has a 60-slot pose array, the player has a 60-slot index scratch array, and the matrix palette sent to the shader is built with 60 matrices. :cite[(`zombie/core/skinnedmodel/animation/AnimationTrack.java:59`, `zombie/core/skinnedmodel/animation/AnimationPlayer.java:1844`, `zombie/core/skinnedmodel/advancedanimation/AnimatedModel.java:1401-1412`)]
 
-> **Proof:** Code. `zombie.core.skinnedmodel.animation.AnimationPlayer#isBoneCountMismatched`, called only from `zombie.core.skinnedmodel.DeadBodyAtlas` and `zombie.iso.fboRenderChunk.FBORenderCorpses`. Build 42.21.0 (revision 4a0e9546ec).
+The same arrays are in 42.21, so this is not a new limit. The shader that animal models use declares 60 matrices too (installed `animalEffect.vert`, `uniform mat4 MatrixPalette[60]`), and all 73 model blocks in the vanilla animal model file name it. :cite[(`media/scripts/generated/models_animals.txt:218-224`)]
 
-**CompanionCat's claim that it "pruned to 56 bones to fit the engine limit" is unsupported by the code.** Either it hit a different limit (an exporter or importer, not the engine), or the constraint was assumed. Do not treat 56 or 64 as a budget, but stay near vanilla until a high-bone-count rig is proven in game `[GAP]`.
+An older version of this page said there is no bone cap, because the constant `MAX_BONES = 64` in `Shader.java` is never used and one shader reads its `boneCount` from a storage buffer. Both facts are still true, but the 60-slot arrays above are the real limit for these models. :cite[(`zombie/core/skinnedmodel/shader/Shader.java:96`)] We read this in the code and did not test a 61-bone rig in a running game.
+
+Corpses add a second number. A saved dead body stores its pose, and 42.22 refuses to load a saved pose, which is stored only when the body fell as a ragdoll, if it claims more than 256 bones or more bones than its data holds. :cite[(`zombie/iso/objects/IsoDeadBody.java:154`, `zombie/iso/objects/IsoDeadBody.java:873-875`)] The 42.21 build had no such check. A render-time check, `isBoneCountMismatched`, compares the pose with the model's bone count before the corpse is drawn; it tests for a different count, not a maximum. :cite[(`zombie/core/skinnedmodel/animation/AnimationPlayer.java:153-155`, `zombie/core/skinnedmodel/DeadBodyAtlas.java:1406`, `zombie/iso/fboRenderChunk/FBORenderCorpses.java:431`)]
+
+Skinning allows 4 influences per vertex: the vertex stage reads four weights and four indices and sums four terms. (Installed `animalEffect.vert`.) A fifth weight is dropped by the exporter or loader, which shows as a collapsing vertex, not as an error.
 
 ## 2. Vanilla rigs: counts and naming
 
-Bone counts are `Frame` blocks in the shipped `.x` files (all of `media\models_X\Skinned\*.x` parsed) `[VERIFIED]`:
+**Every vanilla skinned model has 18 to 46 bones and carries the same top nodes.**
+
+We counted the `Frame` blocks of every `.x` file in the installed `media/models_X/Skinned` folder. Each has `Dummy01` and `Bip01`, and all but three (`Sheep_RamSheared_Headless`, `Turkey_Skeleton`, `Turkey_Skeleton_NoHead`) have `Translation_Data`. The engine's default deferred-movement bone name is `Translation_Data`. :cite[(`zombie/core/skinnedmodel/advancedanimation/AnimNode.java:98`, `zombie/core/skinnedmodel/advancedanimation/AnimNode.java:350`)]
 
 | Model | Bones | Vertices |
 |---|---|---|
-| Female_Skeleton / Male_Skeleton | 46 | 792 / 793 |
+| Female and male skeleton | 46 | 792 and 793 |
 | CowBody | 45 | 670 |
-| Sheep (ram / ewe) | 43-45 | 495-711 |
-| Deer (doe / stag / fawn) | 41 | 521-730 |
+| Sheep (ram, ewe, lamb) | 43 to 45 | 495 to 711 |
+| Deer (doe, stag, fawn) | 41 | 521 to 730 |
 | Rabbit | 39 | 397 |
 | Turkey | 37 | 787 |
-| **MaleBody / FemaleBody** | **36** | 617 / 660 |
-| Bull, cow calf, chicken hen, **raccoon** | 35 | 197-813, **raccoon 387** |
-| Pig (boar / sow / piglet) | 32 | 359-582 |
-| Rat, mouse | 31 | 205-409 |
+| Turkey poult | 30 | 779 |
+| MaleBody and FemaleBody | 36 | 617 and 660 |
+| Bull, cow calf, chicken hen, raccoon | 35 | 197 to 813; raccoon 387 |
+| Chicken cockerel | 29 | 534 |
+| Pig (boar, sow, piglet) | 32 | 359 to 582 |
+| Rat and mouse | 31 | 205 to 409 |
 | Chicken chick | 18 | 197 |
 
-**Every one of them** carries `Dummy01`, `Bip01` and `Translation_Data` (the only exceptions are a few headless or skeleton variants missing `Translation_Data`) `[VERIFIED]`.
-
-Raccoon hierarchy, the closest quadruped to a cat (`media\models_X\Skinned\Raccoon_Body.x`) `[VERIFIED]`:
+Vanilla animal meshes are small: a raccoon has 387 vertices, a cow 670 and a human body 617 to 660. The vanilla raccoon hierarchy (`Raccoon_Body.x`), closest to a cat among the quadrupeds, is:
 
 ```
 Raccoon > Dummy01 > Bip01 > Bip01_Pelvis > Bip01_Spine
@@ -81,39 +92,48 @@ Raccoon > Dummy01 > Bip01 > Bip01_Pelvis > Bip01_Spine
 Translation_Data
 ```
 
-Note what vanilla spends its bones on: **one spine bone, one neck, one toe per foot**. It has no shoulder-blade bone (the clavicle stands in), no lumbar articulation, and three tail bones.
-
-**Are the names required?** CompanionCat runs a rig whose bones are named `Wolf_*SHJnt`, keeping only `Dummy01`, `Bip01_Head`, `Bip01_L/R_Foot` and `Translation_Data`, and it animates in game. So the engine does not demand the full biped naming `[VERIFIED by shipped counter-example]`. Keeping vanilla's convention is still the safer default, since `Translation_Data` and `Dummy01` carry engine meaning (below), and model-script attachments address bones by name.
+Vanilla spends its bones on one spine bone, one neck, one toe per foot, three tail bones, and a clavicle in place of a shoulder blade. Whether the names are required is not settled by the engine reading: a rig with other names ("CompanionCat", an outside mod) is reported to run in game, and we did not check it. Keeping the vanilla names is the safe default, because `Translation_Data` and `Dummy01` carry engine meaning, and model-script attachments address bones by name. :cite[(`media/scripts/generated/models_animals.txt:218-231`)]
 
 ## 3. Scale
 
-| Fact | Evidence |
-|---|---|
-| Animals render at `1.5 * getAnimalSize()`. | `IsoAnimal.java:2634` `[VERIFIED]` |
-| The 1.5 is a global model-view factor applied to everything, humans included. | `Core.java:2591`, `ModelCamera.java:43` `[VERIFIED]` |
-| So relative to a human, an animal is drawn at `animalSize` times its mesh units. | `[DERIVED]` |
-| `getAnimalSize()` is `AnimalData.size`, which starts at `minSize` and grows with age toward `getMaxSize()` (gene-modified). | `IsoAnimal.java:1608-1609`, `AnimalData.java:234-241,1754+` `[VERIFIED]` |
-| The human mesh is 0.9857 BU for about 1.75 m, so **1 unit is about 1.775-1.8 m** for skinned characters. | `PZ_3D_Assets\README.md` section 1; `pz-animation` skill section 7 `[VERIFIED]` |
-| Real cat withers 0.247 m therefore equals **about 0.139 mesh units** at `animalSize = 1.0`. | `[DERIVED]` |
-| Vanilla enlarges small animals: the raccoon mesh is 0.622 units nose-to-tail at size 0.9-1.2, which is about 1.0-1.3 m, well above a real raccoon. | `[DERIVED]` from `Raccoon_Body.x` bounds and `RaccoonDefinitions.lua` |
+**An animal is drawn at its animal size times the same 1.5 model factor as a human.**
 
-**Decision still open `[GAP]`:** author the cat at true size (and look small, like a real cat beside a 1.75 m survivor) or follow vanilla's readability exaggeration. CompanionCat chose exaggeration, at roughly 1.5-2x life size.
+The body of an animal is scaled by its current animal size, `getAnimalSize()`, which is a value that grows from the type's `minSize` toward its `maxSize`. :cite[(`zombie/core/skinnedmodel/advancedanimation/AnimatedModel.java:322`, `zombie/core/skinnedmodel/advancedanimation/AnimatedModel.java:1200`, `zombie/characters/animals/IsoAnimal.java:1603-1605`, `zombie/characters/animals/datas/AnimalData.java:1734-1768`)] The 1.5 is a model-view factor applied to everything drawn this way, humans included. :cite[(`zombie/core/Core.java:448`, `zombie/core/skinnedmodel/ModelCamera.java:43`)] So next to a human an animal is drawn at its size value times its mesh units. The older page cited `IsoAnimal.java` for the 1.5; that code builds the transform of an attachment point on the animal, not the body scale. :cite[(`zombie/characters/animals/IsoAnimal.java:2626-2632`)]
+
+The team's notes measure the human mesh at 0.9857 units for about 1.75 m, so one unit is about 1.775 to 1.8 m, and a real cat at the withers (0.247 m) is about 0.139 units at size 1.0. We did not re-measure that here. Vanilla enlarges small animals: the raccoon mesh is about 0.622 units long at size 0.9 to 1.2, which is 1.0 to 1.3 m, well above a real raccoon. Whether a new animal should be true size or exaggerated is a design choice the engine does not make for you.
 
 ## 4. What binds an animal to its animations
 
-| Step | Evidence |
-|---|---|
-| `AnimalDefinitions` parses an `animset` field from the Lua definition. | `AnimalDefinitions.java:43,272-273` `[VERIFIED]` |
-| The animal's animation set is `AnimationSet.GetAnimationSet(GetAnimSetName())`. | `IsoAnimal.java:1514` `[VERIFIED]` |
-| `GetAnimSetName()` returns `adef.animset`, defaulting to `"cow"` when there is no definition. | `IsoAnimal.java:372-373` `[VERIFIED]` |
-| The same name selects the action group (the state machine). | `IsoAnimal.java:1668`, `AnimalManagerMain.java:108` `[VERIFIED]` |
-| Mods can ship both trees: the loader maps `<mod>/common/media/{actiongroups,AnimSets,anims_X}` and the `<mod>/42/media/...` equivalents. | `ChooseGameInfo.java:512-515` `[VERIFIED]` |
+**The `animset` field names the AnimSet and the action group; a separate script ties the clip folder and the clip names to the mesh.**
 
-So a new type named `cat` needs `AnimSets/cat/`, `actiongroups/cat/` and its clips, and sets `animset = "cat"` in its definition.
+The definition's `animset` is parsed into the animal's definition, and `GetAnimSetName()` returns it, or `cow` when the animal has no definition. :cite[(`zombie/characters/animals/AnimalDefinitions.java:272-274`, `zombie/characters/animals/IsoAnimal.java:372-373`)] The game builds the AnimSet from that name and sets the action group from the same name. :cite[(`zombie/characters/animals/IsoAnimal.java:1509`, `zombie/characters/animals/IsoAnimal.java:1663`, `zombie/characters/animals/AnimalManagerMain.java:109`)]
 
-## 5. AnimSet XML
+| Piece | Where it is read | Mods? | Code |
+|---|---|---|---|
+| AnimSet states (`media/AnimSets/<animset>/<state>/*.xml`) | Every folder of that name in the game and in each enabled mod, merged. | Yes | `zombie/core/skinnedmodel/advancedanimation/AnimationSet.java:55-65`, `zombie/ZomboidFileSystem.java:1209-1221` |
+| Action group (`media/actiongroups/<animset>/`) | The reader builds its paths from the game's media folder. | Open question | `zombie/characters/action/ActionGroup.java:39-44`, `zombie/ZomboidFileSystem.java:247-251` |
+| Clips (`media/anims_X/<folder>/`) | The `animationsMesh` script lists the folder and name prefix; the game loads that folder, and each mod's folder of the same name. | Yes | `zombie/scripting/objects/AnimationsMesh.java:39-45`, `zombie/core/skinnedmodel/ModelManager.java:1665-1700` |
+| Model and `animationsMesh` link | The model script names the `animationsMesh` it uses. | Script | `media/scripts/generated/models_animals.txt:218-231` |
 
-Files live at `media/AnimSets/<animset>/<state>/<node>.xml`. Raccoon example (`walk/defaultWalk.xml`) `[VERIFIED]`:
+The `animationsMesh` script is what the older page missed. It has a `meshFile`, one or more `animationDirectory` lines and optional `animationPrefix` lines that select clips by name. The raccoon's is the simplest: :cite[(`media/scripts/generated/animations_meshes.txt:101-105`)]
+
+```
+animationsMesh Raccoon
+{
+    meshFile = Skinned/Raccoon_Body,
+    animationDirectory = Raccoon,
+}
+```
+
+The chicken is the example with prefixes: one directory serves three meshes, and the prefixes (`Chk_`, `Chk_Chick_`, `Chk_Cock_`, with `!` meaning "not") split the clips between hen, chick and cockerel. :cite[(`media/scripts/generated/animations_meshes.txt:44-67`)]
+
+A new type named `cat` therefore needs `AnimSets/cat/`, an action group for `cat`, an `animationsMesh` and a model script, and sets `animset = "cat"` in its definition. Where the action group comes from for a mod is the open part. The server and client compare a checksum of every AnimSet and action-group XML file of the game and of each enabled mod in multiplayer, so those files must match on both sides. :cite[(`zombie/core/skinnedmodel/advancedanimation/AdvancedAnimator.java:742-812`, `zombie/core/skinnedmodel/advancedanimation/AdvancedAnimator.java:852-859`)] The mod's folders are recorded under `<mod>/common/media/` and `<mod>/42/media/`. :cite[(`zombie/gameStates/ChooseGameInfo.java:517-520`)]
+
+## 5. AnimSet XML and action groups
+
+**An AnimSet node names a clip and its timing; an action group says which state follows which.**
+
+A node file lives at `media/AnimSets/<animset>/<state>/<node>.xml`. The raccoon's walk node reads: :cite[(`media/AnimSets/raccoon/walk/defaultWalk.xml:1-4`)]
 
 ```xml
 <animNode>
@@ -122,18 +142,15 @@ Files live at `media/AnimSets/<animset>/<state>/<node>.xml`. Raccoon example (`w
   <m_BlendTime>0.20</m_BlendTime>
   <m_SpeedScale>1.20</m_SpeedScale>
   <m_SyncTrackingEnabled>false</m_SyncTrackingEnabled>
-  <m_Events><m_EventName>PlayBreedSound</m_EventName><m_TimePc>0.25</m_TimePc>
-            <m_ParameterValue>walkFront</m_ParameterValue></m_Events>
+  <m_Events> ... PlayBreedSound at 25 percent, parameter walkFront ... </m_Events>
 </animNode>
 ```
 
-Other fields seen: `m_SpeedScaleRandomMultiplierMin` / `Max` (idle1), `m_Transitions` with `m_Target` plus its own `m_AnimName` for the transition clip (idle1 -> idleSit via `Rac_IdleToLieDown`), and `m_Conditions` with `m_Name` / `m_Type` / `m_Value` (eating waits for `idleAction == "eat"`), plus an end event `idleActionEnd` `[VERIFIED]`.
+The fields the Java reads include `m_Name`, `m_AnimName`, `m_BlendTime`, `m_SpeedScale`, `m_SpeedScaleVariable`, `m_SpeedScaleRandomMultiplierMin` and `Max`, `m_SyncTrackingEnabled`, `m_Conditions`, `m_Events` and `m_Transitions`. :cite[(`zombie/core/skinnedmodel/advancedanimation/AnimNode.java:34`, `zombie/core/skinnedmodel/advancedanimation/AnimNode.java:48`, `zombie/core/skinnedmodel/advancedanimation/AnimNode.java:120`, `zombie/core/skinnedmodel/advancedanimation/AnimNode.java:140-154`, `zombie/core/skinnedmodel/advancedanimation/AnimNode.java:178`, `zombie/core/skinnedmodel/advancedanimation/AnimNode.java:190-202`)] The raccoon's `idle1` node plays `Rac_Idle01` at speed 0.48 with a random multiplier of 0.70 to 1.20, and moves to `idleSit` through a transition (`m_Target`) that plays the clip `Rac_IdleToLieDown`. The `eating` node waits for the condition `idleAction == "eat"`, a string variable, and ends with the event `idleActionEnd`. :cite[(`media/AnimSets/raccoon/idle/idle1.xml:1-12`, `media/AnimSets/raccoon/eating/eating.xml:1-12`)]
 
-**`m_SpeedScale` is the lever that ties clip tempo to the animation, not to travel speed** `[VERIFIED as a field]`. How clip playback tracks actual movement speed is `[GAP]`; it decides whether our authored gait cadence survives in game, and it is the first thing to test with a real clip.
+`m_SpeedScale` is a number or the name of an animation variable: the engine uses the number when it parses, and otherwise reads the variable as a float. :cite[(`zombie/core/skinnedmodel/advancedanimation/AnimNode.java:289-291`)] That is the lever that ties clip tempo to the animation. Vanilla animal nodes we looked at use fixed numbers. How closely the clip speed follows real movement speed is still not established, and it decides whether an authored gait cadence survives in game, so test it first with a real clip.
 
-## 6. Action groups (the state machine)
-
-`media/actiongroups/<animset>/` `[VERIFIED]`:
+The action group is a folder of XML files, one folder per state, and the raccoon's files show its shape. :cite[(`media/actiongroups/raccoon/actionGroup.xml:1-4`, `media/actiongroups/raccoon/idle/to_walk.xml:1-8`, `media/actiongroups/raccoon/defaultTransitions.xml:1-14`)]
 
 ```
 actionGroup.xml            <actiongroup><initial>idle</initial></actiongroup>
@@ -144,68 +161,83 @@ defaultTransitions.xml
                                          <isFalse>bPathfind</isFalse></conditions></transition>
 ```
 
-Raccoon states: `idle`, `walk`, `pathfind`, `followwall`, `eating`, `hitreaction`, `death`, `deadbody`, `falldown`, `onground`, `climbfence`. Livestock add `trailer`, `onhook` and `hutch` `[VERIFIED]`.
+The raccoon's AnimSet has 11 state folders: `climbfence`, `deadbody`, `death`, `eating`, `falldown`, `followwall`, `hitreaction`, `idle`, `onground`, `pathfind` and `walk`. Its action group has the same states except `deadbody`.
 
-## 7. The clip list a new animal needs
+The cow has `attack`, `onhook`, `trailer` and `zone` but no `climbfence`, and the hen has `hutch`, `sit` and `trailer`, also without `climbfence`. The cow's `onhook` state is the butcher hook pose. :cite[(`media/AnimSets/cow/onhook/onhook.xml:1-3`, `media/actiongroups/cow/onhook/onhook.xml:1-3`)]
 
-Raccoon ships 13 clips in `media/anims_X/Raccoon/` `[VERIFIED]`:
+## 6. The clip list a new animal needs
 
-`Rac_Idle01`, `Rac_Idle02`, `Rac_Idle03`, `Rac_IdleToLieDown`, `Rac_IdleLyingDown`, `Rac_LyingDownToIdle`, `Rac_Walk`, `Rac_Run`, `Rac_ClimbUp`, `Rac_ClimbDown`, `Rac_HitReaction`, `Rac_Death`, `Rac_Dead`.
+**The vanilla raccoon ships 13 clips, and its 19 nodes reuse them, so the clip count is a floor and not a wall.**
 
-19 animset nodes map onto those 13, because states reuse clips: `eating/eating.xml` plays `Rac_Idle01`, and `pathfind` reuses the walk and run clips `[VERIFIED]`.
+The 13 clips in the installed `media/anims_X/Raccoon` folder are `Rac_Idle01`, `Rac_Idle02`, `Rac_Idle03`, `Rac_IdleToLieDown`, `Rac_IdleLyingDown`, `Rac_LyingDownToIdle`, `Rac_Walk`, `Rac_Run`, `Rac_ClimbUp`, `Rac_ClimbDown`, `Rac_HitReaction`, `Rac_Death` and `Rac_Dead`. There are 19 node files in the raccoon AnimSet, because several nodes share a clip: `eating` plays `Rac_Idle01`, and the pathfind and followwall nodes reuse the walk and run clips. :cite[(`media/AnimSets/raccoon/eating/eating.xml:1-6`)] Vanilla ships no attack, eat, drink or sniff clip for the raccoon.
 
-**Minimum viable clip set for the cat** `[INFERENCE]` from that mapping: idle, walk, run, hit reaction, death, dead. Six clips animate every mandatory state. Lie-down, sit, climb and extra idles are polish.
+A minimal clip set for a cat, reasoned from that mapping and not tested: idle, walk, run, hit reaction, death and dead. Six clips animate every mandatory state. Lie-down, sit, climb and extra idles are polish.
 
-Vanilla ships **no** attack, eat, drink or sniff clip for the raccoon, yet CompanionCat's mesh contains clips with those names. Those are the mod's own additions `[VERIFIED]`.
+## 7. The model script
 
-## 8. Model script
+**A model script names the mesh, the shader, whether it is static and the `animationsMesh`, and pins props to bones with `attachment <name> { offset, rotate, bone }` blocks.**
 
-Vanilla animal and character models declare (`media/scripts/generated/models_characters.txt`) `[VERIFIED]`:
+The raccoon's model block is: :cite[(`media/scripts/generated/models_animals.txt:218-231`)]
 
 ```
-model Male_Skeleton { mesh = Skinned/Male_Skeleton, static = false, animationsMesh = Human, }
+model Raccoon_Body
+{
+    mesh = Skinned/Raccoon_Body,
+    shader = animalEffect,
+    static = false,
+    animationsMesh = Raccoon,
+    attachment head { offset = -0.0106 0.2881 0.0874, rotate = -179.0 -5.0 95.0, bone = Dummy01, }
+}
 ```
 
-`animationsMesh` names the rig whose clips this mesh uses, and `attachment <name> { offset, rotate, bone }` pins props to a named bone. CompanionCat's `models_cat.txt` adds `shader = animalEffect` and its saddlebag attachments. The full grammar for animal model scripts, and what `animalEffect` needs, is `[GAP]`.
+All 73 models in the animal model file name `shader = animalEffect`, which we counted. :cite[(`media/scripts/generated/models_animals.txt:218-224`)] That shader exists as a vertex and a fragment file in the installed `media/shaders` folder, takes a 60-matrix palette and the animal's final scale, and reads one texture. The mod-side grammar of the model script beyond these keys is not covered here.
 
-## 9. Silent-failure traps
+## 8. Silent-failure traps
 
-1. **Wrong media folder.** `<mod>/common/media/` and `<mod>/42/media/` are not interchangeable for every asset class. A misplaced file is a silent no-op, not an error.
-2. **Clip changes need a full game restart.** Clip binaries are read once at startup; a Lua reload does nothing. AnimSet XML is refreshable (`pz-animation` skill section 6).
-3. **Ship clips as text `.X`, not `.glb`.** All 2,209 vanilla clips are `.X`, and a `.glb` clip dropped a climbing character to the floor. glTF is scanned, so the name resolves and the failure looks like an animation bug (`pz-animation` skill section 6).
-4. **Every bone needs a full R/S/T track in every clip**; the exporter drops tracks with no keys.
-5. **`Translation_Data` is the deferred movement channel** and is exempt from the importer's axis correction; `Bip01` is the in-skeleton hip. A looping in-place clip keys `Bip01` and zeroes `Translation_Data`.
-6. **Four influences per vertex.** A fifth weight is dropped silently by the exporter or the loader, which shows up as a collapsing vertex, not an error.
+**Most failures here are quiet: a missing file is a no-op, not an error.**
 
-## 10. Spec for our cat rig (first pass)
+1. **Wrong media folder.** `common/media` and `42/media` are not interchangeable for every asset class, and a misplaced file does nothing. AnimSets and clips are read from mods; an action group may not be (section 4).
+2. **Clip changes need a full restart.** The clip files are loaded when the game starts. AnimSet and action-group XML can be reloaded, because debug file watchers watch both folders. :cite[(`zombie/core/skinnedmodel/advancedanimation/AdvancedAnimator.java:70-77`, `zombie/core/skinnedmodel/ModelManager.java:1665-1700`)] This is also from the team's animation skill; we did not test it.
+3. **Ship clips as text `.X`.** All 2,232 files under the installed `anims_X` are `.x` or `.X`; none is `.glb`. The team's notes say a `.glb` clip dropped a climbing character to the floor; not retested.
+4. **Every bone needs a full rotation, scale and translation track in every clip,** because the exporter drops tracks with no keys. (Team notes; not retested.)
+5. **`Translation_Data` is the deferred movement channel.** The engine's default deferred bone is `Translation_Data`, and a looping in-place clip keys `Bip01` and leaves `Translation_Data` still. :cite[(`zombie/core/skinnedmodel/advancedanimation/AnimNode.java:98`, `zombie/core/skinnedmodel/advancedanimation/AnimNode.java:350`)]
+6. **Four influences per vertex.** A fifth is dropped quietly.
+7. **A dead animal needs data from the definitions.** The death code reads the parts list and the `meatRatio` gene with no checks, so a new animal needs both. See [butchering](/pz/build-42/modding/farming-and-animals/butchering-and-dead-animals). :cite[(`media/lua/shared/Definitions/animal/ButcheringUtil.lua:18-27`, `media/lua/shared/Definitions/animal/ButcheringUtil.lua:40`)]
+
+## 9. Our cat rig, first pass
+
+**These are our design choices for a cat, not engine facts; the one hard number is the 60-bone arrays.**
 
 | Item | Value | Basis |
 |---|---|---|
-| Bone budget | **40-50**, versus raccoon 35 and human 36. No engine cap applies. | sections 1-2 |
-| Naming | `Dummy01` > `Bip01` > `Bip01_Pelvis` > ... plus `Translation_Data`, vanilla-style | section 2 |
-| Extra bones worth having over vanilla | scapula per side, 3-4 spine bones instead of 1, 2 neck bones, 5-7 tail bones, jaw, 2 ear bones per side | research/01 rig table |
-| Per-digit toes | **Not recommended for v1.** No engine cap forbids it, but vanilla uses one toe bone per foot and the mesh density cannot show individual toes. Revisit for claws. | sections 1-2; overturns the earlier Godot-era choice |
-| Mesh density | 800-2,000 vertices. Vanilla animals sit at 200-800, CompanionCat at 6,193. | section 2 |
-| Mesh format | `.X` (all vanilla skinned models) or `.glb` (CompanionCat precedent). Prefer `.X` for the shipped mesh. | section 2, trap 3 |
-| Clip format | text `.X`, `pz_compat=True` | trap 3 |
-| Scale | 1 unit is about 1.775 m; real-size cat is 0.139 units at the withers. Exaggeration is a separate decision. | section 3 |
-| Data to ship | `AnimSets/cat/`, `actiongroups/cat/`, `anims_X/Cat/`, a model script, and `animset = "cat"` in the animal definition | sections 4-8 |
-| Minimum clips | idle, walk, run, hit reaction, death, dead | section 7 |
+| Bone budget | 40 to 50, and never over 60 | section 1 |
+| Naming | `Dummy01`, `Bip01`, `Bip01_Pelvis` and so on, plus `Translation_Data`, vanilla style | section 2 |
+| Extra bones over vanilla | scapula per side, 3 or 4 spine bones, 2 neck bones, 5 to 7 tail bones, jaw, 2 ear bones per side | team rig table |
+| Per-digit toes | Not for version 1: vanilla uses one toe bone per foot and the mesh cannot show individual toes | sections 1 and 2 |
+| Mesh density | 800 to 2,000 vertices; vanilla animals are 200 to 813 | section 2 |
+| Mesh format | `.X`, as every vanilla skinned model | section 2 |
+| Clip format | text `.X` | trap 3 |
+| Scale | one unit is about 1.775 m, so a real cat is 0.139 units at the withers; exaggeration is a separate choice | section 3 |
+| Data to ship | `AnimSets/cat/`, an action group `cat`, `anims_X/Cat/`, an `animationsMesh`, a model script, and `animset = "cat"` | sections 4 to 7 |
+| Minimum clips | idle, walk, run, hit reaction, death, dead | section 6 |
 
-## Confidence and gaps
+## 10. What is still open
 
-`[GAP]`, in priority order:
-1. How clip playback speed tracks movement speed (`m_SpeedScale` is the only visible lever). This decides whether an anatomically correct gait cadence survives.
-2. Whether a mod can add a new action group and animset name at all, end to end. The loader maps the folders; nothing here proves a new name registers.
-3. Vertex-count and bone-count budgets in practice: no performance data.
-4. Whether the engine looks up any animal bone by name (a head bone for look-at, for example). Not searched yet.
-5. The animal model-script grammar and what `shader = animalEffect` requires.
-6. What else a new animal needs: corpse and rotten textures, skeleton models, head and skull world items, butchering definitions.
-7. Multiplayer: whether animation state names cross the wire.
-8. Whether `.glb` is safe for a skinned animal **mesh** (CompanionCat says yes in practice).
+**Eight questions from the first pass remain, some narrowed.**
 
-None of these block starting the rig and the mesh; they block shipping.
+1. How closely clip speed follows movement speed. The lever is `m_SpeedScale` (section 5); no number is established.
+2. Whether a mod can add its own action group. The loader we found reads only the game's folder, and the multiplayer checksum counts the mod's files (section 4). Not tested.
+3. Vertex and bone budgets in practice: no performance data. The 60-bone arrays are the hard number.
+4. Whether the engine looks up an animal bone by name. The animal code names `Bip01_Head` as the twist bone and `Bip01` as the counter-rotation bone, and `ropeBone` defaults to `Bip01_Head`. :cite[(`zombie/characters/animals/IsoAnimal.java:546-547`, `zombie/characters/animals/AnimalDefinitions.java:124`)] The attachment names used by the animal code are not all searched.
+5. What the animal model script still needs beyond section 7.
+6. What else a new animal needs: corpse and rotten textures, skeleton models, head and skull items. The parts list names the head and skull items, and the breed names the rotten texture and the icons. :cite[(`media/lua/shared/Definitions/animal/AnimalPartsDefinitions.lua:13-15`, `zombie/characters/animals/AnimalDefinitions.java:798-800`)]
+7. Whether animation state names cross the wire. The animal packet carries a real state value and the `idleAction` string. :cite[(`zombie/network/packets/character/AnimalPacket.java:40`, `zombie/network/packets/character/AnimalPacket.java:50`)]
+8. Whether `.glb` is safe for a skinned animal mesh.
 
-*Compiled 2026-09-11 from the B42 decompile and installed game files (PZ 42.19). An earlier research agent for this document failed on a session rate limit; this is the direct investigation that replaced it.*
+:::callout[How we know]{kind=proof}
+The Java and Lua are read from the 42.22 capture. The bone counts, the clip counts and the shader facts come from the installed game, which has the same Steam build id as the capture; those files are binary or are not in the capture, so they carry no line citations. We did not run the game, so the 60-bone limit is a reading of the arrays, not a test with a 61-bone rig.
 
-*Updated 2026-10-04 for Build 42.21: engine line numbers re-anchored to 42.21; Build 42.21 adds a bone-count equality check for corpse poses (`AnimationPlayer#isBoneCountMismatched`), which is not a bone limit.*
+Not verified: that a 61-bone rig fails; how a mod's action group is found; clip speed against movement speed; the notes about `.glb` clips, missing tracks and the CompanionCat rig, which come from team notes and an outside mod.
+
+Changed since the older page: "there is no bone cap" is replaced by the 60-slot arrays and the new 256-bone corpse check; "a mod can ship both trees" is split into the AnimSet merge and the open action-group question; the `animationsMesh` script is new; the scale citation was moved from a held-item matrix to the model scale; the clip count of 2,209 is now 2,232. The old Godot pipeline note and the CompanionCat vertex count are dropped.
+:::
