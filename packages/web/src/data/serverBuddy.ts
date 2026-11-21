@@ -1,6 +1,6 @@
 /**
  * ServerBuddy: the admins' Windows program for managing our game servers from outside
- * (status, logs, console, restarts, stats, settings, mods, players, Outcast Buddy setup, files). Downloaded only from the admin
+ * (status, logs, console, restarts, stats, settings, mods, players, Outcast Checkpoint setup, files). Downloaded only from the admin
  * dashboard (/admin), never from a public link.
  *
  * The file lives in the private Storage bucket `admin-tools` (migration 047). Storage gives a
@@ -12,10 +12,10 @@
  * SERVERBUDDY_BYTES and SERVERBUDDY_DATE here, rebuild and deploy the site.
  */
 
-export const SERVERBUDDY_VERSION = '0.6.5'
-/** SHA-256 of ServerBuddy-0.6.5.exe (ServerBuddy commit cbe7ae5, built 2026-11-21): one program (the command line is built in), "Java on this server" (each Java mod's version, newest or not, running or blocked, Approve), and "Set up Outcast on this server" (one button: adds Outcast Buddy, its startup line, the Java approvals and the restart loop, restarts only when needed, and finishes by itself). */
-export const SERVERBUDDY_SHA256 = '67593C692E87A9A37C0C930156BF34AA91CE83A5FBF402B6A0ADDC89073647AD'
-export const SERVERBUDDY_BYTES = 16327168
+export const SERVERBUDDY_VERSION = '0.6.6'
+/** SHA-256 of ServerBuddy-0.6.6.exe (ServerBuddy commit 7ef5691, built 2026-11-21): a restart lock left blank by a crash no longer blocks restarts, a refused scheduled restart shows as "Refused" and on Needs you, restarts follow a host move without reopening the window, the agent is shown as Outcast Checkpoint, and "restart onupdate <server> on|off" turns "Restart when a mod updates" on or off from the command line. */
+export const SERVERBUDDY_SHA256 = '984A0B087B999A41956BF103121371C055C95FBD1097B18BE497F6BF980F7762'
+export const SERVERBUDDY_BYTES = 16349696
 /** When this build was made, ISO date. */
 export const SERVERBUDDY_DATE = '2026-11-21'
 
