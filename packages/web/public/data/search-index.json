@@ -7173,7 +7173,7 @@
       "xp",
       "craftrecipe-gating"
     ],
-    "excerpt": "A) Gate + reward a recipe on a vanilla B42 skill:",
+    "excerpt": "Copy-ready Build 42.22 pieces for one skill mod: a gated recipe, a skill book, a recipe magazine, an XP grant that works on a server, and a trait that boosts it, checked against vanilla.",
     "difficulty": "intermediate"
   },
   {
@@ -7227,7 +7227,7 @@
       "xp",
       "craftrecipe-gating"
     ],
-    "excerpt": "There are two layers: a script perk block (defines the perk + XP curve) and Lua/translation wiring so it shows up and can be trained.",
+    "excerpt": "Add a new skill to Build 42.22 from an empty folder: the perks.txt block, the text keys, why it levels at a quarter speed, where it shows, and what changes in multiplayer.",
     "difficulty": "intermediate"
   },
   {
@@ -7298,7 +7298,7 @@
       "xp",
       "craftrecipe-gating"
     ],
-    "excerpt": "B42 replaced the old recipe block with craftRecipe (the B41 recipe syntax is not used; you must rewrite for the new system). A craftRecipe can live in a module (item output) or inside an entity...",
+    "excerpt": "How a Build 42.22 craftRecipe asks for a skill, gives XP and stays hidden until learned, read from a real vanilla blacksmith recipe, with the old magazine key corrected.",
     "difficulty": "intermediate"
   },
   {
@@ -7316,7 +7316,7 @@
       "xp",
       "craftrecipe-gating"
     ],
-    "excerpt": "XP multipliers: global XpMultiplier plus (in B42) per-skill sandbox multipliers let servers tune leveling rates. [LIKELY] Starting skill / occupation behavior: sandbox controls exist for how much...",
+    "excerpt": "Which Build 42.22 sandbox options change XP, skills, books and recipes, which ones do not exist, and what a server decides in multiplayer, including what a skill from a mod needs.",
     "difficulty": "intermediate"
   },
   {
@@ -7334,7 +7334,7 @@
       "xp",
       "craftrecipe-gating"
     ],
-    "excerpt": "The Skills tab lives in the health panel (heart icon, top-left) or via the L key. It groups perks by category, showing level bars and XP tooltips. [CONFIRMED via pzwiki Skill] Skill-name color...",
+    "excerpt": "How the Build 42.22 skills tab is built: how to open it, what the bar, the name color and the arrows mean, what a mod skill needs to appear, and how the crafting window shows a skill requirement.",
     "difficulty": "intermediate"
   },
   {
@@ -7406,7 +7406,7 @@
       "xp",
       "craftrecipe-gating"
     ],
-    "excerpt": "Confirmed from the LuaDocs mirror + recipe-script docs. [CONFIRMED] unless noted.",
+    "excerpt": "The Lua calls that read a skill level, grant XP and react to a level change in Build 42.22, which side runs each one, and the XP calls that do nothing on a server or a client.",
     "difficulty": "intermediate"
   },
   {
