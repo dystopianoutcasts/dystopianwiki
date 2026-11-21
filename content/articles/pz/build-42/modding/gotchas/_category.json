@@ -2,5 +2,6 @@
   "name": "Gotchas",
   "description": "Silent-failure traps and verified engine findings that contradict the plausible guess.",
   "icon": "wrench",
-  "displayOrder": 12
+  "displayOrder": 12,
+  "group": "start-here"
 }

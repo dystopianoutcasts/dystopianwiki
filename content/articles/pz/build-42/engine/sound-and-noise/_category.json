@@ -2,5 +2,6 @@
   "name": "Sound and Noise",
   "description": "How Build 42.22 handles sound: the two separate systems (audio you hear and world sounds that zombies and animals hear), what makes noise and how far it carries, FMOD, sound scripts, music, and how a mod adds sounds.",
   "icon": "volume",
-  "displayOrder": 11
+  "displayOrder": 11,
+  "group": "the-world"
 }

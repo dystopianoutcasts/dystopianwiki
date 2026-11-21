@@ -2,5 +2,6 @@
   "name": "Changing Vanilla Features",
   "description": "How a Build 42 mod changes the game's own items, recipes, loot and Lua, which method to reach for first, and what no mod can change.",
   "icon": "wrench",
-  "displayOrder": 17
+  "displayOrder": 17,
+  "group": "lua-and-engine"
 }

@@ -2,5 +2,6 @@
   "name": "Multiplayer",
   "description": "Server-authoritative facts and the traps that only surface in a dedicated-server round.",
   "icon": "plug",
-  "displayOrder": 14
+  "displayOrder": 14,
+  "group": "lua-and-engine"
 }

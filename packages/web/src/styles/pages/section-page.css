@@ -74,6 +74,22 @@
   margin-bottom: var(--spacing-6);
 }
 
+/* Sections with groups (lib/topics.ts): space between the groups, and each group's line under its heading. */
+.section-page__categories + .section-page__categories {
+  margin-top: var(--spacing-10);
+}
+
+.section-page__categories-title + .section-page__group-description {
+  margin-top: calc(-1 * var(--spacing-4));
+}
+
+.section-page__group-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin-bottom: var(--spacing-5);
+}
+
 .section-page__categories-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

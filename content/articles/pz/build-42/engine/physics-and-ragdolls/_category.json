@@ -2,5 +2,6 @@
   "name": "Physics and Ragdolls",
   "description": "How Build 42.22 runs physics: when a body falls as a ragdoll, the Bullet bridge, hit reactions and ballistics, physics shapes, how a mod changes them, and every table counted from the game files.",
   "icon": "activity",
-  "displayOrder": 8
+  "displayOrder": 8,
+  "group": "the-player"
 }

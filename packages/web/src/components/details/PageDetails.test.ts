@@ -47,7 +47,7 @@ test('State of the Server and the section pages carry their details', () => {
   assert.equal(sots.match(/<Tape side=/g)?.length, 2)
   const section = read('../../pages/SectionPage.tsx')
   assert.match(section, /<StencilCode code=\{panelCode\(section, sectionIndex\)\} \/>/)
-  assert.match(section, /<StencilCode code=\{panelCode\(section, sectionIndex, categoryIndex\)\} small \/>/)
+  assert.match(section, /<StencilCode code=\{panelCode\(section, sectionIndex, categories\.indexOf\(category\)\)\} small \/>/)
 })
 
 test('tally marks: one line per ballot, the fifth of each group struck across, none past 40', () => {
@@ -65,4 +65,6 @@ test('the mascot vote and the build pages carry their details', () => {
   const build = read('../../pages/VersionPage.tsx')
   assert.match(build, /FLIGHT MANUAL \| /)
   assert.match(build, /<StencilCode code=\{panelCode\(section\.id, sectionIndex\)\} small \/>/)
+  // The big topics (lib/topics.ts): a one-section topic's card keeps its section's code.
+  assert.match(build, /<StencilCode code=\{panelCode\(only\.id, sectionIndexOf\(only\.id\)\)\} small \/>/)
 })

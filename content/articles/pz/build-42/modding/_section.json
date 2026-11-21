@@ -2,5 +2,22 @@
   "name": "Modding",
   "description": "Scripts, Lua, crafting, items, traits, and the toolchain for building Build 42 mods from scratch.",
   "icon": "plug",
-  "displayOrder": 1
+  "displayOrder": 1,
+  "groups": [
+    {
+      "id": "start-here",
+      "name": "Start Here",
+      "description": "Set up, learn how a mod is laid out, copy a working skeleton, and avoid the known traps."
+    },
+    {
+      "id": "game-content",
+      "name": "Game Content",
+      "description": "Items, recipes, fluids, farming and animals, skills and traits, the world and its tiles, and translations."
+    },
+    {
+      "id": "lua-and-engine",
+      "name": "Lua and the Engine",
+      "description": "The Lua API and reference, how the engine works, multiplayer, UI, and changing vanilla behavior."
+    }
+  ]
 }

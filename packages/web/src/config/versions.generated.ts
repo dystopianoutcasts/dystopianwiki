@@ -11,6 +11,21 @@ export interface CategoryInfo {
   icon: string
   articleCount: number
   displayOrder: number
+  group?: string
+}
+
+export interface GroupInfo {
+  id: string
+  name: string
+  description: string
+}
+
+export interface TopicInfo {
+  id: string
+  name: string
+  description: string
+  icon: string
+  sections: string[]
 }
 
 export interface SectionInfo {
@@ -20,6 +35,7 @@ export interface SectionInfo {
   description: string
   icon: string
   displayOrder: number
+  groups?: GroupInfo[]
   categories: CategoryInfo[]
 }
 
@@ -29,6 +45,7 @@ export interface VersionInfo {
   releaseDate: string
   status: VersionStatus
   description: string
+  topics?: TopicInfo[]
   sections: SectionInfo[]
 }
 
@@ -190,6 +207,47 @@ export const VERSIONS: VersionInfo[] = [
     releaseDate: '2026-07-29',
     status: 'current',
     description: 'The current stable build (42.20 and later). Modding, mapping, vehicles, the Outcast mods, how the game works and running a server.',
+    topics: [
+      {
+        id: 'playing',
+        name: 'Playing the Game',
+        description: 'How zombies, infection, combat, skills, weight, sleep and loot really work, read from the Build 42 code.',
+        icon: 'box',
+        sections: [
+          'gameplay',
+        ],
+      },
+      {
+        id: 'servers',
+        name: 'Running a Server',
+        description: 'Every server option, sandbox option, admin command and role, and where the game reads each one.',
+        icon: 'database',
+        sections: [
+          'server',
+        ],
+      },
+      {
+        id: 'making-mods',
+        name: 'Making Mods',
+        description: 'Building Build 42 mods: scripts and Lua, vehicles, maps and tiles, and the engine system by system.',
+        icon: 'plug',
+        sections: [
+          'modding',
+          'vehicles',
+          'mapping',
+          'engine',
+        ],
+      },
+      {
+        id: 'outcast-mods',
+        name: 'Outcast Mods',
+        description: 'Our own mods: what each one does, how to use it, and the notes for modders.',
+        icon: 'gear',
+        sections: [
+          'outcast-mods',
+        ],
+      },
+    ],
     sections: [
       {
         id: 'modding',
@@ -197,6 +255,23 @@ export const VERSIONS: VersionInfo[] = [
         description: 'Scripts, Lua, crafting, items, traits, and the toolchain for building Build 42 mods from scratch.',
         icon: 'plug',
         displayOrder: 1,
+        groups: [
+          {
+            id: 'start-here',
+            name: 'Start Here',
+            description: 'Set up, learn how a mod is laid out, copy a working skeleton, and avoid the known traps.',
+          },
+          {
+            id: 'game-content',
+            name: 'Game Content',
+            description: 'Items, recipes, fluids, farming and animals, skills and traits, the world and its tiles, and translations.',
+          },
+          {
+            id: 'lua-and-engine',
+            name: 'Lua and the Engine',
+            description: 'The Lua API and reference, how the engine works, multiplayer, UI, and changing vanilla behavior.',
+          },
+        ],
         categories: [
           {
             id: 'getting-started',
@@ -205,6 +280,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'book',
             displayOrder: 1,
             articleCount: 1,
+            group: 'start-here',
           },
           {
             id: 'foundations',
@@ -213,6 +289,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'book',
             displayOrder: 2,
             articleCount: 21,
+            group: 'start-here',
           },
           {
             id: 'items-and-scripting',
@@ -221,6 +298,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'book',
             displayOrder: 3,
             articleCount: 14,
+            group: 'game-content',
           },
           {
             id: 'crafting',
@@ -229,6 +307,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'wrench',
             displayOrder: 4,
             articleCount: 7,
+            group: 'game-content',
           },
           {
             id: 'fluids',
@@ -237,6 +316,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'book',
             displayOrder: 5,
             articleCount: 9,
+            group: 'game-content',
           },
           {
             id: 'lua-api',
@@ -245,6 +325,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'book',
             displayOrder: 6,
             articleCount: 20,
+            group: 'lua-and-engine',
           },
           {
             id: 'farming-and-animals',
@@ -253,6 +334,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'book',
             displayOrder: 7,
             articleCount: 15,
+            group: 'game-content',
           },
           {
             id: 'skills-and-traits',
@@ -261,6 +343,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'book',
             displayOrder: 8,
             articleCount: 21,
+            group: 'game-content',
           },
           {
             id: 'world-and-tiles',
@@ -269,6 +352,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'map',
             displayOrder: 9,
             articleCount: 14,
+            group: 'game-content',
           },
           {
             id: 'ui',
@@ -277,6 +361,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'book',
             displayOrder: 10,
             articleCount: 5,
+            group: 'lua-and-engine',
           },
           {
             id: 'cookbook',
@@ -285,6 +370,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'wrench',
             displayOrder: 11,
             articleCount: 25,
+            group: 'start-here',
           },
           {
             id: 'gotchas',
@@ -293,6 +379,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'wrench',
             displayOrder: 12,
             articleCount: 3,
+            group: 'start-here',
           },
           {
             id: 'tooling',
@@ -301,6 +388,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'wrench',
             displayOrder: 13,
             articleCount: 8,
+            group: 'start-here',
           },
           {
             id: 'multiplayer',
@@ -309,6 +397,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'plug',
             displayOrder: 14,
             articleCount: 5,
+            group: 'lua-and-engine',
           },
           {
             id: 'reference',
@@ -317,6 +406,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'book',
             displayOrder: 15,
             articleCount: 26,
+            group: 'lua-and-engine',
           },
           {
             id: 'engine',
@@ -325,6 +415,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'gear',
             displayOrder: 16,
             articleCount: 11,
+            group: 'lua-and-engine',
           },
           {
             id: 'changing-vanilla',
@@ -333,6 +424,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'wrench',
             displayOrder: 17,
             articleCount: 7,
+            group: 'lua-and-engine',
           },
           {
             id: 'translation',
@@ -341,6 +433,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'globe',
             displayOrder: 17,
             articleCount: 6,
+            group: 'game-content',
           },
         ],
       },
@@ -638,6 +731,23 @@ export const VERSIONS: VersionInfo[] = [
         description: 'The Build 42 engine explained system by system: what each part does, where it lives in the code, which side runs it, and what a mod can reach.',
         icon: 'gear',
         displayOrder: 7,
+        groups: [
+          {
+            id: 'the-player',
+            name: 'The Player',
+            description: 'Character stats, animation, input and controls, and physics and ragdolls.',
+          },
+          {
+            id: 'the-world',
+            name: 'The World',
+            description: 'Weather, fire, water and power, building and moveables, fishing and trapping, sound, and stashes.',
+          },
+          {
+            id: 'under-the-hood',
+            name: 'Under the Hood',
+            description: 'Networking and packets, anti-cheat, and how saves are written and read.',
+          },
+        ],
         categories: [
           {
             id: 'character-stats',
@@ -646,6 +756,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'heart-pulse',
             displayOrder: 1,
             articleCount: 7,
+            group: 'the-player',
           },
           {
             id: 'weather-and-climate',
@@ -654,6 +765,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'cloud-rain',
             displayOrder: 2,
             articleCount: 7,
+            group: 'the-world',
           },
           {
             id: 'fire-water-and-power',
@@ -662,6 +774,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'flame',
             displayOrder: 3,
             articleCount: 6,
+            group: 'the-world',
           },
           {
             id: 'fishing-and-trapping',
@@ -670,6 +783,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'fish',
             displayOrder: 4,
             articleCount: 6,
+            group: 'the-world',
           },
           {
             id: 'building-and-moveables',
@@ -678,6 +792,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'hammer',
             displayOrder: 5,
             articleCount: 7,
+            group: 'the-world',
           },
           {
             id: 'stash-and-annotated-maps',
@@ -686,6 +801,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'map',
             displayOrder: 6,
             articleCount: 6,
+            group: 'the-world',
           },
           {
             id: 'animation-system',
@@ -694,6 +810,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'film',
             displayOrder: 7,
             articleCount: 8,
+            group: 'the-player',
           },
           {
             id: 'physics-and-ragdolls',
@@ -702,6 +819,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'activity',
             displayOrder: 8,
             articleCount: 7,
+            group: 'the-player',
           },
           {
             id: 'input-and-controls',
@@ -710,6 +828,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'gamepad',
             displayOrder: 9,
             articleCount: 6,
+            group: 'the-player',
           },
           {
             id: 'saves-and-persistence',
@@ -718,6 +837,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'database',
             displayOrder: 10,
             articleCount: 7,
+            group: 'under-the-hood',
           },
           {
             id: 'sound-and-noise',
@@ -726,6 +846,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'volume',
             displayOrder: 11,
             articleCount: 7,
+            group: 'the-world',
           },
           {
             id: 'networking-and-packets',
@@ -734,6 +855,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'globe',
             displayOrder: 12,
             articleCount: 7,
+            group: 'under-the-hood',
           },
           {
             id: 'anti-cheat',
@@ -742,6 +864,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'shield',
             displayOrder: 13,
             articleCount: 7,
+            group: 'under-the-hood',
           },
         ],
       },

@@ -15,7 +15,48 @@
       "name": "Build 42",
       "releaseDate": "2026-07-29",
       "status": "current",
-      "description": "The current stable build (42.20 and later). Modding, mapping, vehicles, the Outcast mods, how the game works and running a server."
+      "description": "The current stable build (42.20 and later). Modding, mapping, vehicles, the Outcast mods, how the game works and running a server.",
+      "topics": [
+        {
+          "id": "playing",
+          "name": "Playing the Game",
+          "description": "How zombies, infection, combat, skills, weight, sleep and loot really work, read from the Build 42 code.",
+          "icon": "box",
+          "sections": [
+            "gameplay"
+          ]
+        },
+        {
+          "id": "servers",
+          "name": "Running a Server",
+          "description": "Every server option, sandbox option, admin command and role, and where the game reads each one.",
+          "icon": "database",
+          "sections": [
+            "server"
+          ]
+        },
+        {
+          "id": "making-mods",
+          "name": "Making Mods",
+          "description": "Building Build 42 mods: scripts and Lua, vehicles, maps and tiles, and the engine system by system.",
+          "icon": "plug",
+          "sections": [
+            "modding",
+            "vehicles",
+            "mapping",
+            "engine"
+          ]
+        },
+        {
+          "id": "outcast-mods",
+          "name": "Outcast Mods",
+          "description": "Our own mods: what each one does, how to use it, and the notes for modders.",
+          "icon": "gear",
+          "sections": [
+            "outcast-mods"
+          ]
+        }
+      ]
     }
   ]
 }

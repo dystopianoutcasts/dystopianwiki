@@ -24,7 +24,16 @@
  *
  * Version folders not listed in versions.config.json (content/articles/pz/meta/)
  * are skipped with a notice. A _section.json may carry "navName", a short name for the header and
- * sidebar; it is passed through and the section's own "name" is unchanged. Missing _section.json / _category.json fall back to
+ * sidebar; it is passed through and the section's own "name" is unchanged.
+ *
+ * Grouping (display only; no URL changes):
+ * - A version in versions.config.json may carry "topics": a few big topics, each naming the
+ *   sections it holds, in order. The build's front page shows the topics. A section with
+ *   articles that no topic names is put in a "More" topic, with a warning, so nothing hides.
+ * - A _section.json may carry "groups" ([{ id, name, description }]), and each of its
+ *   _category.json files a "group" naming one of them. The section's page lists its
+ *   categories under those headings. A category with no group, or an unknown one (warned),
+ *   is listed under "More". Missing _section.json / _category.json fall back to
  * a title-cased id, an empty description, icon "book" and displayOrder 999.
  * Sections and categories are sorted by displayOrder, then id.
  *
@@ -64,6 +73,23 @@ interface CategoryInfo {
   icon: string
   articleCount: number
   displayOrder: number
+  /** The id of one of its section's groups, when the section has groups. */
+  group?: string
+}
+
+interface GroupInfo {
+  id: string
+  name: string
+  description: string
+}
+
+interface TopicInfo {
+  id: string
+  name: string
+  description: string
+  icon: string
+  /** Section ids, in the order the topic shows them. */
+  sections: string[]
 }
 
 interface SectionInfo {
@@ -74,6 +100,8 @@ interface SectionInfo {
   description: string
   icon: string
   displayOrder: number
+  /** Headings the section's page lists its categories under, in order. */
+  groups?: GroupInfo[]
   categories: CategoryInfo[]
 }
 
@@ -83,19 +111,25 @@ interface VersionInfo {
   releaseDate: string
   status: VersionStatus
   description: string
+  /** The build's big topics, for its front page. Absent when the config names none. */
+  topics?: TopicInfo[]
   sections: SectionInfo[]
 }
 
 interface VersionsConfig {
   game: string
   defaultVersion: string
-  versions: Array<Omit<VersionInfo, 'sections'>>
+  versions: Array<Omit<VersionInfo, 'sections' | 'topics'> & { topics?: TopicInfo[] }>
 }
 
 interface MetaFile {
   name: string
   /** _section.json only: a short name for the header and sidebar. */
   navName?: string
+  /** _section.json only: the headings its categories are listed under. */
+  groups?: GroupInfo[]
+  /** _category.json only: the id of the section group it is listed under. */
+  group?: string
   description: string
   icon: string
   displayOrder: number
@@ -199,11 +233,66 @@ function loadConfig(): VersionsConfig {
     if (!STATUSES.includes(v.status)) fail(`versions.config.json: version ${v.id} has unknown status "${v.status}"`)
     if (ids.has(v.id)) fail(`versions.config.json: version ${v.id} is listed twice`)
     ids.add(v.id)
+    if (v.topics !== undefined) v.topics = validateTopics(v.id, v.topics)
   }
   if (!ids.has(config.defaultVersion)) {
     fail(`versions.config.json: defaultVersion "${config.defaultVersion}" is not in the versions list`)
   }
   return config
+}
+
+const ID_PATTERN = /^[a-z0-9][a-z0-9-]*$/
+
+/** Checks a version's "topics" list: shape, unique ids, and no section in two topics. */
+function validateTopics(versionId: string, raw: unknown): TopicInfo[] {
+  const where = `versions.config.json: version ${versionId} topics`
+  if (!Array.isArray(raw)) fail(`${where} must be an array`)
+  const topicIds = new Set<string>()
+  const owner = new Map<string, string>()
+  return raw.map((t: Record<string, unknown>, i) => {
+    if (!t || typeof t !== 'object') fail(`${where}[${i}] is not an object`)
+    for (const key of ['id', 'name', 'description'] as const) {
+      if (typeof t[key] !== 'string' || !(t[key] as string).trim()) fail(`${where}[${i}] has no string "${key}"`)
+    }
+    const id = t.id as string
+    if (!ID_PATTERN.test(id)) fail(`${where}: topic id "${id}" must be lowercase letters, digits and dashes`)
+    if (topicIds.has(id)) fail(`${where}: topic "${id}" is listed twice`)
+    topicIds.add(id)
+    if (!Array.isArray(t.sections) || t.sections.length === 0 || t.sections.some(s => typeof s !== 'string')) {
+      fail(`${where}: topic "${id}" needs a non-empty "sections" list of section ids`)
+    }
+    for (const sectionId of t.sections as string[]) {
+      const prior = owner.get(sectionId)
+      if (prior) fail(`${where}: section "${sectionId}" is in both "${prior}" and "${id}"`)
+      owner.set(sectionId, id)
+    }
+    // Icons are short words, never emoji (the same rule readMeta applies).
+    const icon = typeof t.icon === 'string' && t.icon.trim() && !/[^\x20-\x7E]/.test(t.icon) ? t.icon : 'book'
+    return { id, name: t.name as string, description: t.description as string, icon, sections: [...(t.sections as string[])] }
+  })
+}
+
+/** Checks a _section.json "groups" list; a bad entry is dropped with a warning. */
+function readGroups(file: string, raw: unknown): GroupInfo[] | undefined {
+  if (raw === undefined) return undefined
+  if (!Array.isArray(raw)) {
+    warn(`${rel(file)}: "groups" is not an array; ignored`)
+    return undefined
+  }
+  const groups: GroupInfo[] = []
+  for (const g of raw as Array<Record<string, unknown>>) {
+    const id = g && typeof g.id === 'string' ? g.id : ''
+    if (!ID_PATTERN.test(id) || typeof g.name !== 'string' || !g.name.trim()) {
+      warn(`${rel(file)}: group ${JSON.stringify(g)} needs an "id" (lowercase, dashes) and a "name"; ignored`)
+      continue
+    }
+    if (groups.some(x => x.id === id)) {
+      warn(`${rel(file)}: group "${id}" is listed twice; the second is ignored`)
+      continue
+    }
+    groups.push({ id, name: g.name, description: typeof g.description === 'string' ? g.description : '' })
+  }
+  return groups.length > 0 ? groups : undefined
 }
 
 function titleCase(id: string): string {
@@ -215,7 +304,7 @@ function titleCase(id: string): string {
 }
 
 /** Read _section.json / _category.json, applying the contract C2 defaults. */
-function readMeta(file: string, id: string, allowNavName = false): MetaFile {
+function readMeta(file: string, id: string, kind: 'section' | 'category'): MetaFile {
   const defaults: MetaFile = { name: titleCase(id), description: '', icon: 'book', displayOrder: 999 }
   if (!fs.existsSync(file)) return defaults
 
@@ -228,7 +317,13 @@ function readMeta(file: string, id: string, allowNavName = false): MetaFile {
       ? raw.displayOrder
       : defaults.displayOrder,
   }
-  if (allowNavName && typeof raw.navName === 'string' && raw.navName.trim()) meta.navName = raw.navName.trim()
+  if (kind === 'section') {
+    if (typeof raw.navName === 'string' && raw.navName.trim()) meta.navName = raw.navName.trim()
+    const groups = readGroups(file, raw.groups)
+    if (groups) meta.groups = groups
+  } else if (typeof raw.group === 'string' && raw.group.trim()) {
+    meta.group = raw.group.trim()
+  }
   // Icons are short words (plug, map, book, wrench, car, gear); never emoji.
   if (/[^\x20-\x7E]/.test(meta.icon)) {
     warn(`${rel(file)}: icon "${meta.icon}" is not a plain word; using "book"`)
@@ -318,6 +413,38 @@ function toSearchEntry(
   }
 }
 
+/**
+ * The configured topics against the sections found on disk: a named section that does not
+ * exist is dropped (warned), a topic left with none is dropped, and every section with
+ * articles that no topic names goes in a final "More" topic (warned), so nothing hides.
+ */
+function resolveTopics(versionId: string, configured: TopicInfo[], sections: SectionInfo[]): TopicInfo[] {
+  const found = new Set(sections.map(s => s.id))
+  const named = new Set<string>()
+  const topics: TopicInfo[] = []
+  for (const topic of configured) {
+    const kept = topic.sections.filter(id => {
+      if (found.has(id)) return true
+      warn(`versions.config.json: ${versionId} topic "${topic.id}" names section "${id}", which has no folder; ignored`)
+      return false
+    })
+    kept.forEach(id => named.add(id))
+    if (kept.length === 0) {
+      warn(`versions.config.json: ${versionId} topic "${topic.id}" has no sections left; not shown`)
+      continue
+    }
+    topics.push({ ...topic, sections: kept })
+  }
+  const leftOver = sections
+    .filter(s => !named.has(s.id) && sectionArticleCount(s) > 0)
+    .map(s => s.id)
+  if (leftOver.length > 0) {
+    warn(`versions.config.json: ${versionId} sections ${leftOver.join(', ')} are in no topic; shown under "More"`)
+    topics.push({ id: 'more', name: 'More', description: 'Everything else in this build.', icon: 'book', sections: leftOver })
+  }
+  return topics
+}
+
 function byOrderThenId<T extends { displayOrder: number; id: string }>(a: T, b: T): number {
   return a.displayOrder - b.displayOrder || a.id.localeCompare(b.id)
 }
@@ -346,7 +473,8 @@ function build(config: VersionsConfig): BuildResult {
     const versionDir = path.join(gameDir, v.id)
     const sections: SectionInfo[] = subdirs(versionDir).map(sectionId => {
       const sectionDir = path.join(versionDir, sectionId)
-      const sectionMeta = readMeta(path.join(sectionDir, '_section.json'), sectionId, true)
+      const sectionMeta = readMeta(path.join(sectionDir, '_section.json'), sectionId, 'section')
+      const groupIds = new Set((sectionMeta.groups ?? []).map(g => g.id))
 
       for (const stray of markdownFiles(sectionDir)) {
         warn(`${rel(stray)} sits directly in a section folder, not in a category; it is not counted`)
@@ -354,7 +482,11 @@ function build(config: VersionsConfig): BuildResult {
 
       const categories: CategoryInfo[] = subdirs(sectionDir).map(categoryId => {
         const categoryDir = path.join(sectionDir, categoryId)
-        const categoryMeta = readMeta(path.join(categoryDir, '_category.json'), categoryId)
+        const categoryMeta = readMeta(path.join(categoryDir, '_category.json'), categoryId, 'category')
+        if (categoryMeta.group !== undefined && !groupIds.has(categoryMeta.group)) {
+          warn(`${rel(categoryDir)}/_category.json: group "${categoryMeta.group}" is not one of ${sectionId}'s groups; listed under More`)
+          delete categoryMeta.group
+        }
         const files = markdownFiles(categoryDir)
 
         for (const nested of subdirs(categoryDir)) {
@@ -366,7 +498,8 @@ function build(config: VersionsConfig): BuildResult {
           if (entry) search.push(entry)
         }
 
-        return { id: categoryId, ...categoryMeta, articleCount: files.length }
+        const { group, ...rest } = categoryMeta
+        return { id: categoryId, ...rest, articleCount: files.length, ...(group ? { group } : {}) }
       })
       categories.sort(byOrderThenId)
 
@@ -377,10 +510,13 @@ function build(config: VersionsConfig): BuildResult {
         description: sectionMeta.description,
         icon: sectionMeta.icon,
         displayOrder: sectionMeta.displayOrder,
+        ...(sectionMeta.groups ? { groups: sectionMeta.groups } : {}),
         categories,
       }
     })
     sections.sort(byOrderThenId)
+
+    const topics = v.topics ? resolveTopics(v.id, v.topics, sections) : undefined
 
     return {
       id: v.id,
@@ -388,6 +524,7 @@ function build(config: VersionsConfig): BuildResult {
       releaseDate: v.releaseDate,
       status: v.status,
       description: v.description,
+      ...(topics ? { topics } : {}),
       sections,
     }
   })
@@ -503,6 +640,21 @@ export interface CategoryInfo {
   icon: string
   articleCount: number
   displayOrder: number
+  group?: string
+}
+
+export interface GroupInfo {
+  id: string
+  name: string
+  description: string
+}
+
+export interface TopicInfo {
+  id: string
+  name: string
+  description: string
+  icon: string
+  sections: string[]
 }
 
 export interface SectionInfo {
@@ -512,6 +664,7 @@ export interface SectionInfo {
   description: string
   icon: string
   displayOrder: number
+  groups?: GroupInfo[]
   categories: CategoryInfo[]
 }
 
@@ -521,6 +674,7 @@ export interface VersionInfo {
   releaseDate: string
   status: VersionStatus
   description: string
+  topics?: TopicInfo[]
   sections: SectionInfo[]
 }
 

@@ -2,5 +2,6 @@
   "name": "Character Stats and Moodles",
   "description": "Hunger, thirst, stress, panic, pain and the rest: every character stat in Build 42.22, how it changes each tick, and how moodles turn the numbers into what you see.",
   "icon": "heart-pulse",
-  "displayOrder": 1
+  "displayOrder": 1,
+  "group": "the-player"
 }

@@ -5,6 +5,7 @@ import { SEOHead } from '../components/seo/SEOHead';
 import { getVersion, DEFAULT_VERSION } from '../config/versions.generated';
 import { resolveIcon } from '../components/icons/Icon';
 import { panelCode, StencilCode } from '../components/details/PageDetails';
+import { sectionArticleCount, topicsFor } from '../lib/topics';
 import '../styles/pages/version-page.css';
 import '../styles/components/page-details.css';
 
@@ -22,6 +23,11 @@ export function VersionPage() {
   const { version = DEFAULT_VERSION } = useParams<{ version: string }>();
 
   const versionInfo = getVersion(version);
+  // The build's big topics (lib/topics.ts); null means show the plain section list.
+  const topics = versionInfo ? topicsFor(versionInfo) : null;
+  // The stenciled panel code keeps each section's place in the build's full list ("MOD-01").
+  const sectionIndexOf = (sectionId: string) =>
+    Math.max(0, versionInfo?.sections.findIndex((s) => s.id === sectionId) ?? 0);
 
   if (!versionInfo) {
     return (
@@ -64,7 +70,83 @@ export function VersionPage() {
 
           <section className="version-page__sections">
             <h2 className="version-page__sections-title">Browse Documentation</h2>
-            {versionInfo.sections.length === 0 ? (
+            {topics ? (
+              <div className="version-page__sections-grid">
+                {topics.map((topic) => {
+                  const only = topic.sections.length === 1 ? topic.sections[0] : null;
+                  const count = (
+                    <span className="version-page__section-count">
+                      {topic.articleCount} {topic.articleCount === 1 ? 'article' : 'articles'}
+                    </span>
+                  );
+
+                  // A topic with one section is one big link to that section.
+                  if (only) {
+                    return (
+                      <Link
+                        key={topic.id}
+                        to={`/pz/${version}/${only.id}`}
+                        className="version-page__section-card"
+                      >
+                        <span className="version-page__section-icon" aria-hidden="true">
+                          {resolveIcon(topic.icon)}
+                        </span>
+                        <div className="version-page__section-content">
+                          <h3 className="version-page__section-name">{topic.name}</h3>
+                          <p className="version-page__section-description">{topic.description}</p>
+                          {count}
+                        </div>
+                        <span className="version-page__section-arrow" aria-hidden="true">→</span>
+                        <StencilCode code={panelCode(only.id, sectionIndexOf(only.id))} small />
+                      </Link>
+                    );
+                  }
+
+                  // A topic with several sections: its heading, then one link per section.
+                  const headingId = `topic-${topic.id}`;
+                  return (
+                    <section key={topic.id} className="version-page__topic" aria-labelledby={headingId}>
+                      <div className="version-page__topic-header">
+                        <span className="version-page__section-icon" aria-hidden="true">
+                          {resolveIcon(topic.icon)}
+                        </span>
+                        <div className="version-page__section-content">
+                          <h3 id={headingId} className="version-page__section-name">{topic.name}</h3>
+                          <p className="version-page__section-description">{topic.description}</p>
+                          {count}
+                        </div>
+                      </div>
+                      <ul className="version-page__topic-sections">
+                        {topic.sections.map((section) => {
+                          const articles = sectionArticleCount(section);
+                          return (
+                            <li key={section.id}>
+                              <Link to={`/pz/${version}/${section.id}`} className="version-page__topic-section">
+                                <span className="version-page__topic-section-icon" aria-hidden="true">
+                                  {resolveIcon(section.icon)}
+                                </span>
+                                <span className="version-page__topic-section-content">
+                                  <span className="version-page__topic-section-name">
+                                    {section.navName ?? section.name}
+                                  </span>
+                                  <span className="version-page__topic-section-description">
+                                    {section.description}
+                                  </span>
+                                  <span className="version-page__section-count">
+                                    {articles} {articles === 1 ? 'article' : 'articles'}
+                                  </span>
+                                </span>
+                                <span className="version-page__section-arrow" aria-hidden="true">→</span>
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </section>
+                  );
+                })}
+              </div>
+            ) : versionInfo.sections.length === 0 ? (
               <p className="version-page__empty">
                 No sections yet for {versionInfo.name}. Check back soon.
               </p>

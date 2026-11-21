@@ -2,5 +2,6 @@
   "name": "Networking and Packets",
   "description": "How multiplayer works in Build 42.22: joining a server, the packet system, who owns players, zombies and vehicles, client and server commands for mods, timed actions and items over the network, and a counted reference.",
   "icon": "globe",
-  "displayOrder": 12
+  "displayOrder": 12,
+  "group": "under-the-hood"
 }

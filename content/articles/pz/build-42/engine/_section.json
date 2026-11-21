@@ -3,5 +3,22 @@
   "navName": "Engine",
   "description": "The Build 42 engine explained system by system: what each part does, where it lives in the code, which side runs it, and what a mod can reach.",
   "icon": "gear",
-  "displayOrder": 7
+  "displayOrder": 7,
+  "groups": [
+    {
+      "id": "the-player",
+      "name": "The Player",
+      "description": "Character stats, animation, input and controls, and physics and ragdolls."
+    },
+    {
+      "id": "the-world",
+      "name": "The World",
+      "description": "Weather, fire, water and power, building and moveables, fishing and trapping, sound, and stashes."
+    },
+    {
+      "id": "under-the-hood",
+      "name": "Under the Hood",
+      "description": "Networking and packets, anti-cheat, and how saves are written and read."
+    }
+  ]
 }
