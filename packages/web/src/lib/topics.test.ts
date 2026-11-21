@@ -81,7 +81,7 @@ test('the live Build 42 navigation: four topics, every section with articles in 
 })
 
 test('the live grouped sections: every category is under a named group, none under More', () => {
-  for (const [id, count] of [['modding', 3], ['engine', 3], ['outcast-mods', 4], ['vehicles', 2], ['mapping', 3]] as const) {
+  for (const [id, count] of [['modding', 3], ['engine', 3], ['outcast-mods', 4], ['vehicles', 2], ['mapping', 3], ['server', 3]] as const) {
     const s = getSection('build-42', id)
     assert.ok(s, id)
     const groups = groupCategories(s, s.categories)

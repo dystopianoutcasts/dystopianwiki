@@ -2,5 +2,6 @@
   "name": "Sandbox Options",
   "description": "Generated from the Build 42.22 code: all 269 sandbox options with defaults, presets and where the game reads each.",
   "icon": "globe",
-  "displayOrder": 3
+  "displayOrder": 3,
+  "group": "settings"
 }

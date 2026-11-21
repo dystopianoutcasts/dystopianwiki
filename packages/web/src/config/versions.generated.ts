@@ -756,6 +756,23 @@ export const VERSIONS: VersionInfo[] = [
         description: 'For server owners: every server option, sandbox option, admin command and role in Build 42, generated from the code, with where the game reads each one.',
         icon: 'database',
         displayOrder: 6,
+        groups: [
+          {
+            id: 'start-here',
+            name: 'Start Here',
+            description: 'Your server\'s files, what surprised us in the code, and how to read the server\'s numbers.',
+          },
+          {
+            id: 'settings',
+            name: 'Settings',
+            description: 'Every server ini option and every sandbox option: its default, its range and where the game reads it.',
+          },
+          {
+            id: 'admins-and-roles',
+            name: 'Admins and Roles',
+            description: 'Every admin command, the built-in roles, and which capability each action needs.',
+          },
+        ],
         categories: [
           {
             id: 'getting-started',
@@ -764,6 +781,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'book',
             displayOrder: 1,
             articleCount: 2,
+            group: 'start-here',
           },
           {
             id: 'server-options',
@@ -772,6 +790,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'settings',
             displayOrder: 2,
             articleCount: 6,
+            group: 'settings',
           },
           {
             id: 'sandbox-options',
@@ -780,6 +799,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'globe',
             displayOrder: 3,
             articleCount: 9,
+            group: 'settings',
           },
           {
             id: 'admin-commands',
@@ -788,6 +808,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'wrench',
             displayOrder: 4,
             articleCount: 1,
+            group: 'admins-and-roles',
           },
           {
             id: 'roles-and-access',
@@ -796,6 +817,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'scroll',
             displayOrder: 5,
             articleCount: 2,
+            group: 'admins-and-roles',
           },
         ],
       },
