@@ -703,6 +703,23 @@
           "description": "For server owners: every server option, sandbox option, admin command and role in Build 42, generated from the code, with where the game reads each one.",
           "icon": "database",
           "displayOrder": 6,
+          "groups": [
+            {
+              "id": "start-here",
+              "name": "Start Here",
+              "description": "Your server's files, what surprised us in the code, and how to read the server's numbers."
+            },
+            {
+              "id": "settings",
+              "name": "Settings",
+              "description": "Every server ini option and every sandbox option: its default, its range and where the game reads it."
+            },
+            {
+              "id": "admins-and-roles",
+              "name": "Admins and Roles",
+              "description": "Every admin command, the built-in roles, and which capability each action needs."
+            }
+          ],
           "categories": [
             {
               "id": "getting-started",
@@ -710,7 +727,8 @@
               "description": "Running a server as an Outcast: your server's files, what surprised us in the code, and how to read the server's numbers.",
               "icon": "book",
               "displayOrder": 1,
-              "articleCount": 2
+              "articleCount": 2,
+              "group": "start-here"
             },
             {
               "id": "server-options",
@@ -718,7 +736,8 @@
               "description": "Generated from the Build 42.22 code: all 144 server ini options with default, range and where the game reads each.",
               "icon": "settings",
               "displayOrder": 2,
-              "articleCount": 6
+              "articleCount": 6,
+              "group": "settings"
             },
             {
               "id": "sandbox-options",
@@ -726,7 +745,8 @@
               "description": "Generated from the Build 42.22 code: all 269 sandbox options with defaults, presets and where the game reads each.",
               "icon": "globe",
               "displayOrder": 3,
-              "articleCount": 9
+              "articleCount": 9,
+              "group": "settings"
             },
             {
               "id": "admin-commands",
@@ -734,7 +754,8 @@
               "description": "Generated from the Build 42.22 code: every server command, its forms and the capability it needs.",
               "icon": "wrench",
               "displayOrder": 4,
-              "articleCount": 1
+              "articleCount": 1,
+              "group": "admins-and-roles"
             },
             {
               "id": "roles-and-access",
@@ -742,7 +763,8 @@
               "description": "Generated from the Build 42.22 code: the built-in roles and every capability, with where each is checked.",
               "icon": "scroll",
               "displayOrder": 5,
-              "articleCount": 2
+              "articleCount": 2,
+              "group": "admins-and-roles"
             }
           ]
         },
