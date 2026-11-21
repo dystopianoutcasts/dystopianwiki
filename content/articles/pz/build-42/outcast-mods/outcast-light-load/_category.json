@@ -2,5 +2,6 @@
   "name": "Outcast Light Load",
   "description": "Hauling raw materials stops being the whole afternoon.",
   "icon": "gear",
-  "displayOrder": 7
+  "displayOrder": 7,
+  "group": "inventory-and-hauling"
 }

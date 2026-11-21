@@ -2,5 +2,27 @@
   "name": "Outcast Mods",
   "description": "Documentation for the Outcast mod family: overview, engine notes, API and multiplayer pages per mod.",
   "icon": "gear",
-  "displayOrder": 4
+  "displayOrder": 4,
+  "groups": [
+    {
+      "id": "start-here",
+      "name": "Start Here",
+      "description": "What the Outcast mods are built on: the principles, and the shared library every mod needs."
+    },
+    {
+      "id": "vehicles",
+      "name": "Vehicles",
+      "description": "New cars, opening panels, the mechanics window, and righting an overturned vehicle."
+    },
+    {
+      "id": "inventory-and-hauling",
+      "name": "Inventory and Hauling",
+      "description": "Fewer clicks for loot: reach every nearby container, file items away, rip, saw and haul in bulk."
+    },
+    {
+      "id": "survival",
+      "name": "Survival",
+      "description": "Hearing damage, bare-handed punches, climbing ladders, and animals that keep longer."
+    }
+  ]
 }

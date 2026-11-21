@@ -2,5 +2,6 @@
   "name": "Outcast Stow All",
   "description": "One button files your mixed loot into the containers around you that already hold that item.",
   "icon": "gear",
-  "displayOrder": 15
+  "displayOrder": 15,
+  "group": "inventory-and-hauling"
 }

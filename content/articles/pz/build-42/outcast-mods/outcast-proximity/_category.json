@@ -2,5 +2,6 @@
   "name": "Outcast Proximity",
   "description": "Every container you can already reach, as one list.",
   "icon": "gear",
-  "displayOrder": 11
+  "displayOrder": 11,
+  "group": "inventory-and-hauling"
 }

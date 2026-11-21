@@ -525,6 +525,28 @@ export const VERSIONS: VersionInfo[] = [
         description: 'Documentation for the Outcast mod family: overview, engine notes, API and multiplayer pages per mod.',
         icon: 'gear',
         displayOrder: 4,
+        groups: [
+          {
+            id: 'start-here',
+            name: 'Start Here',
+            description: 'What the Outcast mods are built on: the principles, and the shared library every mod needs.',
+          },
+          {
+            id: 'vehicles',
+            name: 'Vehicles',
+            description: 'New cars, opening panels, the mechanics window, and righting an overturned vehicle.',
+          },
+          {
+            id: 'inventory-and-hauling',
+            name: 'Inventory and Hauling',
+            description: 'Fewer clicks for loot: reach every nearby container, file items away, rip, saw and haul in bulk.',
+          },
+          {
+            id: 'survival',
+            name: 'Survival',
+            description: 'Hearing damage, bare-handed punches, climbing ladders, and animals that keep longer.',
+          },
+        ],
         categories: [
           {
             id: 'about',
@@ -533,6 +555,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'book',
             displayOrder: 0,
             articleCount: 1,
+            group: 'start-here',
           },
           {
             id: 'outcast-911',
@@ -541,6 +564,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'car',
             displayOrder: 1,
             articleCount: 1,
+            group: 'vehicles',
           },
           {
             id: 'outcast-hearing',
@@ -549,6 +573,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'gear',
             displayOrder: 3,
             articleCount: 1,
+            group: 'survival',
           },
           {
             id: 'outcast-husbandry',
@@ -557,6 +582,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'gear',
             displayOrder: 4,
             articleCount: 2,
+            group: 'survival',
           },
           {
             id: 'outcast-ladders',
@@ -565,6 +591,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'gear',
             displayOrder: 5,
             articleCount: 12,
+            group: 'survival',
           },
           {
             id: 'outcast-lib',
@@ -573,6 +600,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'gear',
             displayOrder: 6,
             articleCount: 15,
+            group: 'start-here',
           },
           {
             id: 'outcast-light-load',
@@ -581,6 +609,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'gear',
             displayOrder: 7,
             articleCount: 1,
+            group: 'inventory-and-hauling',
           },
           {
             id: 'outcast-motors',
@@ -589,14 +618,16 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'car',
             displayOrder: 8,
             articleCount: 1,
+            group: 'vehicles',
           },
           {
             id: 'outcast-motors-animated',
             name: 'Outcast Motors Animated',
-            description: 'Animated car panels for the vanilla vehicles: bonnets, doors, windows, boots and tailgates that open, with an engine bay behind the bonnet.',
+            description: 'Animated car panels for the vanilla vehicles: hoods, doors, windows, trunks and tailgates that open, with an engine bay behind the hood.',
             icon: 'car',
             displayOrder: 9,
             articleCount: 1,
+            group: 'vehicles',
           },
           {
             id: 'outcast-motors-ui',
@@ -605,6 +636,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'car',
             displayOrder: 10,
             articleCount: 1,
+            group: 'vehicles',
           },
           {
             id: 'outcast-proximity',
@@ -613,6 +645,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'gear',
             displayOrder: 11,
             articleCount: 1,
+            group: 'inventory-and-hauling',
           },
           {
             id: 'outcast-punch',
@@ -621,6 +654,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'gear',
             displayOrder: 12,
             articleCount: 3,
+            group: 'survival',
           },
           {
             id: 'outcast-rip-all',
@@ -629,6 +663,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'gear',
             displayOrder: 13,
             articleCount: 2,
+            group: 'inventory-and-hauling',
           },
           {
             id: 'outcast-saw-all',
@@ -637,6 +672,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'gear',
             displayOrder: 14,
             articleCount: 2,
+            group: 'inventory-and-hauling',
           },
           {
             id: 'outcast-stow-all',
@@ -645,6 +681,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'gear',
             displayOrder: 15,
             articleCount: 1,
+            group: 'inventory-and-hauling',
           },
           {
             id: 'outcast-upright',
@@ -653,6 +690,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'car',
             displayOrder: 16,
             articleCount: 2,
+            group: 'vehicles',
           },
         ],
       },
