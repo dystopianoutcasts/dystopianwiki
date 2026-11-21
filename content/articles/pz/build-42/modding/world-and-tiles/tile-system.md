@@ -14,133 +14,116 @@ tags:
   - map-modding
   - tiledefs
 excerpt: >-
-  To get a custom tile into the game you still need all three (pzwiki: Adding
-  new tiles, revid 1385091 -- note this page carries an {{Outdated}} banner and
-  a 41.78.19 version tag, so treat...
-last_updated: '2026-09-29'
+  How a custom tile gets into 42.22: the two mod.info lines, the tiledef number range (100 to 8189), sprite ids, tile depth shapes and the tile properties the code names.
+last_updated: '2026-11-15'
 related_articles:
   - basics-what-changed-and-why-it-matters-to-modders
-  - the-map-expansion-knox-country-new-towns
-  - multi-z-the-vertical-engine-change
-  - basements-the-underground-system
   - the-new-lighting-rendering-engine
-  - map-modding-toolchain-for-b42
-  - how-to-make-a-b42-map-building-basement
-  - map-files-map-info-spawnpoints-lua-folder-structure
-  - zones-vehicle-parking-zones-foraging
-  - multiplayer-map-streaming-notes
   - map-tile-modder-migration-checklist
+  - multi-z-the-vertical-engine-change
+  - tiles-and-tiledefs
 ---
-# The tile system: tilesheets, tiledefs, tile depth and the .pack pipeline
+::field-notes
 
-> Source: 06_WORLD_MAP_BASEMENTS_TILES.md (compiled 2026-07-29, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-15.
 
-### 5.1 The three-part pipeline (CONFIRMED)
-To get a custom tile into the game you still need all three (pzwiki: Adding new
-tiles, revid 1385091 -- note this page carries an {{Outdated}} banner and a
-41.78.19 version tag, so treat art-workflow specifics as B41-era-but-still-valid):
-1. **Sprite packing** -- your tile art packed into the game's `.pack` texture
-   format.
-2. **Map definition** -- the tile placed in map/building data.
-3. **Tile definition (tiledef)** -- properties for the tile, registered so the
-   game and editors know what it is.
+:::callout[The 1-minute version]{kind=key}
+- A custom tile needs a texture pack, a tile definition file and a map that uses the tile. The game reads the first two from two lines in the mod's `mod.info`: `pack=<name>` and `tiledef=<name> <number>`.
+- The number must be a whole number from 100 to 8189. A number outside that range stops the mod's `mod.info` from reading. The old page said 100 to 16382 with 8190 as a safe ceiling; the 42.22 code stops at 8189.
+- If two active mods use the same number, the game loads the first mod's file and logs an error for the second. The second mod's tiles are not loaded.
+- A mod file holds up to 512 tilesets of up to 512 tiles each. Vanilla's main file is the only one allowed 1,024 of each.
+- Tile depth shapes (box, cylinder, polygon) live in a `tileGeometry.txt`, and the game reads a mod's copy only from the mod's `common/media` folder.
+- The old page called the colored light fields uncertain. The code reads them from three tile properties, `lightR`, `lightG` and `lightB`, with `LightRadius` for the size.
+:::
 
-### 5.2 Tilesheet authoring facts (CONFIRMED -- Adding new tiles)
-- Tilesheets are typically **1024x2048 or 1024x4096**. Other dimensions cause
-  texture-pack issues.
-- 1024x2048 gives **64 sprites (8 across x 8 down)**. Sprites are referenced by
-  number, e.g. `lighting_outdoor_01_0`; numbering starts at 0 top-left, increments
-  right, then down.
-- Max single-sprite size **128x256**. Game has 1x/2x texture sizes; **2x is
-  default**.
-- Filenames must be **fully lowercase `.png`**, placed in `Tiles\2x\` (the editor
-  render folder) and also in a separate folder holding only your new sheets (used
-  later for the texture pack). Wrong 2x folder = editor error.
-- Per-sheet layer defaults go in `TileSheetName.tilelayers.xml` (a
-  `<tileset columns rows>` of `<tile id layername>` entries) so TileZed auto-picks
-  the right layer.
+:::facts
+- **Tiledef number** 100 to 8189 per mod file
+- **Tilesets per mod file** up to 512, each up to 512 tiles
+- **Named tile properties** 238 in `IsoPropertyType`, 278 in a second list
+- **Tile geometry file** versions 1 and 2, three shapes
+:::
 
-### 5.3 tiledef numbering / allocation -- CONFIRMED (the conflict-avoidance rule)
-Previously flagged as a gap; now **CONFIRMED** (pzwiki: Tiledefs used by mods,
-revid 1394311, v42.9.0; and Adding new tiles, revid 1385091):
+Outcast, this page is for the moment you have art and need the game to know it exists. It says what the 42.22 code reads, in the order it reads it, and which old rules it does not support.
 
-- Tiledefs are **uniquely numbered packs** of textures/assets. The number is
-  declared in the mod's `mod.info`.
-- **Allocation ranges:**
-  - **0-99** -- reserved for **developers** (as of build 41.74).
-  - **100-16382** -- available to **modders**.
-  - **Above 8190** -- allegedly "results in negative sprite IDs," so treat
-    **<= 8190** as the safe practical ceiling.
-- **Uniqueness is mandatory.** Two mods declaring the **same** number (or an
-  invalid number) break: the game logs
-  `ERROR: ZomboidFileSystem.loadModTileDefs> tiledef fileNumber <N> used by more
-  than one mod`, and the affected mods will not work properly.
-- **Conflict avoidance:** consult the community registry (pzwiki: Tiledefs used by
-  mods) before choosing a number; entries flagged with `!` are known
-  invalid/duplicate. Real collisions in the wild include 216/217 (Oujinjintiles
-  vs Chinatown/VaultTec), 723 (Vaccine vs Enhanced Environment), and 999 (Camden
-  County vs Vardell Raceway).
+## 1. A tile needs a pack, a definition and a map
 
-**Exact `mod.info` syntax (CONFIRMED -- Adding new tiles):**
-```
-pack=myTiles
-tiledef=myTiles xxx
-```
-- `pack=` is the name of your `.pack` texturepack (e.g. `media/texturepacks/myTiles.pack`).
-- `tiledef=<name> <number>` -- the number `xxx` **must be unique, starting from
-  100**. (An older struck-through wiki note said 0-999; the current guidance is
-  "unique, from 100," consistent with the 100-16382 range above.)
-- Optional: `require=myTiles` to consume another mod's tiles without bundling them.
+A tile reaches the game through a texture pack, a tile definition file and a map or building that places it.
 
-### 5.4 Editing tiledefinitions (CONFIRMED -- Adding new tiles)
-- **Tools > Tile Properties** in TileZed edits `.tiles` files (per-tile behavior:
-  floor, container, pickup, etc.). See section 5.6.
-- Copy `newtiledefinitions.tiles` from `ProjectZomboid\media\` as your reference,
-  create a new `.tiles`, use the blue-plus icon to add your tilesheet(s), set
-  properties, save. Ship it as `...\Zomboid\mods\myTiles\media\myTiles.tiles`.
-- **Texture pack:** Tools > .pack files > Create .pack File; point it at the
-  folder containing only your new sheets; output to
-  `media\texturepacks\myTiles.pack`.
+The loader treats the first two as separate mod.info entries. The `pack=` line names a pack that the game looks for as `media/texturepacks/<name>.pack`. :cite[(`zombie/ZomboidFileSystem.java:977-986`)] The path is compared in lower case, and a pack that is not found is a warning, not a stop. :cite[(`zombie/ZomboidFileSystem.java:978-981`)]
 
-### 5.5 Tile depth -- NEW in B42 (CONFIRMED)
-Newly confirmed (pzwiki: Tile depth, revid 1438979, v42.19.0). B42 replaced the
-old **layer** system with **tile depth**:
+The `tiledef=` line names a tile definition file that the game looks for as `media/<name>.tiles`, and logs an error for the mod if the file is missing. :cite[(`zombie/ZomboidFileSystem.java:1006-1015`)] A `pack=` line may add `type=ui`, which marks a pack of interface art. :cite[(`zombie/gameStates/ChooseGameInfo.java:267-292`)]
 
-- Tile depth gives each tile "an equivalent of a normal map," telling the game how
-  to render each pixel and how tiles/objects that collide should render against
-  each other.
-- Authored via the **tile depth editor tool in debug mode**, by applying
-  **geometries** on top of the tile. Three geometry types: **box, cylinder,
-  polygon**.
-- All tile geometries are stored in the scripts file **`tileGeometry.txt`**.
-- Practical modding note: custom tiles for B42 need depth geometry to render
-  correctly against neighbours. A community "Depthmap Tutorial B42+" (Crater) is
-  linked from the Mapping page.
+:::flow[What the game does with a tile mod]
+- Read mod.info: pack= and tiledef= lines
+- Load the .pack textures
+- Load the .tiles file under its number
+- Run OnLoadedTileDefinitions
+- Maps and buildings use the tile
+:::
 
-### 5.6 Tile properties -- partially resolved (colored light STILL UNCERTAIN)
-pzwiki: Tile properties, revid 1439313 (v42.19.0). The page is thin and **defers
-the full field catalog to an external API doc**
-(`pz-wiki-modding.github.io/PZ-API-Docs/mapping/tile_properties.html`). What the
-wiki page itself documents:
-- **Directions** follow the PZ isometric system (north = top-right, west =
-  top-left).
-- **Surface**, **ItemHeight**, **IsSurfaceOffset** control where placed items sit.
-- Warning: **not all interactions come from tile properties** -- e.g. a car on a
-  `blends_street_*` floor tile is treated as on-road; other interactions are only
-  discoverable by reading the Java source.
+The order is vanilla's seven definition files first, then each active mod's file, then the `OnLoadedTileDefinitions` event. :cite[(`zombie/iso/IsoWorld.java:1984-1998`)] A file whose name ends in `.patch.tiles` does not add sprites. It changes the properties of sprites that already exist under the same name. :cite[(`zombie/iso/IsoWorld.java:657`, `zombie/iso/IsoWorld.java:722-731`)]
 
-**Colored-light property fields: STILL UNCERTAIN.** The Tile properties page does
-not enumerate colored-light / intensity / hue fields; it defers to the external
-PZ-API-Docs. The cached "Rendering" wiki page is about **Blender 3D rendering for
-mod presentation**, NOT the engine lighting, so it does not help either. Verify
-colored-emitter fields against the PZ-API-Docs tile_properties page or B42
-JavaDocs before authoring custom light emitters. (See Gaps.)
+## 2. The tiledef number is 100 to 8189
 
-### 5.7 New-tile ecosystem (CONFIRMED)
-Many community tile packs already ship B42 variants (the Mapping page lists ~16
-usable tile packs, e.g. Fear's Funky, Erika's/Ivery, Melos, Skizot,
-throttlekitty), proving the custom-tile path works end-to-end in B42.
+The number in a `tiledef=` line must be a whole number from 100 to 8189, or the game logs an error and does not read the mod's `mod.info`.
 
----
+The code reads two words after `tiledef=`, rejects anything that is not a name and an integer, and then checks the range. :cite[(`zombie/gameStates/ChooseGameInfo.java:304-326`)] The Build 41 code accepted up to 16382 (`gameStates/ChooseGameInfo.java` lines 333-337 in `GAME/PZ_Engine_Records/B41/src/`), and that is the source of the old page's "100 to 16382". In 42.22 the upper limit is 8189.
 
-<a name="6-lighting"></a>
+The cap matches the size of the sprite id.
+
+A tile's id is `1048576 + (fileNumber - 2) * 262144 + (tilesetNumber - 1) * 512 + tileIndex` for every file except number 1. :cite[(`zombie/iso/IsoWorld.java:651-653`)] With the largest tileset number (512) and tile index (511), file 8189 gives exactly 2,147,483,647, the top of a 32-bit integer, and file 8190 would pass it. That is our arithmetic from the formula. The code does not say why 8189 was chosen.
+
+Two mods with the same number do not both load. The loader remembers a number only after it has found the mod's `.tiles` file and loaded it, so a mod with a missing file does not claim its number. A second mod that asks for one gets an error in the log and no tiles. :cite[(`zombie/ZomboidFileSystem.java:1000-1019`, `zombie/ZomboidFileSystem.java:1010-1018`)] The mods are visited in the active mod list's order, so the first one in the list keeps the number. :cite[(`zombie/ZomboidFileSystem.java:1003-1006`)]
+
+The file itself has hard limits. A mod's `.tiles` file may hold up to 512 tilesets and each tileset up to 512 tiles, and a tileset number must be 1 to 512. A file over the limit throws an error. Only vanilla's file number 1 is allowed 1,024 of each. :cite[(`zombie/iso/IsoWorld.java:658-659`, `zombie/iso/IsoWorld.java:700-716`)]
+
+## 3. Tile depth is a shape file and a picture file
+
+A tile's depth is described by shapes in a `tileGeometry.txt` and by optional `DEPTH_` pictures, and the game looks for both beside the mod's `common/media` folder.
+
+The geometry file starts with a `VERSION` of 1 or 2 (2 is the latest), then has one `tileset` block per sheet with a `tile` block per tile, addressed as `xy` (column x row). :cite[(`zombie/tileDepth/TileGeometryFile.java:45`, `zombie/tileDepth/TileGeometryFile.java:68-90`, `zombie/tileDepth/TileGeometryFile.java:119-121`)] A tile block can hold three shapes, `box`, `cylinder` and `polygon`, plus a `properties` block. :cite[(`zombie/tileDepth/TileGeometryFile.java:123-148`)] Tiles are indexed as column plus row times 8, so a sheet is eight tiles wide here. :cite[(`zombie/tileDepth/TileGeometryFile.java:103`, `zombie/tileDepth/TileGeometryFile.java:329`)]
+
+The properties block can carry `ItemHeight`, `Surface`, `CurtainOffset` (three numbers), and three yes or no flags: `OpaquePixelsOnly`, `Translucent` and `UseObjectDepthTexture`. :cite[(`zombie/tileDepth/TileGeometryFile.java:882-920`)] Pictures are read from a `depthmaps` folder as files named `DEPTH_<tileset>.png`. :cite[(`zombie/tileDepth/TileDepthTextures.java:127-139`)] A mod's pictures are loaded only if that mod also has a `common/media/tileGeometry.txt`. :cite[(`zombie/tileDepth/TileDepthTextureManager.java:51-58`)]
+
+The game reads its own file from its `media/tileGeometry.txt`. A mod's file is only seen if it sits in `<mod>/common/media/tileGeometry.txt`, because both managers test that exact folder. :cite[(`zombie/tileDepth/TileGeometry.java:30-33`, `zombie/tileDepth/TileGeometryManager.java:37-48`, `zombie/tileDepth/TileDepthTextureManager.java:51-58`)] A file in the version folder (for example `42/media`) is ignored.
+
+The game ships a tile geometry editor in its debug interface folder. :cite[(`media/lua/client/DebugUIs/TileGeometryEditor/TileGeometryEditor.lua:1`)] How to use it is not verified here. The Build 41 sources have no `tileDepth` package, so the system is new in Build 42.
+
+## 4. Tile properties are two lists of names
+
+A tile's behavior comes from named properties, and the engine keeps two lists of names, one of 238 and one of 278.
+
+The first list runs from `IsoType` to `CarSlowFactor`. :cite[(`zombie/core/properties/IsoPropertyType.java:19`, `zombie/core/properties/IsoPropertyType.java:256`)] The ones a mapper meets first are `Surface`, `ItemHeight` and `IsSurfaceOffset` for where items sit. :cite[(`zombie/core/properties/IsoPropertyType.java:83`, `zombie/core/properties/IsoPropertyType.java:86`, `zombie/core/properties/IsoPropertyType.java:167`)] 
+
+The second list, `TilePropertyKey`, registers 278 distinct names, and it holds names this page uses and `IsoPropertyType` lacks: `CurtainOffset`, `OpaquePixelsOnly`, `Translucent`, `UseObjectDepthTexture` and the `LightFilter` family. :cite[(`zombie/core/properties/TilePropertyKey.java:17-295`)] The lists overlap in part, and we did not compare them name by name. The light fields are below.
+
+::::cards
+:::card[Colored light]{accent=orange}
+`lightR`, `lightG` and `lightB` take 0 to 255 and the game divides each by 255. `LightRadius` sets the radius. Details and defaults are on the [lighting page](/pz/build-42/modding/world-and-tiles/the-new-lighting-rendering-engine).
+:::
+:::card[Streetlights]{accent=blue}
+A tile with `streetlight` is treated as a street light, which the game switches by night and grid power. :cite[(`zombie/core/properties/IsoPropertyType.java:52`, `zombie/iso/LightingJNI.java:291`)]
+:::
+::::
+
+The list is names only. What each property does is spread through the game code, and "not all interactions come from tile properties", as the old page warned, is still the right way to read it.
+
+## 5. What this page does not check
+
+The editor side of tile work, and the community's records, are not in the game code and are not checked here.
+
+:::callout[How we know]{kind=proof}
+- Every citation above was read in the 42.22 decompile. Nothing was tested by loading a mod.
+- Changed: the tiledef range. The old page said 100 to 16382 with 8190 as a "safe practical ceiling". The code allows 100 to 8189 (`zombie/gameStates/ChooseGameInfo.java:321-325`).
+- Changed: a duplicate number. The old page said the affected mods "will not work properly". The code loads the first mod and skips the second (`zombie/ZomboidFileSystem.java:1007-1009`).
+- Changed: colored light. The old page said the property names were unknown. They are `lightR`, `lightG`, `lightB` and `LightRadius`.
+- Dropped, not verified: sheet sizes (1024 by 2048 or 1024 by 4096), "64 sprites per sheet", the 128 by 256 sprite limit, lower-case `.png` names, the `.tilelayers.xml` file and the TileZed menu steps. They are about the editors, not the engine. See [tiles and tiledefs](/pz/build-42/mapping/buildings-and-tiles/tiles-and-tiledefs) for the editor procedure.
+- Dropped, not verified: the community registry of tiledef numbers and its examples of clashes, and the count of Build 42 tile packs.
+- Not verified: that tile depth "replaced the layer system", that depth works like a normal map, and where the debug editor is opened from.
+:::
+
+## Where to go next
+
+- [The new lighting engine](/pz/build-42/modding/world-and-tiles/the-new-lighting-rendering-engine)
+- [Map tile modder checklist](/pz/build-42/modding/world-and-tiles/map-tile-modder-migration-checklist)
+- [Tiles and tiledefs (editor steps)](/pz/build-42/mapping/buildings-and-tiles/tiles-and-tiledefs)
