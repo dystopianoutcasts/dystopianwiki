@@ -7868,7 +7868,7 @@
       "map-modding",
       "tiledefs"
     ],
-    "excerpt": "This is the flagship new-world system in B42 and the one most relevant to environment modders.",
+    "excerpt": "How Build 42.22 adds basements: a map's Lua lists pieces and locations, the game picks from the world seed once per new save, saves the result, and builds each piece as chunks are made.",
     "difficulty": "intermediate"
   },
   {
@@ -7886,7 +7886,7 @@
       "map-modding",
       "tiledefs"
     ],
-    "excerpt": "If you made or ran maps in B41, these are the headline shifts that will break or change your workflow. Each is expanded later.",
+    "excerpt": "What a map maker must know about Build 42.22, checked in the game code: 256-square cells, 8-square chunks, levels -32 to 31, basements chosen from Lua, and stacked map folders.",
     "difficulty": "intermediate"
   },
   {
@@ -7904,7 +7904,7 @@
       "map-modding",
       "tiledefs"
     ],
-    "excerpt": "Install a community fork -- Crater's Community Edition (direct B42 fork) or Alree's tools. CONFIRMED these are the options. Extract packed tilesheets if your fork requires it so editors render...",
+    "excerpt": "The order of work for a Build 42.22 map, building or basement: what the game reads at each step, cited, and the editor steps from the community wiki, marked not verified.",
     "difficulty": "intermediate"
   },
   {
@@ -7922,7 +7922,7 @@
       "map-modding",
       "tiledefs"
     ],
-    "excerpt": "File roles (CONFIRMED where stated; some are wiki stubs): .lotheader -- defines the location/cell of your map. chunkdata_X_Y.bin -- chunk data (wiki stub). map.info -- map metadata (see 9.2)...",
+    "excerpt": "Every file Build 42.22 reads from a map folder and what it does with it, the nine map.info keys, and the three forms of a spawn point, each checked in the game code.",
     "difficulty": "intermediate"
   },
   {
@@ -7940,7 +7940,7 @@
       "map-modding",
       "tiledefs"
     ],
-    "excerpt": "Bottom line (CONFIRMED -- pzwiki: Mapping, revid 1443363): usable via community forks; the wiki now calls them reliable.",
+    "excerpt": "What the Build 42.22 game checks in a map tool's output, and what is only reported about the editors by the community wiki. Tool behavior is marked not verified and dated.",
     "difficulty": "intermediate"
   },
   {
@@ -7958,7 +7958,7 @@
       "map-modding",
       "tiledefs"
     ],
-    "excerpt": "[ ] Edit on the 300x300 grid; expect 256x256 exported cells with empty borders. Do not reuse B41 cell coords (re-index). [ ] Check adjacency against other map mods (shared 256 cells drop a map). [...",
+    "excerpt": "A short checklist for moving a Build 41 map or tile mod to Build 42.22, with each item checked in the game code or marked not verified, and the points the old list got wrong.",
     "difficulty": "intermediate"
   },
   {
@@ -7976,7 +7976,7 @@
       "map-modding",
       "tiledefs"
     ],
-    "excerpt": "CONFIRMED (dev blogs). B42 broke the engine's old height limit (~8 floors). Each chunk now extends to up to 32 Z-levels. This makes both very tall buildings and underground spaces possible for the...",
+    "excerpt": "Build 42.22 gives every column of squares 64 levels, numbered -32 to 31, not the 8 floors of Build 41. Where the limit is set, what a lot file stores, and what that means for tall and deep builds.",
     "difficulty": "intermediate"
   },
   {
