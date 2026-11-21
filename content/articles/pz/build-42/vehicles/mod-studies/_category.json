@@ -1,6 +1,7 @@
 {
-  "name": "Mod studies",
+  "name": "Mod Studies",
   "description": "What Project Summer Car, the physics mods and the wider community vehicle mods actually do, read from their shipped files.",
   "icon": "car",
-  "displayOrder": 3
+  "displayOrder": 3,
+  "group": "mod-studies"
 }

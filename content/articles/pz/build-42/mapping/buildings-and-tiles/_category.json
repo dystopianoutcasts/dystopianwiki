@@ -2,5 +2,6 @@
   "name": "Buildings and Tiles",
   "description": "BuildingEd, room templates, tilesets, tiledefs, and tile slicing.",
   "icon": "map",
-  "displayOrder": 2
+  "displayOrder": 2,
+  "group": "making-the-map"
 }

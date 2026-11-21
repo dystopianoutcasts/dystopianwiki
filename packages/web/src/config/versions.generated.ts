@@ -443,6 +443,23 @@ export const VERSIONS: VersionInfo[] = [
         description: 'World, cell, building, tile, and zone authoring for Build 42 maps, from tool setup through packaging.',
         icon: 'map',
         displayOrder: 2,
+        groups: [
+          {
+            id: 'start-here',
+            name: 'Start Here',
+            description: 'Set up the tools, learn the cell grid, and paint a world from PNGs.',
+          },
+          {
+            id: 'making-the-map',
+            name: 'Making the Map',
+            description: 'Buildings and tiles, then zones for loot, cars and animals, and packaging the map mod.',
+          },
+          {
+            id: 'help-and-sources',
+            name: 'Help and Sources',
+            description: 'Known failures and their fixes, and where every fact came from.',
+          },
+        ],
         categories: [
           {
             id: 'fundamentals',
@@ -451,6 +468,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'map',
             displayOrder: 1,
             articleCount: 19,
+            group: 'start-here',
           },
           {
             id: 'buildings-and-tiles',
@@ -459,6 +477,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'map',
             displayOrder: 2,
             articleCount: 3,
+            group: 'making-the-map',
           },
           {
             id: 'zones-and-packaging',
@@ -467,6 +486,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'map',
             displayOrder: 3,
             articleCount: 11,
+            group: 'making-the-map',
           },
           {
             id: 'troubleshooting',
@@ -475,6 +495,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'book',
             displayOrder: 4,
             articleCount: 2,
+            group: 'help-and-sources',
           },
           {
             id: 'sources',
@@ -483,6 +504,7 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'book',
             displayOrder: 5,
             articleCount: 1,
+            group: 'help-and-sources',
           },
         ],
       },
@@ -492,6 +514,18 @@ export const VERSIONS: VersionInfo[] = [
         description: 'The verified Build 42 vehicle API, engine and UI reference, and how to animate a vehicle part.',
         icon: 'car',
         displayOrder: 3,
+        groups: [
+          {
+            id: 'building-vehicle-mods',
+            name: 'Building Vehicle Mods',
+            description: 'The verified vehicle API and engine hooks, and how to make a part open and close.',
+          },
+          {
+            id: 'mod-studies',
+            name: 'Mod Studies',
+            description: 'What other vehicle mods actually do, read from their shipped files.',
+          },
+        ],
         categories: [
           {
             id: 'reference',
@@ -500,22 +534,25 @@ export const VERSIONS: VersionInfo[] = [
             icon: 'car',
             displayOrder: 1,
             articleCount: 12,
+            group: 'building-vehicle-mods',
           },
           {
             id: 'animation',
             name: 'Animation',
-            description: 'How to make a Build 42 vehicle part visibly animate, and the silent-failure catalogue behind it.',
+            description: 'How to make a Build 42 vehicle part visibly animate, and the silent-failure catalog behind it.',
             icon: 'gear',
             displayOrder: 2,
             articleCount: 14,
+            group: 'building-vehicle-mods',
           },
           {
             id: 'mod-studies',
-            name: 'Mod studies',
+            name: 'Mod Studies',
             description: 'What Project Summer Car, the physics mods and the wider community vehicle mods actually do, read from their shipped files.',
             icon: 'car',
             displayOrder: 3,
             articleCount: 29,
+            group: 'mod-studies',
           },
         ],
       },

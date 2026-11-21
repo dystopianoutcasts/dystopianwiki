@@ -2,5 +2,22 @@
   "name": "Mapping",
   "description": "World, cell, building, tile, and zone authoring for Build 42 maps, from tool setup through packaging.",
   "icon": "map",
-  "displayOrder": 2
+  "displayOrder": 2,
+  "groups": [
+    {
+      "id": "start-here",
+      "name": "Start Here",
+      "description": "Set up the tools, learn the cell grid, and paint a world from PNGs."
+    },
+    {
+      "id": "making-the-map",
+      "name": "Making the Map",
+      "description": "Buildings and tiles, then zones for loot, cars and animals, and packaging the map mod."
+    },
+    {
+      "id": "help-and-sources",
+      "name": "Help and Sources",
+      "description": "Known failures and their fixes, and where every fact came from."
+    }
+  ]
 }

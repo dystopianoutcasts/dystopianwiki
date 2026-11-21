@@ -2,5 +2,17 @@
   "name": "Vehicles",
   "description": "The verified Build 42 vehicle API, engine and UI reference, and how to animate a vehicle part.",
   "icon": "car",
-  "displayOrder": 3
+  "displayOrder": 3,
+  "groups": [
+    {
+      "id": "building-vehicle-mods",
+      "name": "Building Vehicle Mods",
+      "description": "The verified vehicle API and engine hooks, and how to make a part open and close."
+    },
+    {
+      "id": "mod-studies",
+      "name": "Mod Studies",
+      "description": "What other vehicle mods actually do, read from their shipped files."
+    }
+  ]
 }
