@@ -7155,7 +7155,7 @@
       "xp",
       "craftrecipe-gating"
     ],
-    "excerpt": "The crafting explosion (the big one). In B41 there was essentially one \"Metalworking\" plus Carpentry/Cooking/etc. B42 splits and adds a full trade tree [CONFIRMED via source + pzwiki Skill]:",
+    "excerpt": "What changed for skills between Build 41 and 42.22: nine new skills, a regrouped Skills tab, XP that the server now computes, new sandbox multipliers, and what a Build 41 skill mod must fix.",
     "difficulty": "intermediate"
   },
   {
@@ -7191,7 +7191,7 @@
       "xp",
       "craftrecipe-gating"
     ],
-    "excerpt": "Two orthogonal things are \"learned\": skill LEVEL (your perk number) and recipe KNOWLEDGE (whether you know how to make a thing). B42 gates them separately.",
+    "excerpt": "How a character gains skill levels and recipe knowledge in 42.22: learn by doing, skill books, recipe magazines, auto-learn, and the one-level-short rule. The two are separate systems.",
     "difficulty": "intermediate"
   },
   {
@@ -7352,7 +7352,7 @@
       "xp",
       "craftrecipe-gating"
     ],
-    "excerpt": "Skills, traits and progression, in 16 parts: The mental model, The Build 42 skill list, B41 -> B42 skill changes, XP, level thresholds & multipliers, Learning: learn-by-doing, skill books, recipe...",
+    "excerpt": "A map of the skills, traits and professions pages for Build 42.22: what each one answers, the key numbers in one place, and the order to read them in.",
     "difficulty": "intermediate"
   },
   {
@@ -7370,7 +7370,7 @@
       "xp",
       "craftrecipe-gating"
     ],
-    "excerpt": "Internal (script) names are what you use in scripts and Lua (Perks.Blacksmith, SkillTrained = Blacksmith, SkillRequired = Blacksmith:4). Display names are what the player sees.",
+    "excerpt": "The 35 skills Build 42.22 registers, in the six groups the Skills tab shows, and the three names a skill can have: engine id, display name and skill-book name.",
     "difficulty": "intermediate"
   },
   {
@@ -7388,7 +7388,7 @@
       "xp",
       "craftrecipe-gating"
     ],
-    "excerpt": "Project Zomboid calls skill lines perks internally, even though the character screen labels them \"Skills.\" Two distinct systems meet at character creation:",
+    "excerpt": "Start here. In 42.22 a skill is a perk with 0 to 10 levels, a trait and a profession are script blocks that give a character its starting levels and recipes, and the server decides XP.",
     "difficulty": "intermediate"
   },
   {
@@ -7510,7 +7510,7 @@
       "xp",
       "craftrecipe-gating"
     ],
-    "excerpt": "Thresholds. Each perk defines ten XP thresholds xp1..xp10. The exact vanilla curves are now [CONFIRMED via pzwiki Skill, revid 1436755] (the wiki attributes the specific figures to build 41.78.16...",
+    "excerpt": "How Build 42.22 turns XP into levels: the cost of each level, the order of the multipliers, the calls that grant XP, and which side (single player, client, server) does the work.",
     "difficulty": "intermediate"
   },
   {
