@@ -14,79 +14,69 @@ tags:
   - map-modding
   - tiledefs
 excerpt: >-
-  Bottom line (CONFIRMED -- pzwiki: Mapping, revid 1443363): usable via
-  community forks; the wiki now calls them reliable.
-last_updated: '2026-09-29'
+  What the Build 42.22 game checks in a map tool's output, and what is only reported about the editors by the community wiki. Tool behavior is marked not verified and dated.
+last_updated: '2026-11-15'
 related_articles:
   - basics-what-changed-and-why-it-matters-to-modders
-  - the-map-expansion-knox-country-new-towns
-  - multi-z-the-vertical-engine-change
-  - basements-the-underground-system
-  - tile-system
-  - the-new-lighting-rendering-engine
   - how-to-make-a-b42-map-building-basement
   - map-files-map-info-spawnpoints-lua-folder-structure
-  - zones-vehicle-parking-zones-foraging
-  - multiplayer-map-streaming-notes
   - map-tile-modder-migration-checklist
+  - basements-the-underground-system
 ---
-# Map-modding toolchain for B42 (readiness assessment)
+::field-notes
 
-> Source: 06_WORLD_MAP_BASEMENTS_TILES.md (compiled 2026-07-29, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-15.
 
-**Bottom line (CONFIRMED -- pzwiki: Mapping, revid 1443363): usable via community
-forks; the wiki now calls them reliable.**
+:::callout[The 1-minute version]{kind=key}
+- The map editors are separate programs, and the game's code cannot say which editor build is "ready". What it can say is what a tool's output must look like for the game to load it.
+- A lot file must carry a version of 0 or 1, and a `.lotheader` must say its chunks are 8 by 8 squares, or that cell fails to load and the game logs an error for it.
+- A tile name in a lot file that the game has no definition for is logged as "Missing tile definition", and the square is left without that tile.
+- A basement piece is a `.pzby` file that starts with the four bytes `PZBY`. A `tiledef=` number in `mod.info` must be from 100 to 8189 or the mod is refused.
+- Which community build of the tools to use, and whether official tools have shipped, is reported by the community wiki. It is not verified here, as of 2026-11-15. The [tools setup page](/pz/build-42/mapping/fundamentals/tools-setup) is where the mapping section keeps it.
+:::
 
-### 7.1 Official tools status (CONFIRMED)
-- **No official B42 mapping-tool release** yet. The tools are a **public GitHub
-  project** anyone can compile and are "fully usable to make maps."
-- TIS (quoted from the **NEXT STEPS 2** blog on the Mapping page) will release,
-  after Stable + hotfixing: *"both our latest mapping tools (WorldZed, TileZed,
-  etc.) and our in-house animation editor and integration tool, AnimZed."* Note
-  the name **WorldZed** (the successor to WorldEd) and the addition of **AnimZed**.
-- The official package historically = **TileZed + WorldEd + PNG tiles**
-  (pzwiki: Mapping tools (official), revid 1390645). **BuildingEd was merged into
-  TileZed** (pzwiki: BuildingEd, revid 1386547). WorldEd unifies cells into a
-  complete map (pzwiki: WorldEd, revid 1395235).
+:::facts
+- **Lot file versions the game accepts** 0 and 1
+- **Chunk width the cell header must declare** 8 x 8 squares
+- **Piece file marker** the four bytes `PZBY`
+- **tiledef= range** 100 to 8189 (the old page said 100 to 8190)
+- **Reported community tool builds** 2 (not verified)
+:::
 
-### 7.2 Community forks you actually use today (CORRECTED)
-The wiki names **two** community forks (the earlier doc's "Unjammer/Alree" was one
-person, and it missed Crater's edition):
-- **Mapping tools (Alree)** -- by Alree (a.k.a. Unjammer on GitHub). A fork of the
-  B41 official tools with changes merged from *before the April 2025 build* of the
-  official B42 tools. Widely used and good, but may lag the latest official
-  improvements. **CONFIRMED.**
-- **Mapping tools (Community Edition)** -- by **Crater**. A **direct fork of the
-  B42 official tools**, merging some of Alree's elements plus further
-  improvements. **CONFIRMED.** (This is the more up-to-date option.)
+Outcast, a map tool is only as good as the files it writes, and the game is strict about three things in them. This page lists those checks first, since they hold for any tool, and then what the old page reported about the editors, kept apart and dated.
 
-The wiki's own reliability note (upgraded from the earlier UNCERTAIN alarm):
-> "While the official mapping tools for Build 42 are not yet released, the
-> community tools still provide a reliable way to create maps for Build 42,
-> without any serious problems that should arise from moving to the official tools
-> in the future."
+## 1. What the game checks in a tool's output
 
-**Correction to the prior draft:** the earlier "tiledef / `newtilesdef` is the
-shakiest area" warning was based on mid-2025 GitHub comments. The canonical wiki
-does not corroborate a systemic tiledef problem and instead deems the forks
-reliable. Downgrade that alarm to "watch for tool-version quirks," not "expect
-tiledef breakage."
+The game reads each lot file's version and refuses a version it does not know.
 
-### 7.3 Reference assets (CONFIRMED)
-- **Unjammer `PZ_Vanilla_map_b42`** -- the vanilla Kentucky map reverse-engineered
-  into a WorldEd/TileZed project. Great reference; building TBX files are
-  **reconstructions** (original TBX metadata/tile categories are not fully
-  recoverable). The Mapping page links this as the "Knox Country unofficial
-  export" via the Vanilla Map Export project.
-- **Building pools** (reusable building collections) listed by the wiki: Building
-  Pool (official), Blackbeard, okkydoo, Dylan, Community Architect, B42 Vanilla
-  Map Building Exports.
+A `.lotpack` carries a version of 0 or 1, and anything else raises "Unsupported version". :cite[(`zombie/iso/IsoLot.java:134-139`)] A `.lotheader` does the same, and it must also say its chunk width and height are 8, or the loader throws "invalid chunk width". :cite[(`zombie/iso/IsoMetaGrid.java:2227`, `zombie/iso/IsoMetaGrid.java:2241`, `zombie/iso/IsoMetaGrid.java:2364-2369`)] When a cell throws, the game logs "ERROR loading" with the file's path and moves to the next cell. :cite[(`zombie/iso/IsoMetaGrid.java:2370-2374`)]
 
-**Readiness verdict:** GREEN to prototype and build custom maps/buildings/
-basements now with **Crater's Community Edition** (or Alree's fork); YELLOW only
-for anything depending on not-yet-shipped official-tool features; re-verify once
-WorldZed/TileZed/AnimZed officially ship post-42.20.
+A lot file is therefore a hard fit. As read, a tool that writes 10-square chunks, as Build 41 did, produces a cell the game will not load.
 
----
+A tile name that is not defined is not an error that stops the map. The game logs "Missing tile definition" with the name, and carries on without the tile. :cite[(`zombie/iso/IsoCell.java:2522-2525`)] The names a cell uses are listed in its `.lotheader`. :cite[(`zombie/iso/IsoMetaGrid.java:2228-2233`)] The tile definition side is on the [tile system page](/pz/build-42/modding/world-and-tiles/tile-system).
 
-<a name="8-authoring"></a>
+The two other checks are on a mod's own files. A basement piece begins with `PZBY`, then a version, its tile names, size, levels, rooms and buildings. :cite[(`zombie/iso/NewMapBinaryFile.java:216-264`)] A `tiledef=` line needs a file name and a number from 100 to 8189, and a line outside that range makes the mod fail to read. :cite[(`zombie/gameStates/ChooseGameInfo.java:305-326`)] The old page said to use a number from 100 to 8190 and to avoid anything above 8190; the game's own limit is 8189.
+
+## 2. What the old page reported about the editors
+
+The old page's account of the editors came from the community wiki and from TIS blog text quoted there, so all of it is not verified as of 2026-11-15.
+
+- **Official tools.** It reported that no official Build 42 mapping tool had been released, that the tools are a public project anyone can compile, and that TIS would release WorldZed, TileZed and an animation tool (AnimZed) after the stable build and its hotfixes. It said the official package was TileZed, WorldEd and PNG tiles, with the building editor merged into TileZed, and that WorldEd joins cells into a map.
+- **Two community builds.** It named the build by Alree (GitHub name Unjammer), a fork of the Build 41 tools with changes from before April 2025, and the Community Edition by Crater, a direct fork of the Build 42 official tools. It added that Crater's edition was the more up to date.
+- **Reliability.** It quoted the wiki as saying the community tools are a reliable way to make Build 42 maps. It dropped an earlier warning that the tile definition files (`newtilesdef`) were the shakiest area, because the wiki did not back it.
+- **Verdict.** It rated the toolchain "green" for building maps, buildings and basements now, and "yellow" for anything that needs official-tool features that had not shipped.
+
+Those four points are dropped as advice, since a readiness grade is a judgment about software the capture does not hold. The facts in them are kept above and marked. The mapping section keeps the current tool notes on the [tools setup page](/pz/build-42/mapping/fundamentals/tools-setup) and the [cell-size page](/pz/build-42/mapping/fundamentals/the-cell-size-question); read those for which tool to run.
+
+## 3. Reference material the old page listed
+
+The old page listed one reference project and several building collections, all from the community wiki.
+
+The reference project is `PZ_Vanilla_map_b42`, a Build 42 vanilla map export that rebuilds the Kentucky map as an editor project. The old page said its building files are reconstructions, because the original building metadata cannot be fully recovered. The building collections were listed as the official Building Pool, Blackbeard, okkydoo, Dylan, Community Architect and "B42 Vanilla Map Building Exports". None of this is verified here, and the repository's [mapping section](/pz/build-42/mapping/buildings-and-tiles/buildings-and-buildinged) covers buildings.
+
+:::callout[How we know]{kind=proof}
+- The checks in section 1 are read from the 42.22 decompile: `IsoLot.java`, `IsoMetaGrid.java`, `IsoCell.java`, `NewMapBinaryFile.java` and `ChooseGameInfo.java`. None was tested with a deliberately bad file.
+- Not verified, as of 2026-11-15: everything in sections 2 and 3, which is what the old page quoted from the community wiki ("Mapping", revision 1443363, and pages on the tools and the building editor) and a TIS blog post.
+- The tiledef limit changed from the old page's figure. The game's check is `fileNumber < 100 || fileNumber > 8189`.
+- Dropped: the old page's "readiness verdict" and the downgrade of the tiledef warning to "tool-version quirks". They were opinions about tool builds, not facts about the game.
+:::
