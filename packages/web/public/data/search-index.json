@@ -7850,7 +7850,7 @@
       "locks",
       "multiplayer"
     ],
-    "excerpt": "A barricade is its own object on one face of a door or window, with plank, metal and metal-bar health. Any barricade, even one with no planks left standing, stops a door opening from either side, and anyone can take any barricade down. How barricades take damage, and the lock hardware the game already has. Read from the 42.21 code.",
+    "excerpt": "In 42.22 a barricade is its own object on one face of a door or window. Any barricade object blocks the door from both sides, anyone can remove it, and the plank recipe takes 1 plank and 1 nail.",
     "difficulty": "intermediate"
   },
   {
@@ -7994,7 +7994,7 @@
       "map-modding",
       "tiledefs"
     ],
-    "excerpt": "CONFIRMED / LIKELY (hosting sources, not wiki): Ports: UDP 16261 (handshake); TCP 16262 (map-data streaming). Player-count sensitivity: above ~32 players -> poor streaming/desync. TIS B42 MP...",
+    "excerpt": "What 42.22 does when a client needs map chunks: both game ports are UDP (there is no TCP map stream), requests are capped, and the server sends only chunks the client's copy lacks.",
     "difficulty": "intermediate"
   },
   {
@@ -8012,7 +8012,7 @@
       "map-modding",
       "tiledefs"
     ],
-    "excerpt": "CONFIRMED (dev blogs). B42 is a heavy evolution/overhaul of Knox Country (the Kentucky setting), aiming for areas that feel more lived-in and believable.",
+    "excerpt": "What the 42.22 files show of Knox Country: 11 map folders, a 78 by 63 cell world, 256-square cells, 8-square chunks, and a 300-square spawn rule. Counts and town history are not verified.",
     "difficulty": "intermediate"
   },
   {
@@ -8030,7 +8030,7 @@
       "map-modding",
       "tiledefs"
     ],
-    "excerpt": "CONFIRMED (dev blogs). B42's lighting/rendering overhaul is the biggest visual change and has direct modding implications. (The canonical PZwiki \"Rendering\" page is unrelated -- it covers Blender...",
+    "excerpt": "What the 42.22 Java shows about light: squares go to a native library, tile properties make colored lights, and doors, curtains and barricades pass fixed amounts. The rest is native.",
     "difficulty": "intermediate"
   },
   {
@@ -8048,7 +8048,7 @@
       "map-modding",
       "tiledefs"
     ],
-    "excerpt": "To get a custom tile into the game you still need all three (pzwiki: Adding new tiles, revid 1385091 -- note this page carries an {{Outdated}} banner and a 41.78.19 version tag, so treat...",
+    "excerpt": "How a custom tile gets into 42.22: the two mod.info lines, the tiledef number range (100 to 8189), sprite ids, tile depth shapes and the tile properties the code names.",
     "difficulty": "intermediate"
   },
   {
@@ -8084,7 +8084,7 @@
       "map-modding",
       "tiledefs"
     ],
-    "excerpt": "For vehicles to spawn, add object zones that are multiples of 4x3 (8x6, 4x6, 12x3, ...), of type ParkingStall, named one of:",
+    "excerpt": "How 42.22 turns a zone named on the map into parked cars: Vehicle and ParkingStall zones park cars, the name picks the table, cars sit on a grid, and only unseen chunks get them. Plus foraging zones.",
     "difficulty": "intermediate"
   },
   {
