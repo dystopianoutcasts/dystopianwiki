@@ -11,14 +11,14 @@
     {
       "id": "animation",
       "name": "Animation",
-      "description": "How to make a Build 42 vehicle part visibly animate, and the silent-failure catalogue behind it.",
+      "description": "How to make a Build 42 vehicle part visibly animate, and the silent-failure catalog behind it.",
       "icon": "gear",
       "articleCount": 14,
       "displayOrder": 2
     },
     {
       "id": "mod-studies",
-      "name": "Mod studies",
+      "name": "Mod Studies",
       "description": "What Project Summer Car, the physics mods and the wider community vehicle mods actually do, read from their shipped files.",
       "icon": "car",
       "articleCount": 29,
