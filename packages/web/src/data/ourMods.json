@@ -218,7 +218,7 @@
   {
     "id": "OutcastBuddy",
     "workshopId": "3838159103",
-    "name": "Outcast Buddy",
+    "name": "Outcast Checkpoint",
     "group": "Outcast",
     "blurb": "The helper that lets the game load the Java parts of Outcast mods (the Outcast Viewpoint first-person view and the Outcast loading screen).",
     "poster": "/assets/mods/OutcastBuddy.webp",

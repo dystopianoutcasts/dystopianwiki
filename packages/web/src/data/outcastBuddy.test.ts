@@ -1,5 +1,5 @@
 /**
- * Outcast Buddy download data. node:test, run with
+ * Outcast Checkpoint download data. node:test, run with
  * `npx tsx --test src/data/outcastBuddy.test.ts` from packages/web.
  */
 import assert from 'node:assert/strict'
@@ -19,7 +19,7 @@ test('the download is the exact release on our installer repo, over https', () =
   assert.equal(url.hostname, 'github.com')
   assert.equal(
     url.pathname,
-    `/dystopianoutcasts/OutcastBuddy-Installer/releases/download/v${INSTALLER_VERSION}/OutcastBuddyInstaller.exe`,
+    `/dystopianoutcasts/OutcastBuddy-Installer/releases/download/v${INSTALLER_VERSION}/OutcastCheckpointInstaller.exe`,
   )
 })
 
@@ -27,7 +27,7 @@ test('the SHA-256 shown is a full 64-character hash', () => {
   assert.match(INSTALLER_SHA256, /^[0-9A-F]{64}$/)
 })
 
-test('the Workshop link is the Outcast Buddy item', () => {
+test('the Workshop link is the Outcast Checkpoint item', () => {
   assert.match(BUDDY_WORKSHOP_ID, /^[0-9]{6,20}$/)
   assert.equal(new URL(BUDDY_WORKSHOP_URL).searchParams.get('id'), BUDDY_WORKSHOP_ID)
 })

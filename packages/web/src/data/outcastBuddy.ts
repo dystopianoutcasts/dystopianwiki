@@ -1,5 +1,5 @@
 /**
- * Outcast Buddy: the helper that lets Project Zomboid load the Java parts of our mods
+ * Outcast Checkpoint (formerly Outcast Buddy): the helper that lets Project Zomboid load the Java parts of our mods
  * (Outcast Viewpoint, the Outcast loading screen). Shown at /buddy.
  *
  * The installer file is served from the GitHub release, not copied onto this site, so there is
@@ -13,10 +13,10 @@
  */
 
 /** The release tag on dystopianoutcasts/OutcastBuddy-Installer, without the leading "v". */
-export const INSTALLER_VERSION = '3.0.0-beta18'
+export const INSTALLER_VERSION = '3.0.0-beta19'
 /** SHA-256 of OutcastBuddyInstaller.exe in that release (checked 2026-11-21 against GitHub's digest). */
-export const INSTALLER_SHA256 = '2088D5575F503EBD04D859DA315A58E1F65551344CD8E0659BB198EE6CFF84EF'
-export const INSTALLER_BYTES = 9197568
+export const INSTALLER_SHA256 = 'FDFAFCB8A2F39EA5DD31BF1F60D14794E959560A94204C6D05E7E3B2A6D14332'
+export const INSTALLER_BYTES = 9198080
 /** When the release was published, ISO date. */
 export const INSTALLER_DATE = '2026-11-21'
 
@@ -26,7 +26,7 @@ export const INSTALLER_DATE = '2026-11-21'
  */
 export const BROKEN_INSTALLER_VERSION = '3.0.0-beta3'
 
-export const INSTALLER_FILE = 'OutcastBuddyInstaller.exe'
+export const INSTALLER_FILE = 'OutcastCheckpointInstaller.exe'
 export const INSTALLER_REPO_URL = 'https://github.com/dystopianoutcasts/OutcastBuddy-Installer'
 export const INSTALLER_DOWNLOAD_URL = `${INSTALLER_REPO_URL}/releases/download/v${INSTALLER_VERSION}/${INSTALLER_FILE}`
 export const INSTALLER_RELEASES_URL = `${INSTALLER_REPO_URL}/releases`

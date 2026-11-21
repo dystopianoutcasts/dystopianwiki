@@ -1,7 +1,7 @@
 /**
- * OutcastBuddyPage (/buddy) - download and install Outcast Buddy, in Rax's own words.
+ * OutcastBuddyPage (/buddy) - download and install Outcast Checkpoint, in Rax's own words.
  *
- * The one job here is "get Outcast Buddy working": subscribe on the Workshop, download the
+ * The one job here is "get Outcast Checkpoint working": subscribe on the Workshop, download the
  * installer, click Install. Both actions are labeled buttons at the top; the steps and the
  * answers to "what does it change", "how do I undo it" follow. The text matches the
  * Install Instructions file inside the Workshop item.
@@ -32,15 +32,15 @@ export function OutcastBuddyPage() {
   return (
     <Layout>
       <SEOHead
-        title="Outcast Buddy"
+        title="Outcast Checkpoint"
         description="The helper that lets Project Zomboid load the Java parts of our mods: Outcast Viewpoint and the Outcast loading screen. Install it once with one click."
       />
       <main className="buddy">
         <header className="buddy__header">
           <p className="buddy__kicker">Dystopian Outcasts</p>
-          <h1 className="buddy__title">Outcast Buddy</h1>
+          <h1 className="buddy__title">Outcast Checkpoint</h1>
           <p className="buddy__lead">
-            Hi, and welcome! I'm Rax, and I'm really glad you're here. Outcast Buddy is the small
+            Hi, and welcome! I'm Rax, and I'm really glad you're here. Outcast Checkpoint (formerly Outcast Buddy) is the small
             helper that lets Project Zomboid load the Java parts of our mods, like the{' '}
             <strong>Outcast Viewpoint</strong> first-person view and our loading screen. Setting it
             up takes about a minute, and you only ever do it once.
@@ -50,7 +50,7 @@ export function OutcastBuddyPage() {
         <section className="buddy__get boone-rivets" aria-labelledby="buddy-get-title">
           <RemoveBeforeFlight />
           <h2 id="buddy-get-title" className="buddy__get-title">
-            Get Outcast Buddy
+            Get Outcast Checkpoint
           </h2>
           <div className="buddy__actions">
             <div className="buddy__action">
@@ -103,7 +103,7 @@ export function OutcastBuddyPage() {
           <h2 id="buddy-install-title">How to install (one time)</h2>
           <ol className="buddy__steps">
             <li>
-              <strong>Subscribe to Outcast Buddy</strong> on the Steam Workshop, and let Steam finish
+              <strong>Subscribe to Outcast Checkpoint</strong> on the Steam Workshop, and let Steam finish
               downloading it.
             </li>
             <li>
@@ -113,7 +113,7 @@ export function OutcastBuddyPage() {
               <strong>Close Project Zomboid.</strong>
             </li>
             <li>
-              <strong>Double-click {INSTALLER_FILE} and click Install Outcast Buddy.</strong> That's
+              <strong>Double-click {INSTALLER_FILE} and click Install Outcast Checkpoint.</strong> That's
               it!
               <ul>
                 <li>
@@ -176,25 +176,25 @@ export function OutcastBuddyPage() {
             <dt>Updates</dt>
             <dd>
               You never need to run the installer again for updates. They come through your Workshop
-              subscription, and Outcast Buddy puts them in place on its own. A new update is ready the
+              subscription, and Outcast Checkpoint puts them in place on its own. A new update is ready the
               next time you start the game, or the time after that.
             </dd>
             <dt>If you unsubscribe</dt>
             <dd>
-              Outcast Buddy switches itself off and the game plays as normal. You'll see a short note
+              Outcast Checkpoint switches itself off and the game plays as normal. You'll see a short note
               on the main menu saying so. Subscribe again and it switches back on.
             </dd>
             <dt>Removing it</dt>
             <dd>
               Run {INSTALLER_FILE} again, click <strong>Uninstall</strong>, then{' '}
-              <strong>Remove Outcast Buddy</strong>. It puts every file and setting back the way it was.
+              <strong>Remove Outcast Checkpoint</strong>. It puts every file and setting back the way it was.
               In the 3.0.0-beta4 installer that last button did nothing, sorry! Download the new one
               above and it works.
             </dd>
             <dt>Prefer the game's own loading screen?</dt>
             <dd>
               Go to <strong>Options</strong>, then <strong>Mods</strong>, then{' '}
-              <strong>Outcast Buddy</strong>, and uncheck "Show the Outcast loading screen".
+              <strong>Outcast Checkpoint</strong>, and uncheck "Show the Outcast loading screen".
             </dd>
           </dl>
         </section>
@@ -219,7 +219,7 @@ export function OutcastBuddyPage() {
 
         <footer className="buddy__footer">
           <p className="buddy__credits">
-            Outcast Buddy is built on the open-source Zombie Buddy loader (MIT license). The license
+            Outcast Checkpoint is built on the open-source Zombie Buddy loader (MIT license). The license
             text is included in the Workshop item as LICENSE.txt.
           </p>
           <Link to="/" className="buddy__home">
