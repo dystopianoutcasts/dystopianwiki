@@ -12,10 +12,10 @@
  * SERVERBUDDY_BYTES and SERVERBUDDY_DATE here, rebuild and deploy the site.
  */
 
-export const SERVERBUDDY_VERSION = '0.6.0'
-/** SHA-256 of ServerBuddy-0.6.0.exe (ServerBuddy commit c66a807, built 2026-11-15): the at-a-glance dashboard (All servers, Overview with Restart/Stop/Message/Update, What happened, Performance graphs), Java mod approvals for the pack, and the 0.5 tools (logs, console, restarts, schedules, settings, mods, players, the sb command line). */
-export const SERVERBUDDY_SHA256 = '6A159EA9F99F701B73FC806DFD1C78B412DA6058845D4309A39ADB1FB148BF64'
-export const SERVERBUDDY_BYTES = 15523840
+export const SERVERBUDDY_VERSION = '0.6.3'
+/** SHA-256 of ServerBuddy-0.6.3.exe (ServerBuddy commit f41616b, built 2026-11-15): 0.6.0's dashboard plus Files search (find in this folder, also by a Workshop folder's mod name) and a clickable path, restarts refused while a newly set up restart loop is not running yet, events that name a Workshop item the server could not download, restart warnings that save as they are typed, and a default restart every 8 hours. */
+export const SERVERBUDDY_SHA256 = '1086D2AABB373480B922BFA5122705C294BDA942D0B351DFBC3495BFB2C7962D'
+export const SERVERBUDDY_BYTES = 15608832
 /** When this build was made, ISO date. */
 export const SERVERBUDDY_DATE = '2026-11-15'
 
