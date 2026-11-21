@@ -12,12 +12,12 @@
  * SERVERBUDDY_BYTES and SERVERBUDDY_DATE here, rebuild and deploy the site.
  */
 
-export const SERVERBUDDY_VERSION = '0.6.3'
-/** SHA-256 of ServerBuddy-0.6.3.exe (ServerBuddy commit f41616b, built 2026-11-15): 0.6.0's dashboard plus Files search (find in this folder, also by a Workshop folder's mod name) and a clickable path, restarts refused while a newly set up restart loop is not running yet, events that name a Workshop item the server could not download, restart warnings that save as they are typed, and a default restart every 8 hours. */
-export const SERVERBUDDY_SHA256 = '1086D2AABB373480B922BFA5122705C294BDA942D0B351DFBC3495BFB2C7962D'
-export const SERVERBUDDY_BYTES = 15608832
+export const SERVERBUDDY_VERSION = '0.6.5'
+/** SHA-256 of ServerBuddy-0.6.5.exe (ServerBuddy commit cbe7ae5, built 2026-11-21): one program (the command line is built in), "Java on this server" (each Java mod's version, newest or not, running or blocked, Approve), and "Set up Outcast on this server" (one button: adds Outcast Buddy, its startup line, the Java approvals and the restart loop, restarts only when needed, and finishes by itself). */
+export const SERVERBUDDY_SHA256 = '67593C692E87A9A37C0C930156BF34AA91CE83A5FBF402B6A0ADDC89073647AD'
+export const SERVERBUDDY_BYTES = 16327168
 /** When this build was made, ISO date. */
-export const SERVERBUDDY_DATE = '2026-11-15'
+export const SERVERBUDDY_DATE = '2026-11-21'
 
 export const SERVERBUDDY_BUCKET = 'admin-tools'
 export const SERVERBUDDY_FILE = `ServerBuddy-${SERVERBUDDY_VERSION}.exe`
