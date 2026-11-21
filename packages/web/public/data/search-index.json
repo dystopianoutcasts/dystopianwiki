@@ -5192,11 +5192,10 @@
     "tags": [
       "animaldefinitions",
       "farming",
-      "ranch-zones",
-      "foraging",
-      "husbandry"
+      "husbandry",
+      "genetics"
     ],
-    "excerpt": "Every animal type has a set of abstracted genes, each carrying two alleles, one inherited randomly from each parent. Named genes include milk quantity, life expectancy, strength, appearance, and...",
+    "excerpt": "How 42.22 gives each animal two alleles per gene, passes them on, applies 28 disorders, and turns genes into size, weight and growth time. Includes every species' weight range.",
     "difficulty": "intermediate"
   },
   {
@@ -5213,7 +5212,7 @@
       "animation",
       "animsets"
     ],
-    "excerpt": "What the engine requires of a new animal type, measured from the B42 decompile and the installed game files (PZ 42.19...",
+    "excerpt": "What 42.22 needs for a new animal type: a rig of at most 60 bones, an AnimSet, an action group, clips tied to the mesh by an animationsMesh script, and a model script. With the traps found.",
     "difficulty": "advanced"
   },
   {
@@ -5227,11 +5226,10 @@
     "tags": [
       "animaldefinitions",
       "farming",
-      "ranch-zones",
-      "foraging",
-      "husbandry"
+      "husbandry",
+      "animals"
     ],
-    "excerpt": "B42 living animals are defined by a stack of per-animal-type properties. The wiki groups them conceptually [CONFIRMED]:",
+    "excerpt": "The 42.22 animal system in one page: the 10 species, what an animal tracks each game hour, breeding and pens, zombies, the info panel by Animal Care level, 14 sandbox options, and which side runs it.",
     "difficulty": "intermediate"
   },
   {
@@ -5245,11 +5243,10 @@
     "tags": [
       "animaldefinitions",
       "farming",
-      "ranch-zones",
-      "foraging",
-      "husbandry"
+      "husbandry",
+      "butchering"
     ],
-    "excerpt": "Butchering skill governs meat quality harvested from an animal; quality rises each level. [CONFIRMED] (Butchering recipes and detailed mechanics are not in the cached farming/animal sources -- see...",
+    "excerpt": "What a dead animal becomes in 42.22: a corpse with butchering data, how Butchering level, size, meat ratio and rot set the meat you get, the hook, leather recipes, and who runs it.",
     "difficulty": "intermediate"
   },
   {
@@ -5336,10 +5333,9 @@
       "animaldefinitions",
       "farming",
       "ranch-zones",
-      "foraging",
       "husbandry"
     ],
-    "excerpt": "RanchZoneDefinitions controls where and which animals spawn on the map. Ranch zones are a specific zone type for spawning animals -- used for mapping and animal modding. [CONFIRMED]",
+    "excerpt": "How 42.22 puts animals on a map: the 21 ranch definitions, what each key does, the dice a ranch zone rolls once, and the dead animals a late-game ranch can spawn.",
     "difficulty": "intermediate"
   },
   {
@@ -5371,11 +5367,10 @@
     "tags": [
       "animaldefinitions",
       "farming",
-      "ranch-zones",
-      "foraging",
-      "husbandry"
+      "husbandry",
+      "modding"
     ],
-    "excerpt": "AnimalDefinitions is a global Lua table holding all animal definitions and properties -- behavior, characteristics, interactions. It has four sub-tables you populate, keyed by your chosen...",
+    "excerpt": "What 42.22 reads from the AnimalDefinitions Lua table: the 116 keys of an animal entry, the stage, breed, gene and sound keys, their defaults, and the traps in vanilla's own files.",
     "difficulty": "intermediate"
   },
   {
