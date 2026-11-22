@@ -15,7 +15,7 @@ tags:
   - sandbox
 excerpt: >-
   How far a zombie sees you (up to 20 tiles by day, never under 10), how its sight chance changes with light, facing and sneaking, and how far walking, fights and gunshots carry. 42.22 code.
-last_updated: '2026-11-15'
+last_updated: '2026-11-22'
 related_articles:
   - how-long-zombies-remember-you
   - the-helicopter-event
@@ -210,7 +210,7 @@ Not every footstep counts: a step makes a noise one time in two, or while sneaki
 
 ### Gunshots and fights
 
-A shot makes a noise of the gun's `SoundRadius` times the **Firearm Noise Multiplier** sandbox setting (default 1.0, range 0.2 to 2.0), halved if you are indoors, and the pull uses the gun's own volume. :cite[(`media/lua/shared/TimedActions/ISReloadWeaponAction.lua:443-450`, `zombie/SandboxOptions.java:253`)] Melee is quieter: the swing itself makes no noise, but every hit that lands makes one of radius 8, plus either a radius 10 noise (one time in three, or always for a shove at the floor) or, otherwise, a radius 16 noise one time in seven. :cite[(`zombie/CombatManager.java:1176-1182`)] The close-range knife kill skips those and makes a radius 4 noise. :cite[(`zombie/CombatManager.java:1170`)] Every hit that lands on a character also adds a radius 5 noise. :cite[(`zombie/characters/IsoGameCharacter.java:6145`)]
+A shot makes a noise of the gun's `SoundRadius` times the **Firearm Noise Multiplier** sandbox setting (default 1.0, range 0.2 to 2.0), halved if you are indoors, and the pull uses the gun's own volume. :cite[(`media/lua/shared/TimedActions/ISReloadWeaponAction.lua:443-450`, `zombie/SandboxOptions.java:253`)] Melee is quieter: the swing itself makes no noise, but every hit that lands makes one of radius 8, plus either a radius 10 noise (one time in three, or always for a shove at the floor) or, otherwise, a radius 16 noise one time in seven. :cite[(`zombie/CombatManager.java:1176-1182`)] The close-range knife kill skips those and makes a radius 4 noise. :cite[(`zombie/CombatManager.java:1170`)] Every hit that lands on a character also adds a radius 5 noise at volume 1. :cite[(`zombie/characters/IsoGameCharacter.java:6145`)]
 
 ```lua
 local radius = weapon:getSoundRadius() * getSandboxOptions():getOptionByName("FirearmNoiseMultiplier"):getValue();

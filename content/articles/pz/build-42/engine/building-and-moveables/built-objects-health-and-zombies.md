@@ -17,7 +17,7 @@ tags:
   - multiplayer
 excerpt: >-
   How many hit points built walls, doors and furniture get, how zombies thump them down (one zombie barely scratches a wall), what comes back when one breaks, plus repair, fire and vehicles.
-last_updated: '2026-11-14'
+last_updated: '2026-11-22'
 related_articles:
   - how-building-works
   - moveables-pick-up-place-and-scrap
@@ -213,7 +213,7 @@ Fire ignores health and swaps a built object for a burnt tile where the tile has
 
 Barricades are separate objects on a door or window face, with their own health.
 
-Their health is plank 1,000, metal bars 3,000 and metal sheet 5,000, all checked again in 42.22. :cite[(`zombie/iso/objects/IsoBarricade.java:61-64`)] A zombie hit takes the zombie's strength off them. :cite[(`:356`)] They are covered in [Barricades and locks in vanilla](/pz/build-42/modding/world-and-tiles/barricades-and-locks-in-vanilla). Where that page differs from 42.22:
+Their health is plank 1,000, metal bars 3,000 and metal sheet 5,000, all checked again in 42.22. :cite[(`zombie/iso/objects/IsoBarricade.java:61-64`)] The 3,000 is the bar constant, not what a placed bar starts with: a bar added from an item starts at the item's condition as a fraction of its maximum times 5,000, and that value is then scaled by the player's metal-barricade strength modifier. :cite[(`zombie/iso/objects/IsoBarricade.java:164-170`)] A zombie hit takes the zombie's strength off them. :cite[(`:356`)] They are covered in [Barricades and locks in vanilla](/pz/build-42/modding/world-and-tiles/barricades-and-locks-in-vanilla). Where that page differs from 42.22:
 
 - Planks cost one plank and **one** nail in the build recipe :cite[(`media/scripts/generated/entities/barricades/entity_barricade_planks.txt:57-58`)]; the page says two. The older `ISBarricadeAction` still checks for two nails :cite[(`media/lua/shared/TimedActions/ISBarricadeAction.lua:37`)] but vanilla Lua only calls it from a test file. :cite[(`media/lua/client/Tests/TimedActionsTests.lua:498`)] The right-click barricade code builds through the entity recipe. :cite[(`media/lua/client/ISUI/ISWorldObjectContextMenu.lua:3082-3088`)] Which path a live game takes is not verified.
 - The metal-sheet and metal-bar barricades need Welding 3 plus welding rods, which the page does not mention. :cite[(`entity_barricade_metalsheet.txt:52-59`, `entity_barricade_metalbar.txt:52-59`)]

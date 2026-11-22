@@ -12,7 +12,7 @@ tags:
   - sandbox-options
   - admin
 excerpt: 'The server owner''s handbook for Build 42.22: your server''s files, every option, command and role, the things in the code that surprised us, and how the reference pages are made.'
-last_updated: '2026-11-15'
+last_updated: '2026-11-22'
 related_articles:
   - server-options-directory
   - sandbox-options-directory
@@ -87,7 +87,7 @@ Outcast, read these before you tune your world: each one is a place where the co
 
 **[BadWordPolicy](/pz/build-42/server/server-options/server-options-only-in-the-ini-file#badwordpolicy) cannot mute.** Its description offers "4 - mute", but the option only takes 1 to 3, and a 4 in the file is refused. :cite[(`zombie/network/ServerOptions.java:201`, `zombie/config/EnumConfigOption.java:14-16`, `zombie/config/IntegerConfigOption.java:99-104`)] The chat code has a branch for 4, but no value can reach it. :cite[(`zombie/network/chat/ChatServer.java:186-199`)]
 
-**45 server options are not on the settings screen's option pages,** the ten anti-cheat options among them. :cite[(`zombie/network/ServerOptions.java:203-212`)] The count of 45 comes from the extractor's reading of the screen's lists. Two of the 45, `Map` and `Mods`, have their own panels in the screen. :cite[(`media/lua/client/OptionScreens/ServerSettingsScreen.lua:4184-4192`)] You set the rest in the ini file, or with `/changeoption`. :cite[(`zombie/commands/serverCommands/ChangeOptionCommand.java:41-45`)]
+**45 server options are not on the settings screen's option pages,** the ten anti-cheat options among them. :cite[(`zombie/network/ServerOptions.java:203-212`)] The count of 45 comes from the extractor's reading of the screen's lists. Two of the 45, `Map` and `Mods`, have their own panels in the screen. :cite[(`media/lua/client/OptionScreens/ServerSettingsScreen.lua:4184-4192`)] You set the rest in the ini file, or with `/changeoption`. :cite[(`zombie/commands/serverCommands/ChangeOptionCommand.java:41-45`)] The in-game admin panel's server options list is a different screen: it lists every public option, the ten anti-cheat options included, so "not on the settings screen" holds for the screen before a game, not for that list. :cite[(`media/lua/client/ISUI/AdminPanel/ISServerOptions.lua:127-148`, `zombie/network/ServerOptions.java:225-233`)]
 
 **`/setaccesslevel` names a level that does not exist.** Its help text lists "Overseer", but no built-in role has that name; overseers default to the `gm` role. :cite[(`media/lua/shared/Translate/EN/UI.json:1438`, `zombie/characters/Roles.java:363-480`, `zombie/characters/Roles.java:489`)] And 3 commands, `/connections`, `/addalltowhitelist` and `/addusertowhitelist`, are switched off in this build. :cite[(`zombie/commands/serverCommands/ConnectionsCommand.java:21`, `zombie/commands/serverCommands/AddAllToWhiteListCommand.java:25`, `zombie/commands/serverCommands/AddUserToWhiteListCommand.java:24`, `zombie/commands/CommandBase.java:172-175`)]
 

@@ -15,7 +15,7 @@ tags:
   - sync
 excerpt: >-
   In 42.22 multiplayer a timed action's complete() runs on the server, the server folder loads on clients too, and a vehicle change reaches the client after the action says done. Where your code goes.
-last_updated: '2026-11-21'
+last_updated: '2026-11-22'
 related_articles:
   - lua-load-order-and-the-three-lua-folders
   - multiplayer-command-patterns
@@ -95,7 +95,7 @@ The real constraint is timing. A `shared/` file runs before any `server/` file e
 
 `OnGameStart` and `OnServerStarted` are raised by different code, so startup code that must run everywhere has to be registered on both.
 
-`OnGameStart` is raised only in `IngameState.enter()`, which a game screen runs. The dedicated server creates an `IngameState` object and calls its `update()`, but never `enter()`. :cite[(`IngameState.java:775`, `GameServer.java:860`, `GameServer.java:1068`)] `OnServerStarted` is raised only in `GameServer.startServer()`, which the server process's `main` calls. :cite[(`GameServer.java:1581`, `GameServer.java:847`)] Two more startup events differ by side. `OnGameBoot` is raised once on the client when the game starts and once on the server process before its worlds load, and the client raises it again after a Lua reload. :cite[(`GameWindow.java:666`, `GameServer.java:1544`, `IngameState.java:1085`)] `OnInitGlobalModData` is raised from `GlobalModData.init()`, which the world calls while it initializes; that runs wherever a world loads, so on a client, in single player and on a server. :cite[(`GlobalModData.java:58-61`, `IsoWorld.java:2028-2030`)]
+`OnGameStart` is raised only in `IngameState.enter()`, which a game screen runs. The dedicated server creates an `IngameState` object and calls its `update()`, but never `enter()`. :cite[(`IngameState.java:775`, `GameServer.java:860`, `GameServer.java:1068`)] `OnServerStarted` is raised only in `GameServer.startServer()`, which the server process's `main` calls. :cite[(`GameServer.java:1581`, `GameServer.java:847`)] Hosting a game in co-op does not raise it in the host's own game: the host's game starts a separate server process, and that process raises it. :cite[(`CoopMaster.java:125-129`)] Two more startup events differ by side. `OnGameBoot` is raised once on the client when the game starts and once on the server process before its worlds load, and the client raises it again after a Lua reload. :cite[(`GameWindow.java:666`, `GameServer.java:1544`, `IngameState.java:1085`)] `OnInitGlobalModData` is raised from `GlobalModData.init()`, which the world calls while it initializes; that runs wherever a world loads, so on a client, in single player and on a server. :cite[(`GlobalModData.java:58-61`, `IsoWorld.java:2028-2030`)]
 
 If the thing you register at startup is your logger, forgetting one of the two events means the server log you look for after a bad session is simply not there.
 

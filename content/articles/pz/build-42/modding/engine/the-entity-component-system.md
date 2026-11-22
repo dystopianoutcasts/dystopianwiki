@@ -15,7 +15,7 @@ tags:
   - multiplayer
 excerpt: >-
   Build 42.22 hangs components on world objects and items. What a GameEntity is, the 23 component types, when the engine ticks them and on which side, how machines run unloaded, and the traps.
-last_updated: '2026-11-21'
+last_updated: '2026-11-22'
 related_articles:
   - the-workstation-entity-system
   - fluids-for-modders-start-here
@@ -160,7 +160,9 @@ A crafting machine of the drying kind that has lost its object (the square no lo
 - **Items only tick while equipped.** Do not expect a component on an item in a bag to be updated by a system :cite[(`GameEntity.java:467-486`)].
 
 :::callout[How we know]{kind=proof}
-All of this is read from the 42.22 code and a count of `media/scripts`. The `Automatic` trap is read from the code; no machine we know of uses it. The test: a test entity with `CraftLogic` set to `StartMode = Automatic` and a one-input recipe, inputs loaded in single player. By the code the log shows a `NullPointerException` from `CraftLogicSystem.start` and the inputs disappear. Not tested.
+All of this is read from the 42.22 code and a count of `media/scripts`. The `Automatic` trap is read from the code; no machine we know of uses it.
+
+The test: a test entity with `CraftLogic` set to `StartMode = Automatic` and a one-input recipe, inputs loaded in single player. By the code the log shows a `NullPointerException` from `CraftLogicSystem.start` and the inputs disappear. Not tested.
 
 The 10 ticks per real second is our arithmetic from the code's time-delta formula and the 48 per second on another page, not a measurement of the entity engine. On a dedicated server the game sets its frame multiplier from the server's own frame rate, and a server frame step is paced at about 100 ms, one tick per step, per [reading server performance numbers honestly](/pz/build-42/modding/multiplayer/reading-server-performance-numbers-honestly) :cite[(`GameServer.java:1160-1166`)]. We read that from the code and did not measure it. The unit of the rain amount is not verified.
 :::

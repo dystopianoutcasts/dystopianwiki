@@ -15,7 +15,7 @@ tags:
   - administration
 excerpt: >-
   Each of the 20 Build 42.22 anti-cheat checks: what it tests, which option controls it, its counter limit, the reason text it writes, and when an honest player can trip it.
-last_updated: '2026-11-15'
+last_updated: '2026-11-22'
 related_articles:
   - how-anti-cheat-works
   - anti-cheat-server-options
@@ -224,6 +224,8 @@ A role that holds `CanSetupSafehouses` is not judged by any of the three. :cite[
 **Limit:** 2. **Reason:** `update failed`. A separate error line in the debug log names the skill and the values: "perk <name> xp growth is too high". :cite[(`AntiCheatXPUpdate.java:70-78`)]
 
 **Honest trips:** high XP multipliers set in sandbox, and a mod or script that grants a large amount of XP in one minute. No role is exempt from the test itself. Not run in a game.
+
+**Known gap:** With the global XP multiplier switched off, the check looks up each skill's own multiplier by the name `MultiplierConfig.` plus the skill's translated display name, while the sandbox options are named by the engine's id. :cite[(`AntiCheatXPUpdate.java:55-62`, `PerkFactory.java:84`, `SandboxOptions.java:1843-1880`)] A skill whose display name differs from its option name finds no option, and its multiplier is left out of the cap, so fast legitimate XP can trip the check. In the English text that is 16 of the 35 per-skill options: Long Blunt (`Blunt`), Short Blunt (`SmallBlunt`), Long Blade (`LongBlade`), Short Blade (`SmallBlade`), Carpentry (`Woodwork`), Electrical (`Electricity`), First Aid (`Doctor`), Knapping (`FlintKnapping`), Blacksmithing (`Blacksmith`), Welding (`MetalWelding`), Foraging (`PlantScavenging`), Lightfooted (`Lightfoot`), Running (`Sprinting`), Sneaking (`Sneak`), Agriculture (`Farming`) and Animal Care (`Husbandry`); the other 19 match. :cite[(`SandboxOptions.java:1841-1877`, `PerkFactory.java:105-148`, `media/lua/shared/Translate/EN/IG_UI.json:190-193`, `:199-212`, `:220-223`, `:749-750`)] A server in another language gets different names, so the list differs there. Read from the code; not run in a game.
 :::
 ::::
 

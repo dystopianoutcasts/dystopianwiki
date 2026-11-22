@@ -15,7 +15,7 @@ tags:
   - lua
 excerpt: >-
   How a Build 42.22 mod can trip the server's anti-cheat by doing ordinary things, how to do them the way the server expects, and why a mod's own commands need their own checks.
-last_updated: '2026-11-15'
+last_updated: '2026-11-22'
 related_articles:
   - how-anti-cheat-works
   - the-anti-cheat-checks
@@ -81,7 +81,7 @@ So a mod that moves its own player with `teleportTo` on a client is judged like 
 
 The way to stay in step with the checks is to make each change where the server can see it made, using the engine's own calls.
 
-For XP, call the vanilla `addXp` global from a server script, and test with `AntiCheatXP` on Log. :cite[(`LuaManager.java:11856-11867`, `GameServer.java:1892-1901`)] Vanilla server scripts do this for building, farming and trapping. :cite[(`media/lua/server/BuildingObjects/ISBuildUtil.lua:107`, `media/lua/server/Farming/SFarmingSystem.lua:551`, `media/lua/server/Traps/STrapGlobalObject.lua:220`)]
+For XP, call the vanilla `addXp` global from a server script, and test with `AntiCheatXP` on Log. :cite[(`LuaManager.java:11856-11867`, `GameServer.java:1892-1901`)] Vanilla server scripts do this for building, farming and trapping. :cite[(`media/lua/server/BuildingObjects/ISBuildUtil.lua:107`, `media/lua/server/Farming/SFarmingSystem.lua:551`, `media/lua/server/Traps/STrapGlobalObject.lua:220`)] With the global XP multiplier switched off, the check looks up each skill's own multiplier by the name `MultiplierConfig.` plus the skill's translated display name, while the sandbox options are named by the engine's id. :cite[(`AntiCheatXPUpdate.java:55-62`, `PerkFactory.java:84`, `SandboxOptions.java:1843-1880`)] A skill whose display name differs from its option name finds no option, and its multiplier is left out of the cap, so fast legitimate XP can trip the check. In the English text that is 16 of the 35 per-skill options: Long Blunt (`Blunt`), Short Blunt (`SmallBlunt`), Long Blade (`LongBlade`), Short Blade (`SmallBlade`), Carpentry (`Woodwork`), Electrical (`Electricity`), First Aid (`Doctor`), Knapping (`FlintKnapping`), Blacksmithing (`Blacksmith`), Welding (`MetalWelding`), Foraging (`PlantScavenging`), Lightfooted (`Lightfoot`), Running (`Sprinting`), Sneaking (`Sneak`), Agriculture (`Farming`) and Animal Care (`Husbandry`); the other 19 match. :cite[(`SandboxOptions.java:1841-1877`, `PerkFactory.java:105-148`, `media/lua/shared/Translate/EN/IG_UI.json:190-193`, `:199-212`, `:220-223`, `:749-750`)] A server in another language gets different names, so the list differs there. Read from the code; not run in a game.
 
 Not run in a game.
 

@@ -15,7 +15,7 @@ tags:
   - sandbox
 excerpt: >-
   How a Build 42.22 zombie picks a state from XML transitions, when it walks straight or asks the pathfinder, which client runs it in multiplayer, and what the "AI director" really is: the sleep system.
-last_updated: '2026-11-21'
+last_updated: '2026-11-22'
 related_articles:
   - animal-pipeline
   - the-events-system
@@ -165,7 +165,9 @@ In multiplayer, sleep is started from client Lua, and the nightmare roll is skip
 
 Every other client sees the zombie as remote. The transition files send remote zombies to the `*-network` states (`walktoward-network`, `lunge-network`, `attack-network`) through the `bClient` variable, which is true only on a client for a zombie it does not own :cite[(`IsoZombie.java:787`, `IsoZombie.java:633-635`)]. A client marks every zombie it creates as remote :cite[(`VirtualZombieManager.java:213-215`)].
 
-The server picks a zombie's owner in `NetworkZombieManager#updateAuth`, at most once every two seconds per zombie (straight away if it has none) :cite[(`NetworkZombieManager.java:66-68`)]. It prefers the player who is grappling the zombie, then the player the zombie is targeting, then the nearest player in range :cite[(`NetworkZombieManager.java:90-129`)]. A closer player only takes over if they are closer by a factor of about 1.618, so ownership does not flicker between two players standing side by side :cite[(`NetworkZombieManager.java:122`)]. With no player in range the zombie has no owner, except for a reanimated player's body, which goes to the dead player's connection :cite[(`NetworkZombieManager.java:131-146`)]. The server option `SwitchZombiesOwnershipEachUpdate`, off by default, replaces all of this with handing each zombie to the next connection in turn :cite[(`NetworkZombieManager.java:69-88`, `ServerOptions.java:60-62`)].
+The server picks a zombie's owner in `NetworkZombieManager#updateAuth`, at most once every two seconds per zombie (straight away if it has none) :cite[(`NetworkZombieManager.java:66-68`)]. It prefers the player who is grappling the zombie, then the player the zombie is targeting, then the nearest player in range :cite[(`NetworkZombieManager.java:90-129`)]. A closer player only takes over if they are closer by a factor of about 1.618, so ownership does not flicker between two players standing side by side :cite[(`NetworkZombieManager.java:122`)].
+
+With no player in range the zombie has no owner, except for a reanimated player's body, which goes to the dead player's connection :cite[(`NetworkZombieManager.java:131-146`)]. The server option `SwitchZombiesOwnershipEachUpdate`, off by default, replaces all of this with handing each zombie to the next connection in turn :cite[(`NetworkZombieManager.java:69-88`, `ServerOptions.java:60-62`)].
 
 Two consequences for your code:
 

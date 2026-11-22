@@ -16,7 +16,7 @@ tags:
   - health
 excerpt: >-
   Every number from the building and moveables pages in tables, each with its capture citation: health, thump damage, timers, moveable tools, scrap chances, events and sandbox options.
-last_updated: '2026-11-14'
+last_updated: '2026-11-22'
 related_articles:
   - how-building-works
   - built-objects-health-and-zombies
@@ -152,7 +152,7 @@ Zombies damage built objects, windows, doors and barricades by rules that differ
 | Zombie strength | Superhuman 5, Normal 3 (default option 2), Weak 1, Random 1-4 | `IsoZombie.java:3847-3861` |
 | Glass pane health | single 50, double 100; damage = strength per thump | `zombie/iso/objects/IsoWindow.java:66-67`, `:147-151`, `:445-446` |
 | Map door health | weak wooden 500, strong wooden 800, forced-locked 2,000, fence-type 100; damage = strength per thump, only with 2 or more zombies near; +2 x near on Superhuman | `zombie/iso/objects/IsoDoor.java:637-648`, `:1025-1033` |
-| Barricade health | plank 1,000 each (4 slots), metal bars 3,000, metal sheet 5,000, damaged sheet 2,500 | `zombie/iso/objects/IsoBarricade.java:61-64` |
+| Barricade health | plank 1,000 each (4 slots), metal bars 3,000 as the constant (a bar added from an item starts at its condition fraction x 5,000, then scaled by the placer's metal-barricade strength modifier), metal sheet 5,000, damaged sheet 2,500 | `zombie/iso/objects/IsoBarricade.java:61-64`, `:164-170` |
 | Barricade damage from a zombie | strength per thump | `IsoBarricade.java:356` |
 | Barricade damage from a weapon | `DoorDamage x 5` | `IsoBarricade.java:429` |
 | Built object damage from a weapon | `DoorDamage` | `IsoThumpable.java:1184` |

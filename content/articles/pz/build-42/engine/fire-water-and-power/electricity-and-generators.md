@@ -16,7 +16,7 @@ tags:
   - multiplayer
 excerpt: >-
   When the power grid dies, how a generator decides what to power, what it costs in fuel and condition, how loud and dangerous it is, and how light switches and bulbs work.
-last_updated: '2026-11-14'
+last_updated: '2026-11-22'
 related_articles:
   - how-fire-works
   - fighting-fire
@@ -162,7 +162,7 @@ You place, connect, fuel and switch on a generator, and only connecting and repa
 | **Fix** | Needs Electrical 3 (or the knowledge), an Electronics Scrap, and the generator **off** and under 100 | Each scrap adds `4 + Electrical level / 2` condition (the result is cut to a whole number) and 5 Electrical XP; takes `150 - 3 x Electrical level` ticks | `ISWorldObjectContextMenuLogic.java:2252-2273`, `media/lua/shared/TimedActions/ISFixGenerator.lua:6-11`, `:70-71`, `:80-85` |
 | **Take** | Only if it is not connected | Picks it up as an item with its condition and fuel | `ISWorldObjectContextMenuLogic.java:2275-2283`, `IsoGenerator.java:133-140` |
 
-Only the connect step and the repair step have the skill gate; adding fuel, switching on and off, and taking are open to everyone.
+Only the connect step and the repair step have the skill gate; adding fuel, switching on and off, and taking are open to everyone. The generator's menu holds Generator Info, Connect or Disconnect, Turn On or Turn Off, Add Fuel, Fix and Take, and no option to take fuel back out. The options are conditional: Add Fuel needs the generator off, below full fuel and a petrol container in your inventory; Fix needs it off and below full condition; Take shows only while it is not connected. :cite[(`media/lua/shared/Translate/EN/ContextMenu.json:423-430`, `zombie/iso/ISWorldObjectContextMenuLogic.java:2190-2197`, `:2233-2239`, `:2252-2253`, `:2277-2284`)] "Disconnect Generator" shows only while the generator is connected and off. :cite[(`zombie/iso/ISWorldObjectContextMenuLogic.java:2190-2197`)]
 
 ### The range
 
