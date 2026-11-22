@@ -380,7 +380,7 @@ function ServerBuddySection() {
       <p>
         A Windows program for managing our game servers from outside: status, live logs, the console, restarts with
         warnings (on a schedule, when a mod updates, and after a crash), server stats, settings, mods and players,
-        setting up Outcast Checkpoint, and files. Only admins can download it here.
+        setting up Outcast Overclock, and files. Only admins can download it here.
       </p>
       <p>
         It holds no logins. You type a server's address, file (SFTP) login and RCON password into it on your own PC, and

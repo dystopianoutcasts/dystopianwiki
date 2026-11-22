@@ -1,5 +1,5 @@
 /**
- * Outcast Checkpoint (formerly Outcast Buddy): the helper that lets Project Zomboid load the Java parts of our mods
+ * Outcast Overclock (formerly Outcast Checkpoint, and before that Outcast Buddy): the helper that lets Project Zomboid load the Java parts of our mods
  * (Outcast Viewpoint, the Outcast loading screen). Shown at /buddy.
  *
  * The installer file is served from the GitHub release, not copied onto this site, so there is
@@ -8,17 +8,17 @@
  * the file a player gets.
  *
  * Each new installer release: update INSTALLER_VERSION, INSTALLER_SHA256, INSTALLER_BYTES and
- * INSTALLER_DATE from `gh release view <tag> -R dystopianoutcasts/OutcastBuddy-Installer`,
+ * INSTALLER_DATE from `gh release view <tag> -R dystopianoutcasts/OutcastOverclock-Installer`,
  * then rebuild and deploy the site.
  */
 
-/** The release tag on dystopianoutcasts/OutcastBuddy-Installer, without the leading "v". */
-export const INSTALLER_VERSION = '3.0.0-beta20'
-/** SHA-256 of OutcastCheckpointInstaller.exe in that release (checked 2026-11-21 against GitHub's digest). */
-export const INSTALLER_SHA256 = '37E11075A0BCAE2A5025CFE1B5CF5646655738B4D7E2D5FE13757470DC81BB0F'
-export const INSTALLER_BYTES = 9259008
+/** The release tag on dystopianoutcasts/OutcastOverclock-Installer (renamed from OutcastBuddy-Installer 2026-11-22), without the leading "v". */
+export const INSTALLER_VERSION = '3.0.0-beta23'
+/** SHA-256 of OutcastOverclockInstaller.exe in that release (checked 2026-11-22 against GitHub's digest). */
+export const INSTALLER_SHA256 = 'BEF5997A188775D48A5D9898E1D718E834808DF2CB438E8B39678CB1576EFED8'
+export const INSTALLER_BYTES = 9275392
 /** When the release was published, ISO date. */
-export const INSTALLER_DATE = '2026-11-21'
+export const INSTALLER_DATE = '2026-11-22'
 
 /**
  * The one released installer that could stop the game from starting (two "--" in the Steam
@@ -26,8 +26,8 @@ export const INSTALLER_DATE = '2026-11-21'
  */
 export const BROKEN_INSTALLER_VERSION = '3.0.0-beta3'
 
-export const INSTALLER_FILE = 'OutcastCheckpointInstaller.exe'
-export const INSTALLER_REPO_URL = 'https://github.com/dystopianoutcasts/OutcastBuddy-Installer'
+export const INSTALLER_FILE = 'OutcastOverclockInstaller.exe'
+export const INSTALLER_REPO_URL = 'https://github.com/dystopianoutcasts/OutcastOverclock-Installer'
 export const INSTALLER_DOWNLOAD_URL = `${INSTALLER_REPO_URL}/releases/download/v${INSTALLER_VERSION}/${INSTALLER_FILE}`
 export const INSTALLER_RELEASES_URL = `${INSTALLER_REPO_URL}/releases`
 
@@ -58,16 +58,16 @@ function download(system: BuddySystem, label: string, file: string, sha256: stri
   }
 }
 
-/** Each system's file in the INSTALLER_VERSION release; SHA-256 checked 2026-11-21 against GitHub's digests. */
+/** Each system's file in the INSTALLER_VERSION release; SHA-256 checked 2026-11-22 against GitHub's digests. */
 export const BUDDY_DOWNLOADS: Record<BuddySystem, BuddyDownload> = {
   windows: download('windows', 'Windows', INSTALLER_FILE, INSTALLER_SHA256, INSTALLER_BYTES,
     `Get-FileHash .\\${INSTALLER_FILE}`, 'In PowerShell, in your Downloads folder, run', false),
-  mac: download('mac', 'Mac', 'outcast-checkpoint-installer-mac.zip',
-    '2BFAB8B0AE751E4184080C954E8D64323FE25974991D780156C4F1E9D08DCD67', 7436761,
-    'shasum -a 256 outcast-checkpoint-installer-mac.zip', 'In Terminal, in your Downloads folder, run', true),
-  linux: download('linux', 'Linux and Steam Deck', 'outcast-checkpoint-installer-linux-amd64.tar.gz',
-    '9372D0D414B65733B164356C790944FECDD29B1C08A0CE5542371DFFCB0545F2', 3879710,
-    'sha256sum outcast-checkpoint-installer-linux-amd64.tar.gz', 'In a terminal, in your Downloads folder, run', true),
+  mac: download('mac', 'Mac', 'outcast-overclock-installer-mac.zip',
+    'F2C61F9C8E98CD1F5C66871431603F9508BFCBCF34A96C6F12E295428A2ABF8B', 7447553,
+    'shasum -a 256 outcast-overclock-installer-mac.zip', 'In Terminal, in your Downloads folder, run', true),
+  linux: download('linux', 'Linux and Steam Deck', 'outcast-overclock-installer-linux-amd64.tar.gz',
+    '0B8E94EF20683B9717DE24F566C7C0CDA6AE625BB4A8CA33F99E0E0ADF88C6F4', 3885772,
+    'sha256sum outcast-overclock-installer-linux-amd64.tar.gz', 'In a terminal, in your Downloads folder, run', true),
 }
 
 export const BUDDY_SYSTEMS: BuddySystem[] = ['windows', 'mac', 'linux']

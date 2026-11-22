@@ -1,7 +1,7 @@
 /**
- * OutcastBuddyPage (/buddy) - download and install Outcast Checkpoint, in Rax's own words.
+ * OutcastBuddyPage (/buddy) - download and install Outcast Overclock, in Rax's own words.
  *
- * The one job here is "get Outcast Checkpoint working": subscribe on the Workshop, download the
+ * The one job here is "get Outcast Overclock working": subscribe on the Workshop, download the
  * installer, click Install. Both actions are labeled buttons at the top; the steps and the
  * answers to "what does it change", "how do I undo it" follow. The text matches the
  * Install Instructions file inside the Workshop item.
@@ -43,15 +43,15 @@ export function OutcastBuddyPage() {
   return (
     <Layout>
       <SEOHead
-        title="Outcast Checkpoint"
+        title="Outcast Overclock"
         description="The helper that lets Project Zomboid load the Java parts of our mods: Outcast Viewpoint and the Outcast loading screen. Install it once with one click."
       />
       <main className="buddy">
         <header className="buddy__header">
           <p className="buddy__kicker">Dystopian Outcasts</p>
-          <h1 className="buddy__title">Outcast Checkpoint</h1>
+          <h1 className="buddy__title">Outcast Overclock</h1>
           <p className="buddy__lead">
-            Hi, and welcome! I'm Rax, and I'm really glad you're here. Outcast Checkpoint (formerly Outcast Buddy) is the small
+            Hi, and welcome! I'm Rax, and I'm really glad you're here. Outcast Overclock (formerly Outcast Checkpoint) is the small
             helper that lets Project Zomboid load the Java parts of our mods, like the{' '}
             <strong>Outcast Viewpoint</strong> first-person view and our loading screen. Setting it
             up takes about a minute, and you only ever do it once.
@@ -61,7 +61,7 @@ export function OutcastBuddyPage() {
         <section className="buddy__get boone-rivets" aria-labelledby="buddy-get-title">
           <RemoveBeforeFlight />
           <h2 id="buddy-get-title" className="buddy__get-title">
-            Get Outcast Checkpoint
+            Get Outcast Overclock
           </h2>
           <fieldset className="buddy__systems">
             <legend className="buddy__systems-legend">Your computer</legend>
@@ -142,12 +142,12 @@ export function OutcastBuddyPage() {
           )}
           <ol className="buddy__steps">
             <li>
-              <strong>Subscribe to Outcast Checkpoint</strong> on the Steam Workshop, and let Steam finish
+              <strong>Subscribe to Outcast Overclock</strong> on the Steam Workshop, and let Steam finish
               downloading it.
             </li>
             <li>
               <strong>Download the installer</strong>, {chosen.file}, with the button above.
-              {system === 'mac' && <> Double-click it to unpack <strong>Outcast Checkpoint Installer</strong>.</>}
+              {system === 'mac' && <> Double-click it to unpack <strong>Outcast Overclock Installer</strong>.</>}
               {system === 'linux' && (
                 <> Unpack it (right-click it, then Extract). On a Steam Deck, do this in Desktop Mode.</>
               )}
@@ -157,7 +157,7 @@ export function OutcastBuddyPage() {
             </li>
             {system === 'windows' && (
               <li>
-                <strong>Double-click {chosen.file} and click Install Outcast Checkpoint.</strong> That's it!
+                <strong>Double-click {chosen.file} and click Install Outcast Overclock.</strong> That's it!
                 <ul>
                   <li>
                     If Windows says "Windows protected your PC", click <strong>More info</strong>, then{' '}
@@ -174,8 +174,8 @@ export function OutcastBuddyPage() {
             )}
             {system === 'mac' && (
               <li>
-                <strong>Right-click Outcast Checkpoint Installer, choose Open, then click Open again.</strong>{' '}
-                Then click <strong>Install Outcast Checkpoint</strong>. That's it!
+                <strong>Right-click Outcast Overclock Installer, choose Open, then click Open again.</strong>{' '}
+                Then click <strong>Install Outcast Overclock</strong>. That's it!
                 <ul>
                   <li>
                     Right-click is needed the first time only. The app isn't signed by Apple, so a plain
@@ -196,8 +196,8 @@ export function OutcastBuddyPage() {
             {system === 'linux' && (
               <li>
                 <strong>
-                  Double-click outcast-checkpoint-installer in the unpacked folder and click Install Outcast
-                  Checkpoint.
+                  Double-click outcast-overclock-installer in the unpacked folder and click Install Outcast
+                  Overclock.
                 </strong>{' '}
                 That's it!
                 <ul>
@@ -207,7 +207,7 @@ export function OutcastBuddyPage() {
                   </li>
                   <li>
                     Prefer a terminal? In the unpacked folder, run{' '}
-                    <code>./outcast-checkpoint-installer install</code> (or <code>status</code>, or{' '}
+                    <code>./outcast-overclock-installer install</code> (or <code>status</code>, or{' '}
                     <code>uninstall</code>). Never use <code>sudo</code>: it only changes files in your own Steam
                     folder, so it refuses to run as root.
                   </li>
@@ -276,25 +276,25 @@ export function OutcastBuddyPage() {
             <dt>Updates</dt>
             <dd>
               You never need to run the installer again for updates. They come through your Workshop
-              subscription, and Outcast Checkpoint puts them in place on its own. A new update is ready the
+              subscription, and Outcast Overclock puts them in place on its own. A new update is ready the
               next time you start the game, or the time after that.
             </dd>
             <dt>If you unsubscribe</dt>
             <dd>
-              Outcast Checkpoint switches itself off and the game plays as normal. You'll see a short note
+              Outcast Overclock switches itself off and the game plays as normal. You'll see a short note
               on the main menu saying so. Subscribe again and it switches back on.
             </dd>
             <dt>Removing it</dt>
             <dd>
               Run the installer again, click <strong>Uninstall</strong>, then{' '}
-              <strong>Remove Outcast Checkpoint</strong>. It puts every file and setting back the way it was.
+              <strong>Remove Outcast Overclock</strong>. It puts every file and setting back the way it was.
               In the 3.0.0-beta4 installer that last button did nothing, sorry! Download the new one
               above and it works.
             </dd>
             <dt>Prefer the game's own loading screen?</dt>
             <dd>
               Go to <strong>Options</strong>, then <strong>Mods</strong>, then{' '}
-              <strong>Outcast Checkpoint</strong>, and uncheck "Show the Outcast loading screen".
+              <strong>Outcast Overclock</strong>, and uncheck "Show the Outcast loading screen".
             </dd>
           </dl>
         </section>
@@ -319,7 +319,7 @@ export function OutcastBuddyPage() {
 
         <footer className="buddy__footer">
           <p className="buddy__credits">
-            Outcast Checkpoint is built on the open-source Zombie Buddy loader (MIT license). The license
+            Outcast Overclock is built on the open-source Zombie Buddy loader (MIT license). The license
             text is included in the Workshop item as LICENSE.txt.
           </p>
           <Link to="/" className="buddy__home">

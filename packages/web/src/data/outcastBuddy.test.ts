@@ -1,5 +1,5 @@
 /**
- * Outcast Checkpoint download data. node:test, run with
+ * Outcast Overclock download data. node:test, run with
  * `npx tsx --test src/data/outcastBuddy.test.ts` from packages/web.
  */
 import assert from 'node:assert/strict'
@@ -19,7 +19,7 @@ test('the download is the exact release on our installer repo, over https', () =
   assert.equal(url.hostname, 'github.com')
   assert.equal(
     url.pathname,
-    `/dystopianoutcasts/OutcastBuddy-Installer/releases/download/v${INSTALLER_VERSION}/OutcastCheckpointInstaller.exe`,
+    `/dystopianoutcasts/OutcastOverclock-Installer/releases/download/v${INSTALLER_VERSION}/OutcastOverclockInstaller.exe`,
   )
 })
 
@@ -27,7 +27,7 @@ test('the SHA-256 shown is a full 64-character hash', () => {
   assert.match(INSTALLER_SHA256, /^[0-9A-F]{64}$/)
 })
 
-test('the Workshop link is the Outcast Checkpoint item', () => {
+test('the Workshop link is the Outcast Overclock item', () => {
   assert.match(BUDDY_WORKSHOP_ID, /^[0-9]{6,20}$/)
   assert.equal(new URL(BUDDY_WORKSHOP_URL).searchParams.get('id'), BUDDY_WORKSHOP_ID)
 })
@@ -47,7 +47,7 @@ test('each system downloads its own file from the same release, with a full hash
     assert.ok(d.bytes > 1_000_000, s)
     const url = new URL(d.url)
     assert.equal(url.protocol, 'https:')
-    assert.equal(url.pathname, `/dystopianoutcasts/OutcastBuddy-Installer/releases/download/v${INSTALLER_VERSION}/${d.file}`)
+    assert.equal(url.pathname, `/dystopianoutcasts/OutcastOverclock-Installer/releases/download/v${INSTALLER_VERSION}/${d.file}`)
     assert.ok(d.hashCommand.includes(d.file), `${s}: the hash command names the file`)
     files.add(d.file)
   }
