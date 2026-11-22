@@ -6011,7 +6011,7 @@
       "findings",
       "running-log"
     ],
-    "excerpt": "Running log of verified Build 42 engine findings, each with its evidence and confidence. F-001 to F-008 are read at 42.22; F-009 to F-016 are still the 42.21 text and are being rechecked.",
+    "excerpt": "Running log of verified Build 42 engine findings with evidence and confidence, read at 42.22: the entity system, Java modding, model and animation pipelines, bare-handed damage and AnimSet nodes.",
     "difficulty": "advanced"
   },
   {
