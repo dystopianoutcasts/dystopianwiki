@@ -4978,7 +4978,7 @@
       "multiplayer",
       "lua-api"
     ],
-    "excerpt": "Seventeen body parts, one overall health number worked out from them, and an infection clock. In Build 42 multiplayer the whole body runs on the server and reaches your client in packets every half second to two seconds. How it fits together, what Lua can change, and the call that infects the player when you meant to heal a bite.",
+    "excerpt": "How Build 42.22 simulates the body: 17 parts, health worked out from them, an infection clock, and in multiplayer a server that owns it all. What Lua can change and the call that infects you.",
     "difficulty": "intermediate"
   },
   {
@@ -4996,7 +4996,7 @@
       "multiplayer",
       "lua-api"
     ],
-    "excerpt": "Every player carries a heat model with seventeen body nodes, a metabolic rate and a core temperature. How clothing, wetness and work feed it, what the Hypothermia and Hyperthermia moodles read, why Hyperthermia cannot pass level 2 in 42.21, and why the work your timed action does may never reach the server's copy of the model.",
+    "excerpt": "Build 42.22 gives every player a heat model with 17 body nodes and a core temperature. How clothing and work feed it, why Hyperthermia stops at level 2, and which work reaches the server's copy.",
     "difficulty": "advanced"
   },
   {
@@ -5051,7 +5051,7 @@
       "multiplayer",
       "native"
     ],
-    "excerpt": "In Build 42.21 the route search itself runs in a native library, PZPathFind64, on its own thread. Java still decides when to search, what it tells the search about the walker, and how the walker follows the route. What each side does, the queue order, how squares reach the pathfinder, and why MapKnowledge does nothing with the native search on.",
+    "excerpt": "In Build 42.22 the route search runs in the native library PZPathFind64 on one thread. What Java decides, tells the search, how squares reach it, and why MapKnowledge is ignored.",
     "difficulty": "advanced"
   },
   {
@@ -5124,7 +5124,7 @@
       "fluids",
       "multiplayer"
     ],
-    "excerpt": "Build 42 bolted a small entity component system onto the old object classes. Crafting benches, drying racks and every fluid container are made of its components. What a GameEntity is, the 23 fixed component types, when the engine ticks them and on which side, how machines keep working while nobody is near, and the traps in the code.",
+    "excerpt": "Build 42.22 hangs components on world objects and items. What a GameEntity is, the 23 component types, when the engine ticks them and on which side, how machines run unloaded, and the traps.",
     "difficulty": "advanced"
   },
   {
@@ -5160,7 +5160,7 @@
       "multiplayer",
       "sandbox"
     ],
-    "excerpt": "A zombie is a Java state machine driven by XML transition files, the same kind animals use. How a zombie picks what to do, when it walks straight and when it asks the pathfinder, which client runs it in multiplayer, and what the \"sadistic AI director\" really is: the sleep interruption system, two of whose switches do nothing in 42.21.",
+    "excerpt": "How a Build 42.22 zombie picks a state from XML transitions, when it walks straight or asks the pathfinder, which client runs it in multiplayer, and what the \"AI director\" really is: the sleep system.",
     "difficulty": "intermediate"
   },
   {
