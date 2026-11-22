@@ -14,7 +14,7 @@ tags:
   - item-scripts
 excerpt: >-
   Where Build 42.22 writes its log, which script mistakes print a line and which fail silently, and how to check in game that an item or recipe loaded. Includes a break-it-on-purpose test mod.
-last_updated: '2026-11-16'
+last_updated: '2026-11-21'
 related_articles:
   - script-file-anatomy
   - items-the-item-block-in-b42
@@ -87,7 +87,7 @@ A channel is a named stream of messages, and every channel starts at `Off`. :cit
 
 Whatever the mode, the game switches six channels on at the start: General, Lua, Mod, Network, Multiplayer and ClientCommand. :cite[(`zombie/debug/DebugLog.java:478-483`)] A message on the General channel, such as `removing script due to load error`, therefore reaches the log on a normal client.
 
-A message on the Script, Recipe or CraftLogic channel reaches the log only with `-debug` on a client, or on a dedicated server, where warnings and errors show. The DetailedInfo channel stays off without `-debug`. :cite[(`zombie/debug/DebugLog.java:83-91`)] The table says which channel each message uses.
+On a dedicated server a message on the Script, Recipe or CraftLogic channel reaches the log at warning level and above, and DetailedInfo stays off without `-debug`. :cite[(`zombie/debug/DebugLog.java:83-98`, `zombie/network/GameServer.java:499`)] A client starts those channels off, and `-debug` alone does not turn them on: it only reads a debug log config file if one exists. :cite[(`zombie/debug/DebugType.java:95`, `zombie/debug/DebugLog.java:478-483`, `zombie/gameStates/MainScreenState.java:284-286`, `zombie/debug/DebugLog.java:487-496`)] To see them on a client, start the game with `-debuglog=Script,Recipe`, or turn them on in a debug log config. :cite[(`zombie/gameStates/MainScreenState.java:251-254`, `zombie/debug/DebugLog.java:280-291`)] The table says which channel each message uses.
 
 ## 4. Common load errors
 
@@ -98,7 +98,7 @@ A message on the Script, Recipe or CraftLogic channel reaches the log only with 
 | `removing script due to load error = ...` and an item that is missing in game | A key in the item block threw while it loaded, for example a `Weight` that is not a number. The engine drops the whole item. Fix the value. | `zombie/scripting/objects/Item.java:2057-2058`, `zombie/scripting/ScriptBucket.java:198-207` |
 | A key has no effect, and nothing is logged | The last key line before `}` has no comma, so the engine never turns it into a line. Put a comma after every key, the last one too. | `zombie/scripting/ScriptParser.java:36-45` |
 | A key, an item or a whole module is skipped, with no message | A `//` line is not a comment: only `/* ... */` is stripped. It merges into the next key, block or module, which then is not recognized. Use `/* ... */` only. | `zombie/scripting/ScriptParser.java:59-90`, `zombie/scripting/ScriptParser.java:40-45`, `zombie/scripting/ScriptManager.java:1360` (a module) |
-| `unknown script object "itme" in '<file>'` (only with `-debug` on a client) | A block word the module does not know, for example a typo in `item`. The block is skipped. | `zombie/scripting/objects/ScriptModule.java:1018-1026` |
+| `unknown script object "itme" in '<file>'` (on a server, or on a client with the Script channel on, `-debuglog=Script`) | A block word the module does not know, for example a typo in `item`. The block is skipped. | `zombie/scripting/objects/ScriptModule.java:1018-1026` |
 | `adding unknown item param "X" = "Y", script: ...` (only in the detailed-info channel) | The item loader does not know the key, so it keeps it as mod data and the key does nothing. This is a misspelled key. | `zombie/scripting/objects/Item.java:2998-3015` |
 | An item loads, and creating it fails later | The item has no valid `ItemType`, which is not an error at load. | `zombie/scripting/objects/Item.java:1494`, `zombie/scripting/objects/Item.java:1831-1835` |
 | `mod "<id>" overrides <path>` | A file of your mod has the same relative path as an earlier file, vanilla's included, and replaces it. Rename your file. | `zombie/ZomboidFileSystem.java:672-677` |

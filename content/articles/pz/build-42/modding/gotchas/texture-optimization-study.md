@@ -12,32 +12,41 @@ tags:
   - mod-study
   - optimization
 excerpt: >-
-  Study of Workshop 3119788162 (ETO_B / ETO_P, author maceleet, modversion
-  1.2.1, versionMin 42.20.0) against a B42 install, 2026-08-10.
-last_updated: '2026-09-29'
+  A texture pack shrinks PNG files without shrinking pictures. What it measurably does, what the 42.22 PNG loader accepts, why quantizing masks is a risk we did not rule out, and what we took from it.
+last_updated: '2026-11-21'
+related_articles:
+  - script-comments-what-slashes-do
 ---
-# Every Texture Optimized -- what it actually does, measured
+::field-notes
 
-> Source: ETO_texture_optimization_study.md (compiled 2026-08-10, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-21. The file measurements on the Workshop mod "Every Texture Optimized" are dated 2026-08-10 (a 42.20 install, imported 2026-09-29) and were not rechecked.
 
-Study of Workshop `3119788162` (`ETO_B` / `ETO_P`, author *maceleet*,
-modversion 1.2.1, versionMin 42.20.0) against a B42 install, 2026-08-10.
+**Who this page is for:** modders who ship textures or want smaller ones. The engine facts are in [part 2](#2-what-the-game-does-with-a-png) and [part 3](#3-what-happens-to-masks), and the measurements of the other mod are in [part 1](#1-the-headline-and-it-is-not-what-the-name-suggests).
 
-Everything below was measured by reading PNG chunks directly -- IHDR, PLTE,
-tRNS, and where needed the decompressed IDAT -- for all 6,140 overridden
-textures and their vanilla counterparts. No assumptions from the mod page.
+:::callout[The 1-minute version]{kind=key}
+- The Workshop mod "Every Texture Optimized" keeps every texture's width and height. We measured that it re-encodes truecolor PNGs as indexed (palette) PNGs, packed to as few bits as the palette allows. That took the set from 566.4 MB to 142.0 MB (Balanced) or 125.8 MB (Max Performance).
+- The engine's PNG decoder reads indexed PNGs of 1, 2, 4 and 8 bits, and both texture load paths turn the picture into 4-byte-per-pixel RGBA before upload. A smaller PNG file therefore saves disk and read size; we did not find a memory saving.
+- Be careful about quantizing (cutting the colors of) a mask. A vehicle mask is loaded without the compress flag the skin, damage, rust, lights and shadow textures get when compression is enabled, and the shaders that read masks are not in the capture. Whether quantizing breaks a mask is not verified and was not tested.
+- If you must shrink a texture, cut colors instead of pixels, and leave masks alone. A lossless re-pack of a mask keeps its exact colors.
+- Test one class of texture at a time, with a before-and-after look at small size.
+:::
 
----
+:::facts
+- **Textures the mod overrides** 6,140, all at vanilla width and height (measured 2026-08-10, not rechecked)
+- **Size of the set** 566.4 MB vanilla, 142.0 MB (25%) Balanced, 125.8 MB (22%) Max Performance (measured, not rechecked)
+- **Indexed bit depths the 42.22 loader reads** 1, 2, 4 and 8 :cite[(`zombie/core/textures/PNGDecoder.java:832-845`)]
+- **Decoded size** 4 bytes per pixel, width and height rounded up to a power of two; the upload may be mipmapped or GPU-compressed :cite[(`zombie/core/textures/ImageData.java:147-148`, `zombie/core/textures/TextureID.java:437-438`, `zombie/core/textures/TextureID.java:463-482`)]
+:::
 
 ## 1. The headline, and it is not what the name suggests
 
-**It does not downscale anything.** Every one of the 6,140 textures keeps
-vanilla's exact width and height. 100% of the pixels are retained, in both
-variants.
+**The mod does not shrink any picture; it re-encodes the same pixels with a palette.**
 
-The optimisation is entirely in the **encoding**:
+Every one of the 6,140 textures keeps vanilla's exact width and height, so 100% of the pixels are kept, in both variants. We measured this by reading the PNG chunks (the header, the palette, the transparency chunk and, where needed, the decompressed pixel data) of every overridden texture and its vanilla counterpart. The mod's own page was not used.
 
-| | vanilla | ETO_B (Balanced) | ETO_P (Max Performance) |
+Truecolor RGB and RGBA files become indexed PNGs, and the index is packed into as few bits as the palette allows.
+
+| | vanilla | Balanced | Max Performance |
 |---|---|---|---|
 | RGB 8-bit | 2,945 files | 190 | 190 |
 | RGBA 8-bit | 1,460 | 190 | 190 |
@@ -47,212 +56,94 @@ The optimisation is entirely in the **encoding**:
 | indexed 1-bit | 4 | 435 | 544 |
 | **total bytes** | **566.4 MB** | **142.0 MB (25%)** | **125.8 MB (22%)** |
 
-So: truecolour RGB/RGBA is converted to **indexed (palette) PNG**, and the
-index is packed into as few bits as the palette allows.
+The median palette is 9 colors in Balanced and 8 in Max Performance, and the 90th-percentile palette is 27 and 18.
 
-Palette sizes: ETO_B median **9** colours, p90 27. ETO_P median **8**, p90 18.
+The only difference between the two variants is palette size. 4,505 of the 6,140 files differ, and in every sample we looked at the difference is the palette count alone: one file went from 15 colors to 12, another from 33 to 26, another from 16 to 13. Same dimensions, same color type.
 
-**The only difference between the two variants is palette size.** 4,505 of 6,140
-files differ, and in every sample the difference is the palette count alone --
-`legend2.png` 15 -> 12, `juicebox.png` 33 -> 26, `bulletround.png` 16 -> 13.
-Same dimensions, same colour type. The entire quality/performance dial is
-"how many colours", nothing else.
+## 2. What the game does with a PNG
 
-## 2. Why this is the right trade for Project Zomboid specifically
+**A texture takes one of two load paths, and both end as 32-bit RGBA, so the PNG encoding changes the file and not the decoded picture.**
 
-The instinct with a performance texture pack is to halve the resolution. ETO
-does the opposite, and for this game that is the better call.
+Textures loaded through the asset manager are read by the engine's own PNG decoder. :cite[(`zombie/core/textures/TextureIDAssetManager.java:37`, `zombie/asset/FileTask_LoadImageData.java:53`, `zombie/core/textures/ImageData.java:144-176`)]
 
-PZ renders world items and vehicle parts from a fixed isometric camera at a few
-dozen pixels. At that size **the silhouette and the value contrast carry the
-read** -- which is exactly what resolution protects and colour depth does not.
-A 128x128 sprite quantised to 9 colours still has every edge it started with. The
-same sprite at 64x64 has lost half its edges permanently.
+A texture opened by file path (`ImageData(String)`) goes through the stb image library instead, and that path is used by some texture constructors. :cite[(`zombie/core/textures/ImageData.java:70`, `zombie/core/textures/Texture.java:656`, `zombie/core/textures/TextureID.java:192`, `zombie/core/textures/TextureID.java:206`)]
 
-Put bluntly: downscaling destroys the thing that survives at 40 px, and
-quantising destroys the thing that does not.
+The rejections below hold for the PNG decoder path only; stb applies its own rules, which we did not check. The PNG decoder accepts indexed color at 1, 2, 4 and 8 bits, and gray, RGB, gray-with-alpha and RGBA only at 8 bits. A 16-bit file, an interlaced file or any other color type throws an error. :cite[(`zombie/core/textures/PNGDecoder.java:805-868`)] A palette must hold 1 to 256 entries, and an indexed file with no palette is refused. :cite[(`zombie/core/textures/PNGDecoder.java:75-77`, `zombie/core/textures/PNGDecoder.java:871-879`)]
 
-## 3. What happens to masks -- the part worth stealing
+For an indexed file the decoder reads the transparency chunk as one alpha value per palette entry, and an entry with no value is fully opaque. :cite[(`zombie/core/textures/PNGDecoder.java:881-899`, `zombie/core/textures/PNGDecoder.java:581-605`)] A re-pack that drops that chunk would therefore turn transparent entries opaque.
 
-PZ has textures the engine samples **by colour**: vehicle skin masks, and the
-`IconColorMask` / `IconFluidMask` images named in item scripts. Quantising one of
-those is not a quality loss, it is a correctness bug -- a region whose colour
-shifts by one step matches nothing and stops being paintable.
+Both paths write RGBA into a buffer whose width and height are rounded up to a power of two. :cite[(`zombie/core/textures/ImageData.java:75-79`, `zombie/core/textures/ImageData.java:147-148`, `zombie/core/textures/ImageData.java:175`)] For an upload without mipmaps the engine counts four bytes per pixel of that rounded size. :cite[(`zombie/core/textures/TextureID.java:481`)] A mipmapped upload sends each mip level instead. :cite[(`zombie/core/textures/TextureID.java:463-476`)]
 
-**ETO gets this right.** Decoding the actual pixels and comparing colour sets:
+With the compression option enabled (the default) and a card that supports it, a texture loaded with the compress flag is also stored by the graphics card in a compressed format. :cite[(`zombie/core/textures/TextureID.java:44`, `zombie/core/textures/TextureID.java:425-438`)] The RGBA buffer is the same whatever bit depth the PNG file had, so a 1-bit file and an 8-bit file of the same picture decode to the same buffer.
 
-- **23 of 25 functional masks are colour-identical to vanilla.** Every
-  `vehicle_*_mask.png` -- carnormal, luxurycar, sportscar, suv, taxi, offroad,
-  pickuptruck, stepvan, van, vanambulance, vanradio, vanseats, racecar,
-  smallcar, smallcar02, carmodern, carmodern2, carmodernlights,
-  carstationwagon, adverttrailer, utilitytrailer -- same dimensions, same exact
-  colour set.
-- The two that changed are `NBC_Mask.png`, which is a **clothing item** (the NBC
-  suit's gas mask), not an engine mask. 649 colours -> 12. Correctly treated as art.
+So the mod's saving is real for disk space, download size and the time to read the file, as measured in part 1. We did not find a saving in the decoded size, and we did not measure load time or graphics memory.
 
-And where a mask *was* re-encoded, it was re-encoded **losslessly**:
+## 3. What happens to masks
+
+**A mask may be read by a shader for its colors, so a lossy re-encode is a risk we did not rule out, and a lossless re-pack keeps every color.**
+
+Quantizing a mask moves its colors. If a shader tells regions apart by color, that could leave a region matching nothing. This is a caution and is not verified: we did not test it in game, and the 42.22 capture does not contain the shader files, so how a shader reads a mask is not checked here.
+
+What the engine code does show is how a vehicle mask is loaded. A skin's mask is loaded with only the size-limit flag, while the skin, damage, rust, lights and shadow textures also get the compress flag when compression is enabled. :cite[(`zombie/vehicles/BaseVehicle.java:608-614`, `zombie/vehicles/BaseVehicle.java:625-634`)] The mask is passed to the vehicle shader as its own input. :cite[(`zombie/core/skinnedmodel/shader/Shader.java:157`, `zombie/core/skinnedmodel/shader/Shader.java:191-192`)]
+
+The item masks named in item scripts (`IconColorMask` and `IconFluidMask`) work differently, and we corrected the old version of this page here. The engine loads each as an inventory icon texture. :cite[(`zombie/scripting/objects/Item.java:1905-1911`, `zombie/inventory/InventoryItem.java:4354-4365`)] In an item icon, the base icon is drawn in white and the mask picture is then drawn over it, tinted with the item's color, or with the fluid's color for the fluid mask. :cite[(`zombie/ui/UIElement.java:561-566`, `zombie/ui/UIElement.java:573-579`, `zombie/ui/UIElement.java:583-585`)] We searched for Java code that compares the pixel colors of these icon masks and found none, so quantizing one would change the tint a little, not make a region stop matching.
+
+The masks used on 3D item models are a different path. The model renderer hands its tint, blood and fluid masks to the texture combiner, and the combiner passes each to a shader as a `MASK` input. :cite[(`zombie/core/skinnedmodel/model/ItemModelRenderer.java:789-804`, `zombie/core/textures/TextureCombiner.java:240-241`)] Hole, blood and tint masks for clothing and characters take the same route. :cite[(`zombie/core/textures/SmartTexture.java:65-115`)] Those shaders are not in the capture, so how they read the mask colors is not verified.
+
+How the mod treats masks, measured on the mod's files:
+
+- **23 of 25 functional masks are color-identical to vanilla.** That includes every `vehicle_*_mask.png` we checked, with the same dimensions and the exact same color set.
+- The two that changed are `NBC_Mask.png`, a clothing item (the gas mask of the NBC suit), not an engine mask. It went from 649 colors to 12, and is correctly treated as art.
+
+Where a mask was re-encoded, it was re-encoded losslessly:
 
 ```
-vehicle_mask.png     512x512  indexed 8-bit  ->  indexed 1-bit   (1 colour used)
+vehicle_mask.png     512x512  indexed 8-bit  ->  indexed 1-bit   (1 color used)
 mask.png             indexed 8-bit pal8      ->  indexed 4-bit pal8
 ```
 
-One colour needs one bit, not eight. Eight colours need four bits, not eight.
-Same pixels, same palette, a fraction of the size, zero risk.
+One color needs one bit, not eight. Eight colors need four bits, not eight. Same pixels, same palette, smaller file. The decoder turns a palette into exact RGBA values, so a file with the same palette and the same indexes gives the same picture however many bits hold the index. :cite[(`zombie/core/textures/PNGDecoder.java:581-605`, `zombie/core/textures/PNGDecoder.java:657-700`)]
 
-**The rule this gives us:** never quantise a functional mask -- but always
-re-pack one. Masks are by construction low-colour images, so vanilla storing
-them at 8-bit indexed is wasting most of every byte.
+**The caution this gives us:** do not quantize a mask (not verified to break, not tested), and note that a lossless re-pack of one keeps every color, because masks are low-color images and vanilla stores many of them at 8-bit indexed.
 
-## 4. What we can apply
+## 4. Why cut colors and not pixels
 
-Our own textures, measured the same way
-(`PZ_3D_Assets/textures/OutcastMotors/`, 19 files, 128x128 RGB 8-bit, 170 KB):
+**This is our judgment about the camera, not something we tested: the outline and the light-to-dark contrast of a small sprite carry the read.**
 
-```
-distinct colours: min 42   median 212   max 521 (Sparkplug)
-```
+The instinct with a performance texture pack is to halve the resolution. This mod does the opposite. The game draws world items and vehicle parts from a fixed isometric camera at a small size, so the silhouette and the value contrast carry the read, and those are what resolution protects and color depth does not. A 128x128 sprite cut to 9 colors keeps every edge it started with, and the same sprite at 64x64 has lost half its edges for good.
 
-Against ETO's median of 9. Nothing here is large enough for the bytes to matter
-on their own, but three things transfer:
+Given what part 2 shows, color cuts save disk and download size only. If memory is the goal, the pixel count is the lever, and we have not tested what that costs.
 
-1. **If we ever need our textures smaller, quantise -- do not downscale.** 128
-   is already the top of vanilla's world-item range and the thing keeping our
-   parts readable at 30-60 px.
-2. **Re-pack rather than resize.** Most of our 19 sit well under 256 colours, so
-   indexed 8-bit is free; several (FanBelt 42, BrakeBooster 52, Flywheel 54)
-   would fit a 4-bit palette losslessly or near enough.
-3. **Any mask we ever author is off-limits to quantisation.** Worth writing into
-   the texture brief now rather than discovering it later, because the failure
-   is silent -- a region simply stops being paintable and nothing logs.
+## 5. What we can apply
 
-## 5. What NOT to copy
+**Our own textures are small enough that nothing here is urgent, but three rules transfer.**
 
-- **This is a technique, not an asset source.** ETO's PNGs are re-encodes of
-  TIS's textures. Same line as always: study the method, ship nothing of theirs.
-- **Do not assume indexed PNG is universally safe.** It evidently works for the
-  classes ETO converts, but we have not verified the engine's loader against
-  every path (UI atlases, shaders sampling with filtering, anything read back at
-  runtime). Convert a class, look at it, then convert the rest.
-- **Whole-set conversion hides regressions.** ETO ships 6,140 files at once; we
-  should not. Per-class, with a before/after look at 64 px.
+We measured our own textures the same way: 19 files of 128x128 RGB 8-bit, 170 KB in all, with between 42 and 521 distinct colors and a median of 212. The mod's median palette is 9.
 
-## 6. The tool -- `pngrepack.py`
+1. **If we ever need our textures smaller, quantize and do not downscale,** on art that is not a mask.
+2. **Re-pack rather than resize.** Most of our 19 sit well under 256 colors, so indexed 8-bit is free, and a few (42, 52 and 54 colors) would fit a 4-bit palette or nearly so.
+3. **Treat any mask we author as off-limits to quantizing until someone tests it.** Put it in the texture brief now as a caution. We have not verified what quantizing would do to a mask, or whether the game would log it.
 
-The study's one free technique, packaged. Re-encodes any PNG of 256 colours or
-fewer as an indexed PNG at the smallest legal bit depth. Nothing is quantised,
-nothing is resized, no colour value ever changes.
+## 6. What not to copy
 
-```
-python pngrepack.py <folder>                     dry run, report only
-python pngrepack.py <folder> --write             rewrite in place
-python pngrepack.py <folder> --scripts <dir>     harvest mask names from scripts
-python pngrepack.py <folder> --csv out.csv       per-file report
-```
+**It is a technique and not an asset source, and converting a whole set at once hides mistakes.**
 
-Dry run is the default; `--write` is required to touch anything. Pure Python +
-numpy, no Blender and no Pillow.
+- **Study the method, ship nothing of theirs.** The mod's PNGs are re-encodes of the game's own textures.
+- **Do not assume indexed PNG is safe everywhere.** The loader above reads it for textures loaded through the engine's PNG decoder, but other code reads some images through a different library, for example the native image helper. :cite[(`zombie/core/utils/NativeImage.java:54`)] We have not checked every path (user interface atlases, shaders that sample with filtering, anything read back at run time). Convert one class, look at it, then convert the rest.
+- **Convert per class, not all at once.** The mod ships 6,140 files at once. We should not, and should look at each class at small size before and after.
 
-**Lossless is verified, not asserted.** Every candidate is decoded, re-encoded,
-then decoded *again* and compared byte-for-byte in RGBA space. A file that does
-not round-trip exactly is rejected and left alone. A file that would not shrink
-by at least `--min-gain` (default 1%) is also left alone, so already-optimal
-files are never churned.
+## 7. Our tool, `pngrepack.py`
 
-**Mask guards**, both on by default:
+**It is our own small script that re-encodes a PNG of 256 colors or fewer as an indexed PNG at the smallest legal bit depth, without changing any color.**
 
-1. any basename containing `mask`
-2. `--scripts <media/scripts>`: every value of every `*mask*` key found in the
-   game's scripts -- which turns out to be `IconColorMask`, `IconFluidMask`,
-   `textureMask`, `primaryAnimMask`, `secondaryAnimMask`
+It quantizes nothing and resizes nothing, and it only runs when told to write: a dry run is the default. Every candidate is decoded, re-encoded, decoded again and compared byte for byte in RGBA. A file that does not round-trip, or would shrink by less than 1%, is left alone.
 
-Guard 2 is data-driven rather than a guessed key list, because guessing which
-key names a functional mask is exactly how you miss one. Measured honestly: on
-vanilla it currently catches nothing guard 1 does not -- all 18 harvested names
-lacking "mask" belong to `primaryAnimMask`/`secondaryAnimMask`, which name
-animation states, not files. Its value is on *mod* folders, where nobody
-guarantees a mask is called one.
+It refuses any file whose name contains `mask`, and it can also read mask names from the game's scripts: the values of the `IconColorMask`, `IconFluidMask`, `textureMask`, `primaryAnimMask` and `secondaryAnimMask` keys. On vanilla that adds nothing beyond the name guard, because the last two name animation states, not files. This is our own tool and our own measurement, and neither was rechecked for 42.22.
 
-`--allow-masks` exists and is genuinely safe for this tool, since a verified
-lossless re-pack cannot move a colour. It is off by default because the failure
-mode, if the verification were ever wrong, is silent.
+Our own measurement showed that this lossless re-pack recovers almost nothing at whole-game scale: 0.11 MB of 565 MB over 6,140 vanilla textures, with 4,195 files over 256 colors that it cannot touch. The set re-packs best on flat-shaded icons and interface art. So the mod's 75% saving is lossy, and comes from cutting colors, not from a free re-pack.
 
-### What it is verified against
+:::callout[How we know]{kind=proof}
+The loader, the memory and compression facts, the vehicle-mask load path and the item-mask drawing were read from the 42.22 engine source, and we opened each line cited. A vanilla file list for 42.22 shows 6,152 PNG files under `media/textures`, so the vanilla counts in part 1 were not recounted at 42.22.
 
-`_src/test_pngrepack.py` checks every claim against **Pillow**, an independent
-decoder that the tool does not depend on. Self-consistency would prove nothing:
-a decoder bug mirrored by an encoder bug passes an internal round-trip and still
-corrupts the pixels.
-
-- **A** -- decode agreement on 48 real vanilla files spanning every colour type
-  and bit depth present in `media` (grey8, RGB8, RGBA8, greyA8, indexed
-  1/2/4/8): 48/48 identical to Pillow
-- **B** -- Pillow re-reads our output with identical pixels: 44/44
-- **C** -- synthetic edges: 1 colour, 2, 4, 16, exactly 256, mixed alpha,
-  1xN and Nx1 strips (sub-byte row padding), 257 colours and noise both refused
-- **D** -- the guards refuse what they should and `--allow-masks` opts out
-- end-to-end `--write` on a disposable copy: 40/40 pixel-identical afterwards,
-  17 shrunk, 0 grew
-
-That suite caught a real bug that the tool's own internal check could not:
-`uint8_array << 16` evaluates to **0** under numpy's NEP 50 promotion rules, so
-casting only the first term of the colour key silently merged every colour
-differing solely in green or blue. Self-consistent, and wrong.
-
-### What it is worth running on -- measured, not assumed
-
-| folder | files | re-packed | saving |
-|---|---|---|---|
-| `PZ_3D_Assets/textures/OutcastMotors` | 40 | 17 | 8% (0.02 MB) |
-| vanilla `media/textures/Vehicles` | 399 | 16 | ~0% (24 masks refused) |
-| vanilla `media/textures` (all of it) | 6,140 | 628 | **0.02%** (0.11 MB of 565 MB) |
-
-**This is the honest headline: lossless re-packing recovers essentially nothing
-at whole-game scale.** Over the full 6,140-file corpus -- the same set ETO
-ships -- it saves 0.11 MB out of 565 MB. The reasons are in the dry run:
-
-```
-skip: >256 colours   4195     cannot be touched without quantising
-keep (<1% gain)      1195     already optimally encoded
-skip: mask-name       121     refused on principle
-skip: 16-bit            1     refused rather than approximated
-repack                628
-```
-
-So ETO's 75% reduction is *lossy*, essentially in full. It comes from cutting
-colour counts to a median of 9, not from the free re-pack. Anyone reaching for
-this tool expecting ETO-scale numbers will be disappointed, and should be.
-
-What the 628 hits do show is **which profile pays**, and it is not vehicles:
-
-| folder | files | saved |
-|---|---|---|
-| `worldMap` | 46 | 54% |
-| `weapons` | 14 | 31% |
-| `weather` | 3 | 29% |
-| `Clothes` | 321 | 27% |
-| `Body` | 14 | 22% |
-| `WorldItems` | 80 | 21% |
-
-Individual hits are large -- `Floss.png` -87%, `WaterDish.png` -85%,
-`circle_only_highlight.png` indexed8 -> indexed1 at -72%, `M16_Rifle.png` -32%.
-They are simply all small files. Flat-shaded item icons and UI art are the
-profile that pays, which is exactly our own: `OMO_Placeholder.png` drops 76% and
-the six Outcast Motors item icons 36-46%.
-
-**Practical read for us:** run it on our icon and world-item output where it is
-free and occasionally large, and do not bother pointing it at vehicle skins.
-
-## 7. Method
-
-`_dev/B42_Textures/_src/` has the three scripts:
-
-- `eto.py` -- dimension and colour-type comparison by category, all 6,140 files
-- `eto2.py` -- encoding histogram, palette sizes, total bytes, variant diff
-- `eto3.py` -- a minimal PNG decoder (unfilter + palette expansion) used to
-  compare the **actual colour sets** of vanilla and ETO masks, which is the only
-  way to tell a lossless re-pack from a quantisation
-- `test_pngrepack.py` -- the verification suite for section 6's tool; needs
-  Pillow, which the tool itself does not
-
-All pure Python, no Blender dependency beyond it being a convenient interpreter.
+Measured 2026-08-10 on the Workshop mod's published files and a 42.20 install, and not rechecked: every file count, size, palette and mask result in parts 1, 3 and 5, and everything about our tool in part 7. Not tested: whether quantizing a vehicle mask breaks painting, how the vehicle shader reads the mask (the shader files are not in the 42.22 capture), load time, and the isometric-camera reasoning in part 4. Dropped from the old page: the claim that 128 is the top of vanilla's world-item size range, for which we found no line.
+:::

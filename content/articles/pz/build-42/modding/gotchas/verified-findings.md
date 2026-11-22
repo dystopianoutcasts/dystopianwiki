@@ -13,99 +13,79 @@ tags:
   - findings
   - running-log
 excerpt: >-
-  Running log of verified findings. Each entry states its evidence and its
-  confidence level. Preliminary findings are labelled as such -- do not cite
-  them as settled.
-last_updated: '2026-10-04'
+  Running log of verified Build 42 engine findings, each with its evidence and confidence. F-001 to F-008 are read at 42.22; F-009 to F-016 are still the 42.21 text and are being rechecked.
+last_updated: '2026-11-21'
 ---
-# Verified engine findings
+::field-notes
 
-> Source: FINDINGS.md (compiled 2026-07-31, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-21, for F-001 to F-008. F-009 to F-016 are still the 42.21 text (revision 4a0e9546ec) and are being rechecked.
 
-Running log of verified findings. Each entry states its evidence and its
-confidence level. **Preliminary findings are labelled as such** -- do not cite
-them as settled.
+Running log of verified findings. Each entry states its evidence and its confidence level. **Preliminary findings are labeled as such** -- do not cite them as settled.
 
-On 2026-10-04 every engine citation in this log was re-checked on Build 42.21
-(revision 4a0e9546ec) and its line number moved to that build. A citation written
-`B42/src/...` now means our decompile of 42.21; files that did not change between
-42.20 and 42.21 have the same line numbers in both.
+F-001 to F-008 below were reread against the 42.22 decompile, and each line they cite was opened. The confidence tags are the original author's, changed only where a reread changed the answer. In F-009 onward, a citation written `B42/src/...` still means our decompile of 42.21, and its line numbers have not been moved to 42.22.
+
+:::callout[The 1-minute version]{kind=key}
+- Build 42 has an entity component system in `zombie/entity/`, and `GameEntity` is the base class of world objects, inventory items and vehicle parts. The 14 files that name `ECSComponent` belong to a separate character-side system, so they do not measure its footprint.
+- Java-side modding by classpath shadowing rests on the sealed launcher file listing `.` before `projectzomboid.jar`. That file is the one saved before a tool edited it, and whether Steam changed the stock file in 42.22 could not be measured.
+- The engine jar carries full debug information, the engine has no Kotlin of its own, and the 42.22 decompile covers every in-scope class.
+- A tile's sprite can be replaced by a 3D model that only changes what is drawn. A mod declares it in `common/media/spriteModels.txt` or as `spriteModel` script objects, and the sprite stays as the fallback.
+- Nothing in the engine draws what is inside an ordinary container, and the container events are weak: `OnContainerUpdate` is a screen-refresh signal. The one exception we found is the mannequin, which draws its worn items.
+:::
+
+:::facts
+- **Files in `zombie/entity/`** 153 (156 in 42.21)
+- **Top-level classes in the 42.22 jar** 3,221, all decompiled, 0 failures (3,352 in 42.21)
+- **Debug tables in `IsoZombie.class`** 325 local-variable tables and 327 line-number tables, one of each per method that has them
+- **Classes under `zombie/` carrying Kotlin metadata** 0
+- **Event trigger sites in Java** `OnFillContainer` 15, `OnContainerUpdate` 39
+:::
 
 ---
 
 ## F-001 -- B42 introduces an Entity Component System
 
-**Confidence: CONFIRMED (exists) / PRELIMINARY (scope and role)**
+**Confidence: CONFIRMED (exists, and `GameEntity` is the base of world objects, items and vehicle parts) / PRELIMINARY (scope and role)**
 
-`zombie/entity/` contains 156 `.java` files implementing a textbook ECS:
+**Build 42 adds an entity component system in `zombie/entity/`, and every world object, inventory item and vehicle part is a `GameEntity`.**
 
-| Class | Role |
-|-------|------|
-| `Engine` | ECS engine root |
-| `EntitySimulation` | simulation driver |
-| `SystemManager`, `EngineSystem` | system registry and base |
-| `GameEntity`, `MetaEntity` | entity types |
-| `Component`, `ComponentContainer`, `ComponentType`, `ComponentFactory` | component model |
-| `Family`, `EntityBucket`, `EntityBucketManager` | entity queries/grouping |
-| `GameEntityNetwork` | network sync for entities |
+The package holds 153 `.java` files at 42.22 (156 at 42.21), in `components/`, `debug/`, `energy/`, `events/`, `meta/`, `network/`, `system/` and `util/`. It has no B41 equivalent: the B41 decompile in our records (1,599 files) has no `GameEntity` or `ComponentType` file. A longer page, not yet rechecked for 42.22, is [The Build 42 entity component system](/pz/build-42/modding/engine/the-entity-component-system). Keep this entry as the short, cited version.
 
-Subpackages: `components/`, `system/`, `network/`, `events/`, `energy/`,
-`meta/`, `debug/`, `util/`.
+| Class | Role | Code |
+|-------|------|------|
+| `Engine` | ECS engine root | `zombie/entity/Engine.java:14` |
+| `EntitySimulation` | simulation driver | `zombie/entity/EntitySimulation.java:12` |
+| `SystemManager`, `EngineSystem` | system registry and base | `zombie/entity/SystemManager.java:17`, `zombie/entity/EngineSystem.java:10` |
+| `GameEntity`, `MetaEntity` | entity types | `zombie/entity/GameEntity.java:55`, `zombie/entity/MetaEntity.java:20` |
+| `Component`, `ComponentContainer`, `ComponentType`, `ComponentFactory` | component model | `zombie/entity/Component.java:34`, `zombie/entity/ComponentContainer.java:18`, `zombie/entity/ComponentType.java:67`, `zombie/entity/ComponentFactory.java:20` |
+| `Family`, `EntityBucket`, `EntityBucketManager` | entity queries and grouping | `zombie/entity/Family.java:15`, `zombie/entity/EntityBucket.java:23`, `zombie/entity/EntityBucketManager.java:15` |
+| `GameEntityNetwork` | network sync for entities | `zombie/entity/GameEntityNetwork.java:37` |
 
-This has no B41 equivalent -- `zombie/entity` did not exist.
+**`GameEntity` reaches the old classes by inheritance.** `IsoObject`, `InventoryItem`, `VehiclePart` and `MetaEntity` all extend it. :cite[(`zombie/iso/IsoObject.java:181`, `zombie/inventory/InventoryItem.java:131`, `zombie/vehicles/VehiclePart.java:44`, `zombie/entity/MetaEntity.java:20`)] 103 files outside `zombie/entity/` import from it (counted), so its footprint is wide.
 
-**Observed in use** at `B42/src/zombie/characters/IsoZombie.java:604`:
+### Corrected: the 14 files that name `ECSComponent`
 
-```java
-public void registerECSComponents() {
-   super.registerECSComponents();
-   this.setECSComponent(new NetworkZombieComponent(this));
-}
-```
+**The files that name `ECSComponent` or `registerECSComponents` are a separate, character-side component system, not `zombie/entity/`.**
 
-### The important caveat
+We first took the count of those files (14, in both 42.20 and 42.21) as the narrow footprint of the entity system. It is not: they use `zombie/characters/ecs/`, which has its own `ECSComponent` and `ECSEntity`. :cite[(`zombie/characters/ecs/ECSComponent.java:12`, `zombie/characters/ecs/ECSEntity.java:22`)] The example we gave, `registerECSComponents` in `IsoZombie`, belongs to that system. :cite[(`zombie/characters/IsoZombie.java:606-609`)] `IsoObject` joins both: it extends `GameEntity` and implements `ECSEntity`. :cite[(`zombie/iso/IsoObject.java:181`)] At 42.22 the count is still 14 files.
 
-Only **14 files engine-wide** reference `ECSComponent` / `registerECSComponents`.
-Against 3,335 total classes on 42.20 (3,352 on 42.21, still 14 files), that is a
-very narrow footprint.
-
-> **Proof:** Code. Counted the decompiled `.java` files (3,335 in the 42.20 capture, revision a2947723ca; 3,352 in the 42.21 capture) and the files naming `ECSComponent` or `registerECSComponents` (14 in each). Build 42.21.0 (revision 4a0e9546ec).
-
-**Preliminary interpretation:** B42 runs the ECS *in parallel with* the legacy
-`IsoObject` / `IsoGameCharacter` inheritance hierarchy rather than replacing it.
-Two coexisting object models.
-
-**This is a grep-level read, not an analysis.** It must be properly characterized
-in Stage 2. Open questions:
-- Which entities are ECS-managed vs. legacy-hierarchy-managed?
+**Preliminary interpretation:** B42 runs the entity system in parallel with the older character component code, and the old `IsoObject` hierarchy now sits on top of `GameEntity`. This is a grep-level read, not an analysis. Open questions, answered in part on the longer page above (not rechecked):
+- Which entities are ECS-managed and which are legacy-managed?
 - Is `EntitySimulation` driven from the main loop, and where?
-- Is the ECS the substrate for B42's new crafting/entity scripts
-  (`media/scripts/generated/entities/`)?
-- Is the legacy hierarchy being migrated onto ECS incrementally?
+- Is the ECS the substrate for B42's crafting and entity scripts (`media/scripts/generated/entities/`)?
 
 ---
 
 ## F-002 -- Java-side modding works by classpath precedence
 
-**Confidence: CONFIRMED**
+**Confidence: CONFIRMED (the file); the JVM rule itself is standard Java and was not run here**
 
-`ProjectZomboid64.json` declares:
+**The launcher file lists `.` before the jar, so a loose `.class` file in the install root is found first.**
 
-```json
-"classpath": [".", "projectzomboid.jar"]
-```
+The sealed `ProjectZomboid64.json` declares `"classpath": [".", "projectzomboid.jar"]`. :cite[(`ProjectZomboid64.json:3-6`)] `.` precedes the jar, so loose `.class` files placed in the install root **override** the corresponding classes inside `projectzomboid.jar` at runtime. This is the concrete mechanism behind the **`L3 JAVA_PATCH`** capability tier: What the file shows is the classpath order: a loose class in the install root is found before the jar. We did not rule out other ways to change Java code, such as an edited launcher file, which another page describes.
 
-`.` precedes the jar, so loose `.class` files placed in the install root
-**override** the corresponding classes inside `projectzomboid.jar` at runtime.
+**The sealed file is the pre-tool copy.** The installed launcher file on our machine was edited by a tool, so the capture holds the copy saved before that, which is byte-identical to the 42.21 one. Whether Steam changed the stock file in 42.22 could not be measured, because no pristine copy was left.
 
-This is the concrete mechanism behind the **`L3 JAVA_PATCH`** capability tier --
-Java-side modding in PZ is classpath shadowing, not bytecode patching.
-
-**Corroborating incident:** 403 stray B41-era `.class` files were found in the
-live install at `zombie/iso - Copy/`. That path maps to no real package, so they
-were never loaded. Had they been at `zombie/iso/`, they would have silently
-overridden B42 engine code with B41 implementations -- with no error and no
-warning. (Archived to `_archive/stray_files_from_install_2026-07-30/`.)
+**Corroborating incident (our own, 2026-07-30, not rechecked):** 403 stray B41-era `.class` files were found in the live install at `zombie/iso - Copy/`. That path maps to no real package, so they were never loaded. Had they been at `zombie/iso/`, they would have silently overridden B42 engine code with B41 implementations, with no error and no warning. (Archived to `_archive/stray_files_from_install_2026-07-30/`.)
 
 ---
 
@@ -113,15 +93,14 @@ warning. (Archived to `_archive/stray_files_from_install_2026-07-30/`.)
 
 **Confidence: CONFIRMED**
 
-`IsoZombie.class` carries **325 `LocalVariableTable`** and **327
-`LineNumberTable`** entries.
+**The jar carries local-variable and line-number tables, so decompiled code has real names and its line numbers mean something.**
+
+`IsoZombie.class` in the 42.22 jar has 327 methods. 325 of them carry a `LocalVariableTable` (914 rows in all) and 327 carry a `LineNumberTable` (3,312 rows). The old wording called these "entries"; they are attributes, one per method. The counts match 42.20 (checked by reading the class file, not by decompiling it).
 
 Consequences:
-- Decompiled output has **real parameter and local variable names**
-  (`setOwner(UdpConnection connection)`), not `var1` / `var10001`.
+- Decompiled output has **real parameter and local variable names** (`setOwner(UdpConnection connection)`), not `var1` or `var10001`. :cite[(`zombie/characters/IsoZombie.java:643`)]
 - Line numbers are meaningful, so `file:line` citations are precise.
-- `B42/src/` is a genuinely readable surface for targeted reading, not merely a
-  citation target.
+- The decompile `src/` is a readable surface for targeted reading, not merely a citation target.
 
 ---
 
@@ -129,35 +108,31 @@ Consequences:
 
 **Confidence: CONFIRMED**
 
-Zero classes under `zombie/` carry `kotlin/Metadata`. The 566 Kotlin classes in
-the jar are vendored stdlib pulled in by okhttp/okio.
+**No class under `zombie/` carries `kotlin/Metadata`, so straight Java decompilation covers the whole engine.**
 
-Straight Java decompilation covers **100%** of the engine. A planned
-Kotlin-aware fallback decompiler was cancelled as unnecessary.
+We read every class of the 42.22 jar for the string `kotlin/Metadata`. None of the classes under `zombie/` has it. The 1,223 that do are all in three vendored libraries: `kotlin/` (824 classes), `okhttp3/` (329) and `okio/` (70).
+
+The jar holds 865 classes under `kotlin/` in all. The old page said 566 Kotlin classes; that number does not reproduce at 42.22.
+
+Straight Java decompilation covers **100%** of the engine. A planned Kotlin-aware fallback decompiler was cancelled as unnecessary.
 
 ---
 
 ## F-005 -- The Lua boundary is self-documented in bytecode
 
-**Confidence: CONFIRMED (mechanism) / PENDING (extraction)**
+**Confidence: CONFIRMED (the two annotations exist) / CORRECTED (they are not the boundary list)**
 
-B42 ships two runtime annotations:
-- `zombie/UsedFromLua.class`
-- `zombie/HiddenFromLua.class`
+**Build 42 ships `@UsedFromLua` and `@HiddenFromLua`, but neither is the list of what Lua can call: an explicit class list decides that, and `@HiddenFromLua` only subtracts from it.**
 
-Both confirmed present and referenced by real engine classes (e.g. `IsoZombie`).
+Both annotations exist as runtime annotations and are used by real engine classes, such as `IsoZombie`. :cite[(`zombie/UsedFromLua.java:14-19`, `zombie/HiddenFromLua.java:14-18`, `zombie/characters/IsoZombie.java:189`)] `@UsedFromLua` appears in 839 decompiled files and `@HiddenFromLua` in 13 (counted).
 
-This means the modding boundary -- literally "what is and is not possible from
-Lua" -- can be read **authoritatively from bytecode** via an ASM annotation scan,
-rather than inferred by parsing `LuaManager` exposure calls as originally planned.
+We first planned to read the whole Lua boundary from an annotation scan. The reread says that would give the wrong list.
 
-`zombie/Lua/` retains the same shape as B41 (`LuaManager`, `LuaEventManager`,
-`Event`, `LuaHookManager`, `LuaBackendClass`, `MapObjects`, plus a new
-`KahluaArrayConverter`).
+The game registers its exposed classes by name in `LuaManager`, and the exposer exposes only a class on that list. For each exposed class it skips a method, field, constructor or class marked `@HiddenFromLua`, and it refuses some classes outright. :cite[(`zombie/Lua/LuaManager.java:1700-1701`, `se/krka/kahlua/integration/expose/LuaJavaClassExposer.java:53-78`, `se/krka/kahlua/integration/expose/LuaJavaClassExposer.java:322-329`)]
 
-**Extraction is pending (W1.4).** The annotation coverage percentage is not yet
-measured -- some classes may be Lua-exposed without carrying the annotation, so
-W1.4 must cross-check against `LuaManager` and `media/lua/`.
+The exposer's compiled code names `zombie/HiddenFromLua` and does not name `zombie/UsedFromLua` (a byte search of the jar). The page [Engine internals: calling exposed Java from Lua](/pz/build-42/modding/lua-api/engine-internals-calling-exposed-java-from-lua) explains the rules. The only `UsedFromLua` check in the decompiled source is a development-build validation. :cite[(`zombie/core/DevValidation.java:106-107`)] The page [Lua reference](/pz/build-42/modding/reference/lua-reference) says the same.
+
+`zombie/Lua/` holds `Event`, `KahluaArrayConverter`, `KahluaNumberConverter`, `LuaBackendClass`, `LuaEventManager`, `LuaHookManager`, `LuaManager` and `MapObjects`. The generated index `api/api.jsonl` now exists and records per member whether Lua can reach it. This entry does not extract that list.
 
 ---
 
@@ -165,19 +140,15 @@ W1.4 must cross-check against `LuaManager` and `media/lua/`.
 
 **Confidence: CONFIRMED**
 
-Vineflower 1.11.1 emitted **3,335 `.java` from 3,335 top-level classes** --
-100% coverage, zero failures, zero error lines, in 98.7 seconds. That was the
-42.20 build; the 42.21 re-capture has 3,352.
+**The 42.22 decompile emitted 3,221 `.java` files from 3,221 top-level classes, with no failures.**
 
-In-scope packages: `zombie` (3,076), `generation` (145), `fmod` (102),
-`astar` (11), `N3D` (1).
+Vineflower 1.11.1 emitted 3,221 `.java` files from 3,221 top-level classes (5,246 class files): 100% coverage, zero failures and zero error lines, in 69.3 seconds. That is the 42.22 capture; the 42.20 build had 3,335 and the 42.21 capture 3,352. The drop is the 145-class `generation/` package, which is absent from the 42.22 jar.
 
-Output preserves full package paths (`zombie/characters/...`), unlike the B41
-decompile which was flattened to `characters/...`.
+In-scope packages (counted in `src/`): `zombie` (3,107), `fmod` (102), `astar` (11), `N3D` (1).
 
-Every output file carries a six-line provenance banner (build, revision, jar
-hash, decompiler, date, and a warning that decompiled output is not original
-source), so a file can never be separated from its origin.
+Output preserves full package paths (`zombie/characters/...`), unlike the B41 decompile, which was flattened to `characters/...`.
+
+Every output file carries a six-line provenance banner (build, revision, jar hash, decompiler, date, and a warning that decompiled output is not original source), so a file can never be separated from its origin. :cite[(`zombie/iso/IsoObject.java:1-6`)] All 3,221 files carry the 42.22 revision line.
 
 ---
 
@@ -185,18 +156,14 @@ source), so a file can never be separated from its origin.
 
 **Confidence: CONFIRMED (mechanism) / PRELIMINARY (limits at furniture scale)**
 
-**Capability tier: L0 `LUA_DIRECT` for the runtime swap; the declaration itself
-is a data file, no code required.**
+**Capability tier: L0 `LUA_DIRECT` for the runtime swap; the declaration itself is a data file, no code required.**
 
-> Derived by manual reading of `B42/src/`. The `api/` index layer is not built
-> yet, so nothing here came from a generated index.
+**The engine can draw a 3D model in place of a tile's sprite, and a mod declares the swap in its own `spriteModels.txt`.**
 
-B42 renders most world furniture as flat isometric sprites, but the engine can
-substitute a real 3D model for any tile. `IsoObject.render()` attempts the model
-first and falls through to the sprite path when it declines:
+Build 42 renders most world furniture as flat isometric sprites, but the engine can substitute a real 3D model for any tile. `IsoObject.render()` tries the model first and falls through to the sprite path when it declines. :cite[(`zombie/iso/IsoObject.java:3613-3617`)] Two other render paths use the same try-model-then-sprite shape. :cite[(`zombie/iso/IsoObject.java:3733-3735`, `zombie/iso/IsoObject.java:3794-3796`)]
 
 ```java
-// B42/src/zombie/iso/IsoObject.java:3588
+// zombie/iso/IsoObject.java:3613
 if (this.renderModel(x + 0.5F, y + 0.5F, z, col)) {
    this.updateRenderInfoForObjectPicker(x, y, z, col);
 } else if (!this.isSpriteInvisible()) {
@@ -204,32 +171,28 @@ if (this.renderModel(x + 0.5F, y + 0.5F, z, col)) {
 }
 ```
 
-Three further call sites use the same try-model-then-sprite shape
-(`IsoObject.java:3730`, `:3800`).
+### The substitution only changes the drawing
 
-### The substitution is render-only
+**`renderModel` changes how the object is drawn and fades, and touches no container or tile property.**
 
-`renderModel` (`B42/src/zombie/iso/IsoObject.java:6348`) touches nothing but the
-draw. Tile properties -- `container`, `ContainerCapacity`, `PickUpWeight`,
-`IsMoveAble`, health -- are read by unrelated systems and are unaffected. A tile
-whose sprite is model-substituted keeps its exact 2D behaviour.
+`renderModel` reads the model, steps the object's fade alpha, applies highlight and blackout colors, and draws. :cite[(`zombie/iso/IsoObject.java:6326-6419`)] It returns true only when the model is ready (or loading during chunk caching), and returns false otherwise, so the sprite is drawn meanwhile. :cite[(`zombie/iso/IsoObject.java:6415-6419`)] Tile properties (`container`, `ContainerCapacity`, `PickUpWeight`, `IsMoveAble`, health) are read by unrelated systems and are unaffected: a tile whose sprite is model-substituted keeps its 2D behavior.
 
 ### Resolution order for an object's model
 
-`getSpriteModel()` (`B42/src/zombie/iso/IsoObject.java:6329`) checks a per-object
-override first, then the sprite's shared assignment:
+**An object's own model name wins, then the sprite's shared model, and a set name that matches nothing gives no model.**
 
-1. `this.spriteModelName` -> `ScriptManager.getSpriteModel(name)` (`:6330-6335`)
-2. `this.sprite.spriteModel` (`:6336-6342`)
+`getSpriteModel()` checks a per-object override first, then the sprite's shared assignment. :cite[(`zombie/iso/IsoObject.java:6306-6321`)]
 
-`setSpriteModelName()` (`:6322`) is public and **serialized** with the object
-(`:1377` read, `:1599` write), so a per-instance model override persists across
-save/load.
+1. `this.spriteModelName` -> `ScriptManager.getSpriteModel(name)` :cite[(`zombie/iso/IsoObject.java:6307-6311`, `zombie/scripting/ScriptManager.java:884-886`)]
+2. `this.sprite.spriteModel` :cite[(`zombie/iso/IsoObject.java:6314-6318`)]
+
+`setSpriteModelName()` is public and **serialized** with the object, so a per-instance model override persists across save and load. :cite[(`zombie/iso/IsoObject.java:6300-6304`, `zombie/iso/IsoObject.java:1394`, `zombie/iso/IsoObject.java:1616-1618`)] A name that is set keeps the same model when the sprite changes, because the lookup is by that name. If the name is set but unknown, `getSpriteModel()` returns null and does not fall back to the sprite's own model, so the object is drawn as a sprite. :cite[(`zombie/iso/IsoObject.java:6306-6313`)]
 
 ### Mods have a dedicated loading slot
 
-`SpriteModelManager.init()` (`B42/src/zombie/spriteModel/SpriteModelManager.java:36`)
-scans every loaded mod for its own `spriteModels.txt`:
+**A mod's `spriteModels.txt` is read from its `common` folder only.**
+
+`SpriteModelManager.init()` scans every loaded mod for its own `spriteModels.txt`. :cite[(`zombie/spriteModel/SpriteModelManager.java:36-47`)]
 
 ```java
 for (String modID : ZomboidFileSystem.instance.getModIDs()) {
@@ -241,62 +204,35 @@ for (String modID : ZomboidFileSystem.instance.getModIDs()) {
 }
 ```
 
-**Path gotcha.** `mediaFile.common` resolves to `<mod>/common/media`
-(`B42/src/zombie/gameStates/ChooseGameInfo.java:511`). The **version** folder
-(`<mod>/42/media/`) is *not* scanned for this file. Wrong folder = silent no-op.
+**Path gotcha.** `mediaFile.common` resolves to `<mod>/common/media`. The **version** folder (`<mod>/42/media/`) is *not* scanned for this file. Wrong folder = silent no-op. :cite[(`zombie/gameStates/ChooseGameInfo.java:509-516`)]
 
-Entries may also be declared as script objects -- `spriteModel` is a registered
-`ScriptType` (`B42/src/zombie/scripting/ScriptType.java:30`) and
-`SpriteModels.fromScriptManager()` (`B42/src/zombie/iso/SpriteModels.java:74`)
-merges them, keyed by the name convention `<tileset>_<tileIndex>`.
+Entries may also be declared as script objects: `spriteModel` is a registered `ScriptType`, and `SpriteModels.fromScriptManager()` merges them, keyed by the name convention `<tileset>_<tileIndex>`. :cite[(`zombie/scripting/ScriptType.java:30`, `zombie/iso/SpriteModels.java:74-86`)]
 
-**Conflict rule: game data wins.** `Tileset.initSprites()` assigns only when the
-slot is empty -- `if (sprite != null && sprite.spriteModel == null)`
-(`B42/src/zombie/iso/SpriteModelsFile.java:286`). A mod cannot override a tile
-vanilla has already claimed.
+**Conflict rule: game data wins.** `Tileset.initSprites()` assigns only when the slot is empty. :cite[(`zombie/iso/SpriteModelsFile.java:283-289`)] A mod cannot override a tile vanilla has already claimed.
 
 ### TIS ships an authoring tool
 
-`media/lua/client/DebugUIs/SpriteModelEditor.lua` (1,082 lines) exposes a mod-ID
-dropdown fed by `SpriteModelManager.getInstance():getModIDs()` (line 696) and a
-SAVE that writes into the selected mod's folder (line 1039). Translate / rotate /
-scale can be tuned live against the tile. This is a supported pipeline, not an
-exploited seam.
+**The game ships a sprite-model editor that saves into a chosen mod's folder.**
+
+`media/lua/client/DebugUIs/SpriteModelEditor.lua` (1,082 lines) has a mod-ID dropdown fed by `SpriteModelManager.getInstance():getModIDs()`, and a SAVE button that writes the sprite-models file for the selected mod. :cite[(`media/lua/client/DebugUIs/SpriteModelEditor.lua:696`, `media/lua/client/DebugUIs/SpriteModelEditor.lua:1038-1041`, `zombie/iso/SpriteModels.java:28-30`)] Translate, rotate and scale can be tuned live against the tile. This is a supported pipeline, not an exploited seam.
 
 ### Constraints
 
-- **Hard dependency on FBO chunk rendering.** `renderModel` opens with
-  `if (!PerformanceSettings.fboRenderChunk) return false;`
-  (`B42/src/zombie/iso/IsoObject.java:6350`). Default is `true`
-  (`B42/src/zombie/core/PerformanceSettings.java:36`) but it is a user graphics
-  setting. **Always ship the sprite as a working fallback.**
-- **Mouse picking still uses sprite bounds.** `updateRenderInfoForObjectPicker()`
-  (`B42/src/zombie/iso/IsoObject.java:6458`) reads
-  `this.sprite.getTextureForCurrentFrame(...)`. Hover/click targeting follows the
-  2D silhouette even when the model is what's drawn. Keep model and sprite
-  silhouettes close.
-- **`runtime =` shorthand is doors-only and not extensible.**
-  `SpriteModel.parseRuntimeString()` (`B42/src/zombie/iso/SpriteModel.java:143`)
-  dispatches on the literals `standard_door` and `pair_door` only.
-- **Per-state models are per-sprite models.** Doors switch model by switching
-  sprite; each sprite carries its own `spriteModel`. `setSpriteFromName()`
-  (`B42/src/zombie/iso/IsoObject.java:2068`) is the runtime lever. Same technique
-  works for any discrete object state.
-- **Tileset+coordinate coupling.** Entries key on `<tilesetName>` plus `xy`; a
-  TIS re-layout of that sheet silently retargets the model.
+**Four limits matter before you ship a model in place of a tile.**
 
-### Vanilla coverage (from the live install, buildid 24449119)
+- **Hard dependency on FBO chunk rendering.** `renderModel` opens with `if (!PerformanceSettings.fboRenderChunk) return false;`. :cite[(`zombie/iso/IsoObject.java:6326-6329`)] The default is `true`. :cite[(`zombie/core/PerformanceSettings.java:36`)] We first called this "a user graphics setting". The reread found no option that sets it: in vanilla code the only writer is a debug-mode key that toggles the old renderer. :cite[(`zombie/iso/IsoCell.java:3557-3560`)] The field is exposed to Lua, so a mod's Lua can set it. :cite[(`api/api.jsonl:23985`)] **Always ship the sprite as a working fallback** all the same.
+- **Mouse picking still uses sprite bounds.** `updateRenderInfoForObjectPicker()` reads `this.sprite.getTextureForCurrentFrame(...)`, so hover and click targeting follow the 2D silhouette even when the model is what is drawn. Keep model and sprite silhouettes close. :cite[(`zombie/iso/IsoObject.java:6437-6440`)]
+- **The `runtime =` shorthand is for doors only.** `SpriteModel.parseRuntimeString()` acts on the words `standard_door` and `pair_door` and does nothing for any other value. :cite[(`zombie/iso/SpriteModel.java:145-153`)]
+- **Per-state models are per-sprite models.** Doors switch model by switching sprite, and each sprite carries its own `spriteModel`. `setSpriteFromName()` is the runtime lever, and `setSprite` also invalidates the render chunk level when it runs on the game thread. :cite[(`zombie/iso/IsoObject.java:2085-2088`, `zombie/iso/IsoObject.java:2068-2075`)] This holds only while no per-object `spriteModelName` is set, as above. The same technique works for any discrete object state.
+- **Tileset and coordinate coupling.** Entries key on `<tilesetName>` plus an index that is split into a column and a row (`index % 8` and `index / 8`), so a TIS re-layout of that sheet silently retargets the model. :cite[(`zombie/iso/SpriteModels.java:80-82`)]
 
-`media/spriteModels.txt` declares 19 tilesets / 232 model entries: 184 are
-`runtime = standard_door ...` (doors, windows, fences, ramps), 100 carry an
-`animation`, and the static non-door remainder is entirely **small ground props**
--- `appliances_radio_01` (20) and `appliances_com_01` (24, walkie-talkies).
-`appliances_laundry_01` is registered with **zero** tiles: TIS opened the door on
-a container appliance and shipped nothing through it.
+### Vanilla coverage (measured on an earlier build, not recounted)
 
-**PRELIMINARY:** there is therefore **no shipped precedent at furniture scale.**
-Lighting behaviour, wall occlusion, and how a 3D piece reads beside neighbouring
-2D furniture are unvalidated. This is an art/tuning risk, not an engine one.
+**Vanilla shipped no 3D model for furniture-scale tiles when we counted.**
+
+`media/spriteModels.txt` declared 19 tilesets and 232 model entries on Steam build 24449119: 184 are `runtime = standard_door ...` (doors, windows, fences, ramps), 100 carry an `animation`, and the static non-door remainder is entirely **small ground props**: `appliances_radio_01` (20) and `appliances_com_01` (24, walkie-talkies). `appliances_laundry_01` is registered with **zero** tiles: TIS opened the door on a container appliance and shipped nothing through it. The file is not in the 42.22 capture; its size is the same in the 42.21 and 42.22 file lists (77,515 bytes), and the counts were not redone.
+
+**PRELIMINARY:** there is therefore **no shipped precedent at furniture scale.** Lighting behavior, wall occlusion, and how a 3D piece reads beside neighboring 2D furniture are unvalidated. This is an art and tuning risk, not an engine one.
 
 ---
 
@@ -306,99 +242,65 @@ Lighting behaviour, wall occlusion, and how a 3D piece reads beside neighbouring
 
 **Capability tier: L2 `EVENT_ONLY`, and the events are weak -- see below.**
 
-`ItemContainer` is pure data. Nothing in the engine draws what is inside a
-container.
+**`ItemContainer` is pure data: apart from the mannequin, we found nothing in the engine that draws what is inside a container, and the events that mention containers are weak.**
 
-The one tile property that sounds relevant is not. `ContainerPosition` is
-registered at `B42/src/zombie/core/properties/TilePropertyKey.java:70`, copied to
-the container at `B42/src/zombie/iso/IsoObject.java:5340`, and stored as a plain
-string (`B42/src/zombie/inventory/ItemContainer.java:3418-3423`). Its values are
-`High` / `Low` and its only consumer is reach-animation selection.
+**The exception we found is `IsoMannequin`.** It copies its worn items into its container and draws them from its `wornItems`, so its container is a copy of what it displays. :cite[(`zombie/iso/objects/IsoMannequin.java:799-801`, `zombie/iso/objects/IsoMannequin.java:832-835`)]
 
-**Consequence:** "show the books that are in the bookcase" cannot be switched on.
-Container state must be *mirrored* into a render layer by the mod.
+The one tile property that sounds relevant is not. `ContainerPosition` is a registered tile property, copied to the container object and stored as a plain string. :cite[(`zombie/core/properties/TilePropertyKey.java:70`, `zombie/iso/IsoObject.java:5329`, `zombie/inventory/ItemContainer.java:3479-3485`)] The only use we found is picking the reach animation: the transfer action sets an animation variable from it, and four loot animation sets read that variable. :cite[(`media/lua/client/TimedActions/ISInventoryTransferAction.lua:197-198`)] Its values were written as `High` and `Low`; the tile definitions are not in the capture, so that list was not rechecked.
+
+**Consequence:** "show the books that are in the bookcase" cannot be switched on, because the mannequin's route draws worn items and is not a general container renderer. Container state must be *mirrored* into a render layer by the mod.
 
 ### There is no reliable container-mutation event
 
-`OnFillContainer`, `OnContainerUpdate`, and `OnObjectAdded` are registered
-(`B42/src/zombie/Lua/LuaEventManager.java:730`, `:741`, `:742`). We first wrote
-that Java never fires the first two. That was wrong: Java fires
-`OnFillContainer` at 15 places, all of them loot generation (`ItemPickerJava`,
-`ItemSpawner`, `IsoChunk`, `BaseVehicle`, and the dead-body filler in
-`LuaManager`), and `OnContainerUpdate` at 41 places. Lua fires them too -- e.g.
-`media/lua/shared/Foraging/forageSystem.lua:1672`,
-`media/lua/shared/Items/OnBreak.lua:47`. `OnContainerUpdate` is still a
-UI-refresh signal, consumed by `ISInventoryPage.lua:2213`, not a data hook: 35 of
-the 41 Java calls pass no argument, and none of them passes an `ItemContainer`.
+**`OnFillContainer` fires only for loot generation, and `OnContainerUpdate` is a screen-refresh signal.**
 
-> **Proof:** Code. `triggerEvent("OnFillContainer"` and `triggerEvent("OnContainerUpdate"` searched across the engine source (15 and 41 calls; the same counts in 42.20); `zombie.inventory.ItemPickerJava`, `zombie.inventory.ItemSpawner`, `zombie.iso.IsoChunk`, `zombie.vehicles.BaseVehicle`, `zombie.Lua.LuaManager`. Build 42.21.0 (revision 4a0e9546ec).
+`OnFillContainer`, `OnContainerUpdate` and `OnObjectAdded` are registered events. :cite[(`zombie/Lua/LuaEventManager.java:730`, `zombie/Lua/LuaEventManager.java:741-742`)] We first wrote that Java never fires the first two. That was wrong: Java fires `OnFillContainer` at 15 places, all of them loot generation (`ItemPickerJava` 10, `ItemSpawner` 2, `IsoChunk`, `BaseVehicle`, and the dead-body filler in `LuaManager`), and `OnContainerUpdate` at 39 places (41 in 42.21). Each `OnFillContainer` call passes the container as its last argument. :cite[(`zombie/inventory/ItemPickerJava.java:598`, `zombie/iso/IsoChunk.java:5355`, `zombie/Lua/LuaManager.java:10334`, `zombie/vehicles/BaseVehicle.java:8952`)]
 
-**This is the hard part of any such mod**, not the rendering. Loot spawn has
-`OnFillContainer`, but coverage of corpse drops, server-side transfers, and other
-mods cannot be guaranteed by event subscription. Design for a reconciling refresh (on container open, on
-proximity) rather than trusting events.
+Lua fires them too, for example in the foraging code and the item-break code. :cite[(`media/lua/shared/Foraging/forageSystem.lua:1672`, `media/lua/shared/Items/OnBreak.lua:47`)] `OnContainerUpdate` is still a UI-refresh signal, not a data hook: its handler in the inventory page only marks the page dirty. :cite[(`media/lua/client/ISUI/ISInventoryPage.lua:2154-2156`, `media/lua/client/ISUI/ISInventoryPage.lua:2213`)] 33 of the 39 Java calls pass no argument, and the other six pass an item, a square or an object, never an `ItemContainer`. :cite[(`zombie/inventory/types/Food.java:785`, `zombie/iso/IsoGridSquare.java:3022`, `zombie/network/packets/RemoveItemFromSquarePacket.java:99`)]
 
-**PRELIMINARY** on completeness: the trigger-site sweep was `rg` over `zombie/`.
-It was re-run on 2026-10-04 (above) and found the Java trigger sites the first
-sweep missed; loot generation is covered by `OnFillContainer`, while player
-transfers and changes made by other mods still are not.
+**This is the hard part of any such mod**, not the rendering. Loot spawn has `OnFillContainer`, but coverage of corpse drops, server-side transfers, and other mods cannot be guaranteed by event subscription. Design for a reconciling refresh (on container open, on proximity) rather than trusting events.
 
-### What the engine *does* provide
+**PRELIMINARY** on completeness: the trigger-site sweep was a text search over `zombie/`, redone on 2026-11-21 for 42.22. Loot generation is covered by `OnFillContainer`, while player transfers and changes made by other mods still are not.
 
-Two independent primitives, both usable today.
+### What the engine does provide
 
-**1. Item models render at arbitrary sub-tile positions.**
-`IsoWorldInventoryObject.render()`
-(`B42/src/zombie/iso/objects/IsoWorldInventoryObject.java:559`) draws an
-`InventoryItem`'s world model at `getX() + xoff, getY() + yoff, getZ() + zoff`.
-Setters at `:869`, `:873`, `:877`; MP sync at `:881`. Spawn via
-`IsoGridSquare.AddWorldInventoryItem(item, x, y, height)`
-(`B42/src/zombie/iso/IsoGridSquare.java:6035`).
+**Two primitives are usable today: item models at sub-tile positions, and phantom render objects.**
 
-B42 already exposes this to players as **Extended Placement** -- a 3D gizmo UI
-(`media/lua/client/ISUI/ISExtendedPlacementUI.lua`, 511 lines) doing
-`setOffX/setOffY/setOffZ` (lines 446-448) plus
-`setWorldXRotation/Y/Z` (lines 436-438). Sub-tile 3D item placement is shipped,
-networked, and persisted.
+**1. Item models render at arbitrary sub-tile positions.** `IsoWorldInventoryObject.render()` draws an item's world model at the tile position plus its stored offsets, when the item's script says it has a world model. :cite[(`zombie/iso/objects/IsoWorldInventoryObject.java:557-566`)] The offsets have setters, are saved with the object, and sync in multiplayer. :cite[(`zombie/iso/objects/IsoWorldInventoryObject.java:867-877`, `zombie/iso/objects/IsoWorldInventoryObject.java:419`, `zombie/iso/objects/IsoWorldInventoryObject.java:485`, `zombie/iso/objects/IsoWorldInventoryObject.java:879-888`)] Spawn one with `IsoGridSquare.AddWorldInventoryItem(item, x, y, height)`. :cite[(`zombie/iso/IsoGridSquare.java:6057`)]
 
-**2. Phantom render objects.** `IsoObject.new(sq, "tilename")` is
-Lua-constructible (used in vanilla at
-`media/lua/client/DebugUIs/Scenarios/Trailer2Scenario.lua:139`), and
-`setSpriteModelName()` (F-007) points it at any declared model.
+B42 already exposes this to players as **Extended Placement**, a 3D gizmo UI (`media/lua/client/ISUI/ISExtendedPlacementUI.lua`, 511 lines) that sets the offsets and the world rotation. :cite[(`media/lua/client/ISUI/ISExtendedPlacementUI.lua:436-438`, `media/lua/client/ISUI/ISExtendedPlacementUI.lua:446-448`)] Sub-tile 3D item placement is shipped, networked and persisted.
 
-**Constraint:** `SpriteModel` script objects are **shared singletons** resolved by
-name through `ScriptManager.getSpriteModel()`. Mutating `translate`/`rotate` on
-one affects every user. Per-instance positioning therefore requires
-**pre-authored slot entries** (a fixed grid of named models), not runtime
-transform edits.
+**2. Phantom render objects.** `IsoObject.new(sq, "tilename")` is Lua-constructible (used in vanilla at `media/lua/client/DebugUIs/Scenarios/Trailer2Scenario.lua:139`), and `setSpriteModelName()` (F-007) points it at any declared model.
+
+**Constraint:** `SpriteModel` script objects are **shared singletons** resolved by name through `ScriptManager.getSpriteModel()`. :cite[(`zombie/scripting/ScriptManager.java:884-886`)] Mutating `translate` or `rotate` on one affects every user. Per-instance positioning therefore requires **pre-authored slot entries** (a fixed grid of named models), not runtime transform edits.
 
 ### Free visual variety
 
-`ItemModelRenderer` tints the world model from the item's own colour --
-`new ImmutableColor(item.getColorRed(), item.getColorGreen(), item.getColorBlue(), 1.0F)`
-(`B42/src/zombie/core/skinnedmodel/model/ItemModelRenderer.java:144`), with
-tint-mask support at `:792`. One mesh plus per-item RGB yields a varied shelf
-with no extra geometry -- the same trick behind vanilla's
-`BookRed_New` / `BookGrey_New` texture set.
+**One mesh plus a per-item color gives a varied shelf with no extra geometry.**
+
+`ItemModelRenderer` tints the world model from the item's own color, and looks for a tint-mask texture beside the model's texture. :cite[(`zombie/core/skinnedmodel/model/ItemModelRenderer.java:144`, `zombie/core/skinnedmodel/model/ItemModelRenderer.java:229-238`)] Vanilla's book models use more than one texture of this kind, for example `BookRed_New` and `BookGrey_New`. :cite[(`media/scripts/generated/models_items.txt:36`, `media/scripts/generated/models_items.txt:4067`)]
 
 ### Performance shape
 
-World items get a **dedicated render pass**, `FBORenderItems.render(int, IsoWorldInventoryObject)`
-(`B42/src/zombie/iso/fboRenderChunk/FBORenderItems.java:50`), separate from the
-cached chunk FBO. So item models are live draws every frame -- they never force
-chunk invalidation, but cost scales with visible count.
+**We have not traced the cost of world-item models, and one earlier claim was wrong.**
 
-Phantom `IsoObject`s take the `renderModel` path instead and **do** land in the
-cached chunk: cheaper at rest, but each change costs an
-`invalidateRenderChunkLevel()` and a chunk re-cache.
+World items drawn as models can go through a dedicated job list, `FBORenderItems`, only when the player's 3D ground items option is on and the item has a model. :cite[(`zombie/iso/fboRenderChunk/FBORenderItems.java:50-56`, `zombie/iso/fboRenderChunk/FBORenderCell.java:2800-2822`, `zombie/core/Core.java:4071`)] We first wrote that these are live draws every frame that never force a chunk invalidation. That is not supported: adding a world item invalidates its render chunk level, and so does moving it with `setOffset`. :cite[(`zombie/iso/IsoGridSquare.java:6078`, `zombie/iso/objects/IsoWorldInventoryObject.java:755-762`)] How often those jobs redraw was not traced.
 
-**Design implication.** The cheapest credible approach to "the container looks
-full" is neither of the above: author N discrete fullness states as separate
-sprites, each with its own `spriteModel`, and swap with `setSpriteFromName()`.
-One object, one draw, no shadow layer, no per-item bookkeeping -- exactly how
-doors do open/closed.
+Phantom `IsoObject`s take the `renderModel` path, which draws into the cached chunk texture, and a sprite change on the game thread invalidates its chunk level. :cite[(`zombie/core/skinnedmodel/model/IsoObjectModelDrawer.java:457-466`, `zombie/iso/IsoObject.java:2068-2075`)]
+
+**Design implication.** The cheapest credible approach to "the container looks full" is neither of the above: author N discrete fullness states as separate sprites, each with its own `spriteModel`, and swap with `setSpriteFromName()`. One object, one draw, no shadow layer, no per-item bookkeeping, exactly how doors do open and closed. Each swap still invalidates the chunk level, so time the swaps.
+
+:::callout[How we know]{kind=proof}
+Read from the 42.22 decompile, with every cited line opened. Counted for this page: the files in `zombie/entity/` (153), the files that import from it (103), the files that name `ECSComponent` (14), the `@UsedFromLua` and `@HiddenFromLua` files (839 and 13), the package file counts, and the event trigger sites. The debug-table counts (F-003), the Kotlin scan (F-004) and the exposer check (F-005) come from reading the compiled jar directly, not the decompile.
+
+Not run in a game: the classpath override (F-002), the sprite-model swap and its fallback (F-007), and every event behavior (F-008). Not rechecked at 42.22: the 2026-07-30 stray-class incident (F-002) and the vanilla `spriteModels.txt` counts (F-007). Not traced: when `FBORenderItems` jobs redraw (F-008).
+:::
 
 ---
+
+:::callout[F-009 to F-016 are not rechecked yet]{kind=warn}
+F-009 to F-016 below are still the 42.21 text and are being rechecked. Their `B42/src/...` citations point at our 42.21 decompile.
+:::
 
 ## F-009 -- Model asset pipeline: formats, path resolution, and the scale convention
 
