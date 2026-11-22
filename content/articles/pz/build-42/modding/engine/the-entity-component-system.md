@@ -14,43 +14,63 @@ tags:
   - fluids
   - multiplayer
 excerpt: >-
-  Build 42 bolted a small entity component system onto the old object classes.
-  Crafting benches, drying racks and every fluid container are made of its
-  components. What a GameEntity is, the 23 fixed component types, when
-  the engine ticks them and on which side, how machines keep working while
-  nobody is near, and the traps in the code.
-last_updated: '2026-10-04'
+  Build 42.22 hangs components on world objects and items. What a GameEntity is, the 23 component types, when the engine ticks them and on which side, how machines run unloaded, and the traps.
+last_updated: '2026-11-21'
 related_articles:
   - the-workstation-entity-system
   - fluids-for-modders-start-here
   - handcraft-from-lua-what-the-server-does
   - lua-classes-entities
 ---
-# The Build 42 entity component system: GameEntity, components and the engine
+::field-notes
 
-Outcast, if you have written a workstation, a fluid container or a crafting machine for Build 42, you have used this system without seeing it: the `component` blocks in your scripts become Java objects hung on a world object or an item, and a small engine ticks some of them. Knowing how it works tells you why your rain barrel fills while you are away, why your machine's recipe gets no player, and why you cannot invent a new kind of component. This page is read from the 42.21 code.
+> Source: Project Zomboid 42.22 (capture B42_3d39148846), read 2026-11-21.
 
-## What it does for the player
+Outcast, if you have written a workstation, a fluid container or a crafting machine for Build 42, you have used this system without seeing it: the `component` blocks in your scripts become Java objects hung on a world object or an item, and a small engine ticks some of them. Knowing how it works tells you why your rain barrel fills while you are away, why your machine's recipe gets no player, and why you cannot invent a new kind of component.
 
-The stone mill that opens its own crafting window, the herb and leather drying racks that finish their work over time, the rain barrel that keeps filling while you are on the other side of the map, the water in your bottle: each is an ordinary object or item carrying components. Only one player can use a bench at a time; walk away and it frees up.
+**Who this page is for:** [players](#1-what-it-does-for-the-player) | [modders](#3-the-23-component-types) | [server owners](#5-when-the-engine-runs-and-on-which-side)
 
-## Where it lives
+:::callout[The 1-minute version]{kind=key}
+- Every world object, inventory item and vehicle part is a `GameEntity`, so each can carry components. The component types are a fixed Java enum of 23, and a mod cannot add one.
+- The engine ticks machines, fluid containers and resources 10 times per real second at normal speed, on the server and in single player but not on a multiplayer client. Items are only in the engine while equipped.
+- A rain barrel and a crafting machine keep working when their chunk unloads, because their components move into a meta entity.
+- A machine's recipe hooks `OnStart` and `OnCreate` get no player, and the `Lua` component does nothing.
+- Vanilla uses 12 component types in its scripts. The only self-running machines are 7 drying entities.
+:::
 
-| Piece | Where | What it is |
-|---|---|---|
-| `GameEntity` | `zombie.entity.GameEntity` | The new base class. `IsoObject`, `InventoryItem`, `VehiclePart` and `MetaEntity` all extend it, so every world object and every item can carry components |
-| `Component`, `ComponentType` | `zombie.entity.Component`, `zombie.entity.ComponentType` (enum) | One component per type per entity; the types are a fixed Java enum |
-| The engine | `zombie.entity.Engine`, `EngineSystem`, `Family`, `EntityBucket` | Systems that each tick a bucket of entities with given components |
-| The registry | `zombie.entity.GameEntityManager` | Ids, the engine, meta entities and their save file |
-| Creation | `zombie.entity.GameEntityFactory` | Builds components from scripts; add, remove and transfer helpers |
-| Networking | `zombie.entity.GameEntityNetwork`, `GameEntity#sendSyncEntity` | Entity packets between server and clients |
-| Off-screen work | `zombie.entity.MetaEntity` | Holds the components of an unloaded object so they keep working |
+:::facts
+- **Component types** 23, and `Undefined` :cite[(`ComponentType.java:68-93`)]
+- **Engine systems** 10, added at world start :cite[(`GameEntityManager.java:81-90`)]
+- **Simulation tick** 0.1 s of game-time delta, about 10 per real second at normal speed, each worth 2.4 game seconds :cite[(`EntitySimulation.java:13-14`, `EntitySimulation.java:35-48`)]
+- **Bench frees itself** when the user is more than 10 tiles away on either axis :cite[(`UsingPlayerUpdateSystem.java:36-42`)]
+- **Package size** 153 Java files in `zombie/entity` at 42.22
+:::
 
-> **Proof:** Code. `zombie.entity.GameEntity` (abstract; `getGameEntityType`, `getEntityNetID`), and `zombie.iso.IsoObject`, `zombie.inventory.InventoryItem`, `zombie.vehicles.VehiclePart`, `zombie.entity.MetaEntity` all `extends GameEntity`; `zombie.entity.ComponentType` (enum); `zombie.entity.Engine`, `zombie.entity.GameEntityManager`, `zombie.entity.GameEntityFactory`, `zombie.entity.GameEntityNetwork`. Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+## 1. What it does for the player
 
-## The 23 component types
+**Benches, drying racks and fluid containers are ordinary objects or items that carry components.** The stone mill opens its own crafting window, the herb and leather drying racks finish their work over time, the rain barrel keeps filling while you are on the other side of the map, and the water in your bottle is a component too. Only one player can use a bench at a time; walk away and it frees up :cite[(`UsingPlayerUpdateSystem.java:27-42`)].
 
-`ComponentType` is an enum, so this list is the whole list. "Ticked" means a system updates it; "keeps working unloaded" means it may move into a meta entity when its object unloads (below).
+## 2. Where it lives
+
+**`GameEntity` is the new base class, and the engine, registry and network code sit around it.**
+
+| Piece | Where | What it is | Code |
+|---|---|---|---|
+| `GameEntity` | `zombie.entity.GameEntity` | The new base class. `IsoObject`, `InventoryItem`, `VehiclePart` and `MetaEntity` all extend it, so every world object and every item can carry components | `GameEntity.java:55`, `IsoObject.java:181`, `InventoryItem.java:131`, `VehiclePart.java:44`, `MetaEntity.java:20` |
+| `Component`, `ComponentType` | `zombie.entity.Component`, `zombie.entity.ComponentType` (enum) | One component per type per entity; the types are a fixed Java enum | `ComponentType.java:68-93` |
+| The engine | `zombie.entity.Engine`, `EngineSystem`, `Family`, `EntityBucket` | Systems that each tick a bucket of entities with given components | `GameEntityManager.java:81-90` |
+| The registry | `zombie.entity.GameEntityManager` | Ids, the engine, meta entities and their save file | `GameEntityManager.java:36-49` |
+| Creation | `zombie.entity.GameEntityFactory` | Builds components from scripts; add, remove and transfer helpers | `GameEntityFactory.java:90-277` |
+| Networking | `zombie.entity.GameEntityNetwork`, `GameEntity#sendSyncEntity` | Entity packets between server and clients | `GameEntity.java:666-757` |
+| Off-screen work | `zombie.entity.MetaEntity` | Holds the components of an unloaded object so they keep working | `GameEntityManager.java:242-301` |
+
+The package holds 153 Java files at 42.22, down from 156 at 42.21 because three sort helper classes were removed. It has no Build 41 equivalent. The shorter, cited entry is [F-001 in the verified findings](/pz/build-42/modding/gotchas/verified-findings).
+
+**There is a second, separate component system for characters.** The character-side `ECSEntity` and `ECSComponent` live in `zombie/characters/ecs` and are not part of `zombie/entity`. `ECSEntity` registers a frame keeper, `IsoGameCharacter` adds a state machine component, `IsoPlayer` adds input and network components, and `IsoZombie` adds the network component that stores its owner :cite[(`ECSEntity.java:25-27`, `IsoGameCharacter.java:857-860`, `IsoPlayer.java:691-695`, `IsoZombie.java:605-609`)]. Fourteen source files name `ECSComponent` or `registerECSComponents`, and `IsoObject` joins both systems: it extends `GameEntity` and implements `ECSEntity` :cite[(`ECSComponent.java:12`, `ECSEntity.java:22`, `IsoObject.java:181`)]. The rest of this page is about `zombie/entity`. See [how zombies are run](/pz/build-42/modding/engine/zombies-states-and-the-ai-director) for the zombie's component.
+
+## 3. The 23 component types
+
+**`ComponentType` is an enum, so this list is the whole list.** :cite[(`ComponentType.java:68-93`)] "Ticked" means a system updates it. "Keeps working unloaded" means it may move into a meta entity when its object unloads (section 6).
 
 | Component | What it is for | Ticked | Keeps working unloaded |
 |---|---|---|---|
@@ -70,72 +90,82 @@ The stone mill that opens its own crafting window, the herb and leather drying r
 | `Lua` | **An empty shell** (see the traps) | No | No |
 | `Script`, `MetaTag` | Internal: the script an entity came from; the pointer from an unloaded object to its meta entity | No | No |
 
-The machine components (`CraftLogic` and the rest) and `FluidContainer`, `SpriteConfig` and `MetaTag` only count as valid on a world object or a meta entity; on an item, the systems skip them.
+The enum flags say which types run in meta: `FluidContainer` has the run-in-meta flag, and `CraftLogic`, `FurnaceLogic`, `MashingLogic`, `DryingLogic`, `Resources` and `DryingCraftLogic` have it plus the add-to-engine flag :cite[(`ComponentType.java:69-92`)]. The machine components, `FluidContainer`, `SpriteConfig`, `SpriteOverlayConfig` and `MetaTag` only count as valid on a world object or a meta entity; on an item, the systems skip them :cite[(`ComponentType.java:69-92`, `Component.java:100-102`)].
 
-What vanilla actually uses is a smaller list. Across every 42.21 script file, the `component` blocks are `UiConfig` (215), `SpriteConfig` (210), `CraftRecipe` (202), `FluidContainer` (144), `CraftBench` (35), `ContextMenuConfig` (15), `CraftBenchSounds` (9), `WallCoveringConfig` (8), `SpriteOverlayConfig` (8), `Resources` (7), `DryingCraftLogic` (7) and `Durability` (5). No vanilla script uses `CraftLogic`, `FurnaceLogic`, `MashingLogic` or `Lua`: the only self-running machines in 42.21 are the seven `DryingCraftLogic` entities (the plain and simple drying racks, the plain and simple herb drying racks, and the large, medium and small leather drying racks). If you build on the other machine components, you are on code paths vanilla content does not exercise.
+`DryingLogicSystem` exists but nothing in the game constructs it, which is why `DryingLogic` is never ticked :cite[(`DryingLogicSystem.java:40`, `GameEntityManager.java:81-90`)]. The vanilla drying racks use `DryingCraftLogic`, which `CraftLogicSystem` ticks :cite[(`CraftLogicSystem.java:61-68`)].
 
-> **Proof:** Code. `zombie.entity.ComponentType` (23 named values plus `Undefined`; flag 2 "run in meta" on `FluidContainer`, flags 3 on `CraftLogic`, `FurnaceLogic`, `MashingLogic`, `DryingLogic`, `Resources`, `DryingCraftLogic`; valid owner types `IsoObject` and `MetaEntity` for those and for `SpriteConfig`, `SpriteOverlayConfig`, `MetaTag`); `zombie.entity.Component#isValid` (owner type check); `zombie.entity.GameEntityManager#Init` (the ten systems; `DryingLogicSystem` is not among them and has no caller of its constructor; the vanilla drying racks use `DryingCraftLogic`, ticked by `CraftLogicSystem`); `zombie.entity.components.fluids.FluidContainerUpdateSystem#updateEntity` (petrol loss and rain), `zombie.entity.components.fluids.FluidContainer#isQualifiesForMetaStorage` (`getRainCatcher() > 0.0F`); the counts are a search of every `component <Type>` line in the installed game's `media/scripts`. Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+**What vanilla actually uses is a smaller list.** Across every 42.22 script file, the `component` blocks are `UiConfig` (215), `SpriteConfig` (210), `CraftRecipe` (202), `FluidContainer` (144), `CraftBench` (35), `ContextMenuConfig` (15), `CraftBenchSounds` (9), `WallCoveringConfig` (8), `SpriteOverlayConfig` (8), `Resources` (7), `DryingCraftLogic` (7) and `Durability` (5). That is a count of every `component <Type>` line in `media/scripts`.
 
-## How an entity gets its components
+No vanilla script uses `CraftLogic`, `FurnaceLogic`, `MashingLogic` or `Lua`. The only self-running machines in 42.22 are the seven `DryingCraftLogic` entities: the plain and simple drying racks, the plain and simple herb drying racks, and the large, medium and small leather drying racks :cite[(`entity_Drying_Rack.txt:22`, `entity_Drying_Rack.txt:519`, `entity_Herb_Drying_Rack.txt:22`, `entity_Herb_Drying_Rack.txt:555`, `entity_leather_prep.txt:133`, `entity_leather_prep.txt:507`, `entity_leather_prep.txt:865`)]. If you build on the other machine components, you are on code paths vanilla content does not exercise.
 
-- **A world object** gets them when its tile has the `EntityScript` property (the components come from the named `entity` script), or when it is a moveable whose `CustomItem` item script has components. `GameEntityFactory.CreateIsoEntityFromCellLoading` does this as the chunk loads.
-- **An item** gets the components in its item script (`component FluidContainer { ... }` and the like) when it is created (`GameEntityFactory.CreateInventoryItemEntity`).
-- **From Lua**, `GameEntityFactory.AddComponent(entity, component)` adds one made with `ComponentType.X:CreateComponent()`, and `RemoveComponentType`, `TransferComponent` and `TransferComponents` do the rest. Transfers refuse multi-tile objects.
+## 4. How an entity gets its components
 
-Each built entity also gets a hidden `Script` component recording which script it came from.
+**A world object gets components from its tile or custom item, an item from its item script, and Lua can add or remove them.**
 
-> **Proof:** Code. `zombie.entity.GameEntityFactory#CreateIsoEntityFromCellLoading` (`IsoFlagType.EntityScript` with `EntityScriptName`, or `IsMoveAble` plus `CustomItem`), `#CreateInventoryItemEntity` (only when the item script `hasComponents()`), `#createEntity` (adds `EntityScriptInfo` as `ComponentType.Script`), `#AddComponent`, `#TransferComponents` ("Cannot transfer components for multi-square objects"). Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+- **A world object** gets them when its tile has the `EntityScript` property (the components come from the named `entity` script), or when it is a moveable whose `CustomItem` item script has components. `GameEntityFactory.CreateIsoEntityFromCellLoading` does this as the chunk loads :cite[(`GameEntityFactory.java:90-110`)].
+- **An item** gets the components in its item script (`component FluidContainer { ... }` and the like) when it is created, and only when the item script has components :cite[(`GameEntityFactory.java:121-129`)].
+- **From Lua**, `GameEntityFactory.AddComponent(entity, component)` adds one made with `ComponentType.X:CreateComponent()`, and `RemoveComponentType`, `TransferComponent` and `TransferComponents` do the rest. Transfers refuse multi-tile objects :cite[(`GameEntityFactory.java:32-48`, `GameEntityFactory.java:75`, `GameEntityFactory.java:220`, `GameEntityFactory.java:256-277`)].
 
-## When the engine runs, and on which side
+Each built entity also gets a hidden `Script` component recording which script it came from :cite[(`GameEntityFactory.java:179-195`)].
 
-`IngameState` calls `GameEntityManager#Update` once per frame. It does two things:
+## 5. When the engine runs, and on which side
 
-1. **Every frame:** the updater systems. `UsingPlayerUpdateSystem` frees a bench when its user is more than 10 tiles away on either axis, on another floor, or dead. `InventoryItemSystem` drops items from the engine once they are no longer equipped. `MashingLogicSystem` runs mashing.
-2. **Simulation ticks:** one tick per 100 milliseconds of game-scaled time, each worth 2.4 game seconds, run on everything **except a multiplayer client** (the tick count is forced to 0 there). The crafting machines (`CraftLogicSystem`), furnaces, fluids, logistics and resources systems run here.
+**`GameEntityManager#Update` runs once per frame, and the simulation part runs on everything except a multiplayer client.** `IngameState` calls it :cite[(`IngameState.java:1551`)]. It does two things :cite[(`GameEntityManager.java:99-123`)]:
+
+1. **Every frame:** the updater systems. `UsingPlayerUpdateSystem` frees a bench when its user is more than 10 tiles away on either axis, on another floor, or dead :cite[(`UsingPlayerUpdateSystem.java:27-42`)]. `InventoryItemSystem` drops items from the engine once they are no longer equipped :cite[(`InventoryItemSystem.java:26-35`)]. `MashingLogicSystem` runs mashing :cite[(`MashingLogicSystem.java:40`)].
+2. **Simulation ticks:** one tick per 100 milliseconds of game-time delta, each worth 2.4 game seconds, run on everything **except a multiplayer client** (the tick count is forced to 0 there). The crafting machines (`CraftLogicSystem`), furnaces, fluids, logistics and resources systems run here :cite[(`GameEntityManager.java:108-114`, `EntitySimulation.java:35-48`, `CraftLogicSystem.java:37`, `FluidContainerUpdateSystem.java:29`, `LogisticsSystem.java:23`, `ResourceUpdateSystem.java:24`)].
+
+**At normal speed a tick is about a tenth of a real second.** The game-time delta is the multiplier divided by 0.8 and by 60 :cite[(`GameTime.java:994-1000`)]. The page on [how long a zombie remembers you](/pz/build-42/gameplay/the-real-numbers/how-long-zombies-remember-you) measured the multiplier at 48 per real second at normal speed, so the delta is 1.0 per real second and a tick is 0.1 seconds. That is our arithmetic, and fast-forward shortens it. The 2.4 game seconds per tick is a constant in the code, not read from the day length :cite[(`EntitySimulation.java:35-37`)]. So a machine recipe's time, counted in those seconds, passes at 24 per real second at normal speed whatever the sandbox day length is :cite[(`CraftLogicSystem.java:101-103`)].
 
 What is in the engine at all:
 
-- **World objects** join when added to the world and leave when removed.
-- **Items** join only while **equipped** (held or worn) and leave when unequipped. A bottle in a bag is not ticked; its components are plain data until some code calls them.
-- **On a multiplayer client**, entities are only indexed by id. They are never added to the client's engine, so no system touches them there. The server pushes changes with `sendSyncEntity` (and a client asks for a fresh copy when an object comes back from a meta entity).
+- **World objects** join when added to the world and leave when removed :cite[(`GameEntity.java:488-505`)].
+- **Items** join only while **equipped** (held or worn) and leave when unequipped. A bottle in a bag is not ticked; its components are plain data until some code calls them :cite[(`GameEntity.java:467-486`, `InventoryItem.java:368-370`)].
+- **On a multiplayer client**, entities are only indexed by id. They are never added to the client's engine, so no system touches them there. The server pushes changes with `sendSyncEntity`, and a client asks for a fresh copy when an object comes back from a meta entity :cite[(`GameEntityManager.java:161-171`, `GameEntity.java:666-705`)].
 
 So in multiplayer **every machine, every rain catcher and the check that frees a bench whose user walked away run on the server**, and the client only shows what the server sends.
 
-> **Proof:** Code. `zombie.gameStates.IngameState` (`GameEntityManager.Update()` each update); `zombie.entity.GameEntityManager#Update` (`int simulationTicks = GameClient.client ? 0 : EntitySimulation.getSimulationTicksThisFrame()`), `#RegisterEntity` (on a client: id map and `sendRequestSyncGameEntity`, no `engine.addEntity`), `zombie.entity.GameEntity#sendRequestSyncGameEntity` (only when the entity has a `MetaTag` component); `zombie.entity.EntitySimulation` (`MILLIS_PER_TICK` 100, `getGameSecondsPerTick` 2.4, time from `GameTime#getTimeDelta`); each system's `EngineSystem` constructor (updater or simulation updater); `zombie.entity.UsingPlayerUpdateSystem#update` (10 tiles, floor, death; `!GameClient.client`); `zombie.entity.InventoryItemSystem#update`; `zombie.entity.GameEntity#onEquip`, `#onUnEquip`, `#addToWorld`; `zombie.inventory.InventoryItem#setEquipParent`. Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+The rain catcher adds 0.005 times the rain intensity times the container's rain-catcher factor times 2.4 per tick, halved in snow. That is 0.012 times intensity times the factor per tick, or 0.12 per real second at normal speed. We did not verify the unit of the amount :cite[(`FluidContainerUpdateSystem.java:41-109`)].
 
-## How machines keep working when nobody is near
+## 6. How machines keep working when nobody is near
 
-When a chunk unloads, each world object with components leaves the engine. If it has any component that may "run in meta" and that currently qualifies (a crafting machine always does; a fluid container only if it catches rain), `GameEntityManager#UnregisterEntity` moves **all** its components into a new `MetaEntity`, registers that in its place, and leaves a `MetaTag` component on the object pointing to it. The meta entity keeps being ticked by the simulation, so the machine finishes its batch and the barrel keeps filling. When the chunk loads again, `RegisterEntity` finds the `MetaTag`, moves the components back onto the object and drops the meta entity.
+**When a chunk unloads, an object whose components may run in meta moves them into a meta entity, which the simulation keeps ticking.** The chunk calls `removeFromWorldToMeta` on each object it unloads :cite[(`IsoChunk.java:3256`, `IsoObject.java:4583`, `IsoObject.java:4616-4624`)].
 
-Components normally save with the object or item that owns them, each in its own length-prefixed block. Meta entities save separately, in `entity_data.bin` inside the save folder.
+If the object has any component that may "run in meta" and that currently qualifies (a crafting machine always does; a fluid container only if it catches rain), `GameEntityManager#UnregisterEntity` moves **all** its components into a new `MetaEntity`, registers that in its place, and leaves a `MetaTag` component on the object pointing to it :cite[(`GameEntityManager.java:242-301`, `FluidContainer.java:1352-1354`, `Component.java:55-57`)]. The meta entity keeps being ticked by the simulation, so the machine finishes its batch and the barrel keeps filling. When the chunk loads again, `RegisterEntity` finds the `MetaTag`, moves the components back onto the object and drops the meta entity :cite[(`GameEntityManager.java:190-219`)].
 
-> **Proof:** Code. `zombie.entity.GameEntityManager#UnregisterEntity(GameEntity, boolean)` (`offloadToMeta`, `ComponentType.bitsRunInMeta`, `isQualifiesForMetaStorage`, `MetaEntity.alloc`, `MetaTagComponent#setStoredID`), `#RegisterEntity` (the `MetaTag` path moves components back and unregisters the meta entity), `#Save` and the `entity_data.bin` cache file; `zombie.entity.Component#isQualifiesForMetaStorage` (default true); `zombie.entity.GameEntity#saveEntity` (each component inside a `ByteBlock`); `zombie.iso.IsoObject` and `zombie.inventory.InventoryItem` call `saveEntity` when `requiresEntitySave()`. Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+Components normally save with the object or item that owns them, each in its own length-prefixed block :cite[(`GameEntity.java:516-531`)]. Meta entities save separately, in `entity_data.bin` inside the save folder :cite[(`GameEntityManager.java:39`, `GameEntityManager.java:377-413`)].
 
-## What Lua can reach
+A crafting machine of the drying kind that has lost its object (the square no longer holds it) is removed from the engine by the crafting system. That check is new in 42.22 :cite[(`CraftLogicSystem.java:49-68`)].
+
+## 7. What Lua can reach
+
+**Lua can read and change an entity's components through `GameEntity`, `ComponentType` and `GameEntityFactory`.**
 
 - [GameEntity](/pz/build-42/modding/reference/lua-classes-entities#gameentity) on any object or item: `hasComponent(ComponentType.X)`, `getComponent(ComponentType.X)`, `getComponentAny`, `componentSize`, `getFluidContainer`, `getEntityScript`, `getUsingPlayer`, `isMeta`, `getEntityNetID`, and `sendSyncEntity(nil)`.
-- [ComponentType](/pz/build-42/modding/reference/lua-classes-entities#componenttype): the values, `CreateComponent()`, `GetList()`, `isRunInMeta()`.
+- [ComponentType](/pz/build-42/modding/reference/lua-classes-entities#componenttype): the values, `CreateComponent()`, `GetList()`, `isRunInMeta()` :cite[(`ComponentType.java:138`)].
 - [GameEntityFactory](/pz/build-42/modding/reference/lua-classes-entities#gameentityfactory): `AddComponent`, `RemoveComponentType`, `TransferComponent`, `TransferComponents`.
 - The component classes themselves: [FluidContainer](/pz/build-42/modding/reference/lua-classes-entities#fluidcontainer), [CraftBench](/pz/build-42/modding/reference/lua-classes-entities#craftbench), [CraftLogic](/pz/build-42/modding/reference/lua-classes-entities#craftlogic), [Resources](/pz/build-42/modding/reference/lua-classes-entities#resources) and the rest, all on the [entities reference page](/pz/build-42/modding/reference/lua-classes-entities).
-- A recipe's Lua hooks `OnStart`, `OnUpdate`, `OnCreate` and `OnFailed`, which a crafting machine calls from its simulation tick.
+- A recipe's Lua hooks `OnStart`, `OnUpdate`, `OnCreate` and `OnFailed`, which a crafting machine calls from its simulation tick :cite[(`CraftLogicSystem.java:101-107`, `CraftLogicSystem.java:168`, `CraftLogicSystem.java:148`, `CraftLogicSystem.java:170`)].
 
-## What a mod can and cannot change, and the traps
+## 8. What a mod can and cannot change, and the traps
 
-- **You cannot add a component type.** `ComponentType` is a Java enum. A mod works with the 23 that exist.
-- **The `Lua` component does nothing.** In 42.21 `LuaComponent` has no fields and its script has no keys; the `LuaCall` names inside it (`OnStart`, `OnUpdate` and so on) are used nowhere. Hooks belong on the recipe, not on a `component Lua` block.
-- **A machine's recipe hooks get no player.** `CraftLogicSystem` calls a recipe's `OnStart` and `OnCreate` with the character argument `nil`, even when a player pressed start. Write those functions so they work without one.
-- **`StartMode = Automatic` on a `CraftLogic` looks broken.** The automatic start passes no player, and `CraftLogicSystem#start` then reads that player's craft history with no check for `nil`, after the inputs were already consumed. All seven vanilla machines in 42.21 use `Manual`. If you try `Automatic`, test it and watch the log.
-- **Add components on the server, then sync.** On a multiplayer server, add or change a component, then call `entity:sendSyncEntity(nil)`. The client's copy then takes the server's full list: components the server sent are created or updated, and any component the server did not send is removed from the client's copy.
-- **Use `DryingCraftLogic`, not `DryingLogic`.** Nothing ticks a `DryingLogic` component in 42.21; every vanilla drying entity uses `DryingCraftLogic`.
-- **Items only tick while equipped.** Do not expect a component on an item in a bag to be updated by a system.
+**Work with the 23 types, add components on the server and sync them, and do not rely on a player in a machine's hooks.**
 
-> **Proof:** Code. `zombie.entity.ComponentType` (enum); `zombie.entity.components.lua.LuaComponent` and `zombie.scripting.entity.components.lua.LuaComponentScript` (no fields, no keys; `LuaComponent.LuaCall` has no references in the 42.21 source); `zombie.entity.components.crafting.CraftLogicSystem#start` (`pendingCraftData.luaCallOnStart()` with no character; `player.getPlayerCraftHistory()` with no null check, bytecode confirms; `consumeInputs` before it), `#stop` (`luaCallOnCreate()` with no character); `zombie.entity.components.crafting.recipe.CraftRecipeData#luaCallOnStart(IsoGameCharacter)` and `#luaCallOnCreate(IsoGameCharacter)` (pass the character through); `zombie.scripting.entity.components.crafting.CraftLogicScript` (`startMode`); vanilla `StartMode = Manual` on all seven lines in `media/scripts` that set it; `zombie.entity.GameEntity#sendSyncEntity` (`GameServer.server` only) and `#receiveSyncEntity` (creates missing components, removes unsent ones). Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+- **You cannot add a component type.** `ComponentType` is a Java enum. A mod works with the 23 that exist :cite[(`ComponentType.java:68-93`)].
+- **The `Lua` component does nothing.** In 42.22 `LuaComponent` has no fields and its script has no keys. The `LuaCall` names inside it (`OnStart`, `OnUpdate` and so on) are used nowhere else in the game's Java code. Hooks belong on the recipe, not on a `component Lua` block :cite[(`LuaComponent.java:9-60`, `LuaComponentScript.java:15-22`)].
+- **A machine's recipe hooks get no player.** `CraftLogicSystem` calls a recipe's `OnStart` and `OnCreate` with the character argument `nil`, even when a player pressed start :cite[(`CraftLogicSystem.java:148`, `CraftLogicSystem.java:170`, `CraftRecipeData.java:440-451`)]. Write those functions so they work without one.
+- **`StartMode = Automatic` on a `CraftLogic` looks broken.** The automatic start passes no player, and `CraftLogicSystem#start` then reads that player's craft history with no check for `nil`, after the inputs were already consumed :cite[(`CraftLogicSystem.java:126-128`, `CraftLogicSystem.java:142`, `CraftLogicSystem.java:149`, `CraftLogic.java:366-382`)]. All seven vanilla lines that set `StartMode` use `Manual`. If you try `Automatic`, test it and watch the log.
+- **Add components on the server, then sync.** On a multiplayer server, add or change a component, then call `entity:sendSyncEntity(nil)`. The client's copy then takes the server's full list: components the server sent are created or updated, and any component the server did not send is removed from the client's copy :cite[(`GameEntity.java:666-696`, `GameEntity.java:708-757`)].
+- **Use `DryingCraftLogic`, not `DryingLogic`.** Nothing ticks a `DryingLogic` component in 42.22; every vanilla drying entity uses `DryingCraftLogic`.
+- **Items only tick while equipped.** Do not expect a component on an item in a bag to be updated by a system :cite[(`GameEntity.java:467-486`)].
 
-The `Automatic` trap is read from the code; no machine we know of uses it. The test: a test entity with `CraftLogic` set to `StartMode = Automatic` and a one-input recipe, inputs loaded in single player; by the code the log shows a `NullPointerException` from `CraftLogicSystem.start` and the inputs disappear.
+:::callout[How we know]{kind=proof}
+All of this is read from the 42.22 code and a count of `media/scripts`. The `Automatic` trap is read from the code; no machine we know of uses it. The test: a test entity with `CraftLogic` set to `StartMode = Automatic` and a one-input recipe, inputs loaded in single player. By the code the log shows a `NullPointerException` from `CraftLogicSystem.start` and the inputs disappear. Not tested.
 
-> **Proof:** Unknown. The automatic-start failure is inferred from `CraftLogicSystem#start`; no game test yet. Build 42.21, engine revision 4a0e9546ec (Steam build 25485521).
+The 10 ticks per real second is our arithmetic from the code's time-delta formula and the 48 per second on another page, not a measurement of the entity engine. On a dedicated server the game sets its frame multiplier from the server's own frame rate, and a server frame step is paced at about 100 ms, one tick per step, per [reading server performance numbers honestly](/pz/build-42/modding/multiplayer/reading-server-performance-numbers-honestly) :cite[(`GameServer.java:1160-1166`)]. We read that from the code and did not measure it. The unit of the rain amount is not verified.
+:::
 
-## Where to go next
+## 9. Where to go next
 
 - [The workstation / entity system](/pz/build-42/modding/items-and-scripting/the-workstation-entity-system): the script side of benches.
 - [Fluids for modders: start here](/pz/build-42/modding/fluids/fluids-for-modders-start-here): the biggest component, in depth.
