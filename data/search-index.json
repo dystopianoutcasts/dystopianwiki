@@ -7765,7 +7765,7 @@
       "vehicles",
       "silent-failure"
     ],
-    "excerpt": "A hidden window never prerenders, instantiate already builds your children, a focused text box swallows every key release, the context menu is one shared object that clears itself, and vanilla actions talk to whatever sits in the mechanics-window slot. What we learned replacing the vehicle mechanics window, read from the 42.21 code.",
+    "excerpt": "Build 42.22 traps in replacing a vanilla window: hidden elements never prerender, a focused text box swallows keys, one shared context menu, and the mechanics-window slot.",
     "difficulty": "advanced"
   },
   {
@@ -7782,7 +7782,7 @@
       "coordinates",
       "scrolling"
     ],
-    "excerpt": "Two places where Build 42's UI code silently switches coordinate systems on you: ISUIElement:drawLine2 draws in screen coordinates while its neighbours draw in the element's own, and ISScrollingListBox finds rows in content coordinates. Read from the 42.21 code.",
+    "excerpt": "Two places where Build 42.22's UI code switches coordinate systems on you: ISUIElement:drawLine2 draws in screen coordinates, and ISScrollingListBox finds rows in content coordinates.",
     "difficulty": "intermediate"
   },
   {
@@ -7799,7 +7799,7 @@
       "iscollapsablewindow",
       "engine-reference"
     ],
-    "excerpt": "Machine-checked against the installed game, not recalled. Every line number below was read out of the installed game's media/lua/client/ on 2026-08-09.",
+    "excerpt": "The UI traps in Build 42.22 that cost real test runs: anchors, the resize strip, list drawing, key events, drawing coordinates and the vehicle mechanics window, each read from the game code.",
     "difficulty": "intermediate"
   },
   {
@@ -7833,7 +7833,7 @@
       "vehicles",
       "ui3dscene"
     ],
-    "excerpt": "Build 42 can draw a 3D car inside an ordinary mod window, outside debug mode, with the camera and placement under your control. But the car is always the stock model: first skin, one fixed paint, no damage, every part fitted. What Lua controls and what the Java hard-codes, read from the 42.21 code.",
+    "excerpt": "Build 42.22 can draw a 3D car in an ordinary mod window, outside debug mode. The car is always the stock model: first skin, fixed paint, no damage, every part fitted.",
     "difficulty": "advanced"
   },
   {
