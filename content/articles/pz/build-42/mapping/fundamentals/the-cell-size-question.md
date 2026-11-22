@@ -91,11 +91,20 @@ Two maps that are nowhere near each other in 300-space can still share a cell in
 Check which 256 cells your export actually touches before publishing, and
 consider a native 256 project if you need tight packing next to other mod maps.
 
-### Replacing a vanilla cell is all-or-nothing
+### Replacing part of a vanilla cell
 
-Overriding an existing cell replaces the **entire** cell -- terrain data and every
-structure in it. You cannot drop a single building into a vanilla cell without
-rebuilding all the surrounding buildings too. `[VERIFIED -- PZwiki]`
+Vanilla is last in the map list, so the layering above applies to it too: your
+map wins every square it puts a tile on, and vanilla shows through on squares
+you leave empty. A square you take is taken on all levels at once.
+:cite[(`zombie/iso/CellLoader.java:383-406`, `zombie/iso/IsoCell.java:2461-2475`)]
+
+That still does not make a single building cheap to drop in. Building and room
+records go by 300x300 block, not by square: a lower map's building is dropped
+when it starts inside a 300x300 block that an earlier map has lot files under.
+So once your map covers a block, every vanilla building that starts there loses
+its building and room records (room names, room loot), even where its tiles
+still show through. Plan to rebuild every building in the blocks you cover.
+:cite[(`zombie/iso/IsoMetaGrid.java:2125`, `zombie/iso/IsoMetaGrid.java:2143-2152`, `zombie/iso/IsoMetaGrid.java:2325`, `zombie/iso/MapFiles.java:127-141`)]
 
 **Changing the grid flag on an existing project is not a safe conversion.** TMX
 dimensions, cell coordinates, roads, objects, thumbnails and generated files all
