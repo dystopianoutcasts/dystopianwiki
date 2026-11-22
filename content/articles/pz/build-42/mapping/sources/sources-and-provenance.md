@@ -15,7 +15,7 @@ excerpt: >-
   Installed game -- Build 42
   STABLE, git revision a2947723ca, Steam buildid 24449119, last updated
   2026-07-29. Sealed snapshot and manifest at...
-last_updated: '2026-09-29'
+last_updated: '2026-11-21'
 ---
 # Sources and provenance
 
@@ -180,9 +180,9 @@ Corrected links:
 | `X_Y.lotpack` | `world_X_Y.lotpack` | Installed game |
 | Official B42 tools are released | **Not released.** Compilable from GitHub; release promised after 42.20.0 hotfixes | PZwiki 42.20.0 |
 | One community toolchain (Alree) | Two: Alree's and Crater's Community Edition, with different color tables | PZwiki 42.20.0 |
-| (not stated) | Mod maps sharing adjacent 256x256 cells **clash; one will not load** | PZwiki 42.20.0 |
+| (not stated) | Mod maps sharing a 256x256 cell **both load and layer square by square**; the map earlier in the list wins (PZwiki said one will not load) | Game source 42.22, 2026-11-21 |
 | (not stated) | Tiledef numbers are a global namespace: 0-99 reserved, 100-16382 valid, >8190 breaks sprite IDs | PZwiki |
-| (not stated) | Vehicle zones must be a multiple of 4x3 | PZwiki |
+| (not stated) | Vehicle zones may be **any size**; the game lays 3x5 stalls over them (PZwiki said a multiple of 4x3) | Game source 42.22, 2026-11-21 |
 
 ## Known gaps
 

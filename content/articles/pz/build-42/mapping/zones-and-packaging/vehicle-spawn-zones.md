@@ -12,8 +12,8 @@ tags:
   - objects-lua
   - spawn-points
   - loot-distribution
-excerpt: 'For a map to spawn vehicles properly, the object zone must be:'
-last_updated: '2026-09-29'
+excerpt: 'A ParkingStall or Vehicle zone of any size; the game lays 3x5 stalls over it and tries one car per stall.'
+last_updated: '2026-11-21'
 related_articles:
   - what-mapping-can-and-cannot-control
   - objects-lua-the-zone-export
@@ -28,14 +28,30 @@ related_articles:
 
 > Source: 05-zones-and-spawns.md (compiled 2026-08-02, verified against Project Zomboid 42.20). Imported 2026-09-29. Confidence tags in the text are the original author's.
 
-### Zone geometry requirement `[VERIFIED -- PZwiki]`
+### Zone geometry
 
-For a map to spawn vehicles properly, the object zone must be:
+A vehicle zone has the type **`ParkingStall`** or **`Vehicle`**; the game
+treats the two the same. Its name picks the vehicle list from the table below,
+and an unnamed zone uses its type as the name.
+:cite[(`zombie/iso/IsoMetaGrid.java:636-644`, `zombie/iso/IsoMetaGrid.java:837-843`, `zombie/iso/IsoChunk.java:1754-1757`)]
 
-- of type **`ParkingStall`**, and
-- a **multiple of 4x3** -- 8x6, 4x6, 12x3, and so on.
+Any size works. The game lays a grid of stalls over the zone and tries one car
+at the center of each stall:
 
-An off-size zone is the usual reason a parking lot stays empty.
+- Cars facing north or south: stalls **3 squares wide and 5 deep**.
+- Cars facing east or west: stalls **5 wide and 3 deep**.
+- A zone 4 to 6 squares wide that is at most 3 or at least 6 squares tall is
+  turned east-west automatically. A `Direction` property on the zone overrides
+  the guess.
+
+:cite[(`zombie/iso/IsoChunk.java:947-976`, `zombie/iso/zones/VehicleZone.java:23-24`)]
+
+So size a lot in whole stalls (for example 9x5 for three cars side by side)
+to avoid cars sitting across a stall line. Older guides say the zone must be a
+"multiple of 4x3"; 42.22 has no such rule. Whether each stall gets a car is a
+dice roll on the vehicle type's spawn rate and the sandbox car spawn setting,
+so an empty lot is not by itself a sign of a bad zone.
+:cite[(`zombie/iso/IsoChunk.java:990-1000`)]
 
 ### The vanilla zone names
 

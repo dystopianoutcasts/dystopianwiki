@@ -13,7 +13,7 @@ tags:
   - biomemap
   - lot-export
 excerpt: 'B41: authoring cells and shipped game cells were both 300 x 300.'
-last_updated: '2026-09-29'
+last_updated: '2026-11-21'
 related_articles:
   - coordinates-use-b41-numbers
   - authoring-the-world-from-pngs
@@ -74,15 +74,19 @@ and an **inactive** area (empty padding around the borders).
 - Active areas **replace** the vanilla map.
 - Inactive areas **fall back** to the vanilla map.
 
-### The mod-map collision trap
+### The mod-map overlap trap
 
-> **Two mod maps that share the same adjacent 256x256 cells will clash, and one
-> of them simply will not load.** `[VERIFIED -- PZwiki]`
+> **Two mod maps that share a 256x256 cell both load, but they layer square by
+> square: the map earlier in the map list wins every square it fills.** A later
+> map shows only on the squares the earlier one leaves empty, and the cell's
+> header comes from the earliest map that has the cell.
+> :cite[(`zombie/iso/MapFiles.java:189-197`, `zombie/iso/IsoMetaGrid.java:1446-1450`, `zombie/iso/CellLoader.java:383-406`)]
 
-This is the single biggest compatibility hazard in B42 mapping and it is a direct
-consequence of the 300 -> 256 padding: your map's *inactive* padding still claims
-those 256 cells. Two maps that are nowhere near each other in 300-space can still
-collide in 256-space.
+Older guides say one of the two maps "will not load". In 42.22 the result is a
+patchwork instead, which is harder to spot. It is still a direct consequence of
+the 300 -> 256 padding: your map's *inactive* padding claims those 256 cells too.
+Two maps that are nowhere near each other in 300-space can still share a cell in
+256-space.
 
 Check which 256 cells your export actually touches before publishing, and
 consider a native 256 project if you need tight packing next to other mod maps.

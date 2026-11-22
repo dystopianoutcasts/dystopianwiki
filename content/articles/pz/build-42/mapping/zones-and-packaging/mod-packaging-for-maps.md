@@ -12,7 +12,7 @@ tags:
   - mod-packaging
   - biomemap-placement
 excerpt: 'Mods live in %UserProfile%\Zomboid\mods (on Linux and macOS, ~/Zomboid/mods).'
-last_updated: '2026-10-04'
+last_updated: '2026-11-21'
 ---
 # Mod packaging for maps
 
@@ -130,6 +130,14 @@ Contents/mods/MyMod1/
 
 **Load order:** `common/` first, then the **closest versioning folder** to the
 game version, which overwrites any common file it also contains.
+
+**Maps are the exception: keep them under `common/media/maps/`.** The game
+looks for map folders in `common/media/maps/` first and checks the versioning
+folder's `media/maps/` only when `common/media/maps/` exists. A map that sits
+only in `42.0.0/media/maps/`, as in the tree above, is never found. Put the map
+in `common/media/maps/<MapName>/`, or at least keep an empty `common/media/maps/`
+folder beside it.
+:cite[(`zombie/MapGroups.java:123-150`)]
 
 **Version folder naming truncates the minor version:**
 
