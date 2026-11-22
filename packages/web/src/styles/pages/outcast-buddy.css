@@ -263,3 +263,69 @@
     transform: none;
   }
 }
+
+/* System picker (Windows, Mac, Linux): native radio buttons, so arrows, Tab and screen readers work as usual. */
+.buddy .buddy__systems {
+  margin: 0 0 var(--spacing-6);
+  /* clear of the "Remove before flight" streamer hanging at the card's right edge */
+  padding: 0 var(--spacing-10) 0 0;
+  border: 0;
+}
+
+.buddy .buddy__systems-legend {
+  margin: 0 0 var(--spacing-2);
+  padding: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.buddy .buddy__systems-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+}
+
+.buddy .buddy__system {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  min-height: 48px;
+  padding: var(--spacing-2) var(--spacing-4);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  cursor: pointer;
+}
+
+.buddy .buddy__system:has(input:checked) {
+  border-color: var(--color-accent-400);
+  background: var(--color-surface-elevated);
+  font-weight: var(--font-weight-medium);
+}
+
+.buddy .buddy__system input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--color-accent-400);
+}
+
+.buddy .buddy__system:has(input:focus-visible) {
+  outline: 3px solid var(--color-link);
+  outline-offset: 2px;
+}
+
+.buddy .buddy__systems-note {
+  margin: var(--spacing-2) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* "New for Mac / Linux" note above the install steps. */
+.buddy .buddy__note {
+  margin: 0 0 var(--spacing-4);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-left: 4px solid var(--color-accent-400);
+  background: var(--color-surface);
+  border-radius: var(--border-radius-md);
+}
