@@ -105,7 +105,7 @@ define new zones or adjust vanilla ones there.
 | `baseVehicleQuality` | Max condition of a part that spawns damaged (0.7 = 70%) | 1.0 |
 | `chanceToSpawnSpecial` | Chance of a special car (any type with `specialCar = true`) | 5 |
 | `chanceToSpawnBurnt` | Chance of a burnt car (80% normalburnt / 20% specialburnt) | 0 |
-| `chanceToSpawnNormal` | Chance of a normal car (picked from `parkingstall`), so themed lots aren't all themed | 80 |
+| `chanceToSpawnNormal` | Chance of a normal car (picked from `parkingstall`) instead, so themed lots aren't all themed. Read only when the zone's table has `specialCar = true`; on any other table it does nothing :cite[(`zombie/vehicles/VehicleType.java:98-99`, `zombie/vehicles/VehicleType.java:194-196`)] | 80 |
 | `spawnRate` | Base chance of adding a vehicle in a zone | 16 |
 | `chanceOfOverCar` | Chance to spawn another car on top (used in trailerpark) | 0 |
 | `randomAngle` | Random angle instead of grid-aligned | false |
@@ -116,10 +116,13 @@ define new zones or adjust vanilla ones there.
 
 Create the zone in the **`ParkingStall`** object group as usual, set `Direction`
 and/or `FaceDirection` as needed, and **name the zone after your custom zone
-type**. If no type is defined on the zone, `parkingstall` is used.
+type**. A zone with no name uses its type (`ParkingStall`), which picks
+`parkingstall`.
 
-Per the vanilla header: the *type* you set on the WorldEd zone is the key --
-`VehicleZoneDistribution.trailerpark` is used for a `trailerpark` zone type.
+The zone's **name** is the key, matched without regard to case:
+`VehicleZoneDistribution.trailerpark` is used for a zone named `trailerpark`. A
+name with no matching table spawns nothing there.
+:cite[(`zombie/iso/IsoChunk.java:1754-1757`, `zombie/iso/IsoChunk.java:1808-1813`, `zombie/vehicles/VehicleType.java:180-181`)]
 
 Confirmed from the editor screenshot: `ParkingStall` sits in the object-group
 tree alongside `ZombiesType`, `RoomTone`, `Mannequin`, `WaterZone`, `WaterFlow`,
