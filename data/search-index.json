@@ -9162,7 +9162,7 @@
       "multiplayer",
       "generated"
     ],
-    "excerpt": "These options are in the server's ini file but on no page of the settings screen: anti-cheat, the bad-word filter, spawn points, towing and more. You change them by editing the file, or with `/changeoption`. Every option with its default, range and where Build 42.22 reads it.",
+    "excerpt": "These options are in the server's ini file but on no option page of the host's settings screen (`Map` and `Mods` get panels of their own there): anti-cheat, the bad-word filter, spawn points, towing and more. You change them by editing the file, with `/changeoption`, or, for every option on the public list, in the in-game admin panel's Server Options list, which sends `/changeoption` for you. Every option with its default, range and where Build 42.22 reads it.",
     "difficulty": "beginner"
   },
   {
