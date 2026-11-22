@@ -6627,7 +6627,7 @@
       "crafting",
       "silent-failure"
     ],
-    "excerpt": "In Build 42 multiplayer only the server simulates item heat, every five seconds. A pot cools on the server the moment it leaves the stove while the client still shows it hot, and a craft that needs hot water then plays its whole animation and makes nothing. How heat works, how hot each heat source gets, and how to build around it.",
+    "excerpt": "In 42.22 multiplayer only the server simulates the heat of a pot, about every 5 seconds. A client can keep showing it hot, and a hot-water craft can then play its whole animation and make nothing.",
     "difficulty": "advanced"
   },
   {
@@ -6645,7 +6645,7 @@
       "ui",
       "layout"
     ],
-    "excerpt": "No minimap in Build 42 is usually a sandbox setting, not a bug: three of the five vanilla presets switch it off. If the sandbox allows it, the next suspect is layout.ini, which keeps one UI layout per screen resolution.",
+    "excerpt": "No minimap in 42.22 is usually the sandbox option Map.AllowMiniMap, which three of five presets set to off. If the sandbox allows it, suspect layout.ini, which keeps one layout per resolution.",
     "difficulty": "beginner"
   },
   {
@@ -6678,7 +6678,7 @@
       "statistics",
       "admin"
     ],
-    "excerpt": "The server's own statistics are named after what they are not. The \"FPS\" is the last tick's length in milliseconds, the \"average\" is not an average, and getServerFPS() always says 10. Here is what each number really is, and the one to trust. Read from the 42.21 code.",
+    "excerpt": "In 42.22 the server statistic \"fps\" is the last frame step's length in milliseconds, \"avg-update-period\" is not an average, and getServerFPS() always says 10. What each number is, and which to trust.",
     "difficulty": "intermediate"
   },
   {
@@ -6696,7 +6696,7 @@
       "vehicles",
       "sync"
     ],
-    "excerpt": "In Build 42 multiplayer a timed action's complete() runs on the server, the server folder loads on clients too, and a vehicle change reaches the client after the action says it is done. The facts that decide where your multiplayer code goes, read from the 42.21 code.",
+    "excerpt": "In 42.22 multiplayer a timed action's complete() runs on the server, the server folder loads on clients too, and a vehicle change reaches the client after the action says done. Where your code goes.",
     "difficulty": "intermediate"
   },
   {
