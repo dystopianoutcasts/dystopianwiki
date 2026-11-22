@@ -11,7 +11,7 @@ tags:
   - server-options
   - multiplayer
   - generated
-excerpt: 'These options are in the server''s ini file but on no page of the settings screen: anti-cheat, the bad-word filter, spawn points, towing and more. You change them by editing the file, or with `/changeoption`. Every option with its default, range and where Build 9.99 reads it.'
+excerpt: 'These options are in the server''s ini file but on no option page of the host''s settings screen (`Map` and `Mods` get panels of their own there): anti-cheat, the bad-word filter, spawn points, towing and more. You change them by editing the file, with `/changeoption`, or, for every option on the public list, in the in-game admin panel''s Server Options list, which sends `/changeoption` for you. Every option with its default, range and where Build 9.99 reads it.'
 last_updated: '2000-01-01'
 related_articles:
   - running-a-server
@@ -23,19 +23,19 @@ related_articles:
 
 > **Generated from the code.** This page is generated from Build 9.99 (revision 0f0f0f0f0f) by `npm run kb:gen-server`, not written by hand. When the game updates we re-extract the data and run it again, so the page always matches one exact build. How it is made is on [the handbook's first page](/pz/build-42/server/getting-started/running-a-server#how-these-pages-are-made).
 
-These options are in the server's ini file but on no page of the settings screen: anti-cheat, the bad-word filter, spawn points, towing and more. You change them by editing the file, or with `/changeoption`.
+These options are in the server's ini file but on no option page of the host's settings screen (`Map` and `Mods` get panels of their own there): anti-cheat, the bad-word filter, spawn points, towing and more. You change them by editing the file, with `/changeoption`, or, for every option on the public list, in the in-game admin panel's Server Options list, which sends `/changeoption` for you.
 
 ### AntiCheatFixture
 
 - **In the file:** `AntiCheatFixture=2` is the default. Takes a choice from 1 to 3: 1 ban, 2 kick, 3 log.
-- **Settings screen:** not on any page. **Sent to joining players:** yes.
+- **Settings screen:** not on any page; the in-game admin panel's Server Options list shows it. **Sent to joining players:** yes.
 - **The game's description:** "Fixture anti-cheat"
 - **Not read by the game code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.
 
 ### ResetID
 
 - **In the file:** `ResetID=` followed by a value computed when the options are created: `Rand.Next(1000)`. Takes a whole number from 0 to 2147483647.
-- **Settings screen:** not on any page. **Sent to joining players:** yes.
+- **Settings screen:** not on any page; the in-game admin panel's Server Options list shows it. **Sent to joining players:** yes.
 - **The game's description:** "Reset marker"
 - **Not read by the game code.** We found no place in the Java or the vanilla Lua that reads this option, and its name appears nowhere else as text.
 - **What the code does with it:** Fixture: read nowhere.

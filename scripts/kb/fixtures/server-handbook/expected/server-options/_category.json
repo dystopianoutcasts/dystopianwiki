@@ -2,5 +2,6 @@
   "name": "Server Options",
   "description": "Generated from the Build 9.99 code: all 5 server ini options with default, range and where the game reads each.",
   "icon": "settings",
-  "displayOrder": 2
+  "displayOrder": 2,
+  "group": "settings"
 }

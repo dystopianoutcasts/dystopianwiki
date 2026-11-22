@@ -2,5 +2,6 @@
   "name": "Admin Commands",
   "description": "Generated from the Build 9.99 code: every server command, its forms and the capability it needs.",
   "icon": "wrench",
-  "displayOrder": 4
+  "displayOrder": 4,
+  "group": "admins-and-roles"
 }

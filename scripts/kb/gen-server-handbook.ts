@@ -200,7 +200,7 @@ export const SERVER_GROUPS: Group[] = [
     slug: 'server-options-only-in-the-ini-file',
     title: 'Server options only in the ini file',
     pages: [null],
-    intro: 'These options are in the server\'s ini file but on no page of the settings screen: anti-cheat, the bad-word filter, spawn points, towing and more. You change them by editing the file, or with `/changeoption`.',
+    intro: 'These options are in the server\'s ini file but on no option page of the host\'s settings screen (`Map` and `Mods` get panels of their own there): anti-cheat, the bad-word filter, spawn points, towing and more. You change them by editing the file, with `/changeoption`, or, for every option on the public list, in the in-game admin panel\'s Server Options list, which sends `/changeoption` for you.',
   },
 ]
 
@@ -256,11 +256,18 @@ export const SANDBOX_GROUPS: Group[] = [
 ]
 
 const CATEGORIES = {
-  'server-options': { name: 'Server Options', icon: 'settings', displayOrder: 2 },
-  'sandbox-options': { name: 'Sandbox Options', icon: 'globe', displayOrder: 3 },
-  'admin-commands': { name: 'Admin Commands', icon: 'wrench', displayOrder: 4 },
-  'roles-and-access': { name: 'Roles and Access', icon: 'scroll', displayOrder: 5 },
+  'server-options': { name: 'Server Options', icon: 'settings', displayOrder: 2, group: 'settings' },
+  'sandbox-options': { name: 'Sandbox Options', icon: 'globe', displayOrder: 3, group: 'settings' },
+  'admin-commands': { name: 'Admin Commands', icon: 'wrench', displayOrder: 4, group: 'admins-and-roles' },
+  'roles-and-access': { name: 'Roles and Access', icon: 'scroll', displayOrder: 5, group: 'admins-and-roles' },
 } as const
+
+// The section page's groups (read by scripts/build-nav.ts); the hand-written getting-started category is in start-here.
+const SECTION_GROUPS = [
+  { id: 'start-here', name: 'Start Here', description: "Your server's files, what surprised us in the code, and how to read the server's numbers." },
+  { id: 'settings', name: 'Settings', description: 'Every server ini option and every sandbox option: its default, its range and where the game reads it.' },
+  { id: 'admins-and-roles', name: 'Admins and Roles', description: 'Every admin command, the built-in roles, and which capability each action needs.' },
+]
 type CategoryId = keyof typeof CATEGORIES
 
 const INDEX_SLUG = 'running-a-server'
@@ -473,7 +480,15 @@ function renderServerOption(o: ServerOption, data: ServerSurface, notes: Notes):
   const pageTitle = o.page ? data.serverPages.find(p => p.key === o.page)?.title ?? o.page : null
   const def = o.default !== null && typeof o.default === 'object' ? `${serverIniLine(o)} followed by a value ${serverValue(o)}` : `${serverIniLine(o)} is the default`
   lines.push(`- **In the file:** ${def}. Takes ${serverKind(o)}.`)
-  lines.push(`- **Settings screen:** ${pageTitle ? `the ${quoteText(pageTitle)} page` : 'not on any page'}. **Sent to joining players:** ${o.public ? 'yes' : 'no'}.`)
+  // Map and Mods are on no option list, but the settings screen gives each its own panel (ServerSettingsScreen.lua:4184-4192).
+  const ownPanel = o.name === 'Map' || o.name === 'Mods'
+  const adminPanel = o.public ? 'the in-game admin panel\'s Server Options list shows it' : 'not in the in-game admin panel either'
+  const screen = pageTitle
+    ? `the ${quoteText(pageTitle)} page`
+    : ownPanel
+      ? `its own ${quoteText(o.name)} panel, not an option page; ${adminPanel}`
+      : `not on any page; ${adminPanel}`
+  lines.push(`- **Settings screen:** ${screen}. **Sent to joining players:** ${o.public ? 'yes' : 'no'}.`)
   if (o.tooltip) lines.push(`- **The game's description:** ${quoteText(o.tooltip)}`)
   if (o.reads.length) lines.push(`- **Read in:** ${siteList(o.reads)}.`)
   if (o.writes.length) lines.push(`- **Changed in:** ${siteList(o.writes)}.`)
@@ -1037,6 +1052,7 @@ export function generate(data: ServerSurface, notes: Notes): Output {
         description: `For server owners: every server option, sandbox option, admin command and role in Build ${data.build.split('.')[0]}, generated from the code, with where the game reads each one.`,
         icon: 'database',
         displayOrder: 6,
+        groups: SECTION_GROUPS,
       },
       null,
       2,
@@ -1049,7 +1065,7 @@ export function generate(data: ServerSurface, notes: Notes): Output {
     'roles-and-access': `Generated from the Build ${data.build} code: the built-in roles and every capability, with where each is checked.`,
   }
   for (const [id, c] of Object.entries(CATEGORIES) as [CategoryId, (typeof CATEGORIES)[CategoryId]][]) {
-    files.set(`${id}/_category.json`, JSON.stringify({ name: c.name, description: descriptions[id], icon: c.icon, displayOrder: c.displayOrder }, null, 2) + '\n')
+    files.set(`${id}/_category.json`, JSON.stringify({ name: c.name, description: descriptions[id], icon: c.icon, displayOrder: c.displayOrder, group: c.group }, null, 2) + '\n')
   }
   for (const p of pages) files.set(`${p.category}/${p.file}`, p.content)
   return { pages, files }
