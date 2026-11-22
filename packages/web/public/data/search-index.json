@@ -4219,7 +4219,7 @@
       "spawn-points",
       "loot-distribution"
     ],
-    "excerpt": "media/maps//spawnpoints.lua is a plain Lua function returning named groups of coordinates. [VERIFIED -- vanilla Muldraugh]",
+    "excerpt": "spawnpoints.lua returns a table keyed by profession id, and a missing profession falls back to unemployed.",
     "difficulty": "intermediate"
   },
   {
@@ -4236,7 +4236,7 @@
       "spawn-points",
       "loot-distribution"
     ],
-    "excerpt": "For a map to spawn vehicles properly, the object zone must be:",
+    "excerpt": "A ParkingStall or Vehicle zone of any size; the game lays 3x5 stalls over it and tries one car per stall.",
     "difficulty": "intermediate"
   },
   {
