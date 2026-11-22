@@ -5978,7 +5978,7 @@
       "silent-failure",
       "parser"
     ],
-    "excerpt": "A script file has exactly one kind of comment, /* */. A // is ordinary text, and it sticks to whatever follows it up to the next comma or brace. Here is what that breaks in each place you might put one, read from the game's script parser.",
+    "excerpt": "A script file has one kind of comment, /* */. A // is ordinary text that sticks to whatever follows it. What that breaks in Build 42.22, place by place, and which of it shows up in your log.",
     "difficulty": "beginner"
   },
   {
@@ -5994,7 +5994,7 @@
       "mod-study",
       "optimization"
     ],
-    "excerpt": "Study of Workshop 3119788162 (ETO_B / ETO_P, author maceleet, modversion 1.2.1, versionMin 42.20.0) against a B42 install, 2026-08-10.",
+    "excerpt": "A texture pack shrinks PNG files without shrinking pictures. What it measurably does, what the 42.22 PNG loader accepts, why quantizing masks is a risk we did not rule out, and what we took from it.",
     "difficulty": "intermediate"
   },
   {
@@ -6011,7 +6011,7 @@
       "findings",
       "running-log"
     ],
-    "excerpt": "Running log of verified findings. Each entry states its evidence and its confidence level. Preliminary findings are labelled as such -- do not cite them as settled.",
+    "excerpt": "Running log of verified Build 42 engine findings, each with its evidence and confidence. F-001 to F-008 are read at 42.22; F-009 to F-016 are still the 42.21 text and are being rechecked.",
     "difficulty": "advanced"
   },
   {
